@@ -7,40 +7,43 @@
  *
  * @package TestLink
  * @author TestLink Community
- * @copyright 2009,2019 TestLink community 
- * @filesource csv.inc.php
+ * @copyright 2009, TestLink community 
+ * @version CVS: $Id $
+ * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
+ * @TODO havlatm: move both functions to appropriate object
  * 
+ * @internal revisions
+ *	20110206 - franciscom - BUGID 4210 - importCSVData() - added more debug info
+ *										 return structure changed.
+ *
+ *	20100508 - franciscom - BUGID 3447 - importCSVData() 
+ *
  **/
  
-/** @used-by keywors.class.php, requirements.inc.php */ 
-function exportDataToCSV($data,$sourceKeys,$destKeys,$bWithHeader = 0,$delimiter = ';') {
+/** @uses keywors.class.php, requirements.inc.php */ 
+function exportDataToCSV($data,$sourceKeys,$destKeys,$bWithHeader = 0,$delimiter = ';')
+{
 	$csvContent = '';
 	$newLine = "\r\n";
 		
-	if ($bWithHeader) {
-		// try to localize
-    $labels = array();
-    foreach($destKeys as $lblID) {
-    	$labels[] = lang_get($lblID,null,false);
-    }
-		$header = implode(";",$labels);	
-
+	if ($bWithHeader)
+	{
+		$header = implode(";",$destKeys);	
 		$csvContent .= $header . $newLine;
 	}
-
-	$len = count($sourceKeys);
-  foreach($data as $values) { 
+	$len = sizeof($sourceKeys);
+	for($i = 0;$i < sizeof($data);$i++)
+	{
+		$values = $data[$i];
 		$line = '';
-		for($k = 0;$k < $len;$k++) {
+		for($k = 0;$k < $len;$k++)
+		{
 			$value = $values[$sourceKeys[$k]];
-			if (strpos($value,$delimiter) !== false || 
-				  strpos($value,"\n") !== false) {
+			if (strpos($value,$delimiter) !== false || strpos($value,"\n") !== false)
 				$value = '"'.str_replace( '"','""',$value).'"';
-			}
-			if ($k) {
+			if ($k)
 				$line .= $delimiter; 
-			}
 			$line .= $value;
 		}
 		$line .= $newLine;
@@ -49,11 +52,13 @@ function exportDataToCSV($data,$sourceKeys,$destKeys,$bWithHeader = 0,$delimiter
 	return $csvContent;
 }
 
+// 20061014 - franciscom
 // added [$num_fields] number of fields a line must have to be valid
-//       if the number is not verified the line is discarded.
+//                     if the number is not verified the line is discarded.
 //
 /** @uses requirements.inc.php */ 
-function importCSVData($fileName,$fieldMappings, $options = null) {
+function importCSVData($fileName,$fieldMappings, $options = null)
+{
 	$debugMe = false; //true;
 	$my['options'] = array( 'delimiter' => ';', 'fieldQty' => 0, 'processHeader' => false);
     $my['options'] = array_merge($my['options'], (array)$options);
@@ -161,5 +166,4 @@ function importCSVData($fileName,$fieldMappings, $options = null) {
 	}
 	return $retVal;
 }
-
-
+?>

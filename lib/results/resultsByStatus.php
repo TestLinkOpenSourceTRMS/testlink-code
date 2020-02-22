@@ -31,13 +31,27 @@ require_once('exec.inc.php'); // used for bug string lookup
 
 $tplCfg = templateConfiguration();
 
-list($tplan_mgr,$args) = initArgsForReports($db);
+testlinkInitPage($db); 
+list($args,$gui) = initScript($db);
+
+
+/**
+ *
+ */
+function initScript(&$dbH) {
+  $args = init_args($dbH);
+  $gui = initializeGui($dbH,$args);
+
+  return array($args,$gui);
+}
+
+
 $statusCode = $args->statusCode;
 
-$tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 
-$gui = initializeGui($db,$args,$tplan_mgr);
+
+
 $its = &$gui->its;
 $labels = &$gui->labels;
 
@@ -341,7 +355,6 @@ function init_args(&$dbHandler)
     }  
   } else {
     testlinkInitPage($dbHandler,true,false,"checkRights");  
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
   
 
@@ -357,11 +370,12 @@ function init_args(&$dbHandler)
  * initializeGui
  *
  */
-function initializeGui(&$dbh,&$argsObj,&$tplanMgr)
+function initializeGui(&$dbh,&$argsObj)
 {
+  $tplanMgr = new testplan($dbh);
   $tprojectMgr = new testproject($dbh);
 
-  $guiObj = new stdClass();
+  list($add2args,$guiObj) = initUserEnv($dbh,$argsObj);
 
   $guiObj->labels = init_labels(
     array('deleted_user' => null, 'design' => null, 

@@ -298,12 +298,22 @@ abstract class tlFilterControl extends tlObjectWithDB
     $this->user = $_SESSION['currentUser'];
     $this->args->user_id = $this->user->dbID;
     $this->args->user_name = $this->user->getDisplayName();
-    
-    $this->args->testproject_id = intval(isset($_SESSION['testprojectID']) ?
-                                  $_SESSION['testprojectID'] : 0);
-    $this->args->testproject_name = isset($_SESSION['testprojectName']) ?
-                                    $_SESSION['testprojectName'] : 0;
-    
+
+    if (!isset($_REQUEST['tproject_id'])) {
+      throw new Exception("Can not get Test Project ID", 1);
+    }
+    $this->args->testproject_id = intval($_REQUEST['tproject_id']);
+    $this->args->testproject_name = testproject::getName($this->db,$this->args->testproject_id);
+
+    $this->args->tproject_id = $this->args->testproject_id;
+    $this->args->tproject_name = $this->args->testproject_name;
+
+    $this->args->testplan_id = 0;
+    if (isset($_REQUEST['tplan_id'])) {
+      $this->args->testplan_id = intval($_REQUEST['tplan_id']);
+    }
+    $this->args->tplan_id = $this->args->testplan_id;
+
     $params = array();
     $params['setting_refresh_tree_on_action'] = array("POST", tlInputParameter::CB_BOOL);
     $params['hidden_setting_refresh_tree_on_action'] =

@@ -18,7 +18,7 @@
  **/
 
 /** report specific configuration; navigator list definition */ 
-require_once('reports.cfg.php');
+require_once('../../cfg/reports.cfg.php');
 
 
 /**
@@ -78,7 +78,7 @@ class tlReports extends tlObjectWithDB
     $apiKeyIsValid = ($apiKeyLen == 32 || $apiKeyLen == 64); // I'm sorry for MAGIC
     
     $xdx = 0;
-
+    
     foreach ($reportList as &$rptItem)  {
       // check validity of report   
       if (($rptItem['enabled'] == 'all') || 

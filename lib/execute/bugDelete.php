@@ -4,8 +4,7 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource  bugDelete.php
- * @internal revisions
- * @since 1.9.16
+ *
  *
 **/
 require_once('../../config.inc.php');
@@ -54,14 +53,12 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-  $args = new stdClass();
+  list($args,$env) = initContext();
   $iParams = array("exec_id" => array("GET",tlInputParameter::INT_N),
-                 "tcstep_id"  => array("GET",tlInputParameter::INT_N),
-           "bug_id" => array("GET",tlInputParameter::STRING_N,0,config_get('field_size')->bug_id));
+                   "tcstep_id"  => array("GET",tlInputParameter::INT_N),
+                   "bug_id" => array("GET",tlInputParameter::STRING_N,0,config_get('field_size')->bug_id));
   
   $pParams = I_PARAMS($iParams,$args);
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
-
   return $args;
 }
 

@@ -342,13 +342,10 @@ function launch_inner_exec(&$dbHandler,&$tplMgr)
     $tplan_mgr = new testplan($dbHandler);
     $info = $tplan_mgr->get_by_id($args->tplan_id,array('output' => 'minimun'));
     
-    if(is_null($info))
-    {
+    if (is_null($info)) {
       die('ltx - tplan info does not exist');
     }  
 
-    $tproject_mgr = new testproject($dbHandler);
-    $tproject_mgr->setSessionProject($info['tproject_id']);
     $op['status_ok'] = true;
   } 
 

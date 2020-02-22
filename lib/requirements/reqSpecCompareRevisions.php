@@ -6,8 +6,8 @@
  * @filesource	reqSpecCompareRevisions.php
  * @package 	TestLink
  * @author		franciscom
- * @copyright 	2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @copyright 	2011,2019 TestLink community 
+ * @link 		http://www.testlink.org
  *
  * Compares selected requirements spec revisions with each other.
  *
@@ -214,7 +214,8 @@ function getCFDiff($cfields,&$itemMgr)
 			} // mega if
 		}  // foraeach		
 	}
-	return count($cmp) > 0 ? $cmp : null;	
+
+	return (is_array($cmp) && count($cmp)) > 0 ? $cmp : null;	
 }
 
 
@@ -228,20 +229,20 @@ function init_args()
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 	
 
-	$args = new stdClass();
-	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? intval($_REQUEST['req_spec_id']) : 0;
+	list($args,$env) = initContext();
+	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? 
+	                     intval($_REQUEST['req_spec_id']) : 0;
+
 	$args->doCompare = isset($_REQUEST['doCompare']) ? true : false;
 	$args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
 	$args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+
 	$args->useDaisyDiff = (isset($_REQUEST['diff_method']) && ($_REQUEST['diff_method'] == 'htmlCompare')) ? 1 : 0;
 	
 
-
 	$diffEngineCfg = config_get("diffEngine");
 	$args->context = null;
-	if( !isset($_REQUEST['context_show_all'])) 
-	{
+	if( !isset($_REQUEST['context_show_all'])) {
 		$args->context = (isset($_REQUEST['context']) && is_numeric($_REQUEST['context'])) ? $_REQUEST['context'] : $diffEngineCfg->context;
 	}
 	

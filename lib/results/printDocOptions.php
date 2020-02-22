@@ -4,7 +4,6 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource printDocOptions.php
- * @author     Martin Havlat
  * 
  *  Settings for generated documents
  *  - Structure of a document 
@@ -20,8 +19,10 @@ require_once("treeMenu.inc.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$args = init_args($db);
-$gui = initializeGui($db,$args);
+
+$tprojMgr = new testproject($db);
+$args = init_args($db,$tprojMgr);
+$gui = initializeGui($db,$args,$tprojMgr);
 $rightPaneAction = 'lib/results/printDocument.php';
 $additionalArgs = '';
 
@@ -129,19 +130,21 @@ $smarty->assign('additionalArgs',$additionalArgs);
 $optCfg = new printDocOptions();
 $smarty->assign('printPreferences', $optCfg->getJSPrintPreferences());
 
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+$smarty->display($templateCfg->tpl);
 
 
 /**
  * get user input and create an object with properties representing this inputs.
  * @return stdClass object 
  */
-function init_args(&$dbHandler) {
+function init_args(&$dbHandler,&$tprojMgr) {
   $args = new stdClass();
   $iParams = array("tplan_id" => array(tlInputParameter::INT_N),
+                   "tproject_id" => array(tlInputParameter::INT_N),
                    "format" => array(tlInputParameter::INT_N,999),
                    "type" => array(tlInputParameter::STRING_N,0,100),
-                   "activity" => array(tlInputParameter::STRING_N,1,10));  
+                   "activity" => array(tlInputParameter::STRING_N,1,10),
+                   "warning" => array(tlInputParameter::STRING_N,1,12));  
   
   $l18n = array();
   $l18n['addTC'] = lang_get('navigator_add_remove_tcase_to_tplan');
@@ -149,13 +152,29 @@ function init_args(&$dbHandler) {
 
 
   R_PARAMS($iParams,$args);
-  $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0);
-  $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+
+  $args->drawTree = true;
+  if ($args->warning != '') {
+    $args->drawTree = false;
+    $args->warning = lang_get($args->warning);
+  }
+
+  if ($args->tplan_id > 0) {  
+    $tplan_mgr = new testplan($dbHandler);
+    $args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+    $args->mainTitle = $l18n['test_plan'] . ': ' . $args->tplan_info['name'];
+  }
+
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $args->tproject_id = $args->tplan_info['testproject_id'];
+  }
+  $args->tproject_name = testproject::getName($dbHandler,$args->tproject_id);
 
   $args->basehref = $_SESSION['basehref'];
-  $args->testprojectOptReqs = $_SESSION['testprojectOptions']->requirementsEnabled;
   
-
+  $tprjOpt = $tprojMgr->getOptions($args->tproject_id);
+  $args->testprojectOptReqs = $tprjOpt->requirementsEnabled;
+ 
   $args->format = is_null($args->format) ? FORMAT_HTML : $args->format;
   $args->type = is_null($args->type) ? DOC_TEST_PLAN_DESIGN : $args->type;
   $args->doc_type = $args->type;
@@ -166,18 +185,12 @@ function init_args(&$dbHandler) {
   $args->tplan_info = null;
   $args->mainTitle = '';
 
-  if( ($args->tplan_id = intval($args->tplan_id)) <= 0 || $args->activity != '') {
+
+  if ($args->activity != '') {
     $args->showOptions = false;
     $args->showHelpIcon = false;
-    $args->tplan_id = intval(isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0);
-
   }  
-  
-  if($args->tplan_id > 0) {  
-    $tplan_mgr = new testplan($dbHandler);
-    $args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-    $args->mainTitle = $l18n['test_plan'] . ': ' . $args->tplan_info['name'];
-  }
+
   
   return $args;
 }
@@ -195,11 +208,14 @@ function init_args(&$dbHandler) {
  * 
  * @return stdClass TBD structure
  */ 
-function initializeGui(&$db,$args) {
+function initializeGui(&$db,&$args,&$tprojectMgr) {
   $tcaseCfg = config_get('testcase_cfg');
   $reqCfg = config_get('req_cfg');
         
   $gui = new stdClass();
+  $gui->drawTree = $args->drawTree;
+  $gui->warning = $args->warning;
+  
   $gui->showOptionsCheckBoxes = $gui->showOptions = $args->showOptions;
 
   $gui->showHelpIcon = $args->showHelpIcon;
@@ -216,7 +232,6 @@ function initializeGui(&$db,$args) {
     }  
   }  
 
-  $tprojectMgr = new testproject($db);
   $tcasePrefix = $tprojectMgr->getTestCasePrefix($args->tproject_id);
 
   $gui->tree_title = '';
@@ -293,6 +308,12 @@ function initializeGui(&$db,$args) {
   } else {
     $gui->mainTitle = $args->mainTitle; 
   } 
+
+  switch ($args->activity) {
+    case 'addTC':
+      $gui->mainTitle = lang_get('testplan_design'); 
+    break;
+  }
 
   $gui->getArguments = "&type=" . $args->doc_type; 
   if ($addTestPlanID) {

@@ -9,11 +9,13 @@ testlinkInitPage($db);
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 
-$tplan_id=$_REQUEST['tplan_id'];
-$tproject_id=$_SESSION['testprojectID'];
-
+list($args,$env) = initContext();
+$tplan_id = $args->tplan_id;
 $tplan_info = $tplan_mgr->get_by_id($tplan_id);
+
+$tproject_id = $tplan_info['testproject_id'];
 $tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
 
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);

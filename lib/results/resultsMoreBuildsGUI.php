@@ -6,10 +6,7 @@
  * builds, platforms, keywords, etc they would like to query results against.
  *
  * @filesource	resultsMoreBuildsGUI.php
- * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  *
- * @internal revisions
- * @since 1.9.4
  * 
  **/
 require_once('../../config.inc.php');
@@ -20,7 +17,7 @@ testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($db,$args);
 
 $smarty = new TLSmarty();
@@ -133,19 +130,22 @@ function initializeGui(&$dbHandler,$args)
 }
 
 
-
-function init_args()
+/**
+ *
+ */
+function init_args(&$dbHandler)
 {
-	$iParams = array("format" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N));
+  list($args,$env) = initContext();
 
-	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
 
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+  $args->tproject_name = testproject::getName($db,$args->tproject_id);
 
-    return $args;
+  return $args;
 }
 
 function checkRights(&$db,&$user)

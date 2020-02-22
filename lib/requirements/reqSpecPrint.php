@@ -6,13 +6,11 @@
  * @filesource	reqSpecPrint.php
  * @package		TestLink
  * @author		Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright 	2005-2011, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @copyright 	2005-2019, TestLink community
+ * @link 		http://www.testlink.org
  *
  * create printer friendly information for ONE requirement
  *
- * @internal revisions:
- * 20110319 - franciscom - BUGID 4321: Requirement Spec - add option to print single Req Spec
  */
 
 require_once("../../config.inc.php");
@@ -25,7 +23,7 @@ $req_cfg = config_get('req_cfg');
 
 $tree_mgr = new tree($db);
 $reqspec_mgr = new requirement_spec_mgr($db);
-$args = init_args();
+$args = init_args($db);
 
 $target_id = $args->reqspec_revision_id;
 $target_id = ($target_id <= 0) ? $args->reqspec_id : $target_id;
@@ -86,15 +84,22 @@ echo $text2print;
   returns: 
 
 */
-function init_args()
+function init_args(&$dbH)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
     $args = new stdClass();
     $args->reqspec_id = isset($_REQUEST['reqspec_id']) ? intval($_REQUEST['reqspec_id']) : 0;
     $args->reqspec_revision_id = isset($_REQUEST['reqspec_revision_id']) ? intval($_REQUEST['reqspec_revision_id']) : 0;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-    $args->tproject_name = $_SESSION['testprojectName'];
+
+
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+
+    if (0==$args->tproject_id) {
+      throw new Exception("BAD Test Project ID", 1);
+      
+    }
+    $args->tproject_name = testproject::getName($dbH,$args->tproject_id);
 
     return $args;
 }

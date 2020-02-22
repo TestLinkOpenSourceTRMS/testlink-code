@@ -74,13 +74,12 @@ class planMilestonesCommands
     // localize target date (is always set on edit)
     $guiObj->milestone['target_date'] = localize_dateOrTimeStamp(null, $dummy, 'date_format',$guiObj->milestone['target_date']);
       
-    // as start date is optional it can be "0000-00-00" (default timestamp)
-    if ($guiObj->milestone['start_date'] != "0000-00-00") 
-    {
+    // as start date is optional it can be "0000-00-00" OR NULL
+    // depending of DBMS (default timestamp)
+    if (null != $guiObj->milestone['start_date']
+        && $guiObj->milestone['start_date'] != "0000-00-00") {
       $guiObj->milestone['start_date'] = localize_dateOrTimeStamp(null, $dummy, 'date_format',$guiObj->milestone['start_date']);
-    } 
-    else 
-    {
+    } else {
       $guiObj->milestone['start_date'] = "";
     }
       

@@ -62,14 +62,13 @@ function init_args()
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $args = new stdClass();
+  list($args,$env) = initContext();
   $args->tcase_id = intval(isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0);
   $args->tcversion_id = intval(isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0);
-  $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
 
-  $args->tproject_name = $_SESSION['testprojectName'];
+  $args->tproject_name = testproject::getName($dbH,$args->tproject_id);
+
   $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
-
 
   $ofd = array('HTML' => lang_get('format_html'),'ODT' => lang_get('format_odt'), 
                'MSWORD' => lang_get('format_msword'));

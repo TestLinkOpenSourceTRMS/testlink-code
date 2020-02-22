@@ -16,8 +16,7 @@ $cfield_mgr = new cfield_mgr($db);
 $args = init_args($db);
 $checkedIDSet = array_keys($args->checkedCF);
 
-switch($args->doAction)
-{
+switch($args->doAction) {
   case 'doAssign':
     $cfield_mgr->link_to_testproject($args->tproject_id,$checkedIDSet);
   break;
@@ -30,8 +29,7 @@ switch($args->doAction)
     // To make user's life simpler, we work on all linked CF 
     // and not only on selected. 
     $cfield_mgr->set_display_order($args->tproject_id,$args->display_order);
-    if( !is_null($args->location) )
-    {
+    if( !is_null($args->location) ) {
       $cfield_mgr->setDisplayLocation($args->tproject_id,$args->location);
     }
   break;
@@ -66,24 +64,21 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args(&$dbHandler)
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
-  $args = new stdClass();
 
+  list($args,$env) = initContext();
   $key2search = array('doAction','checkedCF','display_order','location',
                       'hidden_active_cfield','active_cfield',
                       'hidden_required_cfield','required_cfield',
                       'hidden_monitorable_cfield','monitorable_cfield');
     
-  foreach($key2search as $key)
-  {
+  foreach($key2search as $key) {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;
   }
 
-  if( is_null($args->checkedCF) )
-  {
+  if( is_null($args->checkedCF) ) {
     $args->checkedCF = array();
   }  
 
-  getTproj($dbHandler,$args);
 
   return $args;
 }
@@ -92,40 +87,20 @@ function init_args(&$dbHandler)
 /**
  *
  */
-function getTproj(&$dbH,&$args)
-{  
-  $args->tproject_name = '';
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? 
-                         intval($_REQUEST['tproject_id']) : 0;
-  
-  if( $args->tproject_id == 0 )
-  {
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? 
-                           intval($_SESSION['testprojectID']) : 0;
-  }  
-
-  if( $args->tproject_id > 0 )
-  {
-    $mgr = new tree($dbH);
-    $dummy = $mgr->get_node_hierarchy_info($args->tproject_id,null,
-                array('nodeType' => 'testproject'));
-    if(is_null($dummy))
-    {
-      throw new Exception("Unable to get Test Project ID");
-    }  
-    $args->tproject_name = $dummy['name'];
-  }
-}
 
 /**
  *
  */
 function initializeGui(&$args,&$cfield_mgr)
 {
-  $gui = new stdClass();
 
-  $gui->locations=createLocationsMenu($cfield_mgr->getLocations());
-  $gui->tproject_name = $args->tproject_name;
+  list($add2args,$gui) = initUserEnv($cfield_mgr->db,$args);
+
+  $gui->activeMenu['projects'] = 'active';
+
+  $gui->locations = createLocationsMenu($cfield_mgr->getLocations());
+  $gui->tproject_name = 
+    testproject::getName($cfield_mgr->db,$args->tproject_id);
   
   $gui->linkedCF = $cfield_mgr->get_linked_to_testproject($args->tproject_id);
   $cf2exclude = is_null($gui->linkedCF) ? null :array_keys($gui->linkedCF);
@@ -135,8 +110,7 @@ function initializeGui(&$args,&$cfield_mgr)
   $gui->cf_allowed_nodes = array();
   $allowed_nodes = $cfield_mgr->get_allowed_nodes();
 
-  foreach($allowed_nodes as $verbose_type => $type_id)
-  {
+  foreach($allowed_nodes as $verbose_type => $type_id) {
     $gui->cf_allowed_nodes[$type_id] = lang_get($verbose_type);
   }  
 

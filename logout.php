@@ -12,7 +12,8 @@ require_once('common.php');
 testlinkInitPage($db);
 
 $args = init_args();
-if ($args->userID) {
+if ($args->userID)
+{
   logAuditEvent(TLS("audit_user_logout",$args->userName),"LOGOUT",$args->userID,"users");  
 }
 session_unset();
@@ -20,9 +21,12 @@ session_destroy();
 
 $authCfg = config_get('authentication');
 if(isset($authCfg['SSO_enabled']) && $authCfg['SSO_enabled'] 
-   && $args->ssodisable == FALSE) {
+   && $args->ssodisable == FALSE)
+{
   redirect($authCfg['SSO_logout_destination']);
-} else {
+}
+else
+{
   $std = "login.php?note=logout&viewer={$args->viewer}";
   $std .= $args->ssodisable ? "&ssodisable" : '';
 
@@ -36,14 +40,15 @@ exit();
 /**
  *
  */
-function init_args() {
+function init_args()
+{
 	$args = new stdClass();
 	
 	$args->userID = isset($_SESSION['userID']) ?  $_SESSION['userID'] : null;
 	$args->userName = $args->userID ? $_SESSION['currentUser']->getDisplayName() : "";
 	
 	$args->viewer = isset($_GET['viewer']) ? $_GET['viewer'] : '';
-  $args->ssodisable = getSSODisable();
+    $args->ssodisable = getSSODisable();
 	
-  return $args;
+    return $args;
 }

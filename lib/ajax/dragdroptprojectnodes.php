@@ -37,21 +37,15 @@ switch($args->doAction)
     break;
 }
 
-/**
- *
- */
-function init_args() {
-  $args=new stdClass();
-  
-  $key2loop=array('nodeid','newparentid','nodeorder');
-  foreach($key2loop as $key) {
-    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : null;   
-  }
-
-  $key2loop = array('doAction','top_or_bottom','nodelist');
-  foreach($key2loop as $key) {
-    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;   
-  }
-
-  return $args;
-}  
+function init_args()
+{
+    $args=new stdClass();
+    
+    $key2loop=array('nodeid','newparentid','doAction','top_or_bottom','nodeorder','nodelist');
+    foreach($key2loop as $key)
+    {
+      $args->$key=isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;   
+    }
+    return $args;
+}
+?>                                                                                             

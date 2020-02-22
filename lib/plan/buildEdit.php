@@ -18,17 +18,12 @@ $templateCfg = templateConfiguration();
 
 $date_format_cfg = config_get('date_format');
 
-$op = new stdClass();
-$op->user_feedback = '';
-$op->buttonCfg = new stdClass();
-$op->buttonCfg->name = "";
-$op->buttonCfg->value = "";
 
 $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
-$args = init_args($_REQUEST,$_SESSION,$date_format_cfg,$tplan_mgr);
+$args = init_args($date_format_cfg,$tplan_mgr,$build_mgr);
 $gui = initializeGui($args,$build_mgr);
 
 
@@ -39,11 +34,12 @@ $of->Value = getItemTemplateContents('build_template', $of->InstanceName, $args-
 $op = new stdClass();
 $op->operation_descr = '';
 $op->user_feedback = '';
-$op->buttonCfg = '';
 $op->status_ok = 1;
+$op->buttonCfg = new stdClass();
+$op->buttonCfg->name = "";
+$op->buttonCfg->value = "";
 
-switch($args->do_action)
-{
+switch($args->do_action) {
   case 'edit':
     $op = edit($args,$build_mgr,$date_format_cfg);
     $gui->closed_on_date = $args->closed_on_date;
@@ -90,9 +86,11 @@ switch($args->do_action)
 }
 
 $dummy = null;
-$gui->release_date = (isset($op->status_ok) && $op->status_ok && $args->release_date != "") ? 
-                      localize_dateOrTimeStamp(null, $dummy, 'date_format',$args->release_date) : 
-                      $args->release_date_original;
+$gui->release_date = 
+ (isset($op->status_ok) && $op->status_ok && $args->release_date != "") ? 
+  localize_dateOrTimeStamp(null, $dummy, 'date_format',$args->release_date) : 
+ $args->release_date_original;
+
 $gui->closed_on_date = $args->closed_on_date;
 $gui->operation_descr = $op->operation_descr;
 $gui->user_feedback = $op->user_feedback;
@@ -110,69 +108,76 @@ renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
  *            must be reflected here.
  *
  *
- * @parameter hash request_hash the $_REQUEST
- * @parameter hash session_hash the $_SESSION
- * @return    object with html values tranformed and other
- *                   generated variables.
- * @internal revisions
  *
  */
-function init_args($request_hash, $session_hash,$date_format,&$tplanMgr) {
+function init_args($date_format,&$tplanMgr,&$buildMgr) {
   $args = new stdClass();
-  $request_hash = strings_stripSlashes($request_hash);
+  $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $nullable_keys = array('notes','do_action','build_name',
                          'commit_id','tag','branch','release_candidate');
   foreach($nullable_keys as $value) {
-    $args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;
+    $args->$value = isset($_REQUEST[$value]) ? $_REQUEST[$value] : null;
   }
 
   $intval_keys = array('build_id' => 0, 'source_build_id' => 0);
   foreach($intval_keys as $key => $value) {
-    $args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
+    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
   }
 
   $bool_keys = array('is_active' => 0, 'is_open' => 0, 
                      'copy_to_all_tplans' => 0,
                      'copy_tester_assignments' => 0);
   foreach($bool_keys as $key => $value) {
-    $args->$key = isset($request_hash[$key]) ? 1 : $value;
+    $args->$key = isset($_REQUEST[$key]) ? 1 : $value;
   }
 
   // convert start date to iso format to write to db
   $args->release_date = null;
-  if (isset($request_hash['release_date']) && $request_hash['release_date'] != '') 
+  if (isset($_REQUEST['release_date']) && $_REQUEST['release_date'] != '') 
   {
-    $date_array = split_localized_date($request_hash['release_date'], $date_format);
+    $date_array = split_localized_date($_REQUEST['release_date'], $date_format);
     if ($date_array != null) {
       // set date in iso format
       $args->release_date = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
     }
   }
   
-  $args->release_date_original = isset($request_hash['release_date']) && $request_hash['release_date'] != '' ?
-                                   $request_hash['release_date'] : null;
+  $args->release_date_original = 
+    isset($_REQUEST['release_date']) && $_REQUEST['release_date'] != '' ?
+    $_REQUEST['release_date'] : null;
     
-  $args->closed_on_date = isset($request_hash['closed_on_date']) ? $request_hash['closed_on_date'] : null;
+  $args->closed_on_date = isset($_REQUEST['closed_on_date']) ? 
+    $_REQUEST['closed_on_date'] : null;
     
 
-  if(isset($request_hash['tplan_id']) && intval($request_hash['tplan_id']) > 0) {
+  if(isset($_REQUEST['tplan_id']) && intval($_REQUEST['tplan_id']) > 0) {
     $args->tplan_id = intval($_REQUEST['tplan_id']);
     $dp = $tplanMgr->get_by_id($args->tplan_id);
     $args->tplan_name = $dp['name'];
-  } else {
-    $args->tplan_id = isset($session_hash['testplanID']) ? intval($session_hash['testplanID']) : 0;
-    $args->tplan_name = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
-  }  
+  } 
 
-  $args->testprojectID = intval($session_hash['testprojectID']);
-  $args->testprojectName = $session_hash['testprojectName'];
-  $args->userID = intval($session_hash['userID']);
+  if (0==$args->tplan_id) {
+    if ($args->build_id > 0) {
+      $bop = array('output' => 'fields', 'fields' => 'testplan_id');
+      $binfo = $buildMgr->get_by_id($args->build_id,$bop);
+      $args->tplan_id = intval($binfo['testplan_id']);
+    }
+  }
 
-  $args->exec_status_filter = isset($request_hash['exec_status_filter']) ?
-                                    $request_hash['exec_status_filter'] : null;
+
+  if ( 0==$args->tplan_id ) {
+    throw new Exception("Bad Test Plan ID", 1);
+  }
+
+  $args->tproject_id = intval($dp['testproject_id']);
+  $args->tproject_name = testproject::getName($tplanMgr->db,$args->tproject_id);
+
+  $args->exec_status_filter = isset($_REQUEST['exec_status_filter']) ?
+                                    $_REQUEST['exec_status_filter'] : null;
 
   $args->user = $_SESSION['currentUser'];
+  $args->userID = intval($_SESSION['userID']);
   return $args;
 }
 
@@ -181,20 +186,22 @@ function init_args($request_hash, $session_hash,$date_format,&$tplanMgr) {
  *
  */
 function initializeGui(&$argsObj,&$buildMgr) {
-  $guiObj = new stdClass();
+
+  list($add2args,$guiObj) = initUserEnv($buildMgr->db,$argsObj);
+  $guiObj->activeMenu['plans'] = 'active';
   $guiObj->main_descr = lang_get('title_build_2') . 
     config_get('gui_title_separator_2') . 
     lang_get('test_plan') . config_get('gui_title_separator_1') . 
     $argsObj->tplan_name;
 
-  $guiObj->cfields = $buildMgr->html_custom_field_inputs($argsObj->build_id,$argsObj->testprojectID,'design','',$_REQUEST);
+  $guiObj->cfields = $buildMgr->html_custom_field_inputs($argsObj->build_id,$argsObj->tproject_id,'design','',$_REQUEST);
 
   $dummy = config_get('results');
   foreach($dummy['status_label_for_exec_ui'] as $kv => $vl) {
     $guiObj->exec_status_filter['items'][$dummy['status_code'][$kv]] = lang_get($vl);  
   }  
+  $guiObj->exec_status_filter['selected'] = 0;
 
-  $guiObj->tplan_id = $argsObj->tplan_id;
   return $guiObj;
 }
 
@@ -296,7 +303,7 @@ function doDelete(&$dbHandler,&$argsObj,&$buildMgr,&$tplanMgr) {
   }
   else
   {
-    logAuditEvent(TLS("audit_build_deleted",$argsObj->testprojectName,$argsObj->tplan_name,$build['name']),
+    logAuditEvent(TLS("audit_build_deleted",$argsObj->tproject_name,$argsObj->tplan_name,$build['name']),
                   "DELETE",$argsObj->build_id,"builds");
   }
   return $op;
@@ -387,17 +394,16 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat) {
 
     $oBuild->name = $argsObj->build_name;
     foreach( $prop as $pp ) {
-      $oBuild->$pp = $argsObj->$pp;
+      $oBuild->$pp = null;
+      if (property_exists($argsObj, $pp)) {
+        $oBuild->$pp = $argsObj->$pp;
+      }
     }
 
-    /*
-    $buildID = $buildMgr->create($argsObj->tplan_id,$argsObj->build_name,$argsObj->notes,
-    $argsObj->is_active,$argsObj->is_open,$argsObj->release_date);
-    */
     $buildID = $buildMgr->createFromObject($oBuild);
 
     if ($buildID) {
-      $cf_map = $buildMgr->get_linked_cfields_at_design($buildID,$argsObj->testprojectID);
+      $cf_map = $buildMgr->get_linked_cfields_at_design($buildID,$argsObj->tproject_id);
       $buildMgr->cfield_mgr->design_values_to_db($_REQUEST,$buildID,$cf_map,null,'build');
 
       if($argsObj->is_open == 1) {
@@ -461,7 +467,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat) {
       $op->notes = '';
       $op->template = null;
       $op->status_ok = 1;
-      logAuditEvent(TLS("audit_build_created",$argsObj->testprojectName,
+      logAuditEvent(TLS("audit_build_created",$argsObj->tproject_name,
         $argsObj->tplan_name,$argsObj->build_name),
         "CREATE",$buildID,"builds");
     }
@@ -513,7 +519,7 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
     }    
 
     if ($buildMgr->update($argsObj->build_id,$argsObj->build_name,$argsObj->notes,$attr) ) {
-      $cf_map = $buildMgr->get_linked_cfields_at_design($argsObj->build_id,$argsObj->testprojectID);
+      $cf_map = $buildMgr->get_linked_cfields_at_design($argsObj->build_id,$argsObj->tproject_id);
       $buildMgr->cfield_mgr->design_values_to_db($_REQUEST,$argsObj->build_id,$cf_map,null,'build');
 
       if( $argsObj->closed_on_date == '') {
@@ -531,13 +537,12 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
       $op->notes = '';
       $op->template = null;
       $op->status_ok = 1;
-      logAuditEvent(TLS("audit_build_saved",$argsObj->testprojectName,$argsObj->tplan_name,$argsObj->build_name),
+      logAuditEvent(TLS("audit_build_saved",$argsObj->tproject_name,$argsObj->tplan_name,$argsObj->build_name),
                     "SAVE",$argsObj->build_id,"builds");
     }
   }
 
-  if(!$op->status_ok)
-  {
+  if (!$op->status_ok) {
     $op->operation_descr = lang_get('title_build_edit') . TITLE_SEP_TYPE3 . $oldname;
     $op->buttonCfg = new stdClass();
     $op->buttonCfg->name = "do_update";
@@ -554,9 +559,6 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
   args:
 
   returns: -
-
-  @internal revision
-  20100706 - franciscom - BUGID 3581    
 */
 function crossChecks($argsObj,&$tplanMgr,$dateFormat)
 {
@@ -613,23 +615,19 @@ function crossChecks($argsObj,&$tplanMgr,$dateFormat)
 */
 function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
 {
-    $tprojectMgr = new testproject($tplanMgr->db);
+  $tprojectMgr = new testproject($tplanMgr->db);
 
-    // exclude this testplan
-    $filters = array('tplan2exclude' => $argsObj->tplan_id);
-    $tplanset = $tprojectMgr->get_all_testplans($argsObj->testprojectID,$filters);
+  $filters = array('tplan2exclude' => $argsObj->tplan_id);
+  $tplanset = $tprojectMgr->get_all_testplans($argsObj->tproject_id,$filters);
 
-    if(!is_null($tplanset))
-    {
-        foreach($tplanset as $id => $info)
-        {
-            if(!$tplanMgr->check_build_name_existence($id,$argsObj->build_name))
-            {
-                $buildMgr->create($id,$argsObj->build_name,$argsObj->notes,
-                                  $argsObj->is_active,$argsObj->is_open);
-            }
-        }
+  if (!is_null($tplanset)) {
+    foreach($tplanset as $id => $info) {
+      if (!$tplanMgr->check_build_name_existence($id,$argsObj->build_name)) {
+         $buildMgr->create($id,$argsObj->build_name,$argsObj->notes,
+                                $argsObj->is_active,$argsObj->is_open);
+      }
     }
+  }
 }
 
 function checkRights(&$db,&$user)
@@ -646,34 +644,28 @@ function checkRights(&$db,&$user)
  * @param object $argsObj reference to user input object
  * @return array $htmlMenu array structure with all information needed for the menu
  *
- * @internal revisions
  */
 function init_source_build_selector(&$testplan_mgr, &$argsObj) 
 {
 
   $htmlMenu = array('items' => null, 'selected' => null, 'build_count' => 0);
-  $htmlMenu['items'] = $testplan_mgr->get_builds_for_html_options($argsObj->tplan_id,null,null,
-                                                                  array('orderByDir' => 'id:DESC'));
-  
+  $htmlMenu['items'] = $testplan_mgr->get_builds_for_html_options(
+    $argsObj->tplan_id,null,null,array('orderByDir' => 'id:DESC'));
   
   // get the number of existing execution assignments with each build
-  if( !is_null($htmlMenu['items']) )
-  {
+  if( !is_null($htmlMenu['items']) ) {
     $htmlMenu['build_count'] = count($htmlMenu['items']);
-    foreach ($htmlMenu['items'] as $key => $name) 
-    {
+    foreach ($htmlMenu['items'] as $key => $name) {
       $count = $testplan_mgr->assignment_mgr->get_count_of_assignments_for_build_id($key);
       $htmlMenu['items'][$key] = $name . " (" . $count . ")"; 
     }
     
     // if no build has been chosen yet, select the newest build by default
     reset($htmlMenu['items']);
-    if( !$argsObj->source_build_id )
-    {
+    if( !$argsObj->source_build_id ) {
       $htmlMenu['selected'] = key($htmlMenu['items']);
     } 
   }   
 
   return $htmlMenu;
 } // end of method
-?>

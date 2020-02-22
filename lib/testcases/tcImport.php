@@ -17,12 +17,11 @@ require_once('csv.inc.php');
 require_once('xml.inc.php');
 
 testlinkInitPage($db);
-
-
 $templateCfg = templateConfiguration();
-$pcheck_fn=null;
-$args = init_args();
-$gui = initializeGui($db,$args);
+$pcheck_fn = null;
+
+list($args,$gui) = initScript($db);
+
 if ($args->do_upload) {
   
   // check the uploaded file
@@ -65,7 +64,7 @@ if ($args->do_upload) {
       $opt['duplicateLogic'] = array('hitCriteria' => $args->hit_criteria,
                                      'actionOnHit' => $args->action_on_duplicated_name);
       $gui->resultMap = $pimport_fn($db,$gui->dest,
-         intval($args->container_id),intval($args->tproject_id),intval($args->userID),
+         intval($args->containerID),intval($args->tproject_id),intval($args->userID),
          $opt);
     }
   } else if(is_null($gui->file_check)) {
@@ -102,7 +101,6 @@ $gui->hitOptions = array('name' => lang_get('same_name'),
                          'externalID' => lang_get('same_externalID'));
 
 
-$gui->testprojectName = $_SESSION['testprojectName'];
 $gui->importTypes = $obj_mgr->get_import_file_types();
 $gui->action_on_duplicated_name=$args->action_on_duplicated_name;
 
@@ -270,8 +268,6 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $name = $tc['name'];
     $summary = $tc['summary'];
     $steps = $tc['steps'];
-    $internalid = $tc['internalid'];
-    $externalid = $tc['externalid'];
 
     $doCreate = true;
     if( $duplicatedLogic['actionOnHit'] == 'update_last_version' || 
@@ -557,19 +553,14 @@ function buildKeywordList($kwMap,$keywords) {
 function check_xml_tc_tsuite($fileName,$recursiveMode) {
   $xml = @simplexml_load_file_wrapper($fileName);
   $file_check = array('status_ok' => 0, 'msg' => 'xml_load_ko');          
-  if($xml !== FALSE)
-  {
+  if ($xml !== FALSE) {
     $file_check = array('status_ok' => 1, 'msg' => 'ok');          
     $elementName = $xml->getName();
-    if($recursiveMode)
-    {
-      if($elementName != 'testsuite')
-      {
+    if ($recursiveMode) {
+      if ($elementName != 'testsuite') {
         $file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tsuite_file'));
       }  
-    }
-    else
-    {
+    } else {
       if($elementName != 'testcases' && $elementName != 'testcase')
         {
         $file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tcase_file'));
@@ -584,23 +575,30 @@ function check_xml_tc_tsuite($fileName,$recursiveMode) {
 /* contribution by mirosvad - 
    Convert new line characters from XLS to HTML 
 */
-function nl2p($str)  
+function nl2p($str) 
 {
   return str_replace('<p></p>', '', '<p>' . preg_replace('#\n|\r#', '</p>$0<p>', $str) . '</p>'); //MS
 }
 
 
-/*
-  function: 
-  
-  args :
-  
-  returns: 
-  
-*/
-function init_args()
+/**
+ *
+ *
+ */
+function initScript(&$dbH) 
 {
-  $args = new stdClass();
+  $args = init_args($dbH);
+  $gui = initializeGui($dbH,$args);
+  return array($args,$gui);
+}
+
+/**
+ *
+ */
+function init_args(&$dbH)
+{
+  list($args,$env) = initContext();
+
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $key='action_on_duplicated_name';
@@ -609,19 +607,22 @@ function init_args()
   $key='hit_criteria';
   $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'name';
        
-        
-  $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
-  $args->useRecursion = isset($_REQUEST['useRecursion']) ? $_REQUEST['useRecursion'] : 0;
-  $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
-  $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
-  $args->bIntoProject = isset($_REQUEST['bIntoProject']) ? intval($_REQUEST['bIntoProject']) : 0;
-    
-  $args->containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
+  $k2n = array('importType','location');
+  foreach ($k2n as $prop) {
+    $args->$prop = isset($_REQUEST[$prop]) ? $_REQUEST[$prop] : null;
+  }      
+
+  $k2z = array('useRecursion','bIntoProject','containerID');
+  foreach ($k2z as $prop) {
+    $args->$prop = isset($_REQUEST[$prop]) ? intval($_REQUEST[$prop]) : 0;
+  }      
+
   $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
     
   $args->userID = $_SESSION['userID'];
-  $args->tproject_id = $_SESSION['testprojectID'];
-  
+   if ($args->containerID == 0) {
+    throw new Exception("Can Not Import Without a Container", 1);
+  }  
   return $args;
 }
 
@@ -1131,12 +1132,22 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
  **/
 function initializeGui(&$dbHandler,&$argsObj)
 {
-  $guiObj = new stdClass();
+  list($add2args,$guiObj) = initUserEnv($dbHandler,$argsObj);
+
+  if (0 == $guiObj->tproject_id) {
+    throw new Exception("Bad Test Project ID", 1);
+  }
+  $argsObj->tproject_id = $guiObj->tproject_id;
+
+  $guiObj->tproject_name = 
+    testproject::getName($dbHandler,$guiObj->tproject_id);
+
   $guiObj->importLimitBytes = config_get('import_file_max_size_bytes');
   $guiObj->importLimitKB = ($guiObj->importLimitBytes / 1024);
   $guiObj->hitCriteria = $argsObj->hit_criteria;
   $guiObj->useRecursion = $argsObj->useRecursion;
-  $guiObj->containerID = $argsObj->container_id;
+  $guiObj->containerID = $argsObj->containerID;
+
   $guiObj->bImport = tlStringLen($argsObj->importType);
   $guiObj->bIntoProject = $argsObj->bIntoProject;
   $guiObj->resultMap = null;
@@ -1146,35 +1157,50 @@ function initializeGui(&$dbHandler,&$argsObj)
   $dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
   $dest_files = array('XML' => $dest_common . ".xml");
   $guiObj->dest = $dest_files['XML'];
-  if(!is_null($argsObj->importType))
-  {
+  if (!is_null($argsObj->importType)) {
     $guiObj->dest = $dest_files[$argsObj->importType];
   }
   
   $guiObj->file_check = array('status_ok' => 1, 'msg' => 'ok');
   
-  if($argsObj->useRecursion)
-  {
+  $guiObj->container_description = lang_get('test_suite');
+  if ($argsObj->useRecursion) {
     $guiObj->import_title = lang_get('title_tsuite_import_to');  
-    $guiObj->container_description = lang_get('test_suite');
-  }
-  else
-  {
+  } else {
     $guiObj->import_title = lang_get('title_tc_import_to');
-    $guiObj->container_description = lang_get('test_case');
   }
 
-  if($argsObj->container_id)
-  {
+  if (null != $argsObj->containerID) {
     $tree_mgr = new tree($dbHandler);
-    $node_info = $tree_mgr->get_node_hierarchy_info($argsObj->container_id);
+    $node_info = $tree_mgr->get_node_hierarchy_info($argsObj->containerID);
     unset($tree_mgr);    
     $guiObj->container_name = $node_info['name'];
-    if($argsObj->container_id == $argsObj->tproject_id)
-    {
+    if ($argsObj->containerID == $argsObj->tproject_id) {
       $guiObj->container_description = lang_get('testproject');
     }  
   }
+
+
+  $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 
+    "lib/testcases/archiveData.php?";
+
+  if (intval($argsObj->containerID) > 0) {
+    $guiObj->cancelActionJS .= 'edit=testsuite&id=' . 
+      intval($argsObj->containerID);
+  } else {
+    $guiObj->cancelActionJS .= 'edit=testcase&id=' . 
+      intval($argsObj->tcase_id);
+  }
+
+  if( property_exists($argsObj, 'tplan_id') ) {
+    $guiObj->cancelActionJS .= "&tplan_id={$argsObj->tplan_id}";
+  }
+
+  if( property_exists($argsObj, 'tproject_id') ) {
+    $guiObj->cancelActionJS .= "&tproject_id={$argsObj->tproject_id}";
+  }
+
+  $guiObj->cancelActionJS .= "'";
 
   return $guiObj;
 } 

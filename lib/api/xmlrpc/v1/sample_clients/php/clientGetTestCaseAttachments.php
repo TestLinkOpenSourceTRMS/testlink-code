@@ -3,8 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource: clientGetTestCaseAttachments.php
+ * Filename $RCSfile: clientGetTestCaseAttachments.php,v $
  *
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/05/01 20:36:56 $ by $Author: franciscom $
+ * @Author: francisco.mancardi@gmail.com
+ *
+ * rev: 
  */
  
 require_once 'util.php';
@@ -16,9 +21,9 @@ $test_num=1;
 $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
-$args["devKey"] = 'developer';
+$args["devKey"]=DEV_KEY;
 //$args["testcaseid"]=1631;
-$args["testcaseexternalid"]='SSQA-39153';
+$args["testcaseexternalid"]='API-2';
 
 $additionalInfo='';
 
@@ -29,3 +34,4 @@ echo $additionalInfo;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
+?>

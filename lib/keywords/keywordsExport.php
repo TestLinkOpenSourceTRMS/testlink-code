@@ -18,7 +18,7 @@ require_once("keywordsEnv.php");
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args($db);
-$gui = initializeGui($args);
+$gui = initializeGui($db,$args);
 
 switch ($args->doAction) {
   case "do_export":
@@ -49,17 +49,13 @@ function init_args(&$dbHandler) {
   // Check rights before doing anything else
   // Abort if rights are not enough 
   $args->user = $_SESSION['currentUser'];
-  $env['tproject_id'] = $args->tproject_id;
-  $env['tplan_id'] = 0;
-  
+  $environment = array('tproject_id' => $args->tproject_id);  
   $check = new stdClass();
   $check->items = array('mgt_view_key');
   $check->mode = 'and';
-  checkAccess($dbHandler,$args->user,$env,$check);
+  checkAccess($dbHandler,$args->user,$environment,$check);
  
-  $tproj_mgr = new testproject($dbHandler);
-  $dm = $tproj_mgr->get_by_id($args->tproject_id,array('output' => 'name'));
-  $args->tproject_name = $dm['name'];
+  $args->tproject_name = testproject::getName($dbHandler,$args->tproject_id);
 
   return $args;
 }
@@ -109,17 +105,20 @@ function do_export(&$db,&$smarty,&$args) {
 /**
  *
  */
-function initializeGui(&$argsObj) {
-  $kw = new tlKeyword();
-  $gui = new stdClass();
-  $gui->tproject_id = $argsObj->tproject_id;
-  $gui->exportTypes = $kw->getSupportedSerializationInterfaces();
+function initializeGui(&$dbH,&$argsObj) {
+  
+  list($add2args,$gui) = initUserEnv($dbH,$argsObj);
+  $gui->activeMenu['projects'] = 'active';
   $gui->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
-  $gui->export_filename = is_null($argsObj->export_filename) ? 'keywords.xml' : $argsObj->export_filename;
+  $gui->export_filename = is_null($argsObj->export_filename) ? 
+    $argsObj->tproject_name . '-keywords.xml' : $argsObj->export_filename;
   $gui->action_descr = lang_get('export_keywords');
 
   $gui->actionUrl = "lib/keywords/keywordsExport.php?doAction=do_export&tproject_id={$gui->tproject_id}";
   $gui->cancelUrl = "lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id}";
+
+  $kw = new tlKeyword();
+  $gui->exportTypes = $kw->getSupportedSerializationInterfaces();
   return $gui;
 } 
 

@@ -6,7 +6,6 @@
  * @filesource  reqSpecCommands.class.php
  * @author      Francisco Mancardi
  * 
- *
  */
 class reqSpecCommands
 {
@@ -90,6 +89,8 @@ class reqSpecCommands
     $obj->askForRevision = false;
     $obj->askForLog = false;
     $obj->req_spec = null;
+    $obj->uploadOp = null;
+
     if(!is_null($options))
     {
       if(isset($options['getReqSpec']))
@@ -425,7 +426,7 @@ class reqSpecCommands
     $obj->template = 'reqCopy.tpl';
     $obj->containers = null;
     $obj->page2call = 'lib/requirements/reqSpecEdit.php';
-    $obj->array_of_msg = '';
+    $obj->array_of_msg = array();
     $obj->doActionButton = 'doCopyRequirements';
     $obj->req_spec_id = $argsObj->req_spec_id;
   
@@ -457,13 +458,12 @@ class reqSpecCommands
        
     $copyOptions = array('copy_also' => array('testcase_assignment' => $argsObj->copy_testcase_assignment));
         
-    foreach($argsObj->itemSet as $itemID)
-    {
-      $ret = $this->reqMgr->copy_to($itemID,$argsObj->containerID,$argsObj->user_id,
-                                    $argsObj->tproject_id,$copyOptions);
+    foreach($argsObj->itemSet as $itemID) {
+      $ret = $this->reqMgr->copy_to($itemID,$argsObj->containerID,
+              $argsObj->user_id,
+              $argsObj->tproject_id,$copyOptions);
       $obj->user_feedback = $ret['msg'];
-      if($ret['status_ok'])
-      {
+      if ($ret['status_ok']) {
         $new_req = $this->reqMgr->get_by_id($ret['id'],requirement_mgr::LATEST_VERSION);
         $source_req = $this->reqMgr->get_by_id($itemID,requirement_mgr::LATEST_VERSION);
         $new_req = $new_req[0];
@@ -506,7 +506,7 @@ class reqSpecCommands
     $obj->template = 'reqSpecCopy.tpl';
     $obj->containers = null;
     $obj->page2call = 'lib/requirements/reqSpecEdit.php';
-    $obj->array_of_msg = '';
+    $obj->array_of_msg = array();
     $obj->doActionButton = 'doCopy';
     $obj->req_spec_id = $argsObj->req_spec_id;
     $obj->top_checked = ' checked = "checked" ';
@@ -812,7 +812,9 @@ class reqSpecCommands
    */
   function fileUpload(&$argsObj,$request)
   {
-    $argsObj->uploadOp = fileUploadManagement($this->db,$argsObj->req_spec_id,$argsObj->fileTitle,$this->reqSpecMgr->getAttachmentTableName());
+    $argsObj->uploadOp = fileUploadManagement($this->db,$argsObj->req_spec_id,
+      $argsObj->fileTitle,$this->reqSpecMgr->getAttachmentTableName());
+    
     return $this->initGuiObjForAttachmentOperations($argsObj);
   }
 
@@ -838,9 +840,7 @@ class reqSpecCommands
     $guiObj->action_status_ok = true;
     $guiObj->req_spec_id = $argsObj->req_spec_id;
     $guiObj->template = "reqSpecView.php?refreshTree=0&req_spec_id={$argsObj->req_spec_id}";
-
     $guiObj->uploadOp = $argsObj->uploadOp;
-
     return $guiObj;    
   }
 
@@ -886,7 +886,7 @@ class reqSpecCommands
     $obj->template = 'reqBulkMon.tpl';
     $obj->containers = null;
     $obj->page2call = 'lib/requirements/reqSpecEdit.php';
-    $obj->array_of_msg = '';
+    $obj->array_of_msg = array();
     $obj->doActionButton = 'do' . ucfirst(__FUNCTION__);
     $obj->req_spec_id = $argsObj->req_spec_id;
     $obj->refreshTree = 0;
@@ -903,11 +903,10 @@ class reqSpecCommands
     $obj = $this->initGuiBean(); 
     $obj->req = null;
     $obj->req_spec_id = $argsObj->req_spec_id;
-    $obj->array_of_msg = '';
+    $obj->array_of_msg = array();
   
     $m2r = null;
-    switch($argsObj->op)
-    {
+    switch($argsObj->op) {
       case 'toogleMon':
         $opx = array('reqSpecID' => $argsObj->req_spec_id);
         $monSet = $this->reqMgr->getMonitoredByUser($argsObj->user_id,$argsObj->tproject_id,$opx);

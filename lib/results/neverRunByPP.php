@@ -194,6 +194,12 @@ function init_args(&$dbHandler) {
     $args->getSpreadsheetBy = isset($_REQUEST[$cx]) ? 'download' : null;
   }  
 
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
+
   $args->addOpAccess = true;  
   if( !is_null($args->apikey) ) {
     $cerbero = new stdClass();
@@ -213,7 +219,6 @@ function init_args(&$dbHandler) {
     }  
   } else {
     testlinkInitPage($dbHandler,true,false,"checkRights");  
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
   
   $args->user = $_SESSION['currentUser'];

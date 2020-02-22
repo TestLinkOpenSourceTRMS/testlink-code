@@ -21,38 +21,7 @@ require_once('tree.class.php');
 testlinkInitPage($db);
 
 echo "<pre> testcase - constructor - testcase(&\$db)";echo "</pre>";
-$tcase_mgr = new testcase($db);
-
-$steps = array('notes' => array(1 => 'Lone Ranger',23 => 'Kimosawi'),
-               'status' => array(1 => 'f', 23 => 'p'));
-
-
-$context = new stdClass();
-$context->testplan_id = 2;
-$context->platform_id = 0;
-$context->build_id = 20;
-$context->tester_id = 10;
-
-
-$stepsID = array_keys($steps['notes']);
-//$tcase_mgr->deleteStepsPartialExec($stepsID,$context);
-
-$m2r = 'saveStepsPartialExec';
-echo '<br>Testing:' . $m2r . '<br>';
-var_dump($steps,$context);
-$tcase_mgr->$m2r($steps,$context);
-
-$m2r = 'getStepsPartialExec';
-echo '<br>Testing:' . $m2r . '<br>';
-var_dump($tcase_mgr->$m2r($stepsID,$context) );
-
-die();
-
-
-
-die();
-
-
+$tcase_mgr=new testcase($db);
 // new dBug($tcase_mgr);
 
 try 

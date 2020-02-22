@@ -630,7 +630,6 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
  * Provides Test suites and test cases
  * @used-by Assign Test Execution Feature
  *
- * @internal revisions
  */
 function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                       $tplan_name,$objFilters,$objOptions) 
@@ -642,7 +641,6 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   $treeMenu->rootnode = null;
   $treeMenu->menustring = '';
   
-
   $resultsCfg = config_get('results');
   $glueChar=config_get('testcase_cfg')->glue_character;
   $menustring = null;

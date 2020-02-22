@@ -140,7 +140,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args(&$dbHandler) {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $args = new stdClass();
+  list($args,$env) = initContext();
+
   $args->doExport = isset($_REQUEST['export']) ? 1 : 0;
   $args->doExportSkel = isset($_REQUEST['exportSkel']) ? 1 : 0;
 
@@ -196,7 +197,17 @@ function init_args(&$dbHandler) {
     throw new Exception("Test Project ID=0", 1);
   }  
 
-  $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
+
+  $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
+
+  if (null !== $args->goback_url) {
+    if (property_exists($args, 'tplan_id') ) {
+      $args->goback_url .= "&tplan_id={$args->tplan_id}";
+    }
+    if (property_exists($args, 'tproject_id') ) {
+      $args->goback_url .= "&tproject_id={$args->tproject_id}";
+    }
+  }
 
   unset($omgr);
   return $args;
@@ -222,12 +233,24 @@ function initializeGui($argsObj) {
 
   $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 
     "lib/testcases/archiveData.php?";
+
   if($argsObj->useRecursion || !$guiObj->oneTestCaseExport) {
     $guiObj->cancelActionJS .= 'edit=testsuite&id=' . 
-      intval($argsObj->container_id) . "'";
+      intval($argsObj->container_id);
   } else {
     $guiObj->cancelActionJS .= 'edit=testcase&id=' . 
-      intval($argsObj->tcase_id) . "'";
+      intval($argsObj->tcase_id);
   }
+
+  if( property_exists($argsObj, 'tplan_id') ) {
+    $guiObj->cancelActionJS .= "&tplan_id={$argsObj->tplan_id}";
+  }
+
+  if( property_exists($argsObj, 'tproject_id') ) {
+    $guiObj->cancelActionJS .= "&tproject_id={$argsObj->tproject_id}";
+  }
+
+  $guiObj->cancelActionJS .= "'";
+
   return $guiObj;
 }

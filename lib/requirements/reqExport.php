@@ -60,10 +60,7 @@ function init_args()
   $args->export_attachments = isset($_REQUEST['exportAttachments']) ? $_REQUEST['exportAttachments'] : "";
   
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-  if( $args->tproject_id == 0 )
-  { 
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-  }
+
   $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
 
   return $args;  

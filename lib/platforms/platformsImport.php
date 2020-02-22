@@ -22,7 +22,7 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
 $args = init_args($db);
-$gui = initializeGui($args);
+$gui = initializeGui($db,$args);
 
 $resultMap = null;
 switch($args->doAction) {
@@ -51,17 +51,20 @@ function init_args(&$dbH) {
 	R_PARAMS($iParams,$args);
 	$args->userID = $_SESSION['userID'];
 
+  list($context,$env) = initContext();
+  $args->tproject_id = $context->tproject_id;
+  $args->tplan_id = $context->tplan_id;
   if( 0 == $args->tproject_id ) {
     throw new Exception("Unable to Get Test Project ID, Aborting", 1);
   }
 
-  $args->testproject_name = '';
+  $args->tproject_name = '';
   $tables = tlDBObject::getDBTables(array('nodes_hierarchy'));
   $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
           WHERE id={$args->tproject_id}";
   $info = $dbH->get_recordset($sql);
   if( null != $info ) {
-    $args->testproject_name = $info[0]['name'];
+    $args->tproject_name = $info[0]['name'];
   }
 
 	return $args;
@@ -70,11 +73,11 @@ function init_args(&$dbH) {
 /**
  *
  */
-function initializeGui(&$argsObj) {
-  $guiObj = new stdClass();
+function initializeGui(&$dbH,&$argsObj) {
 
-  $guiObj->tproject_id = $argsObj->tproject_id;
+  list($add2args,$guiObj) = initUserEnv($dbH,$argsObj);
 
+  $guiObj->activeMenu['projects'] = 'active'; 
   $guiObj->goback_url = 
     $_SESSION['basehref'] . 'lib/platforms/platformsView.php?tproject_id=' .
     $guiObj->tproject_id;
@@ -108,12 +111,10 @@ function doImport(&$dbHandler,$testproject_id)
 	$dest = TL_TEMP_PATH . session_id(). "-import_platforms.tmp";
 	$fInfo = $_FILES[$key];
 	$source = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : null;
-	if (($source != 'none') && ($source != ''))
-	{ 
+	if (($source != 'none') && ($source != '')) { 
 		$file_check['filename'] = $fInfo['name'];
 		$xml = false;
-		if (move_uploaded_file($source, $dest))
-		{
+		if (move_uploaded_file($source, $dest)) {
       // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
       $xml = @simplexml_load_file_wrapper($dest);
     }
@@ -131,37 +132,27 @@ function doImport(&$dbHandler,$testproject_id)
          	// Check if platform with this name already exists on test Project
          	// if answer is yes => update fields
          	$name = trim($platform->name);
-         	if(isset($platformsOnSystem[$name]))
-         	{
+         	if( isset($platformsOnSystem[$name])) {
          		$import_msg['ok'][] = sprintf(lang_get('platform_updated'),$platform->name);
             $platform_mgr->update($platformsOnSystem[$name]['id'],$name,$platform->notes);
-         	}
-         	else
-         	{
+         	} else {
          		$import_msg['ok'][] = sprintf(lang_get('platform_imported'),$platform->name);
             $platform_mgr->create($name,$platform->notes);
          	}
-        }
-        else
-        {
+        } else {
           $import_msg['ko'][] = lang_get('bad_line_skipped');
         }  
       }      
-    }
-    else
-    {
+    } else {
       $file_check['msg'] = lang_get('problems_loading_xml_content');  
     }  
           
-  }
-	else
-	{
+  } else {
 		$msg = getFileUploadErrorMessage($fInfo);
 		$file_check = array('show_results' => 0, 'status_ok' => 0,'msg' => $msg);
 	}
   
-  if( count($import_msg['ko']) == 0 )
-  {
+  if( count($import_msg['ko']) == 0 ) {
     $import_msg['ko'] = null;
   }  
   $file_check['import_msg'] = $import_msg;

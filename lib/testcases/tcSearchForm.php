@@ -6,42 +6,36 @@
  * Form to set test cases search criteria
  *
  * @filesource  tcSearchForm.php
- * @package         TestLink
- * @author          TestLink community
- * @copyright   2007-2013, TestLink community 
- * @link                http://www.teamst.org/index.php
+ * @package     TestLink
+ * @author      TestLink community
+ * @copyright   2007-2019, TestLink community 
+ * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.7
  *
 **/
 require_once("../../config.inc.php");
-require_once("../functions/common.php");
+require_once("common.php");
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($db,$args);
-
-
-echo __FILE__;
-die();
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'tcSearchForm.tpl');
+
 /**
  * 
  *
  */
-function init_args()
+function init_args(&$dbH)
 {              
-  $args = new stdClass();
-  $args->tprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-  $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+  list($args,$env) = initContext();
+  $args->tprojectID = $args->tproject_id;
+  $args->tprojectName = testproject::getName($dbH,$args->tproject_id);
 
-  if($args->tprojectID <= 0)
-  {
+  if ($args->tprojectID <= 0) {
     throw new Exception("Error Processing Request - Invalid Test project id " . __FILE__);
   }   
       

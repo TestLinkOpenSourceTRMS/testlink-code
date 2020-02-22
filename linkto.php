@@ -125,13 +125,10 @@ else
   } 
 
   $args = init_args();
-  if($op['status_ok'])
-  {
+  if($op['status_ok']) {
     $tproject = new testproject($db);
     $tproject_data = $tproject->get_by_prefix($args->tprojectPrefix);
-    if(($op['status_ok'] = !is_null($tproject_data))) 
-    {
-      $tproject->setSessionProject($tproject_data['id']);
+    if(($op['status_ok'] = !is_null($tproject_data))) {
       $op['status_ok'] = isset($itemCode[$args->item]);
       $op['msg'] = sprintf(lang_get('invalid_item'),$args->item);
     }

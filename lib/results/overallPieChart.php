@@ -6,12 +6,10 @@
  * @filesource  overallPieChart.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2005-2013, TestLink community
+ * @copyright   2005-2019, TestLink community
  * @copyright   
  * @link        http://www.testlink.org/
  *
- * @internal revisions
- * @since 1.9.10
  *
 **/
 require_once('../../config.inc.php');
@@ -23,6 +21,7 @@ include(PCHART_PATH . "/pChart/pChart.class");
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['overallPieChart'];
 
+testlinkInitPage($db); 
 $args = init_args($db);
 $tplan_mgr = new testplan($db);
 
@@ -103,6 +102,12 @@ function init_args(&$dbHandler)
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
+
   if( !is_null($args->apikey) )
   {
     $cerbero = new stdClass();
@@ -128,7 +133,6 @@ function init_args(&$dbHandler)
   else
   {
     testlinkInitPage($dbHandler,true,false,"checkRights");  
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
 
   return $args;

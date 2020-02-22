@@ -4,17 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  planAddTCNavigator.php
- * @package   TestLink
- * @author    Martin Havlat
- * @copyright   2005-2013, TestLink community
- * @link    http://www.teamst.org/index.php
+ * @package     TestLink
+ * @copyright   2005-2019, TestLink community
+ * @link        http://www.testlink.org/
  *
  *  Navigator for feature: add Test Cases to a Test Case Suite in Test Plan.
  *  It builds the javascript tree that allow the user select a required part
  *  Test specification. Keywords should be used for filter.
- *
- * @internal revisions
- * @since 1.9.10
  *
  */
 
@@ -29,19 +25,16 @@ $templateCfg = templateConfiguration();
 
 // selection of a controller according groupBy mode choice.
 $key = 'setting_testsgroupby';
-
-// now load info from session
 $mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : "mode_test_suite";
-
+$class2use = 'tlTestCaseFilterControl';
 if($mode == "mode_req_coverage"){
-    $control = new tlTestCaseFilterByRequirementControl($db, 'plan_add_mode');
-} else {
-   $control = new tlTestCaseFilterControl($db, 'plan_add_mode');
-}
+  $class2use = 'tlTestCaseFilterByRequirementControl';
+} 
+$control = new $class2use($db, 'plan_add_mode');
 
 $gui = initializeGui($control);
 $control->build_tree_menu($gui);
-$control->formAction = $_SESSION['basehref'] . "lib/plan/planAddTCNavigator.php";
+$control->formAction = $gui->formAction;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -63,17 +56,18 @@ function initializeGui($control)
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $gui = new stdClass();
-  $gui->formAction = '';
+  $gui->formAction = $_SESSION['basehref'] . 
+    "lib/plan/planAddTCNavigator.php";
 
   $gui->req_spec_manager_url = "lib/requirements/reqSpecView.php";
   $gui->req_manager_url = "lib/requirements/reqView.php";
   
   // This logic is managed from frmWorkArea.php and planAddTC.php
-  $gui->loadRightPaneAddTC = isset($_REQUEST['loadRightPaneAddTC']) ? $_REQUEST['loadRightPaneAddTC'] : true;
-  if( isset($_SESSION['loadRightPaneAddTC'][$control->form_token]) )
-  {
+  $kiki = 'loadRightPaneAddTC';
+  $gui->loadRightPaneAddTC = isset($_REQUEST[$kiki]) ? $_REQUEST[$kiki] : true;
+  if( isset($_SESSION[$kiki][$control->form_token]) ) {
     $gui->loadRightPaneAddTC = false;  
-    unset($_SESSION['loadRightPaneAddTC'][$control->form_token]);  
+    unset($_SESSION[$kiki][$control->form_token]);  
   }  
 
   $gui->menuUrl = 'lib/plan/planAddTC.php';
@@ -83,8 +77,10 @@ function initializeGui($control)
   $gui->args = $control->get_argument_string() . '&activity=addTC';
   $gui->additional_string = '';
   $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
-                        "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;
+     "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;
   
   $gui->title_navigator = lang_get('navigator_add_remove_tcase_to_tplan');
+  
+  $gui->tproject_id = $control->args->testproject_id;
   return $gui;
 }

@@ -172,8 +172,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
       $test_spec[$key] = $testcase_counters[$key];
     }
     
-    $tc2show = renderTreeNode(1,$test_spec,$hash_id_descr,
-                              $linkto,$tcase_prefix,$my['options']);
+    $tc2show = renderTreeNode($tproject_id,1,$test_spec,$hash_id_descr,$linkto,$tcase_prefix,$my['options']);
   }
 
   $menustring ='';
@@ -698,9 +697,8 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
  *
  * Used when LAZY Rendering can not be used.
  *
- * @internal revisions
  */
-function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$opt)
+function renderTreeNode($tproject_id,$level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$opt)
 {
 
   static $f2call;
@@ -708,16 +706,14 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
 
   $testCasesIDList='';
 
-  // -------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------
   // Choice for PERFORMANCE:
   // Some pieces of code on TL < 1.9.4 has been wrapped in a function, but when working
   // with BIG amount of testcases (> 5000) impact on performance was high.
-  if(!$f2call)
-  {
+  if (!$f2call) {
     $f2call['testproject'] = 'EP';
     $f2call['testsuite'] = 'ETS';
-    if( isset($opt['forPrinting']) && $opt['forPrinting'] )
-    {
+    if( isset($opt['forPrinting']) && $opt['forPrinting'] ) {
       $f2call['testproject'] = 'TPROJECT_PTP';
       $f2call['testsuite'] = 'TPROJECT_PTS';
     }  
@@ -739,8 +735,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
     $forbidden_parents['testsuite'] = 'testcase';
   }
   
-  if( !isset($node['name']) )
-  {  
+  if( !isset($node['name']) ) {  
     return $testCasesIDList;
   }
     
@@ -753,17 +748,17 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
 
   $node['testlink_node_type'] = $hash_id_descr[$node['node_type_id']];
   $node['forbidden_parent'] = $forbidden_parents[$node['testlink_node_type']];
+  $node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
 
-  $testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0; 
+
+  $tcaseQty = isset($node['testcase_count']) ? $node['testcase_count'] : 0; 
   $pfn = $f2call[$node['testlink_node_type']];
   
-  switch($node['testlink_node_type'])
-  {
+  switch($node['testlink_node_type']) {
     case 'testproject':
     case 'testsuite':
-      $node['text'] =  $node['testlink_node_name'] . " (" . $testcase_count . ")";
-      if(isset($opt['nodeHelpText'][$node['testlink_node_type']]))
-      {
+      $node['text'] =  $node['testlink_node_name'] . " (" . $tcaseQty . ")";
+      if(isset($opt['nodeHelpText'][$node['testlink_node_type']])) {
         $node['text'] = '<span title="' . $opt['nodeHelpText'][$node['testlink_node_type']] . '">' . 
                         $node['text'] . '</span>';
       }  
@@ -771,8 +766,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
       
     case 'testcase':
       $node['text'] = "";
-      if($opt['showTestCaseID'])
-      {
+      if($opt['showTestCaseID']) {
         $node['text'] .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
       } 
       $node['text'] .= $node['testlink_node_name'];
@@ -780,26 +774,31 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
     break;
   } // switch 
 
-  $node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
-  $node['href'] = "javascript:{$pfn}({$node['id']})";
-  // -------------------------------------------------------------------------------  
   
-  if (isset($node['childNodes']) && $node['childNodes'])
-  {
+  switch($node['testlink_node_type']) {
+    case 'testproject':
+      $node['href'] = "javascript:{$pfn}({$node['id']})";
+    break;
+
+    default:
+      $node['href'] = "javascript:{$pfn}($tproject_id,{$node['id']})";
+    break;
+  }  
+  // --------------------------------------------------------------------------
+  
+  if (isset($node['childNodes']) && $node['childNodes']) {
     // need to work always original object
     // in order to change it's values using reference .
     // Can not assign anymore to intermediate variables.
     //
     $nChildren = sizeof($node['childNodes']);
-    for($idx = 0;$idx < $nChildren;$idx++)
-    {
-      // asimon - replaced is_null by !isset because of warnings in event log
-      if(!isset($node['childNodes'][$idx]))
-      {
+    for($idx = 0;$idx < $nChildren;$idx++) {
+      if(!isset($node['childNodes'][$idx])) {
         continue;
       }
-      $testCasesIDList .= renderTreeNode($level+1,$node['childNodes'][$idx],$hash_id_descr,
-                                         $linkto,$testCasePrefix,$opt);
+      $testCasesIDList .= 
+        renderTreeNode($tproject_id,$level+1,$node['childNodes'][$idx],
+                       $hash_id_descr,$linkto,$testCasePrefix,$opt);
     }
   }
   
@@ -950,11 +949,11 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
     break;
 
     default:
-      $pfn = "ST({$node['id']})";
+      $pfn = "ST($tproject_id,{$node['id']})";
       if( isset($pf['default']) ){
         $pfn = null;
         if( '' != $pf['default'] ) {
-          $pfn = $pf['default'] . "({$node['id']})";
+          $pfn = $pf['default'] . "($tproject_id,{$node['id']})";
         } 
       }
     break;
@@ -963,7 +962,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
   $node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
   $node['href'] = is_null($pfn)? '' : "javascript:{$pfn}";
 
-  // ----------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   if( isset($tcase_node[$node['id']]) )
   {
     unset($tcase_node[$node['id']]);   // dam it NO COMMENT!
@@ -1552,8 +1551,9 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
                                        $my['filters'], $my['options']);
   
   $level = 1;
-  $req_spec = prepare_reqspec_treenode($db, $level, $req_spec, $filtered_map, $map_id_nodetype,
-                                       $map_nodetype_id, $my['filters'], $my['options']);
+  $req_spec = prepare_reqspec_treenode($db, $testproject_id, 
+    $level, $req_spec, $filtered_map, $map_id_nodetype,
+    $map_nodetype_id, $my['filters'], $my['options']);
     
   $menustring = null;
   $treeMenu = new stdClass();
@@ -1891,26 +1891,23 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
  * @param array $options
  * @return array tree structure after filtering out unneeded nodes
  */
-function prepare_reqspec_treenode(&$db, $level, &$node, &$filtered_map, &$map_id_nodetype,
-                                  &$map_nodetype_id, &$filters, &$options) 
+function prepare_reqspec_treenode(&$db, $level, $tproject_id,
+  &$node, &$filtered_map, &$map_id_nodetype,
+  &$map_nodetype_id, &$filters, &$options) 
 {
   $child_req_count = 0;
-  if (isset($node['childNodes']) && is_array($node['childNodes'])) 
-  {
+  if (isset($node['childNodes']) && is_array($node['childNodes'])) {
     // node has childs, must be a specification (or testproject)
-    foreach ($node['childNodes'] as $key => $childnode) 
-    {
+    foreach ($node['childNodes'] as $key => $childnode) {
       $current_childnode = &$node['childNodes'][$key];
-      $current_childnode = prepare_reqspec_treenode($db, $level + 1, $current_childnode, 
-                                                    $filtered_map, $map_id_nodetype,
-                                                    $map_nodetype_id,
-                                                    $filters, $options);
+      $current_childnode = prepare_reqspec_treenode($db, $level + 1,
+        $tproject_id, 
+        $current_childnode, $filtered_map, $map_id_nodetype,
+        $map_nodetype_id,$filters, $options);
       
       // now count childnodes that have not been deleted and are requirements
-      if(!is_null($current_childnode) && $current_childnode != REMOVEME) 
-      {
-        switch($current_childnode['node_type_id']) 
-        {
+      if(!is_null($current_childnode) && $current_childnode != REMOVEME) {
+        switch($current_childnode['node_type_id']) {
           case $map_nodetype_id['requirement']:
             $child_req_count ++;
           break;
@@ -1926,8 +1923,7 @@ function prepare_reqspec_treenode(&$db, $level, &$node, &$filtered_map, &$map_id
   $node_type = $map_id_nodetype[$node['node_type_id']];
   
   $delete_node = false;
-  switch ($node_type) 
-  {
+  switch ($node_type) {
     case 'testproject':
       $node['total_req_count'] = $child_req_count;  
     break;
@@ -1945,14 +1941,11 @@ function prepare_reqspec_treenode(&$db, $level, &$node, &$filtered_map, &$map_id
     break;
   }
   
-  if ($delete_node) 
-  {
+  if ($delete_node) {
     unset($node);
     $node = REMOVEME;
-  } 
-  else 
-  {
-    $node = render_reqspec_treenode($db, $node, $filtered_map, $map_id_nodetype);
+  } else {
+    $node = render_reqspec_treenode($db, $tproject_id, $node, $filtered_map, $map_id_nodetype);
   }
   
   return $node;
@@ -2045,7 +2038,7 @@ function prepare_reqspeccoverage_treenode(&$db, $level, &$node, &$filtered_map, 
  * @param array $map_id_nodetype array with node type IDs as keys, node type descriptions as values
  * @return array tree object with all needed data for ExtJS tree
  */
-function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype) {
+function render_reqspec_treenode(&$db, $tproject_id, &$node, &$filtered_map, &$map_id_nodetype) {
   static $js_functions;
   static $forbidden_parents;
   
@@ -2060,8 +2053,7 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
     
     // Hmm is ok ? (see next lines, may be it's time to remove this code)
     $forbidden_parents['requirement_spec'] = 'requirement_spec'; 
-    if($req_cfg->child_requirements_mgmt) 
-    {
+    if($req_cfg->child_requirements_mgmt) {
       $forbidden_parents['requirement_spec'] = 'none';
     } 
   }
@@ -2069,7 +2061,17 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
   $node_type = $map_id_nodetype[$node['node_type_id']];
   $node_id = $node['id'];
   
-  $node['href'] = "javascript:{$js_functions[$node_type]}({$node_id});";
+  switch ($node_type) {
+    case 'testproject':     
+      $node['href'] = "javascript:{$js_functions[$node_type]}({$node_id});";
+    break;
+
+    default:     
+      $node['href'] = 
+        "javascript:{$js_functions[$node_type]}({$tproject_id},{$node_id});";
+    break;
+  }
+
   $node['text'] = htmlspecialchars($node['name']);
   $node['leaf'] = false; // will be set to true later for requirement nodes
   $node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
@@ -2138,8 +2140,7 @@ function render_reqspeccoverage_treenode(&$db, &$node, &$filtered_map, &$map_id_
 	static $js_functions;
 	static $forbidden_parents;
 
-	if (!$js_functions)
-	{
+	if (!$js_functions) {
 		$js_functions = array('testproject' => 'EP',
 				'requirement_spec' =>'ERS',
 				'requirement' => 'ER');
@@ -2400,7 +2401,7 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
       $test_spec[$key] = $testcase_counters[$key];
     }
 
-    $tc2show = renderTreeNode(1,$test_spec,$hash_id_descr,$linkto,$tcase_prefix,$my['options']);
+    $tc2show = renderTreeNode($tproject_id,1,$test_spec,$hash_id_descr,$linkto,$tcase_prefix,$my['options']);
   }
   
   $menustring ='';

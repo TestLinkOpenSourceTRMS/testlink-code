@@ -121,9 +121,9 @@ function fileUploadManagement(&$dbHandler,$id,$title,$table)
 {  
   $uploadOp = new stdClass();
   $uploadOp->statusOK = false;
-  $uploadOp->statusCode = 0;
   $uploadOp->msg = null;
- 
+  
+
   $fInfo  = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
   if ($fInfo && $id) {
     $fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
@@ -132,7 +132,7 @@ function fileUploadManagement(&$dbHandler,$id,$title,$table)
     if ($fSize && $fTmpName != "") {
       $repo = tlAttachmentRepository::create($dbHandler);
       $uploadOp = $repo->insertAttachment($id,$table,$title,$fInfo);
-      $uploadOp->uploaded = $uploadOp->statusOK;
+      $retVal->uploaded = $uploadOp->statusOK;
 
       if ($uploadOp->statusOK) {
         logAuditEvent(TLS("audit_attachment_created",$title,$fInfo['name']),"CREATE",$id,"attachments");

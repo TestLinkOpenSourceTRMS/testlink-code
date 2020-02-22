@@ -40,14 +40,16 @@ $cfieldMgr = new cfield_mgr($db);
 $targetSet = cleanUpTarget($db,$args->target);
 $canUseTarget = (count($targetSet) > 0);
 
-if($args->oneCheck == false) {
+if($args->oneCheck == false)
+{
   $gui->caller = 'search';
   $smarty->assign('gui',$gui);
   $smarty->display($templateCfg->template_dir . $tpl);
   exit();
 }  
 
-if($canUseTarget == false && $args->oneValueOK == false) {
+if($canUseTarget == false && $args->oneValueOK == false)
+{
   $smarty->assign('gui',$gui);
   $smarty->display($templateCfg->template_dir . $tpl);
   exit();
@@ -59,22 +61,27 @@ $map = null;
 // CF belongs to ?
 $tc_cf_id = null;
 $req_cf_id = null;
-if( $args->custom_field_id > 0) {
-  if ( isset( $gui->design_cf_tc[$args->custom_field_id] ) ) {
+if( $args->custom_field_id > 0)
+{
+  if ( isset( $gui->design_cf_tc[$args->custom_field_id] ) )
+  {
     $tc_cf_id = $args->custom_field_id;
   }
 
-  if ( isset( $gui->design_cf_req[$args->custom_field_id] ) ) {
+  if ( isset( $gui->design_cf_req[$args->custom_field_id] ) )
+  {
     $req_cf_id = $args->custom_field_id;
   }  
 }
 
 $args->reqType = null;
-if($args->reqType != '') {
+if($args->reqType != '')
+{
   $args->reqType = str_replace('RQ','', $args->reqTypes);
 }  
 
-if( ($args->tproject_id > 0) && $args->doAction == 'doSearch') {
+if( ($args->tproject_id > 0) && $args->doAction == 'doSearch')
+{
   $tables = $cmdMgr->getTables();
   $views = $cmdMgr->getViews();
 
@@ -95,71 +102,86 @@ $mapRS = null;
 $mapRQ = null;
 
 // Search on Test Suites
-if( $canUseTarget && ($args->ts_summary || $args->ts_title) ) {
+if( $canUseTarget && ($args->ts_summary || $args->ts_title) )
+{
   $mapTS = $cmdMgr->searchTestSuites($targetSet,$canUseTarget);
 }
 
 // Requirment SPECification
-if( $canUseTarget && ($args->rs_scope || $args->rs_title) ) {
+if( $canUseTarget && ($args->rs_scope || $args->rs_title) )
+{
   $mapRS = $cmdMgr->searchReqSpec($targetSet,$canUseTarget);
 } 
 
 // REQuirements
-if( $args->rq_scope || $args->rq_title || $args->rq_doc_id || ($req_cf_id > 0) ) {
+if( $args->rq_scope || $args->rq_title || $args->rq_doc_id || ($req_cf_id > 0) )
+{
   $mapRQ = $cmdMgr->searchReq($targetSet,$canUseTarget,$req_cf_id);  
 } 
 
   
 $hasTestCases = (!is_null($tcaseSet) && count($tcaseSet) > 0);
-if( $hasTestCases ) {
+if( $hasTestCases )
+{
   $emptyTestProject = false;
   $mapTC = $cmdMgr->searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id);
 }  
 
 // Render Results
-if( !is_null($mapTC) ) {
+if( !is_null($mapTC) )
+{
   $tcase_mgr = new testcase($db);   
   $tcase_set = array_keys($mapTC);
   $options = array('output_format' => 'path_as_string');
   $gui->path_info = $treeMgr->get_full_path_verbose($tcase_set, $options);
   $gui->resultSet = $mapTC;
-} else if ($emptyTestProject) {
+}
+else if ($emptyTestProject) 
+{
   $gui->warning_msg = lang_get('empty_testproject');
-} else {
+}
+else
+{
   $gui->warning_msg = lang_get('no_records_found');
 }
 
 $img = $smarty->getImages();
 $table = buildTCExtTable($gui, $charset, $img['edit_icon'], $img['history_small']);
 
-if (!is_null($table)) {
+if (!is_null($table)) 
+{
   $gui->tableSet[] = $table;
 }
 
 $table = null;
-if( !is_null($mapTS)) {
+if( !is_null($mapTS))
+{
   $gui->resultTestSuite = $mapTS;
   $table = buildTSExtTable($gui, $charset, $img['edit_icon'], $img['history_small']); 
 }  
   
 $gui->warning_msg = '';
-if(!is_null($table)) {
+if(!is_null($table))
+{
   $gui->tableSet[] = $table;
 }  
 
 $table = null;
-if( !is_null($mapRS)) {
+if( !is_null($mapRS))
+{
   $gui->resultReqSpec = $mapRS;
   $table = buildRSExtTable($gui, $charset, $img['edit_icon'], $img['history_small']); 
 }  
   
 $gui->warning_msg = '';
-if(!is_null($table)) {
+if(!is_null($table))
+{
   $gui->tableSet[] = $table;
 }  
 
 $table = null;
-if( !is_null($mapRQ)) {
+if( !is_null($mapRQ))
+{
   $gui->resultReq = $mapRQ;
   $req_set = array_keys($mapRQ);
   $options = array('output_format' => 'path_as_string');
@@ -169,7 +191,8 @@ if( !is_null($mapRQ)) {
 }
 
 $gui->warning_msg = '';
-if(!is_null($table)) {
+if(!is_null($table))
+{
   $gui->tableSet[] = $table;
 }  
 
@@ -181,12 +204,14 @@ $smarty->display($templateCfg->template_dir . $tpl);
  * 
  *
  */
-function buildTCExtTable($gui, $charset, $edit_icon, $history_icon)  {
+function buildTCExtTable($gui, $charset, $edit_icon, $history_icon) 
+{
   $table = null;
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
   
-  if(count((array)$gui->resultSet) > 0) {
+  if(count($gui->resultSet) > 0) 
+  {
     $labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
     $columns = array();
     

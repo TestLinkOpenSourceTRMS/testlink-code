@@ -27,8 +27,7 @@ $tcase_mgr = new testcase($db);
 $args = init_args($db);
 $gui = initializeGui($db,$args);
 
-if( $args->doIt )
-{
+if ( $args->doIt ) {
   // Get executions with custom field values
   buildResultSet($db,$gui,$args->tproject_id,$args->tplan_id);
 
@@ -37,8 +36,7 @@ if( $args->doIt )
 
 	// Extract the relevant data and build a matrix
 	$matrixData = array();
-	foreach ($gui->resultSet as $item)
-	{
+	foreach ($gui->resultSet as $item) {
 		$rowData = array();
 
 		// Get test suite path
@@ -65,8 +63,7 @@ if( $args->doIt )
 		$rowData[] = $tcLink;
 
 		$rowData[] = $item['tcversion_number'];
-		if ($args->showPlatforms)
-		{
+		if ($args->showPlatforms) {
 			$rowData[] = $item['platform_name'];
 		}
 		$rowData[] = $item['build_name'];
@@ -89,13 +86,13 @@ if( $args->doIt )
 		
 		$rowData[] = strip_tags($item['exec_notes']);
 		
-		if($item['exec_notes']) {
+		if ($item['exec_notes']) {
 			$hasValue = true;
 		}
 		
-		foreach ($item['cfields'] as $cf_value)
-		{
-			$rowData[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf_value, ENT_QUOTES, $charset));;
+		foreach ($item['cfields'] as $cf_value) {
+			$rowData[] = preg_replace('!\s+!', ' ', 
+        htmlspecialchars($cf_value, ENT_QUOTES, $charset));
 			if ($cf_value) {
 				$hasValue = true;
 			}
@@ -105,8 +102,7 @@ if( $args->doIt )
 		}
 	}
 
-	if (count($matrixData) > 0) 
-	{
+	if (count($matrixData) > 0) {
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 
@@ -119,9 +115,7 @@ if( $args->doIt )
 		$table->toolbarShowAllColumnsButton = true;
 
 		$gui->tableSet = array($table);
-	} 
-	else 
-	{
+	} else {
 		$gui->warning_msg = $labels['no_linked_tc_cf'];
 	}
 }
@@ -130,37 +124,25 @@ $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-/*
- function:
-
- args :
-
- returns:
-
+/**
+ *
+ *
  */
 function init_args(&$dbHandler)
 {
   $argsObj = new stdClass();
-	$argsObj->doIt = false;
+	list($argsObj,$env) = initContext();
+
+  $argsObj->doIt = false;
   $argsObj->showPlatforms = false;
-  $argsObj->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-  $argsObj->tproject_id = intval($argsObj->tproject_id);
-
-
-  $argsObj->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+  $argsObj->tproject_name = 
+    testproject::getName($dbHandler,$argsObj->tproject_id);
 
   $argsObj->tplan_name = '';
-  $argsObj->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
-  $argsObj->tplan_id = intval($argsObj->tplan_id);
-
-  if ($argsObj->tplan_id == 0) {
-    $argsObj->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
-  }
-
-  if($argsObj->tplan_id > 0) {
-    	$tplan_mgr = new testplan($dbHandler);
-        $tplan_info = $tplan_mgr->get_by_id($argsObj->tplan_id);
-        $argsObj->tplan_name = $tplan_info['name'];
+  if ($argsObj->tplan_id > 0) {
+    $tplan_mgr = new testplan($dbHandler);
+    $tplan_info = $tplan_mgr->get_by_id($argsObj->tplan_id);
+    $argsObj->tplan_name = $tplan_info['name'];
 
 		$argsObj->doIt = $tplan_mgr->count_testcases($argsObj->tplan_id) > 0;
 		$argsObj->showPlatforms = $tplan_mgr->hasLinkedPlatforms($argsObj->tplan_id);
@@ -173,11 +155,14 @@ function init_args(&$dbHandler)
 }
 
 
-
+/**
+ *
+ */
 function initializeGui(&$dbHandler,&$argsObj)
 {
-	$guiObj = new stdClass();
-	$guiObj->pageTitle = lang_get('caption_testCasesWithCF');
+	list($add2args,$guiObj) = initUserEnv($dbHandler,$argsObj);
+
+  $guiObj->pageTitle = lang_get('caption_testCasesWithCF');
 	$guiObj->warning_msg = $guiObj->tcasePrefix = '';
 	$guiObj->path_info = $guiObj->resultSet = $guiObj->tableSet = null;
 	
@@ -185,20 +170,18 @@ function initializeGui(&$dbHandler,&$argsObj)
 	$guiObj->tplan_name = $argsObj->tplan_name;
 	$guiObj->tplan_id = $argsObj->tplan_id;
 
-    $tproject_mgr = new testproject($dbHandler);
-    $guiObj->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
-	unset($tproject_mgr);
+  $tprojMgr = new testproject($dbHandler);
+  $guiObj->tcasePrefix = $tprojMgr->getTestCasePrefix($argsObj->tproject_id);
+	unset($tprojMgr);
 
-    // Get the mapping for the Verbose Status Description of Test Case Status
-    $resultsCfg = config_get('results');
-    $guiObj->code_status = $resultsCfg['code_status'];
-    foreach($guiObj->code_status as $code => $verbose)
-    {
-        if(isset($resultsCfg['status_label'][$verbose]))
-        {
-            $guiObj->status_code_labels[$code] = lang_get($resultsCfg['status_label'][$verbose]);
-        }
+  // Get the mapping for the Verbose Status Description of Test Case Status
+  $resultsCfg = config_get('results');
+  $guiObj->code_status = $resultsCfg['code_status'];
+  foreach ($guiObj->code_status as $code => $verbose) {
+    if (isset($resultsCfg['status_label'][$verbose])) {
+      $guiObj->status_code_labels[$code] = lang_get($resultsCfg['status_label'][$verbose]);
     }
+  }
 	return $guiObj; 
 }
 
@@ -212,53 +195,47 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
 	
 	$cfieldMgr = new cfield_mgr($dbHandler);
 
-    // Get the custom fields linked/enabled on execution to a test project
-    // This will be used on report to give name to header of columns that hold custom field value
-    $guiObj->cfields = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,null,'name');
+  // Get the custom fields linked/enabled on execution to a test project
+  // This will be used on report to give name to header of columns 
+  // that hold custom field value
+  $guiObj->cfields = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,null,'name');
     
-    // this way on caller can be used on array operations, without warnings
-    $guiObj->cfields = (array)$guiObj->cfields;  
-    if( count($guiObj->cfields) > 0 )
-    {
-    	foreach($guiObj->cfields as $key => $values)
-    	{
-    	   $cf_place_holder['cfields'][$key]='';
-    	}
+  // this way on caller can be used on array operations, without warnings
+  $guiObj->cfields = (array)$guiObj->cfields;  
+  if (count($guiObj->cfields) > 0) {
+    foreach ($guiObj->cfields as $key => $values) {
+    	$cf_place_holder['cfields'][$key]='';
+    }
 	}
 
-    $cf_map = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,$tplan_id,'exec_id');
+  $cf_map = (array)$cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,$tplan_id,'exec_id');
      
-    // need to transform in structure that allow easy display
-    // Every row is an execution with exec data plus a column that contains following map:
-    // 'cfields' => CFNAME1 => value
-    //              CFNAME2 => value
-    $guiObj->resultSet = array();
+  // need to transform in structure that allow easy display
+  // Every row is an execution with exec data plus a column 
+  // that contains following map:
+  // 'cfields' => CFNAME1 => value
+  //              CFNAME2 => value
+  $guiObj->resultSet = array();
+  $guiObj->row_qty = count($cf_map);
+	if ($guiObj->row_qty >0) {
+    foreach ($cf_map as $exec_id => $exec_info) {
+      // Get common exec info and remove useless keys
+      $guiObj->resultSet[$exec_id] = $exec_info[0];
+      unset($guiObj->resultSet[$exec_id]['name']);
+      unset($guiObj->resultSet[$exec_id]['label']);
+      unset($guiObj->resultSet[$exec_id]['display_order']);
+      unset($guiObj->resultSet[$exec_id]['id']);
+      unset($guiObj->resultSet[$exec_id]['value']);
 
-	if(!is_null($cf_map))
-    {
-        foreach($cf_map as $exec_id => $exec_info)
-        {
-            // Get common exec info and remove useless keys
-            $guiObj->resultSet[$exec_id] = $exec_info[0];
-            unset($guiObj->resultSet[$exec_id]['name']);
-            unset($guiObj->resultSet[$exec_id]['label']);
-            unset($guiObj->resultSet[$exec_id]['display_order']);
-            unset($guiObj->resultSet[$exec_id]['id']);
-            unset($guiObj->resultSet[$exec_id]['value']);
-
-            // Collect custom fields values
-            $guiObj->resultSet[$exec_id] += $cf_place_holder;
-            foreach($exec_info as $cfield_data)
-            {
-                $guiObj->resultSet[$exec_id]['cfields'][$cfield_data['name']] = $cfieldMgr->string_custom_field_value($cfield_data,null);
-            }
-        }
-    }
-
-    if(($guiObj->row_qty=count($cf_map)) == 0 )
-    {
-        $guiObj->warning_msg = lang_get('no_linked_tc_cf');
-    }
+      // Collect custom fields values
+      $guiObj->resultSet[$exec_id] += $cf_place_holder;
+      foreach ($exec_info as $cfield_data) {
+        $guiObj->resultSet[$exec_id]['cfields'][$cfield_data['name']] = $cfieldMgr->string_custom_field_value($cfield_data,null);
+      }
+    } 
+  } else {
+    $guiObj->warning_msg = lang_get('no_linked_tc_cf');
+  } 
 }
 
 
@@ -312,3 +289,4 @@ function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_metrics');
 }
+?>

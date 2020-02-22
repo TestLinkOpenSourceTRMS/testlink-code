@@ -369,7 +369,7 @@ class assignment_mgr extends tlObjectWithDB
     $creation_ts = $this->db->db_now();
     $types = $this->get_available_types();
     $tc_execution_type = $types['testcase_execution']['id'];
-    $delete_all_types = $my['opt']['copy_all_types'];
+    $delete_all_types = $copy_all_types;
       
     $type_sql = ($my['opt']['copy_all_types']) ? "" : " AND type = {$tc_execution_type} ";
     $user_sql = (is_numeric($assigner_id) && $assigner_id != 0) ? $assigner_id : "assigner_id";

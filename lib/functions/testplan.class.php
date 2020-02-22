@@ -9,7 +9,7 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  **/
@@ -157,7 +157,7 @@ class testplan extends tlObjectWithAttachments
    */
   function createFromObject($item,$opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
+    $my['opt'] = array('doChecks' => false);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     try {
@@ -216,7 +216,7 @@ class testplan extends tlObjectWithAttachments
    */
   function updateFromObject($item,$opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
+    $my['opt'] = array('doChecks' => false);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     if( !property_exists($item, 'id') ) {
@@ -591,22 +591,36 @@ class testplan extends tlObjectWithAttachments
 
     args :
         $tplan_id: test plan id
-        $items_to_link: map key=tc_id 
+        $items_to_link: map key=tc_id / 
+                            key CAN BE A SIMPLE INDEX when
+                            $options['getTCPrefixFromTPlan'] = false;
+
                         value: tcversion_id
     returns: -
 
     rev: 20080629 - franciscom - audit message improvements
   */
-  function tcversionInfoForAudit($tplan_id,&$items)
+  function tcversionInfoForAudit($tplan_id,&$items,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
+    $options = array('getTCPrefixFromTPlan' => false);
+    $options = array_merge($options,(array)$opt);
+
     // Get human readeable info for audit
-    $ret=array();
-    // $tcase_cfg = config_get('testcase_cfg');
-    $dummy=reset($items);
+    $ret = array();
+    $dummy = reset($items);
     
-    list($ret['tcasePrefix'],$tproject_id) = $this->tcase_mgr->getPrefix($dummy);
+    $ret['tplanInfo'] = $this->get_by_id($tplan_id);
+
+    if ($options['getTCPrefixFromTPlan']) {
+      $tproject_id = $ret['tplanInfo']['testproject_id'];
+      $ret['tcasePrefix'] = 
+        $this->tproject_mgr->getTestCasePrefix($tproject_id);
+    } else {
+      list($ret['tcasePrefix'],$tproject_id) = 
+        $this->tcase_mgr->getPrefix($dummy);      
+    }
     $ret['tcasePrefix'] .= $this->tcaseCfg->glue_character;
     
         $sql = "/* $debugMsg */ " .
@@ -627,25 +641,27 @@ class testplan extends tlObjectWithAttachments
   /**
    * associates version of different test cases to a test plan.
    * this is the way to populate a test plan
-
-    args :
-        $id: test plan id
-        $items_to_link: map key=tc_id 
-                        value= map with
-                               key: platform_id (can be 0)
-                               value: tcversion_id
-                        passed by reference for speed
-    returns: -
-
-    rev: 20080629 - franciscom - audit message improvements
-  */
-  function link_tcversions($id,&$items_to_link,$userId)
+   *
+   *  args :
+   *     $id: test plan id
+   *     $items_to_link: map key=tc_id 
+   *                     value= map with
+   *                            key: platform_id (can be 0)
+   *                            value: tcversion_id
+   *                     passed by reference for speed
+   *  returns: 
+   */
+  function link_tcversions($id,&$items_to_link,$userId,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     // Get human readeable info for audit
     $title_separator = config_get('gui_title_separator_1');
-    $auditInfo=$this->tcversionInfoForAudit($id,$items_to_link['tcversion']);
+
+    $options = array('getTCPrefixFromTPlan' => false);
+    $options = array_merge($options,(array)$opt);
+
+    $auditInfo=$this->tcversionInfoForAudit($id,$items_to_link['tcversion'],$options);
 
     $optLTT = null;
     $platformInfo = $this->platform_mgr->getLinkedToTestplanAsMap($id,$optLTT);
@@ -2455,9 +2471,9 @@ class testplan extends tlObjectWithAttachments
   }
 
 
-  // --------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Custom field related methods
-  // --------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   /*
     function: get_linked_cfields_at_design
   
@@ -2473,18 +2489,23 @@ class testplan extends tlObjectWithAttachments
   */
   function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null)
   {
-    $path_len=0;
-    if( is_null($parent_id) )
-    {
-      // Need to get testplan parent (testproject id) in order to get custom fields
-      // 20081122 - franciscom - need to check when we can call this with ID=NULL
-      $the_path = $this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-      $path_len = count($the_path);
+    $tproject_id = intval($parent_id); 
+    if (0 == $tproject_id) {
+      // Need to get testplan parent (testproject id) 
+      // in order to get custom fields
+      // need to check when we can call this with ID=NULL
+      $info = $this->tree_manager->get_node_hierarchy_info($id);
+      $tproject_id = $info['parent_id'];    
+    } 
+
+    if (0 == $tproject_id) {
+      throw new Exception(__FUNCTION_ . " - BAD Test Project ID", 1);
+      die();
     }
-    $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id; 
-    
-    $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,self::ENABLED,
-                                                            $show_on_execution,'testplan',$id);
+
+    $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,
+                                   self::ENABLED,$show_on_execution,
+                                   'testplan',$id);
     
     return $cf_map;
   }
@@ -3827,10 +3848,12 @@ class testplan extends tlObjectWithAttachments
     $my['filters'] = array('exclude_node_types' => $nt2exclude,'exclude_children_of' => $nt2exclude_children);
     $tplan_spec = $this->tree_manager->get_subtree($context['tproject_id'],$my['filters'],$my['options']);
 
-    // -----------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------
     // Generate test project info 
-    $tproject_mgr = new testproject($this->db);
-    $tproject_info = $tproject_mgr->get_by_id($context['tproject_id']);
+    //
+    // 20191211
+    // $tproject_mgr = new testproject($this->db);
+    $tproject_info = $this->tproject_mgr->get_by_id($context['tproject_id']);
 
     // ||yyy||-> tags,  {{xxx}} -> attribute 
     // tags and attributes receive different treatment on exportDataToXML()
@@ -7402,20 +7425,25 @@ class testplan extends tlObjectWithAttachments
    *
    * @used-by planEdit.php
    */
-  function getFileUploadRelativeURL($id)
+  function getFileUploadRelativeURL($id,$tproject_id)
   {
     // do_action,tplan_id as expected in planEdit.php
-    $url = "lib/plan/planEdit.php?do_action=fileUpload&tplan_id=" . intval($id);
+    $url = "lib/plan/planEdit.php?do_action=fileUpload&tplan_id=" . 
+           intval($id) . "&tproject_id=" . intval($tproject_id) .
+           "&itemID=" . intval($id); 
     return $url;
   }
 
   /**
    * @used-by planEdit.php
    */
-  function getDeleteAttachmentRelativeURL($id)
+  function getDeleteAttachmentRelativeURL($id,$tproject_id)
   {
     // do_action,tplan_id as expected in planEdit.php
-    $url = "lib/plan/planEdit.php?do_action=deleteFile&tplan_id=" . intval($id) . "&file_id=" ; 
+    $url = "lib/plan/planEdit.php?do_action=deleteFile&tplan_id=" . 
+           intval($id) . "&itemID=" . intval($id) .
+           "&tproject_id=" . intval($tproject_id) . 
+           "&file_id=" ; 
     return $url;
   }
 
@@ -7651,7 +7679,8 @@ class testplan extends tlObjectWithAttachments
   function getLinkedTCVXmen($id,$filters=null,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $safe['tplan_id'] = intval($id);
+    $safe = array('tplan_id' => intval($id));
+
     $my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
 
     // adding tcversion on output can be useful for Filter on Custom Field values,
@@ -7742,7 +7771,7 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = "/* $debugMsg */
-            SELECT tcversion_id 
+            SELECT DISTINCT tcversion_id 
             FROM {$this->tables['testplan_tcversions']} TPTCV
             JOIN {$this->tables['nodes_hierarchy']} NH_TCV
             ON NH_TCV.id = TPTCV.tcversion_id
@@ -7750,10 +7779,18 @@ class testplan extends tlObjectWithAttachments
             AND NH_TCV.parent_id = $tcase_id";
 
     $rs = $this->db->get_recordset($sql);
-    
+
+    // Before 20191208:
     // We trust DB is OK => no matter the record I use
     // testcase version id will be the same.
     //
+    // After 20191208:
+    // Fox Mulder -> trust no one
+    if (count($rs) > 1) {
+      // DB is not OK
+      throw new Exception("DB Issues in testplan_tcversions", 1);
+    }
+
     return $rs[0]['tcversion_id'];
 
   }
@@ -8028,6 +8065,57 @@ class testplan extends tlObjectWithAttachments
     return $xql;
   }
 
+  /**
+   *
+   */
+  function getViewActions($context ) {
+    $act = new stdClass();
+    $act->managerURL = "lib/plan/planEdit.php";
+    $doa = "$act->managerURL?do_action";
+    $prop = array('tproject_id','tplan_id');
+    $ent = '';
+    foreach ($prop as $pp) {
+      $ent .= "&$pp=";
+      if (property_exists($context,$pp)) {
+        $ent .= intval($context->$pp);
+      } else {
+        $ent .= "0";
+      }
+    }
+    $environment = trim($ent,'&');
+    $ent .= "&itemID=";
+
+    $prop = array('tproject_id');
+    $entProj = '';
+    foreach ($prop as $pp) {
+      $entProj .= "&$pp=";
+      if (property_exists($context,$pp)) {
+        $entProj .= intval($context->$pp);
+      } else {
+        $entProj .= "0";
+      }
+    }
+    $entProj .= "&tplan_id=";
+
+
+    $act->deleteAction = "$doa=do_delete$ent";
+    $act->editAction = "$doa=edit$ent";
+    $act->createAction = "$doa=create$ent";
+
+    $impex = trim($ent,'&');
+    $act->exportAction = "lib/plan/planExport.php?$impex";
+    $act->importAction = "lib/plan/planImport.php?$impex";
+
+    $act->assignRolesAction = 
+      "lib/usermanagement/usersAssign.php?featureType=testplan$ent&featureID=";
+    $act->gotoExecuteAction = 
+      "lib/general/frmWorkArea.php?feature=executeTest$entProj";
+
+    $pv = "lib/plan/planView.php";
+    $act->displayListURL = "$pv?" . $environment;
+
+    return $act;
+  }
 
   /**
    * Rules
@@ -8060,11 +8148,104 @@ class testplan extends tlObjectWithAttachments
     $rs = $dbh->get_recordset($sql);
     return is_null($rs) ? $rs : $rs[0]['name'];
   }
-  
+
+  /**
+   *
+   */
+  static function getMilestoneContext(&$dbH,$milestone_id)
+  {
+    $sch = tlDBObject::getDBTables(array('milestones','testplans'));
+    $sql = " SELECT M.id, M.testplan_id, TPLAN.testproject_id
+             FROM {$sch['milestones']} M 
+             JOIN {$sch['testplans']} TPLAN 
+             ON TPLAN.id = M.testplan_id 
+             WHERE M.id = " . $dbH->prepare_int($milestone_id);
+
+    $row = $dbH->fetchRowsIntoMap($sql,'id');
+    return $row;
+  }
+
+
+ /**
+  *
+  */
+  function getLinkedDistinct($id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $sql = " /* $debugMsg */
+             SELECT DISTINCT parent_id AS tcase_id,TPTCV.tcversion_id
+             FROM {$this->tables['nodes_hierarchy']} NHTC
+             JOIN {$this->tables['testplan_tcversions']} TPTCV 
+             ON TPTCV.tcversion_id = NHTC.id
+             WHERE TPTCV.testplan_id = " . intval($id);
+
+    $items = $this->db->fetchColumnsIntoMap($sql,'tcase_id','tcversion_id');
+           
+    return $items;
+  }
+
+  /** 
+   *
+   *
+   */
+
+  function linkTCV2Platform($id,$tcvIDSet,$platformSet,$userId,$opt=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    
+    // Get human readeable info for audit
+    $title_separator = config_get('gui_title_separator_1');
+    
+    $options = array('getTCPrefixFromTPlan' => false);
+    $options = array_merge($options,(array)$opt);
+
+    $auditInfo = $this->tcversionInfoForAudit(
+                          $id,$tcvIDSet,$options);
+    $platformInfo = $this->platform_mgr->getLinkedToTestplanAsMap($id);
+    $platformLabel = lang_get('platform');
+    
+    // Important: MySQL do not support default values on datetime columns that are functions
+    // that's why we are using db_now().
+    $sql = "/* $debugMsg */ " .
+           "REPLACE INTO {$this->tables['testplan_tcversions']} " .
+         "(testplan_id,author_id,creation_ts,tcversion_id,platform_id) " . 
+         " VALUES ({$id},{$userId},{$this->db->db_now()},";
+
+    $features = null;
+    foreach ($tcvIDSet as $tcversion) {
+      foreach($platformSet as $platform_id) {
+        $addInfo='';
+        $result = $this->db->exec_query($sql . "{$tcversion}, {$platform_id})");
+        if ($result) {
+          $features[$platform_id][$tcversion] = 
+            $this->db->insert_id($this->tables['testplan_tcversions']);          
+          if( isset($platformInfo[$platform_id]) ) {
+            $addInfo = ' - ' . $platformLabel . ':' . 
+                       $platformInfo[$platform_id];
+          }
+          $auditMsg = TLS("audit_tc_added_to_testplan",
+                          $auditInfo['tcasePrefix'] . 
+                          $auditInfo['info'][$tcversion]['tc_external_id'] . 
+                          $title_separator . 
+                          $auditInfo['info'][$tcversion]['name'],
+                          $auditInfo['info'][$tcversion]['version'],
+                          $auditInfo['tplanInfo']['name'] . $addInfo );
+          
+          logAuditEvent($auditMsg,"ASSIGN",$id,"testplans");
+        }  
+      }
+    }
+
+    return $features;
+  }
+
+
+
 } // end class testplan
 
 
-// ######################################################################################
+// #######################################################################
 /** 
  * Build Manager Class 
  * @package TestLink
@@ -8079,7 +8260,7 @@ class build_mgr extends tlObject {
    * 
    * @param resource &$db reference to database handler
    **/
-  function build_mgr(&$db) {
+  function __construct(&$db) {
     parent::__construct();
     $this->db = &$db;
     $this->cfield_mgr = new cfield_mgr($this->db);
@@ -8719,7 +8900,7 @@ class milestone_mgr extends tlObject
    * 
    * @param resource &$db reference to database handler
    **/
-  function milestone_mgr(&$db)
+  function __construct(&$db)
   {
     parent::__construct();
     $this->db = &$db;
@@ -8930,6 +9111,4 @@ class milestone_mgr extends tlObject
     $rs=$this->db->get_recordset($sql);
     return $rs;
   }
-
-
 } // end class milestone_mgr

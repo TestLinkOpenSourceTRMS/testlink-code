@@ -6,7 +6,7 @@
  * @filesource  platformsEdit.php
  * @package     TestLink
  * @copyright   2009-2020, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @link        http://www.testlink.org/
  *
  * allows users to manage platforms. 
  *
@@ -24,9 +24,9 @@ require_once(require_web_editor($editorCfg['type']));
 // Security checks are done, if failed => exit()
 list($args,$gui,$platform_mgr) = initEnv($db);
 
-$templateCfg = templateConfiguration();
+$tplCfg = templateConfiguration();
 $smarty = new TLSmarty();
-$default_template = $templateCfg->default_template;
+$tpl = $tplCfg->default_template;
 
 $op = new stdClass();
 $op->status = 0;
@@ -62,7 +62,7 @@ switch ($args->doAction) {
 }
 
 if ($op->status == 1) {
-  $default_template = $op->template;
+  $tpl = $op->template;
   $gui->user_feedback['message'] = $op->user_feedback;
 } else {
   $gui->user_feedback['message'] = getErrorMessage($op->status, $args->name);
@@ -70,13 +70,13 @@ if ($op->status == 1) {
 }
 
 // refresh
-$guiX = $platform_mgr->initViewGui($args->currentUser);    
+$guiX = $platform_mgr->initViewGui($args->currentUser,$args);    
 $gui->platforms = $guiX->platforms;
 
 $gui->notes = $of->CreateHTML();
 
 $smarty->assign('gui',$gui);
-$smarty->display($templateCfg->template_dir . $default_template);
+$smarty->display($tplCfg->template_dir . $tpl);
 
 /**
  * 
@@ -122,6 +122,10 @@ function init_args( &$dbH )
 
   $tables = tlDBObject::getDBTables(array('nodes_hierarchy','platforms'));
   
+  list($context,$env) = initContext();
+  $args->tplan_id = $context->tplan_id;    
+  $args->tproject_id = $context->tproject_id;    
+
   if( 0 != $args->platform_id ) {
     $sql = "SELECT testproject_id FROM {$tables['platforms']}  
             WHERE id={$args->platform_id}";
@@ -149,7 +153,7 @@ function init_args( &$dbH )
   }
 
   if (null == $args->enable_on_execution) {
-    $args->enable_on_execution = 1;
+    $args->enable_on_execution = 0;
   }
   return $args;
 }
@@ -217,15 +221,9 @@ function edit(&$args,&$gui,&$platform_mgr) {
   return $ret;
 }
 
-/*
-  function: do_create 
-            do operations on db
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ *
+ */
 function do_create(&$args,&$gui,&$platform_mgr) {
   $gui->main_descr = lang_get('platform_management');
   $gui->action_descr = lang_get('create_platform');
@@ -334,7 +332,7 @@ function getErrorMessage($code,$platform_name) {
  *
  */
 function init_gui(&$db,&$args,&$platMgr) {
-  $gui = $platMgr->initViewGui($args->currentUser);
+  $gui = $platMgr->initViewGui($args->currentUser,$args);
   
   $gui->name = $args->name;
   $gui->notes = $args->notes;

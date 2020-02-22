@@ -7,11 +7,7 @@
  *
  * @filesource  resultsReqs.php
  * @package     TestLink
- * @author      Martin Havlat
  * 
- * 
- * internal revisions
- * @since 1.9.16
  */
 
 require_once("../../config.inc.php");
@@ -534,15 +530,17 @@ function comment_percentage($percentage)
  */
 function init_args(&$tproject_mgr, &$tplan_mgr, &$req_cfg)
 {
-  $args = new stdClass();
+  list($args,$env) = initContext();
+
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $nn = $tplan_mgr->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
 
   $states_to_show = array(0 => "0");
-  if (isset($_REQUEST['states_to_show'])) 
-  {
+  if (isset($_REQUEST['states_to_show']))  {
     $states_to_show = $_REQUEST['states_to_show'];
-  } 
-  else if (isset($_SESSION['states_to_show'])) 
-  {
+  } else if (isset($_SESSION['states_to_show']))  {
     $states_to_show = $_SESSION['states_to_show'];
   }
     
@@ -553,11 +551,6 @@ function init_args(&$tproject_mgr, &$tplan_mgr, &$req_cfg)
   $args->states_to_show->items = array(0 => "[" . lang_get('any') . "]") + 
                                 (array) init_labels($req_cfg->status_labels);
   
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-  $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-
-  $args->tplan_id = intval($_SESSION['resultsNavigator_testplanID']);
-  
   $args->format = $_SESSION['resultsNavigator_format'];
 
   // remember platform selection too
@@ -565,9 +558,7 @@ function init_args(&$tproject_mgr, &$tplan_mgr, &$req_cfg)
   $platform = 0;
   $gui_open = config_get('gui_separator_open');
   $gui_close = config_get('gui_separator_close');
-
-  $optLTT = null;
-  $dummy = $tplan_mgr->platform_mgr->getLinkedToTestplanAsMap($args->tplan_id,$optLTT);
+  $dummy = $tplan_mgr->platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
   $args->platformSet = $dummy ? array(0 => $gui_open . lang_get('any') . $gui_close) + $dummy : null;
   
   if (isset($_REQUEST['platform'])) 

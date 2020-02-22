@@ -620,6 +620,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->settings['filter_assigned_user'] = false;
     }
 
+    // @used by save_session_data()
+    // CRITIC!!! for save_session_data()
     // add the important settings to active filter array
     foreach ($this->all_settings as $name => $info) {
       if ($this->settings[$name]) {
@@ -682,7 +684,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
   
   /**
    * Active filters will be saved to $_SESSION. 
-   * If there already is data for the active mode and token, it will be overwritten.
+   *
+   * CRITIC: 
+   * setting_* variables are also present in active_filters
+   * (may be not the best choice???)
+   *
+   *
+   * If there already is data for the active mode and token, 
+   * it will be overwritten.
    * This data will be read from pages in the right frame.
    * This solves the problems with too long URLs.
    * See issue 3516 in Mantis for a little bit more information/explanation.
@@ -698,6 +707,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $_SESSION[$this->mode] = array();
     }
     
+    // active_filters contains also:
+    // setting_testplan
+    // setting_platform
+    // setting_build
+    // setting_refresh_tree_on_action
+    // setting_testsgroupby
+    // setting_exec_tree_counters_logic
     $_SESSION[$this->mode][$this->form_token] = $this->active_filters;
     $_SESSION[$this->mode][$this->form_token]['timestamp'] = time();
     
@@ -783,7 +799,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
       // important: the token with which the page in right frame can access data in session
       $string .= '&form_token=' . $this->form_token;
 
-      $key2loop = array('setting_build','setting_platform');
+      // 201911
+      $key2loop = array('setting_testplan','setting_platform',
+                        'setting_build');
       foreach($key2loop as $kiwi) {
         if($this->settings[$kiwi]) {
           $string .= "&{$kiwi}={$this->settings[$kiwi]['selected']}";
@@ -1146,7 +1164,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
 
   /**
-   * 
+   * CRITIC need to called AFTER init_setting_testplan
    * 
    */
   private function init_setting_build() {
@@ -1176,7 +1194,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       break;
     }
     
-    $this->settings[$key]['items'] = $this->testplan_mgr->get_builds_for_html_options($tplan_id, $active, $open);
+    $this->settings[$key]['items'] = (array)$this->testplan_mgr->get_builds_for_html_options($tplan_id, $active, $open);
     $tplan_builds = array_keys((array)$this->settings[$key]['items']);
 
     // According to mode, we need different labels for this selector on GUI
@@ -1191,8 +1209,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     $this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $session_selection;
 
-    if (!$this->args->$key) 
-    {
+    if (!$this->args->$key) {
       $this->args->$key = $newest_build_id;
     }
     
@@ -1214,55 +1231,70 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * 
    * @used-by: tlTestCaseFilterControl->init_settings()
    */
+
+  // CRITIC -> IVU REMOVE ACCESS TO TESTPLAB FROM SESSION
   private function init_setting_testplan()  {
     if (is_null($this->testplan_mgr))  {
       $this->testplan_mgr = new testplan($this->db);
     }
     
-    $key = 'setting_testplan';
+    $this->args->reset_filters = true;
+
     $testplans = $this->user->getAccessibleTestPlans($this->db, $this->args->testproject_id);
-
-    if (isset($_SESSION['testplanID']) && $_SESSION['testplanID'] != $this->args->{$key}) {
-      // testplan was changed, we need to reset all filters
-      // --> they were chosen for another testplan, not this one!
-      $this->args->reset_filters = true;
-
-      // check if user is allowed to set chosen testplan before changing
-      foreach ($testplans as $plan) {
-        if ($plan['id'] == $this->args->{$key}) {
-          setSessionTestPlan($plan);
-        }
-      }
+    
+    $tplan_id = $this->args->testplan_id;
+    if (0 == $tplan_id || $this->args->setting_testplan >0) {
+      $tplan_id = $this->args->setting_testplan;
+      $this->args->testplan_id = $this->args->setting_testplan;
     }
 
-    // now load info from session
-    $info = $this->testplan_mgr->get_by_id($_SESSION['testplanID']);
+    $info = $this->testplan_mgr->get_by_id($tplan_id);
     $this->args->testplan_name = $info['name'];
-    $this->args->testplan_id = $info['id'];
+    $key = 'setting_testplan';
     $this->args->{$key} = $info['id'];
     $this->settings[$key]['selected'] = $info['id'];
 
-    // Final filtering based on mode:
+
+    // echo 'MODE IS:' . $this->mode;
+    // Reset filters
+    // This depends on mode of operation
+    // execution_mode -> exec
+    // plan_add_mode -> add test cases
+    // plan_mode -> assign test case execution
+    //              set urgent test cases
+    //              update linked test case versions
+    //
+    switch ($this->mode) {
+      case 'plan_add_mode':
+      break;
+
+
+    }
+
+
+    // Final filtering based on mode of operation
+    //
     // Now get all selectable testplans for the user to display.
-    // For execution: 
+    // For execution:
+    // 
     // For assign test case execution feature:
-    //     don't take testplans into selection which have no (active/open) builds!
+    //     don't take testplans into selection which 
+    //     have no (active/open) builds!
     //
     // For plan add mode: 
     //     add every plan no matter if he has builds or not.
-
+    //
+    $addToPlanTask = $this->mode == 'plan_add_mode' || 
+                     ($this->mode == 'plan_mode' && 
+                      $this->args->feature != 'tc_exec_assignment');
     foreach ($testplans as $plan) {
-      $add_plan = $this->mode == 'plan_add_mode' || 
-                 ( $this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment' ) ;
-
-      if(!$add_plan) 
-      {
+      $recheckIt = false;
+      if ($addToPlanTask == false) {
         $builds = $this->testplan_mgr->get_builds($plan['id'],testplan::GET_ACTIVE_BUILD,testplan::GET_OPEN_BUILD);
-        $add_plan =  (is_array($builds) && count($builds));
+        $recheckIt =  (is_array($builds) && count($builds));
       }
       
-      if ($add_plan) 
-      {
+      if ($addToPlanTask || $recheckIt) {
         $this->settings[$key]['items'][$plan['id']] = $plan['name'];
       }
     }
@@ -1284,7 +1316,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $session_key = $testplan_id . '_stored_setting_platform';
     $session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
     $key = 'setting_platform';
-
     $optx = null;
     switch ($this->mode) {
       case 'edit_mode':
@@ -1292,7 +1323,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       break;
     }
     
-    $platformSet = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
+    $platformSet = $this->platform_mgr->getActiveLinkedToTestplanAsMap($testplan_id);
 
     if( is_null($platformSet) ) {
       // Brute force bye, bye !! >>--->
@@ -1427,8 +1458,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
         }
       }
       
-      // Important: This is the only case in which active_filters contains the items
-      // which have to be deleted from tree, instead of the other way around.
+      // Important/CRITIC: 
+      // This is the only case in which active_filters 
+      // contains the items which have to be deleted from tree, 
+      // instead of the other way around.
       $this->active_filters[$key] = $this->filters[$key]['exclude_branches'];
     } 
     else 

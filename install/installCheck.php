@@ -11,8 +11,6 @@
  * @author 		Martin Havlat
  * @copyright 	2009,2012 TestLink community 
  *
- * @internal revisions
- * @since 1.9.6
  **/
 require_once('..' . DIRECTORY_SEPARATOR . 'config.inc.php');
 require_once('..' . DIRECTORY_SEPARATOR . 'lib'. DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'common.php');

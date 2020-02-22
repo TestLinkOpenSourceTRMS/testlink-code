@@ -33,7 +33,8 @@ init_global_rights_maps();
 /**
  * init global map with user rights and user rights description localized.
  */
-function init_global_rights_maps() {
+function init_global_rights_maps()
+{
   // Every array, defines a section in the define role page => HAS EFFECTS ONLY ON LAYOUT
   global $g_rights_tp;
   global $g_rights_mgttc;
@@ -216,7 +217,8 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null) {
 /**
  *
  */
-function propagateRights($fromRights,$propRights,&$toRights) {
+function propagateRights($fromRights,$propRights,&$toRights)
+{
   // the mgt_users right isn't test project related so this right is inherited from
   // the global role (if set)
   foreach($propRights as $right => $desc) {
@@ -239,7 +241,8 @@ function propagateRights($fromRights,$propRights,&$toRights) {
  * @since 20.02.2006, 20:30:07
  *
  **/
-function checkForRights($rights,$roleQuestion,$bAND = 1) {
+function checkForRights($rights,$roleQuestion,$bAND = 1)
+{
   $ret = null;
   //check to see if the $roleQuestion variable appears in the $roles variable
   if (is_array($roleQuestion)) {
@@ -283,7 +286,8 @@ function checkForRights($rights,$roleQuestion,$bAND = 1) {
  *                 effective_role_id  user role for test project
  *                 is_inherited
  */
-function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = null) {
+function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = null)
+{
   $effective_role = array();
   $tproject_id = $tproject['id'];
   if (!is_null($user_id))

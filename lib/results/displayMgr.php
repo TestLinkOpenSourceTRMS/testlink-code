@@ -23,7 +23,7 @@ function initArgsForReports(&$dbHandler) {
           "type" => array(tlInputParameter::STRING_N,0,1),
           "sendByMail" => array(tlInputParameter::INT_N),
           "spreadsheet" => array(tlInputParameter::INT_N),
-          "doAction" => array(tlInputParameter::STRING_N,5,15),
+          "doAction" => array(tlInputParameter::STRING_N,5,10),
           "platSet" => array(tlInputParameter::ARRAY_INT),
           "build_set" => array(tlInputParameter::ARRAY_INT),
           "buildListForExcel" => array(tlInputParameter::STRING_N,0,100));
@@ -221,7 +221,7 @@ function flushHttpHeader($format, $doc_kind = 0)
     tLog('flushHttpHeader> Invalid format: '.$format, 'ERROR');
   }
   
-  $filename = isset($_SESSION['testprojectPrefix']) ? $_SESSION['testprojectPrefix'] : '';
+  $filename = '';
   $filename .= $kind_acronym . '-' . date('Y-m-d') . '.' . $file_extensions[$format];
   tLog('Flush HTTP header for '.$format); 
 

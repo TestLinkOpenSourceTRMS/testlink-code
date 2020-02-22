@@ -8,7 +8,7 @@
  * @filesource  print.inc.php
  *
  * @package   TestLink
- * @copyright 2007-2019, TestLink community 
+ * @copyright 2007-2020, TestLink community 
  * @uses      printDocument.php
  *
  */ 

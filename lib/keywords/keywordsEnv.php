@@ -63,7 +63,30 @@ function getKeywordsEnv(&$dbHandler,&$user,$tproject_id,$opt=null) {
   $kwEnv->canManage = $user->hasRight($dbHandler,"mgt_modify_key",$tproject_id);
   $kwEnv->canAssign = $user->hasRight($dbHandler,"keyword_assignment",$tproject_id);
 
-  $kwEnv->editUrl = $_SESSION['basehref'] . "lib/keywords/keywordsEdit.php?" .
-                   "tproject_id={$tproject_id}"; 
-  return $kwEnv;
+  $kwEnv->editUrl = $_SESSION['basehref'] . 
+    "lib/keywords/keywordsEdit.php?" . "tproject_id={$tproject_id}"; 
+
+  return $kwEnv;  
 }
+
+
+/**
+ */
+function setOpenByAnotherEnv(&$argsObj) {
+
+  $argsObj->dialogName = '';
+  $argsObj->bodyOnLoad = $argsObj->bodyOnUnload = '';       
+  if(isset($_REQUEST['openByKWInc'])) {
+    $argsObj->openByOther = 1;
+  } else {
+    // Probably useless
+    $argsObj->openByOther = 
+      isset($_REQUEST['openByOther']) ? intval($_REQUEST['openByOther']) : 0;
+    if( $argsObj->openByOther ) {
+      $argsObj->dialogName = 'kw_dialog';
+      $argsObj->bodyOnLoad = "dialog_onLoad($argsObj->dialogName)";
+      $argsObj->bodyOnUnload = "dialog_onUnload($args->dialogName)";  
+    }    
+  }
+}
+

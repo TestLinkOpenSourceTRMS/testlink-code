@@ -7,6 +7,7 @@
  *
  * View existing and create a new req. specification.
  *
+ *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -19,7 +20,7 @@ $req_cfg = config_get('req_cfg');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = init_args($db);
 $commandMgr = new reqSpecCommands($db,$args->tproject_id);
 
 $gui = initialize_gui($db,$args,$req_cfg,$commandMgr);
@@ -30,8 +31,7 @@ $commandMgr->setAuditContext($auditContext);
 
 $pFn = $args->doAction;
 $op = null;
-if(method_exists($commandMgr,$pFn))
-{
+if (method_exists($commandMgr,$pFn)) {
   $op = $commandMgr->$pFn($args,$_REQUEST);
 }
 
@@ -42,9 +42,10 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
  * 
  *
  */
-function init_args()
+function init_args(&$dbH)
 {
-  $args = new stdClass();
+
+  list($args,$env) = initContext();
 
   $iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
                    "req_spec_id" => array(tlInputParameter::INT_N),
@@ -65,15 +66,14 @@ function init_args()
                    "file_id" => array(tlInputParameter::INT_N),
                    "fileTitle" => array(tlInputParameter::STRING_N,0,100));
 
-  $args = new stdClass();
   R_PARAMS($iParams,$args);
 
   // i guess due to required revison log it is necessary to strip slashes
   // after R_PARAMS call - at least this fixed the problem
   $_REQUEST=strings_stripSlashes($_REQUEST);
   
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-  $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
+  $args->tproject_name = testproject::getName($dbH,$args->tproject_id);
+  
   $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
   $args->basehref = $_SESSION['basehref'];
   
@@ -87,10 +87,8 @@ function init_args()
   // Process buttons
   $args->op = null;
   $btnSet = array('toogleMon','startMon','stopMon');
-  foreach( $btnSet as $btn )
-  {
-    if( isset($_REQUEST[$btn]) )
-    {
+  foreach( $btnSet as $btn ) {
+    if( isset($_REQUEST[$btn]) ) {
       $args->op = $btn;
       break;
     }  
@@ -188,16 +186,14 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
       $renderType = 'template';
       $key2loop = get_object_vars($opObj);
             
-      if($opObj->action_status_ok == false)
-      {
+      if ($opObj->action_status_ok == false) {
         // Remember that scope normally is a WebRichEditor, and that
         // we have already processed WebRichEditor
         // Need to understand if remove of scope key can be done always
         // no matter action_status_ok
         unset($key2loop['scope']);
       }
-      foreach($key2loop as $key => $value)
-      {
+      foreach($key2loop as $key => $value) {
         $guiObj->$key = $value;
       }
       
@@ -206,10 +202,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
       $tpd = isset($key2loop['template_dir']) ? $opObj->template_dir : $templateCfg->template_dir;
 
       $pos = strpos($tpl, '.php');
-      if ($pos === false) {
+      if($pos === false) {
         $tpl = $tpd . $tpl;
       } else {
-        $renderType = 'redirect'; 
+        $renderType = 'redirect';  
+
         if (null != $guiObj->uploadOp && $guiObj->uploadOp->statusOK == false) {
           $tpl .= "&uploadOPStatusCode=" . $guiObj->uploadOp->statusCode;
         }
@@ -217,8 +214,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     break;
   }
     
-  switch($renderType)
-  {
+  switch ($renderType) {
     case 'template':
       $smartyObj->assign('mgt_view_events',has_rights($db,"mgt_view_events"));
       $smartyObj->assign('gui',$guiObj);
@@ -244,13 +240,16 @@ function initialize_gui(&$dbHandler, &$argsObj, &$req_cfg, &$commandMgr)
 {
   $gui = $commandMgr->initGuiBean();
   $gui->parentID = $argsObj->parentID;
+  $gui->tproject_id = $argsObj->tproject_id;
+  $gui->tproject_name = $argsObj->tproject_name;
+  $gui->main_descr = $gui->tproject_name;
+
   $gui->user_feedback = null;
-  $gui->main_descr = null;
   $gui->action_descr = null;
   $gui->refreshTree = 0;
   $gui->external_req_management = ($req_cfg->external_req_management == ENABLED) ? 1 : 0;
-  $gui->grants = new stdClass();
-  $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
+  $gui->userGrants = new stdClass();
+  $gui->userGrants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
 
   return $gui;
 }

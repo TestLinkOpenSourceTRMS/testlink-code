@@ -6,8 +6,6 @@
 *
 * This report shows Test Cases which have not been executed for any Platform.
 *
-* @internal revisions
-* @since 1.9.4
 *
 */
 
@@ -19,9 +17,9 @@ require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = init_args($db);
 
-$gui = new stdClass();
+list($add2args,$gui) = initUserEnv($db,$args);
 $gui->title = lang_get('title_test_report_not_run_on_any_platform');
 $gui->printDate = '';
 $gui->matrixData = array();
@@ -113,8 +111,7 @@ if ($lastResultMap != null && $platforms_active)
 					$rowArray[$cols['tsuite']] = $suiteName;
 					$rowArray[$cols['link']] = $args->format != FORMAT_HTML ? $mail_link : $tcLink;
 
-					if($_SESSION['testprojectOptions']->testPriorityEnabled)
-					{
+					if($gui->tprojOpt->testPriorityEnabled) {
 						$dummy = $tplan_mgr->getPriority($args->tplan_id, array('tcversion_id' => $tcase['tcversion_id']));
 						$rowArray[$cols['priority']] = $dummy[$tcase['tcversion_id']]['priority_level'];
 					}
@@ -152,9 +149,8 @@ if ($lastResultMap != null && $platforms_active)
 }
 
 // create and show the table only if we have data to display
-if ($gui->number_of_not_run_testcases) 
-{
-	$gui->tableSet[] = buildMatrix($gui->matrix, $args->format);
+if ($gui->number_of_not_run_testcases)  {
+	$gui->tableSet[] = buildMatrix($gui->matrix, $args->format, $gui);
 }
 
 if ($platforms_active) 
@@ -177,17 +173,18 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
  * 
  *
  */
-function init_args()
+function init_args(&$dbH)
 {
-	$iParams = array("format" => array(tlInputParameter::INT_N),
-		             "tplan_id" => array(tlInputParameter::INT_N));
+	list($args,$env) = initContext();
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbH);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
 
-	$args = new stdClass();
-	R_PARAMS($iParams,$args);
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->basehref = $_SESSION['basehref'];
 	
-    return $args;
+  return $args;
 }
 
 /**
@@ -208,25 +205,22 @@ function checkRights(&$db,&$user)
  *
  *
  */
-function buildMatrix($dataSet, $format)
+function buildMatrix($dataSet, $format, $gui)
 {
-	$columns = array(array('title_key' => 'title_test_suite_name', 'width' => 100),
-	                 array('title_key' => 'title_test_case_title', 'width' => 150));
+	$columns = array(
+		 array('title_key' => 'title_test_suite_name', 'width' => 100),
+	   array('title_key' => 'title_test_case_title', 'width' => 150));
 
-	if($_SESSION['testprojectOptions']->testPriorityEnabled)
-	{
+	if($gui->tprojOpt->testPriorityEnabled) {
 		$columns[] = array('title_key' => 'priority', 'type' => 'priority', 'width' => 40);
 	}
 
-	if ($format == FORMAT_HTML) 
-	{
-		
+	if ($format == FORMAT_HTML)  {
 		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_tc');
 		$matrix->setGroupByColumnName(lang_get('title_test_suite_name'));
 		$matrix->sortDirection = 'DESC';
 
-		if($_SESSION['testprojectOptions']->testPriorityEnabled)
-		{
+		if($gui->tprojOpt->testPriorityEnabled) {
 			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer', 'filter' => 'Priority'));
 			//sort by priority
 			$matrix->setSortByColumnName(lang_get('priority'));
@@ -240,9 +234,7 @@ function buildMatrix($dataSet, $format)
 		$matrix->toolbarExpandCollapseGroupsButton = true;
 		$matrix->toolbarShowAllColumnsButton = true;
 
-	} 
-	else 
-	{
+	} else {
 		$matrix = new tlHTMLTable($columns, $dataSet, 'tl_table_results_tc');
 	}
 	return $matrix;

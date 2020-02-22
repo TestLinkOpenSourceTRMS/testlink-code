@@ -5,8 +5,6 @@
  *  @filesource   searchMgmt.php
  *  @author       Francisco Mancardi
  * 
- *  @internal revision
- *  @since 1.9.16
  */
 
 require_once('../../config.inc.php');
@@ -21,6 +19,7 @@ processSearch($db);
 function init_args(&$dbHandler)
 {
   $_REQUEST=strings_stripSlashes($_REQUEST);
+  list($args,$env) = initContext();
 
   $iParams = array("target" => array(tlInputParameter::STRING_N,0,200),
                    "caller" => array(tlInputParameter::STRING_N,0,20));               
@@ -29,12 +28,11 @@ function init_args(&$dbHandler)
   R_PARAMS($iParams,$args);
 
   $tprojectMgr = new testproject($dbHandler);
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+
   $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
   $args->form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 
-  if(is_null($args->tcaseTestProject))
-  {  
+  if (is_null($args->tcaseTestProject)) {  
     $args->tcaseTestProject = $tprojectMgr->get_by_id($args->tproject_id);
   }
   return $args;

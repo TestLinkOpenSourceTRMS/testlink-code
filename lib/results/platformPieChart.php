@@ -6,11 +6,9 @@
  * @filesource  platformPieChart.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2005-2013, TestLink community
+ * @copyright   2005-2019, TestLink community
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.10
  *
 **/
 require_once('../../config.inc.php');
@@ -21,6 +19,7 @@ include("../../third_party/pchart/pChart/pChart.class");
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['platformPieChart'];
 
+testlinkInitPage($db);
 $args = init_args($db);
 $metricsMgr = new tlTestPlanMetrics($db);
 $dummy = $metricsMgr->getStatusTotalsByPlatformForRender($args->tplan_id);
@@ -108,11 +107,6 @@ function checkRights(&$db,&$user)
  */
 function init_args(&$dbHandler)
 {
-  //  $_REQUEST = strings_stripSlashes($_REQUEST);
-  //  $args = new stdClass();
-  //  $args->tplan_id = $_REQUEST['tplan_id'];
-  //  $args->tproject_id = $_SESSION['testprojectID'];
-  //  $args->platform_id = $_REQUEST['platform_id'];
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,0,64),
                    "platform_id" => array(tlInputParameter::INT_N), 
                    "tproject_id" => array(tlInputParameter::INT_N), 
@@ -120,6 +114,12 @@ function init_args(&$dbHandler)
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
+
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
 
   if( !is_null($args->apikey) )
   {
@@ -146,7 +146,6 @@ function init_args(&$dbHandler)
   else
   {
     testlinkInitPage($dbHandler,true,false,"checkRights");  
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
   
 

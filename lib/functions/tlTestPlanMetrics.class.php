@@ -1228,6 +1228,7 @@ class tlTestPlanMetrics extends testplan
       case 'keyword':    
         $metrics = $this->getExecCountersByKeywordExecStatus($id,$filters,$opt);
         $setKey = 'keywords';
+        $nameAccess = $setKey;
         $byPlatform = isset($opt['groupByPlatform']) && 
                       $opt['groupByPlatform'];
       break;
@@ -1236,11 +1237,13 @@ class tlTestPlanMetrics extends testplan
         $myOpt = array_merge(array('getPlatformSet' => true),(array)$opt);
         $metrics = $this->getExecCountersByPlatformExecStatus($id,$filters,$myOpt);
         $setKey = 'platforms';
+        $nameAccess = $setKey;
       break;
       
       case 'priority_level':    
         $metrics = $this->getExecCountersByPriorityExecStatus($id,$filters,$opt);
         $setKey = 'priority_levels';
+        $nameAccess = $setKey;
         $byPlatform = isset($opt['groupByPlatform']) && 
                       $opt['groupByPlatform'];
       break;
@@ -1248,6 +1251,7 @@ class tlTestPlanMetrics extends testplan
       case 'tsuite':    
         $metrics = $this->getExecCountersByTestSuiteExecStatus($id,$filters,$opt);
         $setKey = 'tsuites';
+        $nameAccess = 'name';
         $returnArray = true;
         $byPlatform = isset($opt['groupByPlatform']) && 
                       $opt['groupByPlatform'];
@@ -1256,15 +1260,18 @@ class tlTestPlanMetrics extends testplan
 
     if( !is_null($metrics) && !is_null($metrics[$setKey]) > 0) {
       $renderObj = new stdClass();
+      $renderObj->infoAnalysisBy = $itemType;
+      $renderObj->infoIndexedBy = 'unknown';
       $renderObj->info = array(); 
 
       if( $byPlatform == false ) { 
+        $renderObj->infoIndexedBy = 'treeItem';
         $itemList = array_keys($metrics[$setKey]);      
         foreach($itemList as $itemID) {
           if( isset($metrics['with_tester'][$itemID]) ) {
             $totalRun = 0;
             $renderObj->info[$itemID]['type'] = $itemType;
-            $renderObj->info[$itemID]['name'] = $metrics[$setKey][$itemID];   
+            $renderObj->info[$itemID]['name'] = $metrics[$nameAccess][$itemID];
             $renderObj->info[$itemID]['total_tc'] = $metrics['total'][$itemID]['qty'];   
             $renderObj->info[$itemID]['details'] = array();
             
@@ -1290,6 +1297,8 @@ class tlTestPlanMetrics extends testplan
         }
       } else {
         // mainKey is Platform ID
+        $renderObj->infoIndexedBy = 'platform';
+
         $platList = array_keys($metrics['with_tester']); 
         $mex = &$metrics['with_tester']; 
         foreach($platList as $platID) {
@@ -1298,7 +1307,8 @@ class tlTestPlanMetrics extends testplan
             if( isset($mex[$platID]) ) {
               $totalRun = 0;
               $renderObj->info[$platID][$itemID]['type'] = $itemType;
-              $renderObj->info[$platID][$itemID]['name'] = $metrics[$setKey][$itemID];   
+              $renderObj->info[$platID][$itemID]['name'] = 
+                $metrics[$nameAccess][$itemID];   
               $renderObj->info[$platID][$itemID]['total_tc'] = $metrics['total'][$platID][$itemID]['qty'];   
               $renderObj->info[$platID][$itemID]['details'] = array();
             
@@ -1346,10 +1356,6 @@ class tlTestPlanMetrics extends testplan
 
   /**
    *
-   * @internal revisions
-   *
-   * @since 1.9.4
-   * 20120429 - franciscom - 
    */
   function getStatusTotalsByTestSuiteForRender($id,$filters=null,$opt=null)
   {
@@ -1360,14 +1366,29 @@ class tlTestPlanMetrics extends testplan
 
   /**
    *
-   * @internal revisions
+   * getStatusTotalsByTopLevelTestSuiteForRender
    *
-   * @since 1.9.4
    */
   function getStatusTotalsByTopLevelTestSuiteForRender($id,$filters=null,$opt=null)
   {
-
-    list($rx,$staircase) = $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
+    /* staircase
+      array(2) {
+        // ELEMENT #1
+        [33934]=>  (Test Suite -> Elenco agenda)
+        array(1) {
+          [0]=> string(5) "33933" (Test Project - Academy)
+        }
+        
+        // ELEMENT #2
+        [49238]=> (Test Suite -> SOTTO Elenco agenda)
+         array(2) {
+           [0]=> string(5) "33933" (Test Project - Academy)
+           [1]=> string(5) "33934" (Test Suite -> Elenco agenda)
+        }
+       }
+      */
+    list($rx,$staircase) = 
+      $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
 
     // ??? $key2loop = array_keys($rx->info);
     $template = array('type' => 'tsuite', 'name' => '','total_tc' => 0,
@@ -1388,21 +1409,37 @@ class tlTestPlanMetrics extends testplan
     $wp = isset($opt['groupByPlatform']) && $opt['groupByPlatform'];
 
     if( $wp ) {
+      $tsNameCache = array();
       $plat2loop = array_keys($rx->info);
       foreach($key2loop as $tsuite_id) {
-        // (count() == 1) => is a TOP LEVEL SUITE, 
-        // only element contains Root node, is useless for this algorithm
-        // 
-        
-        if( count($staircase[$tsuite_id]) > 1) {
-          // element at position 1 is a TOP LEVEL SUITE
-          //$topSuiteID = &$staircase[$tsuite_id][1];
-          $topSuiteID = $staircase[$tsuite_id][1];
-          $initName = false;
-        } else {
-          $topSuiteID = $tsuite_id;
-          $initName = true;
-        }     
+        /* staircase
+          array(2) {
+            // ELEMENT #1
+            [33934]=>  (Test Suite -> Elenco agenda)
+            array(1) {
+              [0]=> string(5) "33933" (Test Project - Academy)
+            }
+            
+            // ELEMENT #2
+            [49238]=> (Test Suite -> SOTTO Elenco agenda)
+             array(2) {
+               [0]=> string(5) "33933" (Test Project - Academy)
+               [1]=> string(5) "33934" (Test Suite -> Elenco agenda)
+            }
+           }
+          */
+
+          $tsuiteDepth = count($staircase[$tsuite_id]);
+
+          if( $tsuiteDepth > 1) {
+            // element at position 1 on starcaise 
+            // is a TOP LEVEL SUITE
+            $topSuiteID = $staircase[$tsuite_id][1];
+            $initName = false;
+          } else {
+            $topSuiteID = $tsuite_id;
+            $initName = true;
+          }     
     
         // Over Platform
         foreach( $plat2loop as $platId ) {
@@ -1412,11 +1449,14 @@ class tlTestPlanMetrics extends testplan
             $initName = true;
           }              
 
-          if( $initName ) {
-            $dummy = $this->tree_manager->get_node_hierarchy_info($topSuiteID);
+          if ($initName) {
+            if (!isset($tsNameCache[$topSuiteID])) {
+              $dummy = $this->tree_manager->get_node_hierarchy_info($topSuiteID);
+              $tsNameCache[$topSuiteID] = $dummy['name'];
+              unset($dummy);
+            }
             $renderObj->info[$platId][$topSuiteID]['name'] = 
-              $dummy['name'];
-            unset($dummy);
+              $tsNameCache[$topSuiteID];
           }  
           
           // Loop to get executions counters
@@ -1506,20 +1546,12 @@ class tlTestPlanMetrics extends testplan
       }      
     }
 
-
-    unset($topNameCache);
-    unset($rx);
-    unset($staircase);
-    unset($template);
-    unset($key2loop);
-    unset($execQty);
-
     return $renderObj;
   }
 
   /** 
    *    
-   *    
+   * @used-by getStatusTotalsByItemForRender()   
    *    
    *    
    */    
@@ -1637,6 +1669,7 @@ class tlTestPlanMetrics extends testplan
       $exec['tsuites'][$exec['tsuites_full'][$idx]['id']] = $dx['flat'][$exec['tsuites_full'][$idx]['id']];
     }
     $exec['staircase'] = $dx['staircase'];
+    $exec['name'] = $dx['name'];
     
     unset($dx);
     unset($keySet);
@@ -1802,14 +1835,10 @@ class tlTestPlanMetrics extends testplan
       $bi->joinAdd = " AND E.build_id = UA.build_id ";
       $bi->whereAddExec = " AND {$bi->source}.build_id IN ({$bi->inClause}) "; 
       $bi->whereAddNotRun = $bi->whereAddExec; 
-    }            
-    else
-    {
+    } else {
       $sql['getAssignedFeatures'] = '';
       $bi->source = "E";
       
-      // TICKET 5353
-      // $bi->joinAdd = "";
       $bi->joinAdd = " AND E.build_id IN ({$bi->inClause}) ";
       
       // Why ?
@@ -1830,8 +1859,7 @@ class tlTestPlanMetrics extends testplan
     $sql['getUserAssignment']['not_run'] = "";
     $sql['getUserAssignment']['exec'] = "";
 
-    if( $my['opt']['getUserAssignment'] )
-    {
+    if ($my['opt']['getUserAssignment']) {
       $sql['getUserAssignment']['not_run'] = 
         " LEFT JOIN {$this->tables['user_assignments']} UA " .
         " ON UA.feature_id = TPTCV.id " .
@@ -1917,19 +1945,16 @@ class tlTestPlanMetrics extends testplan
   function helperBuildSQLExecCounters($id, $filters=null, $opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    try
-    {
+    try {
       list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
-    }
-    catch(Exception $e)
-    {
+    } catch(Exception $e) {
       return null;
     }
 
 
     $safe_id = intval($id);  
     $platformSet = null;
-    if( $my['opt']['getPlatformSet'] ) {
+    if ($my['opt']['getPlatformSet']) {
       $getOpt = array('outputFormat' => 'mapAccessByID', 'outputDetails' => 'name', 'addIfNull' => true);
       $platformSet = $this->getPlatforms($safe_id,$getOpt);
     }
@@ -2181,7 +2206,6 @@ class tlTestPlanMetrics extends testplan
               " /* Get REALLY NOT RUN => BOTH LEBBP.id AND E.id NULL  */ " .
               " AND E.id IS NULL AND LEBBP.id IS NULL";
     
-    //echo 'QD - <br>' . $union['not_run'] . '<br>';
     return array($my,$builds,$sqlStm,$union);
   }
 
@@ -2406,7 +2430,7 @@ class tlTestPlanMetrics extends testplan
         " AND E.id IS NULL " .
         " AND B.id IN ({$builds->inClause}) "; 
 
-        $dx = $this->db->get_recordset($sql); 
+        $dx = (array)$this->db->get_recordset($sql); 
 
         $l2do = count($dx);
         $loop2do = count($dummy);
@@ -2693,7 +2717,6 @@ class tlTestPlanMetrics extends testplan
         
     $sql = $sex . $where;
 
-    // echo $sql;
     $rs = $this->db->get_recordset($sql);           
     return $rs;
   }
@@ -2778,10 +2801,7 @@ class tlTestPlanMetrics extends testplan
 
     $sql =  " /* {$debugMsg} UNION WITH ALL CLAUSE */ " .
             " {$union['exec']} UNION ALL {$union['not_run']} ";
-
-    //echo $sql;
     $rs = $this->db->get_recordset($sql);              
-    // new dBug($rs);
 
     $ltx = null;
     if(!is_null($rs))

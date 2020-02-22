@@ -7,7 +7,7 @@
  *
  * @filesource  keywordsImport.php
  * @package     TestLink
- * @copyright   2005,2015 TestLink community 
+ * @copyright   2005,2019 TestLink community 
  * @link        http://www.testlink.org/
  *
  */
@@ -20,7 +20,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $args = init_args($db);
-$gui = initializeGui($args);
+$gui = initializeGui($db,$args);
 
 if(!$gui->msg && $args->UploadFile)
 {
@@ -40,16 +40,12 @@ if(!$gui->msg && $args->UploadFile)
           break;
       }
  
-      if($pfn)
-      {
+      if ($pfn) {
         $tproject = new testproject($db);
         $result = $tproject->$pfn($args->tproject_id,$args->dest);
-        if ($result != tl::OK)
-        {  
+        if ($result != tl::OK) {  
           $gui->msg = lang_get('wrong_keywords_file'); 
-        }
-        else
-        {
+        } else {
           header("Location: keywordsView.php?tproject_id={$gui->tproject_id}");
           exit();   
         }
@@ -81,8 +77,7 @@ function init_args(&$dbHandler)
   $args = new stdClass();
   R_PARAMS($ipcfg,$args);
 
-  if( $args->tproject_id <= 0 )
-  {
+  if( $args->tproject_id <= 0 ) {
     throw new Exception(" Error Invalid Test Project ID", 1);
   }
 
@@ -97,9 +92,8 @@ function init_args(&$dbHandler)
   $check->mode = 'and';
   checkAccess($dbHandler,$user,$env,$check);
  
-  $tproj_mgr = new testproject($dbHandler);
-  $dm = $tproj_mgr->get_by_id($args->tproject_id,array('output' => 'name'));
-  $args->tproject_name = $dm['name'];
+  $args->tproject_name = 
+    testproject::getName($dbHandler,$args->tproject_id);
 
   $args->UploadFile = ($args->UploadFile != "") ? 1 : 0; 
   $args->fInfo = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
@@ -112,9 +106,9 @@ function init_args(&$dbHandler)
 /**
  *
  */
-function initializeGui(&$argsObj)
-{
-  $gui = new stdClass();
+function initializeGui(&$dbH,&$argsObj) {
+  list($add2args,$gui) = initUserEnv($dbH,$argsObj);
+ 
   $gui->tproject_id = $argsObj->tproject_id;
   $gui->tproject_name = $argsObj->tproject_name;
 
@@ -131,9 +125,6 @@ function initializeGui(&$argsObj)
   $gui->fileSizeLimitMsg = 
     sprintf(lang_get('max_file_size_is'), $fslimit/1024 . ' KB ');
   $gui->importLimit = $fslimit;
-
-
-
 
   return $gui;
 }

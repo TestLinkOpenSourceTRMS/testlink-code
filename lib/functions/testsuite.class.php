@@ -491,6 +491,11 @@ class testsuite extends tlObjectWithAttachments
     $my['options'] = array('show_mode' => 'readwrite');   
     $my['options'] = array_merge($my['options'], (array)$options);
 
+    $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
+    if($my['options']['show_mode'] == 'readonly') {       
+      $gui->modify_tc_rights = 'no';
+    }
+      
     if($sqlResult) { 
       $gui->sqlResult = $sqlResult;
       $gui->sqlAction = $action;
@@ -501,14 +506,6 @@ class testsuite extends tlObjectWithAttachments
     if( !property_exists($gui,'tproject_id') ) {
       $gui->tproject_id = $this->getTestProjectFromTestSuite($tsuite_id,null);
     }
-
-    $gui->modify_tc_rights = 
-      has_rights($this->db,"mgt_modify_tc",$gui->tproject_id);
-      
-    if($my['options']['show_mode'] == 'readonly') {       
-      $gui->modify_tc_rights = 'no';
-    }
-
 
     $gui->assign_keywords = 0;
     if( property_exists($gui, 'user') ) {
@@ -1805,10 +1802,16 @@ class testsuite extends tlObjectWithAttachments
    * 
    *
    */
-  function buildDirectWebLink($base_href,$id,$tproject_id) {
+  function buildDirectWebLink($context) {
     $tproject_mgr = new testproject($this->db);
+
+    $tproject_id = intval($context->tproject_id);
     $prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
-    $dl = $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . '&item=testsuite&id=' . $id;
+    $dl = $context->basehref 
+          . 'linkto.php?tprojectPrefix=' 
+          . urlencode($prefix) 
+          . '&item=testsuite&id=' . intval($context->id);
+
     return $dl;
   }
 

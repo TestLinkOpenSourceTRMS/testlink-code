@@ -13,18 +13,17 @@ require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 
-// This way can be called without _SESSION, this is useful for reports
+// This way can be called without _SESSION, 
+// this is useful for reports when using access without login
 testlinkInitPage($db,false,true);
 
 $args = init_args($db);
-if ($args->id)
-{
-  $attachmentRepository = tlAttachmentRepository::create($db);
-  $attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
+if ($args->id) {
+  $docRepo = tlAttachmentRepository::create($db);
+  $docInfo = $docRepo->getAttachmentInfo($args->id);
 
-  if ($attachmentInfo) {
-    switch ($args->opmode) 
-    {
+  if ($docInfo) {
+    switch ($args->opmode)  {
       case 'API':
         // want to check if apikey provided is right for attachment context
         // - test project api key:
@@ -38,25 +37,21 @@ if ($args->id)
         //   
         // What kind of attachments I've got ?
         $doIt = false;
-        $attContext = $attachmentInfo['fk_table'];
-        switch($attContext)
-        {
+        $attContext = $docInfo['fk_table'];
+        switch ($attContext) {
           case 'executions':
             // check apikey
             // 1. has to be a test plan key
             // 2. execution must belong to the test plan.
             $item = getEntityByAPIKey($db,$args->apikey,'testplan');
-            if( !is_null($item) )
-            {
+            if (!is_null($item)) {
               $tables = tlObjectWithDB::getDBTables(array('executions'));
               $sql = "SELECT testplan_id FROM {$tables['executions']} " .
-                     "WHERE id = " . intval($attachmentInfo['fk_id']);
+                     "WHERE id = " . intval($docInfo['fk_id']);
 
               $rs = $db->get_recordset($sql);
-              if(!is_null($rs))
-              {
-                if($rs['0']['testplan_id'] == $item['id'])
-                {
+              if (!is_null($rs)) {
+                if($rs['0']['testplan_id'] == $item['id']) {
                   // GOOD !
                   $doIt = true;
                 }  
@@ -68,49 +63,147 @@ if ($args->id)
       
       case 'GUI':
       default:   
-        $doIt = true;
+        // Create _SESSION  to be able to check access
+        // 
+        $doIt = false;
+        doSessionStart();
+        checkSessionValid($db);
+        
+        $user = $_SESSION['currentUser'];
+        $fk_table = $docInfo['fk_table'];
+        $attContext = $fk_table;
+        $attParent = intval($docInfo['fk_id']);
+        if (DB_TABLE_PREFIX != '') {
+          $attContext = str_replace(DB_TABLE_PREFIX, '', $attContext);
+        }
+
+        $tbl = tlObject::getDBTables('testplans','tesuites','builds');
+        switch ($attContext) {
+          case 'executions':
+            $sql = "SELECT E.testplan_id, TPL.testproject_id
+                    FROM executions E 
+                    JOIN {$tbl['testplans']} TPL 
+                    ON TPL.id = E.testplan_id
+                    WHERE E.id = {$attParent}"; 
+            $rs = $db->get_recordset($sql);
+            // $er = $user->getEffectiveRole($db,$rs[0]['testproject_id'],
+            //                              $rs[0]['testplan_id']);       
+          break;
+
+          case 'tcversions':
+            $tree = new tree($db);
+            $ctx = array('tproject_id' => null,'tplan_id' => null,
+                         'checkPublicPrivateAttr' => true);
+            $ctx['tproject_id'] = $tree->getTreeRoot($attParent);
+            $ck = array('mgt_view_tc','mgt_modify_tc');
+          break;
+
+          case 'execution_steps':
+            $sql = "SELECT E.testplan_id, TPL.testproject_id
+                    FROM executions E 
+                    JOIN execution_steps ES
+                    ON E.id = ES.execution_id
+                    JOIN {$tbl['testplans']} TPL 
+                    ON TPL.id = E.testplan_id
+                    WHERE E.id = {$attParent}"; 
+            $rs = $db->get_recordset($sql);
+            $rs = $rs[0];
+            $ctx = array('tproject_id' => $rs[0]['testproject_id'],
+                         'tplan_id' => $rs[0]['testplan_id'],
+                         'checkPublicPrivateAttr' => true);
+            $ck = array('testplan_execute','exec_ro_access',
+                        'exec_testcases_assigned_to_me');
+          break;
+
+          case 'nodes_hierarchy':
+            $tree = new tree($db);
+            $ni = $tree->get_node_hierarchy_info($attParent);
+            $nt = array_flip($tree->get_available_node_types());
+            $nv = $nt[$ni['node_type_id']]; 
+
+            $ck = array('testplan_execute','exec_ro_access',
+                        'exec_testcases_assigned_to_me');
+
+            
+            switch ($nv) {
+              case 'testsuite':
+                $tree = new tree($db);
+                $ctx = array('tproject_id' => $tree->getTreeRoot($attParent),
+                             'tplan_id' => null,
+                             'checkPublicPrivateAttr' => true);
+                $ck = array('mgt_view_tc','mgt_modify_tc');
+              break;
+
+              case 'build':
+                $sql = "SELECT B.testplan_id, TPL.testproject_id
+                        FROM {$tlb['builds']} B 
+                        JOIN {$tbl['testplans']} TPL 
+                        ON TPL.id = B.testplan_id
+                        WHERE B.id = {$attParent}"; 
+                $rs = $db->get_recordset($sql);
+                $rs = $rs[0];
+                $ctx = array('tproject_id' => $rs[0]['testproject_id'],
+                             'tplan_id' => $rs[0]['testplan_id'],
+                             'checkPublicPrivateAttr' => true);
+                $ck = array('testplan_execute','exec_ro_access',
+                            'exec_testcases_assigned_to_me');
+              break;
+
+              case 'testplan':
+                $sql = "SELECT TPL.id AS testplan_id, TPL.testproject_id
+                        FROM {$tbl['testplans']} TPL 
+                        WHERE TPL.id = {$attParent}"; 
+                $rs = $db->get_recordset($sql);
+                $rs = $rs[0];
+                $ctx = array('tproject_id' => $rs[0]['testproject_id'],
+                             'tplan_id' => $rs[0]['testplan_id'],
+                             'checkPublicPrivateAttr' => true);
+                $ck = array('testplan_execute','exec_ro_access',
+                            'exec_testcases_assigned_to_me');
+              break;
+            } 
+          break;
+        }
+
+        // Execute the checks
+        foreach ($ck as $grantToCheck) {
+          $doIt = $user->hasRightWrap($db,$grantToCheck,$ctx);
+          if ($doIt) {
+             break;
+          }
+        }
+
+        //file_put_contents("/var/testlink/log.log", json_encode($user->dbID));
       break;
     }
 
 
-    if( $doIt )
-    {
+    if( $doIt ) {
       $content = '';
       $getContent = true;
-      if( $args->opmode !== 'API' && $args->skipCheck !== 0 && $args->skipCheck !== false)
-      {
-        if( $args->skipCheck != hash('sha256',$attachmentInfo['file_name']) )
-        {
+      if( $args->opmode !== 'API' && $args->skipCheck !== 0 
+          && $args->skipCheck !== false) {
+        if( $args->skipCheck != hash('sha256',$docInfo['file_name']) ) {
           $getContent = false;
         }  
       }  
 
-      if($getContent)
-      {
-        $content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
+      if ($getContent) {
+        $content = $docRepo->getAttachmentContent($args->id,$docInfo);
       }  
 
-      if ($content != "" )
-      {
+      if ($content != "" ) {
         @ob_end_clean();
         header('Pragma: public');
         header("Cache-Control: ");
-        if (!(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" && preg_match("/MSIE/",$_SERVER["HTTP_USER_AGENT"])))
-        { 
+        if (!(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" && preg_match("/MSIE/",$_SERVER["HTTP_USER_AGENT"]))) { 
           header('Pragma: no-cache');
         }
-        header('Content-Type: '.$attachmentInfo['file_type']);
-        header('Content-Length: '.$attachmentInfo['file_size']);
-        header("Content-Disposition: inline; filename=\"{$attachmentInfo['file_name']}\"");
+        header('Content-Type: '.$docInfo['file_type']);
+        header('Content-Length: '.$docInfo['file_size']);
+        header("Content-Disposition: inline; filename=\"{$docInfo['file_name']}\"");
         header("Content-Description: Download Data");
-        global $g_repositoryType;
-        if($g_repositoryType == TL_REPOSITORY_TYPE_DB)
-        {
-          echo base64_decode($content);
-        }
-        else {
-          echo $content;
-        }
+        echo $content;
         exit();
       }      
     }  
@@ -122,7 +215,7 @@ $smarty->assign('gui',$args);
 $smarty->display('attachment404.tpl');
 
 /**
- * @return object returns the arguments for the page
+ * 
  */
 function init_args(&$dbHandler)
 {
@@ -136,19 +229,16 @@ function init_args(&$dbHandler)
 
   $args->light = 'green';
   $args->opmode = 'GUI';
-  if( is_null($args->skipCheck) || $args->skipCheck === 0 )
-  {
+  if( is_null($args->skipCheck) || $args->skipCheck === 0 ) {
     $args->skipCheck = false;
   }  
 
-  // var_dump($args->skipCheck);die();
   // using apikey lenght to understand apikey type
   // 32 => user api key
   // other => test project or test plan
   $args->apikey = trim($args->apikey);
   $apikeyLenght = strlen($args->apikey);
-  if($apikeyLenght > 0)
-  {
+  if ($apikeyLenght > 0) {
     $args->opmode = 'API';
     $args->skipCheck = true;
   } 
@@ -163,4 +253,17 @@ function init_args(&$dbHandler)
 function checkRights(&$db,&$user)
 {
   return (config_get("attachments")->enabled);
+}
+
+/**
+ *
+ */
+function console_log($output, $with_script_tags = true) {
+  $js_code = 'console.log(' . 
+             json_encode($output, JSON_HEX_TAG) . ');';
+
+  if ($with_script_tags) {
+    $js_code = '<script>' . $js_code . '</script>';
+  }
+  echo $js_code;
 }

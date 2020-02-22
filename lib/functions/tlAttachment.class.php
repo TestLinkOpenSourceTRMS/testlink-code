@@ -303,7 +303,7 @@ class tlAttachment extends tlDBObject
       is_null($this->destFPath) ? 'NULL' : "'" . $db->prepare_string($this->destFPath) . "'";
 
     // for FS-repository the contents are null
-    $fContents = is_null($this->fContents) ? 'NULL' : "'" . base64_encode($this->fContents) . "'";
+    $fContents = is_null($this->fContents) ? 'NULL' : "'" . $db->prepare_string($this->fContents) . "'";
     
     $query = "INSERT INTO {$this->tables['attachments']} 
              (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title) 

@@ -33,6 +33,7 @@
  */
 $ADODB_COUNTRECS = TRUE;
 
+require_once( 'const.inc.php' );
 require_once( dirname(__FILE__). '/logging.inc.php' );
 
 /**
@@ -87,8 +88,8 @@ class database {
     $fetch_mode = ADODB_FETCH_ASSOC;
 
     $this->dbType = $db_type;
-    if( $this->dbType == 'mysql' && version_compare(phpversion(), "5.5.0", ">=") )
-    {
+    if( $this->dbType == 'mysql' && 
+        version_compare(phpversion(), "5.5.0", ">=") ) {
       $this->dbType = 'mysqli';
     }
     $adodb_driver = $this->dbType;
@@ -306,8 +307,7 @@ class database {
   function db_is_pgsql() 
   {
     $status_ok = false;
-    switch( $this->dbType ) 
-    {
+    switch( $this->dbType ) {
       case 'postgres':
       case 'postgres7':
       case 'pgsql':
@@ -325,8 +325,7 @@ class database {
   function db_is_oracle() 
   {
     $status_ok = false;
-    switch( $this->dbType ) 
-    {
+    switch( $this->dbType ) {
       case 'oci8':
       case 'oci8po':
         $status_ok = true;
@@ -1054,5 +1053,65 @@ class database {
     return $items;
   }
 
+
+  /**
+   * 
+   */
+  function db_get_dbms_version() {
+    switch( $this->dbType ) {
+      case 'mysqli':
+      case 'mysql':
+        $sql = 'SELECT version() AS version';
+      break;
+
+      case 'postgres':
+      case 'postgres7':
+      case 'pgsql':
+        $sql = 'SELECT version() AS version';
+      break;
+
+      case 'mssqlnative':
+      case 'odbc_mssql':
+        $sql = "SELECT SERVERPROPERTY('ProductVersion') AS version";
+      break;  
+    }
+
+    $rs = $this->get_recordset($sql);
+    return $rs[0]['version'];
+  }
+
+  /**
+   * 
+   */
+  function db_supports_cte() {
+
+    $dbmsVersion = $this->db_get_dbms_version();
+    $vpi = explode('.',$dbmsVersion);
+    $major = $vpi[0];
+    $minor = $vpi[1];
+    $micro = isset($vpi[2]) ? $vpi[2] : 0;
+    
+    switch( $this->dbType ) {
+      case 'mysqli':
+      case 'mysql':
+        if (stripos($dbmsVersion, 'MariaDB') !== FALSE) {
+          return ($major >= 10 && $minor >= 2 && $micro >= 2); 
+        } else {
+          return ($major >= 8);
+        } 
+      break;
+
+      case 'postgres':
+      case 'postgres7':
+      case 'pgsql':
+        return ($major >= 8 && $minor >= 4);
+      break;
+
+      case 'mssqlnative':
+      case 'odbc_mssql':
+        return false;
+      break;  
+    }
+  }
 
 } // end of database class

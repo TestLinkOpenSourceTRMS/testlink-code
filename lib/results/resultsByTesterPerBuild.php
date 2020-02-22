@@ -6,12 +6,10 @@
  * @filesource	resultsByTesterPerBuild.php
  * @package     TestLink
  * @author      Andreas Simon
- * @copyright   2010 - 2014 TestLink community
+ * @copyright   2010 - 2019 TestLink community
  *
  * Lists results and progress by tester per build.
  * 
- * @internal revisions
- * @since  1.9.10
  *
  */
 
@@ -20,6 +18,7 @@ require_once("common.php");
 require_once('exttable.class.php');
 $templateCfg = templateConfiguration();
 
+testlinkInitPage($db);
 list($args,$tproject_mgr,$tplan_mgr) = init_args($db);
 $user = new tlUser($db);
 
@@ -164,6 +163,13 @@ function init_args(&$dbHandler)
 
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
+
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
+
   if( !is_null($args->apikey) )
   {
     $cerbero = new stdClass();
@@ -188,7 +194,6 @@ function init_args(&$dbHandler)
   else
   {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
-	  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
 
   $tproject_mgr = new testproject($dbHandler);
@@ -200,8 +205,7 @@ function init_args(&$dbHandler)
 		$args->tproject_description = $args->tproject_info['notes'];
 	}
 	
-	if ($args->tplan_id > 0) 
-	{
+	if ($args->tplan_id > 0) {
 		$args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 	}
 	

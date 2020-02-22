@@ -8,7 +8,7 @@
  * @filesource  searchCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  *
@@ -196,6 +196,8 @@ class searchCommands
    */
   function initArgs()
   {
+    list($args,$env) = initContext();
+
     $cb = array("rq_scope" => array(tlInputParameter::CB_BOOL),
                 "rq_title" => array(tlInputParameter::CB_BOOL),
                 "rq_doc_id" => array(tlInputParameter::CB_BOOL),
@@ -282,22 +284,14 @@ class searchCommands
 
     $args->userID = intval(isset($_SESSION['userID']) ? $_SESSION['userID'] : 0);
 
-    if(is_null($args->tproject_id) || intval($args->tproject_id) <= 0)
-    {
-      $args->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
-      $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
-    }  
-    else
-    {
-      $args->tprojectID = intval($args->tproject_id);
-      $info = $this->tprojectMgr->get_by_id($args->tprojectID);
-      $args->tprojectName = $info['name'];
-    }  
-
-    if($args->tprojectID <= 0)
-    {
+    $args->tprojectID = intval($args->tproject_id);
+    if ($args->tprojectID <= 0) {
       throw new Exception("Error Processing Request - Invalid Test project id " . __FILE__);
     }   
+
+    $info = $this->tprojectMgr->get_by_id($args->tprojectID);
+    $args->tprojectName = $info['name'];
+
 
     // convert according local
 

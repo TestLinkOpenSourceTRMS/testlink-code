@@ -22,25 +22,21 @@ function getDirSqlFiles($dirPath, $add_dirpath=0)
 $aFileSets=array(); 
 $my_dir_path = '';	
 
-foreach( $dirPath as $the_dir)
-{
-  if ( $add_dirpath )
-  {
+foreach( $dirPath as $the_dir) {
+  if ( $add_dirpath ) {
     $my_dir_path = $the_dir;
   }    		           
 
-  if ($handle = opendir($the_dir)) 
-  {
+  if ($handle = opendir($the_dir)) {
     clearstatcache();
-    while (false !== ($file = readdir($handle))) 
-    {
+    while (false !== ($file = readdir($handle))) {
       $is_folder=is_dir($the_dir . $file);
       
-      // needed because is_dir() cached result. See PHP Manual
+      // needed because is_dir() cached result. 
+      // See PHP Manual
       clearstatcache();
           
-      if ($file != "." && $file != ".." && !$is_folder)
-      {
+      if ($file != "." && $file != ".." && !$is_folder) {
         // use only if extension is sql
         $file=trim($file);
         $path_parts=pathinfo($file);

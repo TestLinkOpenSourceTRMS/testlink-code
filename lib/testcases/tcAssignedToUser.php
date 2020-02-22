@@ -5,8 +5,6 @@
  * @filesource  tcAssignedToUser.php
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
- * @internal revisions
- * @since 1.9.15
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -29,8 +27,9 @@ $filters = initFilters($args);
 $tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPLANS;
 
 $tcase_mgr = new testcase($db);
-$gui->resultSet = $tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id,
-                                                   $tplan_param, $opt, $filters);
+$gui->resultSet = $tcase_mgr->get_assigned_to_user(
+  $args->user_id, $args->tproject_id,
+  $tplan_param, $opt, $filters);
 
 $doIt = !is_null($gui->resultSet);
 
@@ -68,8 +67,8 @@ if( $doIt )
   $tplanSet=array_keys($gui->resultSet);
   $sql="SELECT name,id FROM {$tables['nodes_hierarchy']} " .
        "WHERE id IN (" . implode(',',$tplanSet) . ")";
-  $gui->tplanNames=$db->fetchRowsIntoMap($sql,'id');
-  $optColumns = array('user' => $args->show_user_column, 'priority' => $args->priority_enabled);
+  $gui->tplanNames = $db->fetchRowsIntoMap($sql,'id');
+  $optColumns = array('user' => $args->show_user_column, 'priority' => $gui->priority_enabled);
 
   $whoiam = $args->show_all_users ? 'tcAssignedToUser': 'tcAssignedToMe';
 
@@ -137,23 +136,19 @@ if( $doIt )
                          $tcase['tc_external_id'] . " : " . htmlspecialchars($tcase['name']) .
                          sprintf($gui->l18n['tcversion_indicator'],$tcase['version']);
 
-        if ($show_platforms)
-        {
+        if ($show_platforms) {
           $current_row[] = htmlspecialchars($tcase['platform_name']);
         }
         
-        if ($args->priority_enabled) 
-        {
+        if ($gui->priority_enabled) {
           $current_row[] = "<!-- " . $tcase['priority'] . " -->" . $gui->priority[priority_to_level($tcase['priority'])];
         }
         
         $leOptions = array('getSteps' => 0);
-        $lexec = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id, 
-                                                $tcase['build_id'],$tcase['platform_id'],
+        $lexec = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id,$tcase['build_id'],$tcase['platform_id'],
                                                 $leOptions);
         $status = $lexec[$tcversion_id]['status'];
-        if (!$status) 
-        {
+        if (!$status) {
           $status = $statusGui->status_code['not_run'];
         }
         $current_row[] = $statusGui->definition[$status];
@@ -231,58 +226,36 @@ function get_date_diff($date)
 
 
 /**
- * init_args()
- * Get in an object all data that has arrived to page through _REQUEST or _SESSION.
- * If you think this page as a function, you can consider this data arguments (args)
- * to a function call.
- * Using all this data as one object property will help developer to understand
- * if data is received or produced on page.
  *
- * @author franciscom - francisco.mancardi@gmail.com
- * @args - used global coupling accessing $_REQUEST and $_SESSION
- * 
- * @return object of stdClass
- *
- * @internal revisions
  */
 function init_args(&$dbHandler)
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
+  list($args,$env) = initContext();
 
-  $args = new stdClass();
-  
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-  if( $args->tproject_id == 0)
-  {
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-  }  
-  if( $args->tproject_id == 0)
-  {
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
+
+  if( $args->tproject_id == 0) {
     throw new Exception(__FILE__ . ' Can not work without Test project ID => Aborting');
   }
-  $mgr = new testproject($dbHandler);
-  $info = $mgr->get_by_id($args->tproject_id);
-  $args->tproject_name = $info['name'];
-  $args->testprojectOptions = $info['opt'];
-  unset($info);
+  $args->tproject_name = testproject::getName($dbHandler,$args->tproject_id);
 
   $args->user_id = isset($_REQUEST['user_id']) ? intval($_REQUEST['user_id']) : 0;
   
-  if( $args->user_id != 0)
-  {
+  if ($args->user_id != 0){
     $args->user = new tlUser($args->user_id);
     $args->user->readFromDB($dbHandler); 
-  }
-  else 
-  {
+  } else {
     $args->user_id = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
-    if( $args->user_id == 0)
-    {
+    if( $args->user_id == 0) {
       throw new Exception(__FILE__ . ' Can not work without User ID => Aborting');
     }
     $args->user = $_SESSION['currentUser'];
   }	
-
 
   $args->executedBy = $args->user_id;
   $args->user_name = $args->user->login;
@@ -294,8 +267,7 @@ function init_args(&$dbHandler)
   $args->show_inactive_tplans = isset($_REQUEST['show_inactive_tplans']) ? true : false;
 
   $args->show_all_users = false;
-  if(isset($_REQUEST['show_all_users']))
-  {
+  if(isset($_REQUEST['show_all_users'])) {
     $args->show_all_users = (intval($_REQUEST['show_all_users']) == 1);
   }
   $args->show_user_column = $args->show_all_users; 
@@ -303,43 +275,32 @@ function init_args(&$dbHandler)
 
   $show_closed_builds = isset($_REQUEST['show_closed_builds']) ? true : false;
 	$show_closed_builds_hidden = isset($_REQUEST['show_closed_builds_hidden']) ? true : false;
-	if ($show_closed_builds) 
-  {
+	if ($show_closed_builds) {
 		$selection = true;
-	} 
-  else if ($show_closed_builds_hidden) 
-  {
+	} else if ($show_closed_builds_hidden) {
 		$selection = false;
-	} 
-  else if (isset($_SESSION['show_closed_builds'])) 
-  {
+	} else if (isset($_SESSION['show_closed_builds'])) {
 		$selection = intval($_SESSION['show_closed_builds']);
-	} 
-  else 
-  {
+	} else {
 		$selection = false;
 	}
 	$args->show_closed_builds = $_SESSION['show_closed_builds'] = $selection;
 
-	if ($args->show_all_users) 
-  {
+	if ($args->show_all_users) {
 		$args->user_id = TL_USER_ANYBODY;
 	}
 	
   $args->show_inactive_and_closed = false;	
-  if( isset($_REQUEST['show_inactive_and_closed']) )
-  {
+  if( isset($_REQUEST['show_inactive_and_closed']) ) {
     $args->show_inactive_and_closed = (intval($_REQUEST['show_inactive_and_closed']) != 0);
   }
 
-	$args->priority_enabled = $_SESSION['testprojectOptions']->testPriorityEnabled ? true : false;
 
 
   // quick & dirty execution
   $args->tpx = isset($_REQUEST['tpx']) ? intval($_REQUEST['tpx']) : 0;
   $dirtyHarry = array('pxi','bxi','tcvx');
-  foreach($dirtyHarry as $tg)
-  {
+  foreach($dirtyHarry as $tg) {
     $key = $tg . '_' . $args->tpx;
     $args->$tg = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;
   }  
@@ -407,10 +368,17 @@ function getColumnsDefinition($dbHandler,$tplan_id,$optionalColumns)
   return array($colDef, $sortByCol, $show_plat);
 }
 
-
+/**
+ *
+ */
 function initializeGui(&$dbHandler,$argsObj)
 {
-  $gui = new stdClass();
+  list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
+
+  $gui->priority_enabled = 
+    $gui->tprojOpt->testPriorityEnabled ? true : false;
+
+
   $gui->tproject_name = $argsObj->tproject_name;
 
   // disable "show also closed builds" checkbox when a specific build is selected

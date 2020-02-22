@@ -18,15 +18,15 @@ show_api_db_sample_msg();
 
 
 
-$tcaseQty = 1000;
+$tcaseQty = 100;
 $tcCounter = 1;
 $method='createTestCase';
 
 
 $args=array();
-$args["devKey"] = 'developer';
-$args["testprojectid"]=1;
-$args["testsuiteid"]=2;
+$args["devKey"]=DEV_KEY;
+$args["testprojectid"]=90288;
+$args["testsuiteid"]=90296;
 $args["preconditions"]='Test Link API Up & Running';
 $args["steps"][]=array('step_number' => 1, 'actions' => 'Start Server', 'expected_results' => 'green light');
 $args["authorlogin"]='admin';

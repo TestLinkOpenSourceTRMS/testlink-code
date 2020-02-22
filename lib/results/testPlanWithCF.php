@@ -8,7 +8,6 @@
  *
  * Scope test plan, analize ONLY CF that have 'Test Plan Design SCOPE'
  *
- * @internal revisions
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -27,71 +26,68 @@ $args = init_args($tplan_mgr);
 
 $gui = new stdClass();
 $gui->warning_msg = '';
-$gui->path_info = $gui->resultSet = $gui->tableSet = null;
+$gui->path_info = null;
 $gui->pageTitle = lang_get('caption_testPlanWithCF');
 $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
-
+$gui->resultSet = $gui->tableSet = array();
 
 $labels = init_labels(array('design' => null));
 $testCaseSet = array();
 
-if($tplan_mgr->count_testcases($args->tplan_id) > 0)
-{
-    $resultsCfg = config_get('results');
-    $tcase_cfg = config_get('testcase_cfg');
+if ($tplan_mgr->count_testcases($args->tplan_id) > 0) {
+  $resultsCfg = config_get('results');
+  $tcase_cfg = config_get('testcase_cfg');
 
-    // -----------------------------------------------------------------------------------
-    $gui->code_status = $resultsCfg['code_status'];
+  // ---------------------------------------------------------
+  $gui->code_status = $resultsCfg['code_status'];
 
-    // Get the custom fields linked/enabled on execution to a test project
-    // This will be used on report to give name to header of columns that hold custom field value
-    $gui->cfields = $cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase',
-                                                                       null,null,null,'name');
+  // Get the custom fields linked/enabled on execution to a test project
+  // This will be used on report to give name to header of columns 
+  // that hold custom field value
+  $gui->cfields = $cfield_mgr->get_linked_cfields_at_testplan_design(
+    $args->tproject_id,1,'testcase',
+    null,null,null,'name');
                                                                        
-    if(!is_null($gui->cfields))
-    {
-        foreach($gui->cfields as $key => $values)
-        {
-            $cf_place_holder['cfields'][$key] = '';
-        }
+  if (!is_null($gui->cfields)) {
+    foreach ($gui->cfields as $key => $values) {
+      $cf_place_holder['cfields'][$key] = '';
     }
-   	// Now get TPlan -> Test Cases with custom field values
-    $cf_map = $cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase',
-                                                                 null,null,$args->tplan_id);
-    // need to transform in structure that allow easy display
-    // Every row is an execution with exec data plus a column that contains following map:
-    // 'cfields' => CFNAME1 => value
-    //              CFNAME2 => value
-    $result = array();
-    if(!is_null($cf_map))
-    {
-        foreach($cf_map as $exec_id => $exec_info)
-        {
-            // Get common exec info and remove useless keys
-            $result[$exec_id] = $exec_info[0];
-            // Collect custom fields values
-            $result[$exec_id] += $cf_place_holder;
-            foreach($exec_info as $cfield_data)
-            {
-                $result[$exec_id]['cfields'][$cfield_data['name']]=$cfield_data['value'];
-            }
+  }
+
+  // Now get TPlan -> Test Cases with custom field values
+  $cf_map = (array)$cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase',
+      null,null,$args->tplan_id);
+
+  $gui->row_qty = count($cf_map);
+    
+  // need to transform in structure that allow easy display
+  // Every row is an execution with exec data plus a column that contains following map:
+  // 'cfields' => CFNAME1 => value
+  //              CFNAME2 => value
+  $result = array();
+  if ($gui->row_qty >0) {
+      foreach($cf_map as $exec_id => $exec_info) {
+        // Get common exec info and remove useless keys
+        $result[$exec_id] = $exec_info[0];
+        
+        // Collect custom fields values
+        $result[$exec_id] += $cf_place_holder;
+        foreach ($exec_info as $cfield_data) {
+          $result[$exec_id]['cfields'][$cfield_data['name']]=$cfield_data['value'];
         }
-    }
-    if(($gui->row_qty = count($cf_map)) > 0 )
-    {
-        $gui->warning_msg = '';
-        $gui->resultSet = $result;
-    } else {
+      }
+      $gui->warning_msg = '';
+      $gui->resultSet = $result;      
+  } else {
 		$gui->warning_msg = lang_get('no_linked_tplan_cf');
 	}
 }
 
 $table = buildExtTable($gui,$tcase_mgr, $tplan_mgr, $args->tplan_id,$labels, $imgSet['edit_icon']);
 
-if (!is_null($table)) 
-{
+if (!is_null($table)) {
 	$gui->tableSet[] = $table;
 }
 $smarty->assign('gui',$gui);
@@ -108,8 +104,7 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $labels, $edit_ico
 	$title_sep = config_get('gui_title_separator_1');
 	
 	$table = null;
-	if(count($gui->resultSet) > 0) 
-	{
+	if(count($gui->resultSet) > 0)  {
 		$columns = array();
 		$columns[] = array('title_key' => 'test_suite');
 		$columns[] = array('title_key' => 'test_case', 'width' => 80, 'type' => 'text');
@@ -123,8 +118,7 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $labels, $edit_ico
 		// Extract the relevant data and build a matrix
 		$matrixData = array();
 
-		foreach ($gui->resultSet as $item)
-		{
+		foreach ($gui->resultSet as $item) {
 			$rowData = array();
 
 			// Get test suite path
@@ -179,26 +173,28 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $labels, $edit_ico
 function init_args(&$tplan_mgr)
 {
 	$iParams = array("format" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N));
+					         "tplan_id" => array(tlInputParameter::INT_N),
+                   "tproject_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
 	
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($tplan_mgr->db);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
 
-    $args->tplan_name = '';
-    if(!$args->tplan_id)
-    {
-        $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
-    }
+  $args->tproject_name = 
+    testproject::getName($tplan_mgr->db,$args->tproject_id);
 
-    if($args->tplan_id > 0)
-    {
-        $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-        $args->tplan_name = $tplan_info['name'];
-    }
-    return $args;
+  $args->tplan_name = '';
+  if ($args->tplan_id > 0) {
+    $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+    $args->tplan_name = $tplan_info['name'];
+  }
+
+  return $args;
 }
 
 function checkRights(&$db,&$user)

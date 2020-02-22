@@ -5,21 +5,12 @@
  *
  * @package 	TestLink
  * @author		asimon
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSearchForm.php,v 1.4 2010/10/21 14:57:07 asimon83 Exp $
- * @link 		http://www.teamst.org/index.php
+ * @copyright 	2005-2019, TestLink community 
+ * @filesource  reqSearchForm.php
+ * @link 		http://www.testlink.org/
  *
  * This page presents the search formular for requirements.
  *
- * @internal revisions
- *
- * @since 1.9.4
- * 20110815 - franciscom - 	TICKET 4700: Req Search Improvements - search on log message and 
- *							provide link/url to multiple results
- *
- * @since 1.9.3
- * 20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
- * 20100323 - asimon - added searching for req relation types (BUGID 1748)
  */
 
 require_once("../../config.inc.php");
@@ -32,7 +23,7 @@ $tproject_mgr = new testproject($db);
 $req_mgr = new requirement_mgr($db);
 $tcase_cfg = config_get('testcase_cfg');
 
-$args = init_args();
+$args = init_args($db);
 $gui = new stdClass();
 
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
@@ -78,13 +69,11 @@ $smarty->display($templateCfg->template_dir . 'reqSearchForm.tpl');
 
 
 
-function init_args()
+function init_args(&$dbH)
 {              
-  	$args = new stdClass();
-    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+  list($args,$env) = initContext();
+  $args->tprojectID = $args->tproject_id;
+  $args->tprojectName = testproject::getName($dbH,$args->tproject_id);
        
     return $args;
 }
-
-?>

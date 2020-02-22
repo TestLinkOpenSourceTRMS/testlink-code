@@ -37,28 +37,41 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args(&$dbHandler,$cfgObj) {
 
-  $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
+
   $tplan_mgr = new testplan($dbHandler);
+  list($args,$env) = initContext();
 
-
+  $argsObj->form_token = isset($_REQUEST['form_token']) ? 
+                         $_REQUEST['form_token'] : 0;
+ 
   // Settings we put on session to create some sort of persistent scope, 
-  // because we have had issues when passing this info using GET mode (size limits)
+  // because we have had issues when passing this info using 
+  // GET mode (size limits)
   //
-  // we get info about build_id, platform_id, etc ...
+  // we get info about tplan_id, build_id, platform_id, etc ...
   getContextFromGlobalScope($args);
+
+
   $args->user = $_SESSION['currentUser'];
   $args->user_id = $args->user->dbID;
   $args->caller = isset($_REQUEST['caller']) ? $_REQUEST['caller'] : 'exec_feature';
   $args->reload_caller = false;
-  
-  $args->tplan_id = intval(isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID']);
-  $args->tproject_id = intval(isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID']);
 
-  if($args->tproject_id <= 0) {
+  if ($args->tproject_id <= 0 && $args->tplan_id >0) {
     $tree_mgr = new tree($dbHandler);
     $dm = $tree_mgr->get_node_hierarchy_info($args->tplan_id);
     $args->tproject_id = $dm['parent_id']; 
+  }
+
+  if ($args->tplan_id <= 0) {
+    throw new Exception(__FUNCTION__ . "- *** BAD Test Plan ID", 1);
+    die();
+  }
+
+  if ($args->tproject_id <= 0) {
+    throw new Exception(__FUNCTION__ . "-BAD Test Project ID", 1);
+    die();
   }
 
   if(is_null($args->build_id) || ($args->build_id == 0) ) {
@@ -161,10 +174,11 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
 */
 function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr) {
 
+  list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
+
   $buildMgr = new build_mgr($dbHandler);
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
-  $gui = new stdClass();
   $gui->form_token = $argsObj->form_token;
   $gui->remoteExecFeedback = $gui->user_feedback = '';
   $gui->tplan_id=$argsObj->tplan_id;
@@ -201,12 +215,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr) {
   // Important note: 
   // custom fields for test plan can be edited ONLY on design, that's reason why we are using 
   // scope = 'design' instead of 'execution'
-  $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'design',
-                                                                        array('show_on_execution' => 1));
+  $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values(
+    $argsObj->tplan_id,'design',array('show_on_execution' => 1));
     
 
-  $gui->build_cfields = $buildMgr->html_table_of_custom_field_values($argsObj->build_id,$argsObj->tproject_id,
-                                                                     'design',array('show_on_execution' => 1));
+  $gui->build_cfields = $buildMgr->html_table_of_custom_field_values(
+    $argsObj->build_id,$argsObj->tproject_id,
+    'design',array('show_on_execution' => 1));
     
   $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
   $gui->has_platforms = !is_null($dummy) ? 1 : 0;
@@ -233,41 +248,40 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr) {
 
 
 /**
- *  get info from ... 
+ *  get info from
+ *  SESSION cache
+ *  REQUEST scope
  *
  */
 function getContextFromGlobalScope(&$argsObj)
 {
   $mode = 'execution_mode';
-  $settings = array('build_id' => 'setting_build', 'platform_id' => 'setting_platform');
-  $isNumeric = array('build_id' => 0, 'platform_id' => 0);
+  $settings = array('tplan_id' => 'setting_testplan',
+                    'platform_id' => 'setting_platform',
+                    'build_id' => 'setting_build');
 
-  $argsObj->form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-  $sf = isset($_SESSION['execution_mode']) && isset($_SESSION['execution_mode'][$argsObj->form_token]) ? 
-        $_SESSION['execution_mode'][$argsObj->form_token] : null;
+  $isNumeric = array('tplan_id' => 0,'build_id' => 0, 'platform_id' => 0);
 
-  if(is_null($sf))
-  {
-    foreach($settings as $key => $sfKey)
-    {
-      $argsObj->$key = null;
-    }  
-    return;
+  $cache = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$argsObj->form_token]) ? 
+        $_SESSION[$mode][$argsObj->form_token] : null;
+
+
+  if( is_null($cache) ) {
+    $cache = $_REQUEST;
   } 
 
-  foreach($settings as $key => $sfKey)
-  {
-    $argsObj->$key = isset($sf[$sfKey]) ? $sf[$sfKey] : null;
-    if (is_null($argsObj->$key)) 
-    {
+  foreach($settings as $prop => $cacheKey) {
+    $argsObj->$prop = isset($cache[$cacheKey]) ? $cache[$cacheKey] : null;
+
+    if (is_null($argsObj->$prop)) {
       // let's this page be functional withouth a form token too 
       // (when called from testcases assigned to me)
-      $argsObj->$key = isset($_REQUEST[$sfKey]) ? $_REQUEST[$sfKey] : null;
+      $argsObj->$prop = isset($_REQUEST[$prop]) ? $_REQUEST[$prop] : null;
+    
     }
-    if(isset($isNumeric[$key]))
-    {
-      $argsObj->$key = intval($argsObj->$key);              
+
+    if(isset($isNumeric[$prop])) {
+      $argsObj->$prop = intval($argsObj->$prop);              
     }  
   }
-
 }

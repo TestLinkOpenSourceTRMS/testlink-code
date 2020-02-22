@@ -8,11 +8,9 @@
  *
  * @filesource  planTCNavigator.php
  * @package     TestLink
- * @copyright   2003-2014, TestLink community
+ * @copyright   2003-2019, TestLink community
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.11
  *
  **/
 
@@ -47,21 +45,20 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @param unknown_type $control
  * @return stdClass
  * 
- * @internal revisions:
  */
 function initializeGui(&$dbHandler, &$control, &$assignmentMgr) 
 {
-
-  $gui = new stdClass();
+  list($add2args,$gui) = initUserEnv($dbHandler, $control->args);
   $gui->feature = $control->args->feature;
   $gui->tPlanID = $control->args->testplan_id;
+  $gui->tplan_id = $control->args->testplan_id;
+
   $gui->title = lang_get('title_test_plan_navigator');
   $gui->src_workframe = '';
   $gui->additional_string = '';
   
   // configure target URLs and clickable buttons
-  switch($control->args->feature) 
-  {
+  switch($control->args->feature) {
     case 'planUpdateTC':
       $gui->menuUrl = "lib/plan/planUpdateTC.php";
       $gui->title_navigator = lang_get('navigator_update_linked_tcversions');
@@ -79,7 +76,6 @@ function initializeGui(&$dbHandler, &$control, &$assignmentMgr)
       $build_id = $control->settings['setting_build']['selected'];
       $control->draw_tc_unassign_button = true;
       $control->draw_tc_assignment_bulk_copy_button = true;
-
     break;
   }
   

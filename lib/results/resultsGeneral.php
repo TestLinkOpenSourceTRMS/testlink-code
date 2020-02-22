@@ -46,14 +46,15 @@ if(is_null($tsInf)) {
     $metricsMgr->getStatusTotalsByKeywordForRender($args->tplan_id,null, array('groupByPlatform' => 1) );
 
 	$gui->statistics->keywords = !is_null($keywordsMetrics) ? $keywordsMetrics->info : null; 
-                              
+              
+  $items2loop = array();
 	if( $gui->showPlatforms ) {
 		$items2loop[] = 'platform';
 		$platformMetrics = $metricsMgr->getStatusTotalsByPlatformForRender($args->tplan_id);
 		$gui->statistics->platform = !is_null($platformMetrics) ? $platformMetrics->info : null; 
 	}
 
-	if($gui->testprojectOptions->testPriorityEnabled) {
+	if($gui->tprojOpt->testPriorityEnabled) {
 		$filters = null;
 		$opt = array('getOnlyAssigned' => false, 
                  'groupByPlatform' => 1);
@@ -224,7 +225,9 @@ function buildMailCfg(&$guiObj) {
  *
  */
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) {
-  $gui = new stdClass();
+ 
+  list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
+
   $gui->fakePlatform = array('');
   $gui->title = lang_get('title_gen_test_rep');
   $gui->do_report = array();
@@ -242,11 +245,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) {
   $gui->displayBuildMetrics = false;
   $gui->buildMetricsFeedback = lang_get('buildMetricsFeedback');
 
-  $mgr = new testproject($dbHandler);
-  $dummy = $mgr->get_by_id($argsObj->tproject_id);
-  $gui->testprojectOptions = new stdClass();
-  $gui->testprojectOptions->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
-  $gui->tproject_name = $dummy['name'];
+  $gui->tproject_name = testproject::getName($dbHandler,$argsObj->tproject_id);
 
   $info = $tplanMgr->get_by_id($argsObj->tplan_id);
   $gui->tplan_name = $info['name'];
@@ -263,12 +262,13 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) {
   $gui->basehref = $_SESSION['basehref'];
   $gui->actionSendMail = $gui->basehref . 
           "lib/results/resultsGeneral.php?format=" . 
-          FORMAT_MAIL_HTML . "&tplan_id={$gui->tplan_id}"; 
+          FORMAT_MAIL_HTML . "&tplan_id={$gui->tplan_id}" .
+          "&tproject_id={$gui->tproject_id}";
 
   $gui->actionSpreadsheet = $gui->basehref . 
           "lib/results/resultsGeneral.php?format=" . 
-          FORMAT_XLS . "&tplan_id={$gui->tplan_id}&spreadsheet=1";
-
+          FORMAT_XLS . "&tplan_id={$gui->tplan_id}&spreadsheet=1".
+          "&tproject_id={$gui->tproject_id}";
 
   $gui->mailFeedBack = new stdClass();
   $gui->mailFeedBack->msg = '';

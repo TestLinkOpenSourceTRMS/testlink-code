@@ -83,7 +83,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
   <!-- js placed at the end of the document so the pages load faster -->
-  <script type="text/javascript" src="{$basehref}third_party/jquery/jquery-3.3.1.min.js" language="javascript"></script>
+  <script type="text/javascript" 
+          src="{$basehref}{$smarty.const.TL_JQUERY}" 
+          language="javascript"></script>
 
   <script src="{$dashioHomeURL}lib/bootstrap/js/bootstrap.min.js"></script>
   <script class="include" type="text/javascript" src="{$dashioHomeURL}lib/jquery.dcjqaccordion.2.7.js"></script>

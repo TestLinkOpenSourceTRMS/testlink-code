@@ -10,8 +10,6 @@
  * @copyright   2007-2013, TestLink community 
  * @link        http://www.teamst.org/index.php
  * 
- * @internal revisions
- * @since 1.9.7
  *
  */
 require('../../config.inc.php');
@@ -22,12 +20,10 @@ testlinkInitPage($db);
 
 
 $templateCfg = templateConfiguration();
-$pcheck_fn=null;
-$args = init_args();
+$pcheck_fn = null;
+$args = init_args($db);
 $gui = initializeGui($db,$args);
-if ($args->do_upload)
-{
-  
+if ($args->do_upload) {
   // check the uploaded file
   $source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
   
@@ -108,7 +104,7 @@ else
 
 }
 
-$gui->testprojectName = $_SESSION['testprojectName'];
+$gui->testprojectName = $args->tproject_name;
 $gui->importTypes = $obj_mgr->get_import_file_types();
 $gui->action_on_duplicated_name=$args->action_on_duplicated_name;
 
@@ -539,9 +535,10 @@ function nl2p($str)
   returns: 
   
 */
-function init_args()
+function init_args(&$dbH)
 {
-    $args = new stdClass();
+    list($args,$env) = initContext();
+
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
     $key='action_on_duplicated_name';
@@ -561,7 +558,6 @@ function init_args()
     $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
     
     $args->userID = $_SESSION['userID'];
-    $args->tproject_id = $_SESSION['testprojectID'];
     
     return $args;
 }

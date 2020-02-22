@@ -149,7 +149,7 @@ $tlCfg->gui->ux = 'tl-classic';
  * @see $tlCfg->cookie->path
  * @global string $tlCfg->cookie->prefix
  */
-$tlCfg->cookie->prefix = 'TESTLINK1920';
+$tlCfg->cookie->prefix = 'TESTLINK200';
 
 /**
  * @link http://php.net/function.setcookie
@@ -2054,7 +2054,7 @@ $tlCfg->images = array();
 
 
 
-// ----------------------------------------------------------------------------
+// -------------------------------------------------------------
 /* [PROXY] */
 /* Used only */ 
 /* mantissoapInterface.class.php */
@@ -2069,22 +2069,23 @@ $tlCfg->proxy->password = null;
 /** Plugins feature */
 define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR);
 
-// ----- End of Config ------------------------------------------------------------------
-// --------------------------------------------------------------------------------------
+// ----- End of Config ----------------------------------------
+
+// ------------------------------------------------------------
 // DO NOT DO CHANGES BELOW
-// --------------------------------------------------------------------------------------
+// ------------------------------------------------------------
 
 /** Functions for check request status */
 require_once('configCheck.php');
 
-
-if( !defined('TL_JQUERY') )
-{
-  define('TL_JQUERY','jquery-2.2.4.min.js' );
+/**
+ * @see also cfg/const.inc.php
+ */
+if (!defined('TL_JQUERY')) {
+  define('TL_JQUERY','third_party/jquery/jquery-3.4.1.min.js');
 }
 
-if( !defined('TL_DATATABLES_DIR') )
-{
+if (!defined('TL_DATATABLES_DIR')) {
   define('TL_DATATABLES_DIR','DataTables-1.10.4' );
 }
 

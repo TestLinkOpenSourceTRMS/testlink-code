@@ -10,17 +10,11 @@ require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db,false,false,"checkRights");
 
-$cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
-$args = init_args();
-$gui = initializeGui($cfield_mgr);
 
-
+list($cfield_mgr,$gui,$args) = initScript($db);
 $result_msg = null;
 $do_control_combo_display = 1;
-$cfMix = getCFCfg($args,$cfield_mgr);
-$cfieldCfg = $cfMix->cfieldCfg;
-$gui->cfield = $cfMix->emptyCF;
 
 switch ($args->do_action) {
 	case 'create':
@@ -68,32 +62,31 @@ switch ($args->do_action) {
 if( $do_control_combo_display ) {
   $keys2loop = $cfield_mgr->get_application_areas();
 	foreach( $keys2loop as $ui_mode) {
-    $cfieldCfg->cf_enable_on[$ui_mode]['value']=0;
-    $cfieldCfg->cf_show_on[$ui_mode]['disabled']='';
-    $cfieldCfg->cf_show_on[$ui_mode]['style']='';
+    $gui->cfieldCfg->cf_enable_on[$ui_mode]['value']=0;
+    $gui->cfieldCfg->cf_show_on[$ui_mode]['disabled']='';
+    $gui->cfieldCfg->cf_show_on[$ui_mode]['style']='';
 
-    if($cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']]) {
-	    $cfieldCfg->cf_enable_on[$ui_mode]['value']=1;
+    if($gui->cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']]) {
+	    $gui->cfieldCfg->cf_enable_on[$ui_mode]['value']=1;
     }
         
-		if(!$cfieldCfg->show_on_cfg[$ui_mode][$gui->cfield['node_type_id']]) {
-			$cfieldCfg->cf_show_on[$ui_mode]['disabled']=' disabled="disabled" ';
-			$cfieldCfg->cf_show_on[$ui_mode]['style']=' style="display:none;" ';
+		if(!$gui->cfieldCfg->show_on_cfg[$ui_mode][$gui->cfield['node_type_id']]) {
+			$gui->cfieldCfg->cf_show_on[$ui_mode]['disabled']=' disabled="disabled" ';
+			$gui->cfieldCfg->cf_show_on[$ui_mode]['style']=' style="display:none;" ';
 		}
 	}
 }
 
 $gui->show_possible_values = 0;
 if(isset($gui->cfield['type'])) {
-	$gui->show_possible_values = $cfieldCfg->possible_values_cfg[$gui->cfield['type']];
+	$gui->show_possible_values = $gui->cfieldCfg->possible_values_cfg[$gui->cfield['type']];
 }
 
 // enable on 'execution' implies show on 'execution' then has nosense to display show_on combo
 if($args->do_action == 'edit' && $gui->cfield['enable_on_execution'] ) {
-  $cfieldCfg->cf_show_on['execution']['style']=' style="display:none;" ';
+  $gui->cfieldCfg->cf_show_on['execution']['style']=' style="display:none;" ';
 } 
 
-$gui->cfieldCfg = $cfieldCfg;
 
 $smarty = new TLSmarty();
 $smarty->assign('operation_descr',$operation_descr);
@@ -122,17 +115,6 @@ function getCFCfg(&$args,&$cfield_mgr) {
   return $cfg;
 }
 
-
-/**
- *
- */
-function initializeGui(&$cfield_mgr) {
-  $gui = $cfield_mgr->initViewGUI();
-  return $gui;
-}
-
-
-
 /*
   function: request2cf
             scan a hash looking for a keys with 'cf_' prefix,
@@ -155,15 +137,15 @@ function initializeGui(&$cfield_mgr) {
 */
 function request2cf($hash)
 {
-    // design and execution has sense for node types regarding testing
-    // testplan,testsuite,testcase, but no sense for requirements.
-    //
-    // Missing keys are combos that will be disabled and not show at UI.
-    // For req spec and req, no combo is showed.
-    // To avoid problems (need to be checked), my choice is set to 1
-    // *_on_design keys, that right now will not present only for
-    // req spec and requirements.
-    //
+  // design and execution has sense for node types regarding testing
+  // testplan,testsuite,testcase, but no sense for requirements.
+  //
+  // Missing keys are combos that will be disabled and not show at UI.
+  // For req spec and req, no combo is showed.
+  // To avoid problems (need to be checked), my choice is set to 1
+  // *_on_design keys, that right now will not present only for
+  // req spec and requirements.
+  //
 	$missing_keys = array('show_on_design' => 0,
                           'enable_on_design' => 0,
                           'show_on_execution' => 0,
@@ -176,53 +158,46 @@ function request2cf($hash)
 	$len_cfp = tlStringLen($cf_prefix);
 	$start_pos = $len_cfp;
 	$cf = array();
-	foreach($hash as $key => $value)
-	{
-		if(strncmp($key,$cf_prefix,$len_cfp) == 0)
-		{
+	foreach($hash as $key => $value) {
+		if(strncmp($key,$cf_prefix,$len_cfp) == 0) {
 			$dummy = substr($key,$start_pos);
 			$cf[$dummy] = $value;
 		}
 	}
 
-	foreach($missing_keys as $key => $value)
-	{
-		if(!isset($cf[$key]))
-		{
+	foreach($missing_keys as $key => $value) {
+		if(!isset($cf[$key])) {
 			$cf[$key] = $value;
 		}	
 	}
 
-    // After logic refactoring
-    // if ENABLE_ON_[area] == 1
-    //    DISPLAY_ON_[area] = 1
-    //
-    // 
-    // IMPORTANT/CRITIC: 
-    // this KEY MUST BE ALIGNED WITH name on User Inteface
-    // then if is changed on UI must be changed HERE
-    $setter=array('design' => 0, 'execution' => 0, 'testplan_design' => 0);    
-    switch($cf['enable_on'])
-    {
-        case 'design':
-        case 'execution':
-        case 'testplan_design':
-        $setter[$cf['enable_on']]=1;
-        break;
+  // After logic refactoring
+  // if ENABLE_ON_[area] == 1
+  //    DISPLAY_ON_[area] = 1
+  //
+  // 
+  // IMPORTANT/CRITIC: 
+  // this KEY MUST BE ALIGNED WITH name on User Inteface
+  // then if is changed on UI must be changed HERE
+  $setter=array('design' => 0, 'execution' => 0, 'testplan_design' => 0);    
+  switch($cf['enable_on']) {
+    case 'design':
+    case 'execution':
+    case 'testplan_design':
+      $setter[$cf['enable_on']]=1;
+    break;
 
-        default:
-        $setter['design']=1;
-        break;    
-    }
-    
-    foreach($setter as $key => $value)
-    {
-        $cf['enable_on_' . $key] = $value;
-        if( $cf['enable_on_' . $key] )
-        {
-            $cf['show_on_' . $key] = 1;    
-        }          
-    }
+    default:
+      $setter['design']=1;
+    break;    
+  }
+  
+  foreach($setter as $key => $value) {
+    $cf['enable_on_' . $key] = $value;
+    if( $cf['enable_on_' . $key] ) {
+      $cf['show_on_' . $key] = 1;    
+    }          
+  }
 	return $cf;
 }
 
@@ -236,18 +211,33 @@ function request2cf($hash)
 */
 function init_args()
 {
-    $_REQUEST=strings_stripSlashes($_REQUEST);
-    $args = new stdClass();
-    $args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action'] : null;
-    $args->cfield_id = isset($_REQUEST['cfield_id']) ? intval($_REQUEST['cfield_id']) : 0;
-    $args->cf_name = isset($_REQUEST['cf_name']) ? $_REQUEST['cf_name'] : null;
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+  $args = new stdClass();
+  $context = new stdClass();
+  $env = '';
+  $k2args = array('do_action' => null,
+                  'cf_name' => null,
+                  'cfield_id' => 0);
+  $k2ctx = array('tproject_id' => 0,
+                 'tplan_id' => 0);
+  $k2args = array_merge($k2args,$k2ctx);  
 
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-    if( $args->tproject_id == 0 )
-    {
-      $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-    }  
-    return $args;
+  foreach ($k2args as $prop => $defa) {
+    $args->$prop = isset($_REQUEST[$prop]) ? $_REQUEST[$prop] : $defa;
+    if( is_numeric($defa) ) {
+      $args->$prop = intval($args->$prop);    
+    } 
+    if( isset($k2ctx[$prop]) ) {
+      $context->$prop = $args->$prop;
+      
+      if ($env != '') {
+        $env .= "&";
+      }
+      $env .= "$prop=" . $context->$prop;
+    }
+  }
+
+  return array($args,$context,$env);
 }
 
 /*
@@ -272,8 +262,7 @@ function edit(&$argsObj,&$cfieldMgr)
 
 	$cfinfo = $cfieldMgr->get_by_id($argsObj->cfield_id);
 
-	if ($cfinfo)
-	{
+	if ($cfinfo) {
 		$op->cf = $cfinfo[$argsObj->cfield_id];
 		$op->cf_is_used = $cfieldMgr->is_used($argsObj->cfield_id);
 		
@@ -301,33 +290,25 @@ function doCreate(&$hash_request,&$cfieldMgr,&$argsObj)
 	$op->cf = request2cf($hash_request);
 
 	$keys2trim=array('name','label','possible_values');
-	foreach($keys2trim as $key)
-	{
+	foreach($keys2trim as $key) {
 	  $op->cf[$key]=trim($op->cf[$key]);
 	}
   
   // Check if name exists
   $dupcf = $cfieldMgr->get_by_name($op->cf['name']);
-  if(is_null($dupcf))
-  {
+  if(is_null($dupcf)) {
   	$ret = $cfieldMgr->create($op->cf);
-   	if(!$ret['status_ok'])
-   	{
+   	if(!$ret['status_ok']) {
    		$op->user_feedback = lang_get("error_creating_cf");
-   	}
-   	else
-   	{
+   	} else {
     	$op->template = null;
    		logAuditEvent(TLS("audit_cfield_created",$op->cf['name']),"CREATE",$ret['id'],"custom_fields");
    	
-      if($hash_request['do_action'] == 'do_add_and_assign')
-      {
+      if($hash_request['do_action'] == 'do_add_and_assign') {
         $cfieldMgr->link_to_testproject($argsObj->tproject_id,array($ret['id']));
       }  
     }
-  }
-  else
-	{
+  } else {
   	$op->user_feedback = lang_get("cf_name_exists");
   }
     
@@ -357,24 +338,19 @@ function doUpdate(&$hash_request,&$argsObj,&$cfieldMgr)
   $op->operation_descr=lang_get('title_cfield_edit') . TITLE_SEP_TYPE3 . $oldname;
 
 	$keys2trim=array('name','label','possible_values');
-	foreach($keys2trim as $key)
-	{
+	foreach($keys2trim as $key) {
 		$op->cf[$key]=trim($op->cf[$key]);
 	}
 
 	// Check if name exists
 	$is_unique = $cfieldMgr->name_is_unique($op->cf['id'],$op->cf['name']);
-	if($is_unique)
-	{
+	if($is_unique) {
 		$ret = $cfieldMgr->update($op->cf);
-		if ($ret)
-		{
+		if ($ret) {
 			$op->template = null;
 			logAuditEvent(TLS("audit_cfield_saved",$op->cf['name']),"SAVE",$op->cf['id'],"custom_fields");
 		}
-	}
-	else
-  {  
+	} else {  
 		$op->user_feedback = lang_get("cf_name_exists");
 	}
 	return $op;
@@ -448,21 +424,14 @@ function cfieldCfgInit($cfieldMgr)
 }
 
 
-/*
-  function: renderGui
-            set environment and render (if needed) smarty template
-
-  args: 
-
-  returns: - 
-  
-
-*/
+/**
+ * function: renderGui
+ *           set environment and render (if needed) smarty template
+ */
 function renderGui(&$smartyObj,&$argsObj,&$guiObj,&$cfieldMgr,$templateCfg)
 {
-  $doRender=false;
-  switch($argsObj->do_action)
-  {
+  $doRender = false;
+  switch($argsObj->do_action) {
   	case "do_add":
   	case "do_delete":
   	case "do_update":
@@ -478,15 +447,34 @@ function renderGui(&$smartyObj,&$argsObj,&$guiObj,&$cfieldMgr,$templateCfg)
   	break;
   }
 
-  if($doRender)
-  {
+  if($doRender) {
    $guiObj->cf_map = $cfieldMgr->get_all(null,'transform');
-   $guiObj->cf_types=$cfieldMgr->get_available_types();
+   $guiObj->cf_types = $cfieldMgr->get_available_types();
    $smartyObj->assign('gui',$guiObj);
    $smartyObj->display($templateCfg->template_dir . $tpl);
   }
 }
 
+/**
+ *
+ */
+function initScript(&$dbH)
+{
+  $cfMgr = new cfield_mgr($dbH);
+  list($args,$context,$env) = init_args();
+
+  $cfMix = getCFCfg($args,$cfMgr);
+  $gui = $cfMgr->initViewGUI($context,$env);
+  $gui->cfieldCfg = $cfMix->cfieldCfg;
+  $gui->cfield = $cfMix->emptyCF;
+  $gui->activeMenu['system'] = 'active';
+  return array($cfMgr,$gui,$args);
+}
+
+
+/**
+ *
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,"cfield_management");

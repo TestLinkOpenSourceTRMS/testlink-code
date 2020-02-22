@@ -5,14 +5,12 @@
  *
  * @package 		TestLink
  * @author 			asimon
- * @copyright 	2005-2013, TestLink community 
+ * @copyright 	2005-2019, TestLink community 
  * @filesource	tcCompareVersions.php
  * @link 				http://www.teamst.org/index.php
  *
  * Compares selected testcase versions with each other.
  *
- * @internal revisions
- * @since 1.9.6
  *
  */
 
@@ -84,18 +82,17 @@ function init_args()
   $args->use_daisydiff = isset($_REQUEST['use_html_comp']);
 	
 
-  $args->tcase_id = isset($_REQUEST['testcase_id']) ? $_REQUEST['testcase_id'] : 0;
-  $args->tcase_id = intval($args->tcase_id);
- 
-  $key2set = array('compare_selected_versions' => 0,'version_left' => '','version_right' => '');
-  foreach($key2set as $tk => $value)
-  {
+  $args->tcase_id = isset($_REQUEST['testcase_id']) ? 
+                    intval($_REQUEST['testcase_id']) : 0;
+
+  $key2set = array('compare_selected_versions' => 0,
+                   'version_left' => '','version_right' => '');
+  foreach($key2set as $tk => $value) {
     $args->$tk = isset($_REQUEST[$tk]) ? $_REQUEST[$tk] : $value;
   } 
 	
 	
-	if (isset($_REQUEST['context_show_all'])) 
-  {
+	if (isset($_REQUEST['context_show_all'])) {
 		$args->context = null;
 	} 
   else 

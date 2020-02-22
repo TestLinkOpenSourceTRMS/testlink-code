@@ -7,12 +7,10 @@
  * ACTIVE test plans
  *
  * @package     TestLink
- * @author      Amit Khullar - amkhullar@gmail.com
- * @copyright   2007-2014, TestLink community 
- * @filesource  tcAssign2Tplan.php,v 1.8 2010/05/20 18:20:46 franciscom Exp $
+ * @copyright   2007-2019, TestLink community 
+ * @filesource  tcAssign2Tplan.php
  *
  *
- * @internal revisions
  **/
 
 require_once("../../config.inc.php");
@@ -26,7 +24,7 @@ $tproject_mgr=new testproject($db);
 
 $glue = config_get('testcase_cfg')->glue_character;
 $args = init_args();
-$gui = initializeGui($args);
+$gui = initializeGui($db,$args);
 $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);  
 
@@ -168,25 +166,16 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  *
  * @return  object with some REQUEST and SESSION values as members.
  */
-function init_args()
-{
+function init_args() {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  // if any piece of context is missing => we will display nothing instead of crashing WORK TO BE DONE
-  $args = new stdClass();
-  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
+  list($args,$env) = initContext();
   
-  $args->tproject_id = intval($args->tproject_id);
-  $args->tplan_id = intval($args->tplan_id);
-
-
   $args->tcase_id = isset($_REQUEST['tcase_id']) ? $_REQUEST['tcase_id'] : 0;
-  $args->tcase_id = intval($args->tcase_id);
-
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? $_REQUEST['tcversion_id'] : 0;
+  
+  $args->tcase_id = intval($args->tcase_id);
   $args->tcversion_id = intval($args->tcversion_id);
-
   return $args; 
 }
 
@@ -195,9 +184,9 @@ function init_args()
  * 
  *
  */
-function initializeGui($argsObj)
-{
-  $guiObj = new stdClass();
+function initializeGui(&$dbH,$argsObj) {
+  list($add2args,$guiObj) = initUserEnv($dbH,$argsObj);
+
   $guiObj->pageTitle='';
   $guiObj->tcaseIdentity='';
   $guiObj->mainDescription=lang_get('add_tcversion_to_plans');;
@@ -205,7 +194,15 @@ function initializeGui($argsObj)
   $guiObj->tcversion_id=$argsObj->tcversion_id;
   $guiObj->can_do=false;
   $guiObj->item_sep=config_get('gui')->title_separator_2;
-  $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?" .
-                            'edit=testcase&id=' . intval($argsObj->tcase_id) . "'"; 
+
+  $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 
+     "lib/testcases/archiveData.php?" .
+     'edit=testcase&id=' . intval($argsObj->tcase_id);
+
+  $guiObj->cancelActionJS .= "&tproject_id={$argsObj->tproject_id}"; 
+
+  $guiObj->cancelActionJS .= "'"; 
+
+
   return $guiObj;
 }

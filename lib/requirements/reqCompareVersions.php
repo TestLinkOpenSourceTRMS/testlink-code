@@ -5,7 +5,7 @@
  *
  * @package     TestLink
  * @author      asimon
- * @copyright   2005-2018, TestLink community 
+ * @copyright   2005-2019, TestLink community 
  * @filesource  reqCompareVersions.php
  * @link        http://www.testlink.org/
  *
@@ -245,15 +245,14 @@ function getCFDiff($cfields,&$reqMgr)
  *
  */
 function init_args() {
-  $args = new stdClass();
+  list($args,$env) = initContext();
 
-  $args->req_id = isset($_REQUEST['requirement_id']) ? intval($_REQUEST['requirement_id']) : 0;
-
+  $args->req_id = isset($_REQUEST['requirement_id']) ? 
+                  intval($_REQUEST['requirement_id']) : 0;
   $args->compare_selected_versions = isset($_REQUEST['compare_selected_versions']);
   $args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
   $args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-
+  
   $args->use_daisydiff = isset($_REQUEST['use_html_comp']);
 
   $diffEngineCfg = config_get("diffEngine");

@@ -61,8 +61,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
   $nodes = null;
   $filter_node_type = $show_tcases ? '' : ",'testcase'";
         
-  switch($operation)
-  {
+  switch($operation) {
     case 'print':
       $js_function = array('testproject' => 'TPROJECT_PTP',
                            'testsuite' =>'TPROJECT_PTS', 'testcase' => 'TPROJECT_PTS');
@@ -81,8 +80,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
          " AND NT.description NOT IN " .
          " ('testcase_version','testplan','requirement_spec','requirement'{$filter_node_type}) ";
 
-  if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
-  {
+  if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node) {
     $sql .=" AND NHA.id = " . intval($filter_node);  
   }
   $sql .= " ORDER BY NHA.node_order ";    
@@ -116,8 +114,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
       $path['forbidden_parent'] = 'none';
 
       $tcase_qty = null;
-      switch($row['node_type'])
-      {
+      switch($row['node_type']) {
         case 'testproject':
           // at least on Test Specification seems that we do not execute this piece of code.
           $path['href'] = "javascript:EP({$path['id']})";
@@ -129,12 +126,14 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
           getAllTCasesID($row['id'],$items);
           $tcase_qty = sizeof($items);
 
-          $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+          $path['href'] = "javascript:" . 
+            $js_function[$row['node_type']]. "($root_node,{$path['id']})";
           $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
         break;
                 
         case 'testcase':
-          $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+          $path['href'] = "javascript:" . 
+            $js_function[$row['node_type']]. "($root_node,{$path['id']})";
           $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
           if(is_null($showTestCaseID))
           {

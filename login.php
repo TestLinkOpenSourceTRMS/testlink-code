@@ -7,7 +7,8 @@
  *
  * @filesource  login.php
  * @package     TestLink
- * @copyright   2006,2019 TestLink community 
+ * @author      Martin Havlat
+ * @copyright   2006,2020 TestLink community 
  * @link        http://www.testlink.org
  * 
  **/
@@ -27,10 +28,12 @@ doDBConnect($db, database::ONERROREXIT);
 $args = init_args();
 $gui = init_gui($db,$args);
 
+
 // if these checks fail => we will redirect to login screen with some message
 doBlockingChecks($db,$gui);
 
-switch($args->action) {
+switch($args->action) 
+{
   case 'doLogin':
   case 'ajaxlogin':
     doSessionStart(true);
@@ -51,33 +54,32 @@ switch($args->action) {
 
 
   case 'oauth':
-    // If code is empty then break
-    if (!isset($args->oauth_code)){
+    //If code is empty then break
+    if (!isset($_GET['code'])){
         renderLoginScreen($gui);
         die();
     }
 
-    // Switch between oauth providers
-    if (!include_once('lib/functions/oauth_providers/'.$args->oauth_name.'.php')) {
+    //Switch between oauth providers
+    if (!include_once('lib/functions/oauth_providers/'.$_GET['oauth'].'.php')) {
         die("Oauth client doesn't exist");
     }
 
     $oau = config_get('OAuthServers');
     foreach ($oau as $oprov) {
-      if (strcmp($oprov['oauth_name'],$args->oauth_name) == 0){
+      if (strcmp($oprov['oauth_name'],$_GET['oauth']) == 0){
         $oauth_params = $oprov;
         break;
       }
     }
 
-    $user_token = oauth_get_token($oauth_params, $args->oauth_code);
+    $user_token = oauth_get_token($oauth_params, $_GET['code']);
     if($user_token->status['status'] == tl::OK) {
       doSessionStart(true);
       $op = doAuthorize($db,$user_token->options->user,'oauth',$user_token->options);
       $doAuthPostProcess = true;
     } else {
-	$gui->note = $user_token->status['msg'];
-	$gui->draw=true;    
+        $gui->note = $user_token->status['msg'];
         renderLoginScreen($gui);
         die();
     }
@@ -89,12 +91,15 @@ switch($args->action) {
     $op = null;
 
     // unfortunatelly we use $args->note in order to do some logic.
-    if( ($args->note=trim($args->note)) == "" ) {
-      if( $gui->authCfg['SSO_enabled'] ) {
+    if( ($args->note=trim($args->note)) == "" )
+    {
+      if( $gui->authCfg['SSO_enabled'] )
+      {
         doSessionStart(true);
         $doAuthPostProcess = true;
         
-        switch ($gui->authCfg['SSO_method']) {
+        switch ($gui->authCfg['SSO_method']) 
+        {
           case 'CLIENT_CERTIFICATE':
             $op = doSSOClientCertificate($db,$_SERVER,$gui->authCfg);
           break;
@@ -109,11 +114,13 @@ switch($args->action) {
   break;
 }
 
-if( $doAuthPostProcess ) {
+if( $doAuthPostProcess ) 
+{
   list($doRenderLoginScreen,$gui->note) = authorizePostProcessing($args,$op);
 }
 
-if( $doRenderLoginScreen ) {
+if( $doRenderLoginScreen ) 
+{
   renderLoginScreen($gui);
 }
 
@@ -121,7 +128,8 @@ if( $doRenderLoginScreen ) {
  * 
  *
  */
-function init_args() {
+function init_args()
+{
   $pwdInputLen = config_get('loginPagePasswordMaxLenght');
 
   // 2010904 - eloff - Why is req and reqURI parameters to the login?
@@ -135,8 +143,6 @@ function init_args() {
                    "loginform_token" => array(tlInputParameter::STRING_N, 0, 255),
                    "viewer" => array(tlInputParameter::STRING_N, 0, 3),
                    "oauth" => array(tlInputParameter::STRING_N,0,100),
-                   "code" => array(tlInputParameter::STRING_N,0,4000),
-                   "state" => array(tlInputParameter::STRING_N,0,100),
                   );
   $pParams = R_PARAMS($iParams);
 
@@ -154,62 +160,41 @@ function init_args() {
   $args->viewer = $pParams['viewer']; 
 
   $k2c = array('ajaxcheck' => 'do','ajaxlogin' => 'do');
-  if (isset($k2c[$pParams['action']]))  {
+  if (isset($k2c[$pParams['action']])) 
+  {
     $args->action = $pParams['action'];
-  } else if (!is_null($args->login)) {
+  } 
+  else if (!is_null($args->login)) 
+  {
     $args->action = 'doLogin';
-  // This 'if' branch may be removed in later versions. Kept for compatibility    
-  } else if (!is_null($pParams['oauth']) && $pParams['oauth']) {
+  } 
+  else if (!is_null($pParams['oauth']) && $pParams['oauth'])
+  {
     $args->action = 'oauth';
-    $args->oauth_name = $pParams['oauth'];
-    $args->oauth_code = $pParams['code'];
-  } else if (!is_null($pParams['state']) && !is_null($pParams['code'])) {
-    $args->action = 'oauth';
-    $args->oauth_name = $pParams['state'];
-    $args->oauth_code = $pParams['code'];
-  } else {
+  }
+  else
+  {
     $args->action = 'loginform';
   }
 
-  // whitelist oauth_name
-  if (strcasecmp($args->action,'oauth') == 0) {
-    validateOauth($args->oauth_name);
-  }
 
   return $args;
-}
-
-/**
- *
- */
-function validateOauth($name) {
-  $name = trim($name);
-  $oauthServers = config_get('OAuthServers');
-  $whitelistOK = false;
-  foreach ($oauthServers as $serverCfg) {
-    if (strcasecmp($name, $serverCfg['oauth_name']) == 0) {
-      $whitelistOK = true;
-      break;
-    }
-  }
-
-  if ($whitelistOK == false) {
-    die("Invalid Oauth Service");
-  } 
 }
 
 /**
  * 
  *
  */
-function init_gui(&$db,$args) {
+function init_gui(&$db,$args)
+{
   $gui = new stdClass();
   $gui->viewer = $args->viewer;
 
   $secCfg = config_get('config_check_warning_frequence');
   $gui->securityNotes = '';
   if( (strcmp($secCfg, 'ALWAYS') == 0) || 
-      (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesDone'])) ) {
+      (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesDone'])) )
+  {
     $_SESSION['getSecurityNotesDone'] = 1;
     $gui->securityNotes = getSecurityNotes($db);
   }  
@@ -226,7 +211,7 @@ function init_gui(&$db,$args) {
         $gui->oauth[$name] = new stdClass();
         $gui->oauth[$name]->name = ucfirst($name);
         $gui->oauth[$name]->link = oauth_link($oauth_prov);
-        $gui->oauth[$name]->icon = $name . '.png';
+        $gui->oauth[$name]->icon = $oauth_prov['oauth_icon'];
     }
   }
 
@@ -275,23 +260,6 @@ function init_gui(&$db,$args) {
   $gui->destination = $args->destination;
   $gui->pwdInputMaxLenght = config_get('loginPagePasswordMaxLenght');
   
-
-  // Random Background
-  $imgSet = array();
-  $imgSet[] = "wp-testing04.jpg";
-  $imgSet[] = "Fedora-24-Default-Wallpaper-1.png";
-  $imgSet[] = "fedora-76343.jpg";
-  $imgSet[] = "fedora-hex_0.002.png";
-  $imgSet[] = "fedora-x.jpeg";
-  $imgSet[] = "fedora21.png-1024x640.jpg";
-  $imgSet[] = "fedora28.png";
-
-  $itemQty = count($imgSet)-1;
-  $ixx = rand(0,$itemQty);
-
-  $gui->loginBackgroundImg = 
-    "gui/templates/dashio/img/login/" . $imgSet[$ixx]; 
-  
   return $gui;
 }
 
@@ -305,9 +273,11 @@ function init_gui(&$db,$args) {
  * @param &$guiObj some gui elements that will be used to give feedback
  *  
  */
-function doBlockingChecks(&$dbHandler,&$guiObj) {
+function doBlockingChecks(&$dbHandler,&$guiObj)
+{
   $op = checkSchemaVersion($dbHandler);
-  if( $op['status'] < tl::OK ) {
+  if( $op['status'] < tl::OK ) 
+  {
     // Houston we have a problem
     // This check to kill session was added to avoid following situation
     // TestLink 1.9.5 installed
@@ -315,7 +285,8 @@ function doBlockingChecks(&$dbHandler,&$guiObj) {
     // you logged in TL 1.9.5 => session is created
     // you try to login to 1.9.6, you get the Update DB Schema message but
     // anyway because a LIVE AND VALID session you are allowed to login => BAD
-    if(isset($op['kill_session']) && $op['kill_session']) {
+    if(isset($op['kill_session']) && $op['kill_session'])
+    {
       session_unset();
       session_destroy();
     } 
@@ -335,7 +306,8 @@ function doBlockingChecks(&$dbHandler,&$guiObj) {
  * @global  $g_tlLogger
  * @param stdClassObject $guiObj
  */
-function renderLoginScreen($guiObj) {
+function renderLoginScreen($guiObj)
+{
   global $g_tlLogger; 
   $templateCfg = templateConfiguration();
   $logPeriodToDelete = config_get('removeEventsOlderThan');
@@ -344,9 +316,9 @@ function renderLoginScreen($guiObj) {
   $smarty = new TLSmarty();
   $smarty->assign('gui', $guiObj);
 
-  $templ = config_get('tpl');
-  $tpl = $templ['login'];
-  
+  // $tpl = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+  $tpl = 'login/login-model-marcobiedermann.tpl';
+  $tpl = '../dashio/login/login-dashio.tpl';
   $smarty->display($tpl);
 }
 
@@ -359,31 +331,45 @@ function renderLoginScreen($guiObj) {
 function authorizePostProcessing($argsObj,$op) {
   $note = null;
   $renderLoginScreen = false;
-  if($op['status'] == tl::OK) {
+  if($op['status'] == tl::OK)
+  {
     // Login successful, redirect to destination
     logAuditEvent(TLS("audit_login_succeeded",$argsObj->login,
                   $_SERVER['REMOTE_ADDR']),"LOGIN",$_SESSION['currentUser']->dbID,"users");
     
     if ($argsObj->action == 'ajaxlogin') {
       echo json_encode(array('success' => true));
-    } else {
+    } 
+    else {
       // If destination param is set redirect to given page ...
       if (!empty($argsObj->destination) && preg_match("/linkto.php/", $argsObj->destination)) {
         redirect($argsObj->destination);
-      } else {
+      }
+      else {
         // ... or show main page
         $_SESSION['viewer'] = $argsObj->viewer;
         $ad = $argsObj->ssodisable ? '&ssodisable=1' : '';
         $ad .= ($argsObj->preqURI ? "&reqURI=".urlencode($argsObj->preqURI) :"");
 
+        // Get memory from cookie
+        $tproject_id = 0;
+        $ckCfg = config_get('cookie');    
+        $ckObj = new stdClass();
+        $ckObj->name = $ckCfg->testProjectMemory . $_SESSION['userID'];
+        if (isset($_COOKIE[$ckObj->name])) {
+            $tproject_id = $_COOKIE[$ckObj->name];
+        }
         $rul = $_SESSION['basehref'] . 
-                 "index.php?caller=login&viewer={$argsObj->viewer}" . $ad;
+                 "index.php?caller=login&tproject_id=" . 
+                 intval($tproject_id) . $ad;
+
         
         redirect($rul);
       }
       exit(); // hmm seems is useless
     }
-  } else {
+  }
+  else {
     $note = '';
     if(!$argsObj->ssodisable) {
       $note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];

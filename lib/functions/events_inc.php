@@ -6,7 +6,7 @@
  *
  * @filesource  events_inc.php
  * @package     TestLink
- * @copyright   2015-2020, TestLink community
+ * @copyright   2015-2016, TestLink community
  * @link        http://www.testlink.org/
  *
  **/
@@ -27,11 +27,6 @@ event_declare_many(array(
   'EVENT_TEST_CASE_UPDATE' => EVENT_TYPE_UPDATE,
   'EVENT_TEST_CASE_DELETE' => EVENT_TYPE_DELETE,
 
-  // Requirement related events.
-  'EVENT_TEST_REQUIREMENT_CREATE' => EVENT_TYPE_CREATE,
-  'EVENT_TEST_REQUIREMENT_UPDATE' => EVENT_TYPE_UPDATE,
-  'EVENT_TEST_REQUIREMENT_DELETE' => EVENT_TYPE_DELETE,
-
   // Test Event related events
   'EVENT_EXECUTE_TEST' => EVENT_TYPE_CREATE,
 
@@ -43,3 +38,6 @@ event_declare_many(array(
   'EVENT_RIGHTMENU_BOTTOM' => EVENT_TYPE_OUTPUT,
   'EVENT_TESTRUN_DISPLAY' => EVENT_TYPE_OUTPUT,
 ));
+
+
+?>

@@ -20,22 +20,18 @@ function oauth_get_token($authCfg, $code) {
 
   //Params to get token
   $oauthParams = array(
-    'code'          => $code,
-    'grant_type'    => $authCfg['oauth_grant_type'],
-    'client_id'     => $authCfg['oauth_client_id'],
-    'client_secret' => $authCfg['oauth_client_secret']
+     'code'          => $code,
+     'grant_type'    => $authCfg['oauth_grant_type'],
+     'client_id'     => $authCfg['oauth_client_id'],
+     'redirect_uri'  => isset($_SERVER['HTTPS']) ? 'https://' : 'http://' . $_SERVER[HTTP_HOST]. 
+     'development/release/google/testlink-code-testlink_1_9/login.php?oauth=google',
+     'client_secret' => $authCfg['oauth_client_secret']
   );
-
-  $oauthParams['redirect_uri'] = trim($authCfg['redirect_uri']);  
-  if( isset($_SERVER['HTTPS']) ) {
-    $oauthParams['redirect_uri'] = 
-      str_replace('http://', 'https://', $oauthParams['redirect_uri']);  
-  }  
 
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_URL, $authCfg['token_url']);
   curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($oauthParams));
+  curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($oauthParams)));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
   $result_curl = curl_exec($curl);
@@ -45,21 +41,18 @@ function oauth_get_token($authCfg, $code) {
   //If token is received start session
   if (isset($tokenInfo['access_token'])){
     $oauthParams['access_token'] = $tokenInfo['access_token'];
-    $userInfo = json_decode(file_get_contents($authCfg['oauth_profile'] . '?' . 
-          http_build_query($oauthParams)), true);
+    $userInfo = json_decode(file_get_contents($authCfg['oauth_profile'] . '?' . urldecode(http_build_query($oauthParams))), true);
 
     if (isset($userInfo['id'])){
       if (isset($authCfg['oauth_domain'])) {
         $domain = substr(strrchr($userInfo['email'], "@"), 1);
         if ($domain !== $authCfg['oauth_domain']){
-          $result->status['msg'] = 
-          "TestLink Oauth policy - User email domain:$domain does not 
-           match \$authCfg['oauth_domain']:{$authCfg['oauth_domain']} ";
+          $result->status['msg'] = 'User doesn\'t correspond to Oauth policy';
           $result->status['status'] = tl::ERROR;
         }
       }
     } else {
-      $result->status['msg'] = 'TestLink - User ID is empty';
+      $result->status['msg'] = 'User ID is empty';
       $result->status['status'] = tl::ERROR;
     }
 
@@ -71,7 +64,7 @@ function oauth_get_token($authCfg, $code) {
 
     $result->options = $options;
   } else {
-    $result->status['msg'] = 'TestLink - An error occurred during get token';
+    $result->status['msg'] = 'An error occurred during getting token';
     $result->status['status'] = tl::ERROR;
   }
 

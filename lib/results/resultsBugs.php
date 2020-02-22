@@ -4,6 +4,7 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource resultsBugs.php
+ * 
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -19,14 +20,15 @@ $gui->warning_msg = '';
 $gui->tableSet = null;
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = init_args($db);
 
 // get issue tracker config and object to manage TestLink - BTS integration 
 $its = null;
 $tproject_mgr = new testproject($db);
 $info = $tproject_mgr->get_by_id($args->tproject_id);
 $gui->bugInterfaceOn = $info['issue_tracker_enabled'];
-if( $info['issue_tracker_enabled']) {
+if($info['issue_tracker_enabled'])
+{
   $it_mgr = new tlIssueTracker($db);
   $its = $it_mgr->getInterfaceObject($args->tproject_id);
   unset($it_mgr);
@@ -224,24 +226,28 @@ function getColumnsDefinition()
 }
 
 
-/*
-  function: init_args()
-
-  args :
-  
-  returns: 
-
-*/
-function init_args()
+/**
+ *
+ *
+ */
+function init_args(&$dbHandler)
 {
   $iParams = array("format" => array(tlInputParameter::INT_N),
                    "tplan_id" => array(tlInputParameter::INT_N),
+                   "tproject_id" => array(tlInputParameter::INT_N),
                    "type" => array(tlInputParameter::INT_N) );
 
   $args = new stdClass();
   $pParams = R_PARAMS($iParams,$args);
   
-  $args->tproject_id = intval($_SESSION['testprojectID']);
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
+
+
+
   $args->user = $_SESSION['currentUser'];
 
   switch($args->type)

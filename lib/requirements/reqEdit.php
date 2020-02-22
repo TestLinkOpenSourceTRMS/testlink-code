@@ -25,7 +25,7 @@ require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db,false,false,"checkRights");
 
-$templateCfg = templateConfiguration();
+$tplCfg = templateConfiguration();
 $commandMgr = new reqCommands($db);
 
 $args = init_args($db);
@@ -37,7 +37,7 @@ if(method_exists($commandMgr,$pFn)) {
   $op = $commandMgr->$pFn($args,$_REQUEST);
 }
 
-renderGui($args,$gui,$op,$templateCfg,$editorCfg,$db);
+renderGui($args,$gui,$op,$tplCfg,$editorCfg,$db);
 
 
 /**
@@ -73,30 +73,28 @@ function init_args(&$dbHandler)
                    "log_message" => array(tlInputParameter::STRING_N),
                    "tcaseIdentity" => array(tlInputParameter::STRING_N),
                    "file_id" => array(tlInputParameter::INT_N),
-                   "fileTitle" => array(tlInputParameter::STRING_N,0,100));
+                   "fileTitle" => array(tlInputParameter::STRING_N,0,100),
+                   "tproject_id" => array(tlInputParameter::INT_N));
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
-  $_REQUEST=strings_stripSlashes($_REQUEST);
+  $_REQUEST = strings_stripSlashes($_REQUEST);
     
   $args->req_id = $args->requirement_id;
   $args->title = $args->req_title;
   $args->arrReqIds = $args->req_id_cbox;
 
   $args->basehref = $_SESSION['basehref'];
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-  if($args->tproject_id <= 0)
-  {
+
+  if ($args->tproject_id <= 0) {
     throw new Exception(__FILE__ . '::' . __FUNCTION__ . " Test project ID can not be <= 0 ");  
-  }                                                                                        
+  }
   
   $mgr = new testproject($dbHandler);
   $info = $mgr->get_by_id($args->tproject_id);
-  if(is_null($info))
-  {
+  if (is_null($info)) {
     throw new Exception(__FILE__ . '::' . __FUNCTION__ . " Unable to get test project data ");  
   }                                                                                        
-  
   $args->tproject_name = $info['name'];
   $args->tcasePrefix = $info['prefix'];
   
@@ -118,7 +116,7 @@ function init_args(&$dbHandler)
  * 
  *
  */
-function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
+function renderGui(&$argsObj,$guiObj,$opObj,$tplCfg,$editorCfg,&$dbHandler)
 {
   $smartyObj = new TLSmarty();
   $renderType = 'none';
@@ -186,8 +184,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     break;
   }
   
-  switch($argsObj->doAction)
-  {
+  switch ($argsObj->doAction) {
     case "addTestCase":
     case "edit":
     case "create":
@@ -214,27 +211,28 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     case "startMonitoring":
       $renderType = 'template';
       $key2loop = get_object_vars($opObj);
-      foreach($key2loop as $key => $value)
-      {
+      foreach ($key2loop as $key => $value) {
         $guiObj->$key = $value;
       }
+      $guiObj->tproject_id = $argsObj->tproject_id;
 
       // exceptions
       $guiObj->askForRevision = $opObj->suggest_revision ? 1 : 0;
       $guiObj->askForLog = $opObj->prompt_for_log ? 1 : 0;
       $guiObj->operation = isset($actionOpe[$argsObj->doAction]) ? $actionOpe[$argsObj->doAction] : $argsObj->doAction;
           
-      $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
-      $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
+      $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $tplCfg->template_dir : $opObj->template_dir;
+      $tpl = is_null($opObj->template) ? $tplCfg->default_template : $opObj->template;
 
       $pos = strpos($tpl, '.php');
-      if($pos === false) {
+      if ($pos === false) {
         $tpl = $tplDir . $tpl;      
       } else {
         $renderType = 'redirect';
         if (null != $guiObj->uploadOp && $guiObj->uploadOp->statusOK == false) {
           $tpl .= "&uploadOPStatusCode=" . $guiObj->uploadOp->statusCode;
         }
+
       } 
     break;
   }
@@ -243,8 +241,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
   $guiObj->last_doc_id = $req_mgr->get_last_doc_id_for_testproject($argsObj->tproject_id);
   $guiObj->doAction = $argsObj->doAction;
 
-  switch($renderType)
-  {
+  switch ($renderType) {
     case 'template':
       $smartyObj->assign('gui',$guiObj);
       $smartyObj->display($tpl);
@@ -267,22 +264,18 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 {
   $req_spec_mgr = new requirement_spec_mgr($dbHandler);
-
-  // new dBug($argsObj);
-
   $gui = $commandMgr->initGuiBean();
   $gui->req_cfg = config_get('req_cfg');
   
+  $gui->tproject_id = $argsObj->tproject_id;
   $gui->req_spec_id = $argsObj->req_spec_id;
-  if ($argsObj->req_spec_id)
-  {
+  if ($argsObj->req_spec_id) {
     $gui->requirements_count = $req_spec_mgr->get_requirements_count($gui->req_spec_id);
     $gui->req_spec = $req_spec_mgr->get_by_id($gui->req_spec_id);
   }
   $gui->user_feedback = null;
   $gui->main_descr = lang_get('req_spec_short');
-  if (isset($gui->req_spec))
-  {
+  if (isset($gui->req_spec)) {
      $gui->main_descr .= config_get('gui_title_separator_1') . $gui->req_spec['title'];
   }
   $gui->action_descr = null;

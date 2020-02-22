@@ -16,8 +16,7 @@ list($args,$gui,$commandMgr) = initScript($db);
 
 $pFn = $args->doAction;
 $op = null;
-if(method_exists($commandMgr,$pFn))
-{
+if(method_exists($commandMgr,$pFn)) {
   $op = $commandMgr->$pFn($args,$_REQUEST);
 }
 
@@ -112,10 +111,10 @@ function init_args($whiteList) {
   $args = new stdClass();
 
   $iParams = array("id" => array(tlInputParameter::INT_N),
-		   "doAction" => array(tlInputParameter::STRING_N,0,20),
-		   "name" => array(tlInputParameter::STRING_N,0,100),
-		   "cfg" => array(tlInputParameter::STRING_N,0,2000),
-		   "type" => array(tlInputParameter::INT_N));
+                   "doAction" => array(tlInputParameter::STRING_N,0,20),
+		               "name" => array(tlInputParameter::STRING_N,0,100),
+		               "cfg" => array(tlInputParameter::STRING_N,0,2000),
+		               "type" => array(tlInputParameter::INT_N));
 
   R_PARAMS($iParams,$args);
 
@@ -134,6 +133,10 @@ function init_args($whiteList) {
 
   $args->currentUser = $_SESSION['currentUser'];
 
+  list($context,$env) = initContext();
+  $args->tproject_id = $context->tproject_id;
+  $args->tplan_id = $context->tplan_id;
+
   return $args;
 }
 
@@ -144,7 +147,8 @@ function init_args($whiteList) {
  */
 function initializeGui(&$dbHandler,&$argsObj,&$commandMgr)
 {
-  $gui = new stdClass();
+  list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
+  $gui->activeMenu['system'] = 'active';
   $gui->main_descr = '';
   $gui->action_descr = '';
   $gui->user_feedback = array('type' => '', 'message' => '');
@@ -152,15 +156,11 @@ function initializeGui(&$dbHandler,&$argsObj,&$commandMgr)
 	
   // get affected test projects
   $gui->testProjectSet = null;
-  if($argsObj->id > 0)
-  {
-		
+  if($argsObj->id > 0) {
     // just to fix erroneous test project delete
     $dummy = $commandMgr->codeTrackerMgr->getLinks($argsObj->id,array('getDeadLinks' => true));
-    if( !is_null($dummy) )
-    {
-      foreach($dummy as $key => $elem)
-      {
+    if( !is_null($dummy) ) {
+      foreach($dummy as $key => $elem) {
         $commandMgr->codeTrackerMgr->unlink($argsObj->id,$key);
       }
     }

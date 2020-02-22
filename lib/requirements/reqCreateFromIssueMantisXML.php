@@ -5,8 +5,8 @@
  *
  * @filesource  reqCreateFromIssueFromMantisXML.php
  * @package     TestLink
- * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2019, TestLink community 
+ * @link        http://www.testlink.org/
  * 
  *
  *
@@ -36,8 +36,6 @@
  *       <id>20</id>
  *       <project id="1">testlink-test</project>
  *
- * @internal revisions
- * @since 1.9.10
  *
  */
 require('../../config.inc.php');
@@ -48,7 +46,7 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
 $req_mgr = new requirement_mgr($db);
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($db,$args);
 
 new dBug($args);
@@ -84,9 +82,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  *
  */
-function init_args()
+function init_args(&$dbH)
 {
-  $argsObj = new stdClass();
+  list($argsObj,$env) = initContext();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $iParams = array("importType" => array(tlInputParameter::STRING_N,0,5),
@@ -97,8 +95,9 @@ function init_args()
 
   $argsObj->doAction = ($argsObj->doAction == '') ? 'askFileName' : $argsObj->doAction;
   $argsObj->userID = intval($_SESSION['userID']);
-  $argsObj->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-  $argsObj->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+
+  $argsObj->tproject_name = testproject::getName($dbH,$argsObj->tproject_id);
+  
   return $argsObj;
 }
 

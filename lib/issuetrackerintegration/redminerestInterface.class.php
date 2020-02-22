@@ -23,28 +23,29 @@ class redminerestInterface extends issueTrackerInterface
 	 * @param str $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
-	function __construct($type,$config,$name) {
-      $this->name = $name;
-	  $this->interfaceViaDB = false;
-	  $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+	function __construct($type,$config,$name)
+	{
+    $this->name = $name;
+		$this->interfaceViaDB = false;
+		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 
-      $this->defaultResolvedStatus = array();
-      $this->defaultResolvedStatus[] = array('code' => 3, 'verbose' => 'resolved');
-      $this->defaultResolvedStatus[] = array('code' => 5, 'verbose' => 'closed');
+    $this->defaultResolvedStatus = array();
+    $this->defaultResolvedStatus[] = array('code' => 3, 'verbose' => 'resolved');
+    $this->defaultResolvedStatus[] = array('code' => 5, 'verbose' => 'closed');
 		
-      $this->canSetReporter = true;
-	  if( !$this->setCfg($config) ) {
-        return false;
-      }  
+	  if( !$this->setCfg($config) )
+    {
+      return false;
+    }  
 
-      // http://www.redmine.org/issues/6843
-      // "Target version" is the new display name for this property, 
-      // but it's still named fixed_version internally and thus in the API.
-      // $issueXmlObj->addChild('fixed_version_id', (string)2);
-      $this->translate['targetversion'] = 'fixed_version_id';
+    // http://www.redmine.org/issues/6843
+    // "Target version" is the new display name for this property, 
+    // but it's still named fixed_version internally and thus in the API.
+    // $issueXmlObj->addChild('fixed_version_id', (string)2);
+    $this->translate['targetversion'] = 'fixed_version_id';
 
-      $this->completeCfg();
-	  $this->setResolvedStatusCfg();
+		$this->completeCfg();
+		$this->setResolvedStatusCfg();
 	  $this->connect();
 	}
 
@@ -314,8 +315,8 @@ class redminerestInterface extends issueTrackerInterface
    * - custom_fields    - See Custom fields
    * - watcher_user_ids - Array of user ids to add as watchers (since 2.3.0)
    */
-  public function addIssue($summary,$description,$opt=null) {
-
+  public function addIssue($summary,$description,$opt=null)
+  {
     $reporter = null;
     if(!is_null($opt) && property_exists($opt, 'reporter')) {
       $reporter = $opt->reporter;
@@ -326,8 +327,7 @@ class redminerestInterface extends issueTrackerInterface
   	if( !property_exists($this->cfg,'projectidentifier') ) {
   	  throw new exception(__METHOD__ . " project identifier is MANDATORY");
   	}
-
-
+  	  
     try {
        // needs json or xml
       $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
@@ -345,7 +345,13 @@ class redminerestInterface extends issueTrackerInterface
       // Got from XML Configuration
       // improvement
       $pid = (string)$this->cfg->projectidentifier;
-   	  $issueXmlObj->addChild('project_id',$pid);
+      if(is_string($pid)) {
+        $pinfo = $this->APIClient->getProjectByIdentity($pid);
+        if(!is_null($pinfo)) {
+          $pid = (int)$pinfo->id;
+        }  
+      }  
+   		$issueXmlObj->addChild('project_id', (string)$pid);
 
       if( property_exists($this->cfg,'trackerid') ) {
         $issueXmlObj->addChild('tracker_id', (string)$this->cfg->trackerid);
@@ -355,6 +361,7 @@ class redminerestInterface extends issueTrackerInterface
       if( property_exists($this->cfg,'parent_issue_id') ) {
         $issueXmlObj->addChild('parent_issue_id', (string)$this->cfg->parent_issue_id);
       } 
+
 
       // Why issuesAttr is issue ?
       // Idea was 
@@ -402,7 +409,7 @@ class redminerestInterface extends issueTrackerInterface
       }
 
       // $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
-      //file_put_contents('/var/testlink/' . __CLASS__ . '.log', $xml);
+      file_put_contents('/var/testlink/' . __CLASS__ . '.log', $xml);
       $op = $this->APIClient->addIssueFromXMLString($xml,$reporter);
 
       

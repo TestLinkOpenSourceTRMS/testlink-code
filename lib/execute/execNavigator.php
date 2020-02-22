@@ -9,7 +9,7 @@
  *
  * @filesource  execNavigator.php
  * @package     TestLink
- * @copyright   2007-2017, TestLink community
+ * @copyright   2007-2019, TestLink community
  * @link        http://www.testlink.org
  *
  *
@@ -30,10 +30,7 @@ $control = new tlTestCaseFilterControl($db, 'execution_mode');
 $control->formAction = '';
 
 $gui = initializeGui($db,$control);
-
-
 $control->build_tree_menu($gui);
-
 
 $smarty = new TLSmarty();
 if( $gui->execAccess ) {
@@ -54,7 +51,12 @@ $smarty->display($tpl);
  *
  */
 function initializeGui(&$dbH,&$control) {
-  $gui = new stdClass();
+  
+  list($add2args,$gui) = initUserEnv($dbH,$control->args);
+
+  echo __LINE__;
+  var_dump($control->args->loadExecDashboard);
+  var_dump($_SESSION['loadExecDashboard'][$control->form_token]);
   
   // This logic is managed from execSetResults.php
   $gui->loadExecDashboard = true;
@@ -65,14 +67,18 @@ function initializeGui(&$dbH,&$control) {
     unset($_SESSION['loadExecDashboard'][$control->form_token]);      
   }  
 
+  var_dump($gui->loadExecDashboard);
+
   $gui->menuUrl = 'lib/execute/execSetResults.php';
   $gui->args = $control->get_argument_string();
   if($control->args->loadExecDashboard == false) {
     $gui->src_workframe = '';
   } else {
     $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
-                          "?edit=testproject&id={$control->args->testproject_id}" . 
-                          $gui->args;
+        "?edit=testproject&id={$control->args->testproject_id}" . 
+        "&tproject_id=$gui->tproject_id" .
+        "&tplan_id=$gui->tplan_id";
+        $gui->args;
   } 
   
   $control->draw_export_testplan_button = true;

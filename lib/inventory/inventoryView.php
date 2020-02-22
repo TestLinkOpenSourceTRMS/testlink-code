@@ -7,7 +7,13 @@
  * 
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 2009,2019 TestLink community 
+ * @copyright 	2009, TestLink community 
+ * @version    	CVS: $Id: inventoryView.php,v 1.3 2010/02/20 13:47:49 franciscom Exp $
+ *
+ *	@todo redirect if no right
+ *
+ * @internal Revisions:
+ * None
  *
  **/
 
@@ -23,3 +29,5 @@ $gui->rightView = has_rights($db,"project_inventory_view");
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+?>

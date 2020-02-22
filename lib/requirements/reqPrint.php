@@ -6,7 +6,7 @@
  * @filename  reqPrint.php
  * @package   TestLink
  * @author    Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright 2005-2018, TestLink community
+ * @copyright 2005-2019, TestLink community
  * @link      http://www.testlink.org/
  *
  * create printer friendly information for ONE requirement
@@ -21,13 +21,12 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);
-$args = init_args();
+$args = init_args($db);
 $node = $tree_mgr->get_node_hierarchy_info($args->req_id);
 $node['version_id'] = $args->req_version_id;
 $node['revision'] = $args->req_revision;
 
 $gui = new stdClass();
-$gui->object_name='';
 $gui->object_name = $node['name'];
 $gui->page_title = sprintf(lang_get('print_requirement'),$node['name']);
 $gui->tproject_name=$args->tproject_name;
@@ -62,7 +61,7 @@ echo $text2print;
   returns: 
 
 */
-function init_args() {
+function init_args(&$dbH) {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $args = new stdClass();
@@ -70,8 +69,12 @@ function init_args() {
   $args->req_version_id = isset($_REQUEST['req_version_id']) ? intval($_REQUEST['req_version_id']) : 0;
   $args->req_revision = isset($_REQUEST['req_revision']) ? intval($_REQUEST['req_revision']) : 0;
 
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-  $args->tproject_name = $_SESSION['testprojectName'];
+  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+
+  if (0==$args->tproject_id) {
+    throw new Exception("Bad Test Project ID", 1);    
+  }
+  $args->tproject_name = testproject::getName($dbH,$args->tproject_id);
 
   return $args;
 }

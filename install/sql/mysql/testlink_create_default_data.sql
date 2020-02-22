@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------------------
 
 # Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.20', 'TestLink 1.9.20 Raijin',CURRENT_TIMESTAMP());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 2.0.0', 'TestLink 2.0.0',CURRENT_TIMESTAMP());
 
 # Node types -
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (1,'testproject');
@@ -227,7 +227,6 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,50);
 # TICKET 4342: Security problem with multiple Testlink installations on the same server 
 INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,active,cookie_string)
 			VALUES ('admin',MD5('admin'), 8,'', 'Testlink','Administrator', 'en_GB',1,CONCAT(MD5(RAND()),MD5('admin')));
-
 
 # Assignment types
 INSERT INTO /*prefix*/assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');

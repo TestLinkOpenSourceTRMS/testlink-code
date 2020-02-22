@@ -6,9 +6,11 @@
  * @filesource  tlIssueTracker.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2012,2020 TestLink community
+ * @copyright   2012,2013 TestLink community
  * @link        http://testlink.sourceforge.net/
  *
+ * @internal revisions
+ * @since 1.9.10
  *
 **/
 
@@ -28,59 +30,30 @@ class tlIssueTracker extends tlObject
   // array index is used AS CODE that will be written to DB
   // if you need to add a new item start on 200, to avoid crash with standard ID
   //  
-  var $systems = 
-    array( 1 =>  array('type' => 'bugzilla', 
-                       'api' => 'xmlrpc', 'enabled' => true, 
-                       'order' => 1),
-           2 =>  array('type' => 'bugzilla', 'api' => 'db', 
-                       'enabled' => true, 'order' => 2),
-
-           3 =>  array('type' => 'mantis', 'api' =>'soap', 
-                       'enabled' => true, 'order' => 3),
-           4 =>  array('type' => 'mantis', 'api' =>'db', 
-                       'enabled' => true, 'order' => 5),
-           24 =>  array('type' => 'mantis','api' =>'rest',
-                        'enabled' => true, 'order' => 5),
-
-           5 =>  array('type' => 'jira', 'api' =>'soap', 
-                       'enabled' => true, 'order' => 6),
-           6 =>  array('type' => 'jira', 'api' =>'db', 
-                       'enabled' => true, 'order' => 7),
-           7 =>  array('type' => 'jira', 'api' =>'rest', 
-                       'enabled' => true, 'order' => 8),
-           8 =>  array('type' => 'fogbugz','api' =>'rest',
-                       'enabled' => true, 'order' => 9),
-           9 =>  array('type' => 'fogbugz','api' =>'db',
-                       'enabled' => true, 'order' => 10),
-           10 =>  array('type' => 'gforge','api' =>'soap',
-                        'enabled' => false, 'order' => 11),
-           11 =>  array('type' => 'gforge','api' =>'db',
-                        'enabled' => false, 'order' => 12),
-           12 =>  array('type' => 'eventum','api' =>'db', 
-                        'enabled' => false, 'order' => 13),
-           13 =>  array('type' => 'polarion', 'api' =>'soap', 
-                        'enabled' => false, 'order' => 14),
-           14 =>  array('type' => 'youtrack','api' =>'rest',
-                        'enabled' => true, 'order' => 15),
-           15 =>  array('type' => 'redmine','api' =>'rest',
-                        'enabled' => true, 'order' => 16),
-           16 =>  array('type' => 'redmine','api' =>'db',
-                        'enabled' => false, 'order' => 17),
-           17 =>  array('type' => 'seapine','api' =>'soap',
-                        'enabled' => false, 'order' => 18),
-           18 =>  array('type' => 'seapine','api' =>'db',
-                        'enabled' => false, 'order' => 19),
-           19 =>  array('type' => 'trac','api' =>'xmlrpc',
-                        'enabled' => true, 'order' => 20),
-           20 =>  array('type' => 'trackplus','api' =>'soap',
-                        'enabled' => false, 'order' => 21),
-           21 =>  array('type' => 'trackplus','api' =>'db',
-                        'enabled' => false, 'order' => 22),
-           22 =>  array('type' => 'gitlab','api' =>'rest',
-                        'enabled' => true, 'order' => 23),
-           23 =>  array('type' => 'kaiten','api' =>'rest',
-                        'enabled' => true, 'order' => 24)
+  var $systems = array( 1 =>  array('type' => 'bugzilla', 'api' => 'xmlrpc', 'enabled' => true, 'order' => -1),
+                        2 =>  array('type' => 'bugzilla', 'api' => 'db', 'enabled' => true, 'order' => -1),
+                        3 =>  array('type' => 'mantis', 'api' =>'soap', 'enabled' => true, 'order' => -1),
+                        4 =>  array('type' => 'mantis', 'api' =>'db', 'enabled' => true, 'order' => -1),
+                        5 =>  array('type' => 'jira', 'api' =>'soap', 'enabled' => true, 'order' => -1),
+                        6 =>  array('type' => 'jira', 'api' =>'db', 'enabled' => true, 'order' => -1),
+                        7 =>  array('type' => 'jira', 'api' =>'rest', 'enabled' => true, 'order' => -1),
+                        8 =>  array('type' => 'fogbugz','api' =>'rest','enabled' => true, 'order' => -1),
+                        9 =>  array('type' => 'fogbugz','api' =>'db','enabled' => true, 'order' => -1),
+                       10 =>  array('type' => 'gforge','api' =>'soap','enabled' => false, 'order' => -1),
+                       11 =>  array('type' => 'gforge','api' =>'db','enabled' => false, 'order' => -1),
+                       12 =>  array('type' => 'eventum','api' =>'db', 'enabled' => false, 'order' => -1),
+                       13 =>  array('type' => 'polarion', 'api' =>'soap', 'enabled' => false, 'order' => -1),
+                       14 =>  array('type' => 'youtrack','api' =>'rest','enabled' => true, 'order' => -1),
+                       15 =>  array('type' => 'redmine','api' =>'rest','enabled' => true, 'order' => -1),
+                       16 =>  array('type' => 'redmine','api' =>'db','enabled' => false, 'order' => -1),
+                       17 =>  array('type' => 'seapine','api' =>'soap','enabled' => false, 'order' => -1),
+                       18 =>  array('type' => 'seapine','api' =>'db','enabled' => false, 'order' => -1),
+                       19 =>  array('type' => 'trac','api' =>'xmlrpc','enabled' => true, 'order' => -1),
+                       20 =>  array('type' => 'trackplus','api' =>'soap','enabled' => false, 'order' => -1),
+                       21 =>  array('type' => 'trackplus','api' =>'db','enabled' => false, 'order' => -1),
+                       22 =>  array('type' => 'gitlab','api' =>'rest','enabled' => true, 'order' => -1)
                      );
+  
     
   var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');
     
@@ -145,9 +118,12 @@ class tlIssueTracker extends tlObject
    */
   function getTypes()
   {
-    if( is_null($this->types) ) {
-      foreach($this->systems as $code => $spec) {
-        if ($spec['enabled']) {  
+    if( is_null($this->types) )
+    {
+      foreach($this->systems as $code => $spec)
+      {
+        if($spec['enabled'])
+        {  
           $this->types[$code] = $spec['type'] . " (Interface: {$spec['api']})";
         }  
       }
@@ -648,7 +624,8 @@ class tlIssueTracker extends tlObject
          " WHERE TPIT.testproject_id = " . intval($tprojectID);
          
     $ret = $this->db->get_recordset($sql);
-    if (!is_null($ret)) { 
+    if( !is_null($ret) )
+    { 
       $ret = $ret[0];
       $ret['verboseType'] = $this->types[$ret['type']];
       $spec = $this->systems[$ret['type']];
@@ -708,7 +685,8 @@ class tlIssueTracker extends tlObject
    *
    *
    */
-  function checkConnection($its) {
+  function checkConnection($its)
+  {
     $xx = $this->getByID($its);
     $class2create = $xx['implementation'];
     $its = new $class2create($xx['type'],$xx['cfg'],$xx['name']);

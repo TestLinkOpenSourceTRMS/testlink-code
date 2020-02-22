@@ -16,6 +16,8 @@
 
 /* [GLOBAL SETTINGS] */
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
+define('TL_JQUERY','third_party/jquery/jquery-3.4.1.min.js');  
+
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_VERSION_NUMBER', '2.0.0'); 

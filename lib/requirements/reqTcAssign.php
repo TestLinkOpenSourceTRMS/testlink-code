@@ -82,6 +82,8 @@ $smarty->display($tpl);
  *
  */
 function init_args() {
+
+  list($args,$env) = initContext();
   $iParams = array("id" => array(tlInputParameter::INT_N),
                    "req_id" => array(tlInputParameter::ARRAY_INT),
                    "link_id" => array(tlInputParameter::ARRAY_INT),
@@ -96,7 +98,6 @@ function init_args() {
                    "callback" => array(tlInputParameter::STRING_N,0,1),
                    "idSRS" => array(tlInputParameter::INT_N));  
     
-  $args = new stdClass();
   R_PARAMS($iParams,$args);
 
   // take care of proper escaping when magic_quotes_gpc is enabled
@@ -105,7 +106,7 @@ function init_args() {
   $args->idReqSpec = null;
   $args->idReq = $args->req;
   $args->reqIdSet = $args->req_id;
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+
 
   $args->tcaseSet = null;
   if(isset($_SESSION['edit_mode'][$args->form_token]['testcases_to_show'])) {

@@ -3,15 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource planUpdateTC.php
  *
- * Author: franciscom
  *
- * Allows for NON executed test cases linked to a test plan, update of Test Case versions
- * following user choices.
+ * Allows for NON executed test cases linked to a test plan, 
+ * update of Test Case versions following user choices.
  * Test Case Execution assignments will be auto(magically) updated.
- *
- * 	@internal revisions:
- *	@since 1.9.4
- *	20120410 - franciscom - TICKET 4888: Unable to update test plan with last version of testcase
  *
  */
 require_once("../../config.inc.php");
@@ -30,22 +25,20 @@ $args = init_args($tplan_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
 $keywordsFilter = null;
-if(is_array($args->keyword_id))
-{
-    $keywordsFilter = new stdClass();
-    $keywordsFilter->items = $args->keyword_id;
-    $keywordsFilter->type = $gui->keywordsFilterType->selected;
+if (is_array($args->keyword_id)) {
+  $keywordsFilter = new stdClass();
+  $keywordsFilter->items = $args->keyword_id;
+  $keywordsFilter->type = $gui->keywordsFilterType->selected;
 }
 
-switch ($args->doAction)
-{
-    case "doUpdate":
-    case "doBulkUpdateToLatest":
-	    $gui->user_feedback = doUpdate($db,$args);
-	    break;
+switch ($args->doAction) {
+  case "doUpdate":
+  case "doBulkUpdateToLatest":
+	  $gui->user_feedback = doUpdate($db,$args);
+	break;
 
-    default:
-    	break;
+  default:
+  break;
 }
 
 $out = null;
@@ -53,48 +46,42 @@ $gui->show_details = 0;
 $gui->operationType = 'standard';
 $gui->hasItems = 0;        	
 
-switch($args->level)
-{
+switch ($args->level) {
 	case 'testcase':
-	    $out = processTestCase($db,$args,$keywordsFilter,$tplan_mgr,$tree_mgr);
-		break;
+	  $out = processTestCase($db,$args,$keywordsFilter,$tplan_mgr,$tree_mgr);
+	break;
 
 	case 'testsuite':
-	    $out = processTestSuite($db,$args,$keywordsFilter,$tplan_mgr,$tcase_mgr);
-		break;
+	  $out = processTestSuite($db,$args,$keywordsFilter,$tplan_mgr,$tcase_mgr);
+	break;
 
 	case 'testplan':
-        $itemSet = processTestPlan($db,$args,$tplan_mgr);
-        $gui->testcases = $itemSet['items'];
-        $gui->user_feedback = $itemSet['msg'];
+    $itemSet = processTestPlan($db,$args,$tplan_mgr);
+    $gui->testcases = $itemSet['items'];
+    $gui->user_feedback = $itemSet['msg'];
 		$gui->instructions = lang_get('update2latest');
 		$gui->buttonAction = "doBulkUpdateToLatest";
-        $gui->operationType = 'bulk';
-        if( !is_null($gui->testcases) )
-        {
-	        $gui->hasItems = 1;
+    $gui->operationType = 'bulk';
+    if (!is_null($gui->testcases)) {
+	    $gui->hasItems = 1;
 			$gui->show_details = 1;
-        }
-  		break;
+    }
+  break;
   
 	default:
 		// show instructions
-  		redirect($_SESSION['basehref'] . "/lib/general/staticPage.php?key=planUpdateTC");
-		break;
+  	redirect($_SESSION['basehref'] . "/lib/general/staticPage.php?key=planUpdateTC");
+	break;
 }
 
-if(!is_null($out))
-{
+if (!is_null($out)) {
 	$gui->hasItems = $out['num_tc'] > 0 ? 1 : 0;
 	$gui->items = $out['spec_view'];
 }
 
-if($gui->buttonAction == 'doUpdate')
-{
+if ($gui->buttonAction == 'doUpdate') {
 	$gui->action_descr = lang_get('update_testcase_versions');
-}
-else
-{
+} else {
 	$gui->action_descr = lang_get('update_all_testcase_versions');
 }
 
@@ -112,64 +99,58 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args(&$tplanMgr)
 {
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-    $args = new stdClass();
-    $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-    $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
-    $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+  list($args,$env) = initContext();
+  
+  $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+  $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
+  $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 
-    // Maps with key: test case ID value: tcversion_id
-    $args->fullTestCaseSet = isset($_REQUEST['a_tcid']) ? $_REQUEST['a_tcid'] : null;
-    $args->checkedTestCaseSet = isset($_REQUEST['achecked_tc']) ? $_REQUEST['achecked_tc'] : null;
-    $args->newVersionSet = isset($_REQUEST['new_tcversion_for_tcid']) ? $_REQUEST['new_tcversion_for_tcid'] : null;
-    $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
+  // Maps with key: test case ID value: tcversion_id
+  $args->fullTestCaseSet = isset($_REQUEST['a_tcid']) ? $_REQUEST['a_tcid'] : null;
+  $args->checkedTestCaseSet = isset($_REQUEST['achecked_tc']) ? $_REQUEST['achecked_tc'] : null;
+  $args->newVersionSet = isset($_REQUEST['new_tcversion_for_tcid']) ? $_REQUEST['new_tcversion_for_tcid'] : null;
+  $args->version_id = isset($_REQUEST['version_id']) ? 
+                      intval($_REQUEST['version_id']) : 0;
 
-    $args->tproject_id = $_SESSION['testprojectID'];
-    $args->tproject_name = $_SESSION['testprojectName'];
+  $args->tproject_name = 
+    testproject::getName($tplanMgr->db,$args->tproject_id);
 
-	// For more information about the data accessed in session here, see the comment
-	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
+	// For more information about the data accessed in session here, 
+  // see the comment in the file header of 
+  // lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	
 	$mode = 'plan_mode';
 	
-	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
+	$cache = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
 	                ? $_SESSION[$mode][$form_token] : null;
 	
-	$args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
-	if($args->tplan_id == 0) 
-	{
-		$args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
-		$args->tplan_name = $_SESSION['testplanName'];
-	} 
-	else 
-	{
-		$tpi = $tplanMgr->get_by_id($args->tplan_id);  
-		$args->tplan_name = $tpi['name'];
-	}
+	$args->tplan_id = isset($cache['setting_testplan']) ? $cache['setting_testplan'] : 0;
+	
+  $args->tplan_id = intval($args->tplan_id);
+  $tpi = $tplanMgr->get_by_id($args->tplan_id);  
+	$args->tplan_name = $tpi['name'];
 
-	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
-                         $session_data['setting_refresh_tree_on_action'] : 0;
+	$args->refreshTree = isset($cache['setting_refresh_tree_on_action']) ?
+                         $cache['setting_refresh_tree_on_action'] : 0;
     
-    $args->keyword_id = 0;
+  $args->keyword_id = 0;
 	$fk = 'filter_keywords';
-	if (isset($session_data[$fk])) 
-	{
-		$args->keyword_id = $session_data[$fk];
-		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) 
-		{
-			$args->keyword_id = $args->keyword_id[0];
+	if (isset($cache[$fk])) {
+		$args->keyword_id = $cache[$fk];
+		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+			$args->keyword_id = intval($args->keyword_id[0]);
 		}
 	}
 	
 	$args->keywordsFilterType = null;
 	$ft = 'filter_keywords_filter_type';
-	if (isset($session_data[$ft])) 
-	{
-		$args->keywordsFilterType = $session_data[$ft];
+	if (isset($cache[$ft])) {
+		$args->keywordsFilterType = $cache[$ft];
 	}
 	
-    return $args;
+  return $args;
 }
 
 /*
@@ -186,13 +167,10 @@ function doUpdate(&$dbObj,&$argsObj)
 	$tables = tlObject::getDBTables(array('testplan_tcversions','executions',
 	                                      'cfield_execution_values'));
 	$msg = "";
-	if(!is_null($argsObj->checkedTestCaseSet))
-	{
-		foreach($argsObj->checkedTestCaseSet as $tcaseID => $tcversionID)
-		{
+	if (!is_null($argsObj->checkedTestCaseSet)) {
+		foreach($argsObj->checkedTestCaseSet as $tcaseID => $tcversionID) {
 			$newtcversion=$argsObj->newVersionSet[$tcaseID];
-			foreach($tables as $table2update)
-			{
+			foreach($tables as $table2update) {
 				$sql = "/* $debugMsg */ UPDATE $table2update " .
 				       " SET tcversion_id={$newtcversion} " . 
 				       " WHERE tcversion_id={$tcversionID} " .
@@ -216,18 +194,21 @@ function doUpdate(&$dbObj,&$argsObj)
 */
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
-    $tcase_cfg = config_get('testcase_cfg');
-    $gui = new stdClass();
-    $gui->refreshTree=false;
-    $gui->instructions='';
-    $gui->buttonAction="doUpdate";
-    $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
-    $gui->testCasePrefix .= $tcase_cfg->glue_character;
-    $gui->user_feedback = '';
-    $gui->testPlanName = $argsObj->tplan_name;
-    $gui->items = null;
-    $gui->has_tc = 1;  
-    
+  $tcase_cfg = config_get('testcase_cfg');
+  $gui = new stdClass();
+
+  $gui->refreshTree = false;
+  $gui->instructions = '';
+  $gui->buttonAction = "doUpdate";
+  $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
+  $gui->testCasePrefix .= $tcase_cfg->glue_character;
+  $gui->user_feedback = '';
+  $gui->tplan_name = $argsObj->tplan_name;
+  $gui->items = null;
+  $gui->has_tc = 1;  
+
+    $gui->pageTitle = lang_get('test_plan') . TITLE_SEP . $gui->tplan_name;
+
     return $gui;
 }
 

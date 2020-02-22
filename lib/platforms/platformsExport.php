@@ -19,8 +19,8 @@ require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$args = init_args( $db );
-$gui = initializeGui($args);
+$args = init_args($db);
+$gui = initializeGui($db,$args);
 
 switch($args->doAction) {
   case 'doExport':
@@ -47,21 +47,26 @@ function init_args( &$dbH ) {
           "tproject_id" => array(tlInputParameter::INT));
     
   R_PARAMS($iParams,$args);
-  if (0 == $args->tproject_id) {
+
+  list($context,$env) = initContext();
+  $args->tproject_id = $context->tproject_id;
+  $args->tplan_id = $context->tplan_id;
+  
+  if( 0 == $args->tproject_id ) {
     throw new Exception("Unable to Get Test Project ID, Aborting", 1);
   }
 
-  $args->testproject_name = '';
+  $args->tproject_name = '';
   $tables = tlDBObject::getDBTables(array('nodes_hierarchy'));
   $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
           WHERE id={$args->tproject_id}";
   $info = $dbH->get_recordset($sql);
   if( null != $info ) {
-    $args->testproject_name = $info[0]['name'];
+    $args->tproject_name = $info[0]['name'];
   }
 
   if(is_null($args->export_filename)) {
-    $args->export_filename = $args->testproject_name . "-platforms.xml";
+    $args->export_filename = $args->tproject_name . "-platforms.xml";
   } 
   $args->export_filename = trim(str_ireplace(" ", "",$args->export_filename));
   return $args;
@@ -70,8 +75,11 @@ function init_args( &$dbH ) {
 /**
  *
  */
-function initializeGui(&$argsObj) {
-  $guiObj = new stdClass();
+function initializeGui($dbH,&$argsObj) {
+  list($add2args,$guiObj) = initUserEnv($dbH,$argsObj);
+
+  $guiObj->activeMenu['projects'] = 'active'; 
+
   $guiObj->export_filename = trim($argsObj->export_filename);
   $guiObj->page_title = lang_get('export_platforms');
   $guiObj->do_it = 1;

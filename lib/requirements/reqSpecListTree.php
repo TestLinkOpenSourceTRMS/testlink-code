@@ -16,7 +16,7 @@ require_once('requirements.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($args);
 
 $control = new tlRequirementFilterControl($db);
@@ -31,13 +31,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  *
  */
-function init_args()
+function init_args(&$dbH)
 {
   $args = new stdClass();
-  $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
-  $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'undefned';
+  $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+  $args->tproject_id = intval($args->tproject_id);
+
+  $args->tproject_name = testproject::getName($dbH,$args->tproject_id);
   $args->basehref = $_SESSION['basehref'];
-    
+
   return $args;
 }
 
@@ -51,7 +53,6 @@ function init_args()
   
   returns: stdClass object
   
-  rev: 
 
 */
 function initializeGui($argsObj)
@@ -62,6 +63,7 @@ function initializeGui($argsObj)
   $gui->req_spec_manager_url = "lib/requirements/reqSpecView.php";
   $gui->req_manager_url = "lib/requirements/reqView.php";
   $gui->basehref = $argsObj->basehref;
+  $gui->tproject_id = $argsObj->tproject_id;
     
   return $gui;  
 }

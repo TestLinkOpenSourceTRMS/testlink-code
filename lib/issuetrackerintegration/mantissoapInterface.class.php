@@ -499,7 +499,6 @@ class mantissoapInterface extends issueTrackerInterface
     static $client;
     $ret = array('status_ok' => false,'msg' => '', 'note_id' => -1);
     if (!$this->isConnected()) {
-      $ret = array('status_ok' => false,'msg' => 'Connection KO', 'note_id' => -1);
       return $ret;
     }
     
@@ -548,7 +547,7 @@ class mantissoapInterface extends issueTrackerInterface
       }  
     }
     else {
-      $ret['msg'] = "issue $safe->issueID does not exist";
+      $ret['msg'] = 'issue does not exist';
     }
 
     return $ret;

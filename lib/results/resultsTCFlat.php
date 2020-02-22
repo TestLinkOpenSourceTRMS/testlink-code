@@ -8,8 +8,6 @@
 * Test Results on simple spreadsheet format
 *
 *
-* @internal revisions
-* @since 1.9.15
 */
 require('../../config.inc.php');
 require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
@@ -20,6 +18,7 @@ $timerOn = microtime(true);   // will be used to compute elapsed time
 $templateCfg = templateConfiguration();
 
 $smarty = new TLSmarty;
+testlinkInitPage($db);  
 $args = init_args($db);
 
 $metricsMgr = new tlTestPlanMetrics($db);
@@ -114,10 +113,15 @@ function init_args(&$dbHandler)
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
+
+
   $args->addOpAccess = true;
-  if( !is_null($args->apikey) )
-  {
-    //var_dump($args);
+  if( !is_null($args->apikey) ) {
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
@@ -140,17 +144,14 @@ function init_args(&$dbHandler)
   else
   {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
 
-  if($args->tproject_id <= 0)
-  {
+  if($args->tproject_id <= 0) {
     $msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
     throw new Exception($msg);
   }
 
-  switch($args->format)
-  {
+  switch($args->format) {
     case FORMAT_XLS:
       if($args->buildListForExcel != '')
       {  

@@ -14,14 +14,12 @@
  *   
  * This tree is used to navigate ...
  *
- * @internal revision
- *        
  */
 require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
-
+// root node seems to be test project node, and this is great!!
 $root_node=isset($_REQUEST['root_node']) ? intval($_REQUEST['root_node']): null;
 $node=isset($_REQUEST['node']) ? intval($_REQUEST['node']) : $root_node;
 $filter_node=isset($_REQUEST['filter_node']) ? intval($_REQUEST['filter_node']) : null;
@@ -44,29 +42,33 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
   $forbidden_parent['testproject'] = 'none';
   $forbidden_parent['requirement'] = 'testproject';
   $forbidden_parent['requirement_spec'] = 'requirement_spec';
-  if($cfg->child_requirements_mgmt)
-  {
+  if ($cfg->child_requirements_mgmt) {
     $forbidden_parent['requirement_spec'] = 'none';
   } 
   
   $fn = array();
   $fn['print']['reqspec'] = array('testproject' => 'TPROJECT_PTP_RS',
-                                  'requirement_spec' =>'TPROJECT_PRS', 'requirement' => 'openLinkedReqWindow');
+                                  'requirement_spec' =>'TPROJECT_PRS', 
+                                  'requirement' => 'openLinkedReqWindow');
 
 
   $fn['manage']['reqspec'] = array('testproject' => 'TPROJECT_REQ_SPEC_MGMT',
-                                   'requirement_spec' =>'REQ_SPEC_MGMT', 'requirement' => 'REQ_MGMT');
+                                   'requirement_spec' =>'REQ_SPEC_MGMT', 
+                                   'requirement' => 'REQ_MGMT');
 
   $fn['print']['addtc'] = array('testproject' => 'TPROJECT_PTP',
-                                  'requirement_spec' =>'TPROJECT_PRS', 'requirement' => 'TPROJECT_PRS');
+                                'requirement_spec' =>'TPROJECT_PRS', 
+                                'requirement' => 'TPROJECT_PRS');
 
 
   $fn['manage']['addtc'] = array('testproject' => 'EP','requirement_spec' =>'ERS', 'requirement' => 'ER');
 
 
-  switch($operation)
-  {
+  switch ($operation) {
     case 'print':
+      $js_function=$fn[$operation][$mode];
+    break;
+
     case 'manage':
       $js_function=$fn[$operation][$mode];
     break;
@@ -87,15 +89,13 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
          " ON RSPEC.id = NHA.id " . 
          " WHERE NHA.parent_id = " . intval($parent);
     
-  if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
-  {
+  if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node) {
     $sql .= " AND NHA.id = " . intval($filter_node);  
   }
   $sql .= " ORDER BY NHA.node_order ";    
 
   $nodeSet = $dbHandler->get_recordset($sql);
-  if(!is_null($nodeSet)) 
-  {
+  if(!is_null($nodeSet)) {
     $sql =  " SELECT DISTINCT req_doc_id AS doc_id,NHA.id" .
             " FROM {$tables['requirements']} REQ JOIN {$tables['nodes_hierarchy']} NHA ON NHA.id = REQ.id  " .
             " JOIN {$tables['nodes_hierarchy']}  NHB ON NHA.parent_id = NHB.id " . 
@@ -106,8 +106,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     $treeMgr = new tree($dbHandler);
     $ntypes = $treeMgr->get_available_node_types();
     $peerTypes = array('target' => $ntypes['requirement'], 'container' => $ntypes['requirement_spec']); 
-    foreach($nodeSet as $key => $row)
-    {
+    foreach($nodeSet as $key => $row) {
       $path['text'] = htmlspecialchars($row['name']);                                  
       $path['id'] = $row['id'];                                                           
         
@@ -135,18 +134,19 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
           $req_list = array();
           $treeMgr->getAllItemsID($row['id'],$req_list,$peerTypes);
 
-          $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+          $path['href'] = "javascript:" . 
+            $js_function[$row['node_type']]. "($root_node,{$path['id']})";
           $path['text'] = htmlspecialchars($row['doc_id'] . ":") . $path['text'];
           $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
-          if(!is_null($req_list))
-          {
+          if(!is_null($req_list)) {
             $item_qty = count($req_list);
             $path['text'] .= " ({$item_qty})";   
           }
         break;
 
         case 'requirement':
-          $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+          $path['href'] = "javascript:" . 
+            $js_function[$row['node_type']]. "($root_node,{$path['id']})";
           $path['text'] = htmlspecialchars($requirements[$row['id']]['doc_id'] . ":") . $path['text'];
           $path['leaf'] = true;
           $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];

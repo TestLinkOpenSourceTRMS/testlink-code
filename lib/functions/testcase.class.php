@@ -930,6 +930,8 @@ class testcase extends tlObjectWithAttachments {
 
     $gui = $this->initShowGui($guiObj,$grants,$idCard);
 
+    $gui->tprojOpt = $this->tproject_mgr->getOptions($idCard->tproject_id);
+    
     // When editing on execution, it's important to understand
     // is current displayed version is LINKED to Test Plan 
     // to add or remove some features
@@ -1176,6 +1178,13 @@ class testcase extends tlObjectWithAttachments {
 
     $this->initShowGuiActions($gui);
     $tplCfg = templateConfiguration('tcView');
+
+    // simplest way to pass tproject_id on js calls
+    $jsArgs = '';
+    if (property_exists($gui,'tproject_id')) {
+        $jsArgs = '&tproject_id=' . $gui->tproject_id;
+    }
+    $smarty->assign('args',$jsArgs);
 
     $smarty->assign('gui',$gui);
     $smarty->display($tplCfg->template_dir . $tplCfg->default_template);
@@ -5328,12 +5337,22 @@ class testcase extends tlObjectWithAttachments {
    *
    *
    */
-  function buildDirectWebLink($base_href,$id,$tproject_id=null)
+  function buildDirectWebLink($context)
   {
-    list($external_id,$prefix,$glue,$tc_number) = $this->getExternalID($id,$tproject_id);
+    $base_href = $context->basehref;
+    $id = intval($context->id);
+    $tproject_id = null;
+    if (property_exists($context, 'tproject_id')) {
+      $tproject_id = intval($context->tproject_id);
+    }
 
-    $dl = $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) .
-          '&item=testcase&id=' . urlencode($external_id);
+    list($external_id,$prefix,$glue,$tc_number) = 
+      $this->getExternalID($id,$tproject_id);
+
+    $dl = $base_href . 'linkto.php?tprojectPrefix=' 
+                     . urlencode($prefix) 
+                     . '&item=testcase&id=' 
+                     . urlencode($external_id);
     return $dl;
   }
 
@@ -9128,7 +9147,7 @@ class testcase extends tlObjectWithAttachments {
              WHERE testplan_id = $tplanID
              AND tcversion_id IN ($sqlA) ";
 
-    $linkSet = $this->db->fetchRowsIntoMap($sql,'link_id');
+    $linkSet = (array)$this->db->fetchRowsIntoMap($sql,'link_id');
 
     $sql = " SELECT TPTCV.tcversion_id
              FROM {$this->tables['testplan_tcversions']} TPTCV

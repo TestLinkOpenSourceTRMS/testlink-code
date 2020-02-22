@@ -39,7 +39,7 @@
   </section>
 
   <script type="text/javascript" 
-          src="{$basehref}third_party/jquery/jquery-3.3.1.min.js"
+          src="{$basehref}{$smarty.const.TL_JQUERY}"
           language="javascript"></script>
 
   {$bs = "{$dashioHome}lib/"}

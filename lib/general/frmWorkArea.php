@@ -4,8 +4,6 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  frmWorkArea.php
- * @author      Martin Havlat
- * 
  *
 **/
 require_once('../../config.inc.php');
@@ -13,15 +11,21 @@ require_once("common.php");
 testlinkInitPage($db);
 
 $args = init_args();
+$tprojMgr = new testproject($db);
+$tprojOpt = $tprojMgr->getOptions($args->tproject_id);
+$gui = new stdClass();
+$gui->testPriorityEnabled = $tprojOpt->testPriorityEnabled;  
 
 // Important Notes for Developers
 //
-// if key found in this map, at User Interface level, screen will be divided 
+// if key found in this map, at User Interface level, 
+// screen will be divided 
 // vertically in two frames.
 // Normally on left will exists a tree menu. 
 // On right frame an html named $key.html will be launched.
 // Example:
-// if key = printTc, an html page printTc.html must exists on help directory
+// if key = printTc, an html page printTc.html 
+// must exists on help directory
 //
 // (aa_tfp -> Associative Array TreeFramePath)
 // key  : feature
@@ -32,30 +36,43 @@ $req_cfg = config_get('req_cfg');
 // more info here
 // array(0) => left pane
 // array(1) => right pane
+$libTC = 'lib/testcases/';
+$libReq = 'lib/requirements/';
+$libExec = 'lib/execute/';
+
+$tcFeature = $libTC . 'listTestCases.php?feature=';
+$printDocOptions = 'lib/results/printDocOptions.php?type=';
+$planAddTCNav = 'lib/plan/planAddTCNavigator.php';
+$planTCNav = 'lib/plan/planTCNavigator.php';
+
 $aa_tfp = array( 
-     'editTc' => array('lib/testcases/listTestCases.php?feature=edit_tc',
-                       'lib/testcases/archiveData.php?edit=testproject&id='),
+  'assignReqs' => $tcFeature . 'assignReqs',
+  'keywordsAssign' => $tcFeature . 'keywordsAssign',
+  'searchTc' => $libTC . 'tcSearchForm.php',
 
-     'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
-     'searchTc' => 'lib/testcases/tcSearchForm.php',
-
-     'searchReq' => 'lib/requirements/reqSearchForm.php',
-     'searchReqSpec' => 'lib/requirements/reqSpecSearchForm.php',
+  'searchReq' => $libReq . 'reqSearchForm.php',
+  'searchReqSpec' => $libReq . 'reqSpecSearchForm.php',
    
-     'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
-     'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
-     'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
-     'planAddTC'    => array('lib/plan/planAddTCNavigator.php?loadRightPaneAddTC=0',
-                             'lib/results/printDocOptions.php?activity=addTC'),
-     'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
-     'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
-     'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
-     'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
-     'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
-     'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
-     'executeTest' => array('lib/execute/execNavigator.php?setting_testplan=', 'lib/execute/execDashboard.php?id='),
-     'showMetrics' => 'lib/results/resultsNavigator.php',
-     'reqSpecMgmt' => array('lib/requirements/reqSpecListTree.php','lib/project/project_req_spec_mgmt.php?id=')
+  'printTestSpec' => $printDocOptions . 'testspec',
+  'printReqSpec' => $printDocOptions . 'reqspec',
+
+  'planRemoveTC' => $planAddTCNav . '?feature=removeTC&help_topic=planRemoveTC',
+  'planUpdateTC' => $planTCNav . '?feature=planUpdateTC',
+  'show_ve' => $planTCNav . '?feature=show_ve',  
+  'test_urgency' => $planTCNav . '?feature=test_urgency',
+  'tc_exec_assignment' => $planTCNav . '?feature=tc_exec_assignment',
+  'newest_tcversions' => 'lib/plan/newest_tcversions.php',
+  'showMetrics' => 'lib/results/resultsNavigator.php',
+
+  'editTc' => array($tcFeature . 'edit_tc',
+                    $libTC . 'archiveData.php?edit=testproject&id='),
+  'planAddTC' => array($planAddTCNav . '?loadRightPaneAddTC=0',
+                       'lib/results/printDocOptions.php?activity=addTC'),
+  'reqSpecMgmt' => array($libReq . '/reqSpecListTree.php',
+                         'lib/project/project_req_spec_mgmt.php?id='),
+  'executeTest' => 
+     array($libExec . 'execNavigator.php?setting_testplan=', 
+           $libExec . 'execDashboard.php?tproject_id='),
 );
 
 $full_screen = array('newest_tcversions' => 1);
@@ -65,22 +82,22 @@ $_SESSION['currentSrsId'] = null;
 
 /** feature to display */
 $showFeature = $args->feature;
-if (isset($aa_tfp[$showFeature]) === FALSE)
-{
+if (isset($aa_tfp[$showFeature]) === FALSE) {
   // argument is wrong
   tLog("Wrong page argument feature = ".$showFeature, 'ERROR');
   exit();
 }
 
+$args->tplan_id = intval($args->tplan_id);
+
 // features that need to run the validate build function
-if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment')))
-{
+if (in_array($showFeature,
+             array('executeTest','showMetrics','tc_exec_assignment'))) {
+
   // Check if for test project selected at least a test plan exist
-  if( isset($_SESSION['testplanID']) || !is_null($args->tplan_id))
-  {
+  if ($args->tplan_id >0) {
     // Filter on build attributes: ACTIVE,OPEN
-    switch($showFeature)
-    {
+    switch($showFeature) {
       case 'executeTest':
         $hasToBe['active'] = true;
         $hasToBe['open'] = true;
@@ -104,26 +121,19 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
 
 
     $tplanIDCard = new stdClass();
-    $tplanIDCard->id = intval($_SESSION['testplanID']);
-    $tplanIDCard->name = $_SESSION['testplanName'];
-    $tplanMgr = new testplan($db);
-
-    if(!is_null($args->tplan_id))
-    {
+    if ($args->tplan_id >0) {
       $tplanIDCard->id = intval($args->tplan_id);
-      $dummy = $tplanMgr->tree_manager->get_node_hierarchy_info($tplanIDCard->id);
-      $tplanIDCard->name = $dummy['name'];
+      $tplanIDCard->name = testplan::getName($db,$args->tplan_id);
     } 
 
     $ctx = new stdClass();
     $ctx->tplanIDCard = $tplanIDCard;
     $ctx->featureTitle = $featureHint;
 
-    validateBuildAvailability($db,$tplanMgr,$ctx,$hasToBe);
-  }
-  else
-  {
-    redirect('../plan/planView.php');
+    validateBuildAvailability($db,$ctx,$hasToBe);
+  } else {
+    redirect($_SESSION['basehref'] . 
+             "lib/plan/planView.php?tproject_id={$args->tproject_id}");
     exit();
   }   
 }
@@ -136,46 +146,50 @@ $smarty = new TLSmarty();
 
 // try to add context in order to avoid using global coupling via $_SESSION
 // this will be useful to open different test projects on different browser TAB
-if( is_array($aa_tfp[$showFeature]) )
-{
+if( is_array($aa_tfp[$showFeature]) ) {
   $leftPane = $aa_tfp[$showFeature][0];
   $rightPane = $aa_tfp[$showFeature][1];
   
-  if($rightPane[strlen($rightPane)-1] == '=')
-  {
-    $rightPane .= intval($_SESSION['testprojectID']);
+  if($rightPane[strlen($rightPane)-1] == '=') {
+    $rightPane .= intval($args->tproject_id);
   }  
-  
-  if($showFeature == 'executeTest')
-  {
+  // $rightPane .= "&tplan_id={$args->tplan_id}";
+
+  if($showFeature == 'executeTest') {
     $leftPane .= $args->tplan_id;
   }
-  // new dBug($leftPane);
+  // Context
+  //$leftPane .= "&tproject_id={$args->tproject_id}" .
+  //             "&tplan_id={$args->tplan_id}";
 
-} 
-else
-{
+} else {
   $leftPane = $aa_tfp[$showFeature];
+  //$leftPane .= "&tproject_id={$args->tproject_id}" .
+  //             "&tplan_id={$args->tplan_id}";
+
   $rightPane = 'lib/general/staticPage.php?key=' . $showFeature;
+  //$rightPane .= "&tproject_id={$args->tproject_id}" .
+  //              "&tplan_id={$args->tplan_id}";
 } 
 
-if( intval($args->tproject_id) > 0 || intval($args->tproject_id) > 0)
-{  
+if (intval($args->tproject_id) > 0 || intval($args->tplan_id) > 0) {  
   $leftPane .= (strpos($leftPane,"?") === false) ? "?" : "&";
   $leftPane .= "tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
 
-  // for execDashboard is OK, need to understand if will be ok for other features
+  // for execDashboard is OK, need to understand if 
+  // will be ok for other features
   // or is going to create issues.
   $rightPane .= (strpos($rightPane,"?") === false) ? "?" : "&";
   $rightPane .= "tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
 }
 
-if(isset($full_screen[$showFeature]))
-{
+if(isset($full_screen[$showFeature])) {
   redirect($leftPane);
-}
-else
-{
+} else {
+
+  //var_dump($leftPane);die();
+  //var_dump($rightPane);
+
   $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
   $smarty->assign('treeframe', $leftPane);
   $smarty->assign('workframe', $rightPane);
@@ -191,30 +205,25 @@ else
  *  to create link feature
  *
  *
- * 
- *
  **/
-function validateBuildAvailability(&$db,&$tplanMgr,$context,$attrFilter)
+function validateBuildAvailability(&$db,$context,$attrFilter)
 {
+  $tplanMgr = new testplan($db);
   $tpID = $context->tplanIDCard->id;
   $tpName = $context->tplanIDCard->name;
   
-  if (!$tplanMgr->getNumberOfBuilds($tpID, $attrFilter['active'], $attrFilter['open']))
-  {            
+  if (!$tplanMgr->getNumberOfBuilds($tpID, $attrFilter['active'], $attrFilter['open'])) {            
     $msx = null;
-    if($attrFilter['active'])
-    {
+    if($attrFilter['active']) {
       $msx[] = lang_get('active');
     }  
     
-    if($attrFilter['open'])
-    {
+    if($attrFilter['open']) {
       $msx[] = lang_get('open');
     }  
     
     $mzx = '';
-    if(count($msx) > 0)
-    {
+    if ((null != $msx) && count($msx) > 0) {
       $mzx = "(" . implode(' & ',$msx) . ")";
     }  
 
@@ -225,15 +234,13 @@ function validateBuildAvailability(&$db,&$tplanMgr,$context,$attrFilter)
     
     $link_to_op = '';
     $hint_text = '';
-    if(has_rights($db,"testplan_create_build") == 'yes')
-    { 
+    if(has_rights($db,"testplan_create_build") == 'yes') { 
       // final url will be composed adding to $basehref 
       // (one TL variable available on smarty templates) to $link_to_op
-      $link_to_op = "lib/plan/buildEdit.php?do_action=create&tplan_id=$tpID";
+      $link_to_op = "lib/plan/buildEdit.php?" .
+                    "do_action=create&tplan_id=$tpID";
       $hint_text = lang_get('create_a_build');
-    }  
-    else
-    {
+    } else {
       $message .= '</p><p>' . lang_get('no_build_warning_part2') . '</p>';
     }
       

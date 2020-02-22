@@ -27,7 +27,7 @@ $node['specific'] = $tcase_mgr->getExternalID($args->tcase_id);
 $idCard = $node['specific'][0] . ' : ' . $node['basic']['name'];
 
 
-$gui->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$gui->tproject_id = $args->tproject_id;
 
 // IMPORTANT NOTICE:
 // getExecutionSet() consider only executions written to DB.
@@ -95,20 +95,18 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-  $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
+  list($args,$env) = initContext();
 
   $iParams = array("tcase_id" => array(tlInputParameter::INT_N),
                    'onlyActiveTestPlans' => array(tlInputParameter::INT_N));
   $pParams = R_PARAMS($iParams);
 
-  $args = new stdClass();
   $args->tcase_id = intval($pParams["tcase_id"]);
 
   $args->onlyActiveTestPlans = null;
   if(intval($pParams["onlyActiveTestPlans"]) > 0  ||  
-     $pParams["onlyActiveTestPlans"] == 'on')
-  {
+     $pParams["onlyActiveTestPlans"] == 'on') {
     $args->onlyActiveTestPlans = 1;  
   }  
 

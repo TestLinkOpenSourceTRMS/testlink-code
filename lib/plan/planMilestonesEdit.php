@@ -6,92 +6,98 @@
  * @filesource	planMilestonesEdit.php
  * @author Francisco Mancardi
  *
- * @internal revisions
- * @since 1.9.4
- * 20120204 - franciscom - TICKET 4906: Several security issues       
  *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db,false,false,"checkRights");
-$date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
-$args = init_args($db,$date_format_cfg);
-$gui = initialize_gui($db,$args);
+
+list($args,$gui) = initScript($db);
+
 $commandMgr = new planMilestonesCommands($db);
 
 $pFn = $args->doAction;
 $op = null;
-if(method_exists($commandMgr,$pFn))
-{
+if(method_exists($commandMgr,$pFn)) {
 	$op = $commandMgr->$pFn($args,$_SESSION['basehref']);
 }
 
 renderGui($args,$gui,$op,$templateCfg);
 
 
-/*
-  function: 
+/**
+ *
+ *
+ */
+function initScript(&$dbH)
+{
+  $args = init_args($dbH);
+  $gui = initialize_gui($dbH,$args);
 
-  args :
-  
-  returns: 
+  return array($args,$gui);
+}
 
-*/
-function init_args(&$dbHandler,$dateFormat)
+/**
+ *
+ *
+ */
+function init_args(&$dbHandler) 
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
-	$args = new stdClass();
+  $dateFormat = config_get('date_format');
 
-	$args->target_date_original = isset($_REQUEST['target_date']) ? $_REQUEST['target_date'] : null;
-	$args->start_date_original = isset($_REQUEST['start_date']) ? $_REQUEST['start_date'] : null;
-	
-	// convert target date to iso format to write to db
-    if (isset($_REQUEST['target_date']) && $_REQUEST['target_date'] != '') {
-		$date_array = split_localized_date($_REQUEST['target_date'], $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			$args->target_date = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
-		}
-	}
-	
-	// convert start date to iso format to write to db
-    if (isset($_REQUEST['start_date']) && $_REQUEST['start_date'] != '') {
-		$date_array = split_localized_date($_REQUEST['start_date'], $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			$args->start_date = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
-		}
-	}
- 	
-  	$key2loop = array('low_priority_tcases','medium_priority_tcases','high_priority_tcases');
-  	foreach($key2loop as $key)
-  	{
-  	    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;     
-  	}
+	list($args,$env) = initContext();
 
-	$args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-	$args->name = isset($_REQUEST['milestone_name']) ? $_REQUEST['milestone_name'] : null;
+  $d2k = array('target_date','start_date');
+  foreach ($d2k as $dt) {
+    $ori = $dt . "_original";
+    $args->$ori = isset($_REQUEST[$dt]) ? $_REQUEST[$dt] : null; 
+  }
+
+  // convert target date to iso format to write to db
+  $d2k = array('target_date','start_date');
+  foreach ($d2k as $dt) {
+    if (isset($_REQUEST[$dt]) && $_REQUEST[$dt] != '') {
+		  $dpieces = split_localized_date($_REQUEST[$dt], $dateFormat);
+		  if ($dpieces != null) {
+			 // set date in iso format
+			 $args->$dt = $dpieces['year'] . "-" . $dpieces['month'] . "-" . 
+                    $dpieces['day'];
+		  }
+	  }
+  }  
+	
+
+  $key2loop = array('low_priority_tcases','medium_priority_tcases',
+                    'high_priority_tcases','id');
+  foreach($key2loop as $key) {
+  	$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0; 
+  }
+
+	$args->name = isset($_REQUEST['milestone_name']) ? 
+                $_REQUEST['milestone_name'] : null;
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 
-	$args->basehref=$_SESSION['basehref'];
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
-	
+	$args->basehref = $_SESSION['basehref'];
+
 	$args->tplan_name = '';
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-	if( $args->tplan_id == 0 )
-	{
-	    $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
-	}
-	if( $args->tplan_id > 0 )
-	{
-	    $tplan_mgr = new testplan($dbHandler);
-	    $info = $tplan_mgr->get_by_id($args->tplan_id);
-	    $args->tplan_name = $info['name'];
-  	}
-  	 	
+	if( $args->tplan_id > 0 ) {
+	  $tplan_mgr = new testplan($dbHandler);
+	  $info = $tplan_mgr->get_by_id($args->tplan_id);
+	  $args->tplan_name = $info['name'];
+  }
+
+  if ($args->tproject_id == 0 && $args->tplan_id > 0) {
+    $args->tproject_id = $info['testproject_id'];
+  }
+  if ($args->tproject_id == 0) {
+    throw new Exception("Bad Test Project ID", 1);
+  }  
+  $args->tproject_name = 
+    testproject::getName($dbHandler,$args->tproject_id);
+
 	return $args;
 }
 
@@ -169,33 +175,35 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
 
 }
 
-/*
-  function: initialize_gui
+/**
+ *
+ *
+ */
+function initialize_gui(&$dbHandler,&$argsObj) {
+  list($add2args,$gui) = initUserEnv($dbHandler,$argsObj); 
 
-  args : -
+  $gui->activeMenu['execution'] = 'active';  
+  $gui->action_descr = null;
+  $gui->user_feedback = null;
+  $gui->main_descr = lang_get('req_spec');
 
-  returns:
+  $gui->managerURL = "lib/plan/planMilestonesEdit.php" .
+                     "?tproject_id=$gui->tproject_id";
 
-*/
-function initialize_gui(&$dbHandler,&$argsObj)
-{
-    $req_spec_mgr = new requirement_spec_mgr($dbHandler);
-    $gui = new stdClass();
-    
-    $gui->user_feedback = null;
-    $gui->main_descr = lang_get('req_spec');
-    $gui->action_descr = null;
+  // this will be JS, then single quotes are CRITIC
+  $gui->cancelActionJS = "location.href=fRoot+" .
+                         "'lib/plan/planMilestonesView.php" .
+                         "?tproject_id=$gui->tproject_id" .
+                         "&tplan_id=$gui->tplan_id'";
 
-    $gui->grants = new stdClass();
-    $gui->grants->milestone_mgmt = has_rights($dbHandler,"testplan_planning");
-	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
-	
-	return $gui;
+  return $gui;
 }
 
-
-function checkRights(&$db,&$user)
-{
+/**
+ *
+ *
+ */
+function checkRights(&$db,&$user) {
 	return ($user->hasRight($db,"testplan_planning"));
 }
 ?>

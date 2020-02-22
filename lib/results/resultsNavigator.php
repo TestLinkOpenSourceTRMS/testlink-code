@@ -6,7 +6,6 @@
  * Scope: Launcher for Test Results and Metrics.
  *
  * @filesource	resultsNavigator.php
- * @author      Martin Havlat <havlat@users.sourceforge.net>
  * 
  * 
  **/
@@ -17,11 +16,12 @@ testlinkInitPage($db,true,false,"checkRights");
 
 $smarty = new TLSmarty();
 $templateCfg = templateConfiguration();
-$args = init_args();
+
+$args = init_args($db);
 $gui = initializeGui($db,$args);
 $reports_mgr = new tlReports($db, $gui->tplan_id);
 
-// -----------------------------------------------------------------------------
+// --------------------------------------------------------------------
 // Do some checks to understand if reports make sense
 
 // Check if there are linked test cases to the choosen test plan.
@@ -42,7 +42,7 @@ if( $build_count == 0) {
   $gui->do_report['msg'] = lang_get('report_tplan_has_no_build');       
 }
 
-// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------
 // get navigation data
 $gui->menuItems = array();
 if($gui->do_report['status_ok']) {
@@ -73,9 +73,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * 
  *
  */
-function init_args() {
+function init_args(&$dbH) {
   $iParams = array("format" => array(tlInputParameter::INT_N),
                    "tplan_id" => array(tlInputParameter::INT_N),
+                   "tproject_id" => array(tlInputParameter::INT_N),
                    "show_inactive_tplans" => array(tlInputParameter::CB_BOOL));
   $args = new stdClass();
   R_PARAMS($iParams,$args);
@@ -84,20 +85,28 @@ function init_args() {
     $reports_formats = config_get('reports_formats');
     $args->format = sizeof($reports_formats) ? key($reports_formats) : null;
   }
-  
-  if (is_null($args->tplan_id)) {
-    $args->tplan_id = $_SESSION['testplanID'];
-  }
-  
-  $_SESSION['resultsNavigator_testplanID'] = $args->tplan_id;
-  $_SESSION['resultsNavigator_format'] = $args->format;
-  
-  $args->tproject_id = 
-    isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
   $args->userID = $_SESSION['userID'];
   $args->user = $_SESSION['currentUser'];
-  $args->optReqs = $_SESSION['testprojectOptions']->requirementsEnabled;
+
+  $args->tproject_id = intval($args->tproject_id);
+  if ( $args->tproject_id <= 0) {
+   throw new Exception("Invalid Test Project ID", 1);
+  }  
+  
+  $args->tplan_id = intval($args->tplan_id);
+  if ( $args->tplan_id <= 0) {
+    // Get First testplan in the availables
+    $tplanSet = $args->user->getAccessibleTestPlans($dbH,
+                               $args->tproject_id);
+    if( count($tplanSet) > 0 ) {
+      $cu = current($tplanSet);
+      $args->tplan_id = intval($cu['id']);
+    } else {
+      throw new Exception("Invalid Test Plan ID", 1);
+    } 
+  }
+  
   $args->checked_show_inactive_tplans = 
     $args->show_inactive_tplans ? 'checked="checked"' : 0;
   $args->show_only_active_tplans = !$args->show_inactive_tplans;
@@ -109,16 +118,20 @@ function init_args() {
  *
  */
 function initializeGui(&$dbHandler,$argsObj) {
-  $gui = new stdClass();
-  
+
+  list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
+
   $gui->workframe = $_SESSION['basehref'] . "lib/general/staticPage.php?key=showMetrics";
   $gui->do_report = array('status_ok' => 1, 'msg' => '');
   $gui->tplan_id = $argsObj->tplan_id;
   $gui->tproject_id = $argsObj->tproject_id;
   $gui->checked_show_inactive_tplans = $argsObj->checked_show_inactive_tplans;
   
-  $tproject_mgr = new testproject($dbHandler);
-  $gui->btsEnabled = $tproject_mgr->isIssueTrackerEnabled($gui->tproject_id);
+  $tprojMgr = new testproject($dbHandler);
+  $gui->btsEnabled = $tprojMgr->isIssueTrackerEnabled($gui->tproject_id);
+
+  $tprjOpt = $tprojMgr->getOptions($gui->tproject_id);
+  $argsObj->optReqs = $tprjOpt->requirementsEnabled;
 
   // get Accessible Test Plans for combobox
   $activeAttr = $argsObj->show_only_active_tplans ? 1 : null;

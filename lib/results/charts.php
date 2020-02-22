@@ -6,11 +6,9 @@
  * @filesource	charts.php
  * @package 	  TestLink
  * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2013, TestLink community 
+ * @copyright 	2005-2019, TestLink community 
  * @link 		    http://www.teamst.org/index.php
  *
- * @internal revisions
- * @since 1.9.10
  *
  */
 require_once('../../config.inc.php');
@@ -18,9 +16,10 @@ require_once('common.php');
 
 $templateCfg = templateConfiguration();
 
-$l18n = init_labels(array('overall_metrics' => null,'overall_metrics_for_platform' => null,
+$l10n = init_labels(array('overall_metrics' => null,'overall_metrics_for_platform' => null,
 						              'results_by_keyword' => null,'results_top_level_suites' => null));
 
+testlinkInitPage($db); 
 list($args,$tproject_mgr,$tplan_mgr) = init_args($db);
 
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
@@ -46,20 +45,20 @@ if($gui->can_use_charts == 'OK')
     $platformSet = $tplan_mgr->getPlatforms($gui->tplan_id,array('outputFormat' => 'map'));
     $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
 
-    $gui->charts = array($l18n['overall_metrics'] => $chartsUrl->overallPieChart);
+    $gui->charts = array($l10n['overall_metrics'] => $chartsUrl->overallPieChart);
     if(!is_null($platformSet))
     {
     	foreach($platformIDSet as $platform_id)
     	{
-    	  $description = $l18n['overall_metrics_for_platform'] .  ' ' . $platformSet[$platform_id];
+    	  $description = $l10n['overall_metrics_for_platform'] .  ' ' . $platformSet[$platform_id];
     		$gui->charts[$description] = $pathToScripts . 
     									 "platformPieChart.php?apikey={$args->apikey}&tplan_id={$gui->tplan_id}&platform_id={$platform_id}";
     	}
     }
     
     $gui->charts = array_merge( $gui->charts,
-                         array($l18n['results_by_keyword'] => $chartsUrl->keywordBarChart,
-                         	   $l18n['results_top_level_suites'] => $chartsUrl->topLevelSuitesBarChart) );
+                         array($l10n['results_by_keyword'] => $chartsUrl->keywordBarChart,
+                         	   $l10n['results_top_level_suites'] => $chartsUrl->topLevelSuitesBarChart) );
 }       
 
 $smarty = new TLSmarty();
@@ -83,6 +82,13 @@ function init_args(&$dbHandler)
 
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
+
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
+
   if( !is_null($args->apikey) )
   {
     $cerbero = new stdClass();
@@ -108,20 +114,17 @@ function init_args(&$dbHandler)
   else
   {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
-	  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
 
   $tproject_mgr = new testproject($dbHandler);
   $tplan_mgr = new testplan($dbHandler);
-	if($args->tproject_id > 0) 
-	{
+	if ($args->tproject_id > 0) {
 		$args->tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 		$args->tproject_name = $args->tproject_info['name'];
 		$args->tproject_description = $args->tproject_info['notes'];
 	}
 	
-	if ($args->tplan_id > 0) 
-	{
+	if ($args->tplan_id > 0) {
 		$args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 	}
 	

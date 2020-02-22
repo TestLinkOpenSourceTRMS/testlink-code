@@ -7,11 +7,8 @@
  * Generate documentation Test report based on Test plan data.
  *
  * @filesource  printDocument.php
- * @author      Martin Havlat, Francisco Mancardi
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://www.testlink.org
- *
- *
  *
  */
 require_once('../../config.inc.php');
@@ -25,7 +22,9 @@ $docText = '';
 $topText = '';
 $doc_data = new stdClass(); // gather content and tests related data
 
-list($args,$tproject_mgr,$decode) = init_args($db);
+list($args,$tproject_mgr,$tplan_mgr,$decode) = init_args($db);
+$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+
 $tree_manager = &$tproject_mgr->tree_manager;
 list($doc_info,$my) = initEnv($db,$args,$tproject_mgr,$args->user_id);
 
@@ -79,9 +78,6 @@ switch ($doc_info->type) {
   
   case DOC_TEST_PLAN_EXECUTION:
   case DOC_TEST_PLAN_EXECUTION_ON_BUILD:
-    $tplan_mgr = new testplan($db);
-    $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-
     if($args->build_id > 0) {
       $xx = $tplan_mgr->get_builds($args->tplan_id,null,null,array('buildID' => $args->build_id));
       $doc_info->build_name = htmlspecialchars($xx[$args->build_id]['name']);
@@ -119,8 +115,6 @@ switch ($doc_info->type) {
       }  
     }  
 
-    // var_dump($opx); die();
-    
     switch($doc_info->content_range) {
       case 'testproject':
         $treeForPlatform = buildContentForTestPlan($db,$subtree,$ctx,$decode,
@@ -291,10 +285,12 @@ function init_args(&$dbHandler) {
   $args = new stdClass();
   $pParams = R_PARAMS($iParams,$args);
 
+  $tplan_mgr = null;
+  
   // really UGLY HACK
   $typeDomain = array('test_plan' => 'testplan','test_report' => 'testreport');
   $args->type = isset($typeDomain[$args->type]) ? $typeDomain[$args->type] : $args->type;
-  
+
   if( !is_null($args->apikey) ) {
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
@@ -314,14 +310,23 @@ function init_args(&$dbHandler) {
     $args->itemID = $args->tproject_id;
   }
   else {
-    testlinkInitPage($dbHandler,false,false,"checkRights");  
-    
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+    // Need to understand if use SESSION
+    testlinkInitPage($dbHandler,false,false,"checkRights");      
+    $tplan_mgr = new testplan($dbHandler);
     $args->tplan_id = isset($_REQUEST['docTestPlanId']) ? intval($_REQUEST['docTestPlanId']) : 0;
+
+    if ($args->tproject_id == 0 && $args->tplan_id >0) {
+      $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+      $args->tproject_id = $tplan_info['testproject_id'];
+    }
+
     $args->itemID = $args->id;
   }
 
   $tproject_mgr = new testproject($dbHandler);
+  if ( null == $tplan_mgr ) {
+    $tplan_mgr = new testplan($dbHandler);
+  }
 
   if($args->tproject_id > 0) {
     $dummy = $tproject_mgr->get_by_id($args->tproject_id);
@@ -343,7 +348,7 @@ function init_args(&$dbHandler) {
   $dcd['status_descr_code'] = $resultsCfg['status_code'];
   $dcd['status_code_descr'] = array_flip($dcd['status_descr_code']);
 
-  return array($args,$tproject_mgr,$dcd);
+  return array($args,$tproject_mgr,$tplan_mgr,$dcd);
 }
 
 
@@ -731,8 +736,7 @@ function timeStatistics($items,$context,$decode,$tplanMgr) {
  */
 function checkRights(&$db,&$user,$context = null)
 {
-  if(is_null($context))
-  {
+  if(is_null($context)) {
     $context = new stdClass();
     $context->tproject_id = $context->tplan_id = null;
     $context->getAccessAttr = false; 

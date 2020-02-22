@@ -7,9 +7,8 @@
  * 
  * @filesource  resultsImport.php
  * @package     TestLink
- * @author      Kevin Levy
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2010,2018 TestLink community 
+ * @copyright   2010,2019 TestLink community 
  *
  *
  **/
@@ -584,18 +583,14 @@ function check_xml_execution_results($fileName) {
 }
 
 
-/*
-  function: init_args(&$dbHandler)
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ *
+ *
+ */
 function init_args(&$dbHandler) {
-  $args=new stdClass();
   $_REQUEST=strings_stripSlashes($_REQUEST);
 
+  list($args,$env) = initContext();
   $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
   $args->copyIssues = isset($_REQUEST['copyIssues']) ? 1 : 0;
 
@@ -603,20 +598,23 @@ function init_args(&$dbHandler) {
   // Need to use REQUEST because sometimes data arrives on GET and other on POST (has hidden fields)
   $args->buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : null;
   $args->platformID = isset($_REQUEST['platformID']) ? intval($_REQUEST['platformID']) : null;
-  $args->tplanID = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : null;
-  $args->tplanID = !is_null($args->tplanID) ? $args->tplanID : intval($_SESSION['testplanID']);
 
-  $args->tprojectID = isset($_REQUEST['tprojectID']) ? intval($_REQUEST['tprojectID']) : null;
 
-  if( is_null($args->tprojectID)) {
-    $args->tprojectID = intval($_SESSION['testprojectID']);
-    $args->testprojectName = $_SESSION['testprojectName'];
-  } else {
-    $tproject_mgr = new testproject($dbHandler);
-    $dummy = $tproject_mgr->get_by_id($args->tprojectID);
-    $args->testprojectName = $dummy['name'];
+  $args->tplanID = $args->tplan_id;
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
   }
+  $args->tprojectID = $args->tproject_id;
+
+  $tproject_mgr = new testproject($dbHandler);
+  $dummy = $tproject_mgr->get_by_id($args->tprojectID);
+  $args->testprojectName = 
+    testproject::getName($dbHandler,$args->tproject_id);
     
+
+
   $args->doUpload=isset($_REQUEST['UploadFile']) ? 1 : 0;
   $args->userID=intval($_SESSION['userID']);
 

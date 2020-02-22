@@ -5,16 +5,13 @@
  *  
  * Custom Fields definition export management
  *
- * @package   TestLink
- * @author    Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2009, TestLink community 
- * @version     CVS: $Id: cfieldsExport.php,v 1.4 2010/03/15 20:23:09 franciscom Exp $
- * @link    http://www.teamst.org/index.php
- * @uses    config.inc.php
+ * @package     TestLink
+ * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright   2005-2019, TestLink community 
+ * @filesource  cfieldsExport.php
+ * @link        http://www.testlink.org/
+ * @uses        config.inc.php
  *
- * @internal Revisions:
- * 20100315 - franciscom - added tlInputParameter() on init_args + goback managament
- * 20090719 - franciscom - db table prefix management   
  *
  */
 require_once("../../config.inc.php");
@@ -23,29 +20,44 @@ require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
 
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
-$args = init_args();
 
-$gui = new stdClass();
-$gui->page_title = lang_get('export_cfields');
-$gui->do_it = 1;
-$gui->nothing_todo_msg = '';
-$gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : ''; 
-$gui->export_filename = is_null($args->export_filename) ? 'customFields.xml' : $args->export_filename;
-$gui->exportTypes = array('XML' => 'XML');
+list($args,$gui) = initScript($db);
 
-switch( $args->doAction )
-{
-    case 'doExport':
-      doExport($db,$gui->export_filename);
-      break;  
+
+switch( $args->doAction ) {
+  case 'doExport':
+    doExport($db,$gui->export_filename);
+  break;  
     
-    default:
-      break;  
+  default:
+  break;  
 }
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+
+/**
+ *
+ */
+function initScript(&$dbH) 
+{
+  $args = init_args();
+
+  list($context,$env) = initContext();
+  list($add2args,$gui) = initUserEnv($dbH,$context);
+
+  $gui->activeMenu['system'] = 'active';
+  $gui->page_title = lang_get('export_cfields');
+  $gui->do_it = 1;
+  $gui->nothing_todo_msg = '';
+  $gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : ''; 
+  $gui->export_filename = is_null($args->export_filename) ? 'customFields.xml' : $args->export_filename;
+  $gui->exportTypes = array('XML' => 'XML');
+
+  return array($args,$gui);
+}
 
 
 /*
@@ -105,8 +117,10 @@ function doExport(&$dbHandler,$filename)
   exit();
 }
 
+/**
+ *
+ */
 function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,"cfield_view");
 }
-?>

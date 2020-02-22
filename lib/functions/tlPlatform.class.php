@@ -385,11 +385,22 @@ class tlPlatform extends tlObjectWithDB
     // array => indexed array
     // mapAccessByID => map access key: id
     // mapAccessByName => map access key: name
-    $my['options'] = array('outputFormat' => 'array', 'orderBy' => ' ORDER BY name ');
+    $my['options'] = array('outputFormat' => 'array', 
+                           'orderBy' => ' ORDER BY name ',
+                           'active' => -1);
     $my['options'] = array_merge($my['options'], (array)$options);
     
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $rs = null;
+
+    if ( intval($my['options']['active']) < 0) {
+      $active = '';
+    } else {
+      $active = ' AND TP.active = ' . 
+                ($my['options']['active'] ? 1 : 0);
+    }
+
+    
     $sql = "/* $debugMsg */ 
             SELECT P.id, P.name, P.notes,
                    P.enable_on_design,
@@ -397,7 +408,7 @@ class tlPlatform extends tlObjectWithDB
             FROM {$this->tables['platforms']} P 
             JOIN {$this->tables['testplan_platforms']} TP 
             ON P.id = TP.platform_id 
-            WHERE  TP.testplan_id = {$testplanID} 
+            WHERE  TP.testplan_id = {$testplanID} {$active}
                    {$my['options']['orderBy']}";
     
     switch ($my['options']['outputFormat']) {
@@ -537,10 +548,11 @@ class tlPlatform extends tlObjectWithDB
   /**
    *
    */
-  function initViewGUI( &$userObj ) {
-    $gaga = new stdClass();
-    
+  function initViewGUI(&$userObj,$context) {
+    list($add2args,$gaga) = initUserEnv($this->db,$context);
+
     $gaga->tproject_id = $this->tproject_id;
+    $gaga->activeMenu['projects'] = 'active';
     
     $cfg = getWebEditorCfg('platform');
     $gaga->editorType = $cfg['type'];
@@ -552,12 +564,6 @@ class tlPlatform extends tlObjectWithDB
                  'enable_on_execution' => null);
     $gaga->platforms = $this->getAll($opx);
 
-    /*
-    echo '<pre>';
-    var_dump($gaga->platforms);
-    echo '</pre>';
-    */
-    
     $rx = array('canManage' => 'platform_management', 
                 'mgt_view_events' => 'mgt_view_events');
     foreach($rx as $prop => $right) {
@@ -568,6 +574,47 @@ class tlPlatform extends tlObjectWithDB
     return $gaga;
   }
 
+ /**
+   * @return array Returns all platforms associated to a given testplan
+   *               on the form $platform_id => $platform_name
+   */
+  public function getActiveLinkedToTestplanAsMap($testplanID,$opt=null){
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $options = array('orderBy' => ' ORDER BY name ');
+    $options = array_merge($options,(array)$opt);
+    $orderBy = $options['orderBy'];
+
+    $sql =  "/* $debugMsg */ SELECT P.id, P.name
+             FROM {$this->tables['platforms']} P 
+             JOIN {$this->tables['testplan_platforms']} TP
+             ON P.id = TP.platform_id 
+             WHERE  TP.testplan_id = {$testplanID} 
+             AND TP.active = 1 {$orderBy}";
+    return $this->db->fetchColumnsIntoMap($sql, 'id', 'name');
+  }
+
+  
+  /**
+   *
+   */
+  public function toggleActive($tplan_id,$platformSet)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    if (count($platformSet)>0) {
+      $safeID = intval($tplan_id);
+      $inClause = implode(',',$platformSet);
+      $sql = " /* $debugMsg */
+               UPDATE {$this->tables['testplan_platforms']} 
+               SET active = NOT active
+               WHERE testplan_id = $safeID
+               AND platform_id IN ($inClause)";
+
+      $rs = $this->db->exec_query($sql);
+    }
+  }
+
+  
   /**
    *
    */

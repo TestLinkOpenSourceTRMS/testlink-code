@@ -9,7 +9,7 @@
  * @filesource  configCheck.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
@@ -22,7 +22,6 @@
  * @return string URL 
  *
  * @internal revision
- * @since 1.9.9
  * 
  * TICKET 0006015 - Webserver: Nginx - https is forced incorrectly
  * Applying user suggestion after checking how mantisbt act.
@@ -41,63 +40,51 @@
  */
 function get_home_url($opt)
 {
-  if( isset ( $_SERVER['PHP_SELF'] ) ) 
-  {
-  $t_protocol = 'http';
-  if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
-    $t_protocol= $_SERVER['HTTP_X_FORWARDED_PROTO'];
-  }    
-  else if ( !empty($_SERVER['HTTPS']) && (strtolower( $_SERVER['HTTPS']) != 'off') ) 
-  {
-    $t_protocol = 'https';
-  }
-  $t_protocol = $opt['force_https'] ? 'https' : $t_protocol;
+  if (isset ($_SERVER['PHP_SELF'])) {
+    $t_protocol = 'http';
+    if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+      $t_protocol= $_SERVER['HTTP_X_FORWARDED_PROTO'];
+    }    
+    else if (!empty($_SERVER['HTTPS']) 
+             && (strtolower( $_SERVER['HTTPS']) != 'off')) {
+      $t_protocol = 'https';
+    }
+    $t_protocol = $opt['force_https'] ? 'https' : $t_protocol;
 
-  // $_SERVER['SERVER_PORT'] is not defined in case of php-cgi.exe
-  if ( isset( $_SERVER['SERVER_PORT'] ) ) 
-  {
-    $t_port = ':' . $_SERVER['SERVER_PORT'];
-    if ( ( ':80' == $t_port && 'http' == $t_protocol ) || 
-       ( ':443' == $t_port && 'https' == $t_protocol )) 
-    {
+    // $_SERVER['SERVER_PORT'] is not defined in case of php-cgi.exe
+    if ( isset( $_SERVER['SERVER_PORT'] ) ) {
+      $t_port = ':' . $_SERVER['SERVER_PORT'];
+      if ((':80' == $t_port && 'http' == $t_protocol) 
+           || (':443' == $t_port && 'https' == $t_protocol)) {
+        $t_port = '';
+      }
+    } else {
       $t_port = '';
     }
-  } 
-  else 
-  {
-    $t_port = '';
-  }
 
-  if ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) 
-  {   // Support ProxyPass
-    $t_hosts = explode( ',', $_SERVER['HTTP_X_FORWARDED_HOST'] );
-    $t_host = $t_hosts[0];
-  }
-  else if ( isset( $_SERVER['HTTP_HOST'] ) ) 
-  {
-    $t_host = $_SERVER['HTTP_HOST'];
-  } 
-  else if ( isset( $_SERVER['SERVER_NAME'] ) ) 
-  {
-    $t_host = $_SERVER['SERVER_NAME'] . $t_port;
-  } 
-  else if ( isset( $_SERVER['SERVER_ADDR'] ) ) 
-  {
-    $t_host = $_SERVER['SERVER_ADDR'] . $t_port;
-  } 
-  else 
-  {
-    $t_host = 'localhost';
-  }
+    if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {  // Support ProxyPass
+      $t_hosts = explode( ',', $_SERVER['HTTP_X_FORWARDED_HOST'] );
+      $t_host = $t_hosts[0];
+    }
+    else if (isset( $_SERVER['HTTP_HOST'])) {
+      $t_host = $_SERVER['HTTP_HOST'];
+    } else if ( isset( $_SERVER['SERVER_NAME'] ) ) {
+      $t_host = $_SERVER['SERVER_NAME'] . $t_port;
+    } 
+    else if ( isset( $_SERVER['SERVER_ADDR'] ) ) {
+      $t_host = $_SERVER['SERVER_ADDR'] . $t_port;
+    } else {
+      $t_host = 'localhost';
+    }
 
-  $t_path = dirname( $_SERVER['PHP_SELF'] );
-  if ( '/' == $t_path || '\\' == $t_path ) {
-    $t_path = '';
-  }
+    $t_path = dirname( $_SERVER['PHP_SELF'] );
+    if ( '/' == $t_path || '\\' == $t_path ) {
+      $t_path = '';
+    }
 
-  $t_url  = $t_protocol . '://' . $t_host . $t_path.'/';
-  
-  return ($t_url);
+    $t_url  = $t_protocol . '://' . $t_host . $t_path.'/';
+    
+    return $t_url;
   }
 }
 
@@ -388,11 +375,14 @@ function checkForRepositoryDir($the_dir)
  */
 function checkSchemaVersion(&$db)
 {
-  $result = array('status' => tl::ERROR, 'msg' => null, 'kill_session' => true);
+  $result = array('status' => tl::ERROR, 
+                  'msg' => null, 
+                  'kill_session' => true);
   $latest_version = TL_LATEST_DB_VERSION; 
   $db_version_table = DB_TABLE_PREFIX . 'db_version';
   
-  $sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
+  $sql = "SELECT * FROM {$db_version_table} 
+          ORDER BY upgrade_ts DESC";
   $res = $db->exec_query($sql,1);  
   if (!$res) {
     return $result['msg'] = "Failed to get Schema version from DB";
@@ -400,13 +390,16 @@ function checkSchemaVersion(&$db)
     
   $myrow = $db->fetch_array($res);
   
-  $upgrade_msg = "You need to upgrade your Testlink Database to {$latest_version} - <br>" .
-                 '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
+  $upgrade_msg = 
+    "You need to upgrade your Testlink Database 
+     to {$latest_version} - <br>" 
+     . '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
 
-  $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$latest_version} - Read README file!";
+  $manualop_msg = "You need to proceed with Manual 
+                   upgrade of your DB scheme to 
+                   {$latest_version} - Read README file!";
 
   switch (trim($myrow['version'])) {
-    
     case '1.7.0 Alpha':
     case '1.7.0 Beta 1':
     case '1.7.0 Beta 2':
@@ -461,17 +454,11 @@ function checkSchemaVersion(&$db)
     break;
     
     default:
-      $result['msg'] = "Unknown Schema version " .  trim($myrow['version']) . 
+      $result['msg'] = "Unknown Schema version " .  
+                       trim($myrow['version']) . 
                        ", please upgrade your Testlink Database to " . $latest_version;
       break;
   }
-  
-  /* It will be better for debug if this message will be written to a log file
-  if($result['status'] != tl::OK)
-  {
-
-  } 
-  */ 
   return $result;
 }
 
@@ -766,7 +753,9 @@ function checkServerOs()
  */
 function checkPhpVersion(&$errCounter)
 {
-  $min_version = '5.5.0'; 
+  // 20200215
+  // MAMP PRO from MAC provides 7.2.21
+  $min_version = '7.2.21'; 
   $my_version = phpversion();
 
   // version_compare:

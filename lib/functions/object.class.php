@@ -91,8 +91,8 @@ abstract class tlObject implements iSerialization
   /** class constructor */
   public function __construct()
   {
-    if (!isset($this->tables))
-    {
+
+    if (!isset($this->tables)) {
       $this->tables = self::getDBTables();
       $this->views = self::getDBViews();
     }

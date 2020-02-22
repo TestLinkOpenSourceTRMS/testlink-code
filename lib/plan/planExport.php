@@ -34,11 +34,10 @@ $templateCfg = templateConfiguration();
 
 $tplan_mgr = new testplan($db);
 
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($args,$tplan_mgr);
 
-if ($args->doExport)
-{
+if ($args->doExport) {
   $tLogMsg = 'basename(__FILE__) : ' . basename(__FILE__) . ' : $args->exportContent : ' . $args->exportContent;
   switch ($args->exportContent)
   {
@@ -76,48 +75,70 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-/*
-  function: init_args
-
-  args:
-  
-  returns: 
-
-*/
-function init_args()
+/**
+ *
+ *
+ */
+function init_args($dbH)
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $args = new stdClass();
+  list($args,$env) = initContext();
+
   $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
   $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
   $args->closeOnCancel = isset($_REQUEST['closeOnCancel']) ? $_REQUEST['closeOnCancel'] : 0;
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------
   // IMPORTANT NOTICE - 20101101 - franciscom
   // This page is called (@20101101) from two places
   //
   // From test plan management to export linked test cases & platforms
   // From execution to export test plan contents
-  // I've found problems when using in 'execution feature' when I've choose to name hidden inputs
+  // I've found problems when using in 'execution feature' 
+  // when I've choose to name hidden inputs
   // on tpl with a name different to that used on execSetResults.php.
   // This resulted on weird effects on execNavigator.tpl
   // Propably one option can be to save 'form_token'.
   // I've used a simple (and may be more suggest to new bugs in future):
   // maintain same names -> build_id instead of buildID, and so on.
   // A change was also needed on JS support function openExportTestPlan().
-  // ------------------------------------------------------------------------------------------------
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-  $args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
-  $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-  $args->platform_id = isset($_REQUEST['platform_id']) ? intval($_REQUEST['platform_id']) : 0;
+  // -------------------------------------------------------------------
+  $kp = array('tproject_id','tplan_id','itemID','build_id','platform_id');
+  foreach ($kp as $kpt) {
+    $args->$kpt = isset($_REQUEST[$kpt]) ? intval($_REQUEST[$kpt]) : 0;
+  }
+
+  if ($args->tplan_id==0) {
+    $args->tplan_id = $args->itemID;
+  }
+
+  if ($args->itemID !=0) {
+    if ($args->tplan_id != $args->itemID) {
+      $args->tplan_id = $args->itemID;
+    }
+  }  
+
+  if ($args->tplan_id==0) {
+    throw new Exception("Error Test Plan ID", 1);
+  }
+
+  if ($args->tproject_id==0) {
+    $tplan = new testplan($dbH);
+    $info = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $info['testproject_id'];
+  }
+
+  if ($args->tproject_id==0) {
+    throw new Exception("Error Test Project ID", 1);
+  }
+
 
   $args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
   $args->export_filename = trim($args->export_filename);
 
   // replace blank on name with _
-  if( !is_null($args->export_filename) )
-  { 
+  if (!is_null($args->export_filename)) { 
     $args->export_filename = str_replace(' ','_',$args->export_filename);
   }
     
@@ -126,8 +147,7 @@ function init_args()
   // TICKET 6498: Cross-Site Scripting on /lib/plan/planExport.php (CWE-80)
   $default = 'linkedItems';
   $args->exportContent = isset($_REQUEST['exportContent']) ? substr($_REQUEST['exportContent'],0,strlen($default)) : $default;
-  switch ($args->exportContent)
-  {
+  switch ($args->exportContent) {
     case 'tree':
     case '4results':
     case 'linkedItems':
@@ -139,15 +159,16 @@ function init_args()
   }
 
   // Vulnerable ?
-  $args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+  $args->treeFormToken = isset($_REQUEST['form_token']) ? 
+                         $_REQUEST['form_token'] : 0;
   $args->testCaseSet = null;
-  if($args->treeFormToken >0)
-  {  
+  if ($args->treeFormToken >0) {  
     $mode = 'execution_mode';
-    $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->treeFormToken]) ? 
-                    $_SESSION[$mode][$args->treeFormToken] : null;
+    $cache = isset($_SESSION[$mode]) && 
+             isset($_SESSION[$mode][$args->treeFormToken]) ? 
+             $_SESSION[$mode][$args->treeFormToken] : null;
 
-    $args->testCaseSet = $session_data['testcases_to_show'];
+    $args->testCaseSet = $cache['testcases_to_show'];
   }
   return $args;
 }

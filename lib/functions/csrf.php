@@ -187,7 +187,7 @@ function csrfguard_start()
     {
       //trigger_error("No CSRFName found, probable invalid request.",E_USER_ERROR);
       //return false;
-      redirect($_SESSION['basehref'] . 'error.php?code=1');
+      redirect($_SESSION['basehref'] . 'error.php?message=No CSRFName found, probable invalid request.');
       exit();
     }
 
@@ -199,7 +199,7 @@ function csrfguard_start()
     {
       //trigger_error("Invalid CSRF token.",E_USER_ERROR);
       //return false;
-      redirect($_SESSION['basehref'] . 'error.php?code=2');
+      redirect($_SESSION['basehref'] . 'error.php?message=Invalid CSRF token.');
       exit();
     }
   }

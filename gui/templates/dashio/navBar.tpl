@@ -104,10 +104,13 @@ The _top value of the target attribute specifies that the URL should open in the
     </header>
 
 
-  <script type="text/javascript" src="{$basehref}third_party/jquery/jquery-3.3.1.min.js" language="javascript"></script>
+  <script type="text/javascript" 
+    src="{$basehref}{$smarty.const.TL_JQUERY}" 
+    language="javascript"></script>
 
 
-  <script src="{$dashioHome}lib/bootstrap/js/bootstrap.min.js"></script>
+  <script 
+    src="{$dashioHome}lib/bootstrap/js/bootstrap.min.js"></script>
   <script src="{$dashioHome}lib/jquery.nicescroll.js" type="text/javascript"></script>
   <script class="include" type="text/javascript" src="{$dashioHome}lib/jquery.dcjqaccordion.2.7.js"></script>
   

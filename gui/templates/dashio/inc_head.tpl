@@ -53,7 +53,8 @@ editorType: used to understand if code for tinymce need to be loaded
 
   <link rel="stylesheet" href="{$basehref}third_party/chosen/chosen.css">
 
-	<script type="text/javascript" src="{$basehref}third_party/jquery/jquery-3.3.1.min.js" language="javascript"></script>
+	<script type="text/javascript" 
+    src="{$basehref}{$smarty.const.TL_JQUERY}" language="javascript"></script>
 
 	<script type="text/javascript" src="{$basehref}third_party/chosen/chosen.jquery.js"></script>
  

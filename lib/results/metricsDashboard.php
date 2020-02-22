@@ -5,9 +5,7 @@
  *
  * @filesource  metricsDashboard.php
  * @package     TestLink
- * @copyright   2007-2017, TestLink community 
- * @author      franciscom
- *
+ * @copyright   2007-2019, TestLink community 
  *
  **/
 require('../../config.inc.php');
@@ -331,6 +329,9 @@ function getColumnsDefinition($showPlatforms, $statusLbl, $labels, $platforms)
   return $colDef;
 }
 
+/**
+ *
+ */
 function initEnv(&$dbHandler)
 {
   $args = new stdClass();
@@ -343,26 +344,28 @@ function initEnv(&$dbHandler)
                    "show_only_active_hidden" => array(tlInputParameter::CB_BOOL));
 
   R_PARAMS($iParams,$args);
+
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
+
   
-  if( !is_null($args->apikey) )
-  {
-    
+  if( !is_null($args->apikey) ) {
     $args->show_only_active = true;
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->redirect_target = "../../login.php?note=logout";
 
-    if(strlen($args->apikey) == 32)
-    {
+    if(strlen($args->apikey) == 32) {
       $cerbero->args->tproject_id = $args->tproject_id;
       $cerbero->args->tplan_id = $args->tplan_id;
       $cerbero->args->getAccessAttr = true;
       $cerbero->method = 'checkRights';
     
       setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
-    }
-    else
-    {
+    } else {
       // Have got OBJECT KEY
       $cerbero->method = null;
       $cerbero->args->getAccessAttr = false;
@@ -374,16 +377,11 @@ function initEnv(&$dbHandler)
       $dj = $tprojMgr->getByAPIKey($args->apikey);
       $args->tproject_id = $dj['id'];
     }  
-  }
-  else
-  {
+  } else {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? 
-                         intval($_SESSION['testprojectID']) : 0;
   }
   
-  if($args->tproject_id <= 0)
-  {
+  if ($args->tproject_id <= 0) {
     $msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
     throw new Exception($msg);
   }
@@ -401,20 +399,13 @@ function initEnv(&$dbHandler)
                        "lnl.php?type=metricsdashboard&" .
                        "apikey={$ak}";
 
-  if ($args->show_only_active) 
-  {
+  if ($args->show_only_active) {
     $selection = true;
-  } 
-  else if ($args->show_only_active_hidden) 
-  {
+  } else if ($args->show_only_active_hidden) {
     $selection = false;
-  } 
-  else if (isset($_SESSION['show_only_active'])) 
-  {
+  } else if (isset($_SESSION['show_only_active'])) {
     $selection = $_SESSION['show_only_active'];
-  } 
-  else 
-  {
+  } else {
     $selection = true;
   }
   $args->show_only_active = $_SESSION['show_only_active'] = $selection;

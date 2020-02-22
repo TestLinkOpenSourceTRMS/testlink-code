@@ -13,7 +13,7 @@ require_once("keywordsEnv.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$gui = $args = init_args($db);
+$gui = initScript($db);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -22,44 +22,51 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  * @return object returns the arguments for the page
  */
-function init_args(&$dbHandler) {
+function initArgs(&$dbHandler) {
   $args = new stdClass();
-  $tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
-  $tproject_id = intval($tproject_id);
+  list($context,$env) = initContext();
 
-  if( $tproject_id <= 0 ) {
+  if( $context->tproject_id <= 0 ) {
     throw new Exception("Error Invalid Test Project ID", 1);
   }
 
   // Check rights before doing anything else
   // Abort if rights are not enough 
   $user = $_SESSION['currentUser'];
-  $env['tproject_id'] = $tproject_id;
-  $env['tplan_id'] = 0;
+
+  // check only at test project level
+  $environment = array('tproject_id' => $context->tproject_id);
   
   $check = new stdClass();
   $check->items = array('mgt_view_key');
   $check->mode = 'and';
-  checkAccess($dbHandler,$user,$env,$check);
+  checkAccess($dbHandler,$user,$environment,$check);
   
   // OK, go ahead
-  $args = getKeywordsEnv($dbHandler,$user,$tproject_id);
-  $args->tproject_id = $tproject_id;
-
-  $args->dialogName = '';
-  $args->bodyOnLoad = $args->bodyOnUnload = '';       
-  if(isset($_REQUEST['openByKWInc'])) {
-    $args->openByOther = 1;
-  } else {
-    // Probably useless
-    $args->openByOther = 
-      isset($_REQUEST['openByOther']) ? intval($_REQUEST['openByOther']) : 0;
-    if( $args->openByOther ) {
-      $args->dialogName = 'kw_dialog';
-      $args->bodyOnLoad = "dialog_onLoad($args->dialogName)";
-      $args->bodyOnUnload = "dialog_onUnload($args->dialogName)";  
-    }    
+  $args = getKeywordsEnv($dbHandler,$user,$context->tproject_id);
+  foreach ($context as $prop => $val) {
+    $args->$prop = $val;  
   }
 
+  setOpenByAnotherEnv($args);
+
   return $args;
+}
+
+/**
+ * 
+ */
+function initScript(&$dbH) {
+
+  $argsObj = initArgs($dbH);
+
+  list($add2args,$gui) = initUserEnv($dbH,$argsObj);
+
+  $k2l = get_object_vars($argsObj);
+  foreach ($k2l as $pp => $value) {
+    $gui->$pp = $value;
+  }
+
+  $gui->activeMenu['projects'] = 'active';
+  return $gui;
 }

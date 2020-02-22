@@ -4,7 +4,7 @@
  *
  * @filesource  tcCreatedPerUserOnTestProject.php
  * @package     TestLink
- * @copyright   2005,2018 TestLink community 
+ * @copyright   2005,2019 TestLink community 
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
  * @link        http://www.testlink.org
  * 

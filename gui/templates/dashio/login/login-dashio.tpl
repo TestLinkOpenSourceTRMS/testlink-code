@@ -9,20 +9,20 @@
   <meta name="description" content="">
   <meta name="author" content="Dashboard">
   <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
-  <title>{$labels.login}</title>
+  <title>{$labels.login}{$dashioHome}</title>
 
   <!-- Favicons -->
-  <link href="gui/templates/dashio/img/favicon.png" rel="icon">
-  <link href="gui/templates/dashioimg/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="{$dashioHome}favicon.png" rel="icon">
+  <link href="{$dashioHome}apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Bootstrap core CSS -->
-  <link href="gui/templates/dashio/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{$dashioHome}lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <!--external css-->
-  <link href="gui/templates/dashio/lib/font-awesome/css/all.css" rel="stylesheet" />
+  <link href="{$dashioHome}lib/font-awesome/css/all.css" rel="stylesheet" />
 
   <!-- Custom styles for this template -->
-  <link href="gui/templates/dashio/css/style.css" rel="stylesheet">
-  <link href="gui/templates/dashio/css/style-responsive.css" rel="stylesheet">
+  <link href="{$dashioHome}css/style.css" rel="stylesheet">
+  <link href="{$dashioHome}css/style-responsive.css" rel="stylesheet">
   
   <!-- =======================================================
     Template Name: Dashio
@@ -107,13 +107,14 @@
   </div>
 
   <!-- js placed at the end of the document so the pages load faster -->
-  <script src="gui/templates/dashio/lib/jquery/jquery.min.js"></script>
-  <script src="gui/templates/dashio/lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="{$dashioHome}lib/jquery/jquery.min.js"></script>
+  <script src="{$dashioHome}lib/bootstrap/js/bootstrap.min.js"></script>
   <!--BACKSTRETCH-->
   <!-- You can use an image of whatever size. This script will stretch to fit in any screen size.-->
-  <script type="text/javascript" src="gui/templates/dashio/lib/jquery.backstretch.min.js"></script>
+  <script type="text/javascript" 
+          src="{$dashioHome}lib/jquery.backstretch.min.js"></script>
   <script>
-    $.backstretch("gui/templates/dashio/img/wp-testing04.jpg", {
+    $.backstretch("{$dashioHome}img/wp-testing04.jpg", {
       speed: 500
     });
   </script>

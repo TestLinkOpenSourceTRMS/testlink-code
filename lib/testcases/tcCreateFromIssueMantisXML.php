@@ -392,23 +392,21 @@ function nl2p($str)
   returns: 
   
 */
-function init_args()
+function init_args(&$dbH)
 {
-    $args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
+  list($args,$env) = initContext();
+  $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
-    $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
-    $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
-    $args->containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
-    $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
-    
-    $args->userID = intval($_SESSION['userID']);
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+  $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
+  $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
+  $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
+  $args->containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
+  $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
+  
+  $args->userID = intval($_SESSION['userID']);
 
-    
-    return $args;
+  $args->tproject_name = testproject::getName($dbH,$args->tproject_id);
+  return $args;
 }
 
 

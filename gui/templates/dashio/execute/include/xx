@@ -1,0 +1,14 @@
+add_issue_on_step.inc.tpl
+create_issue.inc.tpl
+execSetResultsBulk.inc.tpl
+execSetResultsJS.inc.tpl
+execSetResultsRemoteExec.inc.tpl
+execSetResultsUtils.inc.tpl
+exec_controls.inc.tpl
+exec_img_controls.inc.tpl
+exec_show_tc_exec.inc.tpl
+exec_tc_relations.inc.tpl
+exec_test_spec.inc.tpl
+issueTrackerMetadata.inc.tpl
+issue_inputs_on_step.inc.tpl
+xx

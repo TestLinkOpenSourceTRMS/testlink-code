@@ -117,8 +117,7 @@ function jsCallDeleteFile(btn, text, o_id) {
 
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 
-    {include file="testcases/tcView_viewer.tpl" 
-
+    {include file="{$tplConfig['tcViewViewer.inc']}"              
              args_tcase_operations_enabled="yes"
              args_read_only="no"
              args_can_move_copy="yes"

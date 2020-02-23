@@ -128,7 +128,7 @@ function validateForm(the_form)
            onclick="show_modified_warning=false; 
                     javascript: {if isset($gui->cancelActionJS)}{$gui->cancelActionJS} {else} history.back() {/if};"/>
   </div>  
-  {include file="testcases/tcEdit_New_viewer.tpl"}
+  {include file="tcEditViewer.inc.tpl"}
   
   {* when save or cancel is pressed do not show modification warning *}
   <div class="groupBtn">

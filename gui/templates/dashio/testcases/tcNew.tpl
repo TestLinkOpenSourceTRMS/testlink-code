@@ -138,7 +138,7 @@ action="{$basehref}lib/testcases/tcEdit.php?containerID={$gui->containerID}"
 
 	</div>
 
-	{include file="testcases/tcEditViewer.tpl"}
+	{include file="tcEditViewer.inc.tpl"}
 
 	<div class="groupBtn">
 			<input type="hidden" id="do_create_2"  name="do_create" value="do_create" />

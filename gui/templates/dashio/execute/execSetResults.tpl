@@ -121,7 +121,7 @@ file_upload_ko,pleaseOpenTSuite'}
 
 {include file="inc_head.tpl" popup='yes' openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 
-{include file="execute/execSetResultsJS.inc.tpl"}
+{include file="{$tplConfig['execSetResultsJS.inc']}"}
 
 {include file="bootstrap.inc.tpl"} 
 <script src="{$basehref}third_party/clipboard/clipboard.min.js"></script>
@@ -370,7 +370,7 @@ file_upload_ko,pleaseOpenTSuite'}
                      show_hide_container_view_status_id=$memstatus_id}
 
             <div id="{$div_id}" name="{$div_id}">
-              {include file="execute/{$tplConfig.inc_exec_controls}"
+              {include file="{$tplConfig['exec_controls.inc']}"
                        args_save_type='bulk'
                        args_input_enable_mgmt=$input_enabled_disabled
                        args_tcversion_id='bulk'
@@ -384,21 +384,20 @@ file_upload_ko,pleaseOpenTSuite'}
 	{/if}
 
   {if $bulkExec}
-    {include file="execute/execSetResultsBulk.inc.tpl"}
+    {include file="{$tplConfig['execSetResultsBulk.inc']}" }
   {/if}
 
   {if $singleExec}
   	{if $tlCfg->exec_cfg->enable_test_automation && 
         $gui->remoteExecFeedback != ''}
-      {include file="execute/execSetResultsRemoteExec.inc.tpl"}
+      {include file="{$tplConfig['execSetResultsRemoteExec.inc']}" }
   	{/if}
 
-    {include file="execute/inc_exec_show_tc_exec.tpl"}
+    {include file="{$tplConfig['exec_show_tc_exec.inc']}" }
     {if isset($gui->refreshTree) && $gui->refreshTree}
       {include file="inc_refreshTreeWithFilters.tpl"}
     {/if}
   {/if}
-  
 </form>
 </div>
 

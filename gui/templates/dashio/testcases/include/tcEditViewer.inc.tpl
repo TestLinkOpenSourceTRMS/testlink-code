@@ -27,7 +27,8 @@ Purpose: smarty template - create new testcase
   <p />
   <div class="labelHolder"><label for="testcase_name">{$labels.tc_title}</label></div>
   <div> 
-    <input type="text" name="testcase_name" id="testcase_name"
+    <input required 
+      type="text" name="testcase_name" id="testcase_name"
       size="{#TESTCASE_NAME_SIZE#}" required 
       maxlength="{#TESTCASE_NAME_MAXLEN#}"
       onchange="content_modified = true"
@@ -35,12 +36,11 @@ Purpose: smarty template - create new testcase
       onkeyup="javascript:checkTCaseDuplicateName(Ext.get('testcase_id').getValue(),Ext.get('testcase_name').getValue(),
                                                   Ext.get('testsuite_id').getValue(),'testcase_name_warning')"
       {if isset($gui->tc.name)}
-           value="{$gui->tc.name|escape}"
+        value="{$gui->tc.name|escape}"
       {else}
-          value=""
-        {/if}
+        value=""
+      {/if}
       title="{$labels.alt_add_tc_name}"/>
-        {include file="error_icon.tpl" field="testcase_name"}
       <span id="testcase_name_warning" class="warning"></span>
     <p />
 
@@ -66,7 +66,7 @@ Purpose: smarty template - create new testcase
          
     {/if}
     {$layout1}
-    {include file="testcases/attributesLinear.inc.tpl"}
+    {include file="attributesLinear.inc.tpl"}
   </div>
 
 

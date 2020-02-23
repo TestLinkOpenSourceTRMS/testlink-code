@@ -188,11 +188,11 @@ function jsCallDeleteFile(btn, text, o_id)
 {elseif $gui->level == 'testsuite'}
 
   {if $gui->modify_tc_rights == 'yes' || $gui->sqlResult neq ''}
-     {include file="testcases/containerViewTestSuiteTextButtons.inc.tpl"} 
+     {include file="containerViewTestSuiteTextButtons.inc.tpl"} 
   {/if}
   
-  {* ----- show Test Suite data ------------------------------------- *}
-  {include file="testcases/inc_testsuite_viewer_ro.tpl"}
+  {* ----- show Test Suite data ----------------------------- *}
+  {include file="tsuiteViewerRO.inc.tpl"}
 
   {if $gui->modify_tc_rights eq 'yes'}
     {$bDownloadOnly=false}

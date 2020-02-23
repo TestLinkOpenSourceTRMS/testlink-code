@@ -24,7 +24,7 @@ tcSearchResults.tpl
 <body>
 <h1 class="{#TITLE_CLASS#}">{$gui->pageTitle}</h1>
 
-{include file="testcases/tcSearchGUI.inc.tpl"}
+{include file="tcSearchGUI.inc.tpl"}
 
 {if $gui->doSearch}
   <div class="workBack">

@@ -103,7 +103,8 @@ class TLSmarty extends Smarty {
              ['main' => $main,
               'include' => $main . 'include/',
               'execInc' => $main . 'execute/include/',
-              'tcaseInc' => $main . 'testcases/include/'
+              'tcaseInc' => $main . 'testcases/include/',
+              'tcaseLbl' => $main . 'testcases/labels/'
              ];
                           
     $this->config_dir = TL_ABS_PATH . 'gui/templates/conf';

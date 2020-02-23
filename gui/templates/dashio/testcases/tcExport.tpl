@@ -20,7 +20,7 @@ test case export initial page
 
 {$myJS=$smarty.template|basename|replace:".tpl":"JS.inc.tpl"}
 
-{include file="testcases/$myJS"}
+{include file=$myJS}
 
 </head>
 
@@ -40,9 +40,10 @@ test case export initial page
         {$labels.export_filename}
         </td>
         <td>
-      	<input type="text" name="export_filename" maxlength="{#FILENAME_MAXLEN#}"
-    			           value="{$gui->export_filename|escape}" size="{#FILENAME_SIZE#}"/>
-    			  				{include file="error_icon.tpl" field="export_filename"}
+      	<input required type="text" 
+          name="export_filename" 
+          maxlength="{#FILENAME_MAXLEN#}"
+    			value="{$gui->export_filename|escape}" size="{#FILENAME_SIZE#}"/>
       	</td>
       </tr>
     	<tr>

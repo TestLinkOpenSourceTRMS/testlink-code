@@ -4057,4 +4057,8 @@ $TLS_selected_cb = '%s checkboxes have been checked ';
 $TLS_deselected_cb = '%s checkboxes have been unchecked';
 $TLS_reload_main_view = "Reload Main View";
 $TLS_toggle_navigation = "Toggle Navigation";
+$TLS_delete_keyword = "Delete Keyword";
+$TLS_reports = "Reports";
+$TLS_on_testproject = "On Test Project";
+
 // ----- END -----------------------------------------------------

@@ -10,8 +10,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels'
-          s='th_issuetracker,th_issuetracker_type,th_delete,th_description,menu_assign_kw_to_tc,title_issuetracker_mgmt,
-          	 btn_create,alt_delete,th_issuetracker_env,check_bts_connection,bts_check_ok,bts_check_ko'}
+  s='th_issuetracker,th_issuetracker_type,th_delete,th_description,
+     menu_assign_kw_to_tc,title_issuetracker_mgmt,
+     btn_create,alt_delete,th_issuetracker_env,
+     check_bts_connection,bts_check_ok,bts_check_ko'}
 
 {lang_get s='warning_delete' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
@@ -22,8 +24,9 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 </script> 
 
 {$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
-                                   DataTableslengthMenu=$ll}
+{include file="DataTables.inc.tpl" 
+         DataTablesSelector="#item_view"
+         DataTableslengthMenu=$ll}
 
 </head>
 <body {$body_onload}>
@@ -34,7 +37,6 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 
 <div class="workBack">
 	{include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
-	{if $gui->items != ''}
 	<table class="{#item_view_table#}" id="item_view">
 	  <thead class="{#item_view_thead#}">
 			<tr>
@@ -46,6 +48,7 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 				{/if}
 			</tr>
 		</thead>
+	{if $gui->items != ''}
   	{foreach key=item_id item=item_def from=$gui->items}
 		<tr>
 			<td>
@@ -86,8 +89,8 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 				</td>
 		</tr>
 		{/foreach}
-	</table>
 	{/if}
+	</table>
 	
 	<div class="groupBtn">	
 	  	<form name="item_view" id="item_view" method="post" action="lib/issuetrackers/issueTrackerEdit.php"> 

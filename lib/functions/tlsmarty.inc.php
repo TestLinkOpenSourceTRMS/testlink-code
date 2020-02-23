@@ -98,8 +98,13 @@ class TLSmarty extends Smarty {
 
     parent::__construct();
     
+    $main = TL_ABS_PATH . 'gui/templates/dashio/';
     $this->template_dir = 
-      array('main' => TL_ABS_PATH . 'gui/templates/dashio/');
+             ['main' => $main,
+              'include' => $main . 'include/',
+              'execInc' => $main . 'execute/include/',
+              'tcaseInc' => $main . 'testcases/include/'
+             ];
                           
     $this->config_dir = TL_ABS_PATH . 'gui/templates/conf';
     $this->compile_dir = TL_TEMP_PATH;
@@ -176,24 +181,45 @@ class TLSmarty extends Smarty {
     $this->assign('locale', $my_locale);
      
     //
-    $stdTPLCfg = array();
-    $stdTPLCfg['inc_tcbody'] = 'testcases/inc_tcbody.tpl';
-    $stdTPLCfg['inc_steps'] = 'testcases/inc_steps.tpl';
+    $stdTPLCfg = ['tcViewViewer.inc' => '',
+                  'tcbody.inc' => '',
+                  'steps.inc' => '',
+                  'keywords.inc' => '',
+                  'relations.inc' => '', 
+                  'quickexec.inc' => '',
+                  'platforms.inc' => '',
+                  'attributesLinearForViewer.inc' => '', 
+                  'steps_horizontal.inc' => '',
+                  'steps_vertical.inc' => ''];
 
-    $stdTPLCfg['inc_show_scripts_table'] = 'inc_show_scripts_table.tpl';
-    
-    $stdTPLCfg['keywords.inc'] = 'testcases/keywords.inc.tpl';
+    array_walk($stdTPLCfg, function (&$value, $key) {
+      $bbb = "testcases/include/";
+      return $value =  $bbb . $key . '.tpl';
+    });
+ 
+    $stdTPLCfg['exec_test_spec.inc'] = '';
+    $stdTPLCfg['exec_img_controls.inc'] = '';
+    $stdTPLCfg['exec_controls.inc'] = '';
+    $stdTPLCfg['exec_show_tc_exec.inc'] = '';
+    $stdTPLCfg['exec_tc_relations.inc'] = '';
+    $stdTPLCfg['add_issue_on_step.inc'] = '';
+    $stdTPLCfg['create_issue.inc'] = '';
+    $stdTPLCfg['execSetResultsBulk.inc'] = '';
+    $stdTPLCfg['execSetResultsJS.inc'] = '';
+    $stdTPLCfg['execSetResultsRemoteExec.inc'] = '';
+    $stdTPLCfg['execSetResultsUtils.inc'] = '';
+    $stdTPLCfg['issueTrackerMetadata.inc'] = '';
+    $stdTPLCfg['issue_inputs_on_step.inc'] = '';
 
-    $stdTPLCfg['attributesLinearForViewer.inc'] = 
-      'testcases/attributesLinearForViewer.inc.tpl';
-
-    $stdTPLCfg['relations.inc'] = 'testcases/relations.inc.tpl'; 
-    $stdTPLCfg['quickexec.inc'] = 'testcases/quickexec.inc.tpl'; 
-
-    $stdTPLCfg['steps_horizontal.inc'] = 'testcases/steps_horizontal.inc.tpl';
-    $stdTPLCfg['steps_vertical.inc'] = 'testcases/steps_vertical.inc.tpl';
-
-    $stdTPLCfg['platforms.inc'] = 'testcases/platforms.inc.tpl';
+    array_walk($stdTPLCfg, function (&$value, $key) {
+      $bbb = "execute/include/";
+      if ($value == '') {
+        return $value =  $bbb . $key . '.tpl';
+      }
+    });
+ 
+    $stdTPLCfg['showScriptsTable.inc'] = 
+      'include/showScriptsTable.inc.tpl';
 
 
     // -----------------------------------------------------------------------------

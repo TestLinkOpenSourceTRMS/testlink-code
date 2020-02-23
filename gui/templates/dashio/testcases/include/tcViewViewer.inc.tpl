@@ -469,7 +469,8 @@ viewer for test case in test specification
   <div {$addInfoDivStyle}>
         <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>
   </div>
-  {/if}
+{/if}
+
 
   <p>
   <div {$addInfoDivStyle}>
@@ -490,6 +491,26 @@ viewer for test case in test specification
             args_tcversion_id=$tcversion_id
    } 
 </div>
+
+{if $gui->hasIssueTracker}
+  <div {$addInfoDivStyle}>
+     {$alienRW = $args_frozen_version=="no" 
+                 && $edit_enabled == 1 
+                 && $has_been_executed == 0} 
+     
+     {if $args_frozen_version=="no" && $has_been_executed == 1 }
+       {if $args_tcase_cfg->can_edit_executed == 1 || 
+           $args_tcase_cfg->can_add_remove_kw_on_executed == 1}
+         {$alienRW = 1}
+       {/if}
+     {/if}
+     
+     {include file="{$tplConfig['aliens.inc']}" 
+              args_edit_enabled=$alienRW
+              args_tcase_id=$tcase_id
+              args_tcversion_id=$tcversion_id} 
+  </div>
+{/if}
   
 <p>
 <div {$addInfoDivStyle}>

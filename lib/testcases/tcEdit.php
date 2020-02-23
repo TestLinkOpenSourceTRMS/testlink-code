@@ -36,6 +36,7 @@ $tplCfg = templateConfiguration('tcEdit');
 $commandMgr = new testcaseCommands($db,$args->user,$args->tproject_id);
 $commandMgr->setTemplateCfg(templateConfiguration());
 
+$testCaseEditorKeys = array('summary' => 'summary','preconditions' => 'preconditions');
 $init_inputs = true;
 $opt_cfg = initializeOptionTransferCfg($optTransferName,$args,$tproject_mgr);
 $gui = initializeGui($db,$args,$cfg,$tcase_mgr,$tproject_mgr);
@@ -45,6 +46,7 @@ $smarty = new TLSmarty();
 $name_ok = 1;
 $doRender = false;
 $pfn = $args->doAction;
+
 
 $testCaseEditorKeys = null;
 switch($args->doAction) {
@@ -430,6 +432,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
     $args->copy[$key] = isset($_REQUEST[$key]) ? true : false;    
   }    
   
+  
   $args->show_mode = (isset($_REQUEST['show_mode']) && $_REQUEST['show_mode'] != '') ? $_REQUEST['show_mode'] : null;
 
         
@@ -441,6 +444,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   $args->requirementsEnabled = $args->tprojOpt->requirementsEnabled;
 
   $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
+
 
   // Specialized webEditorConfiguration
   $action2check = array("editStep" => true,
@@ -455,6 +459,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   }   
 
   $args->stay_here = isset($_REQUEST['stay_here']) ? 1 : 0;
+
 
   $dummy = getConfigAndLabels('testCaseStatus','code');
   $args->tcStatusCfg['status_code'] = $dummy['cfg'];
@@ -495,7 +500,10 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
     $args->$tko = isset($_GET[$tko]) ? intval($_GET[$tko]) : 0;
   }
 
+  $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+  $args->platform_id = isset($_REQUEST['platform_id']) ? intval($_REQUEST['platform_id']) : 0;
   
+
   $cbk = 'changeExecTypeOnSteps';
   $args->applyExecTypeChangeToAllSteps = isset($_REQUEST[$cbk]);
 
@@ -507,6 +515,8 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   $args->copyOnlyLatestVersion = 
     isset($_REQUEST['copy_latest_version']) ? 1 : 0;
 
+  $tcaseMgr->setTestProject($args->tproject_id);
+
   return $args;
 }
 
@@ -516,7 +526,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   args :
   returns: 
 */
-function initializeOptionTransferCfg($otName,&$argsObj,&$tprojMgr)
+function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
 {
   $otCfg = new stdClass();
   $otCfg->js_ot_name = $otName;
@@ -583,9 +593,11 @@ function createWebEditors($basehref,$editorCfg,$editorSet=null)
     return $owe;
 }
 
-/**
- * function: getCfg
- */
+/*
+  function: getCfg
+  args :
+  returns: object
+*/
 function getCfg()
 {
   $cfg = new stdClass();
@@ -690,7 +702,8 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
  * manage GUI rendering
  *
  */
-function renderGui(&$argsObj,$guiObj,$opObj,$tplCfg,$cfgObj,$editorKeys) {
+function renderGui(&$argsObj,$guiObj,$opObj,$tplCfg,$cfgObj,$editorKeys)
+{
   $smartyObj = new TLSmarty();
     
   // needed by webeditor loading logic present on inc_head.tpl

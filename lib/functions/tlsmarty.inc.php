@@ -102,6 +102,7 @@ class TLSmarty extends Smarty {
     $this->template_dir = 
              ['main' => $main,
               'include' => $main . 'include/',
+              'feedback' => $main . 'feedback/',
               'execInc' => $main . 'execute/include/',
               'tcaseInc' => $main . 'testcases/include/',
               'tcaseLbl' => $main . 'testcases/labels/'
@@ -185,6 +186,7 @@ class TLSmarty extends Smarty {
     $stdTPLCfg = ['tcViewViewer.inc' => '',
                   'tcbody.inc' => '',
                   'steps.inc' => '',
+                  'aliens.inc' => '',
                   'keywords.inc' => '',
                   'relations.inc' => '', 
                   'quickexec.inc' => '',

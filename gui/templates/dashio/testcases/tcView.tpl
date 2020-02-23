@@ -117,7 +117,8 @@ function jsCallDeleteFile(btn, text, o_id) {
 
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 
-    {include file="{$tplConfig['tcViewViewer.inc']}"              
+    {include file="{$tplConfig['tcViewViewer.inc']}"  
+             args_aliens_map = $gui->currentVersionAliens
              args_tcase_operations_enabled="yes"
              args_read_only="no"
              args_can_move_copy="yes"
@@ -235,43 +236,45 @@ function jsCallDeleteFile(btn, text, o_id) {
 
               <img class="clickable" src="{$tlImages.cog}" 
                 onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel_{$tcversion_id}','inline');"
-                   title="{$labels.actions}" />
+                title="{$labels.actions}" />
 
               {* Setting args_can_do makes other versions READONLY *}
               {* Be carefull IDX is OK ONLY for status_quo *}
-              {include file="testcases/tcView_viewer.tpl" 
+              {include file="{$tplConfig['tcViewViewer.inc']}" 
                        
-                       args_tcase_cfg=$gui->tcase_cfg
-                       args_read_only=$tcv_frozen_version
+                args_tcase_cfg=$gui->tcase_cfg
+                args_read_only=$tcv_frozen_version
 
-                       args_can_move_copy="no" 
-                       args_can_delete_testcase='no'
-                       args_can_delete_version="yes"
-                       args_hide_relations="no"
-                       args_show_version="no" 
-                       args_show_title="no"
-                       args_new_sibling="no"
-                       args_bulk_action="no"
-                       args_tcase_operations_enabled="no"
+                args_can_move_copy="no" 
+                args_can_delete_testcase='no'
+                args_can_delete_version="yes"
+                args_hide_relations="no"
+                args_show_version="no" 
+                args_show_title="no"
+                args_new_sibling="no"
+                args_bulk_action="no"
+                args_tcase_operations_enabled="no"
 
+                args_testcase = $my_testcase 
 
-                       args_testcase = $my_testcase 
+                args_status_quo = $gui->status_quo[idx]
 
-                       args_status_quo = $gui->status_quo[idx]
+                args_keywords_map = $gui->otherVersionsKeywords[$tdx] 
+                
+                args_platforms_map = $gui->otherVersionsPlatforms[$tdx] 
 
-                       args_keywords_map = $gui->otherVersionsKeywords[$tdx] 
-                       args_platforms_map = $gui->otherVersionsPlatforms[$tdx] 
+                args_aliens_map = $gui->otherVersionsAliens[$tdx] 
 
-                       args_reqs = $gui->req4OtherVersions[$tdx]
-                       args_relations = $gui->otherVersionsRelations[$tdx]
+                args_reqs = $gui->req4OtherVersions[$tdx]
+                args_relations = $gui->otherVersionsRelations[$tdx]
 
-                       args_can_do=$gui->can_do
-                       args_frozen_version=$tcv_frozen_version
+                args_can_do=$gui->can_do
+                args_frozen_version=$tcv_frozen_version
 
-                       args_users=$gui->users
-                       args_cf=$gui->cf_other_versions[idx][$tdx]
-                       args_linked_versions=null
-                       args_has_testplans=$gui->has_testplans}
+                args_users=$gui->users
+                args_cf=$gui->cf_other_versions[idx][$tdx]
+                args_linked_versions=null
+                args_has_testplans=$gui->has_testplans}
 
 
               {$downloadOnly = false} 

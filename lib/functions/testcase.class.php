@@ -904,6 +904,9 @@ class testcase extends tlObjectWithAttachments {
     static $cfg;
     static $reqMgr;
 
+    $debugMsg = 'Class:' . __CLASS__ 
+                . ' - Method: ' . __FUNCTION__;
+
     if(!$cfg) {
       $cfg = config_get('spec_cfg');
       $reqMgr = new requirement_mgr($this->db);
@@ -1008,7 +1011,6 @@ class testcase extends tlObjectWithAttachments {
         $gui->delAttachmentURL = $_SESSION['basehref'] . 
           $this->getDeleteAttachmentByIDRelativeURL($io,$gui);
 
-
         $gui->delTCVRelationURL = $_SESSION['basehref'] . 
           $this->getDeleteTCVRelationRelativeURL($io,$gui);
 
@@ -1018,6 +1020,8 @@ class testcase extends tlObjectWithAttachments {
         $gui->delTCVPlatformURL = $_SESSION['basehref'] . 
           $this->getDeleteTCVPlatformRelativeURL($io,$gui);
 
+        $gui->delTCVAlienURL = $_SESSION['basehref'] . 
+          $this->getDeleteTCVAlienRelativeURL($io,$gui);
 
         // Impacted for version management
         $gui->fileUploadURL[$currentVersionID] = 
@@ -1045,6 +1049,8 @@ class testcase extends tlObjectWithAttachments {
         $gui->currentVersionPlatforms = 
           $this->getPlatforms($tc_id,$currentVersionID);
 
+        $gui->currentVersionAliens = 
+          $this->getAliens($tc_id,$currentVersionID);
 
         $whoami = array('tcase_id' => $tc_id, 
                         'tcversion_id' => $currentVersionID);
@@ -1052,10 +1058,13 @@ class testcase extends tlObjectWithAttachments {
         $of = array('output' => 'html_options','add_blank' => true);
         $gui->currentVersionFreeKeywords = $this->getFreeKeywords($whoami,$of);
 
-
         $gui->currentVersionFreePlatforms = 
           $this->getFreePlatforms($whoami,$of);
 
+        /*
+        $gui->currentVersionFreeAliens = $this->getFreeAliens($whoami,$of);
+        */
+        $gui->currentVersionFreeAliens = null;
 
         if( $my['opt']['getAttachments'] ) {
           $gui->attachments[$currentVersionID] = 
@@ -1160,6 +1169,10 @@ class testcase extends tlObjectWithAttachments {
             $gui->otherVersionsPlatforms[] = 
               $this->getPlatforms($version['testcase_id'],$version['id']);
 
+            $gui->otherVersionsAliens[] = 
+              $this->getAliens($version['testcase_id'],
+                               $version['id']);
+
           }
         } // Other versions exist
       }
@@ -1179,15 +1192,35 @@ class testcase extends tlObjectWithAttachments {
     $this->initShowGuiActions($gui);
     $tplCfg = templateConfiguration('tcView');
 
+    // Aliens are related to issuetracker
+    $sql = "/* $debugMsg */
+            SELECT issuetracker_id 
+            FROM {$this->tables['testproject_issuetracker']}
+            WHERE testproject_id = $this->tproject_id";
+    $rs = $this->db->get_recordset($sql);
+    
+    if ($gui->hasIssueTracker = (null != $rs)) {
+      $system = new tlIssueTracker($this->db);
+      $repo = $system->getInterfaceObject($this->tproject_id);
+      $this->buildAlienBlob($gui->currentVersionAliens,$repo);
+
+      if ($gui->otherVersionsAliens != null) {
+        foreach ($gui->otherVersionsAliens as $zzx => $elem) {
+          $this->buildAlienBlob($gui->otherVersionsAliens[$zzx],
+                                $repo);
+        }
+      }
+    }
+
     // simplest way to pass tproject_id on js calls
     $jsArgs = '';
     if (property_exists($gui,'tproject_id')) {
         $jsArgs = '&tproject_id=' . $gui->tproject_id;
     }
     $smarty->assign('args',$jsArgs);
-
+    
     $smarty->assign('gui',$gui);
-    $smarty->display($tplCfg->template_dir . $tplCfg->default_template);
+    $smarty->display($tplCfg->tpl);
   }
 
 
@@ -2152,6 +2185,8 @@ class testcase extends tlObjectWithAttachments {
     $this->copyTCVRelations($source['version_id'],$dest['version_id']);
 
     $this->copyPlatformsTo($source,$dest,null,$auditContext,array('delete' => false));
+
+    $this->copyAliensTo($source,$dest,$auditContext);
 
 
     if( $this->cfg->testcase->relations->enable && 
@@ -3344,7 +3379,8 @@ class testcase extends tlObjectWithAttachments {
       return true;
     }
 
-    $safeID = array('tc' => intval($id), 'tcv' => intval($version_id));
+    $safeID = array('tc' => intval($id), 
+                    'tcv' => intval($version_id));
     foreach($safeID as $key => $val ) {
       if($val <= 0) {
         throw new Exception(__METHOD__ . " $key cannot be $val ", 1);
@@ -6918,6 +6954,10 @@ class testcase extends tlObjectWithAttachments {
       $goo->uploadOp = null;
     }
 
+    if( !property_exists($goo, 'hasIssueTracker') ) {
+      $goo->hasIssueTracker = false;
+    }
+
     $goo->new_version_source = 'this';
 
     $goo->execution_types = $this->execution_types;
@@ -6947,6 +6987,10 @@ class testcase extends tlObjectWithAttachments {
 
     $goo->view_req_rights = property_exists($grantsObj, 'mgt_view_req') ? $grantsObj->mgt_view_req : 0;
     $goo->assign_keywords = property_exists($grantsObj, 'keyword_assignment') ? $grantsObj->keyword_assignment : 0;
+
+    // Yes keywords right will be used also for aliens
+    $goo->assign_aliens = $goo->assign_keywords;
+
 	  $goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;
 
     $goo->parentTestSuiteName = '';
@@ -6962,6 +7006,7 @@ class testcase extends tlObjectWithAttachments {
     $goo->tc_current_version = array();
     $goo->status_quo = array();
     $goo->keywords_map = array();
+    $goo->aliens_map = array();
     $goo->arrReqs = array();
 
     $goo->cf_current_version = null;
@@ -6970,14 +7015,20 @@ class testcase extends tlObjectWithAttachments {
     $goo->platforms = null;
     
     // add_relation_feedback_msg @used-by testcaseCommands.class.php:doAddRelation()
-    $viewer_defaults = array('title' => lang_get('title_test_case'),'show_title' => 'no',
-                             'action' => '', 'msg_result' => '','user_feedback' => '',
-                             'refreshTree' => 1, 'disable_edit' => 0,
-                             'display_testproject' => 0,'display_parent_testsuite' => 0,
-                             'hilite_testcase_name' => 0,'show_match_count' => 0,
-                             'add_relation_feedback_msg' => '');
+    $viewer_defaults = 
+      array('title' => lang_get('title_test_case'),
+            'show_title' => 'no',
+            'action' => '', 'msg_result' => '',
+            'user_feedback' => '',
+            'refreshTree' => 1, 'disable_edit' => 0,
+            'display_testproject' => 0,
+            'display_parent_testsuite' => 0,
+            'hilite_testcase_name' => 0,
+            'show_match_count' => 0,
+            'add_relation_feedback_msg' => '');
 
-    $viewer_defaults = array_merge($viewer_defaults, (array)$guiObj->viewerArgs);
+    $viewer_defaults = array_merge($viewer_defaults, 
+                         (array)$guiObj->viewerArgs);
 
     $goo->display_testproject = $viewer_defaults['display_testproject'];
     $goo->display_parent_testsuite = $viewer_defaults['display_parent_testsuite'];
@@ -6999,12 +7050,11 @@ class testcase extends tlObjectWithAttachments {
     $goo->sqlResult = $viewer_defaults['msg_result'];
 
     // fine grain control of operations
-    if( $viewer_defaults['disable_edit'] == 1 || ($grantsObj->mgt_modify_tc == false) )
-    {
+    if( $viewer_defaults['disable_edit'] == 1 
+        || ($grantsObj->mgt_modify_tc == false) ) {
       $goo->show_mode = 'editDisabled';
-    }
-    else if( !is_null($goo->show_mode) && $goo->show_mode == 'editOnExec' )
-    {
+    } else if( !is_null($goo->show_mode) 
+               && $goo->show_mode == 'editOnExec' ) {
       // refers to two javascript functions present in testlink_library.js
       // and logic used to refresh both frames when user call this
       // method to edit a test case while executing it.
@@ -7034,7 +7084,9 @@ class testcase extends tlObjectWithAttachments {
     }
 
     $path2root = $this->tree_manager->get_path($id);
-    $goo->tproject_id = $path2root[0]['parent_id'];
+    $goo->tproject_id = intval($path2root[0]['parent_id']);
+    $this->setTestProject($goo->tproject_id);
+
     $info = $this->tproject_mgr->get_by_id($goo->tproject_id);
     $goo->requirementsEnabled = $info['opt']->requirementsEnabled;
 
@@ -7049,13 +7101,16 @@ class testcase extends tlObjectWithAttachments {
 
 
     $testplans = $this->tproject_mgr->get_all_testplans($goo->tproject_id,array('plan_status' =>1) );
-    $goo->has_testplans = !is_null($testplans) && count($testplans) > 0 ? 1 : 0;
-
+    $goo->has_testplans = !is_null($testplans) 
+                          && count($testplans) > 0 ? 1 : 0;
 
     $platformMgr = new tlPlatform($this->db,$goo->tproject_id);
 
+    /* 
     $opx = array('enable_on_design' => true,
                  'enable_on_execution' => false);
+    */
+    $opx = array('enable_on_design' => true);
     $goo->platforms = $platformMgr->getAllAsMap($opx);
 
     $goo->tcasePrefix = $this->tproject_mgr->getTestCasePrefix($goo->tproject_id) . $this->cfg->testcase->glue_character;
@@ -9640,6 +9695,352 @@ class testcase extends tlObjectWithAttachments {
   }
 
 
+  /**
+   *
+   *
+   */
+  function getFreeAliens($idCard,$opt = null) {
+    $my['opt'] = array('accessKey' => 'alien_id', 'fields' => null, 
+                       'orderBy' => null, 'tproject_id' => null,
+                       'output' => 'std', 'add_blank' => false);
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $safe = array();
+    foreach($idCard as $key => $val) {
+      $safe[$key] = intval($val);
+    }
+
+    // CRITIC
+    $tproject_id = $my['opt']['tproject_id'];
+    if( null == $tproject_id ) {
+      $tproject_id = $this->get_testproject($safe['tcase_id']);
+    }
+    $tproject_id = intval($tproject_id);
+
+    $sql = " SELECT AL.id AS alien_id, AL.name 
+             FROM {$this->tables['aliens']} AL
+             WHERE AL.testproject_id = {$tproject_id}
+             AND AL.id NOT IN 
+             (
+               SELECT TCAL.alien_id 
+               FROM {$this->tables['testcase_aliens']} TCAL
+               WHERE TCAL.testcase_id = {$safe['tcase_id']}
+               AND TCAL.tcversion_id = {$safe['tcversion_id']}
+             ) ";
+
+    if (!is_null($my['opt']['orderBy'])) {
+      $sql .= ' ' . $my['opt']['orderBy'];
+    }
+
+    switch($my['opt']['output']) {
+      case 'html_options':
+        $items = $this->db->fetchColumnsIntoMap($sql,'alien_id','name');
+        if( null != $items && $my['opt']['add_blank']) {
+          $items = array(0 => '') + $items;
+        }
+
+      break;
+
+      default:
+        $items = $this->db->fetchRowsIntoMap($sql,$my['opt']['accessKey']);
+      break;
+    }
+
+    return $items;
+  }
+
+
+
+  /**
+   *
+   */
+  function getAliens($tcID,$versionID,$alienID = null,$opt = null) {
+    $my['opt'] = array('accessKey' => 'alien_id', 
+                       'fields' => null, 
+                       'orderBy' => null);
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $f2g = is_null($my['opt']['fields']) ?
+           ' TCAL.id AS tcalien_link,alien_id,
+             testcase_id,tcversion_id ' :
+           $my['opt']['fields'];
+
+    $sfTC = intval($tcID);
+    $sfTCV = intval($versionID);
+    $sql = " SELECT {$f2g}
+             FROM {$this->tables['testcase_aliens']} TCAL
+             WHERE testcase_id = $sfTC 
+             AND tcversion_id = $sfTCV";
+
+    if (!is_null($alienID)) {
+      $sql .= " AND alien_id = " 
+              . "'" 
+              . $this->db->prepare_string($alienID)
+              . "'";
+    }
+
+    if (!is_null($my['opt']['orderBy'])) {
+      $sql .= ' ' . $my['opt']['orderBy'];
+    }
+
+    switch( $my['opt']['accessKey'] ) {
+      case 'testcase_id,tcversion_id';
+        $items = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','tcversion_id',database::CUMULATIVE);
+      break;
+
+      default:
+        $items = $this->db->fetchRowsIntoMap($sql,$my['opt']['accessKey']);
+      break;
+    }
+
+    return $items;
+  }
+
+  /**
+   * $idCard stdClass()
+   *   tproject_id
+   *   tcase_id
+   *   tcversion_id
+   */
+  function addAliens($idCard,$idSet,$audit=null) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $adt = array('on' => self::AUDIT_ON, 'version' => null);
+    $adt = array_merge($adt, (array)$audit);
+
+    if( count($idSet) == 0 ) {
+      return true;
+    }
+
+    $safeID = array('tpr' => intval($idCard->tproject_id),
+                    'tc' => intval($idCard->tcase_id), 
+                    'tcv' => intval($idCard->tcversion_id));
+    foreach($safeID as $key => $val ) {
+      if($val <= 0) {
+        throw new Exception(__METHOD__ . 
+          " $key cannot be $val ", 1);
+      }
+    } 
+
+    // Firts check if records exist    
+    $sql = "/* $debugMsg */
+            SELECT alien_id FROM 
+            {$this->tables['testcase_aliens']} 
+            WHERE testcase_id = {$safeID['tc']} 
+            AND tcversion_id = {$safeID['tcv']} 
+            AND testproject_id = {$safeID['tpr']} 
+            AND alien_id IN ('" . implode("','",$idSet) . "')";
+
+    echo $sql;
+
+    $nuCheck = $this->db->fetchRowsIntoMap($sql,'alien_id');
+ 
+    $sql = "/* $debugMsg */
+            INSERT INTO {$this->tables['testcase_aliens']} 
+            (testproject_id,testcase_id,tcversion_id,alien_id) 
+            VALUES ";
+
+    $dummy = array();
+    foreach( $idSet as $kiwi ) {
+      if( !isset($nuCheck[$kiwi]) ) {
+        $dummy[] = "({$safeID['tpr']},
+                     {$safeID['tc']},{$safeID['tcv']},
+                     '{$kiwi}')";
+      }
+    }
+
+    if( count($dummy) <= 0 ) {
+      return;
+    }
+   
+    // Go ahead
+    $sql .= implode(',', $dummy);
+    $this->db->exec_query($sql);
+     
+    // Now AUDIT
+    if ( $adt['on'] == self::AUDIT_ON ) {
+      // Audit Context
+      $tcPath = $this->getPathName($safeID['tc']);
+    }
+      
+    return true;
+  }
+
+  /**
+   *
+   */
+  function getDeleteTCVAlienRelativeURL($identity,&$guiObj=null) {
+    $url = "lib/testcases/tcEdit.php?doAction=removeAlien";
+
+    if( null != $guiObj ) {
+      $p2l = array('show_mode','tplan_id');
+      foreach($p2l as $pr) {
+        if( property_exists($guiObj, $pr) ) {
+          $url .= "&$pr=" . $guiObj->$pr;
+        }        
+      }
+    }        
+           
+    $url .= '&tcase_id=%1&tcalien_link_id=%2';
+    return $url;
+  }
+
+  /**
+   *
+   */
+  function deleteAliensByLink($tcID, $linkID, $audit=null) {
+    
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;   
+    $safeTCID = intval($tcID); 
+
+    $links = (array)$linkID;
+    $inClause = implode(',',$links);
+
+    $sql = " /* $debugMsg */ 
+             SELECT LT.tcversion_id, LT.alien_id
+             FROM {$this->tables['testcase_aliens']} LT
+             WHERE LT.testcase_id = {$safeTCID}
+             AND LT.id IN ($inClause) ";
+
+    $rs = $this->db->get_recordset($sql);
+    
+    foreach($rs as $link) {
+      $this->deleteAliens($safeTCID, $link['tcversion_id'], 
+        $link['alien_id'],$audit);
+    }  
+  }
+
+  /**
+   *
+   *
+   */
+  function deleteAliens($tcID,$versionID,$alID = null,$audit=null) {
+
+    $sf = new stdClass();
+    $sf->tcase_id = intval($tcID);
+    $sf->tcversion_id = intval($versionID);
+
+    $sql = " DELETE FROM {$this->tables['testcase_aliens']}
+             WHERE testcase_id = $sf->tcase_id 
+             AND tcversion_id = $sf->tcversion_id ";
+
+    $adt = array('on' => self::AUDIT_ON);
+    $adt = array_merge($adt,(array)$audit);
+
+    /* Needs security processing */
+    if (!is_null($alID)) {
+      if (is_array($alID)) {
+        $sql .= " AND alien_id IN ('" . 
+                implode(',',$alID) . "')";
+      } else {
+        $sql .= " AND alien_id = '" .
+                $this->db->prepare_string($alID) . "'";
+      }
+      $key4log = (array)$alID;
+    } else {
+      $key4log = 
+        array_keys((array)$this->getAliens($sf->tcase_id,
+          $sf->tcversion_id));
+    }
+
+    $result = $this->db->exec_query($sql);
+    
+    /* delay the audit code */
+    if (1==0 && $result && $adt['on']==self::AUDIT_ON) {
+      $tcInfo = $this->tree_manager->get_node_hierarchy_info($tcID);
+      if ($tcInfo && $key4log) {
+        $et = new tlAlien($this->db);
+        $aliens = $et->getByID($key4log,array('accessKey' => 'id'));
+        foreach($key4log as $key2get) {
+          logAuditEvent(TLS("audit_alien_assignment_removed_tc",
+            $aliens[$key2get]['name'],$tcInfo['name']),
+            "ASSIGN",$sf->tcversion_id,"nodes_hierarchy");
+        }
+      }
+    }
+    /**/
+
+    return $result;
+  }
+
+  /**
+   *
+   */
+  function getAliensByIdCard($idCard) {
+    return $this->getAliens($idCard['tcase_id'],
+                            $idCard['tcversion_id']);
+  }
+
+  /**
+   *
+   */
+  function buildAlienBlob(&$ufoCrew,&$repo)
+  {
+    static $oCache = array();
+
+    $akey = 'alien_id';
+    $ohnooo = "(" . lang_get('reference_not_found') . ")";
+    foreach ($ufoCrew as $ik => $el) {
+      $code = trim($el[$akey]);
+      if (!isset($oCache[$code])) {
+        $oCache[$code] = $repo->getIssue($code);
+      }
+      $ufoCrew[$ik]['blob'] = $oCache[$code];
+      $houstonWeHaveAProblem = false;
+      if (null == $ufoCrew[$ik]['blob']) {
+        $houstonWeHaveAProblem = true;
+        $ufoCrew[$ik]['blob'] = new stdClass();
+        $ufoCrew[$ik]['blob']->summaryHTMLString = $ohnooo;
+      } else if (property_exists($ufoCrew[$ik]['blob'], 
+                                 'exception')) {
+        $houstonWeHaveAProblem = true;
+        $ufoCrew[$ik]['blob']
+          ->summaryHTMLString = $ufoCrew[$ik]['blob']->reason;
+      }
+      if ($houstonWeHaveAProblem) {
+        $ufoCrew[$ik]['blob']->reportedBy = null;
+        $ufoCrew[$ik]['blob']->handledBy = null;
+        $ufoCrew[$ik]['blob']->version = null;
+        $ufoCrew[$ik]['blob']->fixedInVersion = null;
+        $ufoCrew[$ik]['blob']->targetVersion = null;
+        $ufoCrew[$ik]['blob']->statusVerbose = null;          
+      }
+      $ufoCrew[$ik]['name'] = $code;        
+    }
+  }
+
+  /**
+   *
+   */
+  function copyAliensTo($source,$dest,$auditContext=null,
+                        $opt=null) 
+  {
+
+    $adt = array('on' => self::AUDIT_ON);
+    if( isset($dest['version']) ) {
+      $adt['version'] = $dest['version'];
+    }
+    $adt = array_merge($adt,(array)$auditContext);
+
+    $what = array('delete' => true);
+    $what = array_merge($what,(array)$opt);
+
+    $sourceIT = $this->getAliens($source['id'],
+                                 $source['version_id']);
+    if( !is_null($sourceIT) ) {
+      $itSet = array_keys($sourceIT);
+      $cedula = new stdClass();
+      $cedula->tproject_id = $this->tproject_id;
+      $cedula->tcase_id = $dest['id'];
+      $cedula->tcversion_id = $dest['version_id'];
+      $this->addAliens($cedula,$itSet,$adt);
+    }
+
+    return true;
+  }
 
 
 }  // Class end

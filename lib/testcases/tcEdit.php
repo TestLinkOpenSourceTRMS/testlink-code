@@ -310,9 +310,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   list($args,$env) = initContext();
   $args->user_id = $args->userID;
   $tcaseMgr->setTestProject($args->tproject_id);
+ 
   // Compatibility
   $args->testproject_id = $args->tproject_id;
-
 
   $r_name = $otName . "_newRight";
   $args->assigned_keywords_list = isset($_REQUEST[$r_name]) 
@@ -664,13 +664,16 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
   $guiObj->import_limit = TL_REPOSITORY_MAXFILESIZE;
   $guiObj->msg = '';
 
-  $guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
-                             "/lib/testcases/archiveData.php?edit=testcase&id=" . $argsObj->tcase_id .
-                             "&show_mode={$argsObj->show_mode}";
+  $guiObj->loadOnCancelURL = 
+    $_SESSION['basehref'] . 
+    "/lib/testcases/archiveData.php?edit=testcase&id=" . 
+    $argsObj->tcase_id .
+    "&tproject_id=" . $argsObj->tproject_id .
+    "&show_mode={$argsObj->show_mode}";
   
-  $guiObj->fileUploadURL = $_SESSION['basehref'] . $tcaseMgr->getFileUploadRelativeURL($argsObj);
+  $guiObj->fileUploadURL = $_SESSION['basehref'] . 
+    $tcaseMgr->getFileUploadRelativeURL($argsObj);
 
-   
   if($argsObj->containerID > 0) {
     $pnode_info = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->containerID);
     $node_descr = array_flip($tcaseMgr->tree_manager->get_available_node_types());
@@ -901,8 +904,11 @@ function createNewVersion(&$tplEng,&$argsObj,&$guiObj,&$tcaseMgr,$sourceTCVID) {
   $guiObj->path_info = null;
   
   // used to implement go back ??
-  $guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
-    '/lib/testcases/archiveData.php?edit=testcase&id=' . $argsObj->tcase_id .
+  $guiObj->loadOnCancelURL = 
+    $_SESSION['basehref'] . 
+    '/lib/testcases/archiveData.php?edit=testcase&id=' . 
+    $argsObj->tcase_id .
+    "&tproject_id=" . $argsObj->tproject_id .
     "&show_mode={$argsObj->show_mode}";
 
 

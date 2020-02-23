@@ -91,7 +91,6 @@ abstract class tlObject implements iSerialization
   /** class constructor */
   public function __construct()
   {
-
     if (!isset($this->tables)) {
       $this->tables = self::getDBTables();
       $this->views = self::getDBViews();
@@ -242,7 +241,8 @@ abstract class tlObject implements iSerialization
     */
   static public function getDBTables($tableNames = null)
   {
-    $items = array( 'assignment_status',
+    $items = array( 'aliens',
+                    'assignment_status',
                     'assignment_types', 
                     'attachments',
                     'baseline_l1l2_context',
@@ -291,6 +291,7 @@ abstract class tlObject implements iSerialization
                     'testcase_relations',
                     'tcversions',
                     'tcsteps',
+                    'testcase_aliens',
                     'testcase_keywords',
                     'testcase_platforms',
                     'testplan_platforms' ,

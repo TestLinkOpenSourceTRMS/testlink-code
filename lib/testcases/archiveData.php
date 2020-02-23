@@ -104,7 +104,6 @@ function init_args(&$dbHandler) {
   $args->basehref = $_SESSION['basehref'];
 
   $tprojectMgr = new testproject($dbHandler);
-  
   switch ($args->containerType) {
     case 'testproject':
       if ($args->tproject_id == 0) {
@@ -382,7 +381,8 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg) {
       $gui->path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
     }
     $platform_mgr = new tlPlatform($dbHandler,$args->tproject_id);
-    $gui->platforms = $platform_mgr->getAllAsMap();
+    $opx = array('enable_on_design' => true);
+    $gui->platforms = $platform_mgr->getAllAsMap($opx);
     $gui->direct_link = $item_mgr->buildDirectWebLink($args);
     $gui->id = $args->id;
 

@@ -47,7 +47,7 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
 </script>
 
 {$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" DataTablesOID="item_view"
+{include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
                                    DataTableslengthMenu=$ll}
 </head>
 <body class="testlink" {$body_onload}>

@@ -22,7 +22,7 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 </script> 
 
 {$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" DataTablesOID="item_view"
+{include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
                                    DataTableslengthMenu=$ll}
 
 </head>

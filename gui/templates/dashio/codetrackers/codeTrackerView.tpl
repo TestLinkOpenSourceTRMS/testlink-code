@@ -23,7 +23,7 @@ var del_action=fRoot+'lib/codetrackers/codeTrackerEdit.php?doAction=doDelete&id=
 </script>
 
 {$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" DataTablesOID="item_view"
+{include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
                                    DataTableslengthMenu=$ll}
 </head>
 <body {$body_onload}>

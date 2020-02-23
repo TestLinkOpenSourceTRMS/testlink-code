@@ -37,7 +37,7 @@ var del_action=fRoot+'{$deleteAction}';
 
 {include file="bootstrap.inc.tpl"}
 {$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" DataTablesOID="item_view"
+{include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
                                    DataTableslengthMenu=$ll}
 </head>
 

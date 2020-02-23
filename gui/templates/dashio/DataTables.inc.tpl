@@ -16,7 +16,7 @@ Purpose: smarty template
 
 <script type="text/javascript" language="javascript" class="init">
 $(document).ready(function() {
-  $('#{$DataTablesOID}').DataTable(
+  $('{$DataTablesSelector}').DataTable(
     { "lengthMenu": [ {$DataTableslengthMenu} ],
       "stateSave": true, "conditionalPaging": true
     });

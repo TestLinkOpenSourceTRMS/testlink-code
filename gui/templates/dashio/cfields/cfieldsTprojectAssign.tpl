@@ -20,8 +20,10 @@ Purpose: management Custom fields assignment to a test project
 
 <head>
 {$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" DataTablesOID="item_view"
-                                   DataTableslengthMenu=$ll}
+{$dataAttrDataTable = 'data-view'}
+{include file="DataTables.inc.tpl" 
+         DataTablesSelector="[$dataAttrDataTable]"
+         DataTableslengthMenu=$ll}
 </head>                                   
 <body>
 {include file="aside.tpl"}  
@@ -42,7 +44,8 @@ Purpose: management Custom fields assignment to a test project
  	    {* used as memory for the check/uncheck all checkbox javascript logic *}
        <input type="hidden" name="memory_assigned_cf"  
                             id="memory_assigned_cf"  value="0" />
-      <table class="{#item_view_table#}" id="item_view">
+      <table class="{#item_view_table#}" id="item_view"
+             {$dataAttrDataTable}>
         <thead class="{#item_view_thead#}">
           <tr>
       		<th data-orderable="false" align="center"  
@@ -142,7 +145,8 @@ Purpose: management Custom fields assignment to a test project
        <input type="hidden" 
               name="memory_free_cf"  id="memory_free_cf"  value="0" />
 
-      <table class="{#item_view_table#}" id="item_view">
+      <table class="{#item_view_table#}" id="item_view" 
+             {$dataAttrDataTable}>
         <thead class="{#item_view_thead#}">
           <tr>
       		<th align="center"  style="width: 5px;background-color:#005498;"> 

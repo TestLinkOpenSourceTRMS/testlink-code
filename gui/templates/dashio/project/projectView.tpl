@@ -40,7 +40,7 @@ var del_action=fRoot+'{$deleteAction}';
 
 {if $tlCfg->gui->projectView->pagination->enabled}
   {$ll = $tlCfg->gui->projectView->pagination->length}
-  {include file="DataTables.inc.tpl" DataTablesOID="item_view"
+  {include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
                                      DataTableslengthMenu=$ll}
 {/if}
 

@@ -34,7 +34,7 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
 
 {include file="bootstrap.inc.tpl"} 
 {$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" DataTablesOID="item_view"
+{include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
                                    DataTableslengthMenu=$ll}
 </head>
 <body onLoad="{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}"

@@ -18,7 +18,8 @@ Purpose: smarty template
 $(document).ready(function() {
   $('{$DataTablesSelector}').DataTable(
     { "lengthMenu": [ {$DataTableslengthMenu} ],
-      "stateSave": true, "conditionalPaging": true
+      "stateSave": true, 
+      "conditionalPaging": true
     });
 } );
 </script>

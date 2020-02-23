@@ -240,7 +240,9 @@ function initializeEnv(&$dbHandler)
     $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$args->tproject_id);
     $gui->$right = $grants->$right;
   }
-  
+
+  $gui->modify_tc_rights = $gui->mgt_modify_tc;
+
   $gui->form_token = $args->form_token;
   $gui->tproject_id = $args->tproject_id;
   $gui->tplan_id = $args->tplan_id;

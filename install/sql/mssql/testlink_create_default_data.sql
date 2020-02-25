@@ -11,7 +11,7 @@
 --  -----------------------------------------------------------------------------------
 
 --  Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.9.15','Test Link 1.9.15',GETDATE());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.9.20','Test Link 1.9.20 Raijin',GETDATE());
 
 --  Node types -
 SET IDENTITY_INSERT /*prefix*/node_types ON
@@ -93,7 +93,16 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (46,'testplan_show_testcase
 INSERT INTO /*prefix*/rights (id,description) VALUES (47,'testcase_freeze');
 INSERT INTO /*prefix*/rights (id,description) VALUES (48,'mgt_plugins');
 
+-- since 1.9.17
+INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
+INSERT INTO /*prefix*/rights (id,description) VALUES (50,'monitor_requirement');
+INSERT INTO /*prefix*/rights (id,description) VALUES (51,'codetracker_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (52,'codetracker_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (53,'cfield_assignment');
+INSERT INTO /*prefix*/rights (id,description) VALUES (54,'exec_assign_testcases');
 
+-- since 1.9.20
+INSERT INTO /*prefix*/rights (id,description) VALUES (55,'testproject_add_remove_keywords_executed_tcversions');
 
 
 SET IDENTITY_INSERT /*prefix*/rights OFF
@@ -126,6 +135,8 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
@@ -145,8 +156,11 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,45);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,46);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,47);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,48);
-
-
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,51);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,52);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,53);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,54);
 
 --  Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3);
@@ -161,6 +175,10 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,8);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,9);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,10);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,11);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,29);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,50);
 
 --  Rights for tester role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (7,1);
@@ -179,6 +197,10 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,9);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,11);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,29);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,50);
 
 --  Rights for leader role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,1);
@@ -198,6 +220,11 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,29);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,47);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,50);
 
 --  admin account 
 --  SECURITY: change password after first login

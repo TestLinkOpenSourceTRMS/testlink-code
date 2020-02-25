@@ -4,10 +4,6 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource resultsBugs.php
- * @author kevinlevy
- * 
- * @internal revisions
- * @since 1.9.13
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -30,8 +26,7 @@ $its = null;
 $tproject_mgr = new testproject($db);
 $info = $tproject_mgr->get_by_id($args->tproject_id);
 $gui->bugInterfaceOn = $info['issue_tracker_enabled'];
-if($info['issue_tracker_enabled'])
-{
+if( $info['issue_tracker_enabled']) {
   $it_mgr = new tlIssueTracker($db);
   $its = $it_mgr->getInterfaceObject($args->tproject_id);
   unset($it_mgr);

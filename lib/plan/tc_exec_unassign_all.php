@@ -4,12 +4,7 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @package		TestLink
- * @author		Andreas Simon
- * @copyright	2005-2010, TestLink community 
- * @version		CVS: $Id: tc_exec_unassign_all.php,v 1.3 2010/07/26 19:00:57 asimon83 Exp $
- * @link		http://www.teamst.org/index.php
- *
- * @internal revisions:
+ * @copyright	2005-2019, TestLink community 
  * 
  */
 
@@ -69,11 +64,12 @@ function init_args() {
 	
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	
-	$args->build_id = isset($_REQUEST['build_id']) ? $_REQUEST['build_id'] : 0;
+	$args->build_id = isset($_REQUEST['build_id']) ? 
+	                  intval($_REQUEST['build_id']) : 0;
 	$args->confirmed = isset($_REQUEST['confirmed']) && $_REQUEST['confirmed'] == 'yes' ? true : false;
 	
 	$args->user_id = $_SESSION['userID'];
-	$args->testproject_id = $_SESSION['testprojectID'];
+	$args->testproject_id = intval($_SESSION['testprojectID']);
 	$args->testproject_name = $_SESSION['testprojectName'];
 	
 	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?

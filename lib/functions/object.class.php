@@ -5,11 +5,9 @@
  *
  * @filesource  object.class.php
  * @package     TestLink
- * @copyright   2007-2016, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.15
  **/
  
 /** 
@@ -244,99 +242,126 @@ abstract class tlObject implements iSerialization
     */
   static public function getDBTables($tableNames = null)
   {
-    $tables = array('assignment_status' => DB_TABLE_PREFIX . 'assignment_status',
-                    'assignment_types' => DB_TABLE_PREFIX . 'assignment_types', 
-                    'attachments' => DB_TABLE_PREFIX . 'attachments',
-                    'builds' => DB_TABLE_PREFIX . 'builds',
-                    'cfield_build_design_values' => DB_TABLE_PREFIX . 'cfield_build_design_values',
-                    'cfield_design_values' => DB_TABLE_PREFIX . 'cfield_design_values',
-                    'cfield_execution_values' => DB_TABLE_PREFIX . 'cfield_execution_values',
-                    'cfield_node_types' => DB_TABLE_PREFIX . 'cfield_node_types',
-                    'cfield_testplan_design_values' => DB_TABLE_PREFIX . 'cfield_testplan_design_values',
-                    'cfield_testprojects' => DB_TABLE_PREFIX . 'cfield_testprojects',
-                    'custom_fields' => DB_TABLE_PREFIX . 'custom_fields',
-                    'db_version' => DB_TABLE_PREFIX . 'db_version',
-                    'events' => DB_TABLE_PREFIX . 'events',
-                    'execution_bugs' => DB_TABLE_PREFIX . 'execution_bugs',
-                    'execution_tcsteps' => DB_TABLE_PREFIX . 'execution_tcsteps',
-                    'executions' => DB_TABLE_PREFIX . 'executions',
-                    'inventory' => DB_TABLE_PREFIX . 'inventory',
-                    'issuetrackers' => DB_TABLE_PREFIX . 'issuetrackers',
-                    'testproject_issuetracker' => DB_TABLE_PREFIX . 'testproject_issuetracker',
-                    'keywords' => DB_TABLE_PREFIX . 'keywords',
-                    'milestones' => DB_TABLE_PREFIX . 'milestones',
-                    'node_types' => DB_TABLE_PREFIX . 'node_types',
-                    'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
-                    'object_keywords' => DB_TABLE_PREFIX . 'object_keywords',
-                    'platforms' => DB_TABLE_PREFIX . 'platforms',
-                    'plugins' => DB_TABLE_PREFIX . 'plugins',
-                    'plugins_configuration' => DB_TABLE_PREFIX . 'plugins_configuration', 
-                    'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
-                    'req_relations' => DB_TABLE_PREFIX . 'req_relations',
-                    'req_specs' => DB_TABLE_PREFIX . 'req_specs',
-                    'req_specs_revisions' => DB_TABLE_PREFIX . 'req_specs_revisions',
-                    'reqmgrsystems' => DB_TABLE_PREFIX . 'reqmgrsystems',
-                    'testproject_reqmgrsystem' => DB_TABLE_PREFIX . 'testproject_reqmgrsystem',
-                    'requirements' => DB_TABLE_PREFIX . 'requirements',
-                    'req_versions' => DB_TABLE_PREFIX . 'req_versions',
-                    'req_revisions' => DB_TABLE_PREFIX . 'req_revisions',
-                    'req_notify_assignments' => DB_TABLE_PREFIX . 'req_notify_assignments',
-                    'req_monitor' => DB_TABLE_PREFIX . 'req_monitor',
-                    'rights' => DB_TABLE_PREFIX . 'rights',
-                    'risk_assignments' => DB_TABLE_PREFIX . 'risk_assignments',
-                    'role_rights' => DB_TABLE_PREFIX . 'role_rights',
-                    'roles' => DB_TABLE_PREFIX . 'roles',
-                    'testcase_relations' => DB_TABLE_PREFIX . 'testcase_relations',
-                    'tcversions' => DB_TABLE_PREFIX . 'tcversions',
-                    'tcsteps' => DB_TABLE_PREFIX . 'tcsteps',
-                    'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',
-                    'testplan_platforms' => DB_TABLE_PREFIX . 'testplan_platforms',
-                    'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions',
-                    'testplans' => DB_TABLE_PREFIX . 'testplans',
-                    'testprojects' => DB_TABLE_PREFIX . 'testprojects',
-                    'testsuites' => DB_TABLE_PREFIX . 'testsuites',
-                    'text_templates' => DB_TABLE_PREFIX . 'text_templates',
-                    'transactions' => DB_TABLE_PREFIX . 'transactions',
-                    'user_assignments' => DB_TABLE_PREFIX . 'user_assignments',
-                    'user_group' => DB_TABLE_PREFIX . 'user_group',
-                    'user_group_assign' => DB_TABLE_PREFIX . 'user_group_assign',
-                    'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
-                    'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
-                    'users' => DB_TABLE_PREFIX . 'users'); 
+    $items = array( 'assignment_status',
+                    'assignment_types', 
+                    'attachments',
+                    'baseline_l1l2_context',
+                    'baseline_l1l2_details',
+                    'builds',
+                    'cfield_build_design_values',
+                    'cfield_design_values',
+                    'cfield_execution_values',
+                    'cfield_node_types',
+                    'cfield_testplan_design_values',
+                    'cfield_testprojects',
+                    'custom_fields',
+                    'db_version',
+                    'events',
+                    'execution_bugs',
+                    'execution_tcsteps',
+                    'executions',
+                    'inventory',
+                    'issuetrackers',
+                    'testproject_issuetracker',
+                    'codetrackers',
+                    'testproject_codetracker',
+                    'keywords',
+                    'milestones',
+                    'node_types',
+                    'nodes_hierarchy',
+                    'object_keywords',
+                    'platforms',
+                    'plugins',
+                    'plugins_configuration', 
+                    'req_coverage',
+                    'req_relations',
+                    'req_specs',
+                    'req_specs_revisions',
+                    'reqmgrsystems',
+                    'testproject_reqmgrsystem',
+                    'requirements',
+                    'req_versions',
+                    'req_revisions',
+                    'req_notify_assignments',
+                    'req_monitor',
+                    'rights',
+                    'risk_assignments',
+                    'role_rights',
+                    'roles',
+                    'testcase_relations',
+                    'tcversions',
+                    'tcsteps',
+                    'testcase_keywords',
+                    'testcase_platforms',
+                    'testplan_platforms' ,
+                    'testcase_script_links',
+                    'testplan_tcversions' ,
+                    'testplans' ,
+                    'testprojects',
+                    'testsuites',
+                    'text_templates',
+                    'transactions',
+                    'user_assignments',
+                    'user_group',
+                    'user_group_assign',
+                    'user_testplan_roles',
+                    'user_testproject_roles',
+                    'users',
+                    'execution_tcsteps_wip' 
+    ); 
 
-    if ($tableNames != null)
-    { 
+    $tables = array();
+    foreach($items as $tblKey) {
+      $tables[$tblKey] = DB_TABLE_PREFIX . $tblKey;
+    }
+
+    if ($tableNames != null) { 
       $tableNames = (array)$tableNames;
       $tableNames = array_flip($tableNames);      
       $tables = array_intersect_key($tables,$tableNames);
-      if (sizeof($tables) != sizeof($tableNames))
-      {
+      if (sizeof($tables) != sizeof($tableNames)) {
         throw new Exception("Wrong table name(s) for getDBTables() detected!");
       } 
     }
-    
+     
     return $tables;
   }
 
-  static public function getDBViews($itemNames = null)
+  /**
+   *
+   */
+  static public function getDBViews($itemNames = null) 
   {
-    $items = array('tcversions_last_active' => DB_TABLE_PREFIX . 'tcversions_last_active',
-             'last_executions' => DB_TABLE_PREFIX . 'last_executions',
-             'last_executions_by_platforms' => DB_TABLE_PREFIX . 'last_executions_by_platforms'); 
+    $items = array('tcversions_last_active' => null,
+                   'tcversions_without_keywords' => null,
+                   'tcversions_without_platforms' => null,
+                   'latest_exec_by_context' => null,
+                   'latest_exec_by_testplan' => null,
+                   'latest_exec_by_testplan_plat' => null,
+                   'latest_tcase_version_id' => null,
+                   'latest_tcase_version_number' => null,
+                   'latest_req_version' => null,
+                   'latest_req_version_id' => null,
+                   'latest_rspec_revision' => null,
+                   'tsuites_tree_depth_2' => null,
+                   'exec_by_date_time' => null,
+                   'exec_daily_stats' => null); 
+    
+    foreach($items as $key => $value) {
+      $items[$key] = DB_TABLE_PREFIX . $key;
+    }
 
-    if ($itemNames != null)
-    { 
+    if ($itemNames != null) { 
       $itemNames = (array)$itemNames;
-            $itemNames = array_flip($itemNames);      
+      $itemNames = array_flip($itemNames);      
       $items = array_intersect_key($items,$itemNames);
-      if (sizeof($items) != sizeof($itemNames))
-      {
+      if (sizeof($items) != sizeof($itemNames)) {
         $msg = "Wrong view name(s) for " . __FUNCTION__ . " detected!";
         throw new Exception($msg);
       } 
     }
     
-      return $items;
+    return $items;
   }
 
 }
@@ -517,15 +542,13 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
    * 
    * @return the newly created object on success, or null else
    */
-  static public function createObjectFromDB(&$db,$id,$className,$options = self::TLOBJ_O_SEARCH_BY_ID,
-                                            $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
-  {
-    if ($id)
-    {
+  static public function createObjectFromDB(&$db,$id,$className,
+                                            $options = self::TLOBJ_O_SEARCH_BY_ID,
+                                            $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL) {
+    if ($id) {
       $item = new $className($id);
       $item->setDetailLevel($detailLevel);
-      if ($item->readFromDB($db,$options) >= tl::OK)
-      {
+      if ($item->readFromDB($db,$options) >= tl::OK) {
         return $item;
       } 
     }
@@ -610,21 +633,20 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
                                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
   {
     $items = null;
-    if (sizeof($ids))
-    { 
+    if (null != $ids && sizeof($ids)) { 
       $dummyItem = new $className();
       $query = $dummyItem->getReadFromDBQuery($ids,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
       $result = $db->exec_query($query);
-      if ($result)
-      {
-        while($row = $db->fetch_array($result))
-        {
+      if ($result) {
+        while($row = $db->fetch_array($result)) {
           $item = new $className();
           $item->readFromDBRow($row);
-          if ($returnAsMap)
+          
+          if ($returnAsMap) {
             $items[$item->dbID] = $item;
-          else
+          } else {
             $items[] = $item;
+          }
         }
       }
     }   
@@ -640,10 +662,8 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
    * 
    * @return integer result code
    */
-  static public function deleteObjectFromDB(&$db,$id,$className)
-  {
-    if ($id)
-    {
+  static public function deleteObjectFromDB(&$db,$id,$className) {
+    if ($id) {
       $item = new $className($id);
       return $item->deleteFromDB($db);
     }
@@ -655,10 +675,10 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
    * 
    * @return integer returns always tl::OK
    */
-  protected function addToCache()
-  {
-    if ($this->activateCaching)
+  protected function addToCache() {
+    if ($this->activateCaching) {
       self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID] = $this;
+    }
     return tl::OK; 
   }
   
@@ -667,10 +687,10 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
    * 
    * @return integer returns always tl::OK
    */
-  protected function removeFromCache()
-  {
-    if ($this->activateCaching)
+  protected function removeFromCache() {
+    if ($this->activateCaching) {
       unset(self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID]);
+    }
     return tl::OK;
   }
   
@@ -681,8 +701,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
    * @param $object the object to read from
    * @return integer returns always tl::OK
    */
-  protected function copyFromCache($object)
-  {
+  protected function copyFromCache($object) {
     return tl::OK;
   }
   
@@ -690,16 +709,14 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
    * @return integer returns tl::ERROR if caching is not activated or a cache miss happens
    *          else it returns the result of copyFromCache
    */
-  public function readFromCache()
-  {
-    if (!$this->activateCaching)
+  public function readFromCache() {
+    if (!$this->activateCaching) {
       return tl::ERROR;
+    }
 
-    if (isset(self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID]))
-    {
+    if (isset(self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID])) {
       $object = self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID];
       return $this->copyFromCache($object);
-      
     }
     return tl::ERROR;
   }

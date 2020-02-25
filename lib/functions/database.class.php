@@ -7,13 +7,10 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @author      Mantis Team
- * @copyright   2006-2016 TestLink community 
+ * @copyright   2006-2018 TestLink community 
  * @copyright   2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  *             (Parts of code has been adapted from Mantis BT)
  * @link       http://www.testlink.org
- *
- * @internal revisions
- * @since 1.9.15 
  *
  */
  
@@ -36,21 +33,14 @@
  */
 $ADODB_COUNTRECS = TRUE;
 
-// To use a different version of ADODB that provided with TL, use a similar bunch of lines
-// on custom_config.inc.php
-if( !defined('TL_ADODB_RELATIVE_PATH') )
-{
-    define('TL_ADODB_RELATIVE_PATH','/../../third_party/adodb/adodb.inc.php' );
-}
-require_once( dirname(__FILE__). TL_ADODB_RELATIVE_PATH );
 require_once( dirname(__FILE__). '/logging.inc.php' );
 
 /**
  * TestLink wrapper for ADODB component
  * @package   TestLink
  */
-class database 
-{
+class database {
+  
   const CUMULATIVE=1;
   const ONERROREXIT=1;
   
@@ -219,7 +209,7 @@ class database
         echo "<pre>"; debug_print_backtrace(); echo "</pre>";
         die();
       }   
-      echo "<pre>"; debug_print_backtrace(); echo "</pre>";
+      echo "<pre>"; debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS); echo "</pre>";
         die();
       
       //else
@@ -630,11 +620,15 @@ class database
    *                 X      B     Z
    *                 Y      B     0
    *
-   *        cumulative=0 -> return items= array('X' => array('A','C'), 'Y' => array('B','0') )
+   *        cumulative=0 -> 
+   *        return items= array('X' => array('A','C'), 'Y' => array('B','0') )
    *
-   *        cumulative=1 -> return items= 
-   *                        array('X' => array( 0 => array('A','C'), 1 => array('B','Z')),
-   *                              'Y' => array( 0 => array('B','0')I )
+   *        cumulative=1 -> 
+   *        return items= 
+   *                      array('X' => 
+   *                                   array( 0 => array('A','C'), 
+   *                                          1 => array('B','Z')),
+   *                            'Y' => array( 0 => array('B','0') )
    *
    * @param integer $limit (optional) number of rows
    *
@@ -648,14 +642,14 @@ class database
     if ($result)
     {
       // -----------------------------------------------
-            // Error management Code         
-            $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
+      // Error management Code         
+      $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
       if( ($empty_column = (trim($column)=='') ) )
       {
         $errorMsg .= 'empty column - SQL:' . $sql;
-          trigger_error($errorMsg,E_USER_NOTICE);
-          return null;
-        }
+        trigger_error($errorMsg,E_USER_NOTICE);
+        return null;
+      }
 
       while($row = $this->fetch_array($result))
       {
@@ -824,28 +818,19 @@ class database
   {
     $items = null;
     $result = $this->exec_query($sql,$limit);
-    if ($result)
-    {
-      while($row = $this->fetch_array($result))
-      {
-        if($cumulative)
-        {
+    if ($result) {
+      while($row = $this->fetch_array($result)) {
+        if($cumulative) {
           $items[$row[$main_key]][$row[$sec_key]][] = $row;
-        }
-        else if($col2implode !='')
-        {
-          if(isset($items[$row[$main_key]][$row[$sec_key]]))
-          {
+        } else if($col2implode !='') {
+          if(isset($items[$row[$main_key]][$row[$sec_key]])) {
             $items[$row[$main_key]][$row[$sec_key]][$col2implode] .= 
               ',' . $row[$col2implode];
-          } 
-          else
-          {
+          } else {
             $items[$row[$main_key]][$row[$sec_key]] = $row;   
           } 
         }  
-        else
-        {
+        else {
           $items[$row[$main_key]][$row[$sec_key]] = $row;
         } 
       }
@@ -898,6 +883,35 @@ class database
     return $nullValue;
   }
 
+  /**
+   * Fetches all rows into a map of 2 levels
+   *
+   * @param string $sql the query to be executed
+   * @param array $keyCols, columns to used as access key
+   * @param boolean $cumulative
+   * @param integer $limit (optional) number of rows
+   * 
+   * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
+   * 
+   **/
+  function fetchRowsIntoMap2l($sql,$keyCols,$cumulative = 0,$limit = -1) {
+    $items = null;
+    $result = $this->exec_query($sql,$limit);
+    
+    // new dBug($result);
+    if ($result) {
+      while($row = $this->fetch_array($result)) {
+        if($cumulative) {
+          $items[$row[$keyCols[0]]][$row[$keyCols[1]]][] = $row;
+        } else {
+          $items[$row[$keyCols[0]]][$row[$keyCols[1]]] = $row;
+        } 
+      }
+    }
+
+    unset($result);
+    return $items;
+  }
 
   /**
    * Fetches all rows into a map of 3 levels
@@ -910,22 +924,16 @@ class database
    * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
    * 
    **/
-  function fetchRowsIntoMap3l($sql,$keyCols,$cumulative = 0,$limit = -1)
-  {
+  function fetchRowsIntoMap3l($sql,$keyCols,$cumulative = 0,$limit = -1) {
     $items = null;
     $result = $this->exec_query($sql,$limit);
     
     // new dBug($result);
-    if ($result)
-    {
-      while($row = $this->fetch_array($result))
-      {
-        if($cumulative)
-        {
+    if ($result) {
+      while($row = $this->fetch_array($result)) {
+        if($cumulative) {
           $items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]][] = $row;
-        }
-        else
-        {
+        } else {
           $items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]] = $row;
         } 
       }
@@ -937,7 +945,7 @@ class database
 
 
   /**
-   * Fetches all rows into a map of 3 levels
+   * Fetches all rows into a map of 4 levels
    *
    * @param string $sql the query to be executed
    * @param array $keyCols, columns to used as access key
@@ -1030,16 +1038,12 @@ class database
   /**
    * @used-by testplan.class.php
    */
-  function fetchMapRowsIntoMapStackOnCol($sql,$column_main_key,$column_sec_key,$stackOnCol)
-  {
+  function fetchMapRowsIntoMapStackOnCol($sql,$column_main_key,$column_sec_key,$stackOnCol) {
     $items = null;
     $result = $this->exec_query($sql);
-    if ($result)
-    {
-      while($row = $this->fetch_array($result))
-      {
-        if( !isset($items[$row[$column_main_key]][$row[$column_sec_key]]) )
-        {
+    if ($result) {
+      while($row = $this->fetch_array($result)) {
+        if( !isset($items[$row[$column_main_key]][$row[$column_sec_key]]) ) {
           $items[$row[$column_main_key]][$row[$column_sec_key]] = $row;
           $items[$row[$column_main_key]][$row[$column_sec_key]][$stackOnCol] = array();
         }

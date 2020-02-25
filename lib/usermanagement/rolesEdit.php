@@ -6,12 +6,11 @@
  * @filesource  rolesEdit.php
  *
  * @package     TestLink
- * @copyright   2005-2016, TestLink community
+ * @copyright   2005-2020, TestLink community
  * @link        http://www.testlink.org
  *
- * @internal revisions 
- * @since 1.9.15
- * 
+ * @uses        lib/functions/roles.inc.php
+ *
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -33,8 +32,7 @@ $owebeditor = web_editor('notes',$args->basehref,$editorCfg) ;
 $owebeditor->Value = getItemTemplateContents('role_template', $owebeditor->InstanceName, null);
 $canManage = $args->user->hasRight($db,"role_management") ? true : false;
 
-switch($args->doAction)
-{
+switch ($args->doAction) {
   case 'create':
     $gui->main_title = $lbl["action_{$args->doAction}_role"];
   break;
@@ -47,8 +45,7 @@ switch($args->doAction)
   case 'doCreate':
   case 'doUpdate':
   case 'duplicate':
-    if($canManage)
-    {
+    if ($canManage) {
       $op = doOperation($db,$args,$args->doAction);
       $templateCfg->template = $op->template;
     }
@@ -60,8 +57,6 @@ switch($args->doAction)
 
 $gui = complete_gui($db,$gui,$args,$op->role,$owebeditor);
 $gui->userFeedback = $op->userFeedback;
-
-// Kint::dump($gui);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -198,21 +193,21 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 */
 function getRightsCfg()
 {
-    $cfg = new stdClass();
-    $cfg->tplan_mgmt = config_get('rights_tp');
-    $cfg->tcase_mgmt = config_get('rights_mgttc');
-    $cfg->kword_mgmt = config_get('rights_kw');
-    $cfg->tproject_mgmt = config_get('rights_product');
-    $cfg->user_mgmt = config_get('rights_users');
-    $cfg->req_mgmt = config_get('rights_req');
-    $cfg->cfield_mgmt = config_get('rights_cf');
-    $cfg->system_mgmt = config_get('rights_system');
-    $cfg->platform_mgmt = config_get('rights_platforms');
-    $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
-    $cfg->execution = config_get('rights_executions');
-    // $cfg->reqmgrsystem_mgmt = config_get('rights_reqmgrsystems');
+  $cfg = new stdClass();
+  $cfg->tplan_mgmt = config_get('rights_tp');
+  $cfg->tcase_mgmt = config_get('rights_mgttc');
+  $cfg->kword_mgmt = config_get('rights_kw');
+  $cfg->tproject_mgmt = config_get('rights_product');
+  $cfg->user_mgmt = config_get('rights_users');
+  $cfg->req_mgmt = config_get('rights_req');
+  $cfg->cfield_mgmt = config_get('rights_cf');
+  $cfg->system_mgmt = config_get('rights_system');
+  $cfg->platform_mgmt = config_get('rights_platforms');
+  $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
+  $cfg->codetracker_mgmt = config_get('rights_codetrackers');
+  $cfg->execution = config_get('rights_executions');
 
-    return $cfg;
+  return $cfg;
 }
 
 
@@ -251,12 +246,15 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
                                   'duplicate' => 'duplicate');
 
   $actionCfg['highlight'] = array('create' => 'create_role', 'edit' => 'edit_role',
-                                  'doCreate' => 'create_role', 'doUpdate' => 'edit_role',
+                                  'doCreate' => 'create_role', 
+                                  'doUpdate' => 'edit_role',
                                   'duplicate' => 'create_role');
 
-
-  $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
+  $guiObj->highlight = new stdClass();
+  $kp = $actionCfg['highlight'][$argsObj->doAction];
+  $guiObj->highlight->$kp = 1;
   $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
+
   $guiObj->role = $roleObj;
   $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
   $guiObj->grants->mgt_view_events = $argsObj->user->hasRight($db,"mgt_view_events");
@@ -265,10 +263,8 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
   $guiObj->disabledAttr = $guiObj->roleCanBeEdited ? ' ' : ' disabled="disabled" '; 
 
   // Create status for all checkboxes and set to unchecked
-  foreach($guiObj->rightsCfg as $grantDetails)
-  {
-    foreach($grantDetails as $grantCode => $grantDescription)
-    {
+  foreach ($guiObj->rightsCfg as $grantDetails) {
+    foreach ($grantDetails as $grantCode => $grantDescription) {
       $guiObj->checkboxStatus[$grantCode] = "" . $guiObj->disabledAttr;
     }
   }

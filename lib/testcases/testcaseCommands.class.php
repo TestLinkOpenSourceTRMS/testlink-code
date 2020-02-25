@@ -8,44 +8,48 @@
  * @filesource  testcaseCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
- *
- * @internal revisions
- * @since 1.9.15
  **/
 
-class testcaseCommands
-{
+class testcaseCommands {
   private $db;
   private $tcaseMgr;
+  private $tprojectMgr;
   private $templateCfg;
   private $execution_types;
   private $grants;
+  private $tproject_id;
 
   const UPDATECFONDB = true;
 
-  function __construct(&$db,&$userObj,$tproject_id)
-  {
+  function __construct(&$db,&$userObj,$tproject_id) {
     
     $this->db = $db;
     $this->tcaseMgr = new testcase($db);
+    $this->tcaseMgr->setTestProject($tproject_id);
+
+    $this->tprojectMgr = &$this->tcaseMgr->tproject_mgr;
+    $this->tproject_id = $tproject_id;
+
     $this->execution_types = $this->tcaseMgr->get_execution_types();
     $this->grants = new stdClass();
 
     $g2c = array('mgt_modify_tc','mgt_view_req','testplan_planning',
-                 'testproject_delete_executed_testcases','testproject_edit_executed_testcases');
-    foreach($g2c as $grant)
-    {
+                 'req_tcase_link_management','mgt_modify_req',
+                 'testproject_delete_executed_testcases',
+                 'testproject_edit_executed_testcases');
+    foreach($g2c as $grant) {
       $this->grants->$grant = $userObj->hasRight($db,$grant,$tproject_id);
     }
-    $this->grants->requirement_mgmt = $userObj->hasRight($db,"mgt_modify_req",$tproject_id) ||
-                                      $userObj->hasRight($db,"req_tcase_link_management",$tproject_id);
+
+    $this->grants->requirement_mgmt = $this->grants->mgt_modify_req ||
+      $this->grants->req_tcase_link_management;
+
   }
 
-  function setTemplateCfg($cfg)
-  {
+  function setTemplateCfg($cfg) {
     $this->templateCfg=$cfg;
   }
 
@@ -53,8 +57,7 @@ class testcaseCommands
    * 
    *
    */
-  function initGuiBean(&$argsObj)
-  {
+  function initGuiBean(&$argsObj) {
     $obj = new stdClass();
     $obj->action = '';
     $obj->attachments = null;
@@ -65,6 +68,10 @@ class testcaseCommands
 
 
     $obj->grants = $this->grants;
+
+    $key = 'req_tcase_link_management';
+    $obj->$key = $obj->grants->$key;
+
     $obj->has_been_executed = false;
     $obj->initWebEditorFromTemplate = false;
 
@@ -79,24 +86,38 @@ class testcaseCommands
 
     $dummy = testcase::getLayout();
     $obj->tableColspan = $dummy->tableToDisplayTestCaseSteps->colspan;
-    $obj->tcase_id = property_exists($argsObj,'tcase_id') ? $argsObj->tcase_id : -1;
+
+    $tck = array('tcase_id','tcversion_id','tplan_id');
+    foreach ($tck as $pkey) {
+      $obj->$pkey = property_exists($argsObj,$pkey) ? $argsObj->$pkey : -1;
+    }
+
     $obj->viewerArgs = null;
 
     $p2check = 'goback_url';
     $obj->$p2check = '';
-    if( property_exists($argsObj,$p2check) )
-    {
+    if( property_exists($argsObj,$p2check) ) {
       $obj->$p2check = !is_null($argsObj->$p2check) ? $argsObj->$p2check : ''; 
     }
     
     $p2check = 'show_mode';
-    if( property_exists($argsObj,$p2check) )
-    {
+    if( property_exists($argsObj,$p2check) ) {
       $obj->$p2check = !is_null($argsObj->$p2check) ? $argsObj->$p2check : 'show'; 
     }
 
     // need to check where is used
     $obj->loadOnCancelURL = "archiveData.php?edit=testcase&show_mode={$obj->show_mode}&id=%s&version_id=%s";
+
+    if( property_exists($obj, 'tplan_id') ) {
+      $obj->loadOnCancelURL .= "&tplan_id={$obj->tplan_id}";
+    }
+
+    if( property_exists($obj, 'show_mode') ) {
+      $obj->loadOnCancelURL .= "&show_mode={$obj->show_mode}";
+    }
+
+    $obj->codeTrackerEnabled = $this->tprojectMgr->isCodeTrackerEnabled($this->tproject_id);
+
     return $obj;
   }
    
@@ -104,26 +125,29 @@ class testcaseCommands
    * initialize common test case information, useful when working on steps
    *
    */
-  function initTestCaseBasicInfo(&$argsObj,&$guiObj,$opt=null)
-  {
+  function initTestCaseBasicInfo(&$argsObj,&$guiObj,$opt=null) {
 
     $my['opt'] = array('accessByStepID' => true);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
+    // Security
+    // https://cxsecurity.com/issue/WLB-2019110139
+    if (intval($argsObj->tcase_id) == 0 && 
+        intval($argsObj->tcversion_id) ==0) {
+      die("Error Processing Request:" . __METHOD__);
+    }
+
     $greenCard = array('tcase_id' => $argsObj->tcase_id, 'tcversion_id' => $argsObj->tcversion_id);
-    if( $my['opt']['accessByStepID'] )
-    {  
-      foreach($greenCard as $ky)
-      {
+    
+    if( $my['opt']['accessByStepID'] ) {  
+      foreach($greenCard as $ky) {
         // this logic need to be explained BETTER
-        if($ky == 0)
-        {
+        if($ky == 0) {
           $greenCard = $this->tcaseMgr->getIdCardByStepID($argsObj->step_id);   
           break;
         }  
       }
     }
-
 
     $gopt = array('output' => 'full_without_steps','renderGhost' => true,
                   'renderImageInline' => true,'renderVariables' => true); 
@@ -135,15 +159,14 @@ class testcaseCommands
     $tcaseInfo[0]['tc_external_id'] = $external[0];
     $guiObj->testcase = $tcaseInfo[0];
 
-    if(!isset($guiObj->testcase['ghost']))
-    {
+    if(!isset($guiObj->testcase['ghost'])) {
       $guiObj->testcase['ghost'] = null;  
     }  
-    $guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
+    $guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id']);
+    
     $guiObj->updaterObj = null;
-    if( !is_null($guiObj->testcase['updater_id']) )
-    {
-      $guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
+    if( !is_null($guiObj->testcase['updater_id']) ) {
+      $guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id']);
     }  
   }
 
@@ -162,8 +185,7 @@ class testcaseCommands
     $guiObj->initWebEditorFromTemplate = true;
       
     $guiObj->containerID = $argsObj->container_id;
-    if($argsObj->container_id > 0)
-    {
+    if($argsObj->container_id > 0) {
       $pnode_info = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->container_id);
       $node_descr = array_flip($this->tcaseMgr->tree_manager->get_available_node_types());
       $guiObj->parent_info['name'] = $pnode_info['name'];
@@ -192,16 +214,26 @@ class testcaseCommands
 
 
     $cfPlaces = $this->tcaseMgr->buildCFLocationMap();
-    foreach($cfPlaces as $locationKey => $locationFilter)
-    { 
+    foreach($cfPlaces as $locationKey => $locationFilter) { 
       $guiObj->cf[$locationKey] = 
       $this->tcaseMgr->html_table_of_custom_field_inputs(null,null,'design','',null,null,
                                                          $argsObj->testproject_id,$locationFilter, $_REQUEST);
     }  
 
-    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?id=" .
-                              intval($argsObj->container_id) . 
-                              '&edit=testsuite&level=testsuite&containerType=testsuite' .  "'"; 
+    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 
+      "lib/testcases/archiveData.php?id=" . intval($argsObj->container_id);
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->cancelActionJS .= "&tplan_id={$guiObj->tplan_id}";
+    }
+
+    if( property_exists($guiObj, 'show_mode') ) {
+      $guiObj->cancelActionJS .= "&show_mode={$guiObj->show_mode}";
+    }
+
+
+    $guiObj->cancelActionJS .= 
+      '&edit=testsuite&level=testsuite&containerType=testsuite' .  "'"; 
 
     return $guiObj;
   }
@@ -210,25 +242,15 @@ class testcaseCommands
    * 
    *
    */
-  function doCreate(&$argsObj,&$otCfg,$oWebEditorKeys,$request)
-  {
+  function doCreate(&$argsObj,&$otCfg,$oWebEditorKeys,$request) {
     $guiObj = $this->create($argsObj,$otCfg,$oWebEditorKeys);
       
     // compute order
     $new_order = config_get('treemenu_default_testcase_order');
     $co = $this->tcaseMgr->tree_manager->getBottomOrder($argsObj->container_id,array('node_type' => 'testcase'));
-    if( $co > 0)
-    {
+    if( $co > 0){
       $new_order = $co+1; 
     }  
-    // $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
-    // $siblings = $this->tcaseMgr->tree_manager->get_children($argsObj->container_id,$nt2exclude);
-  
-    //if( !is_null($siblings) )
-    //{
-    //  $dummy = end($siblings);
-    //  $new_order = $dummy['node_order']+1;
-    //}
 
     $options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
                      'action_on_duplicate_name' => 'block',
@@ -240,11 +262,9 @@ class testcaseCommands
                                      $new_order,testcase::AUTOMATIC_ID,
                                      $argsObj->exec_type,$argsObj->importance,$options);
 
-    if($tcase['status_ok'])
-    {
+    if($tcase['status_ok']) {
       $guiObj->actionOK = true;
-      if($argsObj->stay_here)
-      {   
+      if($argsObj->stay_here) {   
         $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->testproject_id,ENABLED,
                                                                              NO_FILTER_SHOW_ON_EXEC,'testcase');
       
@@ -256,16 +276,16 @@ class testcaseCommands
         $guiObj->cleanUpWebEditor = true;
         $opt_list = '';
       }
-      else
-      {
+      else {
         // we will not return to caller
         $argsObj->tcase_id = $tcase['id'];
         $argsObj->tcversion_id = $tcase['tcversion_id'];
+        
+        // BAD Choice Custom fields are written to db on $this->show()
         $this->show($argsObj,$request, array('status_ok' => 1));
       }
     }
-    elseif(isset($tcase['msg']))
-    {
+    elseif(isset($tcase['msg'])) {
       $guiObj->actionOK = false;
       $guiObj->user_feedback = lang_get('error_tc_add');
       $guiObj->user_feedback .= '' . $tcase['msg'];
@@ -290,10 +310,12 @@ class testcaseCommands
     returns: 
   
   */
-  function edit(&$argsObj,&$otCfg,$oWebEditorKeys)
-  {
+  function edit(&$argsObj,&$otCfg,$oWebEditorKeys) {
     $guiObj = $this->initGuiBean($argsObj);
-    $otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id,array('orderByClause' =>" ORDER BY keyword ASC "));
+    $otCfg->to->map = 
+      $this->tcaseMgr->get_keywords_map($argsObj->tcase_id,$argsObj->tcversion_id,
+        array('orderByClause' =>" ORDER BY keyword ASC "));
+
     keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
 
     $gopt = array('renderImageInline' => false, 'renderImageInline' => false, 
@@ -320,8 +342,23 @@ class testcaseCommands
     $guiObj->tc=$tc_data[0];
     $guiObj->opt_cfg=$otCfg;
 
-    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?version_id=" .
-                              $argsObj->tcversion_id . '&edit=testcase&id=' . intval($argsObj->tcase_id) . "'"; 
+    $guiObj->cancelActionJS = 
+      'location.href=fRoot+' . "'" . 
+      "lib/testcases/archiveData.php?version_id=" . 
+      $argsObj->tcversion_id . 
+      "&tcversion_id=" . $argsObj->tcversion_id .
+      '&edit=testcase&id=' . intval($argsObj->tcase_id); 
+
+    if( property_exists($argsObj, 'tplan_id') ) {
+      $guiObj->cancelActionJS .= "&tplan_id={$argsObj->tplan_id}";
+    }
+
+    if( property_exists($argsObj, 'show_mode') ) {
+      $guiObj->cancelActionJS .= "&show_mode={$argsObj->show_mode}";
+    }
+
+    $guiObj->cancelActionJS .= "'"; 
+
     $guiObj->template=$templateCfg->default_template;
     return $guiObj;
   }
@@ -335,8 +372,7 @@ class testcaseCommands
     returns: 
 
   */
-  function doUpdate(&$argsObj,$request)
-  {
+  function doUpdate(&$argsObj,$request) {
     $options = array('status' => $argsObj->tc_status,
                      'estimatedExecDuration' => $argsObj->estimated_execution_duration);
 
@@ -347,7 +383,7 @@ class testcaseCommands
                                    $argsObj->importance,$options);
 
     $this->show($argsObj,$request,$ret);
-    return $guiObj;
+    return;
   }  
 
 
@@ -355,8 +391,7 @@ class testcaseCommands
    * doAdd2testplan
    *
    */
-  function doAdd2testplan(&$argsObj,$request)
-  {
+  function doAdd2testplan(&$argsObj,$request) {
     $smartyObj = new TLSmarty();
     $smartyObj->assign('attachments',null);
     $guiObj = $this->initGuiBean($argsObj);
@@ -407,8 +442,8 @@ class testcaseCommands
    *
    * @internal revisions
    */
-  function delete(&$argsObj,$request)
-  {
+  function delete(&$argsObj,$request) {
+    
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->delete_message = '';
     $cfg = config_get('testcase_cfg');
@@ -467,11 +502,13 @@ class testcaseCommands
     $guiObj->refreshTree = 1;
     $guiObj->main_descr = lang_get('title_del_tc') . TITLE_SEP . $external_id . TITLE_SEP . $tcinfo[0]['name'];  
     
-    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 'lib/testcases/archiveData.php?version_id=undefined&' .
-                              'edit=testcase&id=' . intval($guiObj->testcase_id) . "'";    
+    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 
+      'lib/testcases/archiveData.php?version_id=undefined&' .
+      'edit=testcase&id=' . intval($guiObj->testcase_id) . "'";    
+
 
     $templateCfg = templateConfiguration('tcDelete');
-    $guiObj->template=$templateCfg->default_template;
+    $guiObj->template = $templateCfg->default_template;
     return $guiObj;
   }
 
@@ -479,8 +516,7 @@ class testcaseCommands
    * 
    *
    */
-  function doDelete(&$argsObj,$request)
-  {
+  function doDelete(&$argsObj,$request) {
     $cfg = config_get('testcase_cfg');
 
     $guiObj = $this->initGuiBean($argsObj);
@@ -499,26 +535,22 @@ class testcaseCommands
       $guiObj->action = '';
       $guiObj->sqlResult = $this->tcaseMgr->db->error_msg();
     }
-    else
+    
+    $guiObj->main_descr = lang_get('title_del_tc') . ":" . $external_id . TITLE_SEP . htmlspecialchars($tcinfo[0]['name']);
+    
+    if($argsObj->tcversion_id == testcase::ALL_VERSIONS)
     {
+	  $guiObj->refreshTree = 1;
+	  logAuditEvent(TLS("audit_testcase_deleted",$external_id),"DELETE",$argsObj->tcase_id,"testcases");
       $guiObj->user_feedback = sprintf(lang_get('tc_deleted'), ":" . $external_id . TITLE_SEP . $tcinfo[0]['name']);
     }
-      
-    $guiObj->main_descr = lang_get('title_del_tc') . ":" . $external_id . TITLE_SEP . htmlspecialchars($tcinfo[0]['name']);
-  
-    // refresh must be forced to avoid a wrong tree situation.
-    // if tree is not refreshed and user click on deleted test case he/she
-    // will get a SQL error
-    // $refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
-    $guiObj->refreshTree = 1;
- 
-      // When deleting JUST one version, there is no need to refresh tree
-    if($argsObj->tcversion_id != testcase::ALL_VERSIONS)
-    {
+	  else{
       $guiObj->main_descr .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
+	  // When deleting JUST one version, there is no need to refresh tree
       $guiObj->refreshTree = 0;
+	  logAuditEvent(TLS("audit_testcase_version_deleted",$tcinfo[0]['version'],$external_id),"DELETE",$argsObj->tcase_id,"testcases");
       $guiObj->user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
-    }
+	  }
 
     $guiObj->testcase_name = $tcinfo[0]['name'];
     $guiObj->testcase_id = $argsObj->tcase_id;
@@ -530,16 +562,14 @@ class testcaseCommands
 
 
   /**
-      * createStep
-     *
-     * @internal revisions
-     * 20100927 - franciscom - BUGID 3810
-     */
-  function createStep(&$argsObj,$request)
-  {
+   * createStep
+   *
+   */
+  function createStep(&$argsObj,$request) {
     $guiObj = $this->initGuiBean($argsObj);
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
+
     $guiObj->main_descr = sprintf(lang_get('create_step'), $guiObj->testcase['tc_external_id'] . ':' . 
                     $guiObj->testcase['name'], $guiObj->testcase['version']); 
         
@@ -547,7 +577,7 @@ class testcaseCommands
     $max_step++;;
 
     $guiObj->step_number = $max_step;
-    $guiObj->step_exec_type = $guiObj->testcase['execution_type']; // BUGID 3810
+    $guiObj->step_exec_type = $guiObj->testcase['execution_type']; 
     $guiObj->tcversion_id = $argsObj->tcversion_id;
 
     $guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
@@ -558,7 +588,7 @@ class testcaseCommands
     $guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
         
     $templateCfg = templateConfiguration('tcStepEdit');
-    $guiObj->template=$templateCfg->default_template;
+    $guiObj->template = $templateCfg->default_template;
     $guiObj->action = __FUNCTION__;
     
     return $guiObj;
@@ -568,8 +598,7 @@ class testcaseCommands
    * doCreateStep
    *
    */
-  function doCreateStep(&$argsObj,$request,$doAndExit=false)
-  {
+  function doCreateStep(&$argsObj,$request,$doAndExit=false) {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
     $guiObj->step_exec_type = $argsObj->exec_type;
@@ -620,18 +649,16 @@ class testcaseCommands
    * doCreateStepAndExit
    *
    */
-  function doCreateStepAndExit(&$argsObj,$request)
-  {
+  function doCreateStepAndExit(&$argsObj,$request) {
     $guiObj = $this->doCreateStep($argsObj,$request,true);
-    if($guiObj->doExit)
-    {
+    if($guiObj->doExit) {
       // when working on step, refreshing tree is nonsense
       $argsObj->refreshTree = 0;
-      $this->show($argsObj,$request,array('status_ok' => true),!self::UPDATECFONDB);
+
+      $opt= array('updateCFOnDB' => !self::UPDATECFONDB);
+      $this->show($argsObj,$request,array('status_ok' => true),$opt);
       exit();
-    }
-    else
-    {
+    } else {
       return $guiObj;
     }  
   }
@@ -685,18 +712,15 @@ class testcaseCommands
    * doUpdateStep
    *
    */
-  function doUpdateStep(&$argsObj,$request)
-  {
+  function doUpdateStep(&$argsObj,$request) {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
     
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
-    try
-    {
+    try {
       $stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
     }
-    catch (Exception $e)
-    {
+    catch (Exception $e) {
       echo $e->getMessage();
     }
 
@@ -725,13 +749,13 @@ class testcaseCommands
    * doUpdateStepAndExit
    *
    */
-  function doUpdateStepAndExit(&$argsObj,$request)
-  {
+  function doUpdateStepAndExit(&$argsObj,$request) {
     $this->doUpdateStep($argsObj,$request);
 
     // when working on step, refreshing tree is nonsense
     $argsObj->refreshTree = 0;
-    $this->show($argsObj,$request,array('status_ok' => true),!self::UPDATECFONDB);
+    $opt= array('updateCFOnDB' => !self::UPDATECFONDB);
+    $this->show($argsObj,$request,array('status_ok' => true),$opt);
   }
   
 
@@ -739,16 +763,18 @@ class testcaseCommands
    * doReorderSteps
    *
    */
-  function doReorderSteps(&$argsObj,$request)
-  {
+  function doReorderSteps(&$argsObj,$request) {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->main_descr = lang_get('test_case');
     $this->tcaseMgr->set_step_number($argsObj->step_set);
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
-    $guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&" . 
-                      "edit=testcase&id={$argsObj->tcase_id}&show_mode={$guiObj->show_mode}";
-    return $guiObj;
+
+    $argsObj->refreshTree = 0;
+    $opt= array('updateCFOnDB' => !self::UPDATECFONDB);
+    $this->show($argsObj,$request,array('status_ok' => true),$opt);
+    exit();
+
   }
 
 
@@ -756,11 +782,11 @@ class testcaseCommands
    * doDeleteStep
    *
    */
-  function doDeleteStep(&$argsObj,$request)
-  {
+  function doDeleteStep(&$argsObj,$request) {
     $guiObj = $this->initGuiBean($argsObj);
 
-    $guiObj->viewerArgs=array();
+    $guiObj->main_descr = lang_get('test_case');
+    $guiObj->viewerArgs = array();
     $guiObj->refreshTree = 0;
     $step_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->step_id);
 
@@ -768,23 +794,23 @@ class testcaseCommands
     $argsObj->tcversion_id = $step_node['parent_id'];
     $argsObj->tcase_id = $tcversion_node['parent_id'];
     
-    $guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&" . 
-                      "edit=testcase&id={$argsObj->tcase_id}&show_mode={$guiObj->show_mode}";
-
     $guiObj->user_feedback = '';
     $op = $this->tcaseMgr->delete_step_by_id($argsObj->step_id);
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
-    return $guiObj;
+
+    $argsObj->refreshTree = 0;
+    $opt= array('updateCFOnDB' => !self::UPDATECFONDB);
+    $this->show($argsObj,$request,array('status_ok' => true),$opt);
+    exit();
   }
 
   /**
       * doCopyStep
      *
      */
-  function doCopyStep(&$argsObj,$request)
-  {
+  function doCopyStep(&$argsObj,$request) {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
     $guiObj->step_exec_type = $argsObj->exec_type;
@@ -841,8 +867,7 @@ class testcaseCommands
    * doInsertStep
    *
    */
-  function doInsertStep(&$argsObj,$request)
-  {
+  function doInsertStep(&$argsObj,$request) {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
     $guiObj->step_exec_type = $argsObj->exec_type;
@@ -918,8 +943,7 @@ class testcaseCommands
   /**
    *
    */
-  function doResequenceSteps(&$argsObj,$request)
-  {
+  function doResequenceSteps(&$argsObj,$request) {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
     $guiObj->step_exec_type = $argsObj->exec_type;
@@ -931,14 +955,20 @@ class testcaseCommands
     $stepNumberSet = array();
     $stepSet = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
     $stepsQty = count($stepSet);
-    for($idx=0; $idx < $stepsQty; $idx++)
-    {
+    for($idx=0; $idx < $stepsQty; $idx++) {
       $renumbered[$stepSet[$idx]['id']] = $idx+1; 
     }
     $this->tcaseMgr->set_step_number($renumbered);
 
-   $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                       "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" .
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&" .
+      "show_mode={$guiObj->show_mode}";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
 
     $guiObj->user_feedback = '';
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
@@ -964,8 +994,14 @@ class testcaseCommands
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&".
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
 
     $guiObj->user_feedback = '';
     return $guiObj;
@@ -989,8 +1025,14 @@ class testcaseCommands
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
 
     $guiObj->user_feedback = '';
     return $guiObj;
@@ -1010,12 +1052,26 @@ class testcaseCommands
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
 
-    $this->tcaseMgr->setExecutionType($argsObj->tcversion_id,$argsObj->exec_type);
+    $opx = array('updSteps' => $argsObj->applyExecTypeChangeToAllSteps);
+    $this->tcaseMgr->setExecutionType($argsObj->tcversion_id,$argsObj->exec_type,$opx);
+
+
+
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
+    // 
+
+    
+
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
 
     $guiObj->user_feedback = '';
     return $guiObj;
@@ -1039,8 +1095,14 @@ class testcaseCommands
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
 
     $guiObj->user_feedback = '';
     return $guiObj;
@@ -1052,14 +1114,23 @@ class testcaseCommands
    * 
    *
    */
-  function show(&$argsObj,$request,$userFeedback,$updateCFOnDB=true)
-  {
+  function show(&$argsObj,$request,$userFeedback,$opt=null) {
     $smartyObj = new TLSmarty();
+
+    $options = array('updateCFOnDB' => true, 
+                     'updateTPlanLinkToTCV' => false);
+    $options = array_merge($options,(array)$opt);
+
+    $updateCFOnDB = $options['updateCFOnDB'];
+
     $guiObj = $this->initGuiBean($argsObj);
     $identity = $this->buildIdentity($argsObj);
 
+    $guiObj->uploadOp = $argsObj->uploadOp;
+
     $guiObj->viewerArgs=array();
-    $guiObj->refreshTree = ($argsObj->refreshTree && $userFeedback['status_ok']) ? 1 : 0;
+    $guiObj->refreshTree = ($argsObj->refreshTree 
+      && $userFeedback['status_ok']) ? 1 : 0;
     $guiObj->has_been_executed = $argsObj->has_been_executed;
     $guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
     $guiObj->user_feedback = '';
@@ -1069,26 +1140,39 @@ class testcaseCommands
                                           $argsObj->tcase_id,
                                           $argsObj->testproject_id);
 
-    if($userFeedback['status_ok'])
-    {
+    if($userFeedback['status_ok']) {
+      if( $options['updateTPlanLinkToTCV'] ) {
+        $guiObj->updateTPlanLinkToTCV = true; 
+        $guiObj->show_mode = 'editOnExec'; 
+
+        // @20190127 the only useful thing there may be is the Rabbit
+        $guiObj->additionalURLPar = 
+          "&updateTCVToThis=" . $identity->version_id .
+          "&followTheWhiteRabbit=1";  
+        $guiObj->closeMyWindow = 1;  
+
+      }
+
       $guiObj->user_feedback = '';
-      if($updateCFOnDB)
-      {  
-        $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($identity->tproject_id,
-                                                                            1,null,'testcase') ;
+      if($updateCFOnDB) {  
+        $cfCtx = array('tproject_id' => $identity->tproject_id, 'enabled' => 1,
+                       'node_type' => 'testcase');
+        $cf_map = $this->tcaseMgr->cfield_mgr->getLinkedCfieldsAtDesign($cfCtx);
+
+        
         $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$identity->version_id,$cf_map);
       }
-      $guiObj->attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$identity->id);
+      
+      $guiObj->attachments[$identity->version_id] = 
+        getAttachmentInfosFrom($this->tcaseMgr,$identity->version_id);
     }
-    else
-    {
+    else {
       $guiObj->viewerArgs['user_feedback'] = $guiObj->user_feedback = $userFeedback['msg'];
     }
 
     $guiObj->viewerArgs['refreshTree'] = $guiObj->refreshTree;
     $guiObj->viewerArgs['user_feedback'] = $guiObj->user_feedback;
 
-  
     $this->tcaseMgr->show($smartyObj,$guiObj,$identity,$this->grants); 
     exit();  
   }
@@ -1097,19 +1181,15 @@ class testcaseCommands
   /**
    *
    */
-  private function buildIdentity($cred)
-  {
+  private function buildIdentity($cred) {
     $idy= new stdClass();
-    if( property_exists($cred, 'tproject_id') )
-    {
+    if( property_exists($cred, 'tproject_id') ) {
       $idy->tproject_id = $cred->tproject_id;
     }
-    else if( property_exists($cred, 'testproject_id'))
-    {
+    else if( property_exists($cred, 'testproject_id')) {
       $idy->tproject_id = $cred->testproject_id;
     }  
-    else
-    {
+    else {
       throw new Exception(__METHOD__ . ' EXCEPTION: test project ID, is mandatory');  
     }  
     $idy->tproject_id = intval($idy->tproject_id);
@@ -1123,37 +1203,39 @@ class testcaseCommands
    * 
    *
    */
-  function doAddRelation(&$argsObj,&$request)
-  {
+  function doAddRelation(&$argsObj,&$request) {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
 
-    if($argsObj->destination_tcase_id >0)
-    {
+    if($argsObj->destination_tcase_id >0) {
       $relTypeInfo = explode('_',$argsObj->relation_type);
       $source_id = $argsObj->tcase_id;
       $destination_id = $argsObj->destination_tcase_id;
-      if( $relTypeInfo[1] == "destination" ) 
-      {
+      if( $relTypeInfo[1] == "destination" ) {
         $source_id = $argsObj->destination_tcase_id;
         $destination_id = $argsObj->tcase_id;
-      }      
-      $this->tcaseMgr->addRelation($source_id, $destination_id,$relTypeInfo[0], $argsObj->user_id); 
+      }
+
+      $ret = $this->tcaseMgr->addRelation($source_id, $destination_id,$relTypeInfo[0], $argsObj->user_id);
+	    $guiObj->user_feedback = sprintf(lang_get($ret['msg']), $argsObj->relation_destination_tcase);	  
     } 
-    else
-    {
+    else {
       $guiObj->user_feedback = sprintf(lang_get('testcase_doesnot_exists'), $argsObj->relation_destination_tcase);
     } 
 
     // set up for rendering
     // It's OK put fixed 0 on version_id other functions on the chain to do the display know how to manage this
-    $guiObj->template = "archiveData.php?version_id=0&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
-    
-    if($guiObj->user_feedback != '')
-    {
+    $guiObj->template = "archiveData.php?version_id=0&" .
+      "tcversion_id={$guiObj->tcversion_id}&" . 
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
+
+    if($guiObj->user_feedback != '') {
       $guiObj->template .= "&add_relation_feedback_msg=" . urlencode($guiObj->user_feedback);
     }  
     return $guiObj;
@@ -1163,21 +1245,24 @@ class testcaseCommands
    * 
    *
    */
-  function doDeleteRelation(&$argsObj,&$request)
-  {
+  function doDeleteRelation(&$argsObj,&$request) {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
 
-    if($argsObj->relation_id >0)
-    {
+    if($argsObj->relation_id >0) {
       $this->tcaseMgr->deleteRelationByID($argsObj->relation_id);
     } 
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" .
-                        "&caller=delRel";
+    $guiObj->template = "archiveData.php?edit=testcase&" .
+      "id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" . 
+      "&caller=delRel";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
 
     return $guiObj;
   }
@@ -1188,45 +1273,44 @@ class testcaseCommands
    * doUpdateStepAndExit
    *
    */
-  function doUpdateStepAndInsert(&$argsObj,$request)
-  {
+  function doUpdateStepAndInsert(&$argsObj,$request) {
     $this->doUpdateStep($argsObj,$request);
     return $this->doInsertStep($argsObj,$request);
   }
 
 
- /**
+  /**
    * 
    *
    */
-  function removeKeyword(&$argsObj,&$request)
-  {
+  function removeKeyword(&$argsObj,&$request) {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
 
-    if($argsObj->keyword_id > 0)
-    {
-      $this->tcaseMgr->deleteKeywords($guiObj->tcase_id,array($argsObj->keyword_id),testcase::AUDIT_ON);
+    if($argsObj->tckw_link_id > 0) {
+      $this->tcaseMgr->deleteKeywordsByLink(
+        $guiObj->tcase_id, $argsObj->tckw_link_id,testcase::AUDIT_ON);
     } 
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" .
-                        "&caller=removeKeyword";
+    $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" . "&caller=removeKeyword";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
+
     return $guiObj;
   }
 
 
-  function freeze(&$argsObj,$request)
-  {
-    echo __FUNCTION__;
+  function freeze(&$argsObj,$request) {
     $argsObj->isOpen = 0;
     return $this->setIsOpen($argsObj,$request);
   }
 
-  function unfreeze(&$argsObj,$request)
-  {
+  function unfreeze(&$argsObj,$request) {
     $argsObj->isOpen = 1;
     return $this->setIsOpen($argsObj,$request);
   }
@@ -1234,8 +1318,7 @@ class testcaseCommands
   /**
    *
    */
-  function setIsOpen(&$argsObj,$request)
-  {
+  function setIsOpen(&$argsObj,$request) {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
     $guiObj->step_exec_type = $argsObj->exec_type;
@@ -1247,12 +1330,213 @@ class testcaseCommands
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
 
     $guiObj->user_feedback = '';
     return $guiObj;
   }
+
+
+  /**
+   *
+   */
+  function setActiveAttr(&$argsObj,$request) {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+    $guiObj->tcversion_id = $argsObj->tcversion_id;
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj);
+
+    $this->tcaseMgr->update_active_status($argsObj->tcase_id, 
+      $argsObj->tcversion_id, $argsObj->activeAttr);
+
+    $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+
+    $lk = 'audit_tcversion_deactivated';
+    $pre = 'DE';
+    if( $argsObj->activeAttr ) {
+      $pre = '';
+      $lk = 'audit_tcversion_activated';
+    }
+
+    logAuditEvent(TLS($lk,$guiObj->testcase['name'],
+                          $guiObj->testcase['version']),
+                  "{$pre}ACTIVATE","testcases");
+
+    $this->show($argsObj,$request, array('status_ok' => 1));
+    exit();
+  }
+
+
+  /**
+   * 
+   *
+   */
+  function addKeyword(&$argsObj,&$request) {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
+
+    $tcExternalID = $guiObj->testcase['tc_external_id'];
+    if( null != $argsObj->free_keywords || 1==1) {
+      $this->tcaseMgr->addKeywords($guiObj->tcase_id,$guiObj->tcversion_id,
+        $argsObj->free_keywords);
+
+      $info = $this->tprojectMgr->get_by_id($this->tproject_id);
+      $cfx = config_get('keywords')->byTestProject;
+      if( isset($cfx[$info['prefix']]) && 
+        $cfx[$info['prefix']]['addTCLinkIntoITS'] &&
+        $info['issue_tracker_enabled'] ) {
+
+        $it_mgr = new tlIssueTracker($this->db);
+        $argsObj->itsCfg = $it_mgr->getLinkedTo($this->tproject_id);
+        $its = $it_mgr->getInterfaceObject($this->tproject_id);
+        if( method_exists($its,'addNote') ) {
+          $dl = sprintf(lang_get('dlToTCSpecPVCode'), $tcExternalID) . 
+                ' ' . lang_get('dlToTCSpecPV') . ' ' . 
+                $this->tcaseMgr->buildDirectWebLink($_SESSION['basehref'],
+                $argsObj->tcase_id,$argsObj->testproject_id);
+
+          // Get keyword for human beins
+          $tbl = tlObject::getDBTables(array('keywords'));
+          $inClause = "'" . implode("','",$argsObj->free_keywords) . 
+                      "'";
+          $sql = "SELECT id,keyword FROM {$tbl['keywords']} 
+                  WHERE id IN($inClause) ";
+          $kwSet = $this->db->fetchRowsIntoMap($sql,'id'); 
+          
+          $strToDel = isset($cfx[$info['prefix']]['prefix']) ?
+                      $cfx[$info['prefix']]['prefix'] : '';
+          $strToDel = trim($strToDel);
+          foreach( $argsObj->free_keywords as $kw ) {
+            if( '' == $strToDel ) {
+              $kwv = $kwSet[$kw]['keyword'];
+            } else {
+              $kwv = str_replace($strToDel,'',
+                                 $kwSet[$kw]['keyword']);
+            }           
+            try {
+              $opStatus = $its->addNote($kwv,$dl);
+            } catch(Exception $e) {
+              echo 'Silent Failure?';
+            }
+          }            
+
+
+        }  
+      }    
+    } 
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" . "&caller=addKeyword";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
+   
+    return $guiObj;
+  }
+
+  /**
+   *
+   * @used by tcEdit.php
+   * 
+   */
+  function updateTPlanLinkToTCV($argsObj,$request) {
+
+    $this->tcaseMgr->updateLatestTPlanLinkToTCV($argsObj->tcversion_id,$argsObj->tplan_id);
+
+    $opt = array('updateTPlanLinkToTCV' => true);
+
+    $this->show($argsObj,$request, array('status_ok' => 1),$opt);
+  }
+
+  /**
+   * doStepOperationExit
+   *
+   */
+  function doStepOperationExit(&$argsObj,$request) {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+    $guiObj->step_exec_type = $argsObj->exec_type;
+    $guiObj->tcversion_id = $argsObj->tcversion_id;
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj);
+    $guiObj->main_descr = sprintf(lang_get('create_step'), $guiObj->testcase['tc_external_id'] . ':' . 
+                                  $guiObj->testcase['name'], $guiObj->testcase['version']); 
+    $guiObj->cleanUpWebEditor = true;
+    $this->initTestCaseBasicInfo($argsObj,$guiObj);
+    
+    // when working on step, refreshing tree is nonsense
+    $argsObj->refreshTree = 0;
+
+    $opt= array('updateCFOnDB' => !self::UPDATECFONDB);
+    $this->show($argsObj,$request,array('status_ok' => true),$opt);
+    exit();
+  }
+
+  /**
+   * 
+   *
+   */
+  function addPlatform(&$argsObj,&$request) {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
+
+    if( null != $argsObj->free_platforms ) {
+      $this->tcaseMgr->addPlatforms($guiObj->tcase_id,
+        $guiObj->tcversion_id, $argsObj->free_platforms);
+    }
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" . "&caller=addPlatform";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
+   
+    return $guiObj;
+  }
+
+  /**
+   * 
+   *
+   */
+  function removePlatform(&$argsObj,&$request) {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
+
+    if($argsObj->tcplat_link_id > 0) {
+      $this->tcaseMgr->deletePlatformsByLink(
+        $guiObj->tcase_id, $argsObj->tcplat_link_id,testcase::AUDIT_ON);
+    } 
+
+    // set up for rendering
+    $guiObj->template = 
+      "archiveData.php?edit=testcase&id={$guiObj->tcase_id}" .
+      "&show_mode={$guiObj->show_mode}" . 
+      "&caller=removePlatform";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
+    return $guiObj;
+  }
+
+
+
 
 
 } // end class  

@@ -9,9 +9,6 @@
  * @see https://developer.atlassian.com/jiradev/api-reference/jira-rest-apis/jira-rest-api-tutorials/
  *
  *
- * @internal revisions
- * @since 1.9.14
- *
 **/
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/RestRequest.php");
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/Jira.php");
@@ -23,6 +20,7 @@ class jirarestInterface extends issueTrackerInterface
   private $issueAttr = null;
   private $jiraCfg;
 
+  var $defaultResolvedStatus;
   var $support;
 
 	/**
@@ -38,13 +36,24 @@ class jirarestInterface extends issueTrackerInterface
     $this->support = new jiraCommons();
     $this->support->guiCfg = array('use_decoration' => true);
 
-	  $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+    // This is the right way to overwrite ONLY 
+    // the keys we want, and preserve the default 
+    // configuration present in the issueTrackerInterface class
+	  $this->methodOpt['buildViewBugLink'] = 
+      array_merge($this->methodOpt['buildViewBugLink'], 
+                  array('addSummary' => true, 
+                        'colorByStatus' => false)
+                  );
 
-    if($this->setCfg($config) && $this->checkCfg())
-    {
+    if ($this->setCfg($config) && $this->checkCfg()) {
       $this->completeCfg();
       $this->connect();
       $this->guiCfg = array('use_decoration' => true);
+
+      if( $this->isConnected())
+      {  
+        $this->setResolvedStatusCfg();  
+      }  
     } 
 	}
 
@@ -140,7 +149,6 @@ class jirarestInterface extends issueTrackerInterface
         }  
       }  
 
-
       $this->APIClient = new JiraApi\Jira($this->jiraCfg);
 
       $this->connected = $this->APIClient->testLogin();
@@ -150,6 +158,15 @@ class jirarestInterface extends issueTrackerInterface
         // if at least it exists.
         $pk = trim((string)$this->cfg->projectkey);
         $this->APIClient->getProject($pk);
+
+        $statusSet = $this->APIClient->getStatuses();
+        foreach ($statusSet as $statusID => $statusName)
+        {
+          $this->statusDomain[$statusName] = $statusID;
+        }
+
+        $this->defaultResolvedStatus = 
+          $this->support->initDefaultResolvedStatus($this->statusDomain);
       }  
     }
   	catch(Exception $e)
@@ -193,6 +210,7 @@ class jirarestInterface extends issueTrackerInterface
       // Very strange is how have this worked till today ?? (2015-01-24)
       if(!is_null($issue) && is_object($issue) && !property_exists($issue,'errorMessages'))
       {
+     
         // We are going to have a set of standard properties
         $issue->id = $issue->key;
         $issue->summary = $issue->fields->summary;
@@ -203,6 +221,7 @@ class jirarestInterface extends issueTrackerInterface
         $issue->statusHTMLString = $this->support->buildStatusHTMLString($issue->statusVerbose);
         $issue->summaryHTMLString = $this->support->buildSummaryHTMLString($issue);
         $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+
 
         /*
         for debug porpouses
@@ -374,29 +393,26 @@ class jirarestInterface extends issueTrackerInterface
           }  
         }
 
-        if(property_exists($opt, 'artifactVersion'))
-        {
+        if (property_exists($opt, 'artifactVersion')) {
           // YES is plural!!
           $issue['fields']['versions'] = array();
-          foreach( $opt->artifactVersion as $vv)
-          {
+          foreach ( $opt->artifactVersion as $vv) {
             $issue['fields']['versions'][] = array('id' => (string)$vv);
           }  
         }
 
 
-
-        if(property_exists($opt, 'reporter'))
-        {
+        if (property_exists($opt, 'reporter')) {
           $issue['fields']['reporter'] = array('name' => (string)$opt->reporter);
         }
 
-        if(property_exists($opt, 'issueType'))
-        {
+        if (property_exists($opt, 'issueType')) {
           $issue['fields']['issuetype'] = array('id' => $opt->issueType);
         }
         
-
+        if (preg_grep("/(?:\/.*\/{1,})(.*) - Execution/", $summary, $matches)) {
+          $issue['fields']['customfield_10311'] = $matches[1];
+        }
       }  
 
       $op = $this->APIClient->createIssue($issue);
@@ -520,6 +536,24 @@ class jirarestInterface extends issueTrackerInterface
       tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
     }         
   }
+
+
+  /**
+   *
+   */
+  public function getCreateIssueFields()
+  {
+    try
+    {
+      return $this->APIClient->getCreateIssueFields((string)$this->cfg->projectkey);
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }         
+  }
+
+
 
   /**
    *
@@ -652,13 +686,19 @@ class jirarestInterface extends issueTrackerInterface
   function canCreateViaAPI()
   {
     $status_ok = false;
-    if(property_exists($this->cfg, 'projectkey') && 
-       property_exists($this->cfg, 'issuetype') )
+
+    // The VERY Mandatory KEY   
+    if( property_exists($this->cfg, 'projectkey') )
     {
-      // now check mandatory value
       $pk = trim((string)($this->cfg->projectkey));
       $status_ok = ($pk !== '');
     } 
+   
+    if($status_ok && $this->cfg->userinteraction == 0)
+    {
+      $status_ok = property_exists($this->cfg, 'issuetype'); 
+    }  
+
     return $status_ok;
   }
 
@@ -670,22 +710,12 @@ class jirarestInterface extends issueTrackerInterface
     $attr = get_object_vars($this->cfg->attributes);
     foreach ($attr as $name => $elem) 
     {
-      //var_dump($name);
-      //var_dump($elem);
       $name = (string)$name;
       switch($name)
       {
         case 'customFieldValues':
           $this->getCustomFieldsAttribute($name,$elem);
         break;
-
-        //case 'affectsVersions':
-        //  $this->getAffectsVersionsAttribute($name,$elem);
-        //break;
-
-        //default:
-        //  $this->getRelaxedAttribute($name,$elem);
-        //break;  
       }
     }
   }
@@ -777,9 +807,16 @@ class jirarestInterface extends issueTrackerInterface
         break;
 
         case 'radiobutton':
+          $dummy = array('value' => (string)$valueSet['value']);
+        break;
         case 'selectlist':
           // "customfield_10012": { "value": "red" }
-          $dummy = array('value' => (string)$valueSet['value']);
+          $dummy = array('id' => (string)$valueSet['value']);
+        break;
+
+        case 'userpicker':
+          // "customfield_10012": { "value": "admin" }
+          $dummy = array('name' => (string)$valueSet['value']);
         break;
 
         case 'labels':
@@ -838,6 +875,37 @@ class jirarestInterface extends issueTrackerInterface
     }  
     return $status_ok;
   }
+
+
+  /**
+   *
+   * If connection fails $this->defaultResolvedStatus is null
+   *
+   */
+  public function setResolvedStatusCfg()
+  {
+    if( property_exists($this->cfg,'resolvedstatus') )
+    {
+      $statusCfg = (array)$this->cfg->resolvedstatus;
+    }
+    else
+    {
+      $statusCfg['status'] = $this->defaultResolvedStatus;
+    }
+
+    $this->resolvedStatus = new stdClass();
+    $this->resolvedStatus->byCode = array();
+    if(!is_null($statusCfg['status']))
+    {  
+      foreach($statusCfg['status'] as $cfx)
+      {
+        $e = (array)$cfx;
+        $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
+      }
+    }
+    $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
+  }
+
 
 
 }

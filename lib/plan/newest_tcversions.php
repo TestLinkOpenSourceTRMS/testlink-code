@@ -88,11 +88,12 @@ function init_args()
     
     $args = new stdClass();
     $args->user_id = $_SESSION['userID'];
-    $args->tproject_id = $_SESSION['testprojectID'];
+    $args->tproject_id = intval($_SESSION['testprojectID']);
     $args->tproject_name = $_SESSION['testprojectName'];
     
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
-    
+    $args->tplan_id = intval($args->tplan_id);
+
     $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
     $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;

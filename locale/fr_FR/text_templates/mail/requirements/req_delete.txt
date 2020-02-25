@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<body>
+<p>L'exigence '[%docid%]:%title%' a été supprimée par %user%. 
+<br>
+</p>
+<p><b>Périmètre de l'exigence</b> </p>
+%scope%<p></p>
+<hr>
+<p>
+<p><i>Cet e-mail a été généré automatiquement. (%timestamp%) </i></p>
+</body>
+</html>

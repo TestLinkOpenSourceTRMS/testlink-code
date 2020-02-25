@@ -4,13 +4,11 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	installUtils.php
- * @package 	TestLink
- * @author 		Francisco Mancardi
+ * @package 	  TestLink
+ * @author 		  Francisco Mancardi
  * 
  * Functions for installation process
  *
- * internal revisions
- * @since 1.9.6
  *
  */
 
@@ -33,25 +31,26 @@ foreach( $dirPath as $the_dir)
 
   if ($handle = opendir($the_dir)) 
   {
+    clearstatcache();
+    while (false !== ($file = readdir($handle))) 
+    {
+      $is_folder=is_dir($the_dir . $file);
+      
+      // needed because is_dir() cached result. See PHP Manual
       clearstatcache();
-      while (false !== ($file = readdir($handle))) 
-      {
-          $is_folder=is_dir($the_dir . $file);
-          // needed because is_dir() cached result. See PHP Manual
-          clearstatcache();
           
-          if ($file != "." && $file != ".." && !$is_folder)
-          {
-             // 20071021 - use only is extension sql
-             $file=trim($file);
-             $path_parts=pathinfo($file);
-             if( isset($path_parts['extension']) && $path_parts['extension'] == 'sql' )
-             {   
-               $filesArr[] = $my_dir_path . $file;
-             }  
-          } 
-      }
-      closedir($handle);
+      if ($file != "." && $file != ".." && !$is_folder)
+      {
+        // use only if extension is sql
+        $file=trim($file);
+        $path_parts=pathinfo($file);
+        if( isset($path_parts['extension']) && $path_parts['extension'] == 'sql' )
+        {   
+          $filesArr[] = $my_dir_path . $file;
+        }  
+      } 
+    }
+    closedir($handle);
   }  
   
   sort($filesArr);
@@ -114,41 +113,47 @@ function getUserList(&$db,$db_type)
       // Returns an array containing the original sql statement in the first array element; 
       // the remaining elements of the array are driver dependent.
       //
-      // 20071104 - franciscom
       // Looking into adodb-mssql.inc.php, you will note that array[1] 
       // is a mssql stm object.
       // This info is very important, to use mssql_free_statement()
       //
       $stmt = $db->db->PrepareSP('SP_HELPLOGINS'); # note that the parameter name does not have @ in front!
-      $result=$db->db->Execute($stmt); 
+      $result = $db->db->Execute($stmt); 
       
       // Very important:
       // Info from PHP Manual notes
       // mssql_free_statement()
       //
       // mitch at 1800radiator dot kom (23-Mar-2005 06:02)
-      // Maybe it's unique to my FreeTDS configuration, but if I don't call mssql_free_statement() 
-      // after every stored procedure (i.e. mssql_init, mssql_bind, mssql_execute, mssql_fetch_array), 
-      // all subsequent stored procedures on the same database connection will fail.
-      // I only mention it because this man-page deprecates the use of mssql_free_statement(), 
+      // Maybe it's unique to my FreeTDS configuration, but if 
+      // I don't call mssql_free_statement() 
+      // after every stored procedure (i.e. mssql_init, mssql_bind, 
+      // mssql_execute, mssql_fetch_array), 
+      // all subsequent stored procedures on the same database 
+      // connection will fail.
+      // I only mention it because this man-page deprecates 
+      // the use of mssql_free_statement(), 
       // saying it's only there for run-time memory concerns.  
-      // At least in my case, it's also a crucial step in the process of running a stored procedure.  
-      // If anyone else has problems running multiple stored procedures on the same connection, 
+      // At least in my case, it's also a crucial step in the 
+      // process of running a stored procedure.  
+      // If anyone else has problems running multiple stored 
+      // procedures on the same connection, 
       // I hope this helps them out.
       //
-      // Without this was not possible to call other functions that use store procedures,
+      // Without this was not possible to call other functions 
+      // that use store procedures,
       // because I've got:
       // a) wrong results
       // b) mssql_init() errors
       //
-	  if (function_exists('mssql_free_statement')) 
-	  {
-		mssql_free_statement($stmt[1]);
-	  }	  
-	  else
-	  {      
-	  	sqlsrv_free_stmt($stmt[1]);
-	  }
+      if( is_resource($stmt) ) {
+  	    if (function_exists('mssql_free_statement')) {
+            mssql_free_statement($stmt[1]);
+  	    }	  
+  	    else {      
+            sqlsrv_free_stmt($stmt[1]);
+  	    }
+      }  
       break;
    
    }
@@ -167,7 +172,19 @@ function getUserList(&$db,$db_type)
      while (!$result->EOF) 
      { 
        $row = $result->GetRowAssoc();
-       $users[] = trim($row['LOGINNAME']);
+
+       // seems that on newer SQL Server Version
+       // Camel Case is used, or may be ADODB behaviour has changed
+       // Anyway this check avoid issues
+       //
+       if( isset($row['LOGINNAME']) ) {
+        $uk = 'LOGINNAME';
+       }
+       if( isset($row['LoginName']) ) {
+        $uk = 'LoginName';
+       }
+
+       $users[] = trim($row[$uk]);
        $result->MoveNext(); 
      } 
    }
@@ -208,22 +225,20 @@ if @ in login ->  get the hostname using splitting, and use it
                 
 */
 function create_user_for_db($db_type,$db_name,$db_server, $db_admin_name, $db_admin_pass,
-                            $login, $passwd)
-{
+                            $login, $passwd) {
 $db = new database($db_type);
 
 $user_host = explode('@',$login);
 $the_host = 'localhost';
 
-if ( count($user_host) > 1 )
-{
+if ( count($user_host) > 1 ) {
   $login    = $user_host[0];    
   $the_host = trim($user_host[1]);  
 }
 
 $try_create_user=0;
-switch($db_type)
-{
+switch($db_type) {
+
     case 'mssql':
     @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
     $msg="For MSSQL, no attempt is made to check for user existence";
@@ -277,7 +292,10 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
         case 'mysql':
         case 'mysqli':
         default:
+        // Starting with MySQL 8 the following sentence is WRONG !!
         // for MySQL making the user and assign right is the same operation
+        // But I've modified _mysql_make_user in order to create user
+        // and assign rights
         $op = _mysql_make_user($db,$the_host,$db_name,$login,$passwd);
         break;
 
@@ -287,8 +305,7 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
     {
       // just assign rights on the database
     	$msg = 'ok - user_exists';
-      switch($db_type)
-    	{
+      switch($db_type) {
         case 'mysql':
         case 'mysqli':
         $op = _mysql_assign_grants($db,$the_host,$db_name,$login,$passwd);
@@ -301,7 +318,6 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
         case 'mssql':
         $op = _mssql_assign_grants($db,$the_host,$db_name,$login,$passwd);
         break;
-
       }  
       
     }
@@ -383,143 +399,206 @@ function check_pear_modules()
   rev :
 
 */
-function check_db_loaded_extension($db_type)
-{
+function check_db_loaded_extension($db_type) {
   $dbType2PhpExtension = array('postgres' => 'pgsql');
 
+  $isPHPGTE7 = version_compare(phpversion(), "7.0.0", ">=");
+
   $ext2search = $db_type;  
-  if( $ext2search == 'mysql' && version_compare(phpversion(), "7.0.0", ">=") )
-  {
+  if( $ext2search == 'mysql' &&  $isPHPGTE7) {
     $ext2search = 'mysqli';
   }
 
-	if(PHP_OS == 'WINNT')
-	{
-		// Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
-		// From PHP MANUAL - reganding mssql_* functions
-		// These functions allow you to access MS SQL Server database.
-		// This extension is not available anymore on Windows with PHP 5.3 or later.
-		// SQLSRV, an alternative driver for MS SQL is available from Microsoft:
-		// http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx. 			
+	if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
+
+    // First Time:
+    // 
+		// Faced this problem when testing XAMPP 1.7.7 on 
+    // Windows 7 with MSSQL 2008 Express
 		//
+    // From PHP MANUAL - reganding mssql_* functions
+    // These functions allow you to access MS SQL Server database.
+    // This extension is not available anymore on Windows with 
+    // PHP 5.3 or later.
+    // 
+    // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
+    // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
+    //
+    //
+    // Second Time: (2018) 
+    // When using PHP 7 or up
+    // Help from Bitnami
+    // PHP 7 does not support mssql anymore. 
+    // The PECL extension recommended is to use the "sqlsrv" module 
+    // but you will need to compile it on your own.
+    //
+    // 
 		// PHP_VERSION_ID is available as of PHP 5.2.7
-		if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
-		{
+		if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300){
 			$dbType2PhpExtension['mssql'] = 'sqlsrv';
 		}			
-	}	
 
+    if ( $isPHPGTE7 ){
+      $dbType2PhpExtension['mssql'] = 'sqlsrv';
+    }     
+	}	
     
-  if( isset($dbType2PhpExtension[$db_type]) )
-  {
+  if( isset($dbType2PhpExtension[$db_type]) ) {
     $ext2search=$dbType2PhpExtension[$db_type];  
   }
       
   $msg_ko = "<span class='notok'>Failed!</span>";
   $msg_ok = '<span class="ok">OK!</span>';
-  $tt=array_flip(get_loaded_extensions());
+  $tt = array_flip(get_loaded_extensions());
     
   $errors=0;	
   $final_msg = "</b><br/>Checking PHP DB extensions<b> ";
     
-  if( !isset($tt[$ext2search]) )
-  {
+  if( !isset($tt[$ext2search]) ) {
     $final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension {$ext2search} " .
     	"without it is IMPOSSIBLE to use Testlink.</span>";
     $final_msg .= $msg_ko;
     $errors += 1;
-  }
-  else
-  {
+  } else {
     $final_msg .= $msg_ok;
   }
-  $ret = array ('errors' => $errors,
-                'msg' => $final_msg);
+  
+  $ret = array ('errors' => $errors, 'msg' => $final_msg);
     
-  return ($ret);
-}  //function end
+  return $ret;
+}
 
 
 
 
 
-// 20060514 - franciscom
-function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd)
-{
+/**
+ *
+ *
+ */
+function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd) {
 
-$op = new stdclass();
+  $op = new stdclass();
 
-$op->status_ok=true;
-$op->msg = 'ok - new user';     
+  $op->status_ok = true;
+  $op->msg = 'ok - new user';     
 
-// Escaping following rules form:
-//
-// MySQL Manual
-// 9.2. Database, Table, Index, Column, and Alias Names
-//
-$stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
-        "`" . $dbhandler->prepare_string($db_name) . "`" . ".* TO " . 
-        "'" . $dbhandler->prepare_string($login) . "'";
-        
-// 20070310 - $the_host -> $db_host        
-if (strlen(trim($db_host)) != 0)
-{
-  $stmt .= "@" . "'" . $dbhandler->prepare_string($db_host) . "'";
-}         
-$stmt .= " IDENTIFIED BY '" .  $passwd . "'";
+  // Escaping following rules form:
+  //
+  // MySQL Manual
+  // 9.2. Database, Table, Index, Column, and Alias Names
+  //
+  $safeDBHost = $dbhandler->prepare_string($db_host);
+  $safeDBName = $dbhandler->prepare_string($db_name);
+  $safeLogin = $dbhandler->prepare_string($login);
 
-      
-if (!@$dbhandler->exec_query($stmt)) 
-{
+  $stmt = " CREATE USER '$safeLogin' ";
+  if (strlen(trim($db_host)) != 0) {
+    $stmt .= "@" . "'$safeDBHost'";
+  }         
+
+  // to guess if we are using MariaDB or MySQL
+  // does not seems to be a reliable way to do this
+  //
+  $sql = "SHOW VARIABLES LIKE 'version%'";
+  $vg = array();
+  $rh = $dbhandler->exec_query($sql);
+  if ($rh) {
+    while($row = $dbhandler->fetch_array($rh)) {
+        $vg[$row['Variable_name']] = $row['Value'];
+    } 
+  }
+  
+  $isMariaDB = false;
+  $isMySQL = false;
+  foreach ($vg as $vn => $vv) {
+    if (strripos($vv,'MariaDB') !== FALSE) {
+       $isMariaDB = true;
+       break;
+    }
+    if (strripos($vv,'MySQL') !== FALSE) {
+       $isMySQL = true;
+       break;
+    }    
+  } 
+
+  // To have compatibility with MySQL 5.x
+  // IDENTIFIED WITH mysql_native_password
+  if ($isMySQL) {
+    $stmt .= 
+      " IDENTIFIED WITH mysql_native_password BY '$passwd' ";    
+  }
+
+  if ($isMariaDB) {
+    $stmt .= 
+      " IDENTIFIED  BY '$passwd' ";    
+  }
+  
+  echo 'Running..' . $stmt;
+  if (!@$dbhandler->exec_query($stmt)) {
     $op->msg = "ko - " . $dbhandler->error_msg();
     $op->status_ok=false;
+  } else {
+    // Assign Grants!!
+    $op = _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd);
+  }
+       
+  return $op; 
 }
-else
-{
-  // 20051217 - fm
+
+
+/**
+ *
+ */
+function _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd) {
+
+  $op->status_ok = true;
+  $op->msg = 'ok - new user';     
+
+  // Escaping following rules form:
+  //
+  // MySQL Manual
+  // 9.2. Database, Table, Index, Column, and Alias Names
+  //
+  $safeDBHost = $dbhandler->prepare_string($db_host);
+  $safeDBName = $dbhandler->prepare_string($db_name);
+  $safeLogin = $dbhandler->prepare_string($login);
+
+  $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON 
+           `$safeDBName`.* TO '$safeLogin'@'$safeDBHost' 
+            WITH GRANT OPTION ";
+
+  if ( !@$dbhandler->exec_query($stmt) ) {
+    $op->msg = "ko - " . $dbhandler->error_msg();
+    $op->status_ok=false;
+  }
+
   // found that you get access denied in this situation:
   // 1. you have create the user with grant for host.
   // 2. you are running your app on host.
-  // 3. you don't have GRANT for localhost.       	
+  // 3. you don't have GRANT for localhost.         
   // 
   // Then I've decide to grant always access from localhost
   // to avoid this kind of problem.
   // I hope this is not a security hole.
   //
   //
-  // 20070310 - $the_host -> $db_host        
-  if( strcasecmp('localhost',$db_host) != 0)
-  {
-    // 20060514 - franciscom - missing 
-    $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
-             "`" . $dbhandler->prepare_string($db_name) . "`" . ".* TO " . 
-             "'" . $dbhandler->prepare_string($login) . "'@'localhost'" .
-            " IDENTIFIED BY '" .  $passwd . "'";
-    if ( !@$dbhandler->exec_query($stmt) ) 
-    {
+  if( strcasecmp('localhost',$db_host) != 0 ) {
+    $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON 
+            `$safeDBName`.* TO '$safeLogin'@'localhost' 
+            WITH GRANT OPTION ";
+
+    if ( !@$dbhandler->exec_query($stmt) ) {
       $op->msg = "ko - " . $dbhandler->error_msg();
       $op->status_ok=false;
     }
   }
-}
-     
-return ($op); 
-}
 
+  if( $op->status_ok) {
+    $op->msg = 'ok - grant assignment';
+  }     
 
-// 20060514 - franciscom
-// for MySQL just a wrapper
-function _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd)
-{
-
-$op = _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd);
-
-if( $op->status_ok)
-{
-  $op->msg = 'ok - grant assignment';
-}     
-
-return ($op); 
+  return ($op); 
 }
 
 
@@ -888,23 +967,16 @@ function _mssql_set_passwd($db,$login,$passwd)
   $db->exec_query($sql);
   
 
-} // function end
+} 
 
-
-/*
-  function: important_reminder()
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ *
+ */
 function important_reminder()
 {
-echo ' <br><br><span class="headers">YOUR ATTENTION PLEASE:</span><br>To have a fully functional installation 
+  echo ' <br><br><span class="headers">YOUR ATTENTION PLEASE:</span><br>To have a fully functional installation 
        You need to configure mail server settings, following this steps<br>
        <ul>
        <li>copy from config.inc.php, [SMTP] Section into custom_config.inc.php.</li>
        <li>complete correct data regarding email addresses and mail server.</li></ul><p>';
-}  /* Function ends */
-?>
+}

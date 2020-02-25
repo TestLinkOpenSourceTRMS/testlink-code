@@ -114,7 +114,7 @@ function init_args(&$tplanMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
-    $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+    $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
     $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 

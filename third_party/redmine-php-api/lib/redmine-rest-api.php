@@ -5,11 +5,8 @@
  * Bare bones implementation, just to cover TestLink needs
  *
  * @author   Francisco Mancardi <francisco.mancardi@gmail.com>
- * @created  20120339
  * @link     http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.14
  */
 
 /**
@@ -84,7 +81,7 @@ class redmine
    */
   public function initCurl($cfg=null) 
   {
-    $agent = "TestLink 1.9.15";
+    $agent = "TestLink 1.9.16";
     try
     {
       $this->curl = curl_init();
@@ -164,18 +161,26 @@ class redmine
 
   // with the help of http://tspycher.com/2011/03/using-the-redmine-api-with-php/
   // public function addIssue($summary, $description)
-  public function addIssueFromSimpleXML($issueXmlObj)
+  public function addIssueFromSimpleXML($issueXmlObj,$reporter=null)
   {
-    $op = $this->_request_xml('POST',"/issues.xml",$issueXmlObj->asXML());
+    if( null !== $reporter ) {
+      $reporter = $this->checkUserExistence($reporter) ? $reporter : null; 
+    }
+
+    $op = $this->_request_xml('POST',"/issues.xml",$issueXmlObj->asXML(),0,$reporter);
     return $op;
   }
 
   /**
    *
    */
-  public function addIssueFromXMLString($XMLString)
+  public function addIssueFromXMLString($XMLString,$reporter=null)
   {
-    $op = $this->_request_xml('POST',"/issues.xml",$XMLString);
+    if( null !== $reporter ) {
+      $reporter = $this->checkUserExistence($reporter) ? $reporter : null; 
+    }
+
+    $op = $this->_request_xml('POST',"/issues.xml",$XMLString,0,$reporter);
     return $op;
   }
 
@@ -183,9 +188,13 @@ class redmine
   /**
    *
    */
-  public function addIssueNoteFromSimpleXML($issueID,$issueXmlObj)
+  public function addIssueNoteFromSimpleXML($issueID,$issueXmlObj,$reporter=null)
   {
-    $op = $this->_request_xml('PUT',"/issues/{$issueID}.xml",$issueXmlObj->asXML());
+    if( null !== $reporter ) {
+      $reporter = $this->checkUserExistence($reporter) ? $reporter : null; 
+    }
+
+    $op = $this->_request_xml('PUT',"/issues/{$issueID}.xml",$issueXmlObj->asXML(),0,$reporter);
     return $op;
   }
 
@@ -218,12 +227,59 @@ class redmine
     return $items;
   }                                                   
 
+  /**
+   *
+   * @return array of simpleXMLObjects
+   */
+  public function checkUserExistence($login_name) {                        
+    $items = $this->getUsers();
+    $status = false;
+    foreach( $items as $userObj ) {
+      if( strcmp($login_name, $userObj->login ) == 0 ) {
+        $status = true;
+        break;
+      }
+    }
+
+    if( !$status ) {
+        $msg = 'Redmine Impersonation Not Possible - ' .
+               'TestLink User:' . $login_name . ' is not present on Redmine';
+        tLog($msg,"WARNING","REDMINE");
+    }
+    return $status;
+  }                                                   
+
+
+  /**
+   *
+   * @return array of simpleXMLObjects
+   */
+  public function getUsers() {           
+    /*
+      From Redmine documentation:
+      Collection resources and pagination
+      The response to a GET request on a collection resources (eg. /issues.xml, /users.xml) generally won't return all the objects available in your database. Redmine 1.1.0 introduces a common way to query such resources using the following parameters:
+
+      offset: the offset of the first object to retrieve
+      limit: the number of items to be present in the response (default is 25, maximum is 100)
+      Examples:
+
+      GET /issues.xml
+      => returns the 25 first issues
+
+      GET /issues.xml?limit=100
+      => returns the 100 first issues                 
+    */
+    $items = (array)$this->_get("/users.xml?limit=1000");
+    return $items['user'];
+  }                                                   
 
 
 
-  /* -------------------------------------------------------------------------------------- */
-  /* General Methods used to build up communication process                                 */
-  /* -------------------------------------------------------------------------------------- */
+
+  /* ------------------------------------------------------ */
+  /* General Methods used to build up communication process */
+  /* ------------------------------------------------------ */
 
   /** 
    *
@@ -242,9 +298,10 @@ class redmine
   * @internal notice
   * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
   **/
-  protected function _request_xml($method, $url, $body = NULL, $ignore_status = 0) 
+  protected function _request_xml($method, $url, $body = NULL, $ignore_status = 0,
+                                  $reporter=null) 
   {
-    $r = $this->_request($method, $url, $body, $ignore_status);
+    $r = $this->_request($method, $url, $body, $ignore_status,$reporter);
     $response = $r['response'];
     $content = trim($r['content']);
     $ret = ($content != '' ? $content : null);
@@ -266,7 +323,7 @@ class redmine
   * @internal notice
   * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
   **/
-  protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0) 
+  protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0,$reporter = null) 
   {
     // this can happens because if I save object on _SESSION PHP is not able to
     // save resources.
@@ -315,6 +372,12 @@ class redmine
     //curl_setopt($this->curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     $header = array();
     $header[] = "X-Redmine-API-Key: {$this->apiKey}";
+
+    $XRedmineSwitchUser = '';
+    if(!is_null($reporter))
+    {
+      $header[] = $XRedmineSwitchUser = "X-Redmine-Switch-User: {$reporter}";
+    } 
 
     if ($method == 'PUT' || $method == 'POST') 
     {
@@ -375,8 +438,10 @@ class redmine
     $httpCode = (int)$response['http_code'];
     if ($httpCode != 200 && $httpCode != 201 && $httpCode != $ignoreStatusCode) 
     {
-      throw new exception(__METHOD__ . "url:$this->url - response:" .
-                          json_encode($response) . ' - content: ' . json_encode($content) );
+      throw new exception(__METHOD__ . "url:$this->url" .
+                          ' - XRedmineSwitchUser:' . $XRedmineSwitchUser . 
+                          ' - response:' . json_encode($response) . 
+                          ' - content: ' . json_encode($content) );
     }
     
     $rr = array('content' => $content,'response' => $response,'curlError' => $curlError);
@@ -399,4 +464,3 @@ class redmine
   }
 
 } // Class end
-?>

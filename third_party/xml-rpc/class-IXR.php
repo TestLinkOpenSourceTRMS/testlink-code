@@ -5,12 +5,6 @@
  *
  * @internal revisions
  *
- * 20131220 - moormanm - Adding 'limit' parameter to preg_replace call so to not exceed pcre.backtrack max
- *                       when processing large xmlrpc messages
- *
- * 20111022 - franciscom -	due to use of is_a() without checking that object was REALLY an object
- *							and tlAutoload(), result was CRASH trying to creating NON EXISTENT class
- *							when method return type is SIMPLE (string,int)	 
  */
 
 /*
@@ -24,7 +18,8 @@
 class IXR_Value {
     var $data;
     var $type;
-    function IXR_Value ($data, $type = false) {
+
+    function __construct ($data, $type = false) {
         $this->data = $data;
         if (!$type) {
             $type = $this->calculateType();
@@ -147,7 +142,7 @@ class IXR_Message {
     // The XML parser
     var $_parser;
     
-    function IXR_Message ($message) {
+    function __construct($message) {
         $this->message = $message;
     }
 
@@ -280,7 +275,8 @@ class IXR_Server {
     var $callbacks = array();
     var $message;
     var $capabilities;
-    function IXR_Server($callbacks = false, $data = false) {
+
+    function __construct($callbacks = false, $data = false) {
         $this->setCapabilities();
         if ($callbacks) {
             $this->callbacks = $callbacks;
@@ -290,11 +286,11 @@ class IXR_Server {
     }
     function serve($data = false) {
         if (!$data) {
-            global $HTTP_RAW_POST_DATA;
-            if (!$HTTP_RAW_POST_DATA) {
+            $postdata = file_get_contents("php://input");
+            if (!$postdata) {
                die('XML-RPC server accepts POST requests only.');
             }
-            $data = $HTTP_RAW_POST_DATA;
+            $data = $postdata;
         }
         $this->message = new IXR_Message($data);
         if (!$this->message->parse()) {
@@ -448,7 +444,8 @@ class IXR_Request {
     var $method;
     var $args;
     var $xml;
-    function IXR_Request($method, $args) {
+
+    function __construct($method, $args) {
         $this->method = $method;
         $this->args = $args;
         $this->xml = <<<EOD
@@ -486,7 +483,8 @@ class IXR_Client {
 	var $timeout;
     // Storage place for an error message
     var $error = false;
-    function IXR_Client($server, $path = false, $port = 80, $timeout = false) {
+    
+    function __construct($server, $path = false, $port = 80, $timeout = false) {
         if (!$path) {
             // Assume we have been given a URL instead
             $bits = parse_url($server);
@@ -589,7 +587,8 @@ class IXR_Client {
 class IXR_Error {
     var $code;
     var $message;
-    function IXR_Error($code, $message) {
+
+    function __construct($code, $message) {
         $this->code = $code;
         $this->message = $message;
     }
@@ -625,7 +624,8 @@ class IXR_Date {
     var $hour;
     var $minute;
     var $second;
-    function IXR_Date($time) {
+
+    function __construct($time) {
         // $time can be a PHP timestamp or an ISO one
         if (is_numeric($time)) {
             $this->parseTimestamp($time);
@@ -664,7 +664,8 @@ class IXR_Date {
 
 class IXR_Base64 {
     var $data;
-    function IXR_Base64($data) {
+
+    function __construct($data) {
         $this->data = $data;
     }
     function getXml() {
@@ -676,7 +677,8 @@ class IXR_Base64 {
 class IXR_IntrospectionServer extends IXR_Server {
     var $signatures;
     var $help;
-    function IXR_IntrospectionServer() {
+
+    function __construct() {
         $this->setCallbacks();
         $this->setCapabilities();
         $this->capabilities['introspection'] = array(
@@ -819,7 +821,8 @@ class IXR_IntrospectionServer extends IXR_Server {
 
 class IXR_ClientMulticall extends IXR_Client {
     var $calls = array();
-    function IXR_ClientMulticall($server, $path = false, $port = 80) {
+
+    function __construct($server, $path = false, $port = 80) {
         parent::IXR_Client($server, $path, $port);
         $this->useragent = 'The Incutio XML-RPC PHP Library (multicall client)';
     }

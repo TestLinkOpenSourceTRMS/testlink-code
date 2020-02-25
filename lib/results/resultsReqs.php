@@ -565,7 +565,9 @@ function init_args(&$tproject_mgr, &$tplan_mgr, &$req_cfg)
   $platform = 0;
   $gui_open = config_get('gui_separator_open');
   $gui_close = config_get('gui_separator_close');
-  $dummy = $tplan_mgr->platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
+
+  $optLTT = null;
+  $dummy = $tplan_mgr->platform_mgr->getLinkedToTestplanAsMap($args->tplan_id,$optLTT);
   $args->platformSet = $dummy ? array(0 => $gui_open . lang_get('any') . $gui_close) + $dummy : null;
   
   if (isset($_REQUEST['platform'])) 
@@ -584,7 +586,7 @@ function init_args(&$tproject_mgr, &$tplan_mgr, &$req_cfg)
 
 
   // $dummy = $tplan_mgr->get_builds_for_html_options($id,$active=null,$open=null,$opt=null)
-  $dummy = $tplan_mgr->get_builds_for_html_options($args->tplan_id);
+  $dummy = $tplan_mgr->get_builds_for_html_options($args->tplan_id, 1); //Only active builds should be available to choose
   $args->buildSet = $dummy ? array(0 => $gui_open . lang_get('any') . $gui_close) + $dummy : null;
   $args->build = 0;
   if (isset($_REQUEST['build'])) 
@@ -811,7 +813,7 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
     $allFilters = isset($filters['platform_id']) && isset($filters['build_id']);
 
     // $options = array('addExecInfo' => true,'accessKeyType' => 'tcase');
-    $options = array('addExecInfo' => true,'accessKeyType' => 'tcase+platform');
+    $options = array('addExecInfo' => true,'accessKeyType' => 'tcase+platform', 'build_is_active' => true);
 
     if($noFilter || $filterOnly['platform_id'])  
     {

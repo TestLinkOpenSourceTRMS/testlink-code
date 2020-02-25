@@ -7,12 +7,10 @@
  * 
  * @package     TestLink
  * @author      eloff
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @filesource  platformsAssign.php
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.11
  *
  **/
 require_once("../../config.inc.php");
@@ -26,8 +24,7 @@ $opt_cfg = opt_transf_empty_cfg();
 $opt_cfg->js_ot_name = 'ot';
 $args = init_args($opt_cfg);
 
-if ($args->edit == 'testproject')
-{
+if ($args->edit == 'testproject') {
   show_instructions('platformAssign');
   exit();
 }
@@ -35,7 +32,7 @@ if ($args->edit == 'testproject')
 
 $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
-$platform_mgr = new tlPlatform($db, $args->testproject_id);
+$platform_mgr = new tlPlatform($db, $args->tproject_id);
 
 $gui = new stdClass();
 $gui->platform_assignment_subtitle = null;
@@ -44,8 +41,7 @@ $gui->can_do = isset($args->tplan_id);
 $gui->mainTitle = lang_get('add_remove_platforms');
 $gui->warning = '';
 
-if (isset($args->tplan_id))
-{
+if (isset($args->tplan_id)) {
   // do following check to give warning to user
   // if test plan has test case versions with platform_id=0
   // this means that right now there are not platforms linked to test plan.
@@ -106,11 +102,13 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_option_panels(&$tplan_mgr, &$platform_mgr, &$opt_cfg, &$args)
 {
-  $opt_cfg->from->map = $platform_mgr->getAllAsMap();
-  $map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
+  $opx = array('enable_on_design' => false, 'enable_on_execution' => true);
+  $opt_cfg->from->map = $platform_mgr->getAllAsMap($opx);
+
+  $optLTT = null;
+  $map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id,$optLTT);
   $platform_count_js = "platform_count_map = new Array();\n";
-  if(!is_null($map))
-  {     
+  if (!is_null($map)) {     
     foreach ($map as $platform_id => &$platform_name) 
     {
       $count = $tplan_mgr->count_testcases($args->tplan_id,$platform_id);
@@ -149,10 +147,9 @@ function init_args(&$opt_cfg)
   $args->platformsToRemove = null;
   $args->edit = $pParams["edit"];
   $args->doAction = $pParams["doAction"];
-  $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
   
-  if( $pParams[$added] != "" ) 
-  {
+  if ($pParams[$added] != "") {
      $args->platformsToAdd = explode(",", $pParams[$added]);
   }
   

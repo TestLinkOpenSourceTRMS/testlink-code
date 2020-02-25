@@ -5,25 +5,22 @@
  *
  * @filesource  firstLogin.php
  * @package     TestLink
- * @copyright   2004-2016, TestLink community 
+ * @copyright   2004-2019, TestLink community 
  * @link        http://www.testlink.org
- *
- * @internal revisions
- * @since 1.9.16
  *
  */
 require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 require_once('email_api.php');
+require_once('Zend/Validate/EmailAddress.php');
 
 $templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = $args;
 
-if (!config_get('user_self_signup'))
-{
+if (!config_get('user_self_signup')) {
   $smarty = new TLSmarty();
   $smarty->assign('title', lang_get('fatal_page_title'));
   $smarty->assign('content', lang_get('error_self_signup_disabled'));
@@ -35,21 +32,15 @@ if (!config_get('user_self_signup'))
 doDBConnect($db,database::ONERROREXIT);
 
 $message = ''; //lang_get('your_info_please');
-if( !is_null($args->doEditUser) )
-{
-  if(strcmp($args->password,$args->password2))
-  {
+if( !is_null($args->doEditUser) ) {
+  if(strcmp($args->password,$args->password2)) {
     $message = lang_get('passwd_dont_match');
-  }
-  else
-  {
+  } else {
     $user = new tlUser(); 
     $rx = $user->checkPasswordQuality($args->password);
-    if( $rx['status_ok'] >= tl::OK )
-    {
+    if( $rx['status_ok'] >= tl::OK ) {
       $result = $user->setPassword($args->password);
-      if ($result >= tl::OK)
-      {
+      if ($result >= tl::OK) {
         $user->login = $args->login;
         $user->emailAddress = $args->email;
         $user->firstName = $args->firstName;
@@ -57,8 +48,7 @@ if( !is_null($args->doEditUser) )
         $result = $user->writeToDB($db);
 
         $cfg = config_get('notifications');
-        if($cfg->userSignUp->enabled)
-        {  
+        if($cfg->userSignUp->enabled) {  
           notifyGlobalAdmins($db,$user);
         }
         logAuditEvent(TLS("audit_users_self_signup",$args->login),"CREATE",$user->dbID,"users");
@@ -66,14 +56,10 @@ if( !is_null($args->doEditUser) )
         $url2go = "login.php?viewer={$gui->viewer}&note=first";
         redirect(TL_BASE_HREF . $url2go);
         exit();
-      }
-      else 
-      {
+      } else {
         $message = getUserErrorMessage($result);
       } 
-    }  
-    else
-    {
+    } else {
       $message = $rx['msg'];
     }  
   }
@@ -87,11 +73,10 @@ $gui->message = $message;
 $smarty->assign('gui',$gui);
 
 $tpl = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-if( $args->viewer == 'new' )
-{
+if( $args->viewer == 'new' ) {
   $tpl='firstLogin-model-marcobiedermann.tpl';
 }  
-
+$tpl = 'login/' . $tpl;
 $smarty->display($tpl);
 
 
@@ -166,7 +151,18 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
 
   if($mail['to'] != '')
   {
-    $mail['to'] = implode(',',$mail['to']); // email_api uses ',' as list separator
+    $dest = null;  
+    $validator = new Zend_Validate_EmailAddress();
+    foreach($mail['to'] as $mm)
+    {
+      $ema = trim($mm);
+      if($ema == '' || !$validator->isValid($ema))
+      {
+        continue;
+      }  
+      $dest[] = $ema;
+    }  
+    $mail['to'] = implode(',',$dest); // email_api uses ',' as list separator
     $mail['subject'] = lang_get('new_account');
     $mail['body'] = lang_get('new_account') . "\n";
     $mail['body'] .= " user:$userObj->login\n"; 
@@ -174,6 +170,9 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
     $mail['body'] .= " email:{$userObj->emailAddress}\n";
       
     // silence errors
-    @email_send(config_get('from_email'), $mail['to'], $mail['subject'], $mail['body']);
+    if(!is_null($dest))
+    {
+      @email_send(config_get('from_email'), $mail['to'], $mail['subject'], $mail['body']);
+    }  
   }  
 }

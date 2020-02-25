@@ -61,8 +61,8 @@ class dBug {
 	var $arrHistory = array();
 	
 	// constructor
-    // function dBug($var,$forceType="",$bCollapsed=false) {
-	function dBug($var,$options=null) {
+  // function __construct($var,$forceType="",$bCollapsed=false) {
+	function __construct($var,$options=null) {
 		
 		if( !defined('DBUG_ON') && !isset($_REQUEST['DBUG_ON'])) return; // >>----> Bye!
 

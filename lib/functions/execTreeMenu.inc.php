@@ -11,13 +11,11 @@
  * @filesource  execTreeMenu.inc.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2013,2014 TestLink community 
+ * @copyright   2013,2019 TestLink community 
  * @link        http://testlink.sourceforge.net/ 
  * @uses        config.inc.php
  * @uses        const.inc.php
  *
- * @internal revisions
- * @since 1.9.13
  */
 
 /**
@@ -47,17 +45,16 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   $idx=0;
   $testCaseQty=0;
   $testCaseSet=null;
-   
-  $keyword_id = 0;
-  $keywordsFilterType = 'Or';
-  if (property_exists($objFilters, 'filter_keywords') && !is_null($objFilters->filter_keywords)) 
-  {
-    $keyword_id = $objFilters->filter_keywords;
-    $keywordsFilterType = $objFilters->filter_keywords_filter_type;
-  }
-  
+
   $renderTreeNodeOpt = array();
   $renderTreeNodeOpt['showTestCaseID'] = config_get('treemenu_show_testcase_id');
+
+  $renderTreeNodeOpt['alertOnTestSuiteTCQty'] = 0;
+  if(property_exists($objOptions, 'alertOnTestSuiteTCQty')) {
+    $renderTreeNodeOpt['alertOnTestSuiteTCQty'] = $objOptions->alertOnTestSuiteTCQty;
+  }
+
+
   list($filters,$options,
        $renderTreeNodeOpt['showTestSuiteContents'],
        $renderTreeNodeOpt['useCounters'],
@@ -65,10 +62,8 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
 
   $renderTreeNodeOpt['showTestCaseExecStatus'] = $options['showTestCaseExecStatus'];
 
-  if( property_exists($objOptions, 'actionJS'))
-  {
-    if(isset($objOptions->actionJS['testproject']))
-    {
+  if( property_exists($objOptions, 'actionJS')) {
+    if(isset($objOptions->actionJS['testproject'])) {
       $renderTreeNodeOpt['actionJS']['testproject'] = $objOptions->actionJS['testproject'];
     }  
   }  
@@ -93,28 +88,32 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
                        'remove_empty_nodes_of_type' => $tplan_mgr->tree_manager->node_descr_id['testsuite'],
                        'order_cfg' => array("type" =>'exec_order',"tplan_id" => $context['tplan_id']));
 
-  $my['filters'] = array('exclude_node_types' => array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me',
+  $my['filters'] = array('exclude_node_types' => 
+                    array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me',
                                                        'requirement'=> 'exclude_me'),
-                         'exclude_children_of' => array('testcase' => 'exclude_my_children',
-                                                        'requirement_spec'=> 'exclude_my_children') );
+                         'exclude_children_of' => 
+                           array('testcase' => 'exclude_my_children',
+                                 'requirement_spec'=> 'exclude_my_children') );
 
   // added for filtering by toplevel testsuite
-  if (isset($objFilters->filter_toplevel_testsuite) && is_array($objFilters->filter_toplevel_testsuite)) 
-  {
+  if (isset($objFilters->filter_toplevel_testsuite) && is_array($objFilters->filter_toplevel_testsuite))  {
     $my['filters']['exclude_branches'] = $objFilters->filter_toplevel_testsuite;
   }
 
-  if (isset($objFilters->filter_custom_fields) && is_array($objFilters->filter_custom_fields))
-  {
+  if (isset($objFilters->filter_custom_fields) && is_array($objFilters->filter_custom_fields)) {
     $my['filters']['filter_custom_fields'] = $objFilters->filter_custom_fields;
   }
     
    
   // Document why this is needed, please  
-  $spec = $tplan_mgr->getSkeleton($context['tplan_id'],$context['tproject_id'],$my['filters'],$my['options']);
+  $spec = $tplan_mgr->getSkeleton($context['tplan_id'],
+            $context['tproject_id'],$my['filters'],$my['options']);
 
   $test_spec = $spec[0];
-  $test_spec['name'] = $context['tproject_name'] . " / " . $context['tplan_name'];  // To be discussed
+  
+  // To be discussed
+  $test_spec['name'] = $context['tproject_name'] . " / " . $context['tplan_name'];  
+  
   $test_spec['id'] = $context['tproject_id'];
   $test_spec['node_type_id'] = $hash_descr_id['testproject'];
   $test_spec['node_type'] = 'testproject';
@@ -123,10 +122,9 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   $tplan_tcases = null;
   $linkedTestCasesSet = null;
 
-  if($test_spec)
-  {
-    if(is_null($filters['tcase_id']) || $filters['tcase_id'] > 0)   // 20120519 TO BE CHECKED
-    {
+  if($test_spec) {
+    // 20120519 TO BE CHECKED
+    if(is_null($filters['tcase_id']) || $filters['tcase_id'] > 0) {
       // Step 1 - get item set with exec status.
       // This has to scopes:
       // 1. tree coloring according exec status on (Test plan, platform, build ) context
@@ -139,71 +137,122 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
       // WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
       // THIS YET.
       //
-      if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options)) )
-      {
+      // 2019 - here I need to do changes!!!
+      //$sql2do = 
+      //$tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options);
+      $applyTCCAlgo = false;
+
+      $tcc = null;
+      if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options)) ) {
+
+        $applyTCCAlgo = 
+          ($objOptions->exec_tree_counters_logic == USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS || 
+           $objOptions->exec_tree_counters_logic == 
+            USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS ) ;
+
         $kmethod = "fetchRowsIntoMap";
-        if( is_array($sql2do) )
-        {       
-          if( $filters['keyword_filter_type'] == 'And')
-          { 
+        if( is_array($sql2do) ) {       
+          if( $filters['keyword_filter_type'] == 'And' ) { 
             $kmethod = "fetchRowsIntoMapAddRC";
             $unionClause = " UNION ALL ";
           }
-          else
-          {
+          else {
             $kmethod = "fetchRowsIntoMap";
             $unionClause = ' UNION ';
           }
           $sql2run = $sql2do['exec'] . $unionClause . $sql2do['not_run'];
         }
-        else
-        {
+        else {
           $sql2run = $sql2do;
         }
-        $tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
+        $tplan_tcases = $dbHandler->$kmethod($sql2run,'tcase_id');
+      }
+
+      if( $applyTCCAlgo ) {
+
+        // But what algo?
+        switch ($objOptions->exec_tree_counters_logic) {
+          case USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS:
+            $n3 = 
+              $tplan_mgr->getLinkedForExecTreeCross($context['tplan_id'],
+                             $filters,$options);
+          break;
+          
+          case USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS:
+            $n3 = 
+              $tplan_mgr->getLinkedForExecTreeIVU($context['tplan_id'],
+                             $filters,$options);
+          break;
+        }
+        $ssx = $n3['exec'];
+        if( is_array($n3) ) {
+           $ssx .= ' UNION ' . $n3['not_run'];
+        }
+        $tcc = $dbHandler->fetchRowsIntoMap($ssx,'tcase_id');
       }
     }   
 
-    if( !is_null($tplan_tcases) )
-    {
+    if( $filters['keyword_filter_type'] == 'And' && !is_null($tplan_tcases)) {
+      $kwc = count($filters['keyword_id']);
+      $ak = array_keys($tplan_tcases);
+      $mx = null;
+      foreach($ak as $tk) {
+        if($tplan_tcases[$tk]['recordcount'] == $kwc) {
+          $mx[$tk] = $tplan_tcases[$tk];
+        } 
+      } 
+      $tplan_tcases = null;
+      $tplan_tcases = $mx;
+    } 
+    $setTestCaseStatus = $tplan_tcases;
+
+    if( !is_null($tplan_tcases) ) {
       // OK, now we need to work on status filters
       // if "any" was selected as filtering status, don't filter by status
-      $targetExecStatus = (array)(isset($objFilters->filter_result_result) ? $objFilters->filter_result_result : null);
-      if( !is_null($targetExecStatus) && (!in_array($resultsCfg['status_code']['all'], $targetExecStatus)) ) 
-      {
+      $targetExecStatus = (array)(isset($objFilters->filter_result_result) ? 
+        $objFilters->filter_result_result : null);
+      
+      if( !is_null($targetExecStatus) && (!in_array($resultsCfg['status_code']['all'], $targetExecStatus)) ) {
         applyStatusFilters($context['tplan_id'],$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);       
       }
 
-      if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes']))
-      {
+      if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) {
         // need to separate cf 4 design that cf 4 testplan_design.
         // Here we ONLY use cf 4 design
         $cfx = cfForDesign($dbHandler,$my['filters']['filter_custom_fields']);
-        if( !is_null($cfx) )
-        {
+        if( !is_null($cfx) ) {
           $test_spec['childNodes'] = filter_by_cf_values($dbHandler,$test_spec['childNodes'],$cfx,$hash_descr_id);
         }  
       }
 
+      if( null !== $tcc && count($tcc) > 0 ) {
+        $tcIDSet = array_keys($tplan_tcases);
+        foreach($tcIDSet as $iID) {
+          if( isset($tcc[$iID]) ) {
+            $tplan_tcases[$iID]['exec_status'] = 
+             $tcc[$iID]['exec_status'];
+          }
+        }
+      }
+
+
       // ATTENTION: sometimes we use $my['options'], other $options
       $pnOptions = array('hideTestCases' => $options['hideTestCases'], 'viewType' => 'executionTree');
       $pnFilters = null;    
-      $testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,$tplan_tcases,
-                                               $pnFilters,$pnOptions);
+      $testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,
+                             $map_node_tccount,$tplan_tcases,$pnFilters,$pnOptions);
 
-      foreach($testcase_counters as $key => $value)
-      {
+      /*2019*/
+      foreach($testcase_counters as $key => $value) {
         $test_spec[$key] = $testcase_counters[$key];
       }
     }
-    else
-    {
+    else {
       $tplan_tcases = array();
       unset($test_spec['childNodes']);
 
       $testcase_counters = helperInitCounters();
-      foreach($testcase_counters as $key => $value)
-      {
+      foreach($testcase_counters as $key => $value) {
         $test_spec[$key] = $testcase_counters[$key];
       }
     }  
@@ -216,19 +265,21 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     $lt = array_keys((array)$tplan_tcases);
 
     // here test cases are in the right order
-    $ltcs = $spec[1]['nindex'];
+    $linkedTestCasesSet = null;
+    if( isset($spec[1]['nindex']) ) {
+      $ltcs = $spec[1]['nindex'];
 
-    // now need to filter out
-    $tl = array_flip($lt);
-    foreach($ltcs as &$ele)
-    {
-      if( isset($tl[$ele]) )
-      {
-        $linkedTestCasesSet[] = $ele;
+      // now need to filter out
+      $tl = array_flip($lt);
+      foreach($ltcs as &$ele) {
+        if( isset($tl[$ele]) ) {
+          $linkedTestCasesSet[] = $ele;
+        }  
       }  
     }  
 
-    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,$renderTreeNodeOpt);
+    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,
+                       $tcase_prefix,$renderTreeNodeOpt);
   }
   
   $treeMenu->rootnode=new stdClass();
@@ -241,8 +292,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   
   // Change key ('childNodes')  to the one required by Ext JS tree.
   $menustring = '';
-  if(isset($test_spec['childNodes'])) 
-  {
+  if(isset($test_spec['childNodes'])) {
     $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
   }
    
@@ -268,8 +318,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
  *
  *
  */
-function initExecTree($filtersObj,$optionsObj)
-{
+function initExecTree($filtersObj,$optionsObj) {
   $filters = array();
   $options = array();
   
@@ -354,10 +403,14 @@ function initExecTree($filtersObj,$optionsObj)
 /**
  *
  * @returns test_counters map. key exec_status
+ * 
+ * @used_by
+ * printDocOptions.php
+ * planTCNavigator.php
+ *
  */
-function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = null,
-                             $filters=null, $options=null)
-{
+function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,
+  &$tplan_tcases = null,$filters=null, $options=null) {
   
   static $status_descr_list;
   static $debugMsg;
@@ -365,8 +418,7 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
   static $resultsCfg;
 
   $tpNode = null;
-  if (!$debugMsg)
-  {
+  if (!$debugMsg) {
     $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
 
     $resultsCfg = config_get('results');
@@ -423,7 +475,14 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
 
       if( isset($tpNode['exec_status']) )
       {
-        $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+        if( isset($resultsCfg['code_status'][$tpNode['exec_status']]) )
+        {
+          $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+        }  
+        else
+        {
+          throw new Exception("Config Issue - exec status code: {$tpNode['exec_status']}", 1);
+        }  
       }
       else
       {
@@ -465,24 +524,28 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
           continue;
         }
         
-        $counters_map = prepareExecTreeNode($db,$current,$map_node_tccount,$tplan_tcases,
-                                            $my['filters'],$my['options']);
+        $counters_map = 
+          prepareExecTreeNode($db,$current,$map_node_tccount,$tplan_tcases,$my['filters'],$my['options']);
+       
+        /* 2019
+        */
         foreach($counters_map as $key => $value)
         {
           $tcase_counters[$key] += $counters_map[$key];   
         }  
       }
 
-      foreach($tcase_counters as $key => $value)
-      {
+      /* 2019
+      */
+      foreach($tcase_counters as $key => $value) {
         $node[$key] = $tcase_counters[$key];
       }  
-      
+
       // hhhm is this test needed ? Why ?
-      if (isset($node['id']))
-      {
-        $map_node_tccount[$node['id']] = array( 'testcount' => $node['testcase_count'],
-                                                'name' => $node['name']);
+      if (isset($node['id'])) {
+        $map_node_tccount[$node['id']] = 
+          array( 'testcount' => $node['testcase_count'],
+                 'name' => $node['name']);
       }
 
       // need to check is this check can be TRUE on some situation
@@ -502,14 +565,12 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
         $node = REMOVEME;
       }
     }
-    else if ($node_type == 'testsuite')
-    {
+    else if ($node_type == 'testsuite') {
       // Empty test suite
       $map_node_tccount[$node['id']] = array( 'testcount' => 0,'name' => $node['name']);
       
       // If is an EMPTY Test suite and we have added filtering conditions, We will destroy it.
-      if ($filtersApplied || !is_null($tplan_tcases) )
-      {
+      if ($filtersApplied || !is_null($tplan_tcases) ) {
         // $node = null;
         $node = REMOVEME;
       } 
@@ -529,26 +590,22 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
   $methods = $fm['status_code'];
 
   $ffn = array($methods['any_build'] => 'filterStatusSetAtLeastOneOfActiveBuilds',
-             $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',
-             $methods['specific_build'] => 'filter_by_status_for_build',
-             $methods['current_build'] => 'filter_by_status_for_build',
-             $methods['latest_execution'] => 'filter_by_status_for_latest_execution');
+               $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',
+               $methods['specific_build'] => 'filter_by_status_for_build',
+               $methods['current_build'] => 'filter_by_status_for_build',
+               $methods['latest_execution'] => 'filter_by_status_for_latest_execution');
   
   $f_method = isset($fobj->filter_result_method) ? $fobj->filter_result_method : null;
   $f_result = isset($fobj->filter_result_result) ? $fobj->filter_result_result : null;
   $f_result = (array)$f_result;
 
-  // die();
-  
   // if "any" was selected as filtering status, don't filter by status
-  if (in_array($statusCfg['all'], $f_result)) 
-  {
+  if (in_array($statusCfg['all'], $f_result))  {
     $f_result = null;
     return $items2filter; // >>---> Bye!
   }
 
-  if( ($filter_done = !is_null($f_method) ) )
-  {
+  if( ($filter_done = !is_null($f_method) ) ) {
     $logMsg = 'FILTER METHOD:' . $f_method . '::' .  $ffn[$f_method];
     tLog($logMsg,'DEBUG');
     
@@ -557,8 +614,7 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
     // to the build chosen in settings instead of the one in filters
     //
     // Need to understand why we need to do this 'dirty/brute force initialization'
-    if ($f_method == $methods['current_build']) 
-    {
+    if ($f_method == $methods['current_build']) {
       $fobj->filter_result_build = $fobj->setting_build;
     }
     
@@ -594,6 +650,13 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 
   $renderTreeNodeOpt = null;
   $renderTreeNodeOpt['showTestCaseID'] = config_get('treemenu_show_testcase_id');
+
+ $renderTreeNodeOpt['alertOnTestSuiteTCQty'] = 0;
+  if(property_exists($objOptions, 'alertOnTestSuiteTCQty')) {
+    $renderTreeNodeOpt['alertOnTestSuiteTCQty'] = $objOptions->alertOnTestSuiteTCQty;
+  }
+
+
 
   list($filters,$options,
        $renderTreeNodeOpt['showTestSuiteContents'],
@@ -663,7 +726,6 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     }  
   }  
 
-  // 20151122
   $spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
 
   $test_spec = $spec[0];
@@ -757,11 +819,18 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     // here we have LOT OF CONFUSION, sometimes we use $my['options'] other $options
     $pnFilters = null;    
     $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 'viewType' => 'executionTree');
+
+    if( property_exists($objOptions, 'alertOnTestSuiteTCQty') ) {
+      $pnOptions['alertOnTestSuiteTCQty'] = $objOptions->alertOnTestSuiteTCQty;
+    }
+
+
+    
     $testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,
                                              $tplan_tcases,$pnFilters,$pnOptions);
 
-    foreach($testcase_counters as $key => $value)
-    {
+    /* 2019 */
+    foreach($testcase_counters as $key => $value) {
       $test_spec[$key] = $testcase_counters[$key];
     }
   

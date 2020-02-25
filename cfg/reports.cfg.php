@@ -4,13 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	reports.cfg.php
- * @author 		Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
- * 
- * @internal revisions
- * @since 1.9.14
- *
  * 
  */
 
@@ -33,16 +28,20 @@ define('FORMAT_PDF', 5);
 define('FORMAT_MAIL_HTML', 6);
 
 /** supported document formats (value = localization ID) */
-$tlCfg->reports_formats = array(FORMAT_HTML => 'format_html',FORMAT_MSWORD => 'format_pseudo_msword',
-								FORMAT_MAIL_HTML => 'format_mail_html');
+$tlCfg->reports_formats = array( FORMAT_HTML => 'format_html',
+	                               FORMAT_MSWORD => 'format_pseudo_msword',
+								                 FORMAT_MAIL_HTML => 'format_mail_html');
 
 /** Mime Content Type */
-$tlCfg->reports_applications = array(FORMAT_HTML => 'text/html',FORMAT_XLS => 'application/vnd.ms-excel', 
-									 FORMAT_MSWORD => 'application/vnd.ms-word');
+$tlCfg->reports_applications = 
+  array(FORMAT_HTML => 'text/html',
+  	    FORMAT_XLS => 'application/vnd.ms-excel', 
+				FORMAT_MSWORD => 'application/vnd.ms-word');
 
 
 /** Report file extenssion */
-$tlCfg->reports_file_extension = array(FORMAT_HTML => 'html',FORMAT_XLS => 'xls',FORMAT_MSWORD => 'doc');
+$tlCfg->reports_file_extension = 
+  array(FORMAT_HTML => 'html',FORMAT_XLS => 'xls',FORMAT_MSWORD => 'doc');
 
 
 /** 
@@ -82,8 +81,28 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 	'url' => 'lib/results/resultsGeneral.php',
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=metrics_tp_general',
-	'format' => 'format_html,format_pseudo_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods'
 );
+
+$tlCfg->reports_list['report_by_tsuite'] = 
+  array('title' => 'link_report_by_tsuite',
+        'url' => 'lib/results/resultsByTSuite.php',
+        'enabled' => 'all',
+        'directLink' => 
+          '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=report_by_tsuite',
+        'format' => 'format_html'
+);
+
+$tlCfg->reports_list['baseline_l1l2'] = 
+  array('title' => 'baseline_l1l2',
+        'url' => 'lib/results/baselinel1l2.php',
+        'enabled' => 'all',
+        'directLink' => 
+          '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0' .
+          '&type=baseline_l1l2',
+        'format' => 'format_html'
+);
+
 
 $tlCfg->reports_list['results_by_tester_per_build'] = array( 
 	'title' => 'link_report_by_tester_per_build',
@@ -112,7 +131,7 @@ $tlCfg->reports_list['results_matrix'] = array(
 	'url' => 'lib/results/resultsTC.php',
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_matrix',
-	'format' => 'format_html,format_pseudo_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods'
 );
 
 $tlCfg->reports_list['results_flat'] = array( 
@@ -123,28 +142,49 @@ $tlCfg->reports_list['results_flat'] = array(
 	'format' => 'format_html,format_mail_html'
 );
 
+/* 20191210 */
+$tlCfg->reports_list['abslatest_results_matrix'] = array( 
+	'title' => 'link_report_test_absolute_latest_exec',
+	'url' => 'lib/results/resultsTCAbsoluteLatest.php',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_matrix',
+	'format' => 'format_html,format_pseudo_ods'
+);
+
+
 $tlCfg->reports_list['list_tc_failed'] = array( 
 	'title' => 'link_report_failed',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['failed'],
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_failed',
-	'format' => 'format_html,format_pseudo_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods'
 );
 $tlCfg->reports_list['list_tc_blocked'] = array( 
 	'title' => 'link_report_blocked_tcs',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['blocked'],
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_blocked',
-	'format' => 'format_html,format_pseudo_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods'
 );
+
 $tlCfg->reports_list['list_tc_not_run'] = array( 
 	'title' => 'link_report_not_run',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['not_run'],
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_not_run',
-	'format' => 'format_html,format_pseudo_ods,format_mail_html',
+	'format' => 'format_html,format_pseudo_ods',
 	'misc' => array('bugs_not_linked' => false)
 );
+
+$tlCfg->reports_list['never_run'] = array( 
+	'title' => 'link_report_never_run',
+	'url' => 'lib/results/neverRunByPP.php',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=never_run',
+	'format' => 'format_html,format_pseudo_ods',
+	'misc' => array('bugs_not_linked' => false)
+);
+
 
 $tlCfg->reports_list['tcases_without_tester'] = array(
 	'title' => 'link_report_tcases_without_tester',
@@ -212,13 +252,23 @@ $tlCfg->reports_list['free_tcases'] = array(
 'format' => 'format_html'
 );
 
+$report = 'report_exec_timeline';
+$tlCfg->reports_list[$report] = array( 
+	'title' => 'link_report_exec_timeline',
+	'url' => 'lib/results/execTimelineStats.php',
+	'enabled' => 'all', 
+	'directLink' => 
+	   '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0' .
+	   '&type=' . $report,
+	'format' => 'format_html'
+);
+
 
 
 
 // Add custom configuration
 clearstatcache();
 $f2inc = TL_ABS_PATH . 'cfg/custom_reports.cfg.php';
-if ( file_exists($f2inc) )
-{
+if ( file_exists($f2inc) ) {
   require_once($f2inc);
 }

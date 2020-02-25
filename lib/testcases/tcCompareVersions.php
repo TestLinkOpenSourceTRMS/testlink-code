@@ -85,7 +85,8 @@ function init_args()
 	
 
   $args->tcase_id = isset($_REQUEST['testcase_id']) ? $_REQUEST['testcase_id'] : 0;
-
+  $args->tcase_id = intval($args->tcase_id);
+ 
   $key2set = array('compare_selected_versions' => 0,'version_left' => '','version_right' => '');
   foreach($key2set as $tk => $value)
   {

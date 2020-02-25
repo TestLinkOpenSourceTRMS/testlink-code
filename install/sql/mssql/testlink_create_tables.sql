@@ -191,10 +191,28 @@ CREATE TABLE /*prefix*/roles (
 CREATE TABLE /*prefix*/execution_bugs (
   execution_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_bugs_execution_id DEFAULT ((0)),
   bug_id varchar(64)  NOT NULL CONSTRAINT /*prefix*/DF_execution_bugs_bug_id DEFAULT ((0)),
+  tcstep_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_bugs_tcstep_id DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_execution_bugs PRIMARY KEY CLUSTERED 
 (
   execution_id ASC,
-  bug_id ASC
+  bug_id ASC,
+  tcstep_id ASC
+) ON [PRIMARY]
+) ON [PRIMARY];
+
+CREATE TABLE /*prefix*/testcase_script_links (
+  tcversion_id int NOT NULL CONSTRAINT /*prefix*/DF_testcase_script_links_tcversion_id DEFAULT ((0)),
+  project_key varchar(64)  NOT NULL,
+  repository_name varchar(64)  NOT NULL,
+  code_path varchar(255)  NOT NULL,
+  branch_name varchar(64)  NULL,
+  commit_id varchar(40)  NULL,
+ CONSTRAINT /*prefix*/PK_testcase_script_links PRIMARY KEY CLUSTERED 
+(
+  tcversion_id ASC,
+  project_key ASC,
+  repository_name ASC,
+  code_path ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY];
 
@@ -436,6 +454,12 @@ CREATE NONCLUSTERED INDEX /*prefix*/IX_pid_m_nodeorder ON  /*prefix*/nodes_hiera
   node_order ASC
 ) ON [PRIMARY];
 
+CREATE NONCLUSTERED INDEX /*prefix*/IX_node_type_id ON  /*prefix*/nodes_hierarchy 
+(
+  node_type_id ASC
+) ON [PRIMARY];
+
+
 CREATE TABLE /*prefix*/req_coverage (
   req_id int NOT NULL,
   testcase_id int NOT NULL,
@@ -551,19 +575,29 @@ CREATE TABLE /*prefix*/role_rights (
 ) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/testcase_keywords (
+  id int NOT NULL,
   testcase_id int NOT NULL CONSTRAINT /*prefix*/DF_testcase_keywords_testcase_id DEFAULT ((0)),
+  tcversion_id int NOT NULL CONSTRAINT /*prefix*/DF_testcase_keywords_tcversion_id DEFAULT ((0)),
   keyword_id int NOT NULL CONSTRAINT /*prefix*/DF_testcase_keywords_keyword_id DEFAULT ((0)),
- CONSTRAINT /*prefix*/PK_testcase_keywords PRIMARY KEY CLUSTERED 
+CONSTRAINT /*prefix*/PK_testcase_keywords PRIMARY KEY CLUSTERED 
+(
+  id 
+) ON [PRIMARY],
+CONSTRAINT /*prefix*/UIX_testcase_keywords UNIQUE NONCLUSTERED 
 (
   testcase_id ASC,
+  tcversion_id ASC
   keyword_id ASC
 ) ON [PRIMARY]
+
 ) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_testcase_keywords ON  /*prefix*/testcase_keywords 
 (
-  testcase_id ASC
+  tcversion_id ASC
 ) ON [PRIMARY];
+
+
 
 CREATE TABLE /*prefix*/tcversions (
   id int NOT NULL,
@@ -643,6 +677,7 @@ CREATE TABLE /*prefix*/testprojects (
   prefix varchar(16) NOT NULL,
   tc_counter int NOT NULL CONSTRAINT /*prefix*/DF_testprojects_tc_counter DEFAULT ((0)),
   issue_tracker_enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_issue_tracker_enabled DEFAULT ((0)),  
+  code_tracker_enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_code_tracker_enabled DEFAULT ((0)), 
   reqmgr_integration_enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_reqmgr_integration_enabled DEFAULT ((0)),  
   api_key varchar(64) NOT NULL DEFAULT (HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR))),
   CONSTRAINT /*prefix*/PK_testprojects PRIMARY KEY CLUSTERED 
@@ -699,7 +734,7 @@ CREATE TABLE /*prefix*/user_testplan_roles (
 CREATE TABLE /*prefix*/users (
   id int IDENTITY(1,1) NOT NULL,
   login varchar(100)  NOT NULL,
-  password varchar(32)  NOT NULL,
+  password varchar(255)  NOT NULL,
   role_id int NOT NULL CONSTRAINT /*prefix*/DF_users_role_id DEFAULT ((0)),
   email varchar(100)  NOT NULL,
   first varchar(50)  NOT NULL,
@@ -962,6 +997,34 @@ CREATE TABLE /*prefix*/testproject_issuetracker
 )ON [PRIMARY];
 
 
+CREATE TABLE /*prefix*/codetrackers
+(
+  id int IDENTITY(1,1) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  type int NOT NULL CONSTRAINT /*prefix*/DF_codetrackers_type DEFAULT ((0)),
+  cfg nvarchar(max)  NULL,
+  CONSTRAINT /*prefix*/PK_codetrackers PRIMARY KEY  CLUSTERED 
+  (
+    id
+  )  ON [PRIMARY],
+    CONSTRAINT /*prefix*/UIX_codetrackers UNIQUE NONCLUSTERED 
+   ( 
+  name ASC
+   ) ON [PRIMARY]  
+) ON [PRIMARY];
+
+
+CREATE TABLE /*prefix*/testproject_codetracker
+(
+  testproject_id int NOT NULL,
+  codetracker_id int NOT NULL,
+    CONSTRAINT /*prefix*/UIX_testproject_codetracker UNIQUE NONCLUSTERED 
+   ( 
+  testproject_id ASC
+   ) ON [PRIMARY]    
+)ON [PRIMARY];
+
+
 CREATE TABLE /*prefix*/reqmgrsystems
 (
   id int IDENTITY(1,1) NOT NULL,
@@ -1015,7 +1078,7 @@ CREATE TABLE /*prefix*/req_monitor (
 ) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/plugins (
-  plugin_id int NOT NULL IDENTITY(1,1) CONSTRAINT /*prefix*/DF_plugins_plugin_id DEFAULT ((0)),
+  plugin_id int NOT NULL IDENTITY(1,1), 
   basename VARCHAR(100) NOT NULL,
   enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_plugins_enabled DEFAULT ((0)),
   author_id int NOT NULL,
@@ -1027,7 +1090,7 @@ CREATE TABLE /*prefix*/plugins (
 ) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/plugins_configuration (
-  plugin_config_id int IDENTITY(1,1) NOT NULL CONSTRAINT /*prefix*/DF_plugins_configuration_plugin_config_id DEFAULT ((0)),
+  plugin_config_id int IDENTITY(1,1),
   testproject_id int NOT NULL CONSTRAINT /*prefix*/DF_plugins_configuration__testproject_id DEFAULT ((0)),
   config_key VARCHAR(255) NOT NULL,
   config_type int NOT NULL,

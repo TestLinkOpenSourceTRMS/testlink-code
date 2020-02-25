@@ -9,12 +9,10 @@
  * @filesource  configCheck.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2016, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
- * @internal revisions
- * @since 1.9.15
  **/
 
 /**
@@ -46,8 +44,7 @@ function get_home_url($opt)
   if( isset ( $_SERVER['PHP_SELF'] ) ) 
   {
   $t_protocol = 'http';
-  if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) 
-  {
+  if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
     $t_protocol= $_SERVER['HTTP_X_FORWARDED_PROTO'];
   }    
   else if ( !empty($_SERVER['HTTPS']) && (strtolower( $_SERVER['HTTPS']) != 'off') ) 
@@ -106,14 +103,12 @@ function get_home_url($opt)
 
 
 /** check language acceptance by web client */
-function checkServerLanguageSettings($defaultLanguage)
-{
+function checkServerLanguageSettings($defaultLanguage) {
   $language = $defaultLanguage;
 
   // check for !== false because getenv() returns false on error
   $serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-  if(false !== $serverLanguage)
-  {
+  if(false !== $serverLanguage) {
     $localeSet = config_get('locales');
     if (array_key_exists($serverLanguage,$localeSet))
     {
@@ -130,9 +125,7 @@ function checkConfiguration()
 {
   clearstatcache();
   $file_to_check = "config_db.inc.php";
-
-  if(!is_file($file_to_check))
-  {
+  if(!is_file($file_to_check)) {
     echo '<html><body onload="' . "location.href='./install/index.php'" . '"></body></html>';
     exit();  
   }
@@ -160,17 +153,13 @@ function checkInstallStatus()
  **/
 function checkLibGd()
 {
-  if( extension_loaded('gd') )
-  {
+  if( extension_loaded('gd') ) {
     $arrLibConf = gd_info();
     $msg = lang_get("error_gd_png_support_disabled");
-    if ($arrLibConf["PNG Support"])
-    {
+    if ($arrLibConf["PNG Support"]) {
       $msg = 'OK';
     }  
-  }
-  else
-  {
+  } else {
     $msg = lang_get("error_gd_missing");
   }
   return $msg;
@@ -183,9 +172,6 @@ function checkLibGd()
  * @param array [ref] msgs will be appended
  * @return bool returns true if all extension or functions ar present or defined
  *
- * @author Andreas Morsing 
- * @todo Martin: it's used in getSecurityNotes() ... but it's not consistent with 
- *     checkPhpExtensions() - refactore
  **/
 function checkForExtensions(&$msg)
 {
@@ -201,7 +187,6 @@ function checkForExtensions(&$msg)
  * checks if the install dir is present
  *
  * @return bool returns true if the install dir is present, false else
- * @author Andreas Morsing 
  **/
 function checkForInstallDir()
 {
@@ -217,7 +202,6 @@ function checkForInstallDir()
  *
  * @return boolean returns true if the default password for the admin account is set, 
  *         false else
- * @author Andreas Morsing 
  **/
 function checkForAdminDefaultPwd(&$db)
 {
@@ -226,8 +210,7 @@ function checkForAdminDefaultPwd(&$db)
   $user = new tlUser();
   $user->login = "admin";
   if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK && 
-     $user->comparePassword("admin") >= tl::OK)
-  {   
+     $user->comparePassword($db,"admin") >= tl::OK) {   
     $passwordHasDefaultValue = true;
   }  
   return $passwordHasDefaultValue;
@@ -235,8 +218,6 @@ function checkForAdminDefaultPwd(&$db)
 
 /*
   function: checkForLDAPExtension
-  args :
-  returns: 
 */
 function checkForLDAPExtension()
 {
@@ -248,9 +229,7 @@ function checkForLDAPExtension()
  * these notes should be displayed!
  *
  * @return array returns the security issues, or null if none found!
- * @author Andreas Morsing 
  *
- * @internal rev :
  **/
 function getSecurityNotes(&$db)
 {
@@ -258,38 +237,29 @@ function getSecurityNotes(&$db)
   $repository['path'] = config_get('repositoryPath');
   
   $securityNotes = null;
-  if (checkForInstallDir())
-  {
+  if (checkForInstallDir()) {
     $securityNotes[] = lang_get("sec_note_remove_install_dir");
   }
   
   $authCfg = config_get('authentication');
-  if( 'LDAP' == $authCfg['method']  )
-  {
-    if( !checkForLDAPExtension() )
-    {
+  if( 'LDAP' == $authCfg['method']  ) {
+    if( !checkForLDAPExtension() ) {
       $securityNotes[] = lang_get("ldap_extension_not_loaded");
     }  
-  } 
-  else
-  {
-    if( checkForAdminDefaultPwd($db) )
-    {
+  } else {
+    if( checkForAdminDefaultPwd($db) ) {
         $securityNotes[] = lang_get("sec_note_admin_default_pwd");
     }
   }
 
   
-  if (!checkForBTSConnection())
-  {
+  if (!checkForBTSConnection()) {
     $securityNotes[] = lang_get("bts_connection_problems");
   }
     
-  if($repository['type'] == TL_REPOSITORY_TYPE_FS)
-  {
+  if($repository['type'] == TL_REPOSITORY_TYPE_FS) {
     $ret = checkForRepositoryDir($repository['path']);
-    if(!$ret['status_ok'])
-    {
+    if(!$ret['status_ok']) {
       $securityNotes[] = $ret['msg'];
     }  
   }
@@ -299,14 +269,12 @@ function getSecurityNotes(&$db)
   $res = checkSchemaVersion($db);
   $msg = $res['msg'];
   
-  if($msg != "")
-  {
+  if($msg != "") {
     $securityNotes[] = $msg;
   }
   
   $msg = checkEmailConfig();
-  if(!is_null($msg))
-  {
+  if(!is_null($msg)) {
     foreach($msg as $detail)
     {
        $securityNotes[] = $detail;
@@ -379,8 +347,6 @@ function isMSWindowsServer()
 
 /*
   function: checkForRepositoryDir
-  args :
-  returns: 
 */
 function checkForRepositoryDir($the_dir)
 {
@@ -428,8 +394,7 @@ function checkSchemaVersion(&$db)
   
   $sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
   $res = $db->exec_query($sql,1);  
-  if (!$res)
-  {
+  if (!$res) {
     return $result['msg'] = "Failed to get Schema version from DB";
   }
     
@@ -440,8 +405,8 @@ function checkSchemaVersion(&$db)
 
   $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$latest_version} - Read README file!";
 
-  switch (trim($myrow['version']))
-  {
+  switch (trim($myrow['version'])) {
+    
     case '1.7.0 Alpha':
     case '1.7.0 Beta 1':
     case '1.7.0 Beta 2':
@@ -465,7 +430,29 @@ function checkSchemaVersion(&$db)
     case 'DB 1.9.12':
     case 'DB 1.9.13':
     case 'DB 1.9.14':
+    case 'DB 1.9.15':
+    case 'DB 1.9.16':
+    case 'DB 1.9.17':
+    case 'DB 1.9.18':
+    case 'DB 1.9.19':
       $result['msg'] = $manualop_msg;
+    break;
+
+    case 'DB 1.9.20':
+      // check critic DB schema change because
+      // blocks login
+      $m = $db->db->metaColumns(DB_TABLE_PREFIX . 'users');
+      if ($m['PASSWORD']->max_length == 32) {
+        $result['msg'] = 
+          "It seems that you have migrated to 1.9.20" .
+          "<br>But migration does not changed users table structure" .
+          "<br>the password field is not able to contain " .
+          " a bcrypt password";
+        $result['status'] = tl::ERROR;
+      } else {
+        $result['status'] = tl::OK;
+        $result['kill_session'] = 'false';
+      }
     break;
 
     case $latest_version:
@@ -568,8 +555,7 @@ function check_php_settings(&$errCounter)
  * @todo martin: Do we require "Checking DOM XML support"? It seems that we use internal library.
  *      if (function_exists('domxml_open_file'))
  */
-function checkPhpExtensions(&$errCounter)
-{
+function checkPhpExtensions(&$errCounter) {
  
   $cannot_use='cannot be used';
   $td_ok = "<td><span class='tab-success'>OK</span></td></tr>\n";
@@ -578,38 +564,47 @@ function checkPhpExtensions(&$errCounter)
   $msg_support='<tr><td>Checking %s </td>';
   $checks=array();
 
-
   // Database extensions  
+  $checks[]=array('extension' => 'pgsql',
+                  'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
+
   $mysqlExt = 'mysql';
-  if( version_compare(phpversion(), "5.5.0", ">=") )
-  {
+  if( version_compare(phpversion(), "5.5.0", ">=") ) {
     $mysqlExt = 'mysqli';
-  }
- 
+  } 
   $checks[]=array('extension' => $mysqlExt,
                   'msg' => array('feedback' => 'MySQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
  
-  $checks[]=array('extension' => 'pgsql',
-                  'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
- 
+  // ----------------------------------------------------------------------------    
+  // special check for MSSQL
+  $isPHPGTE7 = version_compare(phpversion(), "7.0.0", ">=");
 
-  // ---------------------------------------------------------------------------------------------------------    
-  // special check for MSSQL - TICKET 4898
   $extid = 'mssql';
-  if(PHP_OS == 'WINNT')
-  {
-  // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
-  // From PHP MANUAL - reganding mssql_* functions
-  // These functions allow you to access MS SQL Server database.
-  // This extension is not available anymore on Windows with PHP 5.3 or later.
-  // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
-  // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
-  //
-  // PHP_VERSION_ID is available as of PHP 5.2.7
-  if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
-  {
-    $extid = 'sqlsrv';
-  }      
+  if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
+    // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
+    // From PHP MANUAL - reganding mssql_* functions
+    // These functions allow you to access MS SQL Server database.
+    // This extension is not available anymore on Windows with PHP 5.3 or later.
+    // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
+    // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
+    //
+    // Second Time: (2018) 
+    // When using PHP 7 or up
+    // Help from Bitnami
+    // PHP 7 does not support mssql anymore. 
+    // The PECL extension recommended is to use the "sqlsrv" module 
+    // but you will need to compile it on your own.
+    //
+    //    
+    // PHP_VERSION_ID is available as of PHP 5.2.7
+    if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300 ) {
+      $extid = 'sqlsrv';
+    } 
+
+    if ( $isPHPGTE7 ) {
+      $extid = 'sqlsrv';
+    } 
+
   }  
   $checks[] = array('extension' => $extid,
                     'msg' => array('feedback' => 'MSSQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );    
@@ -660,8 +655,7 @@ function checkPhpExtensions(&$errCounter)
  * @param integer &$errCounter reference to error counter
  * @return string html row with result 
  */
-function check_session(&$errCounter)
-{
+function check_session(&$errCounter) {
   $out = "<tr><td>Checking if sessions are properly configured</td>";
 
   if( !isset($_SESSION) )
@@ -1035,14 +1029,12 @@ function reportCheckingDatabase(&$errCounter, $type = null)
  * @param integer &$errCounter reference to error counter
  * @author Martin Havlat
  **/
-function reportCheckingWeb(&$errCounter)
-{
+function reportCheckingWeb(&$errCounter) {
   echo '<h2>Web and PHP configuration</h2><table class="common" style="width: 100%;">';
   echo check_timeout($errCounter);
   echo check_php_settings($errCounter);
   echo checkPhpExtensions($errCounter);
   echo '</table>';
-
 }
 
 

@@ -20,9 +20,6 @@
  * other properties can be present depending on ITS.
  * =============================================================================
  *
- * @internal revisions
- * @since 1.9.14
- *
  *
 **/
 require_once(TL_ABS_PATH . "/lib/functions/database.class.php");
@@ -33,6 +30,7 @@ abstract class issueTrackerInterface
   // members to store the bugtracking information.
   // Values are set in the actual subclasses
   var $cfg = null;  // simpleXML object
+  var $xmlCfg = null; // xml string
   var $name = null;
 
   var $tlCharSet = null;
@@ -44,7 +42,12 @@ abstract class issueTrackerInterface
   var $interfaceViaDB = false;  // useful for connect/disconnect methods
   var $resolvedStatus;
   
-  var $methodOpt = array('buildViewBugLink' => array('addSummary' => false, 'colorByStatus' => false));
+  var $methodOpt = array('buildViewBugLink' => 
+                         array('addSummary' => false, 
+                               'colorByStatus' => false,
+                               'addReporter' => false,
+                               'addHandler' => false));
+
   var $guiCfg = array();
   var $summaryLengthLimit = 120;  // Mantis max is 128.  
 
@@ -54,17 +57,15 @@ abstract class issueTrackerInterface
    *
    * @param str $type (see tlIssueTracker.class.php $systems property)
    **/
-  function __construct($type,$config,$name)
-  {
+  function __construct($type,$config,$name) {
+
     $this->tlCharSet = config_get('charset');
     $this->guiCfg = array('use_decoration' => true); // add [] on summary and statusHTMLString
     $this->name = $name;
 
-    if( $this->setCfg($config) )
-    {     
+    if( $this->setCfg($config) ) {     
       // useful only for integration via DB
-      if( !property_exists($this->cfg,'dbcharset') )
-      {
+      if( !property_exists($this->cfg,'dbcharset') ) {
         $this->cfg->dbcharset = $this->tlCharSet;
       }
       $this->connect();
@@ -96,27 +97,23 @@ abstract class issueTrackerInterface
    *
    * 
    **/
-  function setCfg($xmlString)
-  {
+  function setCfg($xmlString) {
     $msg = null;
     $signature = 'Source:' . __METHOD__;
 
     // check for empty string
-    if(strlen(trim($xmlString)) == 0)
-    {
+    if(strlen(trim($xmlString)) == 0) {
       // Bye,Bye
       $msg = " - Issue tracker:$this->name - XML Configuration seems to be empty - please check";
       tLog(__METHOD__ . $msg, 'ERROR');  
       return false;
     }
       
-    $xmlCfg = "<?xml version='1.0'?> " . $xmlString;
+    $this->xmlCfg = "<?xml version='1.0'?> " . $xmlString;
     libxml_use_internal_errors(true);
-    try 
-    {
-      $this->cfg = simplexml_load_string($xmlCfg);
-      if (!$this->cfg) 
-      {
+    try {
+      $this->cfg = simplexml_load_string($this->xmlCfg);
+      if (!$this->cfg) {
         $msg = $signature . " - Failure loading XML STRING\n";
         foreach(libxml_get_errors() as $error) 
         {
@@ -322,8 +319,15 @@ abstract class issueTrackerInterface
    * @return string returns a complete HTML HREF to view the bug (if found in db)
    *
    **/
-  function buildViewBugLink($issueID, $opt=null)
-  {
+  function buildViewBugLink($issueID, $opt=null) {
+
+    static $l10n;
+    
+    if( !$l10n ) {
+      $tg = array('issueReporter' => null, 'issueHandler' => null);
+      $l10n = init_labels($tg);
+    }
+
     $my['opt'] = $this->methodOpt[__FUNCTION__];
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
@@ -335,57 +339,81 @@ abstract class issueTrackerInterface
     $ret->isResolved = false;
     $ret->op = false;
 
-    if( is_null($issue) || !is_object($issue) )
-    {
+    if( is_null($issue) || !is_object($issue) ) {
       $ret->link = "TestLink Internal Message: getIssue($issueID) FAILURE on " . __METHOD__;
       return $ret;
     }
     
     $useIconv = property_exists($this->cfg,'dbcharset');
-    if($useIconv)
-    {
+    if($useIconv) {
       $link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->IDHTMLString);
     }
-    else
-    {
+    else {
       $link .= $issue->IDHTMLString;
     }
     
-    if (!is_null($issue->statusHTMLString))
-    {
-      if($useIconv)
-      {
+    if (!is_null($issue->statusHTMLString)) {
+      if($useIconv) {
         $link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->statusHTMLString);
-      }
-      else
-      {
+      } else {
         $link .= $issue->statusHTMLString;
       }
-    }
-    else
-    {
+    } else {
       $link .= $issueID;
     }
 
-    if($my['opt']['addSummary'])
-    {
-      if (!is_null($issue->summaryHTMLString))
-      {
+    if($my['opt']['addSummary']) {
+      if (!is_null($issue->summaryHTMLString)) {
         $link .= " : ";
-        if($useIconv)
-        {
+        if($useIconv) {
           $link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->summaryHTMLString);
         }
-        else
-        {
+        else {
           $link .= (string)$issue->summaryHTMLString;
         }
       }
     }
+
+    if ($my['opt']['addReporter']) {
+      if( property_exists($issue, 'reportedBy') ) {
+        $link .= "";
+        $who = trim((string)$issue->reportedBy);
+        if( '' != $who ) {
+          
+          $link .= '<br>' . $l10n['issueReporter'] . ':&nbsp;';            
+          if($useIconv) {
+            $link .= 
+             iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$who);
+          }
+          else {
+            $link .= $who;
+          }          
+        }
+      }
+    }
+
+    if($my['opt']['addHandler']) {
+      if( property_exists($issue, 'handledBy') ) {
+        $link .= "";
+        $who = trim((string)$issue->handledBy);
+        if( '' != $who ) {
+
+          $link .= '<br>' . $l10n['issueHandler'] . ':&nbsp;';           
+          if($useIconv) {
+            $link .= 
+             iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$who);
+          }
+          else {
+            $link .= $who;
+          }          
+        }
+      }
+    }
+
     $link .= "</a>";
 
-    if($my['opt']['colorByStatus'] && property_exists($issue,'statusColor') )
-    {
+    if ($my['opt']['colorByStatus'] 
+        && property_exists($issue,'statusColor') ) {
       $title = lang_get('access_to_bts');  
       $link = "<div  title=\"{$title}\" style=\"display: inline; background: $issue->statusColor;\">$link</div>";
     }
@@ -395,12 +423,10 @@ abstract class issueTrackerInterface
     $ret->isResolved = $issue->isResolved;
     $ret->op = true;
 
-    if( isset($my['opt']['raw']) && !is_null(isset($my['opt']['raw'])) )
-    {
-      foreach($my['opt']['raw'] as $attr)
-      {
-      	if(property_exists($issue, $attr))
-      	{
+    if (isset($my['opt']['raw']) 
+        && !is_null(isset($my['opt']['raw'])) ) {
+      foreach ($my['opt']['raw'] as $attr) {
+      	if (property_exists($issue, $attr)) {
           $ret->$attr = $issue->$attr;
       	}
       }  
@@ -414,8 +440,7 @@ abstract class issueTrackerInterface
    * @return string returns a complete URL
    *
    **/
-  function getEnterBugURL()
-  {
+  function getEnterBugURL() {
     return $this->cfg->uricreate;
   }
 
@@ -429,8 +454,7 @@ abstract class issueTrackerInterface
    * 
    * @return string 
    **/
-  function buildViewBugURL($issueID)
-  {
+  function buildViewBugURL($issueID) {
     return $this->cfg->uriview . urlencode($issueID);
   }
 
@@ -502,17 +526,13 @@ abstract class issueTrackerInterface
    **/
   public function setResolvedStatusCfg()
   {
-    if( property_exists($this->cfg,'resolvedstatus') )
-    {
+    if (property_exists($this->cfg,'resolvedstatus')) {
       $statusCfg = (array)$this->cfg->resolvedstatus;
-    }
-    else
-    {
+    } else {
       $statusCfg['status'] = $this->defaultResolvedStatus;
     }
     $this->resolvedStatus = new stdClass();
-    foreach($statusCfg['status'] as $cfx)
-    {
+    foreach ($statusCfg['status'] as $cfx) {
       $e = (array)$cfx;
       $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
     }
@@ -577,8 +597,7 @@ abstract class issueTrackerInterface
    *
    * @return int 
    */
-  function getBugSummaryMaxLength()
-  {
+  function getBugSummaryMaxLength() {
     return $this->summaryLengthLimit;
   }
 

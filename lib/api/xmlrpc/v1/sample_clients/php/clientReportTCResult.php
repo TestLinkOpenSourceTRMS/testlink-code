@@ -1,13 +1,11 @@
 <?php
- /**
+/**
  * A sample client implementation in php
  * 
- * @author    Asiel Brumfield <asielb@users.sourceforge.net>
+ * @author    Francisco Mancardi
  * @package   TestlinkAPI
  * @link      http://testlink.org/api/
  *
- * rev: 20080306 - franciscom - added dBug to improve diagnostic info.
- *      20080305 - franciscom - refactored
  */
  
 require_once 'util.php';
@@ -20,67 +18,34 @@ $tcaseStatusCode['failed']='f';
 $tcaseStatusCode['wrong']='w';
 $tcaseStatusCode['departed']='d';
 
-
-
 // Substitute for tcid and tpid that apply to your project
-$unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
-// $testPlanID=189;
-$testPlanID=190;
-// $testCaseExternalID='API-71';  // 'API-69'
-// $testCaseExternalID='AF-66';
-$testCaseExternalID='AF-1';
+$unitTestDescription = 
+  "XMLRPC -Test - Call with valid parameters: testPlanID,testCaseID,buildID";
 
-$testCaseID=null;
-// $buildID=21;
-$buildID=4;
+$context = new stdClass();
+$context->testplanid=2;
+$context->buildid=1;
+$context->buildname=null;
+$context->platformname=null;
+$context->testcaseexternalid='AF-1';
+$context->testcaseid=null;
 
-$status=$tcaseStatusCode['blocked'];
-//$status=$tcaseStatusCode['failed'];
-//$status=$tcaseStatusCode['passed'];
-
-$exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status}";
-//$platformName='NO PLATFORM LINKED';
-$platformName='Solaris 9';
-$overwrite=true;
+$exec = new stdClass();
+$exec->status = $tcaseStatusCode['blocked'];
+$exec->notes="Call using all EXTERNAL ID ({$context->testcaseexternalid}) - status={$exec->status}";
+$exec->customfields = null;
+$exec->bugid = null;
+//$exec->user = 'QQ';
+$exec->overwrite=false;
 
 $debug=false;
-echo $unitTestDescription;
-$devKey = isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
-$response = reportResult($devKey,$server_url,$testCaseID,$testCaseExternalID,$testPlanID,
-                         $buildID,null,$status,$exec_notes,$bug_id,$customfields,
-                         $platformName,$overwrite,$debug);
+echo '<br><b>' . $unitTestDescription . '</b>';
+echo '<br>';
+$response = executeTestCase($server_url,$context,$exec,$debug);
 
 echo "<br> Result was: ";
-// Typically you'd want to validate the result here and probably do something more useful with it
-// print_r($response);
 new dBug($response);
 echo "<br>";
-
-
-// Substitute for tcid and tpid that apply to your project
-// $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
-// $testPlanID=446;
-// $testCaseExternalID='AA-1';
-// $testCaseID=null;
-// $buildID=2;
-// // $status=$tcaseStatusCode['departed'];
-// $status=$tcaseStatusCode['blocked'];
-// // $status=$tcaseStatusCode['wrong'];
-// // $exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status={$status}";
-// $exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status}";
-// $bug_id='999FF';
-// $customfields=array('CF_EXE1' => 'COMODORE64','CF_DT' => mktime(10,10,0,7,29,2009));
-// 
-// $debug=false;
-// echo $unitTestDescription;
-// $response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
-//                          $buildID,null,$status,$exec_notes,$bug_id,$customfields,$debug);
-// 
-// echo "<br> Result was: ";
-// // Typically you'd want to validate the result here and probably do something more useful with it
-// // print_r($response);
-// new dBug($response);
-// echo "<br>";
 
 
 
@@ -92,71 +57,84 @@ echo "<br>";
   returns: 
 
 */
-function reportResult($devKey,$server_url,$tcaseid=null, $tcaseexternalid=null,$tplanid, $buildid=null, 
-                      $buildname=null, $status,$notes=null,$bugid=null,$customfields=null,
-                      $platformname=null,$overwrite=false,$debug=false)
+function executeTestCase($server_url,$context,$exec,$debug=false)
 {
 
+  echo '<br> Context is:';
+  new dBug($context);
+
+
+  echo '<br> Execution data is:';
+  new dBug($exec);
+
+  echo '<br>';
+  
+
   $client = new IXR_Client($server_url);
- 
   $client->debug=$debug;
   
   $data = array();
-  $data["devKey"] = $devKey;
-  $data["testplanid"] = $tplanid;
+  $data["devKey"] = '21232f297a57a5a743894a0e4a801fc3';
+  $data["status"] = $exec->status;
 
-  if( !is_null($bugid) )
+  if( property_exists($exec, 'user') &&  !is_null($exec->user) )
   {
-      $data["bugid"] = $bugid;  
+    $data["user"]=$exec->user;
   }
 
-  if( !is_null($tcaseid) )
+  if( property_exists($exec, 'notes') && !is_null($exec->notes) )
   {
-      $data["testcaseid"] = $tcaseid;
+     $data["notes"] = $exec->notes;  
   }
-  else if( !is_null($tcaseexternalid) )
+
+  if( property_exists($exec, 'bugid') && !is_null($exec->bugid) ) 
   {
-      $data["testcaseexternalid"] = $tcaseexternalid;
+    $data["bugid"] = $exec->bugid;  
+  }
+
+  if( property_exists($exec, 'overwrite') && !is_null($exec->overwrite) ) 
+  {
+    $data["overwrite"]=$exec->overwrite;
+  }
+
+  if( property_exists($exec, 'customfields') && !is_null($exec->customfields) ) 
+  {
+    $data["customfields"]=$customfields;
+  }
+
+
+  $data["testplanid"] = $context->testplanid;
+  if( property_exists($context, 'testcaseid') && !is_null($context->testcaseid) ) 
+  {
+    $data["testcaseid"] = $context->testcaseid;
+  }
+  else if( property_exists($context, 'testcaseexternalid') && !is_null($context->testcaseexternalid) )
+  {
+    $data["testcaseexternalid"] = $context->testcaseexternalid;
   }
   
-  if( !is_null($buildid) )
+  if( property_exists($context, 'buildid') &&  !is_null($context->buildid) )
   {
-      $data["buildid"] = $buildid;
+    $data["buildid"] = $context->buildid;
   }
-  else if ( !is_null($buildname) )
+  else if ( property_exists($context, 'buildname') && !is_null($context->buildname) )
   {
-        $data["buildname"] = $buildname;
+    $data["buildname"] = $context->buildname;
   }
   
-  if( !is_null($notes) )
+  if( property_exists($context, 'platformname') &&  !is_null($context->platformname) )
   {
-     $data["notes"] = $notes;  
+    $data["platformname"]=$context->platformname;
   }
-  $data["status"] = $status;
-
-    if( !is_null($customfields) )
-    {
-       $data["customfields"]=$customfields;
-    }
     
-    if( !is_null($platformname) )
-    {
-       $data["platformname"]=$platformname;
-    }
-    
-    if( !is_null($overwrite) )
-    {
-       $data["overwrite"]=$overwrite;
-    }
-
+  
+  echo '<br> Method will be called with following data:';
   new dBug($data);
 
-  if(!$client->query('tl.reportTCResult', $data))
-  {
+  if(!$client->query('tl.reportTCResult', $data)) {
     echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();      
   }
-  else
-  {
+  else {
     return $client->getResponse();
   }
 }

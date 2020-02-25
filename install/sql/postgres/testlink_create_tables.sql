@@ -22,8 +22,6 @@
 --        convention regarding case and spaces between DDL keywords.
 --
 -- 
---  @internal revisions
---  @since 1.9.9
 --
 -- Table structure for table "node_types"
 --
@@ -46,6 +44,7 @@ CREATE TABLE /*prefix*/nodes_hierarchy(
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX /*prefix*/nodes_hierarchy_pid_m_nodeorder ON /*prefix*/nodes_hierarchy ("parent_id","node_order");
+CREATE INDEX /*prefix*/nodes_hierarchy_node_type_id ON /*prefix*/nodes_hierarchy ("node_type_id");
 
 --
 --
@@ -98,7 +97,7 @@ CREATE UNIQUE INDEX /*prefix*/roles_uidx1 ON /*prefix*/roles ("description");
 CREATE TABLE /*prefix*/users(  
   "id" BIGSERIAL NOT NULL ,
   "login" VARCHAR(100) NOT NULL DEFAULT '',
-  "password" VARCHAR(32) NOT NULL DEFAULT '',
+  "password" VARCHAR(255) NOT NULL DEFAULT '',
   "role_id" SMALLINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/roles (id),
   "email" VARCHAR(100) NOT NULL DEFAULT '',
   "first" VARCHAR(50) NOT NULL DEFAULT '',
@@ -108,7 +107,9 @@ CREATE TABLE /*prefix*/users(
   "active" INT2 NOT NULL DEFAULT '1',
   "script_key" VARCHAR(32) NULL,
   "cookie_string" varchar(64) NOT NULL DEFAULT '', 
-  "auth_method" VARCHAR(10) NULL DEFAULT '', 
+  "auth_method" VARCHAR(10) NULL DEFAULT '',
+  "creation_ts" timestamp NOT NULL DEFAULT now(),
+  "expiration_date" date DEFAULT NULL,
   PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX /*prefix*/users_uidx1 ON /*prefix*/users ("login");
@@ -152,9 +153,6 @@ CREATE TABLE /*prefix*/tcsteps (
 ); 
 
 
-
-
-
 --
 -- Table structure for table "testplans"
 --
@@ -186,6 +184,10 @@ CREATE TABLE /*prefix*/builds(
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "release_date" DATE NULL,
   "closed_on_date" DATE NULL,
+  "commit_id" VARCHAR(64) NULL,
+  "tag" VARCHAR(64) NULL,
+  "branch" VARCHAR(64) NULL,
+  "release_candidate" VARCHAR(100) NULL,
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/builds_uidx1 ON /*prefix*/builds  ("testplan_id","name");
@@ -225,6 +227,26 @@ CREATE TABLE /*prefix*/execution_tcsteps (
   PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX /*prefix*/execution_tcsteps_uidx1 ON  /*prefix*/execution_tcsteps ("execution_id","tcstep_id");
+
+
+--
+-- Table structure for table "execution_tcsteps_wip"
+--
+CREATE TABLE /*prefix*/execution_tcsteps_wip (
+   "id" BIGSERIAL NOT NULL ,
+   "tcstep_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcsteps (id),
+   "testplan_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
+   "platform_id" INTEGER NOT NULL DEFAULT '0',
+   "build_id" INTEGER NOT NULL DEFAULT '0',
+   "tester_id" BIGINT NULL DEFAULT NULL,
+   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+   "notes" TEXT NULL DEFAULT NULL,
+   "status" CHAR(1) NULL DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/execution_tcsteps_wip_uidx1 ON  /*prefix*/execution_tcsteps_wip ("tcstep_id","testplan_id","platform_id","build_id");
+
+
 
 --
 -- Table structure for table "testplan_tcversions"
@@ -282,6 +304,7 @@ CREATE TABLE /*prefix*/testprojects(
   "tc_counter" int NOT NULL default '0',
   "is_public" INT2 NOT NULL DEFAULT '1',
   "issue_tracker_enabled" INT2 NOT NULL DEFAULT '0',
+  "code_tracker_enabled" INT2 NOT NULL DEFAULT '0',
   "reqmgr_integration_enabled" INT2 NOT NULL DEFAULT '0',
   "api_key" varchar(64) NOT NULL DEFAULT (MD5(RANDOM()::text) || MD5(RANDOM()::text)),
   PRIMARY KEY ("id")
@@ -354,9 +377,6 @@ CREATE TABLE /*prefix*/cfield_node_types(
 ); 
 CREATE INDEX /*prefix*/cfield_node_types_idx_custom_fields_assign ON /*prefix*/cfield_node_types ("node_type_id");
 
-
-
--- ################################################################################ --
 --
 -- Table structure for table assignment_status
 --
@@ -408,15 +428,28 @@ CREATE TABLE /*prefix*/db_version(
 ); 
 
 
-
-
 --
 -- Table structure for table "execution_bugs"
 --
 CREATE TABLE /*prefix*/execution_bugs(  
   "execution_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id) ON DELETE CASCADE,
   "bug_id" VARCHAR(64) NOT NULL DEFAULT '0',
-  PRIMARY KEY ("execution_id","bug_id")
+  "tcstep_id" BIGINT NOT NULL DEFAULT '0',
+  PRIMARY KEY ("execution_id","bug_id","tcstep_id")
+); 
+
+
+--
+-- Table structure for table "testcase_script_links"
+--
+CREATE TABLE /*prefix*/testcase_script_links(  
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id) ON DELETE CASCADE,
+  "project_key" VARCHAR(64) NOT NULL,
+  "repository_name" VARCHAR(64) NOT NULL,
+  "code_path" VARCHAR(255) NOT NULL,
+  "branch_name" VARCHAR(64) NULL,
+  "commit_id" VARCHAR(40) NULL,
+  PRIMARY KEY ("tcversion_id","project_key","repository_name","code_path")
 ); 
 
 
@@ -432,6 +465,8 @@ CREATE TABLE /*prefix*/keywords(
 ); 
 CREATE INDEX /*prefix*/keywords_testproject_id ON /*prefix*/keywords ("testproject_id");
 CREATE INDEX /*prefix*/keywords_keyword ON /*prefix*/keywords ("keyword");
+CREATE UNIQUE INDEX /*prefix*/keywords_keyword_testproject_id ON /*prefix*/keywords (testproject_id,keyword);
+
 
 
 --
@@ -462,6 +497,7 @@ CREATE TABLE /*prefix*/object_keywords(
   "keyword_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/keywords (id) ON DELETE CASCADE,
   PRIMARY KEY ("id")
 ); 
+CREATE UNIQUE INDEX /*prefix*/object_keywords_udx01 ON /*prefix*/object_keywords (fk_id,fk_table,keyword_id);
 
 
 --
@@ -510,15 +546,21 @@ CREATE TABLE /*prefix*/req_versions(
 --
 -- Table structure for table "req_coverage"
 --
-CREATE TABLE /*prefix*/req_coverage(  
+CREATE TABLE /*prefix*/req_coverage( 
+  "id" BIGSERIAL NOT NULL , 
   "req_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id) ON DELETE CASCADE,
+  "req_version_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_versions (id) ON DELETE CASCADE,
   "testcase_id" INTEGER NOT NULL DEFAULT '0',
+  "tcversion_id" INTEGER NOT NULL DEFAULT '0',
+  "link_status" INT2 NOT NULL DEFAULT '1',
+  "is_active" INT2 NOT NULL DEFAULT '1',
   "author_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "review_requester_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
-  "review_request_ts" TIMESTAMP NULL DEFAULT NULL
+  "review_request_ts" TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY ("id")
 ); 
-CREATE INDEX /*prefix*/req_coverage_req_testcase ON /*prefix*/req_coverage ("req_id","testcase_id");
+CREATE UNIQUE INDEX /*prefix*/req_coverage_full_link ON /*prefix*/req_coverage ("req_id","req_version_id","testcase_id","tcversion_id");
 
 
 --
@@ -559,11 +601,15 @@ CREATE TABLE /*prefix*/role_rights(
 --
 -- Table structure for table "testcase_keywords"
 --
-CREATE TABLE /*prefix*/testcase_keywords(  
+CREATE TABLE /*prefix*/testcase_keywords( 
+  "id" BIGSERIAL NOT NULL , 
   "testcase_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id),
   "keyword_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/keywords (id) ON DELETE CASCADE,
-  PRIMARY KEY ("testcase_id","keyword_id")
+  PRIMARY KEY ("id")
 ); 
+CREATE UNIQUE INDEX /*prefix*/idx01_testcase_keywords ON /*prefix*/testcase_keywords ("testcase_id","tcversion_id","keyword_id");
+CREATE INDEX /*prefix*/idx02_testcase_keywords ON /*prefix*/testcase_keywords ("tcversion_id");
 
 
 --
@@ -653,6 +699,8 @@ CREATE TABLE /*prefix*/platforms (
   name VARCHAR(100) NOT NULL,
   testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
   notes text NOT NULL,
+  enable_on_design INT2 NOT NULL DEFAULT '0',
+  enable_on_execution INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX /*prefix*/platforms_uidx1 ON /*prefix*/platforms (testproject_id,name);
@@ -661,6 +709,7 @@ CREATE TABLE /*prefix*/testplan_platforms (
   id BIGSERIAL NOT NULL,
   testplan_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id) ON DELETE CASCADE,
   platform_id BIGINT NOT NULL DEFAULT '0',
+  active INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX /*prefix*/testplan_platforms_uidx1 ON /*prefix*/testplan_platforms (testplan_id,platform_id);
@@ -737,8 +786,7 @@ CREATE TABLE /*prefix*/req_specs_revisions (
 CREATE UNIQUE INDEX /*prefix*/req_specs_revisions_uidx1 ON /*prefix*/req_revisions ("parent_id","revision");
 
 
-CREATE TABLE /*prefix*/issuetrackers
-(
+CREATE TABLE /*prefix*/issuetrackers (
   "id" BIGSERIAL NOT NULL ,
   "name" VARCHAR(100) NOT NULL,
   "type" INTEGER NOT NULL DEFAULT '0',
@@ -796,6 +844,7 @@ CREATE TABLE /*prefix*/testcase_relations (
   source_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id) ON DELETE CASCADE,
   destination_id  INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id) ON DELETE CASCADE,
   relation_type INT2 NOT NULL DEFAULT '1',
+  link_status INT2 NOT NULL DEFAULT '1',
   author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
   creation_ts TIMESTAMP NOT NULL DEFAULT now(),
   PRIMARY KEY (id)
@@ -809,34 +858,6 @@ CREATE TABLE /*prefix*/req_monitor (
   PRIMARY KEY (req_id,user_id,testproject_id)
 );
 
---
--- TICKET 4914: Create View - tcversions_last_active
---
-CREATE OR REPLACE VIEW /*prefix*/tcversions_last_active AS 
-(
-  SELECT tcv.id, tcv.tc_external_id, tcv.version, tcv.layout, tcv.status, 
-  		 tcv.summary, tcv.preconditions, tcv.importance, tcv.author_id, tcv.creation_ts, 
-  		 tcv.updater_id, tcv.modification_ts, tcv.active, tcv.is_open, tcv.execution_type, 
-  		 ac.tcase_id
-  FROM /*prefix*/tcversions tcv
-  JOIN( 
-	  SELECT nhtcv.parent_id AS tcase_id, max(tcv.id) AS tcversion_id
-	  FROM /*prefix*/nodes_hierarchy nhtcv
-	  JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
-	  WHERE tcv.active = 1
-	  GROUP BY nhtcv.parent_id, tcv.tc_external_id
-	  ) ac 
-  ON tcv.id = ac.tcversion_id
-);
-
-
-CREATE OR REPLACE VIEW /*prefix*/tcases_active AS 
-(
-	SELECT DISTINCT nhtcv.parent_id AS tcase_id, tcv.tc_external_id
-	FROM /*prefix*/nodes_hierarchy nhtcv
-	JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
-	WHERE tcv.active = 1
-);
 
 CREATE TABLE /*prefix*/plugins (
    id BIGSERIAL NOT NULL,
@@ -857,3 +878,247 @@ CREATE TABLE /*prefix*/plugins_configuration (
    creation_ts TIMESTAMP NOT NULL DEFAULT now(),
    PRIMARY KEY (id)
 );
+
+--
+--
+--
+CREATE TABLE /*prefix*/codetrackers (
+  id BIGSERIAL NOT NULL ,
+  name VARCHAR(100) NOT NULL,
+  type INTEGER NOT NULL DEFAULT '0',
+  cfg TEXT,
+  PRIMARY KEY  ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/codetrackers_uidx1 ON /*prefix*/codetrackers ("name");
+
+--
+--
+--
+CREATE TABLE /*prefix*/testproject_codetracker (
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  "codetracker_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/codetrackers (id) ON DELETE CASCADE,
+  PRIMARY KEY ("testproject_id")
+);
+
+
+--
+-- Table structure for table "testcase_platforms"
+--
+CREATE TABLE /*prefix*/testcase_platforms( 
+  "id" BIGSERIAL NOT NULL , 
+  "testcase_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id),
+  "platform_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/platforms (id) ON DELETE CASCADE,
+  PRIMARY KEY ("id")
+); 
+CREATE UNIQUE INDEX /*prefix*/idx01_testcase_platforms ON /*prefix*/testcase_platforms ("testcase_id","tcversion_id","platform_id");
+CREATE INDEX /*prefix*/idx02_testcase_platforms ON /*prefix*/testcase_platforms ("tcversion_id");
+
+
+
+CREATE TABLE /*prefix*/baseline_l1l2_context (
+  "id" BIGSERIAL NOT NULL , 
+  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
+  "platform_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/platforms (id) ON DELETE CASCADE,
+  "being_exec_ts" timestamp NOT NULL,
+  "end_exec_ts" timestamp NOT NULL,
+  "creation_ts" timestamp NOT NULL DEFAULT now(),
+  PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/udx1 ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
+
+
+CREATE TABLE /*prefix*/baseline_l1l2_details (
+  "id" BIGSERIAL NOT NULL , 
+  "context_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/baseline_l1l2_context (id),
+  "top_tsuite_id" BIGINT NOT NULL DEFAULT '0'  REFERENCES  /*prefix*/testsuites (id),
+  "child_tsuite_id" BIGINT NOT NULL DEFAULT '0'  REFERENCES  /*prefix*/testsuites (id),
+  "status" char(1) DEFAULT NULL,
+  "qty" INT unsigned NOT NULL DEFAULT '0',
+  "total_tc" INT unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY ("id")
+) ;
+CREATE UNIQUE INDEX /*prefix*/udx1 
+ON /*prefix*/baseline_l1l2_details ("context_id","top_tsuite_id","child_tsuite_id","status");
+
+
+
+--
+-- VIEWS
+--
+CREATE OR REPLACE VIEW /*prefix*/tcases_active AS 
+(
+  SELECT DISTINCT nhtcv.parent_id AS tcase_id, tcv.tc_external_id
+  FROM /*prefix*/nodes_hierarchy nhtcv
+  JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
+  WHERE tcv.active = 1
+);
+
+-- 
+--
+CREATE OR REPLACE VIEW /*prefix*/tcversions_last_active AS 
+(
+  SELECT tcv.id, tcv.tc_external_id, tcv.version, tcv.layout, tcv.status, 
+       tcv.summary, tcv.preconditions, tcv.importance, tcv.author_id, tcv.creation_ts, 
+       tcv.updater_id, tcv.modification_ts, tcv.active, tcv.is_open, tcv.execution_type, 
+       ac.tcase_id
+  FROM /*prefix*/tcversions tcv
+  JOIN( 
+    SELECT nhtcv.parent_id AS tcase_id, max(tcv.id) AS tcversion_id
+    FROM /*prefix*/nodes_hierarchy nhtcv
+    JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
+    WHERE tcv.active = 1
+    GROUP BY nhtcv.parent_id, tcv.tc_external_id
+    ) ac 
+  ON tcv.id = ac.tcversion_id
+);
+
+
+--
+CREATE OR REPLACE VIEW /*prefix*/latest_tcase_version_number AS 
+( 
+  SELECT NH_TC.id AS testcase_id,max(TCV.version) AS version 
+  FROM /*prefix*/nodes_hierarchy NH_TC 
+  JOIN /*prefix*/nodes_hierarchy NH_TCV 
+  ON NH_TCV.parent_id = NH_TC.id
+  JOIN /*prefix*/tcversions TCV 
+  ON NH_TCV.id = TCV.id 
+  GROUP BY testcase_id
+);
+
+--
+-- @uses latest_tcase_version_number
+--
+CREATE OR REPLACE VIEW /*prefix*/latest_tcase_version_id AS 
+(
+  SELECT LTCVN.testcase_id AS testcase_id,
+         LTCVN.version AS version,
+         TCV.id AS tcversion_id
+  FROM /*prefix*/latest_tcase_version_number LTCVN 
+  JOIN /*prefix*/nodes_hierarchy NHTCV 
+  ON NHTCV.parent_id = LTCVN.testcase_id
+  JOIN /*prefix*/tcversions TCV 
+  ON  TCV.id = NHTCV.id 
+  AND TCV.version = LTCVN.version
+);
+
+
+--
+-- @used_by latest_req_version_id
+--
+CREATE OR REPLACE VIEW /*prefix*/latest_req_version AS
+( 
+  SELECT RQ.id AS req_id,max(RQV.version) AS version 
+  FROM /*prefix*/nodes_hierarchy NHRQV 
+  JOIN /*prefix*/requirements RQ 
+  ON RQ.id = NHRQV.parent_id 
+  JOIN /*prefix*/req_versions RQV 
+  ON RQV.id = NHRQV.id
+  GROUP BY RQ.id
+);
+
+
+--
+-- @uses latest_req_version
+-- 
+CREATE OR REPLACE VIEW /*prefix*/latest_req_version_id AS 
+( 
+  SELECT LRQVN.req_id AS req_id, LRQVN.version AS version,
+         REQV.id AS req_version_id
+  FROM /*prefix*/latest_req_version LRQVN JOIN 
+       /*prefix*/nodes_hierarchy NHRQV
+  ON NHRQV.parent_id = LRQVN.req_id 
+  JOIN /*prefix*/req_versions REQV 
+  ON REQV.id = NHRQV.id AND REQV.version = LRQVN.version
+);
+
+
+--
+--
+CREATE OR REPLACE VIEW /*prefix*/latest_rspec_revision AS 
+(
+  SELECT RSR.parent_id AS req_spec_id, RS.testproject_id AS testproject_id,
+  MAX(RSR.revision) AS revision 
+  FROM /*prefix*/req_specs_revisions RSR 
+  JOIN /*prefix*/req_specs RS 
+  ON RS.id = RSR.parent_id
+  GROUP BY RSR.parent_id,RS.testproject_id
+);
+
+--
+--
+CREATE OR REPLACE VIEW /*prefix*/tcversions_without_keywords AS 
+( 
+  SELECT NHTCV.parent_id AS testcase_id, NHTCV.id AS id
+  FROM /*prefix*/nodes_hierarchy NHTCV 
+  WHERE NHTCV.node_type_id = 4 
+  AND NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_keywords TCK 
+                 WHERE TCK.tcversion_id = NHTCV.id ) )
+);
+
+
+--
+--
+CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan AS 
+( 
+  SELECT tcversion_id, testplan_id, MAX(id) AS id 
+  FROM /*prefix*/executions 
+  GROUP BY tcversion_id,testplan_id
+);  
+
+--
+--
+CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_context AS 
+(
+  SELECT tcversion_id, testplan_id,build_id,platform_id,max(id) AS id
+  FROM /*prefix*/executions 
+  GROUP BY tcversion_id,testplan_id,build_id,platform_id
+);
+
+
+--
+--
+CREATE OR REPLACE VIEW /*prefix*/tcversions_without_platforms AS 
+( 
+  SELECT NHTCV.parent_id AS testcase_id, NHTCV.id AS id
+  FROM /*prefix*/nodes_hierarchy NHTCV 
+  WHERE NHTCV.node_type_id = 4 
+  AND NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_platforms TCPL
+                 WHERE TCPL.tcversion_id = NHTCV.id ) )
+);
+
+--
+--
+CREATE OR REPLACE VIEW /*prefix*/tsuites_tree_depth_2 AS 
+(
+  SELECT TPRJ.prefix,
+  NHTPRJ.name AS testproject_name,    
+  NHTS_L1.name AS level1_name,
+  NHTS_L2.name AS level2_name,
+  NHTPRJ.id AS testproject_id, 
+  NHTS_L1.id AS level1_id, 
+  NHTS_L2.id AS level2_id
+  FROM /*prefix*/testprojects TPRJ 
+  JOIN /*prefix*/nodes_hierarchy NHTPRJ 
+  ON TPRJ.id = NHTPRJ.id
+  LEFT OUTER JOIN /*prefix*/nodes_hierarchy NHTS_L1 
+  ON NHTS_L1.parent_id = NHTPRJ.id
+  LEFT OUTER JOIN /*prefix*/nodes_hierarchy NHTS_L2
+  ON NHTS_L2.parent_id = NHTS_L1.id 
+  WHERE NHTPRJ.node_type_id = 1 
+  AND NHTS_L1.node_type_id = 2
+  AND NHTS_L2.node_type_id = 2
+);
+--
+
+CREATE OR REPLACE VIEW /*prefix*/exec_by_date_time 
+AS (
+SELECT NHTPL.name AS testplan_name, 
+TO_CHAR(E.execution_ts, 'YYYY-MM-DD') AS yyyy_mm_dd,
+TO_CHAR(E.execution_ts, 'YYYY-MM') AS yyyy_mm,
+TO_CHAR(E.execution_ts, 'HH24') AS hh,
+TO_CHAR(E.execution_ts, 'HH24') AS hour,
+E.* FROM /*prefix*/executions E
+JOIN /*prefix*/testplans TPL on TPL.id=E.testplan_id
+JOIN /*prefix*/nodes_hierarchy NHTPL on NHTPL.id = TPL.id);
+

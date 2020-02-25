@@ -213,6 +213,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $fieldSizeCfg = config_get('field_size');
 
     $tcase_mgr = new testcase($db);
+    $tcase_mgr->setTestProject($tproject_id);
+
+    
     $tproject_mgr = new testproject($db);
     $req_spec_mgr = new requirement_spec_mgr($db);
     $req_mgr = new requirement_mgr($db);

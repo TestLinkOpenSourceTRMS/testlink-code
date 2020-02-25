@@ -251,6 +251,7 @@ function cs_all_checkbox_in_div(div_id, cb_id_prefix,memory_id)
 		var elemType = inputs[idx].type;		
 		
 		if(inputs[idx].type == "checkbox" && 
+		   inputs[idx].disabled == false && 
 		  (inputs[idx].id.indexOf(cb_id_prefix)==0) )
 		{
       inputs[idx].checked = (memory.value == "1") ? false : true;

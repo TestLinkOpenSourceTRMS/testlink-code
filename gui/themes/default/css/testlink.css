@@ -4,36 +4,82 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 Purpose: Default TestLink CSS
 
-IMPORTANT:
-NiftyCube rounding package has problems with I.E. 6 if background color is
-assigned using name (example: white) instead of code (example: #FFF)
-
 */
 
 /* ***** GLOBAL HTML ***************************************************************** */
+html, body {
+	height:100%;
+	width:100%;
+	margin: 0px;
+}
 body, body.testlink {
-	background:  	#EEE; 
+	background-color: white !important;
 	font-family: 	'Trebuchet MS', Arial, Verdana, sans-serif;
 	font-size: 		small;
 	margin:			0px;
 	padding:		0px;
+	height:100%;
 }
-
-body.landing {
-	background:  	#059; /* 059 */
-	font-family: 	'Trebuchet MS', Arial, Verdana, sans-serif;
-	font-size: 		small;
-	margin:			0px;
-	padding:		0px;
+iframe {
+ border:none;
 }
-
+iframe.sideBarFrame {
+	width:100%;
+	height:calc(100% - 57px);
+}
+iframe.contentFrame-small {
+	border: none;
+	height:calc(100% - 5px);
+	width: calc(100% - 150px);
+	padding-left: 2px;
+}
+iframe.contentFrame-large {
+	border: none;
+	height:calc(100% - 5px);
+	width: calc(100% - 50px);
+	padding-left: 2px;
+}
+iframe.treeframe {
+	width:calc(99% - 70%);
+	height:calc(100% - 35px);
+	float:left;
+}
+iframe.workframe {
+	width:calc(100% - 29%);
+	height:calc(100% - 35px);
+}
+.sidebar.compact.sidebar-large {
+	width:150px !important;
+}
+.sidebar.compact.sidebar-small{
+	width:50px !important;
+}
+span.menu-text-shown{
+	display:block;
+}
+span.menu-text-hidden{
+	display:none;
+}
+div.white-space{
+	height:20px;
+	background-color:whitesmoke;
+}
+table.table{
+	margin:0px;
+}
+ul.nav.nav-tabs.padding-18{
+	padding-top:5px;
+}
+.x-tree-node{
+	font-size:13px!important;
+}
 /** 
 use together with #header-wrap, to create a section on top of body
 that remain always visible while rest of body content scrolls,
 giving visual experience that body goes under the section on top
 */
 body.fixedheader {
-	padding-top:	120px !important;
+	padding-top:	200px !important;
 	padding-top:	0; /* IE 6 does not understand fixed */
 }
 
@@ -94,17 +140,18 @@ form
 }
 
 /* ***** Links ***** */
-/* A Visited link is still blue */
-a:visited, a:link, a:active {
+/* A Visited link is still blue, except if class is btn-primary from bootstrap */
+
+a:not(.btn-primary){
 	color: 			#059;
 	text-decoration: none;
 }
+
 /* A link being hovered over is red*/
 a:hover   {
 	color: 			#900;
 	text-decoration: none;
 }
-
 
 /* ***** Menu bar specific ******************************************* */
 div.menu_title {
@@ -123,7 +170,6 @@ div.menu_bar {
 }
 
 select.menu_combo {
-	background: 	#EEE;
 	border-style:	none;
 	font-size:	 	smaller;
 	font-weight:    bold;
@@ -155,9 +201,8 @@ present on page (example grid())
 On chrome seems not work
 */
 #header-wrap {
-	background:		#eee;
 	border-bottom:	1px solid #000;
-	height: 100px;
+	height: 200px;
 	position: fixed;
 	top:  0;
 	width:  100%;
@@ -197,7 +242,6 @@ span.form_label {
 
 /* for tree menu */
 div.tree {
-	background: 	#EEE;
 	padding: 		3px;
 	border: 		1px solid #808080;
 	margin:			3px;
@@ -209,7 +253,6 @@ div.groupBtn {
 }
 
 div.vertical_menu {
-	background: 	#EEE;
 	font-size:      90%;
 	margin: 		3px;
 	padding: 		2px;
@@ -242,10 +285,11 @@ div.menu_bubble h3{
  * Give buttons, submit, reset a gradient 3d look and other components
  * text/password-input, textarea and select a flat appearance.
  */
+
 input[type="button"],
+input[type="submit"],
 input[type="password"],
 input[type="reset"],
-input[type="submit"],
 input[type="text"],
 select,
 textarea,
@@ -256,7 +300,7 @@ button {
    margin: 4px 0 0 0;
    font-size: 9pt;
    color: black;
-   -moz-border-radius: 3px;
+   -border-radius: 3px;
    -webkit-border-radius: 3px;
    border-radius: 3px;
 }
@@ -443,13 +487,12 @@ span.unselected a, span.unselected a:visited {
 * "common" 		- often used for view arrays
 * "simple" 		- often used for forms
 * "smallGrey" 	- often used for options / filters
-* "invisible" 	- no borders
+* "no-border" 	- no border (former "invisible" but already used by bootstrap)
 * !!! Do not add new table kinds !!! (there is bunch of wild table definitions below)
 */
 
 /* ***** Common ********************* */
 table.common {
-	background:     #EEE;
 	border: 		1px solid black;
 	margin-bottom:	20px;
 	min-width:		50%;
@@ -490,7 +533,6 @@ table.common caption, table.smallGrey caption {
 
 /* ***** Simple Table (often used to show data) ***************** */
 table.simple, table.simple_tableruler {
-	background:     #EEE;
 	border: 		thin solid black;
 	font-size:		90%;
 	margin:			5px;
@@ -508,21 +550,26 @@ table.simple_tableruler tr:hover{
     background-color: #CDDEF3 !important;
 }
 
-table.tableruler tr:hover{
+table.tableruler tbody tr:hover{
     background-color: #FFF !important;
 }
 
 /* Used for filters and options settings */
 table.smallGrey {
-	background:     #EEE;
 	border: 		1px solid black;
 	font-size:		smaller;
 	margin-bottom:	10px;
 	margin-right:	0px;
 }
 
+table.no-border {
+	border: 		0px none;
+	font-size:		90%;
+	margin:			5px 0px;
+	width:			auto;
+}
 
-table.invisible {
+table.no-border {
 	border: 		0px none;
 	font-size:		90%;
 	margin:			5px 0px;
@@ -530,7 +577,6 @@ table.invisible {
 }
 
 table.mainTable{
-	background: 	#EEE;
 	border: 		1px double black;
 	min-width:		200px;
 }
@@ -544,7 +590,6 @@ table.mainTable th {
 }
 
 table.link_and_exec {
-	background:     #EEE;
 	border: 		1px solid black;
 	margin-bottom:	10px;
 	margin-right:	0px;
@@ -556,7 +601,6 @@ table.link_and_exec th {
 
 /* *****  Table Execution History ********* */
 table.exec_history {
-	background:     #EEE;
 	border: 		thin solid black;
 	font-size:		90%;
 	margin:			20px;
@@ -616,6 +660,14 @@ div.blocked {
 
 div.not_run {
 	background:		black;
+}
+
+div.backup_exist {
+	color: 			black;
+	margin: 		8px;
+	padding: 		6px;
+	text-align: 	center;
+	background:		#EEE;
 }
 
 
@@ -725,6 +777,10 @@ div.resultBox {
 	color: 			black;
 	margin: 		0px 12px 12px 12px;
 	padding: 		12px;
+}
+
+div.resultBox img:hover {
+	cursor:		pointer;	
 }
 
 img.arrow {
@@ -884,7 +940,6 @@ div.login_form.medium {
   vertical-align: 	middle;
 }
 
-/* havlatm: @TODO title must be header markup */
 .exec_tc_title {
 	background:		#059;
 	color:			white;
@@ -892,6 +947,16 @@ div.login_form.medium {
 	padding: 		3px;
 	text-align: 	left;
 }
+
+.exec_tc_title_alert {
+	background:		#B22222;
+	color:			white;
+	margin-bottom:	4px;
+	padding: 		3px;
+	text-align: 	left;
+	border-radius: 10px;
+}
+
 
 .exec_additional_info{
 	background-color: 	#F0F4F0; /* whitesmoke=F0F4F0, #FFC*/
@@ -1085,6 +1150,56 @@ th.testlink, td.testlink, tr.testlink td {
 }
 .x-progress-wrap.left-align .x-progress-text {
     text-align:left;
+}
+
+/* From ACE */
+.page-content {
+    margin: 0 0 10px;
+    padding: 8px 8px 24px;
+    position: relative;
+}
+
+/* To adjust Bootstrap tables */
+.table {
+  font-size: 12px;
+  width: 100%;
+}
+
+.table th, .table tr, .table td {
+   height: 10px;
+}
+
+.table .thead-dark th {
+  color: #fff;
+  background-color: #212529;
+  border-color: #32383e;
+}
+
+.table .thead-light th {
+  color: #495057;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+p.text-border {
+	border: 1px solid black;
+	background: white;
+	padding : 10px;
+}
+div.form-border {
+	border: 1px solid black;
+	background: white;
+	padding : 10px;
+}
+.yellow {
+	color : yellow;
+}
+#footer{
+	width:100%;
+	border-top : 3px double #e3e3e3;
+	position: absolute;
+	bottom: 0;
+	padding-top:5px;
+	font-style: normal;
 }
 
 /* ----- END ------------------------------------------------------------------------- */

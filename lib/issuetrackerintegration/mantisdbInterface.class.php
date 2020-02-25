@@ -90,6 +90,8 @@ class mantisdbInterface extends issueTrackerInterface
       $issue = new stdClass();
       $issue->IDHTMLString = "<b>{$id} : </b>";
       $issue->summaryHTMLString = $issueOnMantisDB['summary'];
+	  $issue->id = $issueOnMantisDB['id'];
+      $issue->summary = $issueOnMantisDB['summary'];
       $issue->statusCode = $issueOnMantisDB['status']; 
       $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
 

@@ -233,17 +233,13 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
     //
     // I will try to link the platforms if are defined
     $status_ok = true;
-    if( property_exists($xml,'platforms') )
-    {
+    if (property_exists($xml,'platforms')) {
       $platformMgr = new tlPlatform($dbHandler,$contextObj->tproject_id); 
       $platformUniverse = $platformMgr->getAllAsMap();
-      if( is_null($platformUniverse) )
-      {
+      if (is_null($platformUniverse)) {
         $status_ok = false;
         $msg[] = array($labels['no_platforms_on_tproject'],$labels['not_imported']);
-      }
-      else
-      {
+      } else {
         $platformUniverse = array_flip($platformUniverse);
         $op = processPlatforms($platformMgr,$tplanMgr,$platformUniverse,$xml->platforms,
                      $labels,$contextObj->tplan_id);

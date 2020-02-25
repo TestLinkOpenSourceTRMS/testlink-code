@@ -7,12 +7,9 @@
  *
  * @package     TestLink
  * @filesource  attachments.inc.php
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @link        http://www.testlink.org
  *
- *
- * @internal revisions
- * @since 1.9.10
  **/
 
 /** core functions */
@@ -121,56 +118,52 @@ function checkAttachmentID(&$db,$id,$attachmentInfo)
  *
  */
 function fileUploadManagement(&$dbHandler,$id,$title,$table)
-{
-  $retVal = new stdClass();
-  $retVal->uploaded = null;
-  $retVal->msg = null;
-  
+{  
+  $uploadOp = new stdClass();
+  $uploadOp->statusOK = false;
+  $uploadOp->statusCode = 0;
+  $uploadOp->msg = null;
+ 
   $fInfo  = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
-  if ($fInfo && $id)
-  {
+  if ($fInfo && $id) {
     $fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
     $fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
-
-    if ($fSize && $fTmpName != "")
-    {
+    
+    if ($fSize && $fTmpName != "") {
       $repo = tlAttachmentRepository::create($dbHandler);
-      $retVal->uploaded = $repo->insertAttachment($id,$table,$title,$fInfo);
-      if ($retVal->uploaded)
-      {
+      $uploadOp = $repo->insertAttachment($id,$table,$title,$fInfo);
+      $uploadOp->uploaded = $uploadOp->statusOK;
+
+      if ($uploadOp->statusOK) {
         logAuditEvent(TLS("audit_attachment_created",$title,$fInfo['name']),"CREATE",$id,"attachments");
-      } 
-    }
-    else
-    {
-      $retVal->msg  = getFileUploadErrorMessage($fInfo);
+      } else {
+        $uploadOp->msg = getFileUploadErrorMessage($fInfo,$uploadOp);
+      }
+    } else {
+      $uploadOp->msg = getFileUploadErrorMessage($fInfo);
     } 
   }
-  return $retVal;
+  return $uploadOp;
 }
 
 /**
  *
  */
-function deleteAttachment(&$dbHandler,$fileID,$checkOnSession=true)
-{
+function deleteAttachment(&$dbHandler,$fileID,$checkOnSession=true) {
   $repo = tlAttachmentRepository::create($dbHandler);
   $info = $repo->getAttachmentInfo($fileID);
-  if( $info )
-  {
+  if( $info ) {
     $doIt = true;
-    if( $checkOnSession )
-    {
+    if( $checkOnSession ) {
       $doIt = checkAttachmentID($dbHandler,$fileID,$info);
     }
 
-    if( $doIt )
-    {  
-      if($repo->deleteAttachment($fileID,$info))
-      {
+    if( $doIt ) {  
+      if($repo->deleteAttachment($fileID,$info)) {
         logAuditEvent(TLS("audit_attachment_deleted",$info['title']),"DELETE",$fileID,"attachments");
       } 
     }
   }
+  return $info;
 }
 

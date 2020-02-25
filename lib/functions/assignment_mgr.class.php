@@ -369,7 +369,7 @@ class assignment_mgr extends tlObjectWithDB
     $creation_ts = $this->db->db_now();
     $types = $this->get_available_types();
     $tc_execution_type = $types['testcase_execution']['id'];
-    $delete_all_types = $copy_all_types;
+    $delete_all_types = $my['opt']['copy_all_types'];
       
     $type_sql = ($my['opt']['copy_all_types']) ? "" : " AND type = {$tc_execution_type} ";
     $user_sql = (is_numeric($assigner_id) && $assigner_id != 0) ? $assigner_id : "assigner_id";
@@ -573,8 +573,15 @@ class assignment_mgr extends tlObjectWithDB
           $email['body'] .= $hint . '<br><br>' . $ln . $user_id;
           $email['body'] .= '<br><br>' . $genby;
 
+          $email['cc'] = '';
+          $email['attachment'] = null;
+          $email['exit_on_error'] = true;
+          $email['htmlFormat'] = true; 
+
           $eop = email_send($email['from_address'],$email['to_address'], 
-                            $email['subject'], $email['body'], '', true, true);
+                            $email['subject'], $email['body'], 
+                            $email['cc'],$email['attachment'], 
+                            $email['exit_on_error'], $email['htmlFormat']);
         }  
       }  
     }  

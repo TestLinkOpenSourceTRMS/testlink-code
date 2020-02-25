@@ -7,22 +7,12 @@
  *
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.11 2010/10/17 08:33:41 franciscom Exp $
- * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
- * @link 		http://www.teamst.org/index.php
- * @since 		TestLink 1.9
+ * @copyright 2009, TestLink community 
  * 
- * @todo		ability to reserve machine for an user per dates
- *
- * @internal revisions
- * 20101017 - franciscom - BUGID 3888: Inventory fields are erased if any line break is entered (MySQL ONLY)
- * 20100516 - franciscom - readDB(),getAll() - interface changes
  **/
 
 /** parenthal classes */
 require_once('object.class.php');
-
 
 /**
  * Logic code for Inventory functionality
@@ -69,7 +59,7 @@ class tlInventory extends tlObjectWithDB
 	function __construct($testProjectID, &$dbHandler = null)
 	{
 		parent::__construct($dbHandler);
-		$this->testProjectID = $testProjectID;
+		$this->testProjectID = intval($testProjectID);
 	}
 	
 	/**
@@ -130,8 +120,7 @@ class tlInventory extends tlObjectWithDB
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
 		$doUnserialize = true;
-		switch($my['options']['detailLevel'])
-		{
+		switch($my['options']['detailLevel']) {
 			case 'minimun':
 				$fields2get = ' id ';
 				$doUnserialize = false;
@@ -141,42 +130,34 @@ class tlInventory extends tlObjectWithDB
 				$fields2get = ' * ';
 			break;
 		} 
-		$sql = "/* $debugMsg */ SELECT {$fields2get} FROM {$this->tables['inventory']} " .
-				 " WHERE  testproject_id={$this->testProjectID}";
+		$sql = "/* $debugMsg */ 
+		        SELECT {$fields2get} 
+		        FROM {$this->tables['inventory']}
+				    WHERE  testproject_id={$this->testProjectID}";
 		
 		$clauses = null;
-		if (!is_null($ids))
-		{
-			if (!is_array($ids))
-			{
+		if (!is_null($ids)) {
+			if (!is_array($ids)) {
 				$clauses[] = "id = {$ids}";
-			}
-			else
-			{		
+			} else {		
 				$clauses[] = "id IN (".implode(",",$ids).")";
 			}	
 		}
-		if ($clauses)
-		{
+		if ($clauses) {
 			$sql .= " AND " . implode(" AND ",$clauses);
 		}
 		
 		
-		if( is_null($my['options']['accessKey']) )
-		{
+		if( is_null($my['options']['accessKey']) ) {
 			$recordset = $this->db->get_recordset($sql);
-		}
-		else
-		{
+		} else {
 			$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['accessKey']);
 		}
 		
 		
-		if(!is_null($recordset) && $doUnserialize)
-		{
+		if(!is_null($recordset) && $doUnserialize) {
 			// unserialize text parameters
-			foreach ($recordset as $key => $item)
-			{
+			foreach ($recordset as $key => $item) {
 				$dummy = unserialize($recordset[$key]['content']);
 				$recordset[$key]['content'] = null;  // used for ? who knows?
 				$recordset[$key]['notes'] = isset($dummy['notes']) ? $dummy['notes'] : '';
@@ -195,8 +176,6 @@ class tlInventory extends tlObjectWithDB
 	 * @param integer $db [ref] the database connection
 	 * @return integer returns tl::OK on success, tl::E_DBERROR else
 	 *
-	 * @internal revisions
-	 * 20101017 - franciscom - BUGID 3888
 	 */
 	protected function writeToDB(&$db)
 	{
@@ -206,44 +185,38 @@ class tlInventory extends tlObjectWithDB
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$name = $db->prepare_string($this->name);
 		$ip = $db->prepare_string($this->ipAddress);
-		$data_serialized = $db->prepare_string(serialize($this->inventoryContent)); // BUGID 3888
+		$data_serialized = $db->prepare_string(serialize($this->inventoryContent)); 
 		if (is_null($this->inventoryId) || ($this->inventoryId == 0))
 		{
-			$sql = "/* $debugMsg */ INSERT INTO {$this->tables['inventory']} (name," .
-					 " testproject_id,content,ipaddress,owner_id,creation_ts) " .
-					 " VALUES ('" . $name .	"'," . $this->testProjectID . ",'" . 
-					$data_serialized . "','" . $ip . "'," . $this->ownerId . "," . 
-					$this->db->db_now() . ")";
+			$sql = "/* $debugMsg */ 
+			        INSERT INTO {$this->tables['inventory']} 
+			        (name,testproject_id,content,ipaddress,
+			         owner_id,creation_ts) " .
+					   " VALUES ('" . $name .	"'," . $this->testProjectID . ",'" . 
+					   $data_serialized . "','" . $ip . "'," . 
+					   $this->ownerId . "," . $this->db->db_now() . ")";
 				
 			$result = $this->db->exec_query($sql);
-			if ($result)
-			{
+			if ($result) {
 				$this->inventoryId = $db->insert_id($this->tables['inventory']);
 				logAuditEvent(TLS("audit_inventory_created",$this->name,$auditData['tproject_name']),
 				              "CREATE",$this->name,"inventory");
 				$this->userFeedback = langGetFormated('inventory_create_success',$this->name);
-			}
-			else
-			{
+			} else {
 				$this->userFeedback = langGetFormated('inventory_create_fails',$this->name);
 				tLog('Internal error: An inventory device "'.$this->name.'" was not created.', 'ERROR');
 			}	
-		}
-		else
-		{
+		} else {
 			$sql = "/* $debugMsg */UPDATE {$this->tables['inventory']} " .
 					 " SET name='{$name}', content='{$data_serialized}', " .
 				     " ipaddress='{$ip}', modification_ts=" . $this->db->db_now() .
 				     ", testproject_id={$this->testProjectID}, owner_id=" . $this->ownerId .
 					 " WHERE id={$this->inventoryId}";
 			$result = $this->db->exec_query($sql);
-			if ($result)
-			{
+			if ($result) {
 				tLog('A device "'.$this->name.'" was not updated.', 'INFO');
 				$this->userFeedback = langGetFormated('inventory_update_success',$this->name);
-			}
-			else
-			{
+			} else {
 				$this->setUserFeedback(langGetFormated('inventory_update_fails',$this->name));
 				tLog('Internal error: An inventory device "'.$this->name.'" was not updated.', 'ERROR');
 			}	
@@ -261,7 +234,9 @@ class tlInventory extends tlObjectWithDB
 	protected function deleteFromDB()
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$sql = "/* $debugMsg */ DELETE FROM {$this->tables['inventory']} WHERE id = " . $this->inventoryId;
+		$sql = "/* $debugMsg */ 
+		       DELETE FROM {$this->tables['inventory']} 
+		       WHERE id = " . $this->inventoryId;
 		$result = $this->db->exec_query($sql);
 		return $result ? tl::OK : tl::ERROR;	
 	}
@@ -276,29 +251,23 @@ class tlInventory extends tlObjectWithDB
 	{
 		$auditData = $this->getAuditData();
 		$auditData = current($auditData);
-		$this->inventoryId = $itemID;
+		$this->inventoryId = intval($itemID);
 
 		// check existence / get name of the record		
 		$recordset = $this->readDB($this->inventoryId);
-		if(!is_null($recordset))
-		{
+		if(!is_null($recordset)) {
 			$this->name = $recordset[0]['name'];
 			$result = $this->deleteFromDB();
 
-			if ($result == tl::OK)
-			{
+			if ($result == tl::OK) {
 				logAuditEvent(TLS("audit_inventory_deleted",$this->name,$auditData['tproject_name']),
 				              "DELETE",$this->name,"inventory");
 				$this->userFeedback = langGetFormated('inventory_delete_success',$this->name);
-			}
-			else
-			{
+			} else {
 				$this->userFeedback = langGetFormated('inventory_delete_fails',$this->name);
 				tLog('Internal error: The device "'.$this->name.'" was not deleted.', 'ERROR');
 			}	
-		}
-		else
-		{
+		} else {
 			$this->userFeedback = lang_get('inventory_no_device').' ID='.$this->inventoryId;
 			tLog('Internal error: The device "'.$this->name.'" was not deleted.', 'ERROR');
 		}
@@ -317,8 +286,7 @@ class tlInventory extends tlObjectWithDB
 	{
 		$this->initInventoryData($data);
 		$result = $this->checkInventoryData();
-		if ($result == tl::OK)
-		{
+		if ($result == tl::OK) {
 			$result = $this->writeToDB($this->db);
 		}
 		return $result;
@@ -358,43 +326,38 @@ class tlInventory extends tlObjectWithDB
 		$name = $this->db->prepare_string(strtoupper($this->name));
 		$ipAddress = $this->db->prepare_string(strtoupper($this->ipAddress));
 
-		if (strlen($name) == 0)
-		{
+		if (strlen($name) == 0) {
 			$result = self::E_NAMELENGTH;
-			$this->userFeedback = langGetFormated('inventory_name_empty',$name);
+			$this->userFeedback = 
+			  langGetFormated('inventory_name_empty',$name);
 		}
 
-		if ($result == tl::OK)
-		{
-			
-			$sql = "/* $debugMsg */ SELECT id FROM {$this->tables['inventory']} " .
-					 " WHERE name='" . $name.
-			         "' AND testproject_id={$this->testProjectID}";
+		if ($result == tl::OK) {
+			$sql = "/* $debugMsg */ 
+			        SELECT id FROM {$this->tables['inventory']} " .
+					    " WHERE name='" . $name.
+			        "' AND testproject_id={$this->testProjectID}";
 			         
-			if ($this->inventoryId > 0) // for update
-			{
+			if ($this->inventoryId > 0) {
 				$sql .= ' AND NOT id='.$this->inventoryId;
 			}
 
-			if ($this->db->fetchFirstRow($sql))
-			{
+			if ($this->db->fetchFirstRow($sql)) {
 				$result = self::E_NAMEALREADYEXISTS;
 				$this->userFeedback = langGetFormated('inventory_name_exists',$this->name);
 			}
 		}
 
-		if ($result == tl::OK && !empty($ipAddress))
-		{
-			$sql = "/* $debugMsg */ SELECT id FROM {$this->tables['inventory']} " .
-					 " WHERE ipaddress='" . $ipAddress . 
-		    	     "' AND testproject_id={$this->testProjectID}";
+		if ($result == tl::OK && !empty($ipAddress)) {
+			$sql = "/* $debugMsg */ 
+			        SELECT id FROM {$this->tables['inventory']} " .
+					    " WHERE ipaddress='" . $ipAddress . 
+		    	    "' AND testproject_id={$this->testProjectID}";
 
-			if ($this->inventoryId > 0) // for update
-			{
+			if ($this->inventoryId > 0) {
 				$sql .= ' AND NOT id='.$this->inventoryId;
 			}
-			if ($this->db->fetchFirstRow($sql))
-			{
+			if ($this->db->fetchFirstRow($sql)) {
 				$result = self::E_IPALREADYEXISTS;
 				$this->userFeedback = langGetFormated('inventory_ip_exists',$ipAddress);
 			}
@@ -406,17 +369,14 @@ class tlInventory extends tlObjectWithDB
 	/**
 	 * 
  	 *
-     */
+   */
 	protected function getAuditData()
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$sql = " /* $debugMsg */ " .
 		       " SELECT id, name AS tproject_name FROM {$this->tables['nodes_hierarchy']} " .
 		       " WHERE id = {$this->testProjectID} ";
-  		$info = $this->db->fetchRowsIntoMap($sql,'id');
+  	$info = $this->db->fetchRowsIntoMap($sql,'id');
 		return $info;        
 	}
-
-	
 }
-?>

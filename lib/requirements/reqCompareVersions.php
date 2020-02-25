@@ -3,16 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @package   TestLink
+ * @package     TestLink
  * @author      asimon
- * @copyright   2005-2012, TestLink community 
+ * @copyright   2005-2018, TestLink community 
  * @filesource  reqCompareVersions.php
- * @link    http://www.testlink.org/
+ * @link        http://www.testlink.org/
  *
  * Compares selected requirements versions with each other.
- *
- * @internal revisions
- * @since 1.9.15
  */
 
 require_once("../../config.inc.php");
@@ -237,7 +234,8 @@ function getCFDiff($cfields,&$reqMgr)
       } // mega if
     }  // foraeach    
   }
-  return count($cmp) > 0 ? $cmp : null; 
+
+  return (null != $cmp && count($cmp) > 0) ? $cmp : null; 
 }
 
 
@@ -246,22 +244,21 @@ function getCFDiff($cfields,&$reqMgr)
  * 
  *
  */
-function init_args()
-{
+function init_args() {
   $args = new stdClass();
 
-  $args->req_id = isset($_REQUEST['requirement_id']) ? $_REQUEST['requirement_id'] : 0;
+  $args->req_id = isset($_REQUEST['requirement_id']) ? intval($_REQUEST['requirement_id']) : 0;
+
   $args->compare_selected_versions = isset($_REQUEST['compare_selected_versions']);
   $args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
   $args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 
   $args->use_daisydiff = isset($_REQUEST['use_html_comp']);
 
   $diffEngineCfg = config_get("diffEngine");
   $args->context = null;
-  if( !isset($_REQUEST['context_show_all'])) 
-  {
+  if( !isset($_REQUEST['context_show_all']))  {
     $args->context = (isset($_REQUEST['context']) && is_numeric($_REQUEST['context'])) ? $_REQUEST['context'] : $diffEngineCfg->context;
   }
   

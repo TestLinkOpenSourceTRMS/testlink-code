@@ -8,17 +8,6 @@
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
- * @internak revisions
- * @since 1.9.4
- *
- * @since 1.9.4
- * 20101019 - Julian - show importance column only if priority is enabled for project
- * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                     table state independent from localization
- * 20101012 - Julian - added html comment to properly sort by test case column
- * 20101005 - asimon - added linked icon for testcase editing
- * 20100920 - Julian - use exttable
- *                   - added importance column
  *
  */
 require_once("../../config.inc.php");
@@ -36,7 +25,6 @@ $tproject_mgr = new testproject($db);
 $priorityMgmtEnabled = $_SESSION['testprojectOptions']->testPriorityEnabled;
 
 $msg_key = 'all_testcases_has_testplan';
-
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 // Time tracking
@@ -189,6 +177,3 @@ function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_metrics');
 }
-?>
-
-

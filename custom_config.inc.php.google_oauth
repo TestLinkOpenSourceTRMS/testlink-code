@@ -1,0 +1,29 @@
+<?php
+/**
+ * OAUTH auth
+ * Configure this on custom_config.inc.php
+ */
+
+// Google
+// $tlCfg->authentication['oauth'] = array();
+
+// $tlCfg->authentication['oauth'][1]['oauth_client_id'] = 'CLIENT_ID';
+// $tlCfg->authentication['oauth'][1]['oauth_client_secret'] = 'CLIENT_SECRET';
+// $tlCfg->authentication['oauth'][1]['redirect_uri'] = 'redirect_uri';
+
+// false => if there is only one user it will be selected automatically 
+// $tlCfg->authentication['oauth'][1]['oauth_force_single'] = true; 
+
+
+// $tlCfg->authentication['oauth'][1]['oauth_enabled'] = true;
+// $tlCfg->authentication['oauth'][1]['oauth_name'] = 'google';
+
+// Get from /gui/themes/default/images
+// Can be authorization_code (by default), client_credentials or password
+// $tlCfg->authentication['oauth'][1]['oauth_grant_type'] = 'authorization_code';  
+// $tlCfg->authentication['oauth'][1]['oauth_url'] = 'https://accounts.google.com/o/oauth2/auth';
+// $tlCfg->authentication['oauth'][1]['token_url'] = 'https://accounts.google.com/o/oauth2/token';
+// the domain you want to whitelist
+// $tlCfg->authentication['oauth'][1]['oauth_domain'] = 'google.com'; 
+// $tlCfg->authentication['oauth'][1]['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
+// $tlCfg->authentication['oauth'][1]['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';

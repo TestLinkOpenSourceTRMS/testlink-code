@@ -105,6 +105,10 @@ function initializeGui(&$dbHandler,$argsObj) {
 
   $tplan_mgr = new testplan($dbHandler);
 
+  $gui->doViewReload = false;
+  if (property_exists($argsObj, 'doViewReload')) {
+    $gui->doViewReload = $argsObj->doViewReload;
+  }
   $gui->tproject_id = $argsObj->tproject_id;
   $gui->tplans = null;
   $gui->user_feedback = '';

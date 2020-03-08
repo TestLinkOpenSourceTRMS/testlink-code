@@ -52,7 +52,7 @@ var del_action=fRoot+'{$gui->actions->deleteAction}';
 {/if}
 
 <div class="workBack">
-{if $gui->createEnabled && 
+{if $gui->createEnabled && !is_null($gui->tplans) && 
     count($gui->tplans) > $tlCfg->gui->planView->itemQtyForTopButton}
    <div class="groupBtn">
      <form method="post" action="{$gui->actions->createAction}"

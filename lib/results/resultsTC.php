@@ -49,9 +49,9 @@ setUpBuilds($args,$gui);
 $buildSet = array('buildSet' => $args->builds->idSet);
 
 if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || 
-    ($args->do_action == 'result' && count($args->builds->idSet) <= $gui->matrixCfg->buildQtyLimit) )
+    ($args->doAction == 'result' 
+     && count($args->builds->idSet) <= $gui->matrixCfg->buildQtyLimit) )
 {
-  //setUpBuilds($args,$gui);
 
   $tpl = $templateCfg->default_template;
   //$buildSet = array('buildSet' => $args->builds->idSet);
@@ -89,8 +89,9 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) ||
 }  else {
   // We need to ask user to do a choice
   $tpl = 'resultsTCLauncher.tpl';
-  $gui->url2call = "lib/results/resultsTC.php?tplan_id=$gui->tplan_id" .
-                   "&tproject_id=$gui->tproject_id&do_action=result";
+  $gui->url2call = 
+    "lib/results/resultsTC.php?tplan_id=$gui->tplan_id" .
+    "&tproject_id=$gui->tproject_id&doAction=result&format=";
 
   $gui->pageTitle = $labels['test_result_matrix_filters'];
   if($gui->matrixCfg->buildQtyLimit > 0) {  

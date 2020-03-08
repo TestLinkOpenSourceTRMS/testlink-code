@@ -380,20 +380,17 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat) {
     $user_feedback = lang_get("cannot_add_build");
 
     $oBuild = new stdClass();
+    // 'creation_ts'
     $prop = array('tplan_id','release_date','notes',
                   'commit_id', 'tag',
                   'branch', 'release_candidate',
-                  'is_active','is_open','creation_ts');
+                  'is_active','is_open');
 
     $oBuild->name = $argsObj->build_name;
     foreach( $prop as $pp ) {
       $oBuild->$pp = $argsObj->$pp;
     }
 
-    /*
-    $buildID = $buildMgr->create($argsObj->tplan_id,$argsObj->build_name,$argsObj->notes,
-    $argsObj->is_active,$argsObj->is_open,$argsObj->release_date);
-    */
     $buildID = $buildMgr->createFromObject($oBuild);
 
     if ($buildID) {

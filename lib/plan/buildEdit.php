@@ -169,8 +169,9 @@ function init_args($request_hash, $session_hash,$date_format,&$tplanMgr) {
   $args->testprojectName = $session_hash['testprojectName'];
   $args->userID = intval($session_hash['userID']);
 
-  $args->exec_status_filter = isset($request_hash['exec_status_filter']) ?
-                                    $request_hash['exec_status_filter'] : null;
+  $args->exec_status_filter = 
+    isset($request_hash['exec_status_filter']) ?
+          $request_hash['exec_status_filter'] : null;
 
   $args->user = $_SESSION['currentUser'];
   return $args;
@@ -193,6 +194,8 @@ function initializeGui(&$argsObj,&$buildMgr) {
   foreach($dummy['status_label_for_exec_ui'] as $kv => $vl) {
     $guiObj->exec_status_filter['items'][$dummy['status_code'][$kv]] = lang_get($vl);  
   }  
+  $guiObj->exec_status_filter['selected'] = 
+    $argsObj->exec_status_filter;
 
   $guiObj->tplan_id = $argsObj->tplan_id;
   return $guiObj;

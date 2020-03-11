@@ -925,7 +925,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   "creation_ts" timestamp NOT NULL DEFAULT now(),
   PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX /*prefix*/udx1 ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
+CREATE UNIQUE INDEX /*prefix*/baseline_l1l2_context_uidx1 ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
 
 
 CREATE TABLE /*prefix*/baseline_l1l2_details (
@@ -938,7 +938,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   "total_tc" INT unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ) ;
-CREATE UNIQUE INDEX /*prefix*/udx1 
+CREATE UNIQUE INDEX /*prefix*/baseline_l1l2_details_uidx1
 ON /*prefix*/baseline_l1l2_details ("context_id","top_tsuite_id","child_tsuite_id","status");
 
 
@@ -1121,4 +1121,3 @@ TO_CHAR(E.execution_ts, 'HH24') AS hour,
 E.* FROM /*prefix*/executions E
 JOIN /*prefix*/testplans TPL on TPL.id=E.testplan_id
 JOIN /*prefix*/nodes_hierarchy NHTPL on NHTPL.id = TPL.id);
-

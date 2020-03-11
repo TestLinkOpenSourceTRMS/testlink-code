@@ -246,11 +246,9 @@ function setPaths()
 function checkSessionValid(&$db, $redirect=true)
 {
   $isValidSession = false;
-  if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0)
-  {
+  if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0) {
     $now = time();
-    if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60))
-    {
+    if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60)) {
       $_SESSION['lastActivity'] = $now;
       $user = new tlUser($_SESSION['userID']);
       $user->readFromDB($db);
@@ -258,8 +256,8 @@ function checkSessionValid(&$db, $redirect=true)
       $isValidSession = true;
     }
   }
-  if (!$isValidSession && $redirect)
-  {
+
+  if (!$isValidSession && $redirect) {
     tLog('Invalid session from ' . $_SERVER["REMOTE_ADDR"] . '. Redirected to login page.', 'INFO');
     
     $fName = "login.php";
@@ -426,14 +424,12 @@ function initProject(&$db,$hash_user_sel) {
   // Now we need to validate the TestPlan
   $ckObj->name = $ckCfg->prefix .  "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
 
-  if($user_sel["tplan_id"] != 0)
-  {
+  if($user_sel["tplan_id"] != 0) {
     $ckObj->value = $user_sel["tplan_id"];
     $ckObj->expire = time()+60*60*24*90;
     tlSetCookie($ckObj);
   } 
-  elseif (isset($_COOKIE[$ckObj->name])) 
-  {
+  elseif (isset($_COOKIE[$ckObj->name])) {
     $tplan_id = intval($_COOKIE[$ckObj->name]);
   }
   
@@ -470,8 +466,10 @@ function initProject(&$db,$hash_user_sel) {
  * @param string $userRightsCheckFunction (optional) name of function used to check user right needed
  *                           to execute the page
  */
-function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
-                          $userRightsCheckFunction = null, $onFailureGoToLogin = false)
+function testlinkInitPage(&$db, $initProject = FALSE, 
+                          $dontCheckSession = false,
+                          $userRightsCheckFunction = null, 
+                          $onFailureGoToLogin = false)
 {
   static $pageStatistics = null;
 
@@ -1133,8 +1131,7 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
   doDBConnect($dbHandler);
 
   $user = tlUser::getByAPIKey($dbHandler,$apikey);
-  if( count($user) == 1 )
-  {
+  if( count($user) == 1 ) {
     $_SESSION['lastActivity'] = time();
     $userObj = new tlUser(key($user));
     $userObj->readFromDB($dbHandler);
@@ -1155,16 +1152,13 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
     // b. using traditional login
     // In both way we assure that behaivour will be OK.
     //
-    if(!isset($_SESSION['basehref']))
-    {
+    if (!isset($_SESSION['basehref'])) {
       session_unset();
       session_destroy();
-      if(property_exists($rightsCheck, 'redirect_target') && !is_null($rightsCheck->redirect_target))
-      {
+      if(property_exists($rightsCheck, 'redirect_target') 
+         && !is_null($rightsCheck->redirect_target)) {
         redirect($rightsCheck->redirect_target);  
-      } 
-      else
-      {
+      } else {
         // best guess for all features that live on ./lib/results/
         redirect("../../login.php?note=logout");  
       } 
@@ -1173,9 +1167,7 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
     }  
  
 
-
-    if(!is_null($rightsCheck))
-    {
+    if(!is_null($rightsCheck)) {
       checkUserRightsFor($dbHandler,$rightsCheck,true);
     }
   }
@@ -1315,8 +1307,7 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
   }  
 
   $status_ok = false;
-  if( !is_null($item) )
-  {
+  if (!is_null($item)) {
     $_SESSION['lastActivity'] = time();
     $userObj = new tlUser();
     $_SESSION['currentUser'] = $userObj;
@@ -1417,10 +1408,8 @@ function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
     logAuditEvent(TLS("audit_security_no_environment",$script), $action,$userObj->dbID,"users");
   }
    
-  if( !$doExit )
-  {
-    foreach($rightsToCheck->items as $verboseRight)
-    {
+  if( !$doExit ) {
+    foreach($rightsToCheck->items as $verboseRight) {
       $status = $userObj->hasRight($dbHandler,$verboseRight,
                   $env['tproject_id'],$env['tplan_id'],true);
       if( ($doExit = !$status) && ($rightsToCheck->mode == 'and'))
@@ -1922,7 +1911,8 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
   if($tprojOpt->inventoryEnabled) {
     $invr = array('project_inventory_view','project_inventory_management');
     foreach($invr as $r){
-      $grants[$r] = ($user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
+      $grants[$r] = 
+        ($argsObj->user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
     }
   }
 

@@ -42,7 +42,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   "creation_ts" timestamp NOT NULL DEFAULT now(),
   PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX /*prefix*/udx1 ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
+CREATE UNIQUE INDEX /*prefix*/udx1_context ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
 
 
 CREATE TABLE /*prefix*/baseline_l1l2_details (
@@ -55,7 +55,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   "total_tc" INT NOT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ) ;
-CREATE UNIQUE INDEX /*prefix*/udx1 
+CREATE UNIQUE INDEX /*prefix*/udx1_details 
 ON /*prefix*/baseline_l1l2_details ("context_id","top_tsuite_id","child_tsuite_id","status");
 
 

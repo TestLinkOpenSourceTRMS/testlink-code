@@ -806,7 +806,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   end_exec_ts timestamp NOT NULL,
   creation_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY udx1 (testplan_id,platform_id,creation_ts)
+  UNIQUE KEY udx1_context (testplan_id,platform_id,creation_ts)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -819,7 +819,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   qty int(10) unsigned NOT NULL DEFAULT '0',
   total_tc int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY udx1 (context_id,top_tsuite_id,child_tsuite_id,status)
+  UNIQUE KEY udx1_details (context_id,top_tsuite_id,child_tsuite_id,status)
 ) DEFAULT CHARSET=utf8;
 
 

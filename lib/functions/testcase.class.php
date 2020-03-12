@@ -967,6 +967,7 @@ class testcase extends tlObjectWithAttachments {
 
       $cfx = 0;
       $gui->otherVersionsKeywords = array();
+      $gui->otherVersionsAliens = null;
 
       $gui->fileUploadURL = array();
       foreach($idSet as $key => $tc_id) {
@@ -1202,7 +1203,10 @@ class testcase extends tlObjectWithAttachments {
     if ($gui->hasIssueTracker = (null != $rs)) {
       $system = new tlIssueTracker($this->db);
       $repo = $system->getInterfaceObject($this->tproject_id);
-      $this->buildAlienBlob($gui->currentVersionAliens,$repo);
+
+      if ($gui->currentVersionAliens != null) {
+        $this->buildAlienBlob($gui->currentVersionAliens,$repo);
+      }  
 
       if ($gui->otherVersionsAliens != null) {
         foreach ($gui->otherVersionsAliens as $zzx => $elem) {

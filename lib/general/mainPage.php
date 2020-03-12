@@ -50,6 +50,13 @@ $userID = $currentUser->dbID;
 
 $gui = new stdClass();
 $gui->grants = getGrants($db,$user,$testprojectID,$userIsBlindFolded);
+
+/*
+echo '<pre>';
+var_dump($gui->grants);
+echo '</pre>';
+*/
+
 $gui->hasTestCases = false;
 
 if($gui->grants['view_tc']) { 

@@ -488,8 +488,9 @@ function testlinkInitPage(&$db, $initProject = FALSE,
     checkSessionValid($db);
   }
   
-  if ($userRightsCheckFunction) {
-    checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
+  if ($userRightsCheckFunction !== null) {
+    checkUserRightsFor($db,$userRightsCheckFunction,
+                       $onFailureGoToLogin);
   }
    
   // Init plugins
@@ -975,10 +976,8 @@ function checkUserRightsFor(&$db,$pfn,$onFailureGoToLogin=false)
   }
   
   
-  if (!$m2call($db,$currentUser,$arguments,$action))
-  {
-    if (!$action)
-    {
+  if (!$m2call($db,$currentUser,$arguments,$action)) {
+    if (!$action) {
       $action = "any";
     }
     logAuditEvent(TLS("audit_security_user_right_missing",$currentUser->login,$script,$action),
@@ -2096,4 +2095,47 @@ function initContext()
   }
 
   return array($context,$env);
+}
+
+
+
+/*
+ * rights check 
+ */
+function pageAccessCheck(&$db, &$user, $context) 
+{
+  $tplan_id = 0;
+  if (property_exists($context,'tplan_id')) {
+    $tplan_id = $context->tplan_id;
+  }
+
+  
+  $checkAnd = true;
+  foreach ($context->rightsAnd as $ri) {
+    $checkAnd &= $user->hasRight($db,$ri,
+                          $context->tproject_id,
+                          $tplan_id,true);
+  }
+ 
+  $checkOr = true;
+  if ($checkAnd) {
+    $checkOr = false;
+    foreach ($context->rightsAnd as $ri) {
+      $checkOr = $user->hasRight($db,$ri,
+                            $context->tproject_id,
+                            $tplan_id,true);
+      if ($checkOr) {
+        break;
+      }
+    }
+  }
+
+  if ($checkAnd == false && $checkOr == false) {
+    $script = basename($_SERVER['PHP_SELF']);
+    $action = 'Access Req Feature';
+    $msg = TLS("audit_security_user_right_missing",
+               $user->login,$script,$action); 
+    logAuditEvent($msg, $action,$user->dbID,"users");
+    throw new Exception($msg, 1);
+  }
 }

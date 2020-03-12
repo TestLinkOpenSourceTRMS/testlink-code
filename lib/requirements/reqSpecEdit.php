@@ -16,13 +16,17 @@ $editorCfg = getWebEditorCfg('requirement_spec');
 require_once(require_web_editor($editorCfg['type']));
 $req_cfg = config_get('req_cfg');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
 $commandMgr = new reqSpecCommands($db,$args->tproject_id);
-
 $gui = initialize_gui($db,$args,$req_cfg,$commandMgr);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$args->user,$context);
+
 
 $auditContext = new stdClass();
 $auditContext->tproject = $args->tproject_name;
@@ -96,6 +100,8 @@ function init_args()
     }  
   }  
   
+  $args->user = $_SESSION['currentUser'];
+
   return $args;
 }
 
@@ -255,11 +261,13 @@ function initialize_gui(&$dbHandler, &$argsObj, &$req_cfg, &$commandMgr)
   return $gui;
 }
 
+
 /**
- * 
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$user,&$context)
 {
-  return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+  $context->rightsOr = [];
+  $context->rightsAnd = ["mgt_view_req","mgt_modify_req"];
+  pageAccessCheck($db, $user, $context);
 }

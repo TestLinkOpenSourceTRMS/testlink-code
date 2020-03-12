@@ -23,13 +23,18 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('requirement');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 $commandMgr = new reqCommands($db);
 
 $args = init_args($db);
 $gui = initialize_gui($db,$args,$commandMgr);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$args->user,$context);
+
 
 $pFn = $args->doAction;
 $op = null;
@@ -46,6 +51,7 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg,$db);
  */
 function init_args(&$dbHandler)
 {
+
   $reqTitleSize = config_get('field_size')->requirement_title;
   $iParams = array("requirement_id" => array(tlInputParameter::INT_N),
                    "req_version_id" => array(tlInputParameter::INT_N),
@@ -79,6 +85,7 @@ function init_args(&$dbHandler)
   R_PARAMS($iParams,$args);
   $_REQUEST=strings_stripSlashes($_REQUEST);
     
+  $args->user = $_SESSION['currentUser'];
   $args->req_id = $args->requirement_id;
   $args->title = $args->req_title;
   $args->arrReqIds = $args->req_id_cbox;
@@ -299,9 +306,12 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
   return $gui;
 }
 
-
-function checkRights(&$db,&$user)
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-  return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+  $context->rightsOr = [];
+  $context->rightsAnd = ["mgt_view_req","mgt_modify_req"];
+  pageAccessCheck($db, $user, $context);
 }
-?>

@@ -14,15 +14,20 @@ require_once("users.inc.php");
 require_once('requirements.inc.php');
 require_once('attachments.inc.php');
 require_once("configCheck.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
-$templateCfg = templateConfiguration();
+$tplCfg = templateConfiguration();
 $args = init_args();
 $gui = initialize_gui($db,$args);
 
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+$smarty->display($tplCfg->template_dir . $tplCfg->default_template);
 
 
 /**
@@ -50,9 +55,9 @@ function initialize_gui(&$dbHandler,&$argsObj)
 {
   $req_spec_mgr = new requirement_spec_mgr($dbHandler);
   $tproject_mgr = new testproject($dbHandler);
-  $commandMgr = new reqSpecCommands($dbHandler,$argsObj->tproject_id);
+  $commandMgr = new reqSpecCommands($dbHandler,
+                      $argsObj->tproject_id);
                             
-  
   $gui = $commandMgr->initGuiBean();
   $gui->refreshTree = $argsObj->refreshTree;
   $gui->req_spec_cfg = config_get('req_spec_cfg');
@@ -60,7 +65,8 @@ function initialize_gui(&$dbHandler,&$argsObj)
   $gui->external_req_management = ($gui->req_cfg->external_req_management == ENABLED) ? 1 : 0;
   
   $gui->grants = new stdClass();
-  $gui->grants->req_mgmt = has_rights($db,"mgt_modify_req");
+  $gui->grants->req_mgmt = 
+     has_rights($db,"mgt_modify_req",$argsObj->tproject_id);
 
   $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
   $gui->revCount = $req_spec_mgr->getRevisionsCount($argsObj->req_spec_id);
@@ -73,8 +79,10 @@ function initialize_gui(&$dbHandler,&$argsObj)
   
   
   $gui->tproject_name = $argsObj->tproject_name;
-  $gui->main_descr = lang_get('req_spec_short') . config_get('gui_title_separator_1') . 
-                     "[{$gui->req_spec['doc_id']}] :: " .$gui->req_spec['title'];
+  $gui->main_descr = lang_get('req_spec_short') . 
+                     config_get('gui_title_separator_1') . 
+                     "[{$gui->req_spec['doc_id']}] :: " .
+                     $gui->req_spec['title'];
 
   $gui->refresh_tree = 'no';
   
@@ -121,7 +129,12 @@ function initialize_gui(&$dbHandler,&$argsObj)
 }
 
 
-function checkRights(&$db,&$user)
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($db,'mgt_view_req');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["mgt_view_req"];
+  pageAccessCheck($db, $user, $context);
 }

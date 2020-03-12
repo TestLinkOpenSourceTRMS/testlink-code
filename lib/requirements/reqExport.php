@@ -14,12 +14,18 @@ require_once("xml.inc.php");
 require_once("common.php");
 require_once("requirements.inc.php");
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
 
 $args = init_args();
 $gui = initializeGui($args,$req_spec_mgr);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
 
 switch($args->doAction)
 {
@@ -36,14 +42,14 @@ switch($args->doAction)
 
 
 /**
- * checkRights
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($db,'mgt_view_req');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["mgt_view_req"];
+  pageAccessCheck($db, $user, $context);
 }
-
 
 /**
  * init_args

@@ -11,7 +11,7 @@ require_once('common.php');
 require_once('attachments.inc.php');
 require_once('requirements.inc.php');
 require_once('users.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 
@@ -20,6 +20,10 @@ $req_mgr = new requirement_mgr($db);
 
 $args = init_args($req_mgr);
 $gui = initialize_gui($db,$args,$tproject_mgr,$req_mgr);
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -250,14 +254,16 @@ function getGrants( &$dbH, &$userObj, $tproject_id ) {
   return $grants;
 }
 
-
 /**
- * 
  *
  */
-function checkRights(&$dbHandler,&$user) {
-  return $user->hasRight($dbHandler,'mgt_view_req');
+function checkRights(&$db,&$user,&$context)
+{
+  $context->rightsOr = [];
+  $context->rightsAnd = ["mgt_view_req"];
+  pageAccessCheck($db, $user, $context);
 }
+
 
 
 /**

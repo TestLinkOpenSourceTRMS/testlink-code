@@ -6,7 +6,7 @@
  *
  * @package     TestLink
  * @author      Andreas Simon
- * @copyright   2018,2019 TestLink community
+ * @copyright   2018,2020 TestLink community
  * @filesource  reqOverview.php
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
@@ -18,7 +18,8 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
+
+testlinkInitPage($db,false,false);
 
 $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
@@ -27,8 +28,11 @@ $req_mgr = new requirement_mgr($db);
 
 $cfg = getCfg();
 $args = init_args($tproject_mgr);
-
 $gui = init_gui($args);
+$ctx = new stdClass();
+$ctx->tproject_id = $args->tproject_id;
+checkRights($db,$args->user,$ctx);
+
 $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 
 $smarty = new TLSmarty();
@@ -330,6 +334,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args(&$tproject_mgr) {
   $args = new stdClass();
+  $args->user = isset($_SESSION['currentUser']) 
+                ? $_SESSION['currentUser'] : null;
 
   $all_versions = isset($_REQUEST['all_versions']) ? true : false;
   $all_versions_hidden = isset($_REQUEST['all_versions_hidden']) ? true : false;
@@ -395,11 +401,12 @@ function getCfg() {
   return $cfg;
 }
 
-
-/*
- * rights check function for testlinkInitPage()
+/**
+ *
  */
-function checkRights(&$db, &$user) {
-  return $user->hasRight($db,'mgt_view_req');
+function checkRights(&$db, &$user, $context) 
+{
+  $context->rightsOr = ["mgt_view_req"];
+  $context->rightsAnd = [];
+  pageAccessCheck($db, $user, $context);
 }
-

@@ -17,7 +17,7 @@ require_once('requirements.inc.php');
 require_once('xml.inc.php');
 require_once('csv.inc.php');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
@@ -25,6 +25,13 @@ $req_mgr = new requirement_mgr($db);
 
 $args = init_args();
 $gui = initializeGui($db,$args,$_SESSION,$req_spec_mgr,$req_mgr);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$args->user,$context);
+
+
+
 switch ($args->doAction) {
   case 'uploadFile':
     $dummy = doExecuteImport($gui->fileName,$args,$req_spec_mgr,$req_mgr);
@@ -155,6 +162,11 @@ function init_args()
   $args->tproject_id = intval($_SESSION['testprojectID']);
   $args->tproject_name = $_SESSION['testprojectName'];
   $args->user_id = intval(isset($_SESSION['userID']) ? $_SESSION['userID'] : 0);
+  
+  $args->user = isset($_SESSION['currentUser']) 
+                ? $_SESSION['currentUser'] : null;
+
+
   $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
 
   $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? 
@@ -246,12 +258,13 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr,&$reqMgr)
 
 
 /**
- * 
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$user,&$context)
 {
-  return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+  $context->rightsOr = [];
+  $context->rightsAnd = ["mgt_view_req","mgt_modify_req"];
+  pageAccessCheck($db, $user, $context);
 }
 
 

@@ -494,7 +494,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   $args->keyword_id = isset($_GET['keyword_id']) 
                       ? intval($_GET['keyword_id']) : 0;
 
-  $l2c = array('tckw_','tcpla_','tcalien_');
+  $l2c = array('tckw_','tcplat_','tcalien_');
   foreach ($l2c as $lk) {
     $tko = $lk .'link_id';
     $args->$tko = isset($_GET[$tko]) ? intval($_GET[$tko]) : 0;

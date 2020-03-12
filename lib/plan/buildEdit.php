@@ -13,7 +13,7 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 $templateCfg = templateConfiguration();
 
 $date_format_cfg = config_get('date_format');
@@ -30,6 +30,11 @@ $build_mgr = new build_mgr($db);
 
 $args = init_args($_REQUEST,$_SESSION,$date_format_cfg,$tplan_mgr);
 $gui = initializeGui($args,$build_mgr);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+$context->tplan_id = $args->tplan_id;
+checkRights($db,$_SESSION['currentUser'],$context);
 
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
@@ -166,6 +171,8 @@ function init_args($request_hash, $session_hash,$date_format,&$tplanMgr) {
   }  
 
   $args->testprojectID = intval($session_hash['testprojectID']);
+  $args->tproject_id = intval($session_hash['testprojectID']);
+
   $args->testprojectName = $session_hash['testprojectName'];
   $args->userID = intval($session_hash['userID']);
 
@@ -632,10 +639,17 @@ function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
     }
 }
 
-function checkRights(&$db,&$user)
+
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($db,'testplan_create_build');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_create_build"];
+  pageAccessCheck($db, $user, $context);
 }
+
 
 /**
  * Initialize the HTML select box for selection of a source build when
@@ -676,4 +690,3 @@ function init_source_build_selector(&$testplan_mgr, &$argsObj)
 
   return $htmlMenu;
 } // end of method
-?>

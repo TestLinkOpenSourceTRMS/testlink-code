@@ -14,8 +14,15 @@
  
 require('../../config.inc.php');
 require_once('common.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 $args = init_args();
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+$context->tplan_id = $args->tplan_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
 
 if ($args->show_help) {
   show_instructions('test_urgency');
@@ -151,8 +158,12 @@ function doProcess(&$argsObj,&$tplanMgr)
 }
 
 
-
-function checkRights(&$db,&$user)
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($db,'testplan_planning');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_planning"];
+  pageAccessCheck($db, $user, $context);
 }

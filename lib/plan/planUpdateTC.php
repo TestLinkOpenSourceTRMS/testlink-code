@@ -17,7 +17,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("specview.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
@@ -28,6 +28,13 @@ $templateCfg = templateConfiguration();
 
 $args = init_args($tplan_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+$context->tplan_id = $args->tplan_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
 
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
@@ -424,7 +431,12 @@ function tideUpForGUI(&$output)
     } 
 }
 
-function checkRights(&$db,&$user)
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-	return $user->hasRight($db,'testplan_planning');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_planning"];
+  pageAccessCheck($db, $user, $context);
 }

@@ -18,7 +18,7 @@ require_once('email_api.php');
 require_once("specview.php");
 require_once('Zend/Validate/EmailAddress.php');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $objMgr['tree'] = new tree($db);
 $objMgr['tplan'] = new testplan($db);
@@ -30,9 +30,13 @@ $tplan_mgr = &$objMgr['tplan'];
 $tcase_mgr = &$objMgr['tcase'];
 $assignment_mgr = &$objMgr['assign'];
 
-
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+$context->tplan_id = $args->tplan_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
 $keywordsFilter = new stdClass();
 $keywordsFilter->items = null;
 $keywordsFilter->type = null;
@@ -628,7 +632,12 @@ function doBulkUserRemove(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
 }
 
 
-function checkRights(&$db,&$user)
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($db,'exec_assign_testcases');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["exec_assign_testcases"];
+  pageAccessCheck($db, $user, $context);
 }

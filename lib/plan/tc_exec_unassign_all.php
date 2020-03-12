@@ -4,14 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @package		TestLink
- * @copyright	2005-2019, TestLink community 
+ * @copyright	2005-2020, TestLink community 
  * 
  */
 
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
 
-testlinkInitPage($db, false, false, "checkRights");
+testlinkInitPage($db, false, false);
 
 $assignment_mgr = new assignment_mgr($db);
 $testplan_mgr = new testplan($db);
@@ -20,6 +20,12 @@ $templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = init_gui($db, $args);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
 
 $assignment_count = 0;
 
@@ -103,8 +109,10 @@ function init_gui(&$dbHandler, &$argsObj) {
 /**
  *
  */
-function checkRights(&$dbHandler,&$user) {
-	return $user->hasRight($dbHandler, 'testplan_planning');
+function checkRights(&$db,&$user,&$context)
+{
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_planning"];
+  pageAccessCheck($db, $user, $context);
 }
 
-?>

@@ -10,25 +10,30 @@
  */
 require('../../config.inc.php');
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
-$templateCfg = templateConfiguration();
-
+$tplCfg = templateConfiguration();
 
 
 $gui = initEnv($db);
 
+$context = new stdClass();
+$context->tproject_id = $gui->tproject_id;
+$context->tplan_id = $gui->tplan_id;
+
+checkRights($db,$_SESSION['currentUser'],$context);
+
+/**
+ *
+ */
 function initEnv(&$dbHandler)
 {
   $gui = new StdClass();
 
   $_REQUEST = strings_stripSlashes($_REQUEST);
-
-  
-
-  $gui->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-  if( $gui->tplan_id == 0 )
-  {
+  $gui->tplan_id = isset($_REQUEST['tplan_id']) 
+                   ? intval($_REQUEST['tplan_id']) : 0;
+  if( $gui->tplan_id == 0 ) {
     throw new Exception("Abort Test Plan ID == 0", 1);
   }  
 
@@ -36,15 +41,14 @@ function initEnv(&$dbHandler)
   $info = $tplan_mgr->tree_manager->
             get_node_hierarchy_info($gui->tplan_id,null,array('nodeType' => 'testplan'));
 
-  if( !is_null($info) )
-  {
+  if( !is_null($info) ) {
     $gui->tplan_name = $info['name'];
-  }  
-  else
-  {
+  } else {
     throw new Exception("Invalid Test Plan ID", 1);
   }  
  
+  $gui->tproject_id = intval($info['testproject_id']);
+
   $gui->buildSet = $tplan_mgr->get_builds($gui->tplan_id);
   $gui->user_feedback = null;
 
@@ -56,10 +60,15 @@ function initEnv(&$dbHandler)
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+$smarty->display($tplCfg->template_dir . $tplCfg->default_template);
 
 
-function checkRights(&$db,&$user)
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($db,'testplan_create_build');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_create_build"];
+  pageAccessCheck($db, $user, $context);
 }

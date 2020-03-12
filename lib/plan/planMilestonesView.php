@@ -9,21 +9,27 @@
  *
  * @package 	 TestLink
  * @author     Francisco Mancardi
- * @copyright  2003-2009, TestLink community 
+ * @copyright  2003-2020, TestLink community 
  * @filesoruce planMilestonesView.php
  * @link 		   http://www.testlink.org
  * 
- * @internal revision
  **/
 
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("testplan.class.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initialize_gui($db,$args);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+$context->tplan_id = $args->tplan_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -85,9 +91,12 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	return $gui;
 }
 
-
-function checkRights(&$db,&$user)
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-	return ($user->hasRight($db,"testplan_planning"));
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_planning"];
+  pageAccessCheck($db, $user, $context);
 }
-?>

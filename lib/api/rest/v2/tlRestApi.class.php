@@ -174,9 +174,16 @@ class tlRestApi
 
     $this->cfg['tcase']['defaults']['importance'] = config_get('testcase_importance_default');
     $this->cfg['tcase']['defaults']['executionType'] = TESTCASE_EXECUTION_TYPE_MANUAL;
-    $this->cfg['tcase']['status'] = config_get('testCaseStatus'); 
-
-    $this->cfg['execType'] = config_get('execution_type');
+    
+    $this->cfg['tcase']['status'] = config_get('testCaseStatus');
+    $this->cfg['tcase']['executionType'] = 
+      config_get('execution_type');
+    
+    $x = config_get('importance');
+    $this->cfg['tcase']['importance'] = []; 
+    foreach($x['code_label'] as $code => $label) {
+      $this->cfg['tcase']['importance'][$label] = $code; 
+    } 
 
     $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
   }  
@@ -323,7 +330,9 @@ class tlRestApi
    */ 
   public function getProjectTestCases($idCard)
   {
-    $op  = array('status' => 'ok', 'message' => 'ok', 'items' => null);
+    $op  = array('status' => 'ok', 
+                 'message' => 'ok', 
+                 'items' => null);
     $tproject = $this->getProjects($idCard, array('output' => 'internal'));
 
     if( !is_null($tproject) )
@@ -391,7 +400,8 @@ class tlRestApi
     } 
     catch (Exception $e) 
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage() . 
+                       '>line>' . $e->getLine();   
     }
     echo json_encode($op);
   }
@@ -448,7 +458,8 @@ class tlRestApi
       }
 
       if( property_exists($ex, 'executionType') == FALSE ) {
-        $ex->executionType = $this->cfg['execType']['auto'];
+        $ex->executionType = 
+          $this->cfg['tcase']['executionType']['auto'];
       }
 
       // If we are here this means we can write execution status!!!
@@ -459,7 +470,8 @@ class tlRestApi
       $op = array('status' => 'ok', 'message' => 'ok');
       $op['id'] = $this->tplanMgr->writeExecution($ex);
     } catch (Exception $e) {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage() . 
+                       '>line>' . $e->getLine();   
     }
     echo json_encode($op);
   }
@@ -599,7 +611,8 @@ class tlRestApi
     } 
     catch (Exception $e) 
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage() . 
+                       '>line>' . $e->getLine();   
     }
     echo json_encode($op);
   }
@@ -626,7 +639,8 @@ class tlRestApi
     } 
     catch (Exception $e) 
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage() . 
+                       '>line>' . $e->getLine();   
     }
     echo json_encode($op);
   }
@@ -651,7 +665,8 @@ class tlRestApi
     } 
     catch (Exception $e) 
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage() . 
+                       '>line>' . $e->getLine();   
     }
     echo json_encode($op);
   }
@@ -684,6 +699,7 @@ class tlRestApi
 
       // create obj with standard properties
       $tcase = $this->buildTestCaseObj($item);
+      var_dump($tcase);
 
       $this->checkRelatives($tcase->testProjectID,$tcase->testSuiteID);
 
@@ -699,7 +715,8 @@ class tlRestApi
     } 
     catch (Exception $e) 
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage() . 
+                       '>line>' . $e->getLine();   
     }
     echo json_encode($op);
   }
@@ -890,6 +907,8 @@ class tlRestApi
     $tcase->authorID = -1;
     $tcase->steps = null;
     $tcase->testProjectID = -1;
+    $tcase->testSuiteID = -1;
+
 
     $accessKey = array();
     $isOK = true;
@@ -920,7 +939,8 @@ class tlRestApi
 
     
     // Mandatory attributes
-    $ma = array('name' => null,'testProject' => array('id','prefix'),
+    $ma = array('name' => null,
+                'testProject' => array('id','prefix'),
                 'testSuite' => array('id'));
 
     foreach ($ma as $key => $dummy) 
@@ -931,27 +951,30 @@ class tlRestApi
       }  
     }
 
-    foreach ($ma as $key => $attr) 
-    {
-      if( !is_null($attr) )
-      {
+    foreach ($ma as $key => $attr) {
+      if( !is_null($attr) ) {
         $attrOK = false;
-        foreach($attr as $ak)
-        {
+        foreach($attr as $ak) {
           $accessKey[$key][$ak] = property_exists($obj->$key,$ak);
           $attrOK = $attrOK || $accessKey[$key][$ak];
         }  
 
-        if(!$attrOK)
-        {
+        if (!$attrOK) {
           $msg = "Attribute:{$key} mandatory key (";
-          if(count($attr) > 1)
-          {
+          if(count($attr) > 1) {
             $msg .= "one of set: ";
           }  
           $msg .= implode('/',$attr) . ") is missing";
           throw new Exception($msg);            
         }  
+      } else {
+        if ( property_exists($obj,$key) ) {
+          $tcase->$key = $obj->$key;
+        } else {
+          $msg = "Attribute:{$key} mandatory key ($key) 
+                  is missing";
+          throw new Exception($msg);            
+        }
       }  
     }
 
@@ -979,28 +1002,35 @@ class tlRestApi
       $msg .= "does not exist or you have no rights to use it";
       throw new Exception($msg,999);            
     } 
+    $tcase->testProjectID = intval($info[0]['id']);
+    $tcase->testSuiteID = intval($obj->testSuite->id);
 
-
+    // simple values
     $sk2d = array('summary' => '','preconditions' => '',
-                  'order' => 100, 'estimatedExecutionTime' => 0);
-    foreach($sk2d as $key => $value)
-    {
-      $tcase->$key = property_exists($obj, $key) ? $obj->key : $value;
+                  'order' => 100, 
+                  'estimatedExecutionTime' => 0);
+    foreach ($sk2d as $key => $value) {
+      $tcase->$key = property_exists($obj, $key) ? $obj->$key : $value;
     } 
 
-    $ck2d = array('importance' => $this->cfg['tcase']['defaults']['importance'], 
-                  'status' => $this->cfg['tcase']['status']['draft']);
+    // name is the access
+    $tcfg = $this->cfg['tcase'];
+    $ck2d = array('executionType' => 
+                     $tcfg['executionType']['manual'], 
+                  'importance' => 
+                    $tcfg['defaults']['importance'], 
+                  'status' => 
+                    $tcfg['status']['draft']);
 
-  
-    var_dump($tcase);
-    die();
+    foreach($ck2d as $prop => $defa) {
+      $tcase->$prop = property_exists($obj, $prop) ? 
+        $tcfg[$prop][$obj->$prop->name] : $defa;      
+    }  
 
-
-
-    if(property_exists($obj, 'steps'))
-    {
+    if (property_exists($obj, 'steps')) {
       $tcase->steps = $obj->steps;
     }
+    return $tcase;
   }
 
 

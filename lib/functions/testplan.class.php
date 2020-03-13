@@ -6142,7 +6142,9 @@ class testplan extends tlObjectWithAttachments
                           $my['join']['keywords'] .
                           $my['join']['cf'] .
                           $my['join']['tsuites'] .
-                          
+                          $my['join']['aliens'] .
+                          $my['join']['bugs'] .
+
                           " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
                 
                           " /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
@@ -6180,6 +6182,8 @@ class testplan extends tlObjectWithAttachments
                      $my['join']['keywords'] .
                      $my['join']['cf'] .
                      $my['join']['tsuites'] .
+                     $my['join']['aliens'] .
+                     $my['join']['bugs'] .
 
                      " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
                      
@@ -8045,8 +8049,10 @@ class testplan extends tlObjectWithAttachments
           $my['join']['keywords'] .
           $my['join']['ua'] .
           $my['join']['cf'] .
+          $my['join']['aliens'] .
 
-        " /* Get REALLY NOT RUN => 
+        " /* getLinkedForExecTreeCross() 
+             Get REALLY NOT RUN => 
              BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
         " LEFT OUTER JOIN ({$sqlLatestExecOnTPLAN}) AS LEXBTPLAN " .
         " ON  LEXBTPLAN.testplan_id = TPTCV.testplan_id " .
@@ -8071,6 +8077,7 @@ class testplan extends tlObjectWithAttachments
         $my['join']['keywords'] .
         $my['join']['ua'] .
         $my['join']['cf'] .
+        $my['join']['aliens'] .
 
         " JOIN ({$sqlLatestExecOnTPLAN}) AS LEXBTPLAN " .
         " ON  LEXBTPLAN.testplan_id = TPTCV.testplan_id " .

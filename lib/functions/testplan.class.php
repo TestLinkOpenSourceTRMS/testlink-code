@@ -6231,7 +6231,10 @@ class testplan extends tlObjectWithAttachments
    */
   function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
+    $dummy = array('exec_type','tc_id',
+                   'builds','keywords',
+                   'executions','platforms',
+                   'aliens');
 
     $ic['fields']['tsuites'] = '';
 
@@ -6240,6 +6243,7 @@ class testplan extends tlObjectWithAttachments
     $ic['join']['bugs'] = '';
     $ic['join']['cf'] = '';
     $ic['join']['tsuites'] = '';
+    $ic['join']['aliens'] = '';
 
 
     $ic['where'] = array();
@@ -6247,23 +6251,32 @@ class testplan extends tlObjectWithAttachments
     $ic['where']['platforms'] = '';
     $ic['where']['not_run'] = '';
     $ic['where']['cf'] = '';
+    $ic['where']['aliens'] = '';
 
     $ic['green_light'] = true;
-    $ic['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
-                           'assigned_to' => null, 'exec_status' => null,
-                           'build_id' => 0, 'cf_hash' => null,
+    $ic['filters'] = array('tcase_id' => null, 
+                           'keyword_id' => 0,
+                           'assigned_to' => null, 
+                           'exec_status' => null,
+                           'build_id' => 0, 
+                           'cf_hash' => null,
                            'urgencyImportance' => null, 
                            'tsuites_id' => null,
-                           'platform_id' => null, 'exec_type' => null,
-                           'tcase_name' => null);
+                           'platform_id' => null, 
+                           'exec_type' => null,
+                           'tcase_name' => null,
+                           'alien_id' => null);
 
     $ic['options'] = array('hideTestCases' => 0, 
                            'include_unassigned' => false, 
                            'allow_empty_build' => 0, 
                            'addTSuiteOrder' => false,
-                           'addImportance' => false, 'addPriority' => false);
-    $ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
-    $ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
+                           'addImportance' => false, 
+                           'addPriority' => false);
+    $ic['filters'] = array_merge($ic['filters'], 
+                       (array)$filtersCfg);
+    $ic['options'] = array_merge($ic['options'], 
+                       (array)$optionsCfg);
 
 
     $ic['filters']['build_id'] = intval($ic['filters']['build_id']);
@@ -6326,6 +6339,13 @@ class testplan extends tlObjectWithAttachments
 
       // **** // CHECK THIS CAN BE NON OK
       $ic['where']['where'] .= $ic['where']['keywords']; 
+    }
+
+    if( isset($ic['filters']['alien_id']) 
+        && !is_null($ic['filters']['alien_id']) ) {    
+      list($ic['join']['aliens'],$ic['where']['aliens']) = 
+       $this->helper_aliens_sql($ic['filters']['alien_id']);
+      $ic['where']['where'] .= $ic['where']['aliens'];
     }
 
                               
@@ -8139,7 +8159,8 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  static function getName(&$dbh,$id) {
+  static function getName(&$dbh,$id) 
+  {
     $sch = tlDBObject::getDBTables(array('nodes_hierarchy','testplans'));
     $sql = "SELECT name FROM {$sch['nodes_hierarchy']} NH
             JOIN {$sch['testplans']} TPLAN
@@ -8189,7 +8210,6 @@ class testplan extends tlObjectWithAttachments
    *
    *
    */
-
   function linkTCV2Platform($id,$tcvIDSet,$platformSet,$userId,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -8238,6 +8258,33 @@ class testplan extends tlObjectWithAttachments
     }
 
     return $features;
+  }
+
+
+  /**
+   * 
+   * Based on:
+   *          helper_bugs_sql()
+   *          helper_keywords_sql()
+   *
+   */
+  function helper_aliens_sql($filter)
+  {
+    $sql = array('filter' => '', 'join' => '');
+    if ($filter == null) {
+      return array($sql['join'],$sql['filter']);
+    }
+
+    // Go ahead!
+    $items = $filter;
+    if(!is_null($items)) {
+      $sql['filter'] = " AND TAL.alien_id IN ('" 
+                       . implode("','",$items) . "')";            
+      $sql['join'] = 
+        " JOIN {$this->tables['testcase_aliens']} TAL 
+          ON TAL.tcversion_id = NH_TCV.id ";
+    }  
+    return array($sql['join'],$sql['filter']);
   }
 
 

@@ -687,7 +687,12 @@ class tlRestApi
     $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
     try {
       $request = $this->app->request();
-      $item = json_decode($request->getBody());
+      
+      //$body = str_replace("\n", '', $request->getBody());
+      //$item = json_decode($request->getBody());
+      $body = str_replace("\n", '', $request->getBody());
+      $item = json_decode($body);
+
       if(is_null($item)) {
         throw new Exception("Fatal Error " . __METHOD__ . " json_decode(requesBody) is NULL", 1);
       }

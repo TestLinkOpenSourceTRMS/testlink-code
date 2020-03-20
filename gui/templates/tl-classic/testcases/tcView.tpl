@@ -19,6 +19,34 @@ Purpose: smarty template - view test case in test specification
 {$deleteStepAction = "$deleteStepAction&tplan_id=$tplanID&step_id="}
 
 {include file="inc_head.tpl" openHead='yes'}
+
+<style>
+.mainAttrContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+#summaryCONTAINER {
+  padding: 5px 3px 4px 5px;
+  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->summary};
+}
+
+#spaceOne {
+  padding: 5px 3px 4px 5px;
+  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne};
+}
+
+
+#preconditionsCONTAINER {
+  padding: 5px 3px 4px 5px;
+  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions};  
+}
+</style>
+
+
+
+
+
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 {include file="inc_del_onclick.tpl"}
 

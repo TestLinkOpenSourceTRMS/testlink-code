@@ -43,21 +43,27 @@ Purpose: smarty template - create new testcase
     <p />
 
     <br />
-    {if $gui->cf.before_summary neq ""}
-      <br/>
-      <div id="cf_before_summary"
-           class="custom_field_container">
-           {$gui->cf.before_summary}
-      </div>
-    {/if}
  
-    <div class="labelHolder">{$labels.summary}</div>
-    <div>{$summary}</div>
-    <br />
+    <div id="mainAttrContainer" class="mainAttrContainer"> 
+      <div id="summaryCONTAINER">
+        {if $gui->cf.before_summary neq ""}
+          <div id="cf_before_summary"
+               class="custom_field_container">
+               {$gui->cf.before_summary}
+          </div>
+        {/if}
 
-    <div class="labelHolder">{$labels.preconditions}</div>
-    <div>{$preconditions}</div>
-    
+        <div class="labelHolder">{$labels.summary}</div>
+        <div>{$summary}</div>
+      </div>
+      <div id="spaceOne" style="margin-top:35px;"></div>
+      <div id="preconditionsCONTAINER">
+        <div class="labelHolder">{$labels.preconditions}</div>
+        <div>{$preconditions}</div>
+      </div>
+    </div>
+
+
     {* Custom fields - with before steps & results location *}
     <br />
     {if $gui->cf.before_steps_results neq ""}

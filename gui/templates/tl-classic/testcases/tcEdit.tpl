@@ -10,6 +10,29 @@ Purpose: smarty template - edit test specification: test case
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 
+<style>
+.mainAttrContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+#summaryCONTAINER {
+  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->summary};
+}
+
+#spaceOne {
+  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne};
+}
+
+
+#preconditionsCONTAINER {
+  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions};  
+}
+</style>
+
+
+
+
 {include file="inc_del_onclick.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>

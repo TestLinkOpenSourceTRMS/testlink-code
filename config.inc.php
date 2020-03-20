@@ -1338,6 +1338,17 @@ $tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion = TRUE;
 //$tlCfg->testcase_cfg->frozenNotExecutedTCVDelREQVLink = FALSE;
 
 
+// Change order using CSS flexbox model
+// @used-by tcEdit.tpl
+$tlCfg->testcase_cfg->viewerFieldsOrder = new stdClass();
+$tlCfg->testcase_cfg->viewerFieldsOrder->summary = 3;
+$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne = 2;
+$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions = 1;
+
+
+
+
+
 // Effects on Req Version to TCVersion LINK 
 // when a new version of a linked Test Case is created
 // If LINK is frozen, then this means that link can not be deleted.

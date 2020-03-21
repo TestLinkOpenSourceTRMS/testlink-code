@@ -3170,7 +3170,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $sql = " SELECT TCV.version,TCV.id " . " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " . " WHERE NH.parent_id = {$tcase_id} " . " AND TCV.version = {$version_number} " . " AND TCV.id = NH.id ";
 
             $target_tcversion = $this->dbObj->fetchRowsIntoMap( $sql, 'version' );
-            if(! is_null( $target_tcversion ) && count( $target_tcversion ) != 1) {
+            if(is_null( $target_tcversion ) || count( $target_tcversion ) != 1) {
                 $status_ok = false;
                 $tcase_info = $this->tcaseMgr->get_by_id( $tcase_id );
                 $msg = sprintf( TCASE_VERSION_NUMBER_KO_STR, $version_number, $tcase_external_id, $tcase_info[0]['name'] );

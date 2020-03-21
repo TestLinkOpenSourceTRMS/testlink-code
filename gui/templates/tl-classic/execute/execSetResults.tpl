@@ -132,6 +132,31 @@ warning_nothing_will_be_saved,file_upload_ko,pleaseOpenTSuite'}
 {$exportAction="lib/execute/execExport.php?tplan_id="}
 
 {include file="inc_head.tpl" popup='yes' openHead='yes' jsValidate="yes" editorType=$gui->editorType}
+
+<style>
+  .mainAttrContainer {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .summaryCONTAINER {
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->summary};
+  }
+
+  .spaceOne {
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne};
+  }
+
+
+  .preconditionsCONTAINER {
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions};  
+  }
+</style>
+
+
+
+
+
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 

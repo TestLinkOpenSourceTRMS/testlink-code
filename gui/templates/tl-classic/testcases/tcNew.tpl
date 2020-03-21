@@ -13,23 +13,23 @@ Purpose: smarty template - create a testcase
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 
 <style>
-.mainAttrContainer {
-  display: flex;
-  flex-direction: column;
-}
+  .mainAttrContainer {
+    display: flex;
+    flex-direction: column;
+  }
 
-#summaryCONTAINER {
-  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->summary};
-}
+  #summaryCONTAINER {
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->summary};
+  }
 
-#spaceOne {
-  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne};
-}
+  #spaceOne {
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne};
+  }
 
 
-#preconditionsCONTAINER {
-  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions};  
-}
+  #preconditionsCONTAINER {
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions};  
+  }
 </style>
 
 

@@ -17,8 +17,8 @@ Author : franciscom
  
     {$cfdt = $args_design_time_cf[$testcase_id]}
     <div class="exec_test_spec">
-      <div id="mainAttrContainer" class="mainAttrContainer"> 
-        <div id="summaryCONTAINER">
+      <div class="mainAttrContainer"> 
+        <div class="summaryCONTAINER">
           {if $cfdt.before_summary neq ''}
             <div class="custom_field_container">
               {$cfdt.before_summary}
@@ -35,8 +35,10 @@ Author : franciscom
             </div>
           {/if}
         </div>
+        
+        <div class="spaceOne" style="margin-top:35px;"></div>
 
-        <div id="preconditionsCONTAINER">
+        <div class="preconditionsCONTAINER">
           {if $cfdt.before_preconditions neq ''}
             <div class="custom_field_container">
               {$cfdt.before_preconditions}

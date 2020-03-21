@@ -15,6 +15,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {$inExec = 1}
   {/if}  
 
+<div class="workBack">
+  <table class="simple">
   <tr>
     <th width="40px"><nobr>
     {if $edit_enabled && $steps != '' && !is_null($steps) && $args_frozen_version=="no"}
@@ -156,3 +158,5 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {/if}
 
   {/foreach}
+ </table>
+</div>

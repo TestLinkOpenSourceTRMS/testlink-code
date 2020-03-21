@@ -408,6 +408,7 @@ viewer for test case in test specification
   <input type="hidden" id="stepsControls_tplan_id" name="tplan_id" 
          value="{$gui->tplan_id}" />
 
+  <div class="workBack">
     {include file="{$tplConfig.inc_tcbody}" 
              inc_tcbody_close_table=false
              inc_tcbody_testcase=$args_testcase
@@ -418,7 +419,6 @@ viewer for test case in test specification
              inc_tcbody_updater_userinfo=$updater_userinfo
              inc_tcbody_editor_type=$gui->designEditorType
              inc_tcbody_cf=$args_cf}
-    
   {if $args_testcase.steps != ''}
     {include file="{$tplConfig.inc_steps}"
              layout=$gui->steps_results_layout
@@ -427,29 +427,11 @@ viewer for test case in test specification
              ghost_control=true
              steps=$args_testcase.steps}
   {/if}
-</table>
-
-  {if $edit_enabled && $args_frozen_version=="no"}
-    <div {$addInfoDivStyle}>
-      <input type="submit" name="create_step" 
-              onclick="doAction.value='createStep';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_create_step}" />
-
-      {if $args_testcase.steps != ''}
-        <input type="submit" name="resequence_steps" id="resequence_steps" 
-                onclick="doAction.value='doResequenceSteps';{$gui->submitCode}" 
-                value="{$tcView_viewer_labels.btn_resequence_steps}" />
-      {/if}
-
-      <span class="order_info" style='display:none'>
-      <input type="submit" name="renumber_step" 
-              onclick="doAction.value='doReorderSteps';{$gui->submitCode};javascript: return validateStepsReorder('step_number{$args_testcase.id}');"
-              value="{$tcView_viewer_labels.btn_reorder_steps}" />
-      </span>
-    </div>
-  {/if}
+  </div>
 </form>
 
-{include file="{$tplConfig['attributesLinearForViewer.inc']}"} 
+<div class="workBack">
+  {include file="{$tplConfig['attributesLinearForViewer.inc']}"} 
 
 {if $args_cf.standard_location neq ''}
   <div {$addInfoDivStyle}>
@@ -592,6 +574,8 @@ viewer for test case in test specification
   {include file="{$tplConfig['quickexec.inc']}"
            args_edit_enabled=$edit_enabled} 
 {/if}
+
+</div>
 
 {if $gui->closeMyWindow }
   <script type="text/javascript">

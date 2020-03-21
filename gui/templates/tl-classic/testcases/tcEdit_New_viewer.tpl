@@ -42,6 +42,16 @@ Purpose: smarty template - create new testcase
       <span id="testcase_name_warning" class="warning"></span>
     <p />
 
+    {if $gui->cf.after_title neq ''}
+      <div> 
+        <div id="cf_after_title"
+             class="custom_field_container">
+          {$gui->cf.after_title}
+        </div>
+      </div>
+        
+    {/if}
+
     <br />
  
     <div id="mainAttrContainer" class="mainAttrContainer"> 
@@ -51,15 +61,38 @@ Purpose: smarty template - create new testcase
                class="custom_field_container">
                {$gui->cf.before_summary}
           </div>
+          <br> 
         {/if}
 
         <div class="labelHolder">{$labels.summary}</div>
         <div>{$summary}</div>
+
+        {if $gui->cf.after_summary neq ""}
+          <div id="cf_after_summary"
+               class="custom_field_container">
+               {$gui->cf.after_summary}
+          </div>
+        {/if}
+
       </div>
       <div id="spaceOne" style="margin-top:35px;"></div>
       <div id="preconditionsCONTAINER">
+        {if $gui->cf.before_preconditions neq ""}
+          <div id="cf_before_preconditions"
+               class="custom_field_container">
+               {$gui->cf.before_preconditions}
+          </div>
+          <br> 
+        {/if}
+
         <div class="labelHolder">{$labels.preconditions}</div>
         <div>{$preconditions}</div>
+        {if $gui->cf.after_preconditions neq ""}
+          <div id="cf_after_preconditions"
+               class="custom_field_container">
+               {$gui->cf.after_preconditions}
+          </div>
+        {/if}
       </div>
     </div>
 

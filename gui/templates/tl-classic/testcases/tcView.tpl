@@ -26,6 +26,11 @@ Purpose: smarty template - view test case in test specification
   flex-direction: column;
 }
 
+.mainAttrContainer > div {
+  padding: 5px 3px 4px 5px;
+}
+
+
 #summaryCONTAINER {
   padding: 5px 3px 4px 5px;
   order: {$tlCfg->testcase_cfg->viewerFieldsOrder->summary};

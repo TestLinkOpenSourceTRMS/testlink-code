@@ -135,7 +135,11 @@ class cfield_mgr extends tlObject
     var $locations = array('testcase' => 
                        array( 1 => 'standard_location', 
                               2 => 'before_steps_results',
-                              3 => 'before_summary') );
+                              3 => 'before_summary',
+                              4 => 'before_preconditions',
+                              5 => 'after_title',
+                              6 => 'after_summary',
+                              7 => 'after_preconditions') );
 
     // changes in configuration
     //

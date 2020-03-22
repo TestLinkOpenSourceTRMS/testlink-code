@@ -952,11 +952,11 @@ class testcase extends tlObjectWithAttachments {
     if($status_ok && sizeof($idSet)) {
 
       $cfPlaces = $this->buildCFLocationMap();
-
       $gui->linked_versions = null;
-
-      $gopt = array('renderGhost' => true, 'withGhostString' => true,
-                    'renderImageInline' => true, 'renderVariables' => true,
+      $gopt = array('renderGhost' => true, 
+                    'withGhostString' => true,
+                    'renderImageInline' => true, 
+                    'renderVariables' => true,
                     'renderSpecialKW' => true,
                     'caller' => 'show()');
 
@@ -965,7 +965,6 @@ class testcase extends tlObjectWithAttachments {
 
       $gui->fileUploadURL = array();
       foreach($idSet as $key => $tc_id) {
-
         // IMPORTANT NOTICE
         // Deep Analysis is need to understand if there is an use case
         // where this method really receive an array of test case ID.
@@ -1073,7 +1072,9 @@ class testcase extends tlObjectWithAttachments {
           $gui->relationSet[] = $this->getTCVersionRelations($xm);
         }
 
-        $cfCtx = array('scope' => 'design','tproject_id' => $gui->tproject_id,'link_id' => $tc_current['id']);
+        $cfCtx = array('scope' => 'design',
+                       'tproject_id' => $gui->tproject_id,
+                       'link_id' => $tc_current['id']);
         foreach($cfPlaces as $cfpKey => $cfpFilter) {
           $gui->cf_current_version[$cfx][$cfpKey] =
             $this->htmlTableOfCFValues($tc_id,$cfCtx,$cfpFilter);

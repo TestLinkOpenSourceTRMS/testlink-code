@@ -26,26 +26,26 @@ Purpose: smarty template - view test case in test specification
   flex-direction: column;
 }
 
-.mainAttrContainer > div {
-  padding: 5px 3px 4px 5px;
-}
-
-
-#summaryCONTAINER {
+.summaryCONTAINER {
   padding: 5px 3px 4px 5px;
   order: {$tlCfg->testcase_cfg->viewerFieldsOrder->summary};
 }
 
-#spaceOne {
+.spaceOne {
   padding: 5px 3px 4px 5px;
   order: {$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne};
 }
 
-
-#preconditionsCONTAINER {
+.preconditionsCONTAINER {
   padding: 5px 3px 4px 5px;
   order: {$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions};  
 }
+
+.CFBeforeStepsCONTAINER {
+  padding: 5px 3px 4px 5px;
+  order: 99;  
+}
+
 </style>
 
 

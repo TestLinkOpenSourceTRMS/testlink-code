@@ -27,12 +27,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       {$can_manage_attachments=0}
     {/if}
 
- 
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
 		<input type='hidden' name='version_number[{$tcversion_id}]' value='{$version_number}' />
-    {* ------------------------------------------------------------------------------------ *}
+    {* ---------------------------------------------------------- *}
 
-    {* ------------------------------------------------------------------------------------ *}
+    {* ---------------------------------------------------------- *}
     {lang_get s='th_testsuite' var='container_title'}
     {$ts_name=$tsuite_info[$tc_id].tsuite_name}
     {$container_title="$container_title$title_sep$ts_name"}
@@ -57,7 +56,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         </div>
 		  {/if}
 
-  		{if $gui->tSuiteAttachments != null && $gui->tSuiteAttachments[$tc_exec.tsuite_id] != null}
+  		{if $gui->tSuiteAttachments != null 
+          && $gui->tSuiteAttachments[$tc_exec.tsuite_id] != null}
   		  <br />
 		    {include file="inc_attachments.tpl" 
 		             attach_tableName="nodes_hierarchy" 
@@ -69,7 +69,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	    {/if}
 	    <br />
     </div>
-    {* ------------------------------------------------------------------------------------ *}
+    {* ---------------------------------------------------------- *}
   <br />  
   {$drawNotRun=0}
  	{if $cfg->exec_cfg->show_last_exec_any_build}
@@ -87,7 +87,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {$my_build_name=$gui->build_name|escape}
   {/if}
   {$exec_build_title="$build_title $title_sep $my_build_name"}
-
 
 		<div id="execution_history" class="exec_history">
   		<div class="exec_history_title">
@@ -181,9 +180,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     	{$labels.tc_not_tested_yet}
 	 {/if}
      
-     
-
-    {* -------------------------------------------------------------------------------------------------- *}
+    {* ---------------------------------------------------------- *}
     {if $gui->other_execs.$tcversion_id}
       {$my_colspan=$attachment_model->num_cols}
 
@@ -340,7 +337,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     			{if $can_delete_exec && $tc_old_exec.build_is_open}
 	       		  	<td align="center">
     	         	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
-             	                                       {$tc_old_exec.execution_id},'do_delete',1);">
+             	  {$tc_old_exec.execution_id},'do_delete',1);">
       			    <img src="{$tlImages.delete}" title="{$labels.img_title_delete_execution}"
       			         style="border:none" /></a>
       			 </td>
@@ -366,8 +363,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
           {if $tlCfg->exec_cfg->steps_exec }
             <td class="icon_cell" align="center">
               <img src="{$tlImages.steps}" title="{$labels.access_test_steps_exec}"  
-                   onclick="javascript:openPrintPreview('exec',{$tc_old_exec.execution_id},
-                                                        null,null,'{$printExecutionAction}');"/>
+                   onclick="javascript:openPrintPreview('exec',
+                   {$tc_old_exec.execution_id},
+                   null,null,'{$printExecutionAction}');"/>
             </td>
           {/if}
 
@@ -401,7 +399,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
    			</tr>
  			  {/if}
 
-  			{* Custom field values  *}
+  		{* Custom field values  *}
 			<tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
   				{$execID=$tc_old_exec.execution_id}
@@ -410,116 +408,78 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   			</td>
   			</tr>
 
-
-
   		{* Attachments *}
 			{if isset($gui->attachments[$execID]) }
-      <tr style="background-color: {$bg_color}">
-  			<td colspan="{$my_colspan}">
-  				{$execID=$tc_old_exec.execution_id}
-      
-  				{$attach_info=$gui->attachments[$execID]}
-          {include file="attachments.inc.tpl"
-  				         attach_attachmentInfos=$attach_info
-  				         attach_id=$execID 
-  				         attach_tableName="executions"
-  				         attach_show_upload_btn=$attachment_model->show_upload_btn
-  				         attach_show_title=$attachment_model->show_title
-  				         attach_downloadOnly=$att_download_only 
-  				         attach_tableClassName=null
-                   attach_inheritStyle=0
-                   attach_tableStyles=null}
-  			</td>
-  			</tr>
-        {/if}
+        <tr style="background-color: {$bg_color}">
+    			<td colspan="{$my_colspan}">
+    				{$execID=$tc_old_exec.execution_id}
+        
+    				{$attach_info=$gui->attachments[$execID]}
+            {include file="attachments.inc.tpl"
+    				         attach_attachmentInfos=$attach_info
+    				         attach_id=$execID 
+    				         attach_tableName="executions"
+    				         attach_show_upload_btn=$attachment_model->show_upload_btn
+    				         attach_show_title=$attachment_model->show_title
+    				         attach_downloadOnly=$att_download_only 
+    				         attach_tableClassName=null
+                     attach_inheritStyle=0
+                     attach_tableStyles=null}
+    			</td>
+    			</tr>
+          {/if}
 
-        {* Execution Bugs (if any) *}
-        {if isset($gui->bugs[$execID])}
-		<tr style="background-color: {$bg_color}">
-   			<td colspan="{$my_colspan}">
-   				{include file="inc_show_bug_table.tpl"
-   			         	 bugs_map=$gui->bugs[$execID]
-   			         	 can_delete=$tc_old_exec.build_is_open
-   			         	 exec_id=$execID}
-   			</td>
-   		</tr>
+          {* Execution Bugs (if any) *}
+          {if isset($gui->bugs[$execID])}
+  		  <tr style="background-color: {$bg_color}">
+     			<td colspan="{$my_colspan}">
+     				{include file="inc_show_bug_table.tpl"
+     			         	 bugs_map=$gui->bugs[$execID]
+     			         	 can_delete=$tc_old_exec.build_is_open
+     			         	 exec_id=$execID}
+     			</td>
+     		</tr>
    		{/if}
 		{/foreach}
-			{* ----------------------------------------------------------------------------------- *}
+			{* --------------------------------------------------------- *}
 
 			</table>
 		{/if}
   </div>
 
-  <br />
-    {$theClass = "exec_tc_title"}
-    {$hasNewestVersionMsg = ''}
-    {if $gui->hasNewestVersion}
-      {$theClass = "exec_tc_title_alert"}
-      {$hasNewestVersionMsg = $labels.hasNewestVersionMsg}
-    {/if}
-    <div class="{$theClass}">
-    {if '' !== $hasNewestVersionMsg}  
-      <div style="text-align: center;">{$hasNewestVersionMsg}</div>
-
-      {if $gui->hasNewestVersion} 
-        <div style="text-align: center;">
-          <input type="hidden" id="TCVToUpdate" name="TCVToUpdate"
-            value="{$gui->tcversionSet}">
-          <input type="submit" id="linkLatestVersion" name="linkLatestVersion"
-                   value="{$labels.updateLinkToLatestTCVersion}"/>
-        </div>     
-        <br>    
-      {/if}
-    {/if}
-    {if $gui->grants->edit_testcase}
-      {$tplan=$gui->tplan_id}
-      {$metaMode="editOnExec&tplan_id=$tplan"}                    
-      <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'{$metaMode}')">
-      <img src="{$tlImages.note_edit}"  title="{$labels.show_tcase_spec}">
-      </a>
-    {/if}
-    
-    {$labels.title_test_case}&nbsp;{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version} :: {$tc_exec.name|escape}
     <br />
-        {if $tc_exec.assigned_user == ''}
-          <img src="{$tlImages.warning}" style="border:none" />&nbsp;{$labels.has_no_assignment}
-        {else}
-          <img src="{$tlImages.user}" style="border:none" />&nbsp;
-          {$labels.assigned_to}{$title_sep}{$tc_exec.assigned_user|escape}
-        {/if}
+    {include file="execute/execTCaseHeader.inc.tpl"}
+
+    {* ---------------------------------------------------------- *}
+    <div>
+        {include file="execute/inc_exec_test_spec.tpl"
+                 args_tc_exec=$tc_exec
+                 args_labels=$labels
+                 args_enable_custom_field=$enable_custom_fields
+                 args_execution_time_cf=$gui->execution_time_cfields
+                 args_design_time_cf=$gui->design_time_cfields
+                 args_testplan_design_time_cf=$gui->testplan_design_time_cfields
+                 args_execution_types=$gui->execution_types
+                 args_tcAttachments=$gui->tcAttachments
+                 args_req_details=$gui->req_details
+                 args_relations=$gui->relations
+                 args_keywords=$gui->kw
+                 args_cfg=$cfg}
+
+        <div class="workBack">
+          {if $tc_exec.can_be_executed}
+            {include file="execute/{$tplConfig.inc_exec_controls}"
+                     args_save_type='single'
+                     args_input_enable_mgmt=$input_enabled_disabled
+                     args_tcversion_id=$tcversion_id
+                     args_webeditor=$gui->exec_notes_editors[$tc_id]
+                     args_labels=$labels}
+          {/if}
+          {if $tc_exec.active eq 0}
+           <h1 class="title"><center>{$labels.testcase_version_is_inactive_on_exec}</center></h1>
+          {/if}
+        </div>
+        <hr />
     </div>
-
-
-  {* ------------------------------------------------------------- *}
-  <div>
-    {include file="execute/inc_exec_test_spec.tpl"
-             args_tc_exec=$tc_exec
-             args_labels=$labels
-             args_enable_custom_field=$enable_custom_fields
-             args_execution_time_cf=$gui->execution_time_cfields
-             args_design_time_cf=$gui->design_time_cfields
-             args_testplan_design_time_cf=$gui->testplan_design_time_cfields
-             args_execution_types=$gui->execution_types
-             args_tcAttachments=$gui->tcAttachments
-             args_req_details=$gui->req_details
-             args_relations=$gui->relations
-             args_keywords=$gui->kw
-             args_cfg=$cfg}
-
-    {if $tc_exec.can_be_executed}
-      {include file="execute/{$tplConfig.inc_exec_controls}"
-               args_save_type='single'
-               args_input_enable_mgmt=$input_enabled_disabled
-               args_tcversion_id=$tcversion_id
-               args_webeditor=$gui->exec_notes_editors[$tc_id]
-               args_labels=$labels}
-    {/if}
-    {if $tc_exec.active eq 0}
-     <h1 class="title"><center>{$labels.testcase_version_is_inactive_on_exec}</center></h1>
-    {/if}
-  <hr />
-  </div>
-  {* ----------------------------------------------------------------------------------- *}
-
+    {* ---------------------------------------------------------- *}
 	{/foreach}

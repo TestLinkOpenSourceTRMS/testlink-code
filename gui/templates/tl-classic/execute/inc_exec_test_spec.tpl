@@ -17,8 +17,8 @@ Author : franciscom
  
     {$cfdt = $args_design_time_cf[$testcase_id]}
     <div class="exec_test_spec">
-      <div id="mainAttrContainer" class="mainAttrContainer"> 
-        <div id="summaryCONTAINER">
+      <div class="mainAttrContainer"> 
+        <div class="summaryCONTAINER">
           {if $cfdt.before_summary neq ''}
             <div class="custom_field_container">
               {$cfdt.before_summary}
@@ -36,7 +36,7 @@ Author : franciscom
           {/if}
         </div>
 
-        <div id="preconditionsCONTAINER">
+        <div class="preconditionsCONTAINER">
           {if $cfdt.before_preconditions neq ''}
             <div class="custom_field_container">
               {$cfdt.before_preconditions}
@@ -56,7 +56,7 @@ Author : franciscom
     </div>
 
  
-  <div class="exec_test_spec">
+  <div class="workBack">
     <table class="simple">
       {if $cfdt.before_steps_results != ''}
         <tr>
@@ -65,21 +65,25 @@ Author : franciscom
       {/if}
 
       {if $args_tc_exec.steps != '' && !is_null($args_tc_exec.steps)}
-        {include file="testcases/inc_steps.tpl"
-                 layout=$args_cfg->exec_cfg->steps_results_layout
-                 edit_enabled=false
-                 ghost_control=false
-                 add_exec_info=$tlCfg->exec_cfg->steps_exec
-                 steps=$args_tc_exec.steps}
+        <tr>
+          <td>
+            {include file="testcases/inc_steps.tpl"
+                     layout=$args_cfg->exec_cfg->steps_results_layout
+                     edit_enabled=false
+                     ghost_control=false
+                     add_exec_info=$tlCfg->exec_cfg->steps_exec
+                     steps=$args_tc_exec.steps}
+          </td>
+        </tr>
 
         <tr>
           <td colspan="{$tableColspan}" style="text-align: center;"> 
-          <b>{$args_labels.partialExecNoAttachmentsWarning}</b>
+          <br><b>{$args_labels.partialExecNoAttachmentsWarning}</b>
           </td>
         <tr>
-
         <tr>
           <td colspan="{$tableColspan}" style="text-align: center;"> 
+           <br>
            <button class="btn btn-primary" name="saveStepsPartialExec"
              id="saveStepsPartialExec" type="submit">{$args_labels.saveStepsForPartialExec}</button>
           </td>
@@ -88,16 +92,6 @@ Author : franciscom
 
       <tr> <td colspan="{$tableColspan}"> &nbsp; </td></tr>
       <tr> <td colspan="{$tableColspan}"> &nbsp; </td></tr>
-
-      <tr>
-        <td colspan="{$tableColspan}"><b>{$args_labels.execution_type}{$smarty.const.TITLE_SEP}</b>
-                                         {$args_execution_types[$args_tc_exec.execution_type]}</td>
-      </tr>
-      <tr>
-        <td colspan="{$tableColspan}"><b>{$args_labels.estimated_execution_duration}{$smarty.const.TITLE_SEP}</b>
-          {$args_tc_exec.estimated_exec_duration}
-        </td>
-      </tr>
 
       {if $args_relations != '' && !is_null($args_relations)}
         <tr>
@@ -182,7 +176,7 @@ Author : franciscom
 
   <br />
   {if isset($args_req_details)}
-    <div class="exec_test_spec">
+    <div class="workBack">
       <table class="test_exec"  >
       <tr>
         <th colspan="{$tableColspan}" class="title">{$args_labels.reqs}</th>

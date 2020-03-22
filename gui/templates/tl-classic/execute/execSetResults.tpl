@@ -132,6 +132,41 @@ warning_nothing_will_be_saved,file_upload_ko,pleaseOpenTSuite'}
 {$exportAction="lib/execute/execExport.php?tplan_id="}
 
 {include file="inc_head.tpl" popup='yes' openHead='yes' jsValidate="yes" editorType=$gui->editorType}
+
+<style>
+  .mainAttrContainer {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mainAttrContainer > div {
+    padding: 5px 3px 4px 5px;
+  }
+
+
+  .summaryCONTAINER {
+    padding: 5px 3px 4px 5px;
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->summary};
+  }
+
+  .spaceOne {
+    padding: 5px 3px 4px 5px;
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne};
+  }
+
+
+  .preconditionsCONTAINER {
+    padding: 5px 3px 4px 5px;
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions};  
+  }
+
+  .CFBeforeStepsCONTAINER {
+    padding: 5px 3px 4px 5px;
+    order: 99;  
+  }
+</style>
+
+
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
@@ -375,6 +410,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 {/if}
 
 <div id="main_content" class="workBack">
+
 	{if $gui->user_feedback != ''}
 		<div class="error">{$gui->user_feedback}</div>
 	{/if}
@@ -387,177 +423,176 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {/if}
 
 
-<form method="post" id="execSetResults" name="execSetResults" 
-      enctype="multipart/form-data"
-      onSubmit="javascript:return validateForm(this);">
+  <form method="post" id="execSetResults" name="execSetResults" 
+    enctype="multipart/form-data"
+    onSubmit="javascript:return validateForm(this);">
 
-  <input type="hidden" id="save_button_clicked"  name="save_button_clicked" value="0" />
-  <input type="hidden" id="do_delete"  name="do_delete" value="0" />
-  <input type="hidden" id="exec_to_delete"  name="exec_to_delete" value="0" />
-  <input type="hidden" id="form_token"  name="form_token" value="{$gui->treeFormToken}" />
-  <input type="hidden" id="refresh_tree"  name="refresh_tree" value="{$gui->refreshTree}" />
-  <input type="hidden" id="{$gui->history_status_btn_name}" name="{$gui->history_status_btn_name}" value="1" />
+    <input type="hidden" id="save_button_clicked"  name="save_button_clicked" value="0" />
+    <input type="hidden" id="do_delete"  name="do_delete" value="0" />
+    <input type="hidden" id="exec_to_delete"  name="exec_to_delete" value="0" />
+    <input type="hidden" id="form_token"  name="form_token" value="{$gui->treeFormToken}" />
+    <input type="hidden" id="refresh_tree"  name="refresh_tree" value="{$gui->refreshTree}" />
+    <input type="hidden" id="{$gui->history_status_btn_name}" name="{$gui->history_status_btn_name}" value="1" />
 
-  {$bulkExec = $cfg->exec_cfg->show_testsuite_contents && 
-               $gui->can_use_bulk_op }
-  {$singleExec = !$bulkExec}
+    {$bulkExec = $cfg->exec_cfg->show_testsuite_contents && 
+                 $gui->can_use_bulk_op }
+    {$singleExec = !$bulkExec}
 
-  {if $singleExec}
-    <div class="groupBtn">
-      <input type="hidden" id="history_on" name="history_on" value="{$gui->history_on}" />
-      
-      {$tlImages.toggle_direct_link} &nbsp;
-      <div class="direct_link" style='display:none'>
-      <img class="clip" src="{$tlImages.clipboard}" title="eye" 
-           data-clipboard-text="{$gui->direct_link}">
-      <a href="{$gui->direct_link}" target="_blank">
-      {$gui->direct_link}</a></div>
+    {if $singleExec}
+      <div class="groupBtn">
+        <input type="hidden" id="history_on" name="history_on" value="{$gui->history_on}" />
+        
+        {$tlImages.toggle_direct_link} &nbsp;
+        <div class="direct_link" style='display:none'>
+        <img class="clip" src="{$tlImages.clipboard}" title="eye" 
+             data-clipboard-text="{$gui->direct_link}">
+        <a href="{$gui->direct_link}" target="_blank">
+        {$gui->direct_link}</a></div>
+        
+        <input type="button" name="print" id="print" value="{$labels.btn_print}" onclick="javascript:window.print();" />
+        <input type="button" id="toggle_history_on_off"  name="{$gui->history_status_btn_name}"
+               value="{lang_get s=$gui->history_status_btn_name}" 
+               onclick="javascript:toogleRequiredOnShowHide('bug_summary');
+                        javascript:toogleRequiredOnShowHide('artifactVersion');
+                        javascript:toogleRequiredOnShowHide('artifactComponent');
+                        execSetResults.submit();"/>
 
-      
-      <input type="button" name="print" id="print" value="{$labels.btn_print}" onclick="javascript:window.print();" />
-      <input type="button" id="toggle_history_on_off"  name="{$gui->history_status_btn_name}"
-             value="{lang_get s=$gui->history_status_btn_name}" 
-             onclick="javascript:toogleRequiredOnShowHide('bug_summary');
-                      javascript:toogleRequiredOnShowHide('artifactVersion');
-                      javascript:toogleRequiredOnShowHide('artifactComponent');
-                      execSetResults.submit();"/>
+        {if $gui->grants->execute}
+        <input type="button" id="pop_up_import_button" name="import_xml_button"
+               value="{$labels.import_xml_results}"
+               onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},
+                                                     {$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
+            
+        {/if}
+        
+        {if $tlCfg->exec_cfg->enable_test_automation}
+          <input type="submit" id="execute_cases" name="execute_cases"
+                   value="{$labels.execute_and_save_results}"/>
+        {/if}
 
-      {if $gui->grants->execute}
-      <input type="button" id="pop_up_import_button" name="import_xml_button"
-             value="{$labels.import_xml_results}"
-             onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},
-                                                   {$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
-          
-      {/if}
-      
-      {if $tlCfg->exec_cfg->enable_test_automation}
-        <input type="submit" id="execute_cases" name="execute_cases"
-                 value="{$labels.execute_and_save_results}"/>
-      {/if}
+        {if $gui->hasNewestVersion && 1==0} 
+          <input type="hidden" id="TCVToUpdate" name="TCVToUpdate"
+            value="{$gui->tcversionSet}">
+          <input type="submit" id="linkLatestVersion" name="linkLatestVersion"
+                   value="{$labels.updateLinkToLatestTCVersion}"/>
+        {/if}
 
-      {if $gui->hasNewestVersion && 1==0} 
-        <input type="hidden" id="TCVToUpdate" name="TCVToUpdate"
-          value="{$gui->tcversionSet}">
-        <input type="submit" id="linkLatestVersion" name="linkLatestVersion"
-                 value="{$labels.updateLinkToLatestTCVersion}"/>
-      {/if}
+      </div>
+    {/if}
 
-    </div>
-  {/if}
+    {if $gui->plugins.EVENT_TESTRUN_DISPLAY}
+      <div id="plugin_display">
+        {foreach from=$gui->plugins.EVENT_TESTRUN_DISPLAY item=testrun_item}
+          {$testrun_item}
+          <br />
+        {/foreach}
+      </div>
+    {/if}
 
-  {if $gui->plugins.EVENT_TESTRUN_DISPLAY}
-    <div id="plugin_display">
-      {foreach from=$gui->plugins.EVENT_TESTRUN_DISPLAY item=testrun_item}
-        {$testrun_item}
-        <br />
-      {/foreach}
-    </div>
-  {/if}
-
-  {* ------------------------------------ *}
-  {* Test Plan notes show/hide management *}
-  {* ------------------------------------ *}
-  {$div_id='tplan_notes'}
-  {$memstatus_id=$tplan_notes_view_memory_id}
-  {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$gui->testplan_div_title
-           show_hide_container_id=$div_id
-           show_hide_container_draw=false
-           show_hide_container_class='exec_additional_info'
-           show_hide_container_view_status_id=$memstatus_id}
-
-  <div id="{$div_id}" class="exec_additional_info">
-    {if $gui->testPlanEditorType == 'none'}{$gui->testplan_notes|nl2br}{else}{$gui->testplan_notes}{/if}
-    {if $gui->testplan_cfields neq ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
-  </div>
-  {* ---------------------------------------------------------------- *}
-
-  {* ---------------------------------------------------------------- *}
-  {* Platforms notes show/hide management *}
-  {* ---------------------------------------------------------------- *}
-  {if $gui->platform_info.id > 0}
-    {$div_id='platform_notes'}
-    {$memstatus_id=$platform_notes_view_memory_id}
-	{if $gui->platformEditorType == 'none'}{$content=$gui->platform_info.notes|nl2br}{else}{$content=$gui->platform_info.notes}{/if}
-
+    {* ------------------------------------ *}
+    {* Test Plan notes show/hide management *}
+    {* ------------------------------------ *}
+    {$div_id='tplan_notes'}
+    {$memstatus_id=$tplan_notes_view_memory_id}
     {include file="inc_show_hide_mgmt.tpl"
-             show_hide_container_title=$gui->platform_div_title
+             show_hide_container_title=$gui->testplan_div_title
+             show_hide_container_id=$div_id
+             show_hide_container_draw=false
+             show_hide_container_class='exec_additional_info'
+             show_hide_container_view_status_id=$memstatus_id}
+
+    <div id="{$div_id}" class="exec_additional_info">
+      {if $gui->testPlanEditorType == 'none'}{$gui->testplan_notes|nl2br}{else}{$gui->testplan_notes}{/if}
+      {if $gui->testplan_cfields neq ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
+    </div>
+    {* ------------------------------------------------------------ *}
+
+    {* ------------------------------------------------------------- *}
+    {* Platforms notes show/hide management *}
+    {* ------------------------------------------------------------- *}
+    {if $gui->platform_info.id > 0}
+      {$div_id='platform_notes'}
+      {$memstatus_id=$platform_notes_view_memory_id}
+  	  {if $gui->platformEditorType == 'none'}{$content=$gui->platform_info.notes|nl2br}{else}{$content=$gui->platform_info.notes}{/if}
+
+      {include file="inc_show_hide_mgmt.tpl"
+                 show_hide_container_title=$gui->platform_div_title
+                 show_hide_container_id=$div_id
+                 show_hide_container_view_status_id=$memstatus_id
+                 show_hide_container_draw=true
+                 show_hide_container_class='exec_additional_info'
+                 show_hide_container_html=$content}
+    {/if}         
+    {* ------------------------------------------------------- *}
+
+    {* ------------------------------------------------------- *}
+    {* Build notes show/hide management                        *}
+    {* ------------------------------------------------------- *}
+    {$div_id='build_notes'}
+    {$memstatus_id=$build_notes_view_memory_id}
+    {include file="inc_show_hide_mgmt.tpl"
+             show_hide_container_title=$gui->build_div_title
              show_hide_container_id=$div_id
              show_hide_container_view_status_id=$memstatus_id
-             show_hide_container_draw=true
-             show_hide_container_class='exec_additional_info'
-             show_hide_container_html=$content}
-  {/if}         
-  {* ------------------------------------------------------- *}
+             show_hide_container_draw=false
+             show_hide_container_class='exec_additional_info'}
 
-  {* ------------------------------------------------------- *}
-  {* Build notes show/hide management                        *}
-  {* ------------------------------------------------------- *}
-  {$div_id='build_notes'}
-  {$memstatus_id=$build_notes_view_memory_id}
-  {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$gui->build_div_title
-           show_hide_container_id=$div_id
-           show_hide_container_view_status_id=$memstatus_id
-           show_hide_container_draw=false
-           show_hide_container_class='exec_additional_info'}
+    <div id="{$div_id}" class="exec_additional_info">
+      {if $gui->buildEditorType == 'none'}{$gui->build_notes|nl2br}{else}{$gui->build_notes}{/if}
+      {if $gui->build_cfields != ''} <div id="cfields_build" class="custom_field_container">{$gui->build_cfields}</div>{/if}
+    </div>
 
-  <div id="{$div_id}" class="exec_additional_info">
-    {if $gui->buildEditorType == 'none'}{$gui->build_notes|nl2br}{else}{$gui->build_notes}{/if}
-    {if $gui->build_cfields != ''} <div id="cfields_build" class="custom_field_container">{$gui->build_cfields}</div>{/if}
-  </div>
-
-  {* ------------------------------------------------------- *}
-  {if $gui->map_last_exec eq ""}
-     <div class="messages" style="text-align:center"> {$labels.no_data_available}</div>
-  {else}
+    {* ------------------------------------------------------- *}
+    {if $gui->map_last_exec eq ""}
+      <div class="messages" style="text-align:center">{$labels.no_data_available}</div>
+    {else}
       {if $gui->grants->execute == 1 and $gui->build_is_open == 1}
-        {$input_enabled_disabled=""}
-        {$att_download_only=false}
-        {$enable_custom_fields=true}
-        {$draw_submit_button=true}
+          {$input_enabled_disabled=""}
+          {$att_download_only=false}
+          {$enable_custom_fields=true}
+          {$draw_submit_button=true}
 
-        {if $bulkExec}
-            {$div_id='bulk_controls'}
-            {$memstatus_id="$bulk_controls_view_memory_id"}
-            {include file="inc_show_hide_mgmt.tpl"
-                     show_hide_container_title=$labels.bulk_tc_status_management
-                     show_hide_container_id=$div_id
-                     show_hide_container_draw=false
-                     show_hide_container_class='exec_additional_info'
-                     show_hide_container_view_status_id=$memstatus_id}
+          {if $bulkExec}
+              {$div_id='bulk_controls'}
+              {$memstatus_id="$bulk_controls_view_memory_id"}
+              {include file="inc_show_hide_mgmt.tpl"
+                       show_hide_container_title=$labels.bulk_tc_status_management
+                       show_hide_container_id=$div_id
+                       show_hide_container_draw=false
+                       show_hide_container_class='exec_additional_info'
+                       show_hide_container_view_status_id=$memstatus_id}
 
-            <div id="{$div_id}" name="{$div_id}">
-              {include file="execute/{$tplConfig.inc_exec_controls}"
-                       args_save_type='bulk'
-                       args_input_enable_mgmt=$input_enabled_disabled
-                       args_tcversion_id='bulk'
-                       args_webeditor=$gui->bulk_exec_notes_editor
-                       args_execution_time_cfields=$gui->execution_time_cfields
-                       args_draw_save_and_exit=$gui->draw_save_and_exit
-                       args_labels=$labels}
-            </div>
-        {/if}
-    	{/if}
-	{/if}
-
-  {if $bulkExec}
-    {include file="execute/execSetResultsBulk.inc.tpl"}
-  {/if}
-
-  {if $singleExec}
-  	{if $tlCfg->exec_cfg->enable_test_automation && 
-        $gui->remoteExecFeedback != ''}
-      {include file="execute/execSetResultsRemoteExec.inc.tpl"}
+              <div id="{$div_id}" name="{$div_id}">
+                {include file="execute/{$tplConfig.inc_exec_controls}"
+                         args_save_type='bulk'
+                         args_input_enable_mgmt=$input_enabled_disabled
+                         args_tcversion_id='bulk'
+                         args_webeditor=$gui->bulk_exec_notes_editor
+                         args_execution_time_cfields=$gui->execution_time_cfields
+                         args_draw_save_and_exit=$gui->draw_save_and_exit
+                         args_labels=$labels}
+              </div>
+          {/if}
+      {/if}
   	{/if}
 
-    {include file="execute/inc_exec_show_tc_exec.tpl"}
-    {if isset($gui->refreshTree) && $gui->refreshTree}
-      {include file="inc_refreshTreeWithFilters.tpl"}
+    {if $bulkExec}
+      {include file="execute/execSetResultsBulk.inc.tpl"}
     {/if}
-  {/if}
-  
-</form>
+
+    {if $singleExec}
+    	{if $tlCfg->exec_cfg->enable_test_automation && 
+          $gui->remoteExecFeedback != ''}
+        {include file="execute/execSetResultsRemoteExec.inc.tpl"}
+    	{/if}
+
+      {include file="execute/inc_exec_show_tc_exec.tpl"}
+      {if isset($gui->refreshTree) && $gui->refreshTree}
+        {include file="inc_refreshTreeWithFilters.tpl"}
+      {/if}
+    {/if}
+    
+  </form>
 </div>
 
 <script>

@@ -51,7 +51,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
       <div style="padding-left: 5px;">
         <b>{$labels.execution_type}{$smarty.const.TITLE_SEP}</b>
-           {$execution_types[$tc_exec.execution_type]}
+           {$gui->execution_types[$tc_exec.execution_type]}
       </div>
 
 

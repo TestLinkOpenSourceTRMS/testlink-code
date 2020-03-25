@@ -255,13 +255,13 @@ class testplan extends tlObjectWithAttachments
       }  
 
       if( property_exists($item, 'notes') ) {
-        $upd = ($upd != '' ? ',' : '') . " notes = '" . $this->db->prepare_string($item->notes) . "' ";
+        $upd .= ($upd != '' ? ',' : '') . " notes = '" . $this->db->prepare_string($item->notes) . "' ";
       }
 
       $intAttr = array('active','is_public');
       foreach($intAttr as $key) {
         if( property_exists($item, $key) ) {
-          $upd = ($upd != '' ? ',' : '') . $key . ' = ' . (intval($item->$key) > 0 ? 1 : 0);
+          $upd .= ($upd != '' ? ',' : '') . $key . ' = ' . (intval($item->$key) > 0 ? 1 : 0);
         }
       }  
 

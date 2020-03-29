@@ -3146,6 +3146,7 @@ $TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s ist angefordert, aber nicht 
 
 $TLS_API_INVALID_TESTCASE_VERSION_NUMBER="Die Angeforderte Versionsnummer existiert nicht für Testfall";
 $TLS_API_PARAMETER_NOT_INT = "Parameter (%s) sollte ein Integer sein (current value: %s).";
+$TLS_API_ILLEGAL_PARAMETER_VALUE = "Parameter (%s) muss enthalten sein in (%s) (aktueller Wert: %s).";
 
 $TLS_API_TPLAN_TPROJECT_KO="Test Plan (name=%s / id=%s) gehört nicht zu dem Test Projekt (name=%s / id=%s)";
 $TLS_API_TCASE_TPROJECT_KO="Testfall (%s:%s) gehört nicht zu dem Test Projekt (name=%s / id=%s)";
@@ -3663,3 +3664,4 @@ $TLS_confirm_uninstall_header = "undefined";
 $TLS_confirm_uninstall_text = "undefined";					
 // ----- END ------------------------------------------------------------------
 ?>
+

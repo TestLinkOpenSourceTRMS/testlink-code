@@ -19,51 +19,55 @@ Purpose: smarty template - assign platforms to testplans
 
 {if $gui->can_do}
   <script type="text/javascript" language="JavaScript">
-{* Used to show warnings when trying to remove platform with testcases *}
-{$gui->platform_count_js}
+    {* Used to show warnings when trying to remove 
+       platform with testcases *}
+    {$gui->platform_count_js}
 
-  var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
-  {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
-  {$opt_cfg->js_ot_name}.saveRemovedRightOptions("{$opt_cfg->js_ot_name}_removedRight");
-  {$opt_cfg->js_ot_name}.saveAddedLeftOptions("{$opt_cfg->js_ot_name}_addedLeft");
-  {$opt_cfg->js_ot_name}.saveAddedRightOptions("{$opt_cfg->js_ot_name}_addedRight");
-  {$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
-  {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
+    var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
+    {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
+    {$opt_cfg->js_ot_name}.saveRemovedRightOptions("{$opt_cfg->js_ot_name}_removedRight");
+    {$opt_cfg->js_ot_name}.saveAddedLeftOptions("{$opt_cfg->js_ot_name}_addedLeft");
+    {$opt_cfg->js_ot_name}.saveAddedRightOptions("{$opt_cfg->js_ot_name}_addedRight");
+    {$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
+    {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 
 
-/* Checks if any of the removed platforms has linked testcases.
- * If that is the case, an alert dialog is displayed
- *
- * 20091201 - Eloff - Added transferLeft function
- */
-{$opt_cfg->js_ot_name}.transferLeft={literal}function(){
-	options = this.right.options;
-	num_with_linked_to_move = 0;
-	for(idx=0; idx<options.length; idx++) {
-		if(options[idx].selected && platform_count_map[options[idx].text] > 0) {
-			num_with_linked_to_move++;
-		}
-	}
-	// Don't allow removal of platforms with linked TCs.
-	if (num_with_linked_to_move > 0) {
-		Ext.Msg.alert("{/literal}{$labels.platform_unlink_warning_title}{literal}",
-		                "{/literal}{$labels.platform_unlink_warning_message}{literal}");
-	}
-	else {
-		// this is the default call from option transfer
-		moveSelectedOptions(this.right,this.left,this.autoSort,this.staticOptionRegex); this.update();
-	}
-};
-{/literal}
-// Select all options in right panel, and move to left
-{$opt_cfg->js_ot_name}.transferAllLeft={literal}function(){
-	options = this.right.options;
-	Ext.query("option", this.right).each(function(el, i) {
-			el.selected = true;
-		});
-	this.transferLeft();
-};
-{/literal}
+    /* Checks if any of the removed platforms has linked testcases.
+     * If that is the case, an alert dialog is displayed
+     *
+     * 20091201 - Eloff - Added transferLeft function
+     */
+    {$opt_cfg->js_ot_name}.transferLeft={literal}function(){
+    	options = this.right.options;
+    	num_with_linked_to_move = 0;
+    	for(idx=0; idx<options.length; idx++) {
+    		if(options[idx].selected && platform_count_map[options[idx].text] > 0) {
+    			num_with_linked_to_move++;
+    		}
+    	}
+    	// Don't allow removal of platforms with linked TCs.
+    	if (num_with_linked_to_move > 0) {
+    		Ext.Msg.alert("{/literal}{$labels.platform_unlink_warning_title}{literal}",
+    		                "{/literal}{$labels.platform_unlink_warning_message}{literal}");
+    	}
+    	else {
+    		// this is the default call from option transfer
+    		moveSelectedOptions(this.right,this.left,this.autoSort,this.staticOptionRegex); this.update();
+    	}
+    };
+    {/literal}
+
+    //
+    // Anonymous Function
+    // Move all options from the Right to the LEFT 
+    {$opt_cfg->js_ot_name}.transferAllLeft=function(){
+    	options = this.right.options;
+      for (var iz=0; iz < options.length; iz++) { 
+        options[iz].selected = true;
+      }
+    	this.transferLeft();
+    };
+
   </script>
 {/if}
 </head>

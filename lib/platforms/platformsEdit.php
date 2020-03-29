@@ -144,13 +144,15 @@ function init_args( &$dbH )
 
   $args->currentUser = $_SESSION['currentUser'];
   
+  // Checkboxes
   if (null == $args->enable_on_design) {
     $args->enable_on_design = 0;
   }
 
   if (null == $args->enable_on_execution) {
-    $args->enable_on_execution = 1;
+    $args->enable_on_execution = 0;
   }
+
   return $args;
 }
 
@@ -217,16 +219,13 @@ function edit(&$args,&$gui,&$platform_mgr) {
   return $ret;
 }
 
-/*
-  function: do_create 
-            do operations on db
-
-  args :
-  
-  returns: 
-
-*/
-function do_create(&$args,&$gui,&$platform_mgr) {
+/**
+ * function: do_create 
+ *           do operations on db
+ *
+ */
+function do_create(&$args,&$gui,&$platform_mgr) 
+{
   $gui->main_descr = lang_get('platform_management');
   $gui->action_descr = lang_get('create_platform');
   $gui->submit_button_label = lang_get('btn_save');
@@ -236,8 +235,10 @@ function do_create(&$args,&$gui,&$platform_mgr) {
   $ret->template = 'platformsView.tpl';
   $plat = new stdClass();
   $plat->name = $args->name; 
-  $k2c = array('notes' => null,'enable_on_design' => 0,
-               'enable_on_execution' => 1);
+  $k2c = array('notes' => null,
+               'enable_on_design' => 0,
+               'enable_on_execution' => 0);
+
   foreach ($k2c as $prop => $defa) {
     $plat->$prop = property_exists($args, $prop) ? $args->$prop : $defa;
   }

@@ -1359,8 +1359,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $selection = null;
     } else {
       $this->do_filtering = true;
-      // we got the external ID here when filtering, but need the internal one
-      $internal_id = $this->tc_mgr->getInternalID($selection);
+      // we got the external ID here when filtering, 
+      // but need the internal one
+      $oget = ['tproject_id' => $this->args->testproject_id];
+      $internal_id = $this->tc_mgr->getInternalID($selection,$oget);
     }
     
     $this->filters[$key] = array('selected' => $selection ? $selection : $tc_prefix);

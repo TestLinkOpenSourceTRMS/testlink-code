@@ -419,14 +419,15 @@ class tlPlatform extends tlObjectWithDB
 
   /**
    * @param string $orderBy
-   * @return array Returns all platforms associated to a given testplan
-   *               on the form $platform_id => $platform_name
+   * @return array Returns all platforms associated 
+   *               to a given testplan
+   *         output format: $id => $name
    */
   public function getLinkedToTestplanAsMap($testplanID,$opt=null)
   {
-
+    // null -> any
     $options = array('orderBy' => ' ORDER BY name ',
-                     'enable_on_design' => false,
+                     'enable_on_design' => null,
                      'enable_on_execution' => true);
 
     $options = array_merge($options,(array)$opt);
@@ -436,6 +437,11 @@ class tlPlatform extends tlObjectWithDB
     $filterEnableOn = "";
     $enaSet = array('enable_on_design','enable_on_execution');
     foreach ($enaSet as $ena) {
+      if ($options[$ena] == null) {
+        // do not filter
+        continue;
+      }
+      
       if (is_bool($options[$ena]) || is_int($options[$ena])) {
         $filterEnableOn .= " AND $ena = " . ($options[$ena] ? 1 : 0);
       }                  

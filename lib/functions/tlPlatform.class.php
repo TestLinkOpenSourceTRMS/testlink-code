@@ -188,17 +188,15 @@ class tlPlatform extends tlObjectWithDB
   public function linkToTestplan($id, $testplan_id)
   {
     $result = true;
-    if( !is_null($id) )
-    {
+    if ( !is_null($id) ) {
       $idSet = (array)$id;
-      foreach ($idSet as $platform_id)
-      {
-        $sql = " INSERT INTO {$this->tables['testplan_platforms']} " .
+      foreach ($idSet as $platform_id) {
+        $sql = 
+            " INSERT INTO {$this->tables['testplan_platforms']} " .
             " (testplan_id, platform_id) " .
             " VALUES ($testplan_id, $platform_id)";
         $result = $this->db->exec_query($sql);
-        if(!$result)
-        {
+        if (!$result) {
           break;
         }  
       }

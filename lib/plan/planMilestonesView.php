@@ -6,7 +6,7 @@
  *
  * @package 	 TestLink
  * @author     Francisco Mancardi
- * @copyright  2003-2019, TestLink community 
+ * @copyright  2003-2020, TestLink community 
  * @filesoruce planMilestonesView.php
  * @link 		   http://www.testlink.org
  * 
@@ -68,7 +68,7 @@ function initialize_gui(&$dbHandler,&$argsObj) {
   $gui->tplan_name = testplan::getName($dbHandler,$gui->tplan_id);
   $gui->main_descr = lang_get('title_milestones') . " " . $gui->tplan_name;
 
-  $manager = new milestone_mgr($dbHandler);
+  $manager = new milestone($dbHandler);
 	$gui->items = $manager->get_all_by_testplan($gui->tplan_id);
   $gui->itemsLive = null;
 

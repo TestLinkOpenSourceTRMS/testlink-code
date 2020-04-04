@@ -101,9 +101,10 @@ class TLSmarty extends Smarty {
     $main = TL_ABS_PATH . 'gui/templates/dashio/';
     $this->template_dir = 
              ['main' => $main,
-              'include' => $main . 'include/',
-              'feedback' => $main . 'feedback/',
+              'attach' => $main . 'attachments/',
               'execInc' => $main . 'execute/include/',
+              'feedback' => $main . 'feedback/',
+              'include' => $main . 'include/',
               'tcaseInc' => $main . 'testcases/include/',
               'tcaseLbl' => $main . 'testcases/labels/'
              ];

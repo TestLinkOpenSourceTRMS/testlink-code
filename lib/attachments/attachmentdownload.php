@@ -10,8 +10,11 @@
  */
 @ob_end_clean();
 require_once('../../config.inc.php');
-require_once('../functions/common.php');
-require_once('../functions/attachments.inc.php');
+#require_once('../functions/common.php');
+#require_once('../functions/attachments.inc.php');
+require_once('common.php');
+require_once('attachments.inc.php');
+
 
 // This way can be called without _SESSION, 
 // this is useful for reports when using access without login
@@ -21,6 +24,16 @@ $args = init_args($db);
 if ($args->id) {
   $docRepo = tlAttachmentRepository::create($db);
   $docInfo = $docRepo->getAttachmentInfo($args->id);
+
+  file_put_contents("/var/testlink/log.log", 
+                    __LINE__ . ' ' 
+                    . $args->id . PHP_EOL,FILE_APPEND);
+ 
+  file_put_contents("/var/testlink/log.log", 
+                    __LINE__ . ' ' 
+                    . json_encode($docInfo). PHP_EOL,FILE_APPEND);
+ 
+
 
   if ($docInfo) {
     switch ($args->opmode)  {
@@ -78,6 +91,14 @@ if ($args->id) {
         }
 
         $tbl = tlObject::getDBTables('testplans','tesuites','builds');
+
+         file_put_contents("/var/testlink/log.log", 
+                    __LINE__ . ' ' 
+                    . $fk_table. PHP_EOL,FILE_APPEND);
+
+         file_put_contents("/var/testlink/log.log", 
+                    __LINE__ . ' ' 
+                    . $attContext . PHP_EOL,FILE_APPEND);
         switch ($attContext) {
           case 'executions':
             $sql = "SELECT E.testplan_id, TPL.testproject_id
@@ -86,8 +107,6 @@ if ($args->id) {
                     ON TPL.id = E.testplan_id
                     WHERE E.id = {$attParent}"; 
             $rs = $db->get_recordset($sql);
-            // $er = $user->getEffectiveRole($db,$rs[0]['testproject_id'],
-            //                              $rs[0]['testplan_id']);       
           break;
 
           case 'tcversions':
@@ -115,53 +134,15 @@ if ($args->id) {
                         'exec_testcases_assigned_to_me');
           break;
 
+          case 'testplans':
+            list($ctx,$ck) = 
+              getContextForTestPlan($db,$tbl,$attParent);
+          break;
+
+
           case 'nodes_hierarchy':
-            $tree = new tree($db);
-            $ni = $tree->get_node_hierarchy_info($attParent);
-            $nt = array_flip($tree->get_available_node_types());
-            $nv = $nt[$ni['node_type_id']]; 
-
-            $ck = array('testplan_execute','exec_ro_access',
-                        'exec_testcases_assigned_to_me');
-
-            
-            switch ($nv) {
-              case 'testsuite':
-                $tree = new tree($db);
-                $ctx = array('tproject_id' => $tree->getTreeRoot($attParent),
-                             'tplan_id' => null,
-                             'checkPublicPrivateAttr' => true);
-                $ck = array('mgt_view_tc','mgt_modify_tc');
-              break;
-
-              case 'build':
-                $sql = "SELECT B.testplan_id, TPL.testproject_id
-                        FROM {$tlb['builds']} B 
-                        JOIN {$tbl['testplans']} TPL 
-                        ON TPL.id = B.testplan_id
-                        WHERE B.id = {$attParent}"; 
-                $rs = $db->get_recordset($sql);
-                $rs = $rs[0];
-                $ctx = array('tproject_id' => $rs[0]['testproject_id'],
-                             'tplan_id' => $rs[0]['testplan_id'],
-                             'checkPublicPrivateAttr' => true);
-                $ck = array('testplan_execute','exec_ro_access',
-                            'exec_testcases_assigned_to_me');
-              break;
-
-              case 'testplan':
-                $sql = "SELECT TPL.id AS testplan_id, TPL.testproject_id
-                        FROM {$tbl['testplans']} TPL 
-                        WHERE TPL.id = {$attParent}"; 
-                $rs = $db->get_recordset($sql);
-                $rs = $rs[0];
-                $ctx = array('tproject_id' => $rs[0]['testproject_id'],
-                             'tplan_id' => $rs[0]['testplan_id'],
-                             'checkPublicPrivateAttr' => true);
-                $ck = array('testplan_execute','exec_ro_access',
-                            'exec_testcases_assigned_to_me');
-              break;
-            } 
+            list($ctx,$ck) = 
+              getContextForNodesHierarchy($db,$tbl,$attParent);
           break;
         }
 
@@ -173,7 +154,9 @@ if ($args->id) {
           }
         }
 
-        //file_put_contents("/var/testlink/log.log", json_encode($user->dbID));
+        file_put_contents("/var/testlink/log.log", 
+                          json_encode($user->dbID),FILE_APPEND);
+
       break;
     }
 
@@ -267,3 +250,72 @@ function console_log($output, $with_script_tags = true) {
   }
   echo $js_code;
 }
+
+
+/**
+ *
+ */
+function getContextForTestPlan(&$dbH,&$tbl,$id) 
+{
+  $sql = "SELECT TPL.id AS testplan_id, 
+          TPL.testproject_id
+          FROM {$tbl['testplans']} TPL 
+          WHERE TPL.id = $id"; 
+
+  $rs = $dbH->get_recordset($sql);
+  $rs = $rs[0];
+  $ctx = array('tproject_id' => $rs['testproject_id'],
+               'tplan_id' => $rs['testplan_id'],
+               'checkPublicPrivateAttr' => true);
+  $ck = array('testplan_execute','exec_ro_access',
+              'exec_testcases_assigned_to_me');
+
+  return array($ctx,$ck);
+}
+
+/**
+ *
+ */
+function getContextForNodesHierarchy(&$dbH,&$tbl,$id) 
+{
+  $tree = new tree($dbH);
+  $ni = $tree->get_node_hierarchy_info($attParent);
+  $nt = array_flip($tree->get_available_node_types());
+  $nv = $nt[$ni['node_type_id']]; 
+
+  $ck = array('testplan_execute','exec_ro_access',
+              'exec_testcases_assigned_to_me');
+
+  switch ($nv) {
+    case 'testsuite':
+      $ctx = array('tproject_id' => 
+                     $tree->getTreeRoot($attParent),
+                   'tplan_id' => null,
+                   'checkPublicPrivateAttr' => true);
+      $ck = array('mgt_view_tc','mgt_modify_tc');
+    break;
+
+    case 'build':
+      $sql = "SELECT B.testplan_id, TPL.testproject_id
+              FROM {$tlb['builds']} B 
+              JOIN {$tbl['testplans']} TPL 
+              ON TPL.id = B.testplan_id
+              WHERE B.id = $id"; 
+      $rs = $dbH->get_recordset($sql);
+      $rs = $rs[0];
+      $ctx = array('tproject_id' => $rs[0]['testproject_id'],
+                   'tplan_id' => $rs[0]['testplan_id'],
+                   'checkPublicPrivateAttr' => true);
+      $ck = array('testplan_execute','exec_ro_access',
+                  'exec_testcases_assigned_to_me');
+    break;
+
+    case 'testplan':
+      list($ctx,$ck) = 
+        getContextForTestPlan($db,$tbl,$id);
+    break;
+  } 
+
+  return array($ctx,$ck);
+}
+

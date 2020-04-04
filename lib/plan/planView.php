@@ -8,64 +8,25 @@
  */
 require_once('../../config.inc.php');
 require_once("common.php");
+require_once("planViewUtils.php");
+
 testlinkInitPage($db,false,false,"checkRights");
 
-$templateCfg = templateConfiguration();
+$tplCfg = templateConfiguration();
 
 $args = init_args($db);
 list($gui,$tproject_mgr,$tplan_mgr) = initializeGui($db,$args);
 
-if($args->tproject_id) {  
-  if( !is_null($gui->tplans) && count($gui->tplans) > 0 ) {
-    // do this test project has platform definitions ?
-    $tplan_mgr->platform_mgr->setTestProjectID($args->tproject_id);
-    $dummy = $tplan_mgr->platform_mgr->testProjectCount();
-    $gui->drawPlatformQtyColumn = $dummy[$args->tproject_id]['platform_qty'] > 0;
-
-    $tplanSet = array_keys($gui->tplans);
-    $dummy = $tplan_mgr->count_testcases($tplanSet,null,array('output' => 'groupByTestPlan'));
-    $buildQty = $tplan_mgr->get_builds($tplanSet,null,null,array('getCount' => true));
-    $rightSet = array('testplan_user_role_assignment');
-
-    foreach($tplanSet as $idk) {
-      $gui->tplans[$idk]['tcase_qty'] = isset($dummy[$idk]['qty']) ? intval($dummy[$idk]['qty']) : 0;
-      $gui->tplans[$idk]['build_qty'] = isset($buildQty[$idk]['build_qty']) ? intval($buildQty[$idk]['build_qty']) : 0;
-
-      if( $gui->drawPlatformQtyColumn ) {
-        $plat = $tplan_mgr->getPlatforms($idk);
-        $gui->tplans[$idk]['platform_qty'] = is_null($plat) ? 0 : count($plat);
-      }
-
-
-      // Get rights for each test plan
-      foreach($rightSet as $target) {
-        // DEV NOTE - CRITIC
-        // I've made a theorically good performance choice to 
-        // assign to $roleObj a reference to different roleObj
-        // UNFORTUNATELLY this choice was responsible to destroy 
-        // the pointed object since second LOOP
-        $roleObj = null;
-        if($gui->tplans[$idk]['has_role'] > 0) {
-          $roleObj = $args->user->tplanRoles[$gui->tplans[$idk]['has_role']];
-        }  
-        else if (!is_null($args->user->tprojectRoles) && 
-                 isset($args->user->tprojectRoles[$args->tproject_id]) )
-        {
-          $roleObj = $args->user->tprojectRoles[$args->tproject_id];
-        }  
-
-        if(is_null($roleObj)) {
-          $roleObj = $args->user->globalRole;
-        }  
-        $gui->tplans[$idk]['rights'][$target] = $roleObj->hasRight($target);  
-      }  
-    }    
+if ($args->tproject_id) {  
+  if (!is_null($gui->tplans) && count($gui->tplans) > 0) {
+    $gui->getTestPlans = false;
+    planViewGUIInit($db,$args,$gui,$tplan_mgr);
   }
 }
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+$smarty->display($tplCfg->template_dir . $tplCfg->default_template);
 
 
 /**
@@ -115,8 +76,10 @@ function initializeGui(&$dbHandler,$argsObj) {
   $gui->activeMenu['plans'] = 'active';
 
 
-  $gui->main_descr = lang_get('testplan_title_tp_management'). " - " . 
-                     lang_get('testproject') . ' ' . $argsObj->tproject_name;
+  $gui->main_descr = lang_get('testplan_title_tp_management') . 
+                     " - " . 
+                     lang_get('testproject') . ' ' . 
+                     $argsObj->tproject_name;
   $cfg = getWebEditorCfg('testplan');
   $gui->editorType = $cfg['type'];
     

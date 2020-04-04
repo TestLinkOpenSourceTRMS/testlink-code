@@ -168,11 +168,11 @@ Purpose: smarty template - create/edit Test Plan
   {/if}
 
   {include file="attachments.inc.tpl" 
-               attach_id=$planID
-               attach_tableName=$gui->attachmentTableName
-               attach_attachmentInfos=$gui->attachments[$planID]  
-               attach_downloadOnly=$downloadOnly
-               attach_loadOnCancelURL=$loadOnCancelURL}
+                attach_id=$planID
+                attach_tableName=$gui->attachmentTableName
+                attach_attachmentInfos=$gui->attachments  
+                attach_downloadOnly=$downloadOnly
+                attach_loadOnCancelURL=$loadOnCancelURL}
 {/if}
              
 <p>{$labels.testplan_txt_notes}</p>

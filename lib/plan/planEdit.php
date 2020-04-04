@@ -6,7 +6,7 @@
  * Manages test plans
  *
  * @package   TestLink
- * @copyright 2007-2019, TestLink community 
+ * @copyright 2007-2020, TestLink community 
  * @version   planEdit.php
  * @link      http://www.testlink.org/
  *
@@ -15,6 +15,7 @@
 
 require_once('../../config.inc.php');
 require_once("common.php");
+require_once("planViewUtils.php");
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testplan');
 require_once(require_web_editor($editorCfg['type']));
@@ -28,12 +29,13 @@ $tproject_mgr = new testproject($db);
 $smarty = new TLSmarty();
 $do_display = false;
 $template = null;
+
 $args = init_args($db,$tplan_mgr);
 $gui = initializeGui($db,$args,$editorCfg,$tproject_mgr);
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
-$of->Value = getItemTemplateContents('testplan_template', $of->InstanceName, $args->notes);
-
+$of->Value = getItemTemplateContents('testplan_template', 
+                 $of->InstanceName, $args->notes);
 
 // Checks on testplan name, and testplan name<=>testplan id
 if ($args->do_action == "do_create" || $args->do_action == "do_update") {
@@ -44,12 +46,11 @@ if ($args->do_action == "do_create" || $args->do_action == "do_update") {
                      $gui->tplans[$args->itemID]['name'] == $args->testplan_name);
 }
 
-// interface changes to be able to do not loose CF values if some problem arise on User Interface
-$gui->cfields = $tplan_mgr->html_table_of_custom_field_inputs($args->itemID,$args->tproject_id,'design','',$_REQUEST);
-
+$uploadOp = null;
 switch ($args->do_action) {
   case 'fileUpload':
-    $uploadOp = fileUploadManagement($db,$args->itemID,$args->fileTitle,
+    $uploadOp = fileUploadManagement($db,$args->itemID,
+                  $args->fileTitle,
                   $tplan_mgr->getAttachmentTableName());
   break;
 
@@ -125,8 +126,11 @@ switch ($args->do_action) {
     $gui->is_public = ($args->is_public == 'on') ? 1 :0 ;
     
     if (!$name_exists) {
-      $new_tplan_id = $tplan_mgr->create($args->testplan_name,$args->notes,
-                                         $args->tproject_id,$args->active,$args->is_public);
+      $new_tplan_id = $tplan_mgr->create($args->testplan_name,
+                                         $args->notes,
+                                         $args->tproject_id,
+                                         $args->active,
+                                         $args->is_public);
       if ($new_tplan_id == 0) {
         $gui->user_feedback = $db->error_msg();
       } else {
@@ -164,8 +168,8 @@ switch ($args->do_action) {
     }
     
     if(!$status_ok) {
-      $gui->tproject_name=$args->tproject_name;
-      $gui->notes=$of->CreateHTML();
+      $gui->tproject_name = $args->tproject_name;
+      $gui->notes = $of->CreateHTML();
     }
   break;
 
@@ -186,6 +190,7 @@ $opt = array('caller' => 'planEdit');
 list($add2args,$ux) = initUserEnv($db,$argsUX,$opt);
 $gui->uri = $ux->uri;
 
+$createNotesHTML = false;
 switch ($args->do_action) {
   case "do_create":
   case "do_delete":
@@ -201,6 +206,8 @@ switch ($args->do_action) {
       array('output' =>'mapfull','active' => null));
 
     $gui->drawPlatformQtyColumn = false;
+
+    // 20200308 - DO REFACTOR PLEASE
     if( !is_null($gui->tplans) ) {
       // do this test project has platform definitions ?
       $tplan_mgr->platform_mgr->setTestProjectID($args->tproject_id);
@@ -258,14 +265,19 @@ switch ($args->do_action) {
    case 'deleteFile':
      $do_display = true;
      $template = is_null($template) ? 'planEdit.tpl' : $template;
-     $gui->notes = $of->CreateHTML();
+     $createNotesHTML = true;
    break;
 }
 
 if ($do_display) {
   $gui = initializeGui($db,$args,$editorCfg,$tproject_mgr);
-  $gui->doViewReload = ($template == 'planView.tpl');
+
   $gui->uploadOp = $uploadOp;
+  if ($gui->doViewReload = ($template == 'planView.tpl')) {
+    $gui->getTestPlans = true;
+    planViewGUIInit($db,$args,$gui,$tplan_mgr);
+  }
+
   switch ($args->do_action) {
    case "edit":
    case 'fileUpload':
@@ -274,6 +286,10 @@ if ($do_display) {
    break;
   }
    
+  if ($createNotesHTML) {
+    $gui->notes = $of->CreateHTML();
+  }
+
   $smarty->assign('gui',$gui);
   $smarty->display($templateCfg->template_dir . $template);
 }
@@ -296,9 +312,12 @@ function init_args(&$dbH,&$tplanMgr)
   list($args,$env) = initContext();
 
   $nullable_keys = array('testplan_name',
-                         'notes','rights','active','do_action');
+                         'notes','rights',
+                         'active','do_action');
+
   foreach ($nullable_keys as $value) {
-    $args->$value = isset($_REQUEST[$value]) ? trim($_REQUEST[$value]) : null;
+    $args->$value = isset($_REQUEST[$value]) ? 
+                    trim($_REQUEST[$value]) : null;
   }
 
   $checkboxes_keys = array('is_public' => 0,'active' => 0);
@@ -314,9 +333,12 @@ function init_args(&$dbH,&$tplanMgr)
   $args->copy = ($args->copy_from_tplan_id > 0) ? TRUE : FALSE;
 
   $args->copy_options=array();
-  $boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0,
-                        'copy_milestones' => 0, 'copy_user_roles' => 0, 
-                        'copy_builds' => 0, 'copy_platforms_links' => 0,
+  $boolean_keys = array('copy_tcases' => 0,
+                        'copy_priorities' => 0,
+                        'copy_milestones' => 0, 
+                        'copy_user_roles' => 0, 
+                        'copy_builds' => 0, 
+                        'copy_platforms_links' => 0,
                         'copy_attachments' => 0);
 
   foreach ($boolean_keys as $key => $value) {
@@ -383,7 +405,8 @@ function checkRights(&$db,&$user)
  * initializeGui
  *
  */
-function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
+function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,
+                       &$tprojectMgr)
 {
   $tplan_mgr = new testplan($dbHandler);
   $opt = array('caller' => basename(__FILE__) . '::' . __FUNCTION__);
@@ -410,7 +433,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
                        lang_get('testproject') . ' ' . $argsObj->tproject_name;
 
   
-  $guiObj->attachments[$guiObj->tplan_id] = getAttachmentInfosFrom($tplan_mgr,$guiObj->tplan_id);
+  // $guiObj->attachments[$guiObj->tplan_id] = getAttachmentInfosFrom($tplan_mgr,$guiObj->tplan_id);
+  $guiObj->attachments = 
+    getAttachmentInfosFrom($tplan_mgr,$guiObj->tplan_id);
   $guiObj->attachmentTableName = $tplan_mgr->getAttachmentTableName();
   
 
@@ -434,28 +459,40 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     $guiObj->is_public = 0;
     $guiObj->cfields = '';
     $guiObj->notes = '';    
+  } else {
+
+    $guiObj->cfields = 
+      $tplan_mgr->html_table_of_custom_field_inputs(
+         $argsObj->itemID,$argsObj->tproject_id,
+         'design','',$_REQUEST);
+
   }
-  
+ 
+
+
   return $guiObj;
 }
 
 /**
  *
  */
-function getItemData(&$itemMgr,&$guiObj,&$ofObj,$itemID,$updateAttachments=false)
+function getItemData(&$itemMgr,&$guiObj,&$ofObj,$itemID,
+                     $updateAttachments=false)
 {
   $dummy = $itemMgr->get_by_id($itemID);
   if (sizeof($dummy)) {
-    $ofObj->Value = $dummy['notes'];
 
     $guiObj->testplan_name = $dummy['name'];
     $guiObj->is_active = $dummy['active'];
     $guiObj->is_public = $dummy['is_public'];
     $guiObj->api_key = $dummy['api_key'];
     $guiObj->tplan_id = $itemID;
+    $guiObj->notes = $dummy['notes'];
+
+    $ofObj->Value = $dummy['notes'];
 
     if($updateAttachments) {  
-      $guiObj->attachments[$guiObj->tplan_id] = 
+      $guiObj->attachments = 
         getAttachmentInfosFrom($itemMgr,$guiObj->tplan_id);
     }
   }

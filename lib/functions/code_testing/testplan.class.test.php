@@ -211,7 +211,7 @@ new dBug($linked_tcversions);
 // -------------------------------------------------------------------------------------------
 echo "<hr><h2> Build Manager Class </h2>";
 echo "<pre> build manager - constructor - build_mgr(&\$db)";echo "</pre>";
-$build_mgr=new build_mgr($db);
+$build_mgr=new build($db);
 new dBug($build_mgr);
 
 

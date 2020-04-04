@@ -128,7 +128,7 @@ function contextAsXML(&$dbHandler,$contextSet,&$tplanMgr)
 	
 	$info['tplan'] = $tplanMgr->get_by_id($contextSet->tplan_id);
 
-	$buildMgr = new build_mgr($dbHandler);
+	$buildMgr = new build($dbHandler);
 	$info['build'] = $buildMgr->get_by_id($contextSet->build_id);
 	unset($buildMgr);
 	

@@ -176,7 +176,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr) {
 
   list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
 
-  $buildMgr = new build_mgr($dbHandler);
+  $buildMgr = new build($dbHandler);
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui->form_token = $argsObj->form_token;

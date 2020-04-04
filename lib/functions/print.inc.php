@@ -2248,7 +2248,7 @@ function initStaticRenderTestCaseForPrinting(&$dbH,$tcaseID,$ctx,$cfg) {
 
   $things->tc_mgr = new testcase($dbH);
   $things->tplan_urgency = new testPlanUrgency($dbH);
-  $things->build_mgr = new build_mgr($dbH);
+  $things->build_mgr = new build($dbH);
   $things->tplan_mgr = new testplan($dbH);
   $things->req_mgr = new requirement_mgr($dbH);
   $things->tproject_mgr = new testproject($dbH); 

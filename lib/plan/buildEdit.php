@@ -21,7 +21,7 @@ $date_format_cfg = config_get('date_format');
 
 $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
-$build_mgr = new build_mgr($db);
+$build_mgr = new build($db);
 
 $args = init_args($date_format_cfg,$tplan_mgr,$build_mgr);
 $gui = initializeGui($args,$build_mgr);

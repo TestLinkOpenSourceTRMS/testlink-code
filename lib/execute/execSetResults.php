@@ -1428,7 +1428,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 
   list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
 
-  $buildMgr = new build_mgr($dbHandler);
+  $buildMgr = new build($dbHandler);
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui->headsUpTSuite = false;

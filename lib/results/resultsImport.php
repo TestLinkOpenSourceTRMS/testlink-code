@@ -195,7 +195,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options) {
   if($tc_qty) {
     $tplan_mgr=new testplan($db);
     $tproject_mgr=new testproject($db);
-    $build_mgr=new build_mgr($db);
+    $build_mgr=new build($db);
   }
   
   // Need to do checks on common settings

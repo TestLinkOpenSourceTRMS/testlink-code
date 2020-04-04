@@ -121,7 +121,7 @@ class RestApi
     $this->reqSpecMgr = new requirement_spec_mgr($this->db);
     $this->reqMgr = new requirement_mgr($this->db);
     $this->cfieldMgr = $this->tprojectMgr->cfield_mgr;
-    $this->buildMgr = new build_mgr($this->db);
+    $this->buildMgr = new build($this->db);
 
     $this->tables = $this->tcaseMgr->getDBTables();
 

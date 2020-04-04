@@ -9,8 +9,6 @@
  * @filesource  buildCopyExecTaskAssignment.php
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.15
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -22,7 +20,7 @@ checkRights($db,$_SESSION['currentUser']);
 
 $tplan_mgr = new testplan($db);
 $assignment_mgr = &$tplan_mgr->assignment_mgr;
-$build_mgr = new build_mgr($db);
+$build_mgr = new build($db);
 
 $templateCfg = templateConfiguration();
 

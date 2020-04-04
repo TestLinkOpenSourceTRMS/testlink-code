@@ -5,7 +5,6 @@ use Slim\App;
 
 
 return function (App $app) {
-  $app->get('/',World::class . ':hello');
 
   // using array(), was the way in Slim3 and 
   // still seems valid

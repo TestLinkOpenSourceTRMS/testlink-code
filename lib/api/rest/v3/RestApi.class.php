@@ -8,7 +8,7 @@
  * @author 		Francisco Mancardi <francisco.mancardi@gmail.com>
  * @package 	TestLink
  * 
- * Implemented using Slim framework Version 4.4.0
+ * Implemented using Slim framework Version 4.3.0 / 4.4.0
  * 
  * 
  * References
@@ -362,10 +362,10 @@ class RestApi
       // This is a global right
       $rightToCheck="mgt_modify_product";
       if( $this->userHasRight($rightToCheck) ) {
+        $op = array('status' => 'ok', 'message' => 'ok');
         $item = json_decode($request->getBody());
         $op['id'] = $this->tprojectMgr->create($item,
                              array('doChecks' => true));
-        $op = array('status' => 'ok', 'message' => 'ok');
       } else {
         $response = new Response();
         $response->withStatus(403);
@@ -789,6 +789,7 @@ class RestApi
   /**
    * 'name'
    * 'testProjectID'
+   * 'testProjectPrefix'
    * 'notes'
    * 'active'
    * 'is_public'
@@ -804,6 +805,12 @@ class RestApi
       $op = array('status' => 'ok', 'message' => 'ok');
       $opeOpt = array('setSessionProject' => false,
                       'doChecks' => true);
+
+      if (property_exists($item, 'testProjectPrefix')) {
+        $pi = $this->tprojectMgr->get_by_prefix(trim($item->testProjectPrefix));
+        $item->testProjectID = intval($pi[id]);
+      }
+
       $op['id'] = $this->tplanMgr->createFromObject($item,$opeOpt);
       
     } catch (Exception $e) {

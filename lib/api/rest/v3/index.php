@@ -7,20 +7,15 @@ use Slim\Factory\AppFactory;
 require_once('../../../../config.inc.php');
 require 'autoload.php';
 require 'RestApi.class.php';
-// @used-by ./core/routes.php
-require 'World.class.php';
 
 //
 $app = AppFactory::create();
 $basePath = "/lib/api/rest/v3";
 $app->setBasePath($basePath);
-
-// $restApi = new RestApi();
 $app->restApi = new RestApi();
 
 // Register routes
 $routes = require './core/routes.php';
-// $routes($app,$restApi);
 $routes($app);
 
 // Middleware
@@ -31,6 +26,5 @@ $app->add(array($app->restApi,'authenticate'));
 // php-slim-framework-v3-set-
 //     global-content-type-for-responses/37255946
 $app->add(array($app->restApi,'setContentTypeJSON'));
-
 
 $app->run();

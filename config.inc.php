@@ -278,7 +278,7 @@ $tlCfg->sessionInactivityTimeout = 9900;
  * If you want sessions to last longer this must be set to a higher value.
  * You may need to set this in your global php.ini if the settings don't take effect.
  */
-//ini_set('session.gc_maxlifetime', 54000);
+//ini_set('session.gc_maxlifetime', 60*90);
 
 $tlCfg->notifications->userSignUp = new stdClass();
 $tlCfg->notifications->userSignUp->enabled = TRUE;  // @see notifyGlobalAdmins()

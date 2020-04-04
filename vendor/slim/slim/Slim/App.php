@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slim Framework (https://slimframework.com)
  *
@@ -27,6 +28,8 @@ use Slim\Routing\RouteCollectorProxy;
 use Slim\Routing\RouteResolver;
 use Slim\Routing\RouteRunner;
 
+use function strtoupper;
+
 class App extends RouteCollectorProxy implements RequestHandlerInterface
 {
     /**
@@ -34,7 +37,7 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
      *
      * @var string
      */
-    public const VERSION = '4.3.0';
+    public const VERSION = '4.4.0';
 
     /**
      * @var RouteResolverInterface

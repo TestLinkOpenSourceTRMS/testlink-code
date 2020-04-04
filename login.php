@@ -151,7 +151,8 @@ function init_args() {
   $args->destination = urldecode($pParams['destination']);
   $args->loginform_token = urldecode($pParams['loginform_token']);
 
-  $args->viewer = $pParams['viewer']; 
+  // $args->viewer = $pParams['viewer']; 
+  $args->viewer = '';
 
   $k2c = array('ajaxcheck' => 'do','ajaxlogin' => 'do');
   if (isset($k2c[$pParams['action']]))  {

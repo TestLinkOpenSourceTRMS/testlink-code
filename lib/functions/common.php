@@ -2139,3 +2139,20 @@ function pageAccessCheck(&$db, &$user, $context)
     throw new Exception($msg, 1);
   }
 }
+
+/**
+ *
+ */
+function XSS_StringScriptSafe($content) 
+{
+  $needle = [];
+  $needle[] = "<script";
+  $needle[] = "< s c r i p t";
+
+  foreach ($needle as $ne) {
+    if (stripos($content, $ne) !== FALSE) {
+      return false;
+    }
+  }
+  return true;
+}

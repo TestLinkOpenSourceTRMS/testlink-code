@@ -13,20 +13,20 @@ require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 
-// This way can be called without _SESSION, this is useful for reports
+// This way can be called without _SESSION, 
+// this is useful for reports
 testlinkInitPage($db,false,true);
 
 $args = init_args($db);
-if ($args->id)
-{
-  $attachmentRepository = tlAttachmentRepository::create($db);
-  $attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
+if ($args->id) {
+  $fileRepo = tlAttachmentRepository::create($db);
+  $attachInfo = $fileRepo->getAttachmentInfo($args->id);
 
-  if ($attachmentInfo) {
-    switch ($args->opmode) 
-    {
+  if ($attachInfo) {
+    switch ($args->opmode) {
       case 'API':
-        // want to check if apikey provided is right for attachment context
+        // want to check if apikey provided is right 
+        // for attachment context
         // - test project api key:
         //   is needed to get attachments for:
         //   test specifications
@@ -38,25 +38,21 @@ if ($args->id)
         //   
         // What kind of attachments I've got ?
         $doIt = false;
-        $attContext = $attachmentInfo['fk_table'];
-        switch($attContext)
-        {
+        $attContext = $attachInfo['fk_table'];
+        switch ($attContext) {
           case 'executions':
             // check apikey
             // 1. has to be a test plan key
             // 2. execution must belong to the test plan.
             $item = getEntityByAPIKey($db,$args->apikey,'testplan');
-            if( !is_null($item) )
-            {
+            if (!is_null($item)) {
               $tables = tlObjectWithDB::getDBTables(array('executions'));
               $sql = "SELECT testplan_id FROM {$tables['executions']} " .
-                     "WHERE id = " . intval($attachmentInfo['fk_id']);
+                     "WHERE id = " . intval($attachInfo['fk_id']);
 
               $rs = $db->get_recordset($sql);
-              if(!is_null($rs))
-              {
-                if($rs['0']['testplan_id'] == $item['id'])
-                {
+              if (!is_null($rs)) {
+                if($rs['0']['testplan_id'] == $item['id']) {
                   // GOOD !
                   $doIt = true;
                 }  
@@ -73,44 +69,53 @@ if ($args->id)
     }
 
 
-    if( $doIt )
-    {
+    if ($doIt) {
       $content = '';
       $getContent = true;
-      if( $args->opmode !== 'API' && $args->skipCheck !== 0 && $args->skipCheck !== false)
-      {
-        if( $args->skipCheck != hash('sha256',$attachmentInfo['file_name']) )
-        {
+      if( $args->opmode !== 'API' && $args->skipCheck !== 0 
+          && $args->skipCheck !== false) {
+        if( $args->skipCheck != hash('sha256',$attachInfo['file_name']) ) {
           $getContent = false;
         }  
       }  
 
-      if($getContent)
-      {
-        $content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
+      if ($getContent) {
+        $content = $fileRepo->getAttachmentContent($args->id,
+                                                   $attachInfo);
       }  
 
-      if ($content != "" )
-      {
+      if ($content != "") {
+
+        // try to fight XSS in SVG
+        global $g_repositoryType;
+        $doEncode = ($g_repositoryType == TL_REPOSITORY_TYPE_DB);
+        if ($doEncode) {
+          $content = base64_decode($content);
+        }
+
+        $what2do = "Content-Disposition: inline;";
+        // is SVG?
+        if (strripos($content, "<!DOCTYPE svg") !== FALSE
+            || strripos($content, "<svg") !== FALSE) {
+          if (!XSS_StringScriptSafe($content)) {
+            $what2do = "Content-Disposition: attachment;";
+          }
+        }
+
         @ob_end_clean();
         header('Pragma: public');
         header("Cache-Control: ");
-        if (!(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" && preg_match("/MSIE/",$_SERVER["HTTP_USER_AGENT"])))
-        { 
+        if (!(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" && preg_match("/MSIE/",$_SERVER["HTTP_USER_AGENT"]))) { 
           header('Pragma: no-cache');
         }
-        header('Content-Type: '.$attachmentInfo['file_type']);
-        header('Content-Length: '.$attachmentInfo['file_size']);
-        header("Content-Disposition: inline; filename=\"{$attachmentInfo['file_name']}\"");
+        header('Content-Type: '. $attachInfo['file_type']);
+        header('Content-Length: '.$attachInfo['file_size']);
+        
+        header( $what2do . 
+                " filename=\"{$attachInfo['file_name']}\"");
         header("Content-Description: Download Data");
-        global $g_repositoryType;
-        if($g_repositoryType == TL_REPOSITORY_TYPE_DB)
-        {
-          echo base64_decode($content);
-        }
-        else {
-          echo $content;
-        }
+
+        echo $content;
         exit();
       }      
     }  

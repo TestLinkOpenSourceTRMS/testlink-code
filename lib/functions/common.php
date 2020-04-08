@@ -355,8 +355,8 @@ function initTopMenu(&$db)
         if( $addItem )
         {
           $_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
-          "target='{$element['target']}' accesskey='{$element['shortcut']}'" .
-          "tabindex=''" . $idx++ . "''>";
+          "target='{$element['target']}' accesskey='{$element['shortcut']}' " .
+          "tabindex='" . $idx++ . "'>";
 
           if( isset($element['imgKey']) )
           {

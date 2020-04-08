@@ -934,8 +934,8 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   "top_tsuite_id" BIGINT NOT NULL DEFAULT '0'  REFERENCES  /*prefix*/testsuites (id),
   "child_tsuite_id" BIGINT NOT NULL DEFAULT '0'  REFERENCES  /*prefix*/testsuites (id),
   "status" char(1) DEFAULT NULL,
-  "qty" INT unsigned NOT NULL DEFAULT '0',
-  "total_tc" INT unsigned NOT NULL DEFAULT '0',
+  "qty" INT NOT NULL DEFAULT '0',
+  "total_tc" INT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ) ;
 CREATE UNIQUE INDEX /*prefix*/udx1_details 

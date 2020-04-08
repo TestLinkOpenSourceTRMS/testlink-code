@@ -323,9 +323,10 @@ function initTopMenu(&$db)
     foreach ($guiTopMenu as $element)
     {
       // check if Test Plan is available
+      $testPlanID = (isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0) ? $_SESSION['testplanID'] : null;
       if ((!isset($element['condition'])) || ($element['condition'] == '') ||
         (($element['condition'] == 'TestPlanAvailable') && 
-          isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0) ||
+         !is_null($testPlanID)) ||
         (($element['condition'] == 'ReqMgmtEnabled') && 
           isset($_SESSION['testprojectOptions']->requirementsEnabled) && 
             $_SESSION['testprojectOptions']->requirementsEnabled))
@@ -339,7 +340,7 @@ function initTopMenu(&$db)
           {
             foreach($element['right'] as $rg)
             {
-              if( $addItem = (has_rights($db,$rg) == "yes") )
+              if( $addItem = (has_rights($db,$rg, $_SESSION['testprojectID'], $testPlanID) == "yes") )
               {
                 break;
               }   
@@ -347,7 +348,7 @@ function initTopMenu(&$db)
           } 
           else
           {
-            $addItem = (has_rights($db,$element['right']) == "yes");   
+            $addItem = (has_rights($db,$element['right'], $_SESSION['testprojectID'], $testPlanID) == "yes");
           } 
         } 
 

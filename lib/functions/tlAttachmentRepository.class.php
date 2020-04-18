@@ -361,15 +361,14 @@ class tlAttachmentRepository extends tlObjectWithDB
   public function getAttachmentContent($id,$attachmentInfo = null)
   {
     $content = null;
-    if (!$attachmentInfo)
-    {
+    if (!$attachmentInfo) {
       $attachmentInfo = $this->getAttachmentInfo($id);
     }
     
-    if ($attachmentInfo)
-    {
+    if ($attachmentInfo) {
       $fname = 'getAttachmentContentFrom';
-      $fname .= ($this->repositoryType == TL_REPOSITORY_TYPE_FS) ? 'FS' : 'DB';
+      $fname .= ($this->repositoryType == TL_REPOSITORY_TYPE_FS) 
+                ? 'FS' : 'DB';
       $content = $this->$fname($id);
     }
     return $content;
@@ -384,17 +383,18 @@ class tlAttachmentRepository extends tlObjectWithDB
   protected function getAttachmentContentFromFS($id)
   {
     $query = "SELECT file_size,compression_type,file_path " .
-             " FROM {$this->tables['attachments']} WHERE id = {$id}";
+             " FROM {$this->tables['attachments']}
+               WHERE id = {$id}";
     $row = $this->db->fetchFirstRow($query);
 
     $content = null;
-    if ($row)
-    {
+    if ($row) {
       $filePath = $row['file_path'];
       $fileSize = $row['file_size'];
-      $destFPath = $this->repositoryPath.DIRECTORY_SEPARATOR.$filePath;
-      switch($row['compression_type'])
-      {
+      $destFPath = $this->repositoryPath 
+                   . DIRECTORY_SEPARATOR . $filePath;
+
+      switch($row['compression_type']) {
         case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
           $content = getFileContents($destFPath);
           break;
@@ -404,9 +404,9 @@ class tlAttachmentRepository extends tlObjectWithDB
           break;
       }
     }
-
     return $content;
   }
+
   /**
    * Gets some common infos about attachments
    *

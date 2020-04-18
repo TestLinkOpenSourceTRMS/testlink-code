@@ -1048,26 +1048,25 @@ function get_requirement_child_by_id_req($id){
    * create XML string with following req spec data
    *  - basic data (title, scope)
    *  - custom fields values
-   *  - children: can be other req spec  or requirements (tree leaves)
+   *  - children: can be other req spec  or requirements 
+   *    (tree leaves)
    *
    * Developed using exportTestSuiteDataToXML() as model
    *
-   * @internal revision
    */
-  function exportReqSpecToXML($id,$tproject_id,$optionsForExport=array())
+  function exportReqSpecToXML($id,$tproject_id,$optForExport=array())
   {
   	// manage missing keys; recursive export by default
-    if( !array_key_exists('RECURSIVE',$optionsForExport) ){
-	  $optionsForExport['RECURSIVE'] = true;
-	}
+    if( !array_key_exists('RECURSIVE',$optForExport) ) {
+	    $optForExport['RECURSIVE'] = true;
+  	}
   	
     $relXmlData = '';
     $relationsCache = array();
 
-  	$cfXML=null;
+  	$cfXML = null;
   	$xmlData = null;
-  	if($optionsForExport['RECURSIVE'])
-  	{
+  	if ($optForExport['RECURSIVE']) {
     	$cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
   		$containerData = $this->get_by_id($id);
     	$xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']) . '" ' .
@@ -1080,35 +1079,33 @@ function get_requirement_child_by_id_req($id){
   	}
    
 	// Add attachments info	
-	if (isset($optionsForExport['ATTACHMENTS']) && $optionsForExport['ATTACHMENTS'])
-    {
-		$attachments=null;
-		// get all attachments
-		$attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
+	if (isset($optForExport['ATTACHMENTS']) 
+      && $optForExport['ATTACHMENTS']) {
+
+		$attachments = null;
+		$attachSet = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
 	  
 		// get all attachments content and encode it in base64	  
-		if ($attachmentInfos)
-		{
-			foreach ($attachmentInfos as $attachmentInfo)
-			{
-				$aID = $attachmentInfo["id"];
-				$content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
+		if ($attachSet) {
+			foreach ($attachSet as $attInfo) {
+				$aID = $attInfo["id"];
+				$content = $this->attachmentRepository
+                        ->getAttachmentContent($aID, $attInfo);
 				
-				if ($content != null)
-				{
+				if ($content != null) {
 					$attachments[$aID]["id"] = $aID;
-					$attachments[$aID]["name"] = $attachmentInfo["file_name"];
-					$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
-					$attachments[$aID]["title"] = $attachmentInfo["title"];
-					$attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
+					$attachments[$aID]["name"] = $attInfo["file_name"];
+					$attachments[$aID]["file_type"] = $attInfo["file_type"];
+					$attachments[$aID]["title"] = $attInfo["title"];
+					$attachments[$aID]["date_added"] = $attInfo["date_added"];
 					$attachments[$aID]["content"] = base64_encode($content);
 				}
 			}
-	    }
+	  }
 	  
-		if( !is_null($attachments) && count($attachments) > 0 )
-		{
-			$attchRootElem = "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
+		if( !is_null($attachments) && count($attachments) > 0 ) {
+			$attchRootElem = 
+        "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
 			$attchElemTemplate = "\t\t<attachment>\n" .
 							   "\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
 							   "\t\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
@@ -1121,26 +1118,24 @@ function get_requirement_child_by_id_req($id){
 			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
 								"||ATTACHMENT_FILE_TYPE||" => "file_type", "||ATTACHMENT_TITLE||" => "title",
 								"||ATTACHMENT_DATE_ADDED||" => "date_added", "||ATTACHMENT_CONTENT||" => "content");
-			$xmlData .= exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
-        }
+			$xmlData .= exportDataToXML($attachments,$attchRootElem,
+                     $attchElemTemplate,$attchDecode,true);
+      }
     }
 	
   	$req_spec = $this->getReqTree($id);
   	$childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
-  	if( !is_null($childNodes) )
-  	{
+  	if( !is_null($childNodes) ) {
       $loop_qty=sizeof($childNodes); 
-      for($idx = 0;$idx < $loop_qty;$idx++)
-      {
+      for($idx = 0;$idx < $loop_qty;$idx++) {
   	    $cNode = $childNodes[$idx];
   	    $nTable = $cNode['node_table'];
-  	    if($optionsForExport['RECURSIVE'] && $cNode['node_table'] == 'req_specs')
-  	    {
-  	    	$xmlData .= $this->exportReqSpecToXML($cNode['id'],$tproject_id,$optionsForExport);
-  	    }
-  	    else if ($cNode['node_table'] == 'requirements')
-  	    {
-          $xmlData .= $this->req_mgr->exportReqToXML($cNode['id'],$tproject_id,$optionsForExport['ATTACHMENTS']);
+  	    if( $optForExport['RECURSIVE'] 
+            && $cNode['node_table'] == 'req_specs') {
+  	    	$xmlData .= $this->exportReqSpecToXML($cNode['id'],
+                              $tproject_id,$optForExport);
+  	    } else if ($cNode['node_table'] == 'requirements') {
+          $xmlData .= $this->req_mgr->exportReqToXML($cNode['id'],$tproject_id,$optForExport['ATTACHMENTS']);
 
           $relations = $this->req_mgr->get_relations($cNode['id']);
           if( !is_null($relations['relations']) && count($relations['relations']) > 0 )
@@ -1165,7 +1160,7 @@ function get_requirement_child_by_id_req($id){
       $xmlData .= $relXmlData;
   	}    
 
-  	if ($optionsForExport['RECURSIVE'])
+  	if ($optForExport['RECURSIVE'])
   	{
   		$xmlData .= "</req_spec>\n";
   	}
@@ -2119,7 +2114,6 @@ function get_requirement_child_by_id_req($id){
 	  	       $this->db->prepare_string($item['scope']) . "','" . 
 	  	       $this->db->prepare_string($item['type']) . "','" . 
 	  	       $this->db->prepare_string($item['log_message']) . "'" . $val2add . ")";
-	  	// echo $sql . '<br>'; die();   		
 
 		$result = $this->db->exec_query($sql);
 		if ($result)

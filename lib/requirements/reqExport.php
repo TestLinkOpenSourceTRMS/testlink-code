@@ -15,7 +15,7 @@ require_once("common.php");
 require_once("requirements.inc.php");
 
 testlinkInitPage($db,false,false);
-$templateCfg = templateConfiguration();
+$tplCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
 
 $args = init_args();
@@ -25,14 +25,12 @@ $context = new stdClass();
 $context->tproject_id = $args->tproject_id;
 checkRights($db,$_SESSION['currentUser'],$context);
 
-
-
-switch($args->doAction)
-{
+switch($args->doAction) {
   case 'export':
     $smarty = new TLSmarty();
     $smarty->assign('gui', $gui);
-    $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+    $smarty->display($tplCfg->template_dir . 
+                     $tplCfg->default_template);
   break;
     
   case 'doExport':
@@ -59,15 +57,21 @@ function init_args()
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
   $args = new stdClass();
-  $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : 'export';
-  $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
-  $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? intval($_REQUEST['req_spec_id']) : null;
-  $args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : "";
-  $args->export_attachments = isset($_REQUEST['exportAttachments']) ? $_REQUEST['exportAttachments'] : "";
+  $args->doAction = isset($_REQUEST['doAction']) 
+                    ? $_REQUEST['doAction'] : 'export';
+  $args->exportType = isset($_REQUEST['exportType']) 
+                      ? $_REQUEST['exportType'] : null;
+  $args->req_spec_id = isset($_REQUEST['req_spec_id']) 
+                       ? intval($_REQUEST['req_spec_id']) : null;
+  $args->export_filename = isset($_REQUEST['export_filename']) 
+                           ? $_REQUEST['export_filename'] : "";
+  $args->export_attachments = isset($_REQUEST['exportAttachments'])
+    ? $_REQUEST['exportAttachments'] : "";
   
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-  if( $args->tproject_id == 0 )
-  { 
+  $args->tproject_id = isset($_REQUEST['tproject_id']) 
+    ? intval($_REQUEST['tproject_id']) : 0;
+
+  if( $args->tproject_id == 0 ) { 
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
   $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
@@ -145,8 +149,7 @@ function doExport(&$argsObj,&$req_spec_mgr)
 
       $openTag = $argsObj->scope == 'items' ? "requirements>" : 'requirement-specification>';
       
-      switch($argsObj->scope)
-      {
+      switch($argsObj->scope) {
         case 'tree':
           $reqSpecSet = $req_spec_mgr->getFirstLevelInTestProject($argsObj->tproject_id);
           $reqSpecSet = array_keys($reqSpecSet);
@@ -159,10 +162,8 @@ function doExport(&$argsObj,&$req_spec_mgr)
       }
       
       $content .= "<" . $openTag . "\n";
-      if(!is_null($reqSpecSet))
-      {
-        foreach($reqSpecSet as $reqSpecID)
-        {
+      if(!is_null($reqSpecSet)) {
+        foreach($reqSpecSet as $reqSpecID) {
           $content .= $req_spec_mgr->$pfn($reqSpecID,$argsObj->tproject_id,$optionsForExport);
         }
       }
@@ -170,9 +171,9 @@ function doExport(&$argsObj,&$req_spec_mgr)
     break;
   }
 
-  if ($pfn)
-  {
-    $fileName = is_null($argsObj->export_filename) ? $fileName : $argsObj->export_filename;
+  if ($pfn) {
+    $fileName = is_null($argsObj->export_filename) 
+                ? $fileName : $argsObj->export_filename;
     downloadContentsToFile($content,$fileName);
     exit();
   }

@@ -7,15 +7,12 @@ use Slim\Factory\AppFactory;
 require_once('../../../../config.inc.php');
 require 'autoload.php';
 require 'RestApi.class.php';
-// @used-by ./core/routes.php
-require 'World.class.php';
 
 //
 $app = AppFactory::create();
 $basePath = "/lib/api/rest/v3";
 $app->setBasePath($basePath);
 
-// $restApi = new RestApi();
 $app->restApi = new RestApi();
 
 // Register routes

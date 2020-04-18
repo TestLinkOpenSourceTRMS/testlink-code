@@ -361,11 +361,12 @@ function initTopMenu(&$db)
           if( isset($element['imgKey']) )
           {
            $_SESSION['testprojectTopMenu'] .= '<img src="' . $imageSet[$element['imgKey']] . '"' .
-                                              ' title="' . lang_get($element['label']) . '">'; 
+             ' title="' . lang_get($element['label']) . '">'; 
           }  
           else
           {
-           $_SESSION['testprojectTopMenu'] .= lang_get($element['label']); 
+           $_SESSION['testprojectTopMenu'] .= 
+             lang_get($element['label']); 
           }  
 
           $_SESSION['testprojectTopMenu'] .= "</a>&nbsp;&nbsp;&nbsp;";
@@ -476,7 +477,8 @@ function testlinkInitPage(&$db, $initProject = FALSE,
 
   doSessionStart();
   setPaths();
-  if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) ) {
+  if( isset($_SESSION['locale']) 
+      && !is_null($_SESSION['locale']) ) {
     setDateTimeFormats($_SESSION['locale']);
   } 
   doDBConnect($db);

@@ -11,16 +11,22 @@
 **/
 class mantisdbInterface extends issueTrackerInterface
 {
-  private $code_status = array(10 => 'new',20 => 'feedback',30 => 'acknowledged',
-                               40 => 'confirmed',50 => 'assigned',80 => 'resolved',90 => 'closed');
+  private $code_status = array(10 => 'new',
+                               20 => 'feedback',
+                               30 => 'acknowledged',
+                               40 => 'confirmed',
+                               50 => 'assigned',
+                               80 => 'resolved',
+                               90 => 'closed');
                               
-  private $status_color = array('new'          => '#ffa0a0', # red,
-                                'feedback'     => '#ff50a8', # purple
-                                'acknowledged' => '#ffd850', # orange
-                                'confirmed'    => '#ffffb0', # yellow
-                                'assigned'     => '#c8c8ff', # blue
-                                'resolved'     => '#cceedd', # buish-green
-                                'closed'       => '#e8e8e8'); # light gray
+  private $status_color = 
+            array('new'          => '#ffa0a0', # red,
+                  'feedback'     => '#ff50a8', # purple
+                  'acknowledged' => '#ffd850', # orange
+                  'confirmed'    => '#ffffb0', # yellow
+                  'assigned'     => '#c8c8ff', # blue
+                  'resolved'     => '#cceedd', # buish-green
+                  'closed'       => '#e8e8e8'); # light gray
 
   var $defaultResolvedStatus;
 
@@ -42,15 +48,18 @@ class mantisdbInterface extends issueTrackerInterface
 
     $this->interfaceViaDB = true;
     $this->defaultResolvedStatus = array();
-    $this->defaultResolvedStatus[] = array('code' => 80, 'verbose' => 'resolved');
-    $this->defaultResolvedStatus[] = array('code' => 90, 'verbose' => 'closed');
+    $this->defaultResolvedStatus[] = array('code' => 80, 
+                                           'verbose' => 'resolved');
+    $this->defaultResolvedStatus[] = array('code' => 90, 
+                                           'verbose' => 'closed');
     
     $this->setResolvedStatusCfg();
     
-    $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
+    $this->methodOpt['buildViewBugLink'] = 
+      array('addSummary' => true, 'colorByStatus' => true);
+    
     $this->guiCfg = array('use_decoration' => true);
-    if( property_exists($this->cfg, 'statuscfg') )
-    {
+    if( property_exists($this->cfg, 'statuscfg') ) {
       $this->setStatusCfg();
     }
   }

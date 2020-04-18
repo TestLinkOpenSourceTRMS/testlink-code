@@ -253,17 +253,13 @@ public function setSessionProject($projectId)
     $tproject_info = $this->get_by_id($projectId);
   }
 
-  if ($tproject_info)
-  {
+  if ($tproject_info) {
     $_SESSION['testprojectID'] = $tproject_info['id'];
     $_SESSION['testprojectName'] = $tproject_info['name'];
     $_SESSION['testprojectColor'] = $tproject_info['color'];
     $_SESSION['testprojectPrefix'] = $tproject_info['prefix'];
 
-        if(!isset($_SESSION['testprojectOptions']) )
-        {
-          $_SESSION['testprojectOptions'] = new stdClass();
-        }
+    $_SESSION['testprojectOptions'] = new stdClass();
     $_SESSION['testprojectOptions']->requirementsEnabled = 
             isset($tproject_info['opt']->requirementsEnabled) 
             ? $tproject_info['opt']->requirementsEnabled : 0;

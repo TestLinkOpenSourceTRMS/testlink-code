@@ -1,0 +1,10 @@
+{
+  "testPlanID":46,
+  "buildID":13,
+  "platformID":6,
+  "testCaseExternalID":"PWQ-2", 
+  "notes":"This is an execution created via REST API",
+  "statusCode":"b",
+  "executionType":"1",
+  "executionTimeStampISO":"2013-04-27 12:09:00"
+}

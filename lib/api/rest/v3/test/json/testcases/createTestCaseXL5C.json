@@ -1,0 +1,14 @@
+{
+  "name":"Test Case XL5-C",
+  "testSuite": {"id": 62},
+  "testProject": {"id": 1},
+  "summary": 
+  "This is a summary for Test Case 
+  second line 
+  line #3",
+  "preconditions":"No preconditions",
+  "order":100,
+  "authorLogin": "admin",
+  "importance": {"name":"high"},
+  "executionType": {"name":"automatic"}
+}

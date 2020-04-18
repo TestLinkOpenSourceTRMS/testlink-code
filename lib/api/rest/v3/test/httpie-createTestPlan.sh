@@ -1,0 +1,5 @@
+URI=http://slim4/lib/api/rest/v3/
+APIKEY="Apikey:c94048220527a3d038db5c19e1156c08"
+ACTION=testplans
+JSON=./json/createTestPlan.json
+http POST $URI$ACTION $APIKEY  < $JSON

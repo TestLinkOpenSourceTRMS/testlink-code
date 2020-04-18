@@ -1,0 +1,8 @@
+touch httpie-createTestCase.sh
+touch httpie-createTestCaseB.sh
+touch httpie-createTestCaseWithSteps.sh
+touch httpie-createTestCaseXL5.sh
+touch httpie-createTestCaseXL5B.sh
+touch httpie-createTestCaseXL5C.sh
+touch httpie-createTestCaseXL5D.sh
+

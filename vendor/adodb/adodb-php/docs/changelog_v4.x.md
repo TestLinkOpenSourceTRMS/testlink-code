@@ -19,33 +19,33 @@ Older changelogs:
 - New ADODB_Cache_File class for file caching defined in adodb.inc.php.
 - Farsi language file contribution by Peyman Hooshmandi Raad (phooshmand#gmail.com)
 - New API for creating your custom caching class which is stored in $ADODB_CACHE:
-  ```
-include "/path/to/adodb.inc.php";
-$ADODB_CACHE_CLASS = 'MyCacheClass';
-
-class MyCacheClass extends ADODB_Cache_File
-{
-	function writecache($filename, $contents,$debug=false){...}
-	function &readcache($filename, &$err, $secs2cache, $rsClass){ ...}
-		:
-}
-
-$DB = NewADOConnection($driver);
-$DB->Connect(...);  ## MyCacheClass created here and stored in $ADODB_CACHE global variable.
-
-$data = $rs->CacheGetOne($sql); ## MyCacheClass is used here for caching...
-```
+    ```
+    include "/path/to/adodb.inc.php";
+    $ADODB_CACHE_CLASS = 'MyCacheClass';
+    
+    class MyCacheClass extends ADODB_Cache_File
+    {
+        function writecache($filename, $contents,$debug=false){...}
+        function &readcache($filename, &$err, $secs2cache, $rsClass){ ...}
+            :
+    }
+    
+    $DB = NewADOConnection($driver);
+    $DB->Connect(...);  ## MyCacheClass created here and stored in $ADODB_CACHE global variable.
+    
+    $data = $rs->CacheGetOne($sql); ## MyCacheClass is used here for caching...
+    ```
 - Memcache supports multiple pooled hosts now. Only if none of the pooled servers can be contacted will a connect error be generated. Usage example below:
-  ```
-$db = NewADOConnection($driver);
-$db->memCache = true; /// should we use memCache instead of caching in files
-$db->memCacheHost = array($ip1, $ip2, $ip3); /// $db->memCacheHost = $ip1; still works
-$db->memCachePort = 11211; /// this is default memCache port
-$db->memCacheCompress = false; /// Use 'true' to store the item compressed (uses zlib)
-
-$db->Connect(...);
-$db->CacheExecute($sql);
-```
+    ```
+    $db = NewADOConnection($driver);
+    $db->memCache = true; /// should we use memCache instead of caching in files
+    $db->memCacheHost = array($ip1, $ip2, $ip3); /// $db->memCacheHost = $ip1; still works
+    $db->memCachePort = 11211; /// this is default memCache port
+    $db->memCacheCompress = false; /// Use 'true' to store the item compressed (uses zlib)
+    
+    $db->Connect(...);
+    $db->CacheExecute($sql);
+    ```
 
 ## 4.98 - 13 Feb 2008
 
@@ -174,24 +174,24 @@ $db->CacheExecute($sql);
 - Changed CacheSelectLimit() to flush cache when $secs2cache==-1 due to complaints from other users.
 - Added support for using memcached with CacheExecute/CacheSelectLimit. Requires memcache module PECL extension. Usage:
     ```
-$db = NewADOConnection($driver);
-$db->memCache = true; /// should we use memCache instead of caching in files
-$db->memCacheHost = "126.0.1.1"; /// memCache host
-$db->memCachePort = 11211; /// this is default memCache port
-$db->memCacheCompress = false; /// Use 'true' to store the item compressed (uses zlib)
-$db->Connect(...);
-$db->CacheExecute($sql);
-```
+    $db = NewADOConnection($driver);
+    $db->memCache = true; /// should we use memCache instead of caching in files
+    $db->memCacheHost = "126.0.1.1"; /// memCache host
+    $db->memCachePort = 11211; /// this is default memCache port
+    $db->memCacheCompress = false; /// Use 'true' to store the item compressed (uses zlib)
+    $db->Connect(...);
+    $db->CacheExecute($sql);
+    ```
 
 - Implemented Transpose() for recordsets. Recordset must be retrieved using ADODB_FETCH_NUM. First column becomes the column name.
     ```
-$db = NewADOConnection('mysql');
-$db->Connect(...);
-$db->SetFetchMode(ADODB_FETCH_NUM);
-$rs = $db->Execute('select productname,productid,unitprice from products limit 10');
-$rs2 = $db->Transpose($rs);
-rs2html($rs2);
-```
+    $db = NewADOConnection('mysql');
+    $db->Connect(...);
+    $db->SetFetchMode(ADODB_FETCH_NUM);
+    $rs = $db->Execute('select productname,productid,unitprice from products limit 10');
+    $rs2 = $db->Transpose($rs);
+    rs2html($rs2);
+    ```
 
 ## 4.91 - 2 Aug 2006
 
@@ -349,20 +349,19 @@ rs2html($rs2);
 - Added 'w' (dow as 0-6 or 1-7) and 'l' (dow as string) for SQLDate for oci8, postgres and mysql.
 - Rolled back MetaType() changes for mysqli done in prev version.
 - Datadict change by chris, cblin#tennaxia.com data mappings from:
-
     ```
-oci8:  X->varchar(4000) XL->CLOB
-mssql: X->XL->TEXT
-mysql: X->XL->LONGTEXT
-fbird: X->XL->varchar(4000)
-```
+    oci8:  X->varchar(4000) XL->CLOB
+    mssql: X->XL->TEXT
+    mysql: X->XL->LONGTEXT
+    fbird: X->XL->varchar(4000)
+    ```
   to:
     ```
-oci8:  X->varchar(4000) XL->CLOB
-mssql: X->VARCHAR(4000) XL->TEXT
-mysql: X->TEXT          XL->LONGTEXT
-fbird: X->VARCHAR(4000) XL->VARCHAR(32000)
-```
+    oci8:  X->varchar(4000) XL->CLOB
+    mssql: X->VARCHAR(4000) XL->TEXT
+    mysql: X->TEXT          XL->LONGTEXT
+    fbird: X->VARCHAR(4000) XL->VARCHAR(32000)
+    ```
 - Added $connection->disableBlobs to postgresql to improve performance when no bytea is used (2-5% improvement).
 - Removed all HTTP_* vars.
 - Added $rs->tableName to be set before calling AutoExecute().
@@ -532,33 +531,29 @@ fbird: X->VARCHAR(4000) XL->VARCHAR(32000)
 - Added $gmt parameter (true/false) to UserDate and UserTimeStamp in connection class, to force conversion of input (in local time) to be converted to UTC/GMT.
 - Mssql datadict did not support INT types properly (no size param allowed). Added _GetSize() to datadict-mssql.inc.php.
 - For borland_ibase, BeginTrans(), changed:
-
     ```
-$this->_transactionID = $this->_connectionID;
-```
-
+    $this->_transactionID = $this->_connectionID;
+    ```
   to
-
     ```
-$this->_transactionID = ibase_trans($this->ibasetrans, $this->_connectionID);
-```
+    $this->_transactionID = ibase_trans($this->ibasetrans, $this->_connectionID);
+    ```
 
 - Fixed typo in mysqi_field_seek(). Thx to Sh4dow (sh4dow#php.pl).
 - LogSQL did not work with Firebird/Interbase. Fixed.
 - Postgres: made errorno() handling more consistent. Thx to Michael Jahn, Michael.Jahn#mailbox.tu-dresden.de.
 - Added informix patch to better support metatables, metacolumns by "Cecilio Albero" c-albero#eos-i.com
 - Cyril Malevanov contributed patch to oci8 to support passing of LOB parameters:
-
     ```
-$text = 'test test test';
-$sql = "declare rs clob; begin :rs := lobinout(:sa0); end;";
-$stmt = $conn -> PrepareSP($sql);
-$conn -> InParameter($stmt,$text,'sa0', -1, OCI_B_CLOB);
-$rs = '';
-$conn -> OutParameter($stmt,$rs,'rs', -1, OCI_B_CLOB);
-$conn -> Execute($stmt);
-echo "return = ".$rs."<br>";</pre>
-```
+    $text = 'test test test';
+    $sql = "declare rs clob; begin :rs := lobinout(:sa0); end;";
+    $stmt = $conn -> PrepareSP($sql);
+    $conn -> InParameter($stmt,$text,'sa0', -1, OCI_B_CLOB);
+    $rs = '';
+    $conn -> OutParameter($stmt,$rs,'rs', -1, OCI_B_CLOB);
+    $conn -> Execute($stmt);
+    echo "return = ".$rs."<br>";</pre>
+    ```
 
   As he says, the LOBs limitations are:
   - use OCINewDescriptor before binding

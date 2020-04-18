@@ -1,4 +1,4 @@
-URI=http://slim4/lib/api/rest/v3/
+. ./setURI.sh
 APIKEY="Apikey:c94048220527a3d038db5c19e1156c08"
 ACTION=testprojects
 http GET $URI$ACTION $APIKEY

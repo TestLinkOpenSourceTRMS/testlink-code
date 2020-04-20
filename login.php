@@ -58,8 +58,22 @@ switch($args->action) {
     }
 
     // Switch between oauth providers
-    if (!include_once('lib/functions/oauth_providers/'.$args->oauth_name.'.php')) {
-        die("Oauth client doesn't exist");
+    // validate providers
+    switch ($args->oauth_name) {
+      case 'azure':
+      case 'github':
+      case 'google':
+      case 'microsoft':
+        if (!include_once('lib/functions/oauth_providers/' .
+            $args->oauth_name . '.php')) {
+            die("Oauth client doesn't exist");
+        }
+      break;
+      
+      default:
+        renderLoginScreen($gui);
+        die();
+      break;  
     }
 
     $oau = config_get('OAuthServers');
@@ -76,10 +90,10 @@ switch($args->action) {
       $op = doAuthorize($db,$user_token->options->user,'oauth',$user_token->options);
       $doAuthPostProcess = true;
     } else {
-	$gui->note = $user_token->status['msg'];
-	$gui->draw=true;    
-        renderLoginScreen($gui);
-        die();
+    	$gui->note = $user_token->status['msg'];
+    	$gui->draw=true;    
+      renderLoginScreen($gui);
+      die();
     }
   break;
 

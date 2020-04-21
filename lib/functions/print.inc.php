@@ -288,9 +288,24 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
         
         $pathname = $repoDir . $item['file_path'];
         list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+
+        // Sorry by MAGIC Numbers
+        if($iWidth > 900 or $iHeight > 700) {
+          if($iWidth > $iHeight) {
+            $imgDiff = round($iWidth / 600);
+          } else {
+            $imgDiff = round($iHeight / 450);
+          }
+          $iWidth = $iWidth/$imgDiff;
+          $iHeight = $iHeight/$imgDiff;
+        }
+        // ---
+
+
         $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
         $output .= '<li>' . '<img ' . $iDim . 
                    ' src="' . $basehref . $cmout . '">';
+
       } else {
         $output .= '<li>' . '<a href="' . $basehref . 
                    $cmout . '" ' . ' target="#blank" > ' . $safeFileName . '</a>';
@@ -1278,9 +1293,23 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                       $code .= "<li>{$safeFileName}</li>";
                       $pathname = $st->repoDir . $fitem['file_path'];
                       list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
-                      $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+
+                      // Sorry by MAGIC Numbers
+                      if($iWidth > 900 or $iHeight > 700) {
+                        if($iWidth > $iHeight) {
+                          $imgDiff = round($iWidth / 600);
+                        } else {
+                          $imgDiff = round($iHeight / 450);
+                        }
+                        $iWidth = $iWidth/$imgDiff;
+                        $iHeight = $iHeight/$imgDiff;
+                      }
+
+                      $iDim = ' width=' . $iWidth . 
+                              ' height=' . $iHeight;
                       $code .= '<li><img ' . $iDim . 
-                               ' src="' . $env->base_href . $cmout . '">';
+                               ' src="' . $env->base_href . 
+                               $cmout . '">';
                     } else {
                       $code .= '<li><a href="' . $env->base_href . $cmout .  
                                '" target="#blank" > ' . $safeFileName . '</a>';
@@ -1586,6 +1615,20 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
             $pathname = $st->repoDir . $item['file_path'];
             list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+
+            // Sorry by MAGIC Numbers
+            if($iWidth > 900 or $iHeight > 700) {
+              if($iWidth > $iHeight) {
+                $imgDiff = round($iWidth / 600);
+              } else {
+                $imgDiff = round($iHeight / 450);
+              }
+              $iWidth = $iWidth/$imgDiff;
+              $iHeight = $iHeight/$imgDiff;
+            }
+            // ---
+
+
             $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
             $code .= '<li>' . '<img ' . $iDim . 
                      ' src="' . $env->base_href . $cmout . '"> </li>';

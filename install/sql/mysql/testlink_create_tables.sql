@@ -349,7 +349,7 @@ CREATE TABLE /*prefix*/req_coverage (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `review_requester_id` int(10) unsigned default NULL,
-  `review_request_ts` TIMESTAMP NULL DEFAULT NULL,
+  `review_request_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY /*prefix*/req_coverage_full_link (`req_id`,`req_version_id`,`testcase_id`,`tcversion_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='relation test case version ** requirement version';
@@ -802,8 +802,8 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   testplan_id int(10) unsigned NOT NULL DEFAULT '0',
   platform_id int(10) unsigned NOT NULL DEFAULT '0',
-  begin_exec_ts timestamp NOT NULL,
-  end_exec_ts timestamp NOT NULL,
+  begin_exec_ts timestamp NOT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  end_exec_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   creation_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY udx1_context (testplan_id,platform_id,creation_ts)

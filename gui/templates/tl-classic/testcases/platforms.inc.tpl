@@ -50,10 +50,12 @@ var pF_remove_platform = remove_platform;
 
 </script>
 
-<form method="post" id="platf2" name="platf2" action="{$basehref}lib/testcases/tcEdit.php">
-  <input type="hidden" id="platf2_doAction" name="doAction" value="removeplatform" />
-  <input type="hidden" name="tcase_id" id="tcase_id" value="{$args_tcase_id}" />
-  <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$args_tcversion_id}" />
+<form method="post" id="platf2" name="platf2" 
+  action="{$basehref}lib/testcases/tcEdit.php">
+  <input type="hidden" name="doAction" value="removeplatform" />
+  <input type="hidden" name="tcase_id" value="{$args_tcase_id}" />
+  <input type="hidden" name="tcversion_id"
+    value="{$args_tcversion_id}" />
 
   {if property_exists($gui,'tplan_id') } 
     <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />

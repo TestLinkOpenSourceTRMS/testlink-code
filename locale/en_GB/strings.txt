@@ -315,6 +315,8 @@ $TLS_btn_apply_assign = "Apply Assign";
 $TLS_btn_save_assign = "Save Assignments";
 $TLS_btn_remove = "Remove";
 $TLS_btn_remove_assignments = "Remove Assignments";
+$TLS_btn_remove_current_assignments = "Remove All Assignments (if any exist)";
+
 
 
 // Status (used wide)
@@ -1663,7 +1665,7 @@ $TLS_testproject_alt_delete = 'Delete the Test project and all related data.';
 // Warning!!! - if JS string you must use \\n to get \n
 $TLS_popup_product_delete = 'Warning! This action deletes irrevocable all Test Project related ' .
                             'data (including test results, plans, etc.). ' .
-                            'You can also use to desactivate instead of delete.\\n' .
+                            'You can also use to deactivate instead of delete.\\n' .
                             'Recommendation: Execute a dump of database at first.\\n' .
                             'Are you sure to delete the Test Project?';
 $TLS_th_reqmgrsystem_short = 'Req. Mgmt. System';
@@ -1714,7 +1716,7 @@ $TLS_hint_new_version = "Create a new version";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
 $TLS_can_not_edit_frozen_tc = "You can not edit this version because it has been frozen";
 $TLS_can_not_delete_relation_frozen_tc = "You can not delete this relation : testcase has been frozen";
-$TLS_deactivate_this_tcversion = "Desactivate this version";
+$TLS_deactivate_this_tcversion = "Deactivate this version";
 $TLS_execution_type = 'Execution type';
 $TLS_execution_type_short_descr = 'Execution';
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
@@ -1915,10 +1917,7 @@ $TLS_info_report_milestones_no_prio = "This Report shows milestones defined for 
 $TLS_info_res_by_kw = "This report shows results for each keyword. If a test case has multiple " .
                       "keywords assigned it will be count for each assigned keyword.";
 $TLS_info_gen_test_rep = "<b>General Information</b><br />" .
-                         "All reports only consider latest execution of each test case.<br />" .
-                         "You can sort tables by clicking the column header.";
-
-
+                         "All reports only consider latest execution of each test case.<br />";
 
 // ----- gui/templates/resultsMoreBuilds_query_form.tpl -----
 $TLS_results_latest = "Latest Results Only";
@@ -3979,8 +3978,8 @@ $TLS_info_neverRunByPP_report =
    Test cases <b>with and without tester assignment</b>
    are considered<br />";
 
-$TLS_neverRunByPP_title = "Test Cases Never Runned"; 
-$TLS_link_report_never_run = "Test Cases Never Runned";
+$TLS_neverRunByPP_title = "Test Cases Never Run"; 
+$TLS_link_report_never_run = "Test Cases Never Run";
 
 
 $TLS_commit_id = 'commit id';
@@ -3988,4 +3987,63 @@ $TLS_branch = 'branch';
 $TLS_tag = 'tag';
 $TLS_release_candidate = 'release candidate';
 
-// ----- END ------------------------------------------------------------------
+$TLS_allowed_files = "Allowed files:";
+$TLS_allowed_filenames_regexp = "Filename must verify this regexp:";
+
+$TLS_info_xls_report_results_by_status = '!!Spreasheet Output includes the Test Case Summary';
+
+
+$TLS_link_report_test_absolute_latest_exec = "Absolute Latest Execution Matrix";
+$TLS_latest_execution = "Latest execution on Context";
+$TLS_resultsTCAbsoluteLatest = "Latest execution is computed over all builds";
+$TLS_info_resultsTCAbsoluteLatest_report = $TLS_resultsTCAbsoluteLatest;
+
+$TLS_resultsTCAbsoluteLatest_title = "Latest execution in Selected Platform  computed over all builds";
+
+$TLS_FILE_UPLOAD_allowed_filenames_regexp = 'File Name does not pass REGEXP checkings';
+
+$TLS_FILE_UPLOAD_empty_extension = 'Empty Extension is Forbidden';
+$TLS_FILE_UPLOAD_allowed_files = 'File does not pass allowed file type check';
+
+$TLS_file_upload_ko = 'File Upload Issue';
+$TLS_pleaseOpenTSuite = 'Test Suite Details contain CRITIC information for ' .
+                   'execution. <br>Please open the section and ' .
+                   'read it carefully.<br>Thanks!';
+
+$TLS_delete_frozen_tcversion = "Delete Frozen TCVersion";
+$TLS_right_delete_frozen_tcversion = "Delete Frozen TCVersion";
+$TLS_copy_only_latest_version = 'Copy ONLY the Latest Version AS Version 1';
+$TLS_qty = 'Qty';
+$TLS_yyyy_mm = 'Year/Month';
+$TLS_yyyy_mm_dd = 'Date';
+$TLS_hh = 'Hour';
+$TLS_execTimelineStats_report = 'Execution By Date/Time Statistics';
+$TLS_link_report_exec_timeline = 'Execution By Date/Time';
+$TLS_qty_of_executions = 'Test Case Executions';
+$TLS_assignOnlyToTestCasesInTestSuite = 'Assign ONLY to direct children of this test suite';
+$TLS_target_kword = "Target Keywords (Assign/Remove)";
+$TLS_link_report_by_tsuite = "Metrics by Level 1 & Level 2 Test Suites";
+$TLS_metrics_by_l1l2_testsuite = "Metrics by Level 1 & Level 2 Test Suites";
+$TLS_you_can_sort = "You can sort tables by clicking the column header.";
+$TLS_firstExec = 'First Execution on: ';
+$TLS_latestExec = 'Latest Execution on: ';
+$TLS_section_link_report_by_tsuite_on_plat = "Results on Platform: ";
+$TLS_l1l2 = 'Top : Child (Test Suites)';
+$TLS_not_enough_rights = 'Not Enough Rights To Access The Feature';
+$TLS_saveForBaseline = 'Save to create baseline';
+$TLS_baseline_saved_ok = 'Baseline saved';
+$TLS_baseline_l1l2 = 'Baselines Level 1 & Level 2 Test Suites';
+$TLS_baselineTimestamp = 'Baseline taken on:';
+$TLS_on_design = 'On Design';
+$TLS_on_exec = 'On Execution';
+$TLS_note_platform_filter = 'Test Cases are filtered by following platforms';
+$TLS_testers_qty = 'Number of testers';
+
+$TLS_report_test_automation = 'Report Test Automation Spec';
+$TLS_btn_report_test_automation = 'Report Test Automation Spec';
+$TLS_before_summary = "Before summary";
+$TLS_before_preconditions = "Before Preconditions";
+$TLS_after_title = "After Title";
+$TLS_after_summary = "After summary";
+$TLS_after_preconditions = "After Preconditions";
+// ----- END -----------------------------------------------------

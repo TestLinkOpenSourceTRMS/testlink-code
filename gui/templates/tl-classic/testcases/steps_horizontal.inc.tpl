@@ -4,17 +4,19 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
             Shows the steps for a testcase in horizontal layout
 
 @used-by inc_steps.tpl
+@use issue_inputs_on_step.inc.tpl
 
 @param $steps Array of the steps
 @param $edit_enabled Steps links to edit page if true
 
-@internal revisions
 *}
   {$inExec = 0}
   {if isset($add_exec_info) && $add_exec_info}
     {$inExec = 1}
   {/if}  
 
+<div class="workBack">
+  <table class="simple">
   <tr>
     <th width="40px"><nobr>
     {if $edit_enabled && $steps != '' && !is_null($steps) && $args_frozen_version=="no"}
@@ -156,3 +158,5 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {/if}
 
   {/foreach}
+ </table>
+</div>

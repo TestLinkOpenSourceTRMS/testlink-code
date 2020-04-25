@@ -105,7 +105,6 @@ function open_popup(page) {
                 "toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no," +
                 "width=600,height=500";
   window.open(page, "_blank",windowCfg);
-  return true;
 }
 
 // test specification related functions
@@ -141,7 +140,7 @@ function ST(id,version)
 function STS(id)
 {
   var _FUNCTION_NAME_='STS';
-  var action_url = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
+  var action_url = fRoot+menuUrl+"?level=testsuite&id="+id+args;
   // alert(args);
   parent.workframe.location = action_url;
 }
@@ -1900,26 +1899,19 @@ function validateStepsReorder(cssClassName)
 function toogleRequiredOnShowHide(oid,display_type)
 {
   var obj = document.getElementById(oid);
-  if (!obj)
-  {
+  if (!obj) {
     return;
   }                  
 
-  if(obj.style.display == 'none')
-  {
-    if(display_type != undefined)
-    {
+  if(obj.style.display == 'none') {
+    if(display_type != undefined) {
       obj.style.display = display_type;
-    } 
-    else
-    {
+    } else {
       // SHOW, then field has to be Required
       obj.style.display = '';
       obj.setAttribute('required','required');
     } 
-  }
-  else
-  {
+  } else {
     obj.style.display = 'none';
     obj.removeAttribute('required'); 
   }

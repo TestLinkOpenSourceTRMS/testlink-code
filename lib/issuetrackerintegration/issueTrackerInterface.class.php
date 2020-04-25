@@ -20,9 +20,6 @@
  * other properties can be present depending on ITS.
  * =============================================================================
  *
- * @internal revisions
- * @since 1.9.14
- *
  *
 **/
 require_once(TL_ABS_PATH . "/lib/functions/database.class.php");
@@ -39,10 +36,12 @@ abstract class issueTrackerInterface
   var $tlCharSet = null;
   
   // private vars don't touch
-  var $dbConnection = null;  // usable only if interface is done via direct DB access.
+  // usable only if interface is done via direct DB access.
+  var $dbConnection = null;  
   var $dbMsg = '';
+  // useful for connect/disconnect methods
+  var $interfaceViaDB = false;  
   var $connected = false;
-  var $interfaceViaDB = false;  // useful for connect/disconnect methods
   var $resolvedStatus;
   
   var $methodOpt = array('buildViewBugLink' => 
@@ -203,7 +202,8 @@ abstract class issueTrackerInterface
     }
        
     // cast everything to string in order to avoid issues
-    // @20140604 someone has been issues trying to connect to JIRA on MSSQL    
+    // @20140604 someone has been issues trying to connect 
+    // to JIRA on MSSQL    
     $this->cfg->dbtype = strtolower((string)$this->cfg->dbtype);
     $this->cfg->dbhost = (string)$this->cfg->dbhost;
     $this->cfg->dbuser = (string)$this->cfg->dbuser;
@@ -211,27 +211,28 @@ abstract class issueTrackerInterface
     $this->cfg->dbname = (string)$this->cfg->dbname;
 
     $this->dbConnection = new database($this->cfg->dbtype);
-    $result = $this->dbConnection->connect(false, $this->cfg->dbhost,$this->cfg->dbuser,
-                                           $this->cfg->dbpassword, $this->cfg->dbname);
+    $result = $this->dbConnection->connect(false, 
+                     $this->cfg->dbhost,
+                     $this->cfg->dbuser,
+                     $this->cfg->dbpassword, 
+                     $this->cfg->dbname);
 
-    if (!$result['status'])
-    {
+    if (!$result['status']) {
       $this->dbConnection = null;
-      $connection_args = "(interface: - Host:$this->cfg->dbhost - " . 
-                         "DBName: $this->cfg->dbname - User: $this->cfg->dbuser) "; 
-      $msg = sprintf(lang_get('BTS_connect_to_database_fails'),$connection_args);
+      $cnn = "(interface: - Host:{$this->cfg->dbhost} - " . 
+             "DBName: {$this->cfg->dbname} 
+             - User: {$this->cfg->dbuser}) "; 
+      $msg = sprintf(lang_get('BTS_connect_to_database_fails'),
+                     $cnn);
       tLog($msg  . $result['dbms_msg'], 'ERROR');
     }
-    elseif ($this->cfg->dbtype == 'mysql')
-    {
-      if ($this->cfg->dbcharset == 'UTF-8')
-      {
+    elseif ($this->cfg->dbtype == 'mysql') {
+      if ($this->cfg->dbcharset == 'UTF-8') {
         $r = $this->dbConnection->exec_query("SET CHARACTER SET utf8");
         $r = $this->dbConnection->exec_query("SET NAMES utf8");
         $r = $this->dbConnection->exec_query("SET collation_connection = 'utf8_general_ci'");
       }
-      else
-      {
+      else {
         $r = $this->dbConnection->exec_query("SET CHARACTER SET " . $this->cfg->dbcharset);
         $r = $this->dbConnection->exec_query("SET NAMES ". $this->cfg->dbcharset);
       }
@@ -377,7 +378,7 @@ abstract class issueTrackerInterface
       }
     }
 
-    if($my['opt']['addReporter']) {
+    if ($my['opt']['addReporter']) {
       if( property_exists($issue, 'reportedBy') ) {
         $link .= "";
         $who = trim((string)$issue->reportedBy);
@@ -415,8 +416,8 @@ abstract class issueTrackerInterface
 
     $link .= "</a>";
 
-    if($my['opt']['colorByStatus'] && property_exists($issue,'statusColor') )
-    {
+    if ($my['opt']['colorByStatus'] 
+        && property_exists($issue,'statusColor') ) {
       $title = lang_get('access_to_bts');  
       $link = "<div  title=\"{$title}\" style=\"display: inline; background: $issue->statusColor;\">$link</div>";
     }
@@ -426,12 +427,10 @@ abstract class issueTrackerInterface
     $ret->isResolved = $issue->isResolved;
     $ret->op = true;
 
-    if( isset($my['opt']['raw']) && !is_null(isset($my['opt']['raw'])) )
-    {
-      foreach($my['opt']['raw'] as $attr)
-      {
-      	if(property_exists($issue, $attr))
-      	{
+    if (isset($my['opt']['raw']) 
+        && !is_null(isset($my['opt']['raw'])) ) {
+      foreach ($my['opt']['raw'] as $attr) {
+      	if (property_exists($issue, $attr)) {
           $ret->$attr = $issue->$attr;
       	}
       }  
@@ -531,17 +530,13 @@ abstract class issueTrackerInterface
    **/
   public function setResolvedStatusCfg()
   {
-    if( property_exists($this->cfg,'resolvedstatus') )
-    {
+    if (property_exists($this->cfg,'resolvedstatus')) {
       $statusCfg = (array)$this->cfg->resolvedstatus;
-    }
-    else
-    {
+    } else {
       $statusCfg['status'] = $this->defaultResolvedStatus;
     }
     $this->resolvedStatus = new stdClass();
-    foreach($statusCfg['status'] as $cfx)
-    {
+    foreach ($statusCfg['status'] as $cfx) {
       $e = (array)$cfx;
       $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
     }

@@ -29,6 +29,39 @@ Purpose: create/edit test case step
              title_created,version,by,summary,preconditions,title_last_mod"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
+
+<style>
+  .mainAttrContainer {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mainAttrContainer > div {
+    padding: 5px 3px 4px 5px;
+  }
+
+
+  .summaryCONTAINER {
+    padding: 5px 3px 4px 5px;
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->summary};
+  }
+
+  .spaceOne {
+    padding: 5px 3px 4px 5px;
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne};
+  }
+
+  .preconditionsCONTAINER {
+    padding: 5px 3px 4px 5px;
+    order: {$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions};  
+  }
+
+  .CFBeforeStepsCONTAINER {
+    padding: 5px 3px 4px 5px;
+    order: 99;  
+  }
+</style>
+
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
@@ -41,7 +74,8 @@ var warning_step_number_already_exists = "{$labels.warning_step_number_already_e
  *
  *
  */
-function validateForm(the_form,step_set,step_number_on_edit) {
+function validateForm(the_form,step_set,step_number_on_edit) 
+{
   var value = '';
   var status_ok = true;
   var feedback = '';
@@ -70,11 +104,11 @@ function validateForm(the_form,step_set,step_number_on_edit) {
 </script>
 
 {if $tlCfg->gui->checkNotSaved}
-<script type="text/javascript">
-var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
-var tc_editor = "{$gui->editorType}";
-</script>
-<script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var unload_msg = "{$labels.warning_unsaved|escape:'javascript'}";
+  var tc_editor = "{$gui->editorType}";
+  </script>
+  <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}
 </head>
 
@@ -114,7 +148,7 @@ var tc_editor = "{$gui->editorType}";
   <input type="hidden" name="goback_url" value="{$goBackAction}" />
   <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
 
-    {include file="testcases/inc_tcbody.tpl" 
+  {include file="testcases/inc_tcbody.tpl" 
              inc_tcbody_close_table=true
              inc_tcbody_testcase=$gui->testcase
              inc_tcbody_show_title="yes"
@@ -123,226 +157,229 @@ var tc_editor = "{$gui->editorType}";
              inc_tcbody_author_userinfo=$gui->authorObj
              inc_tcbody_updater_userinfo=$gui->updaterObj
 			       inc_tcbody_editor_type=$gui->editorType
-             inc_tcbody_cf=null}
-
-
+             inc_tcbody_cf=$gui->cfieldsDesignTime}
 
   {* when save or cancel is pressed do not show modification warning *}
-  <div class="groupBtn">
-    <input id="do_update_step" type="submit" name="do_update_step" 
-           onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" 
-           value="{$labels.btn_save}" />
+  <div class="workBack" style="padding:0px;">   
+    <div class="groupBtn">
+      <input id="do_update_step" type="submit" name="do_update_step" 
+             onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" 
+             value="{$labels.btn_save}" />
 
-    <input id="do_update_step_and_exit" type="submit" name="do_update_step_and_exit" 
-           onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
-           value="{$labels.btn_save_and_exit}" />
+      <input id="do_update_step_and_exit" type="submit" name="do_update_step_and_exit" 
+             onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
+             value="{$labels.btn_save_and_exit}" />
 
-    {if $gui->operation == 'doUpdateStep'}
-      <input id="do_create_step" type="submit" name="do_create_step" 
-             onclick="doAction.value='createStep'" value="{$labels.btn_create_step}" />
+      {if $gui->operation == 'doUpdateStep'}
+        <input id="do_create_step" type="submit" name="do_create_step" 
+               onclick="doAction.value='createStep'" value="{$labels.btn_create_step}" />
 
-      <input id="do_copy_step" type="submit" name="do_copy_step" 
-             onclick="doAction.value='doCopyStep'" value="{$labels.btn_copy_step}" />
-    {/if}
-    <input id="doExit153" type="submit" name="doExit" 
-      onclick="doAction.value='doStepOperationExit'" 
-      value="{$labels.btn_cancel}" />
-  </div>  
-
-  <table class="simple">
-  {if $gui->steps_results_layout == "horizontal"}
-    <tr>
-      <th width="{$gui->tableColspan}">{$labels.step_number}</th>
-      {* Julian: added width to show columns step details and expected
-       * results at approximately same size (step details get 45%
-       * expected results get the rest)
-       *}
-    <th width="45%">{$labels.step_actions}</th>
-      <th>{$labels.expected_results}</th>
-      {if $session['testprojectOptions']->automationEnabled}
-        <th width="25">{$labels.execution_type_short_descr}</th>
-      {/if}  
-    </tr>
-  
-  {* this means we have steps to display *}
-  {if $gui->tcaseSteps != ''}
-    {$rowCount=$gui->tcaseSteps|@count} 
-    {$row=0}
-    
-    {foreach from=$gui->tcaseSteps item=step_info}
-      <tr id="step_row_{$step_info.step_number}">
-      {if $step_info.step_number == $gui->step_number}
-      <td style="text-align:left;">{$gui->step_number}</td>
-        <td>{$steps}
-      <div class="groupBtn">
-        <input id="do_update_step" type="submit" name="do_update_step" 
-               onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" 
-               value="{$labels.btn_save}" />
-
-        <input type="submit" id="do_update_step_and_insert" name="do_update_step_and_insert" 
-               onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndInsert'" 
-               value="{$labels.btn_save_and_insert}" />
-
-        <input id="do_update_step_and_exit" type="submit" name="do_update_stepand_exit" 
-               onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
-               value="{$labels.btn_save_and_exit}" />
-
-        {if $gui->operation == 'doUpdateStep'}
-          <input id="do_copy_step" type="submit" name="do_copy_step" 
-                 onclick="doAction.value='doCopyStep'" value="{$labels.btn_cp}" />
-        {/if}
-        <input id="doExit206" type="submit" name="doExit" 
-          onclick="doAction.value='doStepOperationExit'" 
-          value="{$labels.btn_cancel}" />
-      </div>  
-    
-
-        </td>
-        <td>{$expected_results}</td>
-        {if $session['testprojectOptions']->automationEnabled}
-        <td>
-          <select name="exec_type" onchange="content_modified = true">
-              {html_options options=$gui->execution_types selected=$gui->step_exec_type}
-          </select>
-          </td>
-          {/if}
-      {else}
-        <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
-        <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
-        <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
-        {if $session['testprojectOptions']->automationEnabled}
-          <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
-        {/if}  
+        <input id="do_copy_step" type="submit" name="do_copy_step" 
+               onclick="doAction.value='doCopyStep'" value="{$labels.btn_copy_step}" />
       {/if}
-    {$rCount=$row+$step_info.step_number}
-    {if ($rCount < $rowCount) && ($rowCount>=1)}
-      <tr width="100%">
-        {if $session['testprojectOptions']->automationEnabled}
-        <td colspan=6>
-        {else}
-        <td colspan=5>
-        {/if}
-        <hr align="center" width="100%" color="grey" size="1">
-        </td>
-      </tr>
-    {/if}
-      </tr>
-    {/foreach}
-  {/if}
-  {else} 
+      <input id="doExit153" type="submit" name="doExit" 
+        onclick="doAction.value='doStepOperationExit'" 
+        value="{$labels.btn_cancel}" />
+    </div>  
+  </div>
 
-  {* Vertical layout *}
-    {foreach from=$gui->tcaseSteps item=step_info}
-      <tr id="step_row_{$step_info.step_number}">
-        <th width="20">{$args_labels.step_number} {$step_info.step_number}</th>
-        <th>{$labels.step_actions}</th>
-        {if $session['testprojectOptions']->automationEnabled}
-          {if $step_info.step_number == $gui->step_number}
-          <th width="200">{$labels.execution_type_short_descr}:
-            <select name="exec_type" onchange="content_modified = true">
-              {html_options options=$gui->execution_types selected=$gui->step_exec_type}
-                </select>
-          </th>
-          {else}
-            <th>{$labels.execution_type_short_descr}:
-              {$gui->execution_types[$step_info.execution_type]}</th>
-          {/if}
-          {else}
-          <th>&nbsp;</th>
-        {/if} {* automation *}
-        {if $edit_enabled}
-          <th>&nbsp;</th>
-        {/if}
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-        {if $step_info.step_number == $gui->step_number}
-          <td colspan="2">{$steps}</td>
-        {else}
-          <td colspan="2"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
-        {/if}
-      </tr>
-      <tr>
-        <th style="background: transparent; border: none"></th>
-        <th colspan="2">{$labels.expected_results}</th>
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-        {if $step_info.step_number == $gui->step_number}
-          <td colspan="2">{$expected_results}</td>
-        {else}
-          <td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em">
-          <a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
-        {/if}
-      </tr>
-    {/foreach}
-  {/if}
-
-  {if $gui->action == 'createStep' || $gui->action == 'doCreateStep'}
-    {* We have forgotten to manage layout here *}
-    {if $gui->steps_results_layout == "horizontal"}
-      <tr id="new_step">
-        <td style="text-align:left;">{$gui->step_number}</td>
-        <td>{$steps}</td>
-        <td>{$expected_results}</td>
+  <div class="workBack">
+    <table class="simple">
+      {if $gui->steps_results_layout == "horizontal"}
+        <tr>
+          <th width="{$gui->tableColspan}">{$labels.step_number}</th>
+          {* Julian: 
+           * added width to show columns step details and expected
+           * results at approximately same size (step details get 45%
+           * expected results get the rest)
+           *}
+          <th width="45%">{$labels.step_actions}</th>
+          <th>{$labels.expected_results}</th>
           {if $session['testprojectOptions']->automationEnabled}
-          <td>
-            <select name="exec_type" onchange="content_modified = true">
-                {html_options options=$gui->execution_types selected=$gui->step_exec_type}
-            </select>
-          </td>
+            <th width="25">{$labels.execution_type_short_descr}</th>
+          {/if}  
+        </tr>
+        {* this means we have steps to display *}
+        {if $gui->tcaseSteps != ''}
+          {$rowCount=$gui->tcaseSteps|@count} 
+          {$row=0}
+          
+          {foreach from=$gui->tcaseSteps item=step_info}
+            <tr id="step_row_{$step_info.step_number}">
+            {if $step_info.step_number == $gui->step_number}
+            <td style="text-align:left;">{$gui->step_number}</td>
+              <td>{$steps}
+            <div class="groupBtn">
+              <input id="do_update_step" type="submit" name="do_update_step" 
+                     onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" 
+                     value="{$labels.btn_save}" />
+
+              <input type="submit" id="do_update_step_and_insert" name="do_update_step_and_insert" 
+                     onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndInsert'" 
+                     value="{$labels.btn_save_and_insert}" />
+
+              <input id="do_update_step_and_exit" type="submit" name="do_update_stepand_exit" 
+                     onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
+                     value="{$labels.btn_save_and_exit}" />
+
+              {if $gui->operation == 'doUpdateStep'}
+                <input id="do_copy_step" type="submit" name="do_copy_step" 
+                       onclick="doAction.value='doCopyStep'" value="{$labels.btn_cp}" />
+              {/if}
+              <input id="doExit206" type="submit" name="doExit" 
+                onclick="doAction.value='doStepOperationExit'" 
+                value="{$labels.btn_cancel}" />
+            </div>  
+          
+
+              </td>
+              <td>{$expected_results}</td>
+              {if $session['testprojectOptions']->automationEnabled}
+              <td>
+                <select name="exec_type" onchange="content_modified = true">
+                    {html_options options=$gui->execution_types selected=$gui->step_exec_type}
+                </select>
+                </td>
+                {/if}
+            {else}
+              <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
+              <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
+              <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
+              {if $session['testprojectOptions']->automationEnabled}
+                <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
+              {/if}  
+            {/if}
+          {$rCount=$row+$step_info.step_number}
+          {if ($rCount < $rowCount) && ($rowCount>=1)}
+            <tr width="100%">
+              {if $session['testprojectOptions']->automationEnabled}
+              <td colspan=6>
+              {else}
+              <td colspan=5>
+              {/if}
+              <hr align="center" width="100%" color="grey" size="1">
+              </td>
+            </tr>
           {/if}
-      </tr>
-    
-    {else}
-      <tr id="new_step">
-        <th width="20">{$args_labels.step_number} {$gui->step_number}</th>
-        <th>{$labels.step_actions}</th>
-        {if $session['testprojectOptions']->automationEnabled}
-          <th width="200">{$labels.execution_type_short_descr}:
-              <select name="exec_type" onchange="content_modified = true">
-                {html_options options=$gui->execution_types selected=$gui->step_exec_type}
-              </select>
-          </th>
+            </tr>
+          {/foreach}
         {/if}
-        <tr>
-          <td>&nbsp;</td>
-          <td colspan="2">{$steps}</td>
-        </tr>
-        <tr>
-          <th style="background: transparent; border: none"></th>
-          <th colspan="2">{$labels.expected_results}</th>
-        </tr>
-        <tr>
-          <td>&nbsp;</td>
-          <td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em"> {$expected_results}</td>
-        </tr>
-      <tr>
-    {/if}
-  {/if}
-  </table>  
-  <p>
-  {* when save or cancel is pressed do not show modification warning *}
-  <div class="groupBtn">
-    <input id="do_update_step" type="submit" name="do_update_step" 
-           onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
+      {else} 
+        {* Vertical layout *}
+        {foreach from=$gui->tcaseSteps item=step_info}
+            <tr id="step_row_{$step_info.step_number}">
+              <th width="20">{$args_labels.step_number} {$step_info.step_number}</th>
+              <th>{$labels.step_actions}</th>
+              {if $session['testprojectOptions']->automationEnabled}
+                {if $step_info.step_number == $gui->step_number}
+                <th width="200">{$labels.execution_type_short_descr}:
+                  <select name="exec_type" onchange="content_modified = true">
+                    {html_options options=$gui->execution_types selected=$gui->step_exec_type}
+                      </select>
+                </th>
+                {else}
+                  <th>{$labels.execution_type_short_descr}:
+                    {$gui->execution_types[$step_info.execution_type]}</th>
+                {/if}
+                {else}
+                <th>&nbsp;</th>
+              {/if} {* automation *}
+              {if $edit_enabled}
+                <th>&nbsp;</th>
+              {/if}
+            </tr>
+            <tr>
+              <td>&nbsp;</td>
+              {if $step_info.step_number == $gui->step_number}
+                <td colspan="2">{$steps}</td>
+              {else}
+                <td colspan="2"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
+              {/if}
+            </tr>
+            <tr>
+              <th style="background: transparent; border: none"></th>
+              <th colspan="2">{$labels.expected_results}</th>
+            </tr>
+            <tr>
+              <td>&nbsp;</td>
+              {if $step_info.step_number == $gui->step_number}
+                <td colspan="2">{$expected_results}</td>
+              {else}
+                <td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em">
+                <a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
+              {/if}
+            </tr>
+        {/foreach}
+      {/if}
 
-    <input id="do_update_step_and_exit" type="submit" name="do_update_step_and_exit" 
-           onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
-           value="{$labels.btn_save_and_exit}" />
+      {if $gui->action == 'createStep' || $gui->action == 'doCreateStep'}
+        {* We have forgotten to manage layout here *}
+        {if $gui->steps_results_layout == "horizontal"}
+          <tr id="new_step">
+            <td style="text-align:left;">{$gui->step_number}</td>
+            <td>{$steps}</td>
+            <td>{$expected_results}</td>
+              {if $session['testprojectOptions']->automationEnabled}
+              <td>
+                <select name="exec_type" onchange="content_modified = true">
+                    {html_options options=$gui->execution_types selected=$gui->step_exec_type}
+                </select>
+              </td>
+              {/if}
+          </tr>
+        
+        {else}
+          <tr id="new_step">
+            <th width="20">{$args_labels.step_number} {$gui->step_number}</th>
+            <th>{$labels.step_actions}</th>
+            {if $session['testprojectOptions']->automationEnabled}
+              <th width="200">{$labels.execution_type_short_descr}:
+                  <select name="exec_type" onchange="content_modified = true">
+                    {html_options options=$gui->execution_types selected=$gui->step_exec_type}
+                  </select>
+              </th>
+            {/if}
+            <tr>
+              <td>&nbsp;</td>
+              <td colspan="2">{$steps}</td>
+            </tr>
+            <tr>
+              <th style="background: transparent; border: none"></th>
+              <th colspan="2">{$labels.expected_results}</th>
+            </tr>
+            <tr>
+              <td>&nbsp;</td>
+              <td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em"> {$expected_results}</td>
+            </tr>
+          <tr>
+        {/if}
+      {/if}
+    </table> 
+  </div>
+  {* when save or cancel is pressed do not show 
+     modification warning *}
+  <div class="workBack" style="padding:0px;">   
+    <div class="groupBtn">
+      <input id="do_update_step" type="submit" name="do_update_step" 
+             onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
 
-    {if $gui->operation == 'doUpdateStep'}
-      <input id="do_create_step" type="submit" name="do_create_step" 
-             onclick="doAction.value='createStep'" value="{$labels.btn_create_step}" />
+      <input id="do_update_step_and_exit" type="submit" name="do_update_step_and_exit" 
+             onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
+             value="{$labels.btn_save_and_exit}" />
 
-      <input id="do_copy_step" type="submit" name="do_copy_step" 
-             onclick="doAction.value='doCopyStep'" value="{$labels.btn_copy_step}" />
-    {/if}
+      {if $gui->operation == 'doUpdateStep'}
+        <input id="do_create_step" type="submit" name="do_create_step" 
+               onclick="doAction.value='createStep'" value="{$labels.btn_create_step}" />
 
-   <input id="doExit361" type="submit" name="doExit" 
-      onclick="doAction.value='doStepOperationExit'" 
-      value="{$labels.btn_cancel}" />
-  </div>  
+        <input id="do_copy_step" type="submit" name="do_copy_step" 
+               onclick="doAction.value='doCopyStep'" value="{$labels.btn_copy_step}" />
+      {/if}
+
+     <input id="doExit361" type="submit" name="doExit" 
+        onclick="doAction.value='doStepOperationExit'" 
+        value="{$labels.btn_cancel}" />
+    </div>  
+  </div>
 </form>
 
 </div>

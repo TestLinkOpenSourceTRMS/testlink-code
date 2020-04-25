@@ -3170,7 +3170,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $sql = " SELECT TCV.version,TCV.id " . " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " . " WHERE NH.parent_id = {$tcase_id} " . " AND TCV.version = {$version_number} " . " AND TCV.id = NH.id ";
 
             $target_tcversion = $this->dbObj->fetchRowsIntoMap( $sql, 'version' );
-            if(! is_null( $target_tcversion ) && count( $target_tcversion ) != 1) {
+            if(is_null( $target_tcversion ) || count( $target_tcversion ) != 1) {
                 $status_ok = false;
                 $tcase_info = $this->tcaseMgr->get_by_id( $tcase_id );
                 $msg = sprintf( TCASE_VERSION_NUMBER_KO_STR, $version_number, $tcase_external_id, $tcase_info[0]['name'] );
@@ -5085,9 +5085,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
 
             $docRepo = tlAttachmentRepository::create( $this->dbObj );
-            $uploadedFile = $docRepo->insertAttachment( $fkId, $fkTable, $title, $fInfo );
+            $uploadOp = $docRepo->insertAttachment( $fkId, $fkTable, $title, $fInfo );
             
-            if(!$uploadedFile) {
+
+            if($uploadOp->statusOK == false) {
               $msg = $msg_prefix . ATTACH_DB_WRITE_ERROR_STR;
               $this->errors[] = new IXR_ERROR( ATTACH_DB_WRITE_ERROR, $msg );
               $statusOK = false;
@@ -6083,7 +6084,11 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
             // lazy way
             $name = trim( $this->args[self::$platformNameParamName] );
-            $itemSet = $this->platformMgr->getAllAsMap( 'name', 'allinfo' );
+
+            $opx = array('accessKey' => 'name',
+                         'output' => 'allinfo');
+
+            $itemSet = $this->platformMgr->getAllAsMap($opx);
             if(isset( $itemSet[$name] )) {
                 $status_ok = false;
                 $msg = $msg_prefix . sprintf( PLATFORMNAME_ALREADY_EXISTS_STR, $name, $itemSet[$name]['id'] );
@@ -6432,9 +6437,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
 
             if($checkRight) {
-                $r2c = array(
-                        'testproject_edit_executed_testcases'
-                );
+                $r2c = array('testproject_edit_executed_testcases' );
                 foreach( $r2c as $right ) {
                     $status_ok = $this->userHasRight( $right, $ck, $ctx );
                     if(! $status_ok) {

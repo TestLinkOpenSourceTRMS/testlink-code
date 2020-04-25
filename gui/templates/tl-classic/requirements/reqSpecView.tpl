@@ -6,13 +6,10 @@ Purpose: view a requirement specification
 @filesource reqSpecView.tpl
 @author: Martin Havlat
 
-@internal revisions
-@since 1.9.10
 *}
-
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,
               title_last_mod,title_created,no_records_found,revision,
-              commit_title,please_add_revision_log,actions"}
+              commit_title,please_add_revision_log,actions,file_upload_ko"}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -147,6 +144,10 @@ function jsCallDeleteFile(btn, text, o_id)
 
 var pF_freeze_req_spec = freeze_req_spec;
 </script>
+
+
+{include file="bootstrap.inc.tpl"}
+<script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
 </head>
 
 <body {$body_onload} onUnload="storeWindowSize('ReqSpecPopup')" >
@@ -159,6 +160,21 @@ var pF_freeze_req_spec = freeze_req_spec;
   {include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
   {/if}
 </h1>
+
+
+{if $gui->uploadOp != null }
+  <script>
+  var uplMsg = "{$labels.file_upload_ko}<br>";
+  var doAlert = false;
+  {if $gui->uploadOp->statusOK == false}
+    uplMsg += "{$gui->uploadOp->msg}<br>";
+    doAlert = true;
+  {/if}
+  if (doAlert) {
+    bootbox.alert(uplMsg);
+  }
+  </script>
+{/if}
 
 <div class="workBack">
   {if isset($gui->direct_link)}

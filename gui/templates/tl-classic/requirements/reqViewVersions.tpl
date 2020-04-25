@@ -25,7 +25,8 @@ Purpose: view requirement with version management
              relation_destination_doc_id, in, btn_add, img_title_delete_relation, current_req,
              no_records_found,other_versions,version,title_test_case,match_count,warning,
              revision_log_title,please_add_revision_log,commit_title,current_direct_link,
-             specific_direct_link,req_does_not_exist,actions,img_title_relation_frozen'}
+             specific_direct_link,req_does_not_exist,actions,img_title_relation_frozen,
+             file_upload_ko'}
 
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"} 
@@ -218,7 +219,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
 <script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
 
 
-
+{include file="bootstrap.inc.tpl"}
+<script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
 </head>
 
 {$my_style=""}
@@ -232,6 +234,22 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
 <h1 class="title">{$gui->main_descr|escape}{if isset($gui->show_match_count) && $gui->show_match_count} - {$labels.match_count}: {$gui->match_count}{/if}
   {include file="inc_help.tpl" helptopic="hlp_req_view" show_help_icon=true}
 </h1>
+
+
+{if $gui->uploadOp != null }
+  <script>
+  var uplMsg = "{$labels.file_upload_ko}<br>";
+  var doAlert = false;
+  {if $gui->uploadOp->statusOK == false}
+    uplMsg += "{$gui->uploadOp->msg}<br>";
+    doAlert = true;
+  {/if}
+  if (doAlert) {
+    bootbox.alert(uplMsg);
+  }
+  </script>
+{/if}
+
 {if !isset($refresh_tree) }
   {$refresh_tree=false}
 {/if}

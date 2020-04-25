@@ -21,14 +21,12 @@ function oauth_link($oauthCfg)
       str_replace('http://', 'https://', $oap['redirect_uri']);
   }
 
+  $oap['prompt'] = 'none';
   // see https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-oauth-code for details
   if ($oauthCfg['oauth_name'] == 'azuread') {
-    $oap['prompt'] = 'login';
     if (!is_null($oauthCfg['oauth_domain']))
       $oap['domain_hint'] = $oauthCfg['oauth_domain'];
   } else {
-
-    $oap['prompt'] = 'none';
     if ($oauthCfg['oauth_force_single']) {
       $oap['prompt'] = 'consent';
     }

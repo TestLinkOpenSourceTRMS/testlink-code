@@ -79,6 +79,7 @@ $tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
 //
 $tlCfg->keywords->byTestProject = array();
 
+$tlCfg->keywords->headsUpTSuiteOnExec = 'CMD_OPEN_ON_EXEC';
 
 $tlCfg->accessWithoutLogin = array();
 
@@ -101,6 +102,9 @@ $tlCfg->theme_dir = 'gui/themes/default/';
 /** Dir for compiled templates */
 $tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 
                    'templates_c' . DIRECTORY_SEPARATOR;
+if (($tpltmp = getenv('TESTLINK_TEMPLATES_C'))) {
+  $tlCfg->temp_dir = trim($tpltmp);
+}
 
 /** default filenames of CSS files of current GUI theme */
 define('TL_CSS_MAIN', 'testlink.css');
@@ -144,8 +148,7 @@ $tlCfg->gui->ux = 'tl-classic';
  * @see $tlCfg->cookie->path
  * @global string $tlCfg->cookie->prefix
  */
-$tlCfg->cookie->prefix = 'TESTLINK197';
-
+$tlCfg->cookie->prefix = 'TESTLINK1920';
 
 /**
  * @link http://php.net/function.setcookie
@@ -155,6 +158,9 @@ $tlCfg->cookie->expire = (time()+60*60*24*30); // 30 days;
 $tlCfg->cookie->domain = '';
 $tlCfg->cookie->secure = false;
 $tlCfg->cookie->httponly = false;
+
+$tlCfg->cookie->testProjectMemory = $tlCfg->cookie->prefix . 
+                                    '_PROJ_ID_USER_ID_';
 
 /**
  * Copied from MantisBT
@@ -272,7 +278,7 @@ $tlCfg->sessionInactivityTimeout = 9900;
  * If you want sessions to last longer this must be set to a higher value.
  * You may need to set this in your global php.ini if the settings don't take effect.
  */
-//ini_set('session.gc_maxlifetime', 54000);
+//ini_set('session.gc_maxlifetime', 60*90);
 
 $tlCfg->notifications->userSignUp = new stdClass();
 $tlCfg->notifications->userSignUp->enabled = TRUE;  // @see notifyGlobalAdmins()
@@ -303,7 +309,9 @@ $tlCfg->smarty_debug = false;
  *  put it out of reach via web or configure access denied.
  */
 $tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
-
+if (($lp = getenv('TESTLINK_LOG_PATH'))) {
+  $tlCfg->log_path = trim($lp);
+}
 
 /**
  * @var string How to warning user when security weak points exists.
@@ -460,7 +468,6 @@ $tlCfg->OAuthServers = array();
 // $tlCfg->OAuthServers[1]['oauth_name'] = 'google';
 
 // Get from /gui/themes/default/images
-// $tlCfg->OAuthServers[1]['oauth_icon'] = 'google.png'; 
 // $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
 // Can be authorization_code (by default), client_credentials or password
@@ -477,7 +484,6 @@ $tlCfg->OAuthServers = array();
 // Github
 // $tlCfg->OAuthServers[2]['oauth_enabled'] = true;
 // $tlCfg->OAuthServers[2]['oauth_name'] = 'github';
-// $tlCfg->OAuthServers[2]['oauth_icon'] = 'github.png'; //Get from /gui/themes/default/images
 // $tlCfg->OAuthServers[2]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->OAuthServers[2]['oauth_client_secret'] = 'CLIENT_SECRET';
 
@@ -494,7 +500,6 @@ $tlCfg->OAuthServers = array();
 //Microsoft
 //$tlCfg->OAuthServers[1]['oauth_enabled'] = true;
 //$tlCfg->OAuthServers[1]['oauth_name'] = 'microsoft';
-//$tlCfg->OAuthServers[1]['oauth_icon'] = 'mslogo.jpg';
 //$tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
 //$tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
 
@@ -517,11 +522,10 @@ $tlCfg->OAuthServers = array();
 
 // $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
 // $tlCfg->OAuthServers[1]['oauth_name'] = 'azuread'; //do not change this
-// $tlCfg->OAuthServers[1]['oauth_icon'] = 'azuread.png'; 
 
 // $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
-// $tlCfg->OAuthServers[1]['redirect_uri'] = 'https://YOURTESTLINKSERVER/login.php';
+// $tlCfg->OAuthServers[1]['redirect_uri'] = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . '/login.php';
 
 // $tlCfg->OAuthServers[1]['oauth_force_single'] = true; 
 
@@ -531,7 +535,7 @@ $tlCfg->OAuthServers = array();
 // the domain you want to whitelist (email domains)
 // $tlCfg->OAuthServers[1]['oauth_domain'] = 'autsoft.hu'; 
 // $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://login.microsoftonline.com/TENANTID/openid/userinfo';
-// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/mail.read';
+// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/mail.read https://graph.microsoft.com/user.read openid profile email';
 
 /**
  * Single Sign On authentication
@@ -900,6 +904,8 @@ $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 $tlCfg->reportsCfg->start_time = '00:00';
 
 // Result matrix (resultsTC.php)
+$tlCfg->resultMatrixReport = new stdClass();
+
 // Shows an extra column with the result of the latest execution on
 // the lastest CREATED build
 $tlCfg->resultMatrixReport->buildColumns['showExecutionResultLatestCreatedBuild'] = true;
@@ -1332,6 +1338,17 @@ $tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion = TRUE;
 //$tlCfg->testcase_cfg->frozenNotExecutedTCVDelREQVLink = FALSE;
 
 
+// Change order using CSS flexbox model
+// @used-by tcEdit.tpl
+$tlCfg->testcase_cfg->viewerFieldsOrder = new stdClass();
+$tlCfg->testcase_cfg->viewerFieldsOrder->summary = 3;
+$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne = 2;
+$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions = 1;
+
+
+
+
+
 // Effects on Req Version to TCVersion LINK 
 // when a new version of a linked Test Case is created
 // If LINK is frozen, then this means that link can not be deleted.
@@ -1464,37 +1481,53 @@ $tlCfg->platform_template->notes->value = '';
 /* [ATTACHMENTS] */
 
 /** Attachment feature availability */
-$g_attachments = new stdClass();
-$g_attachments->enabled = TRUE;
+$tlCfg->attachments = new stdClass();
+$tlCfg->attachments->enabled = TRUE;
 
 // TRUE -> when you upload a file you can give no title
-$g_attachments->allow_empty_title = TRUE;
+$tlCfg->attachments->allow_empty_title = TRUE;
 
-// $g_attachments->allow_empty_title == TRUE, you can ask the system
+// $tlCfg->attachments->allow_empty_title == TRUE, you can ask the system
 // to do something
 //
 // 'none'         -> just write on db an empty title
 // 'use_filename' -> use filename as title
-//$g_attachments->action_on_save_empty_title='use_filename';
+//$tlCfg->attachments->action_on_save_empty_title='use_filename';
 //
-$g_attachments->action_on_save_empty_title = 'none';
+$tlCfg->attachments->action_on_save_empty_title = 'none';
 
 // Remember that title is used as link description for download
 // then if title is empty, what the system has to do when displaying ?
-// 'show_icon'  -> the $g_attachments->access_icon will be used.
-// 'show_label' -> the value of $g_attachments->access_string will be used .
-$g_attachments->action_on_display_empty_title = 'show_icon';
+// 'show_icon'  -> the $tlCfg->attachments->access_icon will be used.
+// 'show_label' -> the value of $tlCfg->attachments->access_string will be used .
+$tlCfg->attachments->action_on_display_empty_title = 'show_icon';
 
 // Set display order of uploaded files 
-$g_attachments->order_by = " ORDER BY date_added DESC ";
+$tlCfg->attachments->order_by = " ORDER BY date_added DESC ";
 
 
 // need to be moved AFTER include of custom_config
 //
-// $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
-$g_attachments->access_string = "[*]";
+// $tlCfg->attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
+$tlCfg->attachments->access_string = "[*]";
+
+/**
+ * Files that are allowed.  Separate items by commas.
+ * eg. 'doc,xls,gif,png,jpg'
+ */
+$tlCfg->attachments->allowed_files = 'doc,xls,gif,png,jpg,xlsx,csv';
 
 
+/**
+ * Process filename against XSS
+ * Thanks to http://owasp.org/index.php/Unrestricted_File_Upload
+ *   '/^[a-zA-Z0-9]{1,20}\.[a-zA-Z0-9]{1,10}$/'; 
+ *   added - and _.
+ * 
+ * NO CHECK if -> $g_attachments->allowed_filenames_regexp = '';
+ *
+ */
+$tlCfg->attachments->allowed_filenames_regexp = '/^[a-zA-Z0-9_-]{1,20}\.[a-zA-Z0-9]{1,10}$/';
 
 
 /** the type of the repository can be database or filesystem
@@ -1511,6 +1544,9 @@ $g_repositoryType = TL_REPOSITORY_TYPE_FS;
  *
  **/
 $g_repositoryPath = '/var/testlink/upload_area/';  /* unix example */
+if (($upa = getenv('TESTLINK_UPLOAD_AREA'))) {
+  $g_repositoryPath = trim($upa);
+}
 
 /**
  * compression used within the repository
@@ -1838,6 +1874,8 @@ $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_execution_type = ENABL
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_workflow_status = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->advanced_filter_mode_choice = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_platforms = ENABLED;
+
 
 $tlCfg->tree_filter_cfg->requirements->filter_doc_id = ENABLED;
 $tlCfg->tree_filter_cfg->requirements->filter_title = ENABLED;
@@ -1981,10 +2019,11 @@ $tlCfg->enableTableExportButton = DISABLED;
 
 
 /**
- * Taken from Mantis to implement better login security, and solve
- * TICKET 4342
+ * Taken from Mantis to implement better login security
+ * and solve TICKET 4342.
  */
-$tlCfg->auth_cookie = "TESTLINK_USER_AUTH_COOKIE";
+$tlCfg->auth_cookie = $tlCfg->cookie->prefix . 
+                      "TESTLINK_USER_AUTH_COOKIE";
 
 /** 
 Used when creating a Test Suite using copy
@@ -2063,9 +2102,10 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
 }
 
 
-if( !isset($g_attachments->access_icon) )
-{
-  $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
+if( !isset($tlCfg->attachments->access_icon) ) {
+  $tlCfg->attachments->access_icon = 
+    '<img src="' . $tlCfg->theme_dir . 
+    'images/new_f2_16.png" style="border:none" />';
 }
 
 

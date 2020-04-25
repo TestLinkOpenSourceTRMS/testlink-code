@@ -44,8 +44,7 @@ function get_home_url($opt)
   if( isset ( $_SERVER['PHP_SELF'] ) ) 
   {
   $t_protocol = 'http';
-  if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) 
-  {
+  if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
     $t_protocol= $_SERVER['HTTP_X_FORWARDED_PROTO'];
   }    
   else if ( !empty($_SERVER['HTTPS']) && (strtolower( $_SERVER['HTTPS']) != 'off') ) 
@@ -126,9 +125,7 @@ function checkConfiguration()
 {
   clearstatcache();
   $file_to_check = "config_db.inc.php";
-
-  if(!is_file($file_to_check))
-  {
+  if(!is_file($file_to_check)) {
     echo '<html><body onload="' . "location.href='./install/index.php'" . '"></body></html>';
     exit();  
   }
@@ -156,17 +153,13 @@ function checkInstallStatus()
  **/
 function checkLibGd()
 {
-  if( extension_loaded('gd') )
-  {
+  if( extension_loaded('gd') ) {
     $arrLibConf = gd_info();
     $msg = lang_get("error_gd_png_support_disabled");
-    if ($arrLibConf["PNG Support"])
-    {
+    if ($arrLibConf["PNG Support"]) {
       $msg = 'OK';
     }  
-  }
-  else
-  {
+  } else {
     $msg = lang_get("error_gd_missing");
   }
   return $msg;
@@ -217,8 +210,7 @@ function checkForAdminDefaultPwd(&$db)
   $user = new tlUser();
   $user->login = "admin";
   if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK && 
-     $user->comparePassword("admin") >= tl::OK)
-  {   
+     $user->comparePassword($db,"admin") >= tl::OK) {   
     $passwordHasDefaultValue = true;
   }  
   return $passwordHasDefaultValue;
@@ -245,38 +237,29 @@ function getSecurityNotes(&$db)
   $repository['path'] = config_get('repositoryPath');
   
   $securityNotes = null;
-  if (checkForInstallDir())
-  {
+  if (checkForInstallDir()) {
     $securityNotes[] = lang_get("sec_note_remove_install_dir");
   }
   
   $authCfg = config_get('authentication');
-  if( 'LDAP' == $authCfg['method']  )
-  {
-    if( !checkForLDAPExtension() )
-    {
+  if( 'LDAP' == $authCfg['method']  ) {
+    if( !checkForLDAPExtension() ) {
       $securityNotes[] = lang_get("ldap_extension_not_loaded");
     }  
-  } 
-  else
-  {
-    if( checkForAdminDefaultPwd($db) )
-    {
+  } else {
+    if( checkForAdminDefaultPwd($db) ) {
         $securityNotes[] = lang_get("sec_note_admin_default_pwd");
     }
   }
 
   
-  if (!checkForBTSConnection())
-  {
+  if (!checkForBTSConnection()) {
     $securityNotes[] = lang_get("bts_connection_problems");
   }
     
-  if($repository['type'] == TL_REPOSITORY_TYPE_FS)
-  {
+  if($repository['type'] == TL_REPOSITORY_TYPE_FS) {
     $ret = checkForRepositoryDir($repository['path']);
-    if(!$ret['status_ok'])
-    {
+    if(!$ret['status_ok']) {
       $securityNotes[] = $ret['msg'];
     }  
   }
@@ -286,14 +269,12 @@ function getSecurityNotes(&$db)
   $res = checkSchemaVersion($db);
   $msg = $res['msg'];
   
-  if($msg != "")
-  {
+  if($msg != "") {
     $securityNotes[] = $msg;
   }
   
   $msg = checkEmailConfig();
-  if(!is_null($msg))
-  {
+  if(!is_null($msg)) {
     foreach($msg as $detail)
     {
        $securityNotes[] = $detail;
@@ -413,8 +394,7 @@ function checkSchemaVersion(&$db)
   
   $sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
   $res = $db->exec_query($sql,1);  
-  if (!$res)
-  {
+  if (!$res) {
     return $result['msg'] = "Failed to get Schema version from DB";
   }
     
@@ -456,6 +436,23 @@ function checkSchemaVersion(&$db)
     case 'DB 1.9.18':
     case 'DB 1.9.19':
       $result['msg'] = $manualop_msg;
+    break;
+
+    case 'DB 1.9.20':
+      // check critic DB schema change because
+      // blocks login
+      $m = $db->db->metaColumns(DB_TABLE_PREFIX . 'users');
+      if ($m['PASSWORD']->max_length == 32) {
+        $result['msg'] = 
+          "It seems that you have migrated to 1.9.20" .
+          "<br>But migration does not changed users table structure" .
+          "<br>the password field is not able to contain " .
+          " a bcrypt password";
+        $result['status'] = tl::ERROR;
+      } else {
+        $result['status'] = tl::OK;
+        $result['kill_session'] = 'false';
+      }
     break;
 
     case $latest_version:

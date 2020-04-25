@@ -8,7 +8,7 @@
  * 
  * @filesource  const.inc.php
  * @package     TestLink
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @see         config.inc.php
  *
  **/
@@ -20,7 +20,7 @@ define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_VERSION_NUMBER', '1.9.20'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Raijin)'); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] '); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Latest Database version that is used to give users feedback 
@@ -375,6 +375,11 @@ $tlCfg->results['status_code'] = array('failed' => 'f','blocked' => 'b',
                                        'not_available' => 'x','unknown' => 'u',
                                        'all' => 'a'); 
 
+/* for some reports */
+$tlCfg->results['status_order'] = array('not_run' => 'n',
+                                        'passed' => 'p',
+                                        'failed' => 'f',
+                                        'blocked' => 'b');
 
 /** 
  * Used to get localized string to show to users

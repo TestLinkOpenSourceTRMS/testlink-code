@@ -7,14 +7,9 @@
  *
  * @package   TestLink
  * @author    Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2009, TestLink community 
- * @version     CVS: $Id: cfieldsExport.php,v 1.4 2010/03/15 20:23:09 franciscom Exp $
- * @link    http://www.teamst.org/index.php
+ * @copyright   2005-2020, TestLink community 
  * @uses    config.inc.php
  *
- * @internal Revisions:
- * 20100315 - franciscom - added tlInputParameter() on init_args + goback managament
- * 20090719 - franciscom - db table prefix management   
  *
  */
 require_once("../../config.inc.php");
@@ -24,6 +19,7 @@ require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args();
+
 
 $gui = new stdClass();
 $gui->page_title = lang_get('export_cfields');
@@ -61,12 +57,17 @@ function init_args()
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
-           "export_filename" => array(tlInputParameter::STRING_N,0,100),
-           "goback_url" => array(tlInputParameter::STRING_N,0,2048));
+  $iParams = 
+    array("doAction" 
+             => array(tlInputParameter::STRING_N,0,50),
+           "export_filename" 
+              => array(tlInputParameter::STRING_N,0,100));
 
   R_PARAMS($iParams,$args);
-    $args->userID = $_SESSION['userID'];
+  $args->userID = $_SESSION['userID'];
+
+  $args->goback_url = $_SESSION['basehref'] .
+                      'lib/cfields/cfieldsView.php';
 
   return $args;
 }

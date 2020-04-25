@@ -8,7 +8,7 @@
  *
  * @filesource  resultsByStatus.php
  * @package     TestLink
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://www.testlink.org
  *
  * 
@@ -31,11 +31,10 @@ require_once('exec.inc.php'); // used for bug string lookup
 
 $tplCfg = templateConfiguration();
 
-$args = init_args($db);
+list($tplan_mgr,$args) = initArgsForReports($db);
 $statusCode = $args->statusCode;
 
 $tplan_mgr = new testplan($db);
-
 $tcase_mgr = new testcase($db);
 
 $gui = initializeGui($db,$args,$tplan_mgr);
@@ -49,10 +48,8 @@ $cfOnExec = $cfSet = null;
 
 // done here in order to get some config about images
 $smarty = new TLSmarty();
-if( !is_null($metrics) and count($metrics) > 0 )
-{              
-  if($args->addOpAccess)
-  {  
+if (!is_null($metrics) and count($metrics) > 0) {              
+  if ($args->addOpAccess) {  
     $links = featureLinks($labels,$smarty->getImages());
   }  
 
@@ -71,8 +68,7 @@ if( !is_null($metrics) and count($metrics) > 0 )
 
   $odx = 0;
 
-  if( $args->type != $statusCode['not_run'] )
-  {
+  if( $args->type != $statusCode['not_run'] ) {
     // get Custom fields definition to understand columns to be added
     $cfSet = $tcase_mgr->cfield_mgr->get_linked_cfields_at_execution($args->tproject_id,true,'testcase');
     $execSet = array_keys($metrics);
@@ -83,12 +79,10 @@ if( !is_null($metrics) and count($metrics) > 0 )
   }
 
 
-  foreach($metrics as $execID => &$exec)
-  {  
-    // --------------------------------------------------------------------------
+  foreach($metrics as $execID => &$exec) {  
+    // ---------------------------------------------------------------------
     // do some decode work, using caches
-    if( !isset($pathCache[$exec['tcase_id']]) )
-    {
+    if (!isset($pathCache[$exec['tcase_id']])) {
       $dummy = $tcase_mgr->getPathLayered(array($exec['tcase_id']));  
       $pathCache[$exec['tcase_id']] = $dummy[$exec['tsuite_id']]['value'];
       $levelCache[$exec['tcase_id']] = $dummy[$exec['tsuite_id']]['level'];
@@ -106,6 +100,11 @@ if( !is_null($metrics) and count($metrics) > 0 )
     // suiteName
     // testTitle   CCA-15708: RSRSR-150
     // testVersion   1
+
+    // @20191128 
+    // We will adde test version summary ONLY if OUTPUT is
+    // Spreadsheet 
+    
     // platformName XXXX  <<< ONlY is platforms have been used on 
     //                        Test plan under analisys
     //
@@ -121,13 +120,11 @@ if( !is_null($metrics) and count($metrics) > 0 )
 
     // -------------------------------------------------------------------------
     $zipper = '';
-    switch($args->format)
-    {
+    switch ($args->format) {
       case FORMAT_HTML:
         $out[$odx]['testTitle'] = "<!-- " . sprintf("%010d", $exec['external_id']) . " -->";
         $zipper = '';
-        if($args->addOpAccess)
-        {  
+        if ($args->addOpAccess) {  
           $out[$odx]['testTitle'] .= sprintf($links['full'],
                                      $exec['tcase_id'],$exec['tcase_id'],$exec['tcversion_id'],
                                      $exec['build_id'],$args->tplan_id,$exec['platform_id'],$exec['tcase_id']);
@@ -150,14 +147,23 @@ if( !is_null($metrics) and count($metrics) > 0 )
     }
 
     // See IMPORTANT NOTICE/WARNING about XLS generation
-    $out[$odx]['testTitle'] .= $exec['full_external_id'] . ':' . $exec['name'] . 
-                               $zipper;
+    $out[$odx]['testTitle'] .= $exec['full_external_id'] . ':' . 
+                               $exec['name'] .$zipper;
 
     $out[$odx]['testVersion'] =  $exec['tcversion_number'];
     
+    switch ($args->format) {
+      case FORMAT_XLS:
+        $out[$odx]['summary'] =  $exec['summary'];
+      break;
+
+      case FORMAT_HTML:
+      default:
+      break; 
+    }
+
     // Insert order on out is CRITIC, because order is used on buildMatrix
-    if($gui->show_platforms)
-    {
+    if($gui->show_platforms) {
       $out[$odx]['platformName'] = $nameCache['platform'][$exec['platform_id']];
     }
 
@@ -270,14 +276,11 @@ if( !is_null($metrics) and count($metrics) > 0 )
   }
   $gui->dataSet = $out;
   unset($out);
-}
-else
-{
+} else {
   $gui->warning_msg = getWarning($args->type,$statusCode);
 }  
 
-switch($args->format)
-{
+switch ($args->format) {
   case FORMAT_XLS:
     createSpreadsheet($gui,$args,$args->getSpreadsheetBy,$cfSet);
   break;  
@@ -315,36 +318,28 @@ function init_args(&$dbHandler)
   R_PARAMS($iParams,$args);
 
   $args->getSpreadsheetBy = isset($_REQUEST['sendSpreadSheetByMail_x']) ? 'email' : null;
-  if( is_null($args->getSpreadsheetBy) )
-  {
+  if( is_null($args->getSpreadsheetBy) ) {
     $args->getSpreadsheetBy = isset($_REQUEST['exportSpreadSheet_x']) ? 'download' : null;
   }  
 
   $args->addOpAccess = true;
-  
-  if( !is_null($args->apikey) )
-  {
+  if( !is_null($args->apikey) ) {
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
     $cerbero->args->tplan_id = $args->tplan_id;
     
-    if(strlen($args->apikey) == 32)
-    {
+    if(strlen($args->apikey) == 32) {
       $cerbero->args->getAccessAttr = true;
       $cerbero->method = 'checkRights';
       $cerbero->redirect_target = "../../login.php?note=logout";
       setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
-    }
-    else
-    {
+    } else {
       $args->addOpAccess = false;
       $cerbero->method = null;
       setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
     }  
-  }
-  else
-  {
+  } else {
     testlinkInitPage($dbHandler,true,false,"checkRights");  
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
@@ -368,14 +363,19 @@ function initializeGui(&$dbh,&$argsObj,&$tplanMgr)
 
   $guiObj = new stdClass();
 
-  $guiObj->labels = init_labels(array('deleted_user' => null, 'design' => null, 
-                                      'execution' => null,'nobody' => null,
-                                      'execution_history' => null,
-                                      'info_only_with_tester_assignment'  => null,
-                                      'th_bugs_not_linked' => null,
-                                      'info_notrun_tc_report' => null));
+  $guiObj->labels = init_labels(
+    array('deleted_user' => null, 'design' => null, 
+          'execution' => null,'nobody' => null,
+          'execution_history' => null,
+          'info_only_with_tester_assignment'  => null,
+          'th_bugs_not_linked' => null,
+          'info_notrun_tc_report' => null,
+          'info_xls_report_results_by_status' => null));
 
   $guiObj->report_context = $guiObj->labels['info_only_with_tester_assignment'];
+  $guiObj->info_xls_report = 
+    $guiObj->labels['info_xls_report_results_by_status'];
+  
   $guiObj->info_msg = '';
   $guiObj->bugs_msg = '';
 
@@ -682,6 +682,7 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
   // Test suite
   // Test case
   // Version
+  // Test case summary
   // [Platform]
   // Build
   // Tester
@@ -698,6 +699,7 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
   // suiteName   Issue Tracker Management
   // testTitle   PTRJ-76:Create issue tracker - no conflict
   // testVersion   1
+  // bla,bla,bla,....
   // [platformName]
   // buildName   1.0
   // testerName  admin
@@ -706,47 +708,42 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
   // bugString   [empty string]  
 
   //
-  $dataHeader = array($lbl['title_test_suite_name'],$lbl['title_test_case_title'],$lbl['version']);
+  $dataHeader = 
+    array($lbl['title_test_suite_name'],$lbl['title_test_case_title'],
+          $lbl['version'],$lbl['summary']);
+
   if( $showPlatforms = ( property_exists($gui,'platformSet') && !is_null($gui->platformSet) && 
-                         !isset($gui->platformSet[0])) )
-  {
+                         !isset($gui->platformSet[0])) ) {
     $dataHeader[] = $lbl['platform'];
   }
 
   $dataHeader[] = $lbl['build'];
 
-  if( $gui->notRunReport )
-  {
+  if ($gui->notRunReport) {
     $dataHeader[] = $lbl['assigned_to'];
     $dataHeader[] = $lbl['summary'];
-  }
-  else
-  {
+  } else {
     $dataHeader[] = $lbl['th_run_by'];
     $dataHeader[] = $lbl['th_date'];
     $dataHeader[] = $lbl['title_execution_notes'];
   }
 
 
-  if(!is_null($customFieldColumns))
-  {
-    foreach($customFieldColumns as $id => $def)
-    {
+  if(!is_null($customFieldColumns)) {
+    foreach($customFieldColumns as $id => $def) {
       $dataHeader[] = $def['label'];
     }  
   }  
 
   // ATTENTION logic regarding NOT RUN IS MISSING
   // For not run this column and also columns regarding CF on exec are not displayed
-  if( $gui->bugInterfaceOn && !$gui->notRunReport)  
-  {
+  if( $gui->bugInterfaceOn && !$gui->notRunReport) {
     $dataHeader[] = $lbl['th_bugs_id_summary'];
   }  
 
   $startingRow = count($lines2write) + 2; // MAGIC
   $cellArea = "A{$startingRow}:";
-  foreach($dataHeader as $zdx => $field)
-  {
+  foreach($dataHeader as $zdx => $field) {
     $cellID = $cellRange[$zdx] . $startingRow; 
     $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
     $cellAreaEnd = $cellRange[$zdx];
@@ -755,16 +752,13 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
   $objPHPExcel->getActiveSheet()->getStyle($cellArea)
               ->applyFromArray($style['DataHeader']);  
 
-
   // Now process data  
   $startingRow++;
   $qta_loops = count($gui->dataSet);
-  for($idx = 0; $idx < $qta_loops; $idx++)
-  {
+  for ($idx = 0; $idx < $qta_loops; $idx++) {
     $line2write = $gui->dataSet[$idx];
     $colCounter = 0; 
-    foreach($gui->dataSet[$idx] as $ldx => $field)
-    {
+    foreach($gui->dataSet[$idx] as $ldx => $field) {
       if( $ldx != 'bugString' || ($ldx == 'bugString' && $gui->bugInterfaceOn) )
       {  
         $cellID = $cellRange[$colCounter] . $startingRow; 
@@ -773,8 +767,7 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
       }
       
       // May be same processing can be applied to execution otes
-      if(($ldx == 'bugString' && $gui->bugInterfaceOn))
-      {
+      if(($ldx == 'bugString' && $gui->bugInterfaceOn)) {
         // To manage new line
         // http://stackoverflow.com/questions/5960242/how-to-make-new-lines-in-a-cell-using-phpexcel
         // http://stackoverflow.com/questions/6054444/how-to-set-auto-height-in-phpexcel
@@ -794,10 +787,8 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
   $tmpfname = tempnam(config_get('temp_dir'),"resultsByStatus.tmp");
   $objWriter->save($tmpfname);
 
-  if($args->getSpreadsheetBy == 'email')
-  {
+  if($args->getSpreadsheetBy == 'email') {
     require_once('email_api.php');
-
     $ema = new stdClass();
     $ema->from_address = config_get('from_email');
     $ema->to_address = $args->user->emailAddress;;
@@ -811,9 +802,7 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
     $email_op = email_send_wrapper($ema,$oops);
     unlink($tmpfname);
     exit(); 
-  } 
-  else
-  {
+  } else {
     downloadXls($tmpfname,$xlsType,$gui,'resultsByStatus_');
   } 
 }
@@ -828,19 +817,25 @@ function getMetrics(&$dbh,&$args,&$gui)
   $statusCode = $resultsCfg['status_code'];
   $metricsMgr = new tlTestPlanMetrics($dbh);
 
-  if( $args->type == $statusCode['not_run'] )
-  {
+  if( $args->type == $statusCode['not_run'] ) {
     $opt = array('output' => 'array');
+    if ($args->format == FORMAT_XLS) {
+      $opt['add2fields'] = 'TCV.summary';
+    }
+
     $met = $metricsMgr->getNotRunWithTesterAssigned($args->tplan_id,null,$opt);
  
     $gui->notRunReport = true;
     $gui->info_msg = $gui->labels['info_notrun_tc_report'];
     $gui->notesAccessKey = 'summary';
     $gui->userAccessKey = 'user_id';
-  }
-  else
-  {
-    $opt = array('output' => 'mapByExecID', 'getOnlyAssigned' => true);
+  } else {
+    $opt = array('output' => 'mapByExecID', 
+                 'getOnlyAssigned' => true);
+    if ($args->format == FORMAT_XLS) {
+      $opt['add2fields'] = 'TCV.summary';
+    }
+
     $met = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,null,$opt);
 
     $gui->notRunReport = false;

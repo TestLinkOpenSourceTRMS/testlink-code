@@ -734,7 +734,7 @@ CREATE TABLE /*prefix*/user_testplan_roles (
 CREATE TABLE /*prefix*/users (
   id int IDENTITY(1,1) NOT NULL,
   login varchar(100)  NOT NULL,
-  password varchar(32)  NOT NULL,
+  password varchar(255)  NOT NULL,
   role_id int NOT NULL CONSTRAINT /*prefix*/DF_users_role_id DEFAULT ((0)),
   email varchar(100)  NOT NULL,
   first varchar(50)  NOT NULL,

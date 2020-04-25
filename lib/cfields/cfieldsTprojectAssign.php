@@ -16,8 +16,7 @@ $cfield_mgr = new cfield_mgr($db);
 $args = init_args($db);
 $checkedIDSet = array_keys($args->checkedCF);
 
-switch($args->doAction)
-{
+switch ($args->doAction) {
   case 'doAssign':
     $cfield_mgr->link_to_testproject($args->tproject_id,$checkedIDSet);
   break;
@@ -30,8 +29,7 @@ switch($args->doAction)
     // To make user's life simpler, we work on all linked CF 
     // and not only on selected. 
     $cfield_mgr->set_display_order($args->tproject_id,$args->display_order);
-    if( !is_null($args->location) )
-    {
+    if( !is_null($args->location) ) {
       $cfield_mgr->setDisplayLocation($args->tproject_id,$args->location);
     }
   break;
@@ -68,18 +66,18 @@ function init_args(&$dbHandler)
   $_REQUEST = strings_stripSlashes($_REQUEST);
   $args = new stdClass();
 
-  $key2search = array('doAction','checkedCF','display_order','location',
+  $key2search = array('doAction','checkedCF','display_order',
+                      'location',
                       'hidden_active_cfield','active_cfield',
                       'hidden_required_cfield','required_cfield',
-                      'hidden_monitorable_cfield','monitorable_cfield');
+                      'hidden_monitorable_cfield',
+                      'monitorable_cfield');
     
-  foreach($key2search as $key)
-  {
+  foreach ($key2search as $key) {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;
   }
 
-  if( is_null($args->checkedCF) )
-  {
+  if( is_null($args->checkedCF) ) {
     $args->checkedCF = array();
   }  
 
@@ -124,7 +122,7 @@ function initializeGui(&$args,&$cfield_mgr)
 {
   $gui = new stdClass();
 
-  $gui->locations=createLocationsMenu($cfield_mgr->getLocations());
+  $gui->locations = createLocationsMenu($cfield_mgr->getLocations());
   $gui->tproject_name = $args->tproject_name;
   
   $gui->linkedCF = $cfield_mgr->get_linked_to_testproject($args->tproject_id);
@@ -159,17 +157,11 @@ function checkRights(&$db,&$user)
  */
 function createLocationsMenu($locations)
 {
-  $menuContents=null;
+  $menuContents = null;
   $items = $locations['testcase'];
-  
-  // loop over status for user interface, because these are the statuses
-  // user can assign while executing test cases
-  
-  foreach($items as $code => $key4label)
-  {
+  foreach($items as $code => $key4label) {
     $menuContents[$code] = lang_get($key4label); 
   }
-  
   return $menuContents;
 }
 

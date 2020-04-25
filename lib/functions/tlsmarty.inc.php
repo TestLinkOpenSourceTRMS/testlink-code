@@ -9,7 +9,7 @@
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2019, TestLink community 
+ * @copyright 	2005-2020, TestLink community 
  * @link 		    http://www.testlink.org/
  * @link 		    http://www.smarty.net/ 
  *
@@ -414,10 +414,12 @@ class TLSmarty extends Smarty {
                    'remove' => $imgLoc . 'delete.png',
                    'reorder' => $imgLoc . 'arrow_switch.png',
                    'report' => $imgLoc . 'report.png',
+                   'report_test_automation' => $imgLoc . 'lightning.png',
                    'report_word' => $imgLoc . 'page_word.png',
                    'requirements' => $imgLoc . 'cart.png',
                    'resequence' => $imgLoc . 'control_equalizer.png',
                    'reset' => $imgLoc . 'arrow_undo.png',
+                   'saveForBaseline' => $imgLoc . 'lock.png',
                    'summary_small' => $imgLoc . 'information_small.png',
                    'sort' => $imgLoc . 'sort_hint.png',
                    'steps' => $imgLoc . 'bricks.png',

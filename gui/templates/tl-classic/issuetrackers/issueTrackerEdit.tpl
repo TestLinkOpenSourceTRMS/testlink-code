@@ -145,15 +145,15 @@ function displayITSCfgExample(oid,displayOID)
   	<div class="groupBtn">	
 	  <input type="hidden" name="id" id="id" value="{$gui->item.id}">
   	<input type="hidden" name="doAction" value="{$gui->operation}" />
-    <input type="submit" name="create" id="create" 
+    <input class="btn btn-primary" type="submit" name="create" id="create" 
            value="{$gui->submit_button_label}"
 	         onclick="doAction.value='{$gui->operation}'" />
   
-    <input type="submit" name="checkConnection" id="checkConnection" 
+    <input class="btn btn-primary" type="submit" name="checkConnection" id="checkConnection" 
            value="{$labels.btn_check_connection}"
            onclick="doAction.value='checkConnection'" />
    
-   	<input type="button" value="{$labels.btn_cancel}"
+   	<input class="btn btn-primary" type="button" value="{$labels.btn_cancel}"
 	         onclick="javascript:location.href=fRoot+'lib/issuetrackers/issueTrackerView.php'" />
   	</div>
   	</form>

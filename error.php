@@ -48,7 +48,7 @@ function init_gui($args) {
   $gui = new stdClass();
   $gui->message = '';
     
-  if(isset($args->message) {
+  if (isset($args->message)) {
     $gui->message = $args->message;
   }
     

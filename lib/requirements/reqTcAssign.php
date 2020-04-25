@@ -8,11 +8,16 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
 
 $bulkCounter = 0;
 $bulkDone = false;
@@ -391,6 +396,15 @@ function getTargetTestCases(&$dbHandler,&$argsObj) {
 }
 
 
-function checkRights(&$db,&$user) {
-  return ($user->hasRight($db,'req_tcase_link_management'));
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
+{
+  $context->rightsOr = [];
+  $context->rightsAnd = ["req_tcase_link_management"];
+  pageAccessCheck($db, $user, $context);
 }
+
+
+

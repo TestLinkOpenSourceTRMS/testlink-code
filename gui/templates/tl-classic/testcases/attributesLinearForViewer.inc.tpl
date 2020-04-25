@@ -11,7 +11,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       method="post" action="{$basehref}lib/testcases/tcEdit.php">
 
   <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
-  <input type="hidden" name="doAction" id="doAction" value="setStatus">
+  <input type="hidden" name="doAction" value="setStatus">
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
   <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
@@ -34,7 +34,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
     <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
     <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
-    <input type="hidden" name="doAction" id="doAction" value="setImportance">
+    <input type="hidden" name="doAction" value="setImportance">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
     
@@ -57,7 +57,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   
     <input type="hidden" name="show_mode" value="{$gui->show_mode}" />  
     <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
-    <input type="hidden" name="doAction" id="doAction" value="setExecutionType">
+    <input type="hidden" name="doAction" value="setExecutionType">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
   <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}" 
@@ -80,9 +80,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
   <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
   <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />      
-  <input type="hidden" name="doAction" id="doAction" value="setEstimatedExecDuration">
-  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+  <input type="hidden" name="doAction" 
+    value="setEstimatedExecDuration">
+  <input type="hidden" name="testcase_id" 
+    value="{$args_testcase.testcase_id}" />
+  <input type="hidden" name="tcversion_id" 
+    value="{$args_testcase.id}" />
 
   <span class="labelHolder" title="{$tcView_viewer_labels.estimated_execution_duration}"
         style="margin-left:20px;">{$tcView_viewer_labels.estimated_execution_duration_short}{$smarty.const.TITLE_SEP}</span>

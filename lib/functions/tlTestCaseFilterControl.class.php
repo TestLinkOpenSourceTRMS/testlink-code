@@ -6,7 +6,7 @@
  * @filesource tlTestCaseFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2016, TestLink community
+ * @copyright  2006-2020, TestLink community
  * @link       http://testlink.sourceforge.net/
  * 
  *
@@ -33,8 +33,6 @@
  *    --> assign keywords
  *    --> assign requirements
  *
- * @internal revisions
- * @since 1.9.13
  */
 
 /*
@@ -925,8 +923,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       break;
       
       case 'edit_mode':
-        if ($gui->tree_drag_and_drop_enabled[$this->args->feature]) 
-        {
+        if ($gui->tree_drag_and_drop_enabled[$this->args->feature]) {
           $drag_and_drop->enabled = true;
           $drag_and_drop->BackEndUrl = $this->args->basehref . 
                                        'lib/ajax/dragdroptprojectnodes.php';
@@ -937,15 +934,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
         // -> store state for each feature and each project
         $cookie_prefix = $this->args->feature . "_tproject_id_" . $this->args->testproject_id ."_";
         
-        if ($this->do_filtering) 
-        {
+        if ($this->do_filtering) {
           // TICKET 4353: added active/inactive filter
           $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
           $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
-          if(isset($filters['filter_active_inactive']))
-          {  
-            if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES)
-            {
+          if (isset($filters['filter_active_inactive'])) {  
+            if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES) {
                 $ignore_inactive_testcases = IGNORE_INACTIVE_TESTCASES;
             }
             if ($filters['filter_active_inactive'] == IGNORE_ACTIVE_TESTCASES)
@@ -960,9 +954,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
                            'ignore_inactive_testcases' => $ignore_inactive_testcases,
                            'ignore_active_testcases' => $ignore_active_testcases);
 
-          $forrest = generateTestSpecTree($this->db, $this->args->testproject_id,
-                                          $this->args->testproject_name,
-                                          $gui->menuUrl, $filters, $options);
+          $forrest = generateTestSpecTree($this->db, 
+                       $this->args->testproject_id,
+                       $this->args->testproject_name,
+                       $gui->menuUrl, $filters, $options);
           
 
           $this->set_testcases_to_show($forrest['leaves']);
@@ -998,12 +993,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
         // values in $filters->setting_xyz
         $cookie_prefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
 
-		// get filter mode
+		    // get filter mode
         $key = 'setting_testsgroupby';
         $mode = $this->args->$key;
 
-        if ($this->do_filtering)
-        {
+        if ($this->do_filtering) {
           // TICKET 4496: added active/inactive filter
           // Will be refactored in future versions
           // $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
@@ -1028,17 +1022,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
                            'ignore_active_testcases' => $ignore_active_testcases);
       
 
-          if ($mode == 'mode_test_suite')
-          {
-			
-         	 $tree_menu = generateTestSpecTree($this->db,
-                                            $this->args->testproject_id,
-                                            $this->args->testproject_name,
-                                            $gui->menuUrl,$filters,$options);
-
+          if ($mode == 'mode_test_suite') {
+         	  $tree_menu = generateTestSpecTree($this->db,
+                           $this->args->testproject_id,
+                           $this->args->testproject_name,
+                           $gui->menuUrl,$filters,$options);
           }
 
-		  $tree_menu = $tree_menu['menu']; 
+		      $tree_menu = $tree_menu['menu']; 
           $root_node = $tree_menu->rootnode;
           $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         } 
@@ -1281,6 +1272,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * 
    * Possibility to filter by Platform:
    * according mode we need to add [Any] option
+   * it's really a filter?
    *
    */
   private function init_setting_platform() {
@@ -1292,6 +1284,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $session_key = $testplan_id . '_stored_setting_platform';
     $session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
     $key = 'setting_platform';
+
+    $optx = null;
+    switch ($this->mode) {
+      case 'edit_mode':
+      case 'plan_add_mode':
+      break;
+    }
+    
     $platformSet = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
 
     if( is_null($platformSet) ) {
@@ -1359,8 +1359,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $selection = null;
     } else {
       $this->do_filtering = true;
-      // we got the external ID here when filtering, but need the internal one
-      $internal_id = $this->tc_mgr->getInternalID($selection);
+      // we got the external ID here when filtering, 
+      // but need the internal one
+      $oget = ['tproject_id' => $this->args->testproject_id];
+      $internal_id = $this->tc_mgr->getInternalID($selection,$oget);
     }
     
     $this->filters[$key] = array('selected' => $selection ? $selection : $tc_prefix);
@@ -1455,7 +1457,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
         if (!$this->testproject_mgr) {
           $this->testproject_mgr = new testproject($this->db);
         }
-        $keywords = $this->testproject_mgr->get_keywords_map($this->args->testproject_id);
+        $keywords = $this->testproject_mgr->getUsedKeywordsMap($this->args->testproject_id);
       break;
 
       default:
@@ -1490,7 +1492,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $type_selection = $this->args->{$type};
     
     // are there any keywords?
-    if (!is_null($keywords) && count($keywords)) {
+    $atLeastOneKW = !is_null($keywords) && count($keywords);
+    if ($atLeastOneKW) {
       $this->filters[$key] = array();
 
       if (!$selection || !$type_selection || $this->args->reset_filters) {
@@ -1515,14 +1518,18 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->filters[$key][$type]['selected'] = $type_selection;
     }
     
-    // set the active value to filter
-    // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
-    if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {
-      $this->active_filters[$key] = null;
+    if ($atLeastOneKW) {
+      // set the active value to filter
+      // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
+      if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {
+        $this->active_filters[$key] = null;
+      } else {
+        $this->active_filters[$key] = $this->filters[$key]['selected'];
+      }
+      $this->active_filters[$type] = $selection ? $type_selection : null;
     } else {
-      $this->active_filters[$key] = $this->filters[$key]['selected'];
-    }
-    $this->active_filters[$type] = $selection ? $type_selection : null;
+      $this->active_filters[$key] = 0;
+    }  
   } 
 
 
@@ -2134,10 +2141,22 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
 
     $this->platform_mgr->setTestProjectID($this->args->testproject_id);
-    $platformSet = $this->platform_mgr->getAllAsMap();
 
+
+    $opx = null;
+    switch ($this->mode) {
+      case 'edit_mode':
+      case 'plan_add_mode':
+        $opxy = array('enable_on_design' => true,
+                      'enable_on_execution' => false);
+      break;
+
+    }
+
+    $platformSet = $this->platform_mgr->getAllAsMap($opxy);
     $this->filters[$key] = array('items' => $platformSet,
                                  'selected' => $selection);
+
     // set the active value to filter
     // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
     if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {

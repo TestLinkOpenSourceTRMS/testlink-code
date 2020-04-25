@@ -3,17 +3,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource planEdit.tpl
 
 Purpose: smarty template - create Test Plan
-@internal revisions
-@since 1.9.10
 *}
 
 {lang_get var="labels"
           s="warning,warning_empty_tp_name,testplan_title_edit,public,api_key,
              testplan_th_name,testplan_th_notes,testplan_question_create_tp_from,
              opt_no,testplan_th_active,btn_testplan_create,btn_upd,cancel,
-             show_event_history,testplan_txt_notes"}
-
-
+             show_event_history,testplan_txt_notes,file_upload_ko"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
@@ -88,12 +84,30 @@ function jsCallDeleteFile(btn, text, o_id)
 }        
 </script>
 
+
+{include file="bootstrap.inc.tpl"}
+<script src="{$basehref}third_party/clipboard/clipboard.min.js"></script>
+<script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
 </head>
 
 <body>
+{if $gui->uploadOp != null }
+  <script>
+  var uplMsg = "{$labels.file_upload_ko}<br>";
+  var doAlert = false;
+  {if $gui->uploadOp->statusOK == false}
+    uplMsg += "{$gui->uploadOp->statusCode}<br>";
+    doAlert = true;
+  {/if}
+  if (doAlert) {
+    bootbox.alert(uplMsg);
+  }
+  </script>
+{/if}
+
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
-{$planID=$gui->tplan_id}
+{$planID=$gui->itemID}
 {if !isset($loadOnCancelURL)}
   {$loadOnCancelURL=""}
 {/if}
@@ -102,11 +116,9 @@ function jsCallDeleteFile(btn, text, o_id)
 
 <div class="workBack">
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
-  {$form_action='create'}
   {if $gui->tplan_id neq 0}
     <h2>
     {$labels.testplan_title_edit} {$gui->testplan_name|escape}
-    {$form_action='update'}
     {if $gui->grants->mgt_view_events eq "yes"}
       <img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
            onclick="showEventHistoryFor('{$gui->tplan_id}','testplans')" alt="{$labels.show_event_history}" 
@@ -116,7 +128,7 @@ function jsCallDeleteFile(btn, text, o_id)
   {/if}
 
   <form method="post" name="testplan_mgmt" id="testplan_mgmt"
-        action="lib/plan/planEdit.php?action={$form_action}"
+        action="lib/plan/planEdit.php"
         onSubmit="javascript:return validateForm(this);">
   <input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
   <table class="common" width="80%">
@@ -145,7 +157,7 @@ function jsCallDeleteFile(btn, text, o_id)
         </select>
 
             <div id="copy_controls" style="display:none;">
-            {assign var=this_template_dir value=$smarty.template|dirname}
+            {$this_template_dir=$smarty.template|dirname}
             {include file="$this_template_dir/inc_controls_planEdit.tpl"}
             </div>
         </td>

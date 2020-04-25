@@ -219,10 +219,15 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
     $this->name = trim($this->name);
     $this->notes = trim($this->notes);
     
-    $result = tlKeyword::doesKeywordExist($db,$this->name,$this->testprojectID,$this->dbID);
+    $op = tlKeyword::doesKeywordExist($db,$this->name,$this->testprojectID,
+                                      $this->dbID);
+
+    $result = $op['status'];
+    $this->dbID = $op['kwID'];
     if ($result >= tl::OK) {
       $result = tlKeyword::checkKeywordName($this->name);
-    } 
+    }
+
     return $result;
   }
 
@@ -337,7 +342,9 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    * @return integer return tl::OK if the keyword is found, else tlKeyword::E_NAMEALREADYEXISTS 
    */
   static public function doesKeywordExist(&$db,$name,$tprojectID,$kwID = null) {
-    $result = tl::OK;
+    
+    $op = array('status' => tl::OK, 'kwID' => $kwID);
+
     $tables = tlObjectWithDB::getDBTables("keywords");
     
     $name = $db->prepare_string(strtoupper($name));
@@ -349,10 +356,11 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
       $query .= " AND id <> " .$kwID;
     }  
     
-    if ($db->fetchFirstRow($query)) {
-      $result = self::E_NAMEALREADYEXISTS;
+    if (($rs=$db->fetchFirstRow($query))) {
+      $op['status'] = self::E_NAMEALREADYEXISTS;
+      $op['kwID'] = $rs['id'];
     }
-    return $result;
+    return $op;
   }
 
   //BEGIN interface iSerializationToXML

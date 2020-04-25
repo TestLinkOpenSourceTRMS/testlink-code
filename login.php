@@ -51,15 +51,29 @@ switch($args->action) {
 
 
   case 'oauth':
-    //If code is empty then break
+    // If code is empty then break
     if (!isset($args->oauth_code)){
         renderLoginScreen($gui);
         die();
     }
 
-    //Switch between oauth providers
-    if (!include_once('lib/functions/oauth_providers/'.$args->oauth_name.'.php')) {
-        die("Oauth client doesn't exist");
+    // Switch between oauth providers
+    // validate providers
+    switch ($args->oauth_name) {
+      case 'azure':
+      case 'github':
+      case 'google':
+      case 'microsoft':
+        if (!include_once('lib/functions/oauth_providers/' .
+            $args->oauth_name . '.php')) {
+            die("Oauth client doesn't exist");
+        }
+      break;
+      
+      default:
+        renderLoginScreen($gui);
+        die();
+      break;  
     }
 
     $oau = config_get('OAuthServers');
@@ -76,10 +90,10 @@ switch($args->action) {
       $op = doAuthorize($db,$user_token->options->user,'oauth',$user_token->options);
       $doAuthPostProcess = true;
     } else {
-	$gui->note = $user_token->status['msg'];
-	$gui->draw=true;    
-        renderLoginScreen($gui);
-        die();
+    	$gui->note = $user_token->status['msg'];
+    	$gui->draw=true;    
+      renderLoginScreen($gui);
+      die();
     }
   break;
 
@@ -151,7 +165,8 @@ function init_args() {
   $args->destination = urldecode($pParams['destination']);
   $args->loginform_token = urldecode($pParams['loginform_token']);
 
-  $args->viewer = $pParams['viewer']; 
+  // $args->viewer = $pParams['viewer']; 
+  $args->viewer = '';
 
   $k2c = array('ajaxcheck' => 'do','ajaxlogin' => 'do');
   if (isset($k2c[$pParams['action']]))  {
@@ -171,7 +186,31 @@ function init_args() {
     $args->action = 'loginform';
   }
 
+  // whitelist oauth_name
+  if (strcasecmp($args->action,'oauth') == 0) {
+    validateOauth($args->oauth_name);
+  }
+
   return $args;
+}
+
+/**
+ *
+ */
+function validateOauth($name) {
+  $name = trim($name);
+  $oauthServers = config_get('OAuthServers');
+  $whitelistOK = false;
+  foreach ($oauthServers as $serverCfg) {
+    if (strcasecmp($name, $serverCfg['oauth_name']) == 0) {
+      $whitelistOK = true;
+      break;
+    }
+  }
+
+  if ($whitelistOK == false) {
+    die("Invalid Oauth Service");
+  } 
 }
 
 /**
@@ -202,7 +241,7 @@ function init_gui(&$db,$args) {
         $gui->oauth[$name] = new stdClass();
         $gui->oauth[$name]->name = ucfirst($name);
         $gui->oauth[$name]->link = oauth_link($oauth_prov);
-        $gui->oauth[$name]->icon = $oauth_prov['oauth_icon'];
+        $gui->oauth[$name]->icon = $name . '.png';
     }
   }
 

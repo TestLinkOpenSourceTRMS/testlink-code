@@ -8,6 +8,7 @@ Purpose: smarty template - platforms export
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
+{include file="bootstrap.inc.tpl"}
 
 {lang_get var="labels" 
           s='btn_export,btn_cancel,warning,export_filename,file_type,
@@ -36,7 +37,6 @@ function validateForm(f) {
   <form method="post" id="export_xml" enctype="multipart/form-data" 
         action="lib/platforms/platformsExport.php"
         onsubmit="javascript:return validateForm(this);">
-  
     <table>
 	    <tr>
 	    	<td>{$labels.export_filename}</td>
@@ -58,13 +58,17 @@ function validateForm(f) {
   	</table>
   	
   	<div class="groupBtn">
-      <input type="hidden" name="testprojectID" id="doAction" 
+      <input type="hidden" 
+             name="tproject_id" 
+             id="tproject_id" 
              value="{$gui->tproject_id}" />
   	  
       <input type="hidden" name="doAction" id="doAction" value="" />
-  		<input type="submit" name="doExport" id="doExport" value="{$labels.btn_export}" 
-  		                     onclick="doAction.value=this.id" />
-    	<input type="button" name="cancel" value="{$labels.btn_cancel}"
+  		<input type="submit" class="{#BUTTON_CLASS#}" role="button"
+             name="doExport" id="doExport" value="{$labels.btn_export}" 
+  		       onclick="doAction.value=this.id" />
+    	<input type="button" class="{#BUTTON_CLASS#}" 
+             name="cancel" value="{$labels.btn_cancel}"
     		  {if $gui->goback_url  != ''}  onclick="location='{$gui->goback_url}'"
     		  {else}  onclick="javascript:history.back();" {/if} />
   	</div>

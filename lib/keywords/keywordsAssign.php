@@ -5,7 +5,7 @@
  *
  * @filesource  keywordsAssign.php
  * @package     TestLink
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @link        http://www.testlink.org/
  * 
  *
@@ -45,11 +45,10 @@ $opt_cfg->additional_global_lbl = null;
 $opt_cfg->from->lbl = lang_get('available_kword');
 $opt_cfg->from->map = $tproject_mgr->get_keywords_map($args->testproject_id);
 
-
 switch($args->edit) {
 
   case 'testsuite':
-    $opt_cfg->to->lbl = lang_get('kword_to_be_assigned_to_testcases');
+    $opt_cfg->to->lbl = lang_get('target_kword');
     $opt_cfg->to->map = null;
 
     // We are going to walk all test suites contained
@@ -58,18 +57,47 @@ switch($args->edit) {
     $testsuite = $tsuite_mgr->get_by_id($args->id);
     $gui->keyword_assignment_subtitle = lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
 
-    if($args->useFilteredSet) {
-      $tcs = $args->tcaseSet;    
-    } 
-    else {
-      $tcs = $tsuite_mgr->get_testcases_deep($args->id,'only_id');
-    } 
+    if ($args->onlyDirectChildren) {
+      $tsChildren = $tsuite_mgr->get_children_testcases($args->id,'only_id');
+    } else {
+      if($args->useFilteredSet) {
+        $filteredTC = $args->tcaseSet;    
+      } else {
+        $deepTC = $tsuite_mgr->get_testcases_deep($args->id,'only_id');      
+      }
+    }
+
+    if ($args->onlyDirectChildren && $args->useFilteredSet) {
+      // intersect
+      $tcs = array_intersect($tsChildren, $filteredTC);
+    } else {
+      if ($args->useFilteredSet) {
+        $tcs = &$filteredTC;
+      } else if ($args->onlyDirectChildren) {
+        $tcs = &$tsChildren;
+      } else {
+        $tcs = &$deepTC;
+      }
+    }
 
     if( ($loop2do = sizeof($tcs)) ) {
       $gui->can_do = 1;
-      if ($args->assignToTestSuite) {
+      
+      $method = null;
+      if ($args->assignToTestSuite && null != $args->keywordArray) {
+        $method = 'addKeywords'; 
+      }
+
+      if ($args->removeFromTestSuite && null != $args->keywordArray) {
+        $method = 'deleteKeywords'; 
+      }
+
+      if ($args->removeAllFromTestSuite) {
+        $method = 'deleteKeywords'; 
+      }
+
+      if (null != $method) {  
         $result = 'ok';
-        
         $glOpt = array('output' => 'thin', 'active' => 1);
      
         for($idx = 0; $idx < $loop2do; $idx++) {
@@ -80,12 +108,7 @@ switch($args->edit) {
           $hasBeenExecuted = intval($statusQuo['executed']) > 0;
           if( $gui->canAddRemoveKWFromExecuted || 
               $hasBeenExecuted == false ) {
-            if(is_null($args->keywordArray)) { 
-              $tcase_mgr->deleteKeywords($tcs[$idx],$latestActiveVersionID);
-            }
-            else {
-              $tcase_mgr->addKeywords($tcs[$idx],$latestActiveVersionID,$args->keywordArray);
-            }             
+              $tcase_mgr->$method($tcs[$idx],$latestActiveVersionID,$args->keywordArray);
           }
         }
       }
@@ -110,11 +133,13 @@ switch($args->edit) {
     $statusQuo = current($tcase_mgr->get_versions_status_quo($args->id,$latestActiveVersionID));
     $gui->hasBeenExecuted = intval($statusQuo['executed']) > 0;
 
-    if( $args->assignToTestCase && 
-        ($gui->canAddRemoveKWFromExecuted || !$gui->hasBeenExecuted) ) {
-      $result = 'ok';
-      $tcase_mgr->setKeywords($args->id,$latestActiveVersionID,$args->keywordArray);
-      $doRecall = !is_null($args->keywordArray);  
+    if ($gui->canAddRemoveKWFromExecuted || !$gui->hasBeenExecuted) {      
+      $kwQty = !is_null($args->keywordArray) ? count($args->keywordArray) : 0;
+      if ($args->assignToTestCase && $kwQty >0) {
+        $result = 'ok';
+        $tcase_mgr->setKeywords($args->id,$latestActiveVersionID,$args->keywordArray);
+        $doRecall = !is_null($args->keywordArray);  
+      }
     }
 
     $opt_cfg->to->lbl = lang_get('assigned_kword');
@@ -144,21 +169,37 @@ function init_args(&$opt_cfg) {
                    "edit" => array(tlInputParameter::STRING_N,0,100),
                    "assigntestcase" => array(tlInputParameter::STRING_N,0,1),
                    "assigntestsuite" => array(tlInputParameter::STRING_N,0,1),
+                   "removetestcase" => array(tlInputParameter::STRING_N,0,1),
+                   "removetestsuite" => array(tlInputParameter::STRING_N,0,1),
+                   "removealltestcase" => array(tlInputParameter::STRING_N,0,1),
+                   "removealltestsuite" => array(tlInputParameter::STRING_N,0,1),
                    $rl_html_name => array(tlInputParameter::STRING_N) );
     
-  $pParams = R_PARAMS($iParams);
-    
   $args = new stdClass();
+  $pParams = R_PARAMS($iParams,$args);
+    
   $args->id = $pParams["id"];
   $args->edit = $pParams["edit"];
+
   $args->assignToTestCase = ($pParams["assigntestcase"] != "") ? 1 : 0;
   $args->assignToTestSuite = ($pParams["assigntestsuite"] != "") ? 1 : 0;
+
+  $args->removeFromTestCase = ($pParams["removetestcase"] != "") ? 1 : 0;
+  $args->removeFromTestSuite = ($pParams["removetestsuite"] != "") ? 1 : 0;
+
+  $args->removeAllFromTestCase = ($pParams["removealltestcase"] != "") ? 1 : 0;
+  $args->removeAllFromTestSuite = ($pParams["removealltestsuite"] != "") ? 1 : 0;
+
+  $args->useFilteredSet = isset($_REQUEST['useFilteredSet']) ? 1 : 0;
+  $args->onlyDirectChildren = isset($_REQUEST['onlyDirectChildren']) ? 1 : 0;
+
   $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-  $args->useFilteredSet = isset($_REQUEST['useFilteredSet']) ? 1 : 0;                     
+                     
 
   $args->form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-  $args->tcaseSet = isset($_SESSION['edit_mode']) && isset($_SESSION['edit_mode'][$args->form_token]['testcases_to_show']) ? 
-                    $_SESSION['edit_mode'][$args->form_token]['testcases_to_show'] : null;
+  $args->tcaseSet = isset($_SESSION['edit_mode']) 
+    && isset($_SESSION['edit_mode'][$args->form_token]['testcases_to_show']) ? 
+    $_SESSION['edit_mode'][$args->form_token]['testcases_to_show'] : null;
   
 
   $args->keywordArray = null;
@@ -179,6 +220,7 @@ function initializeGui(&$argsObj) {
   $guiObj->can_do = 0;
   $guiObj->form_token = $argsObj->form_token;
   $guiObj->useFilteredSet = $argsObj->useFilteredSet;
+  $guiObj->onlyDirectChildren = $argsObj->onlyDirectChildren;
   $guiObj->id = $argsObj->id;
   $guiObj->level = $argsObj->edit;
   $guiObj->keyword_assignment_subtitle = null;

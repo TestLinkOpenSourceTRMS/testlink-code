@@ -67,7 +67,8 @@ Purpose: management Custom fields assignment to a test project
       		           
       		<td>
       		{* location will NOT apply to EXEC only CF *}
-      		{if $cf.node_description == 'testcase' && $cf.enable_on_execution ==0}
+      		{if $cf.node_description == 'testcase' 
+              && $cf.enable_on_design == 1}
 			  	<select name="location[{$cf.id}]">
 			  	  {html_options options=$gui->locations selected=$cf.location}
 			  	</select>
@@ -99,14 +100,20 @@ Purpose: management Custom fields assignment to a test project
         
         <input type="hidden" name="doAction" value="" />
     	  
-    		<input type="submit" name="doUnassign" value="{$labels.btn_unassign}" 
-    		                     onclick="doAction.value=this.name"/>
+    		<input class="btn btn-primary" type="submit" 
+               name="doUnassign" 
+               value="{$labels.btn_unassign}" 
+    		       onclick="doAction.value=this.name"/>
     		                     
-    		<input type="submit" name="doBooleanMgmt" value="{$labels.btn_cfields_boolean_mgmt}"
-    		                     onclick="doAction.value=this.name"/>
+    		<input class="btn btn-primary" type="submit" 
+               name="doBooleanMgmt" 
+               value="{$labels.btn_cfields_boolean_mgmt}"
+    		       onclick="doAction.value=this.name"/>
 
-    		<input type="submit" name="doReorder" value="{$labels.btn_cfields_display_attr}" 
-    		                     onclick="doAction.value=this.name"/>
+    		<input class="btn btn-primary" type="submit" 
+               name="doReorder" 
+               value="{$labels.btn_cfields_display_attr}" 
+    		       onclick="doAction.value=this.name"/>
     		
     	</div>
     </form>
@@ -149,8 +156,10 @@ Purpose: management Custom fields assignment to a test project
     	</div>
     	<div class="groupBtn">
         <input type="hidden" name="doAction" value="" />
-    		<input type="submit" name="doAssign" id=this.name value="{$labels.btn_assign}" 
-    		                     onclick="doAction.value=this.name"/>
+    		<input class="btn btn-primary" type="submit" 
+               name="doAssign" id="doAssign" 
+               value="{$labels.btn_assign}" 
+    		       onclick="doAction.value=this.name"/>
     	</div>
     </form>
     </div>

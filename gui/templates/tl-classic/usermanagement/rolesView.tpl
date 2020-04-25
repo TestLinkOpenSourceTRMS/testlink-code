@@ -116,7 +116,8 @@ Purpose: smarty template - View defined roles
 
 {if $draw_create_btn}
   <div class="groupBtn">
-    <form method="post" action="{$createRoleAction}" name="launch_create">
+    <form method="post" action="{$createRoleAction}" 
+          name="launch_create" id="launch_create">
       <input type="submit" name="doCreate"  value="{$labels.btn_create}" />
     </form>
   </div>
@@ -126,10 +127,18 @@ Purpose: smarty template - View defined roles
 {* Poor's man solution instead of on ready *}
 <script type="text/javascript">
 /* All this stuff is need for logic contained in inc_del_onclick.tpl */
-// alert(document.getElementById('CSRFName').value);
+
+// https://stackoverflow.com/questions/2435525/
+//         best-practice-access-form-elements-by-html-id-or-name-attribute
+// 
+var csrfid = document.getElementById("launch_create").elements["CSRFName"];
+var csrftoken = document.getElementById("launch_create").elements["CSRFToken"];
 var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete'+
-               '&csrfid=' + document.getElementById('CSRFName').value + 
-               '&csrftoken=' + document.getElementById('CSRFToken').value +
+               '&csrfid=' + csrfid.value + 
+               '&csrftoken=' + csrftoken.value +
                '&roleid=';
+/*
+var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete';
+*/
 </script>
 </body>

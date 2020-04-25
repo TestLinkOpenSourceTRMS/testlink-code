@@ -1,17 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.27 2010/10/11 18:11:29 franciscom Exp $
+@filesource tcEdit_New_viewer.tpl
 Purpose: smarty template - create new testcase
-
-@internal revisions
- 
 *}
 
-{* ---------------------------------------------------------------- *}
+{* -------------------------------------------------------------- *}
 {lang_get var='labels' 
-          s='tc_title,alt_add_tc_name,summary,steps,expected_results,
-             preconditions,status,estimated_execution_duration,importance,
-             execution_type,test_importance,tc_keywords,assign_requirements'}
+  s='tc_title,alt_add_tc_name,summary,steps,expected_results,
+     preconditions,status,estimated_execution_duration,importance,
+     execution_type,test_importance,tc_keywords,
+     assign_requirements'}
 
 {* Steps and results Layout management *}
 {$layout1="<br />"}
@@ -23,7 +21,7 @@ Purpose: smarty template - create new testcase
   {$layout2='</td><td width="50%">'}
   {$layout3="</td></tr></table><br />"}
 {/if}
-{* ---------------------------------------------------------------- *}
+{* ----------------------------------------------------------- *}
   <p />
   <div class="labelHolder"><label for="testcase_name">{$labels.tc_title}</label></div>
   <div> 
@@ -44,26 +42,69 @@ Purpose: smarty template - create new testcase
       <span id="testcase_name_warning" class="warning"></span>
     <p />
 
-    <div class="labelHolder">{$labels.summary}</div>
-    <div>{$summary}</div>
-    <br />
+    {if $gui->cf.after_title neq ''}
+      <div> 
+        <div id="cf_after_title"
+             class="custom_field_container">
+          {$gui->cf.after_title}
+        </div>
+      </div>
+        
+    {/if}
 
-    <div class="labelHolder">{$labels.preconditions}</div>
-    <div>{$preconditions}</div>
-    
+    <br />
+ 
+    <div id="mainAttrContainer" class="mainAttrContainer"> 
+      <div id="summaryCONTAINER">
+        {if $gui->cf.before_summary neq ""}
+          <div id="cf_before_summary"
+               class="custom_field_container">
+               {$gui->cf.before_summary}
+          </div>
+          <br> 
+        {/if}
+
+        <div class="labelHolder">{$labels.summary}</div>
+        <div>{$summary}</div>
+
+        {if $gui->cf.after_summary neq ""}
+          <div id="cf_after_summary"
+               class="custom_field_container">
+               {$gui->cf.after_summary}
+          </div>
+        {/if}
+
+      </div>
+      <div id="spaceOne" style="margin-top:35px;"></div>
+      <div id="preconditionsCONTAINER">
+        {if $gui->cf.before_preconditions neq ""}
+          <div id="cf_before_preconditions"
+               class="custom_field_container">
+               {$gui->cf.before_preconditions}
+          </div>
+          <br> 
+        {/if}
+
+        <div class="labelHolder">{$labels.preconditions}</div>
+        <div>{$preconditions}</div>
+        {if $gui->cf.after_preconditions neq ""}
+          <div id="cf_after_preconditions"
+               class="custom_field_container">
+               {$gui->cf.after_preconditions}
+          </div>
+        {/if}
+      </div>
+    </div>
+
+
     {* Custom fields - with before steps & results location *}
     <br />
     {if $gui->cf.before_steps_results neq ""}
          <br/>
-         {* ID is important because is used on validationForm to get custom field container
-            that's how have to have SAME ID that other div below on page.
-            NOTICE that only one of this div are active, if will not be the case we will
-            have a problem because ID has to be UNIQUE
-          *}
-         <div id="cfields_design_time" class="custom_field_container">
-         {$gui->cf.before_steps_results}
+         <div id="cf_before_steps" 
+              class="custom_field_container">
+           {$gui->cf.before_steps_results}
          </div>
-         
     {/if}
     {$layout1}
     {include file="testcases/attributesLinear.inc.tpl"}
@@ -73,7 +114,7 @@ Purpose: smarty template - create new testcase
   {* Custom fields - with standard location  *}
   {if $gui->cf.standard_location neq ""}
     <br/>
-    <div id="cfields_design_time" class="custom_field_container">
+    <div id="cf_standard_location" class="custom_field_container">
     {$gui->cf.standard_location}
     </div>
   {/if}

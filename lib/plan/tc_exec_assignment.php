@@ -5,7 +5,7 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2018, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @filesource  tc_exec_assignment.php
  * @link        http://www.testlink.org
  *
@@ -18,7 +18,7 @@ require_once('email_api.php');
 require_once("specview.php");
 require_once('Zend/Validate/EmailAddress.php');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $objMgr['tree'] = new tree($db);
 $objMgr['tplan'] = new testplan($db);
@@ -30,9 +30,13 @@ $tplan_mgr = &$objMgr['tplan'];
 $tcase_mgr = &$objMgr['tcase'];
 $assignment_mgr = &$objMgr['assign'];
 
-
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+$context->tplan_id = $args->tplan_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
 $keywordsFilter = new stdClass();
 $keywordsFilter->items = null;
 $keywordsFilter->type = null;
@@ -345,7 +349,10 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
   
   $tcase_cfg = config_get('testcase_cfg');
   $gui = new stdClass();
-  $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+
+  $optLTT = null;
+  $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id,$optLTT);
+  
   $gui->usePlatforms = $platform_mgr->platformsActiveForTestplan($argsObj->tplan_id);
   $gui->bulk_platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
   $gui->bulk_platforms[0] = lang_get("all_platforms");
@@ -431,8 +438,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
 
   // Do we really have platforms?
   $pset = array_flip(array_keys($features));
-  if( $hasPlat = !isset($pset[0]) )
-  {
+  if ($hasPlat = !isset($pset[0])) {
     $platMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     $platSet = $platMgr->getAllAsMap();
   }  
@@ -626,7 +632,12 @@ function doBulkUserRemove(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
 }
 
 
-function checkRights(&$db,&$user)
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($db,'exec_assign_testcases');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["exec_assign_testcases"];
+  pageAccessCheck($db, $user, $context);
 }

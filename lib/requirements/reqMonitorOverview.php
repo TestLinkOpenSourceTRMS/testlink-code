@@ -16,7 +16,7 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
 require_once('requirements.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
@@ -24,6 +24,11 @@ $req_mgr = new requirement_mgr($db);
 
 $args = init_args($tproject_mgr);
 $gui = initializeGui($args,$tproject_mgr);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
 
 $cfg = getCfg();
 
@@ -274,11 +279,14 @@ function buildOnClick($args,$lbl,$imgSet)
   return $ret;
 }
 
-/*
- * rights check function for testlinkInitPage()
+/**
+ *
  */
-function checkRights(&$db, &$user)
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($db,'mgt_view_req');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["mgt_view_req"];
+  pageAccessCheck($db, $user, $context);
 }
+
 

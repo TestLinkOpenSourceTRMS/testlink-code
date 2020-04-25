@@ -6,19 +6,23 @@
  * @filesource	planMilestonesEdit.php
  * @author Francisco Mancardi
  *
- * @internal revisions
- * @since 1.9.4
- * 20120204 - franciscom - TICKET 4906: Several security issues       
  *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 $date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
 $args = init_args($db,$date_format_cfg);
 $gui = initialize_gui($db,$args);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+$context->tplan_id = $args->tplan_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
 $commandMgr = new planMilestonesCommands($db);
 
 $pFn = $args->doAction;
@@ -194,8 +198,12 @@ function initialize_gui(&$dbHandler,&$argsObj)
 }
 
 
-function checkRights(&$db,&$user)
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-	return ($user->hasRight($db,"testplan_planning"));
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_planning"];
+  pageAccessCheck($db, $user, $context);
 }
-?>

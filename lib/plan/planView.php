@@ -4,24 +4,22 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	planView.php
- * @internal revisions
- * @since 1.9.12
  *
  */
 require_once('../../config.inc.php');
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
-
-$args=init_args();
+$args = init_args();
 $gui = initializeGui($db,$args);
 
-if($args->tproject_id)
-{
+if ($args->tproject_id 
+    && checkRights($db,$args->user,$args->tproject_id)) {
   $tproject_mgr = new testproject($db);
-  $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,
-                                                     array('output' =>'mapfull', 'active' => null));
+  $gui->tplans = 
+    $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,
+                                        array('output' =>'mapfull', 'active' => null));
   $gui->drawPlatformQtyColumn = false;
   
   if( !is_null($gui->tplans) && count($gui->tplans) > 0 )
@@ -119,7 +117,7 @@ function initializeGui(&$dbHandler,$argsObj)
  * checkRights
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$user,$tproject_id)
 {
-  return $user->hasRight($db,'mgt_testplan_create');
+  return $user->hasRight($db,'mgt_testplan_create',$tproject_id);
 }

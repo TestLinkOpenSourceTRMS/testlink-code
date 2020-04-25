@@ -13,11 +13,15 @@ require_once('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 require_once('requirements.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($args);
+
+$ctx = new stdClass();
+$ctx->tproject_id = $args->tproject_id;
+checkRights($db,$args->user,$ctx);
 
 $control = new tlRequirementFilterControl($db);
 $control->build_tree_menu($gui);
@@ -37,7 +41,10 @@ function init_args()
   $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'undefned';
   $args->basehref = $_SESSION['basehref'];
-    
+ 
+  $args->user = isset($_SESSION['currentUser']) 
+                ? $_SESSION['currentUser'] : null;
+
   return $args;
 }
 
@@ -66,10 +73,12 @@ function initializeGui($argsObj)
   return $gui;  
 }
 
-/**
- *
+/*
+ * rights check 
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db, &$user, $context) 
 {
-	return ( $user->hasRight($db,'mgt_view_req') || $user->hasRight($db,'mgt_modify_req') ) ;
+  $context->rightsOr = ["mgt_view_req","mgt_modify_req"];
+  $context->rightsAnd = [];
+  pageAccessCheck($db, $user, $context);
 }

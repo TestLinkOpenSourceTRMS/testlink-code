@@ -6,7 +6,7 @@
  
  1. Continuous bug fixes and security fixes for the ongoing deployment environment of the future Linux and Windows host
  2. Adding language support for the latest versions.
- 3. Adding a script to build a docker image with no need to do customized install at at for fast deployment 
+ 3. Adding a script to build a docker image with no need to do customized install at all for fast deployment 
  4. Create a fast deployment on popular cloud system such as Azure, AWS and DigitalOcean
   
  

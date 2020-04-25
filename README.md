@@ -1,3 +1,15 @@
+# Notice from the maintainer of this fork 
+
+
+ Because the original version of the teslink has decided to move to a totally new UX framwork, I decided to maintain the current framwork based code 
+ for an indefinitely future. Following are the plans of this fork:
+ 
+ 1. Continuous bug fixes and security fixes for the ongoing deployment environment of the future Linux and Windows host
+ 2. Adding language support for the latest versions.
+ 3. Adding a docker image for the convenience of deployment 
+ 4. Create a fast deployment on popular cloud system such as Azure, AWS and DigitalOcean
+  
+ 
 # IMPORTANT NOTICE
 1.9.20 will be the last version of the 1.9.x family.  
 Next TestLink version will 2.x with a new UX based on the Dashio - Bootstrap Admin Template (https://templatemag.com/dashio-bootstrap-admin-template/)

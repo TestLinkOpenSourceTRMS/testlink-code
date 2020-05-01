@@ -96,8 +96,16 @@ title bar + menu
 {/if}
   
 {if $gui->updateMainPage == 1}
+  {$wtg1 = "{$basehref}lib/general/mainPage.php"}
+  {$wtg2 = "{$basehref}index.php"}
   <script type="text/javascript">
-  parent.mainframe.location = "{$basehref}lib/general/mainPage.php";
+  whereToGo1 = "{$wtg1}";
+  whereToGo2 = "{$wtg2}";
+  if (parent.mainframe !== undefined) {
+    parent.mainframe.location = whereToGo1;
+  } else {
+    parent.location = whereToGo2;  
+  }
   </script>
 {/if}
 

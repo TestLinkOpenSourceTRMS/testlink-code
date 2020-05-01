@@ -23,12 +23,12 @@ $smarty = new TLSmarty();
 $tproject_mgr = new testproject($db);
 $user = $_SESSION['currentUser'];
 
-
-$testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+$testprojectID = 
+isset($_SESSION['testprojectID']) 
+? intval($_SESSION['testprojectID']) : 0;
 
 if( isset($_REQUEST['testplan']) ) {
   $testplanID = $_REQUEST['testplan'];
-
 } else {
   $testplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
 }

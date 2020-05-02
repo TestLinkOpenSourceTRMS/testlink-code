@@ -355,23 +355,17 @@ function checkForRepositoryDir($the_dir)
   $ret['msg']=lang_get('attachments_dir') . " " . $the_dir . " ";
   $ret['status_ok']=false;
     
-  if(is_dir($the_dir)) 
-  {
+  if(is_dir($the_dir)) {
     $ret['msg'] .= lang_get('exists') . ' ';
     $ret['status_ok'] = true;
     $ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
 
-    if($ret['status_ok']) 
-    {
+    if($ret['status_ok']) {
       $ret['msg'] .= lang_get('directory_is_writable');
-    }
-    else
-    {
+    } else {
       $ret['msg'] .= lang_get('but_directory_is_not_writable');
     }  
-  } 
-  else
-  {
+  } else {
     $ret['msg'] .= lang_get('does_not_exist');
   }
   
@@ -752,8 +746,8 @@ function checkDbType(&$errCounter, $type)
 function checkServerOs()
 {
   $final_msg = '<tr><td>Server Operating System (no constrains)</td>';
-  $final_msg .= '<td>'.PHP_OS.'</td></tr>';
-  
+  $final_msg .= '<td>' . PHP_OS . '</td></tr>';
+
   return $final_msg;
 }  
 
@@ -775,15 +769,15 @@ function checkPhpVersion(&$errCounter)
 
   $final_msg = '<tr><td>PHP version</td>';
 
-  if($php_ver_comp < 0) 
-  {
-    $final_msg .= "<td><span class='tab-error'>Failed!</span> - You are running on PHP " . $my_version .
-                  ", and TestLink requires PHP " . $min_version . ' or greater. ' .
-                  'This is fatal problem. You must upgrade it.</td>';
+  if($php_ver_comp < 0) {
+    $final_msg .= 
+      "<td><span class='tab-error'>Failed!</span> - You are running on PHP " . 
+      $my_version .
+      ", and TestLink requires PHP " . $min_version . 
+      ' or greater. ' .
+      'This is fatal problem. You must upgrade it.</td>';
     $errCounter += 1;
-  } 
-  else 
-  {
+  } else {
     $final_msg .= "<td><span class='tab-success'>OK ( {$min_version} [minimum version] ";
     $final_msg .= ($php_ver_comp == 0 ? " = " : " <= ");
     $final_msg .=  $my_version . " [your version] " ;
@@ -810,79 +804,52 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
   $checked_file = $checked_path.DIRECTORY_SEPARATOR.$checked_filename;
   $out = '<tr><td>Access to file ('.$checked_file.')</td>';
 
-  if ($inst_type == 'new')
-  {
-    if(file_exists($checked_file)) 
-    {
-      if (is_writable($checked_file))
-      {
+  if ($inst_type == 'new') {
+    if (file_exists($checked_file)) {
+      if (is_writable($checked_file)) {
         $out .= "<td><span class='tab-success'>OK (writable)</span></td></tr>\n"; 
-      }
-      else
-      {
-        if ($isCritical)
-        {
+      } else {
+        if ($isCritical) {
           $out .= "<td><span class='tab-error'>Failed! Please fix the file " .
           $checked_file . " permissions and reload the page.</span></td></tr>"; 
           $errCounter += 1;
-        }
-        else
-        {
+        } else {
            $out .= "<td><span class='tab-warning'>Not writable! Please fix the file " .
            $checked_file . " permissions.</span></td></tr>"; 
         }      
       }
-    } 
-    else 
-    {
-      if (is_writable($checked_path))
-      {
+    } else {
+      if (is_writable($checked_path)) {
         $out .= "<td><span class='tab-success'>OK</span></td></tr>\n"; 
-      }
-      else
-      {
-        if ($isCritical)
-        {
+      } else {
+        if ($isCritical) {
           $out .= "<td><span class='tab-error'>Directory is not writable! Please fix " .
           $checked_path . " permissions and reload the page.</span></td></tr>"; 
           $errCounter += 1;
-        }
-        else
-        {
+        } else {
           $out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " .
           $checked_path . " permissions.</span></td></tr>"; 
         }      
       }
     }
-  }
-  else
-  {
-    if(file_exists($checked_file)) 
-    {
-      if (!is_writable($checked_file))
-      {
+  } else {
+    if (file_exists($checked_file)) {
+      if (!is_writable($checked_file)) {
         $out .= "<td><span class='tab-success'>OK (read only)</span></td></tr>\n"; 
-      }
-      else
-      {
+      } else {
         $out .= "<td><span class='tab-warning'>It's recommended to have read only permission for security reason.</span></td></tr>"; 
       }
-    } 
-    else 
-    {
-      if ($isCritical)
-      {
+    } else  {
+      if ($isCritical) {
         $out .= "<td><span class='tab-error'>Failed! The file is not on place.</span></td></tr>"; 
         $errCounter += 1;
-      }
-      else
-      {
+      } else {
         $out .= "<td><span class='tab-warning'>The file is not on place.</span></td></tr>"; 
       }  
     }
   }
 
-  return($out);
+  return $out;
 }
 
 
@@ -904,22 +871,25 @@ function check_dir_permissions(&$errCounter)
   $msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
   $checked_path_base = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
 
-  $final_msg .= "<tr><td>For security reasons we suggest that directories tagged with [S]" .
-                " on following messages, will be made UNREACHEABLE from browser.<br>" .
-                "<span class='tab-success'>Give a look to README file, section 'Installation & SECURITY' " . 
-                " to understand how to change the defaults.</span>" .
-                "</td>";
+  $final_msg .= 
+    "<tr><td>For security reasons we suggest that directories tagged with [S]" .
+    " on following messages, will be made UNREACHEABLE from browser.<br>" .
+    "<span class='tab-success'>Give a look to README file, section 'Installation & SECURITY' " . 
+    " to understand how to change the defaults.</span>";
 
-  foreach ($dirs_to_check as $the_d => $how) 
-  {
-    if( is_null($how) )
-    {
+  $os = strtolower(PHP_OS);
+  if ($os == 'linux') {
+    $final_msg .= 
+      '<br><span class="tab-success">Give a look to SELINUX section in README.md'; 
+  }  
+  $final_msg .= "</td>";
+
+  foreach ($dirs_to_check as $the_d => $how) {
+    if( is_null($how) ) {
       // Correct relative path for installer.
       $needsLock = '';
       $the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
-    }
-    else
-    {
+    } else {
       $needsLock = '[S] ';
       $the_d = config_get($how);  
     }

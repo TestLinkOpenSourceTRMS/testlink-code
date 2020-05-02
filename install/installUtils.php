@@ -409,6 +409,10 @@ function check_db_loaded_extension($db_type) {
     $ext2search = 'mysqli';
   }
 
+  // PHP_OS constant
+  // keep in mind this constant will contain 
+  // the operating system PHP was built on
+  //
 	if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
 
     // First Time:

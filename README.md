@@ -227,6 +227,18 @@ Take a look at [bug 5147][5147], [bug 5148][5148], [bug 4977][4977] and
 You should also need to configure write access for logging, upload and
 template directories.
 
+
+### SELINUX 
+If you use Linux Operating System, SELINUX can create some issues:  
+
+**ATTENTION with /var/www/html and selinux**  
+https://stackoverflow.com/questions/45311124/directory-is-not-writable-centos7-apache-2-4-6-php-5-4-16  
+
+If SELINUX is enabled you will need to run following command before been able to adjust folder rights   
+*[root@dogbert ~]\# chcon -R -t httpd_sys_rw_content_t /var/www/html/*
+
+You may find more information searching in the Internet:  
+TestLink & SELINUX  
 ** FCKEDITOR UPLOAD **
 
 **ATTENTION: We now use CKEDITOR** (see [forum post][cke])

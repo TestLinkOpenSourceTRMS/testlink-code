@@ -1641,7 +1641,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
       $singleVal = array('issuetype' => 'issueType',
                          'issuepriority' => 'issuePriority');
       foreach ($singleVal as $kj => $attr) {
-        $gui->$attr = $itsCfg->$kj;  
+        $gui->$attr = null;  
+        if (property_exists($itsCfg, $kj)) {
+          $gui->$attr = $itsCfg->$kj;
+        }    
         $forStep = $attr . 'ForStep';
         $gui->$forStep = $gui->$attr; 
       }  
@@ -1649,7 +1652,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
       $multiVal = array('version' => 'artifactVersion',
                         'component' => 'artifactComponent');
       foreach ($multiVal as $kj => $attr) {
-        $gui->$attr = (array)$itsCfg->$kj;  
+        $gui->$attr = null;  
+        if (property_exists($itsCfg, $kj)) {
+          $gui->$attr = (array)$itsCfg->$kj;  
+        }
         $forStep = $attr . 'ForStep';
         $gui->$forStep = $gui->$attr; 
       }  

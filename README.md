@@ -755,7 +755,7 @@ BEFORE the commit ID. => then Nike => Just DO IT
 [upgf]: http://forum.testlink.org/viewforum.php?f=11
 [uupg]: http://forum.testlink.org/viewforum.php?f=58
 [tucf]: http://www.testlink.org/
-[mbug]: http://www.testlink.org/mantis/
+[mbug]: http://mantis.testlink.org/
 [twt]: http://twitter.com/#!/TLOpenSource
 [free]: http://www.freetest.net.br
 [csrf]: https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet

@@ -527,13 +527,16 @@ viewer for test case in test specification
 {if $gui->requirementsEnabled == TRUE && 
   ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
   {$reqLinkingEnabled = 0}
-  {if $gui->req_tcase_link_management && $args_frozen_version=="no" &&
-         $edit_enabled == 1 }
+  {if $gui->req_tcase_link_management 
+      && $args_frozen_version == "no"
+      && $args_testcase.active == 1 
+      && $edit_enabled == 1 }
          {$reqLinkingEnabled = 1}
   {/if}    
 
-  {if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 && 
-       $has_been_executed == 1 && $args_tcase_cfg->can_edit_executed == 0}
+  {if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 
+      && $has_been_executed == 1 
+      && $args_tcase_cfg->can_edit_executed == 0}
        {$reqLinkingEnabled = 0}
   {/if}
   <div {$addInfoDivStyle}>

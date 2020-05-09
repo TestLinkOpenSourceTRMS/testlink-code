@@ -1104,8 +1104,16 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
 
     $output = 0;
     $now = $this->db->db_now();
-    if($testcase_id && $req_id) {
+    if ($testcase_id && $req_id) {
+      // Get Latest Active Test Case Version 
+      $tcv = current($tcMgr->get_last_active_version($testcase_id));
+      if ($tcv == null) {
+        return $output;
+      }
+    }
 
+    // Go ahead
+    if ($testcase_id && $req_id) {
       // Need to get latest version for each requirement
       $reqIDSet = (array)$req_id;
       $gopt = array('output' => 'id,version');
@@ -1118,8 +1126,6 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
         $reqLatestVersionNumberSet[] = $isofix['version'];
       }
 
-      // Get Latest Active Test Case Version 
-      $tcv = current($tcMgr->get_last_active_version($testcase_id));
       $ltcv = $tcv['tcversion_id'];
       $ltcvNum = $tcv['version'];
       $in_clause = implode(",",$reqLatestVersionIDSet);
@@ -1161,9 +1167,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
                             "ASSIGN",$this->object_table);
             }                 
           }
-        }    
-        else
-        {
+        } else {
           $output = 1;
         }
       }

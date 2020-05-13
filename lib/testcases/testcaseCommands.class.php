@@ -1619,13 +1619,18 @@ class testcaseCommands {
              array('accessByStepID' => false));
 
     if (null != $argsObj->free_aliens) {
-      $this->tcaseMgr->addAliens($argsObj,$argsObj->free_aliens);
+      $this->tcaseMgr->addAliens($argsObj,$argsObj->free_aliens
+                                 ,$argsObj->alien_relation_type);
     }
 
     // set up for rendering
     $guiObj->template = 
       sprintf($guiObj->tcaseMgrURL,$guiObj->tcase_id,'addAlien');
 
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
+   
     return $guiObj;
   }
 

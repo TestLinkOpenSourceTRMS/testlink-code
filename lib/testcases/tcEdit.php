@@ -515,6 +515,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   $args->copyOnlyLatestVersion = 
     isset($_REQUEST['copy_latest_version']) ? 1 : 0;
 
+  $ki = 'alien_relation_type';
+  $args->$ki = isset($_REQUEST[$ki]) ? intval($_REQUEST[$ki]) : TL_ALIEN_REL_TYPE_FIX;
+
   $tcaseMgr->setTestProject($args->tproject_id);
 
   return $args;

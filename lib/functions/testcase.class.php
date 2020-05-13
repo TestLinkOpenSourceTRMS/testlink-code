@@ -1184,6 +1184,8 @@ class testcase extends tlObjectWithAttachments {
     if($this->cfg->testcase->relations->enable) {
       $gui->relation_domain = $this->getRelationTypeDomainForHTMLSelect();
     }
+    
+    $gui->alien_relation_domain = $this->getAlienRelationTypeDomainForHTMLSelect();
 
     // Removing duplicate and NULL id's
     unset($userIDSet['']);
@@ -9768,7 +9770,7 @@ class testcase extends tlObjectWithAttachments {
 
     $f2g = is_null($my['opt']['fields']) ?
            ' TCAL.id AS tcalien_link,alien_id,
-             testcase_id,tcversion_id ' :
+             testcase_id,tcversion_id,relation_type ' :
            $my['opt']['fields'];
 
     $sfTC = intval($tcID);
@@ -9799,6 +9801,15 @@ class testcase extends tlObjectWithAttachments {
       break;
     }
 
+    if ($items != null) {
+      $ll = $this->getAlienRelationTypeDomainForHTMLSelect();
+      foreach($items as $key => $elem) {
+        if (!isset($elem['relation_type'])) {
+          break;
+        }
+        $items[$key]['relTypeVerbose'] = $ll['items'][$elem['relation_type']]; 
+      }
+    }
     return $items;
   }
 
@@ -9807,8 +9818,10 @@ class testcase extends tlObjectWithAttachments {
    *   tproject_id
    *   tcase_id
    *   tcversion_id
+   *
+   * $alienRelType int applied to whole idSet 
    */
-  function addAliens($idCard,$idSet,$audit=null) {
+  function addAliens($idCard,$idSet,$alienRelType,$audit=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -9838,13 +9851,12 @@ class testcase extends tlObjectWithAttachments {
             AND testproject_id = {$safeID['tpr']} 
             AND alien_id IN ('" . implode("','",$idSet) . "')";
 
-    echo $sql;
-
     $nuCheck = $this->db->fetchRowsIntoMap($sql,'alien_id');
  
     $sql = "/* $debugMsg */
             INSERT INTO {$this->tables['testcase_aliens']} 
-            (testproject_id,testcase_id,tcversion_id,alien_id) 
+            (testproject_id,testcase_id,tcversion_id
+             ,alien_id,relation_type) 
             VALUES ";
 
     $dummy = array();
@@ -9852,7 +9864,8 @@ class testcase extends tlObjectWithAttachments {
       if( !isset($nuCheck[$kiwi]) ) {
         $dummy[] = "({$safeID['tpr']},
                      {$safeID['tc']},{$safeID['tcv']},
-                     '{$kiwi}')";
+                     '{$kiwi}',
+                     $alienRelType)";
       }
     }
 
@@ -10046,5 +10059,29 @@ class testcase extends tlObjectWithAttachments {
     return true;
   }
 
+  /**
+   *
+   * @return array $htmlSelect info needed to create select box on multiple templates
+   */
+  function getAlienRelationTypeDomainForHTMLSelect() {
+    $htmlSelect = array('items' => array(), 'selected' => null);
+    $labels = $this->getAlienRelationLabels();
+    foreach ($labels as $key => $lbl) {
+      $htmlSelect['items'][$key] = $lbl;
+    }
+    $htmlSelect['selected'] = TL_ALIEN_REL_TYPE_FIX;
+    return $htmlSelect;
+  }
 
+  /**
+   *
+   */
+  public static function getAlienRelationLabels() {
+    $cfg = config_get('testcase_cfg');
+    $labels = $cfg->aliens->relationsType->labels;
+    foreach ($labels as $key => $label) {
+      $labels[$key] = lang_get($label);
+    }
+    return $labels;
+  }
 }  // Class end

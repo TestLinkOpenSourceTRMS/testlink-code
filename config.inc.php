@@ -1299,6 +1299,12 @@ $tlCfg->testcase_cfg->relations->type_description = array(TL_REL_TYPE_PARENT_CHI
 
 
 
+$tlCfg->testcase_cfg->aliens = new stdClass();
+$tlCfg->testcase_cfg->aliens->relationsType = new stdClass();
+$tlCfg->testcase_cfg->aliens->relationsType->labels = array(
+  TL_ALIEN_REL_TYPE_FIX => 'testing_a_fix',
+  TL_ALIEN_REL_TYPE_REGRESSION => 'testing_a_regression'
+);
 
 // @since 1.9.18
 // TRUE => After a test case version has been executed 

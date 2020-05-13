@@ -4081,4 +4081,7 @@ $TLS_alien_handledBy = 'Assigned To / Handled By';
 $TLS_alien_version = 'Version';
 $TLS_alien_fixedInVersion = 'Fixed In Version';
 $TLS_alien_statusVerbose = 'Status';
+$TLS_testing_a_fix = 'Fix';
+$TLS_testing_a_regression = 'Regression';
+$TLS_alien_relTypeVerbose = ' ';
 // ----- END -----------------------------------------------------

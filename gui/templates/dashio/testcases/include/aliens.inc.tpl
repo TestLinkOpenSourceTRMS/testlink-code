@@ -10,7 +10,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              select_aliens,createAlien,btn_create_and_link,
              alien_reportedBy,alien_handledBy,
              alien_version,alien_fixedInVersion,
-             alien_statusVerbose'}
+             alien_statusVerbose,alien_relTypeVerbose'}
 
 
 {if $args_edit_enabled}
@@ -87,7 +87,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
   {$canWork=1}
   {$mcQty = count($moreCol)}
-  {$tcolQty = $mcQty+3}
+  {$tcolQty = $mcQty+4}
   <table class="simple" id="aliens">
     {if $args_edit_enabled}
       <br>
@@ -122,6 +122,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       {/if}
       <tr>
         <th class="clickable_icon"></th>
+        <th>{$alien_labels.alien_relTypeVerbose}</th>
         <th>{$alien_labels.id}</th>
         <th><nobr>{$alien_labels.description}</nobr></th>
         {foreach item=ccol from=$moreCol}
@@ -147,6 +148,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                 style="border:none" /></a>
             {/if}
         </td>
+        <td style="padding:{$tdPad}">
+          {$tcalien_link_item.relTypeVerbose|escape}
+        </td>        
         <td style="padding:{$tdPad}">
           {$tcalien_link_item.name|escape}
         </td>

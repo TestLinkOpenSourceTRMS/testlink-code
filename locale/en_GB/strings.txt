@@ -4083,5 +4083,7 @@ $TLS_alien_fixedInVersion = 'Fixed In Version';
 $TLS_alien_statusVerbose = 'Status';
 $TLS_testing_a_fix = 'Fix';
 $TLS_testing_a_regression = 'Regression';
+$TLS_testing_a_requirement = 'Requirement';
+
 $TLS_alien_relTypeVerbose = ' ';
 // ----- END -----------------------------------------------------

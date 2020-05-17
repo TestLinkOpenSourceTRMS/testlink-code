@@ -443,7 +443,10 @@ abstract class issueTrackerInterface
    **/
   function getEnterBugURL()
   {
-    return $this->cfg->uricreate;
+    if (property_exists($this->cfg, 'uricreate')) {
+      return $this->cfg->uricreate;
+    }
+    return '';
   }
 
 

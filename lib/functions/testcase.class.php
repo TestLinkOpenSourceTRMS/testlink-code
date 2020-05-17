@@ -966,8 +966,8 @@ class testcase extends tlObjectWithAttachments {
                     'caller' => 'show()');
 
       $cfx = 0;
-      $gui->otherVersionsKeywords = array();
       $gui->otherVersionsAliens = null;
+      $gui->otherVersionsKeywords = array();
 
       $gui->fileUploadURL = array();
       foreach($idSet as $key => $tc_id) {
@@ -1184,7 +1184,7 @@ class testcase extends tlObjectWithAttachments {
     if($this->cfg->testcase->relations->enable) {
       $gui->relation_domain = $this->getRelationTypeDomainForHTMLSelect();
     }
-    
+
     $gui->alien_relation_domain = $this->getAlienRelationTypeDomainForHTMLSelect();
 
     // Removing duplicate and NULL id's
@@ -1202,14 +1202,16 @@ class testcase extends tlObjectWithAttachments {
             WHERE testproject_id = $this->tproject_id";
     $rs = $this->db->get_recordset($sql);
     
+    $gui->addAndLinkIsEnabled = 0;
     if ($gui->hasIssueTracker = (null != $rs)) {
       $system = new tlIssueTracker($this->db);
       $repo = $system->getInterfaceObject($this->tproject_id);
+      $gui->addAndLinkIsEnabled = method_exists($repo,'addLink');
 
       if ($gui->currentVersionAliens != null) {
         $this->buildAlienBlob($gui->currentVersionAliens,$repo);
-      }  
-
+      }
+      
       if ($gui->otherVersionsAliens != null) {
         foreach ($gui->otherVersionsAliens as $zzx => $elem) {
           $this->buildAlienBlob($gui->otherVersionsAliens[$zzx],
@@ -9860,12 +9862,14 @@ class testcase extends tlObjectWithAttachments {
             VALUES ";
 
     $dummy = array();
+    $alienSet = array();
     foreach( $idSet as $kiwi ) {
       if( !isset($nuCheck[$kiwi]) ) {
         $dummy[] = "({$safeID['tpr']},
                      {$safeID['tc']},{$safeID['tcv']},
                      '{$kiwi}',
                      $alienRelType)";
+        $alienSet[$kiwi] = $alienRelType;              
       }
     }
 
@@ -9876,6 +9880,22 @@ class testcase extends tlObjectWithAttachments {
     // Go ahead
     $sql .= implode(',', $dummy);
     $this->db->exec_query($sql);
+
+    // Now add into tlIssueTracker    
+    $system = new tlIssueTracker($this->db);
+    $repo = $system->getInterfaceObject($safeID['tpr']);
+    if ( method_exists($repo,'addLink') ) {
+      $link = new stdClass();
+      $in = $this->getExternalID($safeID['tc'],$safeID['tpr']);
+      $link->testCaseID = $in[0];
+      $link->testCaseName = $this->getName($safeID['tc']);
+      $verbose = $this->getAlienRelationLabels();
+
+      foreach ($alienSet as $alienID => $relType) {
+        $link->relation = $verbose[$relType];
+        $repo->addLink($alienID,$link); 
+      }
+    }
      
     // Now AUDIT
     if ( $adt['on'] == self::AUDIT_ON ) {
@@ -9964,6 +9984,20 @@ class testcase extends tlObjectWithAttachments {
     }
 
     $result = $this->db->exec_query($sql);
+
+    // Remove from issue tracker    
+    $system = new tlIssueTracker($this->db);
+    $repo = $system->getInterfaceObject($this->tproject_id);
+    if ( method_exists($repo,'removeLink') ) {
+      $link = new stdClass();
+      $in = $this->getExternalID($sf->tcase_id,$this->tproject_id);
+      $link->testCaseID = $in[0];
+      $verbose = $this->getAlienRelationLabels();
+      foreach ($key4log as $alienID) {
+        $repo->removeLink($alienID,$link); 
+      }
+    }
+
     
     /* delay the audit code */
     if (1==0 && $result && $adt['on']==self::AUDIT_ON) {
@@ -10059,6 +10093,7 @@ class testcase extends tlObjectWithAttachments {
     return true;
   }
 
+
   /**
    *
    * @return array $htmlSelect info needed to create select box on multiple templates
@@ -10084,4 +10119,7 @@ class testcase extends tlObjectWithAttachments {
     }
     return $labels;
   }
+
+
+
 }  // Class end

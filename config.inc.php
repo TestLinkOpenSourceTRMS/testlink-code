@@ -1303,7 +1303,8 @@ $tlCfg->testcase_cfg->aliens = new stdClass();
 $tlCfg->testcase_cfg->aliens->relationsType = new stdClass();
 $tlCfg->testcase_cfg->aliens->relationsType->labels = array(
   TL_ALIEN_REL_TYPE_FIX => 'testing_a_fix',
-  TL_ALIEN_REL_TYPE_REGRESSION => 'testing_a_regression'
+  TL_ALIEN_REL_TYPE_REGRESSION => 'testing_a_regression',
+  TL_ALIEN_REL_TYPE_REQUIREMENT => 'testing_a_requirement'
 );
 
 // @since 1.9.18

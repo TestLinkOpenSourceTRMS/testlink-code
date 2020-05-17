@@ -178,24 +178,42 @@ class mantisrestInterface extends issueTrackerInterface {
       $jsonObj = $this->APIClient->getIssue($issueID);
 
       if( !is_null($jsonObj) && is_object($jsonObj)) {
+
+        $issue = new stdClass();
+        $issue->IDHTMLString = "<b>{$issueID} : </b>";
+  
+        if (property_exists($jsonObj,'exception')) {
+          $issue->summary = (string)$jsonObj->reason;
+          $issue->summaryHTMLString = $issue->summary;          
+          return $issue;
+        }
+
+        // Normal processing
         $item = $jsonObj->issues;
         $item = $item[0];
 
-      /*
-      echo '<pre>';
-      var_dump($item);
-      echo '</pre>';
-      die();
-      */
-        $issue = new stdClass();
-        $issue->IDHTMLString = "<b>{$issueID} : </b>";
         $issue->statusCode = intval($item->status->id);
         $issue->statusVerbose = (string)$item->status->label;
         $issue->statusHTMLString = "[{$issue->statusVerbose}]";
         $issue->reportedBy = (string)$item->reporter->real_name;
         $issue->handledBy = (string)$item->handler->real_name;
         $issue->summary = $issue->summaryHTMLString = (string)$item->summary;
-    
+
+        $cond = array('version' => 'name',
+                      'fixed_in_version' => 'name',
+                      'target_version' => 'name');
+        $trans = array('version' => 'version',
+                       'fixed_in_version' => 'fixedInVersion',
+                       'target_version' => 'targetVersion');  
+
+        foreach ($cond as $prop => $wtg) {
+          $ip = $trans[$prop];
+          $issue->$ip = null;
+          if ( property_exists($item, $prop)) {
+            $issue->$ip = (string)$item->$prop->$wtg;
+          }
+        }
+
         $issue->isResolved = false;
       }
     }
@@ -298,6 +316,54 @@ class mantisrestInterface extends issueTrackerInterface {
     $ret = ['status_ok' => true, 'id' => (string)$op->iid, 
             'msg' => sprintf(lang_get('mantis_bug_comment'),
                        $op->body, $this->APIClient->projectId)];
+    return $ret;
+  }
+
+
+
+  /**
+   *
+   * link->testCaseID
+   * link->testCaseName
+   * link->relation (verbose)
+   *
+   */
+  public function addLink($issueID,$link) {
+    try {
+      $op = $this->APIClient->addLink($issueID,$link);
+      if(is_null($op)){
+        throw new Exception("Error creating link", 1);
+      }
+      $ret = ['status_ok' => true, 'id' => (string)$op->id, 
+              'msg' => 'ok'];
+    }
+    catch (Exception $e) {
+       $msg = "Create Mantis Link Via REST FAILURE => " . $e->getMessage();
+       tLog($msg, 'WARNING');
+       $ret = ['status_ok' => false, 'id' => -1, 'msg' => $msg];
+    }
+    return $ret;
+  }
+
+  /**
+   *
+   * link->testCaseID
+   *
+   */
+  public function removeLink($issueID,$link) {
+    try {
+      $op = $this->APIClient->removeLink($issueID,$link);
+      if(is_null($op)){
+        throw new Exception("Error removing link", 1);
+      }
+      $ret = ['status_ok' => true, 'id' => (string)$op->id, 
+              'msg' => 'ok'];
+    }
+    catch (Exception $e) {
+       $msg = "Remove Mantis Link Via REST FAILURE => " . $e->getMessage();
+       tLog($msg, 'WARNING');
+       $ret = ['status_ok' => false, 'id' => -1, 'msg' => $msg];
+    }
     return $ret;
   }
 

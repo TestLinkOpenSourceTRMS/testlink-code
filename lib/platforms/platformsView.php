@@ -9,11 +9,12 @@
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
+
+$args = init_args();
+checkRights($db,$args);
 
 $templateCfg = templateConfiguration();
-$args = init_args();
-
 $platform_mgr = new tlPlatform($db, $args->tproject_id);
 $gui = $platform_mgr->initViewGui($args->currentUser);	  
 
@@ -43,6 +44,9 @@ function init_args() {
  * 
  *
  */
-function checkRights(&$db,&$user) {
-	return ($user->hasRight($db,'platform_management') || $user->hasRight($db,'platform_view'));
+function checkRights(&$db,&$args) {
+	return ($args->currentUser->hasRight($db,
+                                'platform_management',$args->tproject_id) 
+          || $args->currentUser->hasRight($db,
+                                   'platform_view',$args->tproject_id));
 }

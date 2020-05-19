@@ -16,13 +16,20 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
-testlinkInitPage($db,false,false,"checkRights");
-
-$templateCfg = templateConfiguration();
+testlinkInitPage($db,false,false);
 
 $opt_cfg = opt_transf_empty_cfg();
 $opt_cfg->js_ot_name = 'ot';
 $args = init_args($opt_cfg);
+if (!checkRights($db,$args)) {
+  $smarty = new TLSmarty();
+  $smarty->assign('title', lang_get('fatal_page_title'));
+  $smarty->assign('content', lang_get('not_enough_rights'));
+  $smarty->display('workAreaSimple.tpl');
+  exit();
+}
+
+$templateCfg = templateConfiguration();
 
 if ($args->edit == 'testproject') {
   show_instructions('platformAssign');
@@ -164,11 +171,13 @@ function init_args(&$opt_cfg)
     $args->platformsToRemove = explode(",", $pParams[$removed]);
   }
 
+  $args->currentUser = $_SESSION['currentUser'];
+
   return $args;
 }
 
 
 function checkRights(&$db,&$user)
 {
-  return $user->hasRight($db,'testplan_add_remove_platforms');
+  return $args->currentUser->hasRight($db,'testplan_add_remove_platforms',$args->tproject_id);
 }

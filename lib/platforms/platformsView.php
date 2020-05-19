@@ -12,7 +12,13 @@ require_once("common.php");
 testlinkInitPage($db,false,false);
 
 $args = init_args();
-checkRights($db,$args);
+if (!checkRights($db,$args)) {
+  $smarty = new TLSmarty();
+  $smarty->assign('title', lang_get('fatal_page_title'));
+  $smarty->assign('content', lang_get('not_enough_rights'));
+  $smarty->display('workAreaSimple.tpl');
+  exit();
+}
 
 $templateCfg = templateConfiguration();
 $platform_mgr = new tlPlatform($db, $args->tproject_id);

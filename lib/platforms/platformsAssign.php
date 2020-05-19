@@ -170,5 +170,5 @@ function init_args(&$opt_cfg)
 
 function checkRights(&$db,&$user)
 {
-  return $user->hasRight($db,'testplan_add_remove_platforms');
+  return $user->hasRightOnProj($db,'testplan_add_remove_platforms');
 }

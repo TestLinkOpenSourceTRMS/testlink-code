@@ -170,5 +170,5 @@ function doImport(&$dbHandler,$testproject_id)
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,"platform_management");
+	return $user->hasRightOnProj($db,"platform_management");
 }

@@ -1522,4 +1522,16 @@ class tlUser extends tlDBObject {
                            $cx['checkPublicPrivateAttr']);
   }
 
+  /**
+   *
+   */
+  function hasRightOnProj(&$db,$roleQuestion) {
+    $tproj = null;
+    if (isset($_SESSION['testprojectID'])) {
+      $tproj = intval($_SESSION['testprojectID']);
+    }
+    return $this->hasRight($db,$roleQuestion,$tproj);
+  }
+
+
 }

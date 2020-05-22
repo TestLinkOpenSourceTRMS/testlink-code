@@ -25,7 +25,7 @@ function oauth_get_token($authCfg, $code) {
      'client_secret' => $authCfg['oauth_client_secret']
   );
 
-  $oauthParams['redirect_uri'] = $oauthCfg['redirect_uri'];  
+  $oauthParams['redirect_uri'] = $authCfg['redirect_uri'];  
   if( isset($_SERVER['HTTPS']) ) {
     $oauthParams['redirect_uri'] = 
       str_replace('http://', 'https://', $oauthParams['redirect_uri']);  

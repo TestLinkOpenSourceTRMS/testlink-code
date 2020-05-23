@@ -10,6 +10,7 @@
  */
 
 // Create correct link for oauth
+
 function oauth_link($oauthCfg)
 {
 
@@ -21,27 +22,44 @@ function oauth_link($oauthCfg)
       str_replace('http://', 'https://', $oap['redirect_uri']);
   }
 
-  $oap['prompt'] = 'none';
-  // see https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-oauth-code for details
-  if ($oauthCfg['oauth_name'] == 'azuread') {
-    if (!is_null($oauthCfg['oauth_domain']))
-      $oap['domain_hint'] = $oauthCfg['oauth_domain'];
-  } else {
-    if ($oauthCfg['oauth_force_single']) {
-      $oap['prompt'] = 'consent';
-    }
+
+  switch ($oauthCfg['oauth_name']) {
+    case 'gitlab':
+      $providerCfg = ['clientId' => $oauthCfg['oauth_client_id'],
+                      'clientSecret' => $oauthCfg['oauth_client_secret'],
+                      'redirectUri' => $oap['redirect_uri']]; 
+
+      $provider = new Omines\OAuth2\Client\Provider\Gitlab($providerCfg);
+      $url = $provider->getAuthorizationUrl();
+    break;
+
+    default:
+      $oap['prompt'] = 'none';
+      // see https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-oauth-code for details
+      if ($oauthCfg['oauth_name'] == 'azuread') {
+        if (!is_null($oauthCfg['oauth_domain']))
+          $oap['domain_hint'] = $oauthCfg['oauth_domain'];
+      } else {
+        if ($oauthCfg['oauth_force_single']) {
+          $oap['prompt'] = 'consent';
+        }
+      }
+
+
+      $oap['response_type'] = 'code';
+      $oap['client_id'] = $oauthCfg['oauth_client_id'];
+      $oap['scope'] = $oauthCfg['oauth_scope'];
+      $oap['state'] = $oauthCfg['oauth_name'];
+
+
+
+      // http_build_query — Generate URL-encoded query string
+      $url = $oauthCfg['oauth_url'] . '?' . http_build_query($oap);
+    break;
+
   }
 
 
-  $oap['response_type'] = 'code';
-  $oap['client_id'] = $oauthCfg['oauth_client_id'];
-  $oap['scope'] = $oauthCfg['oauth_scope'];
-  $oap['state'] = $oauthCfg['oauth_name'];
-
-
-
-  // http_build_query — Generate URL-encoded query string
-  $url = $oauthCfg['oauth_url'] . '?' . http_build_query($oap);
 
   return $url;
 }

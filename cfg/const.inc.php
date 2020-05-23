@@ -39,11 +39,14 @@ if (!defined('TL_ABS_PATH')) {
 $ds = DIRECTORY_SEPARATOR;
 $ps = PATH_SEPARATOR;
 
+$p2functions = TL_ABS_PATH . 'lib' . $ds . 'functions' . $ds;
+$p2lib = TL_ABS_PATH . 'lib' . $ds;
 ini_set('include_path', ini_get('include_path') . $ps . '.' . 
-  $ps . TL_ABS_PATH . 'lib' . $ds . 'functions' . $ds  . 
-  $ps . TL_ABS_PATH . 'lib' . $ds . 'issuetrackerintegration' . $ds . 
-  $ps . TL_ABS_PATH . 'lib' . $ds . 'codetrackerintegration' . $ds . 
-  $ps . TL_ABS_PATH . 'lib' . $ds . 'reqmgrsystemintegration' . $ds);
+  $ps . $p2functions  . 
+  $ps . $p2functions . 'oauth_providers' . $ds .   
+  $ps . $p2lib . 'issuetrackerintegration' . $ds . 
+  $ps . $p2lib . 'codetrackerintegration' . $ds . 
+  $ps . $p2lib . 'reqmgrsystemintegration' . $ds);
 
 ini_set('include_path',ini_get('include_path') . 
         $ps . TL_ABS_PATH . 'third_party' . $ds . 

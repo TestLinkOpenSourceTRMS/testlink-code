@@ -184,8 +184,10 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
     tlSetCookie($ckObj);
 
     // Disallow two sessions within one browser
-    if ($options->doSessionExistsCheck && 
-        isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser'])) {
+    if (property_exists($options,'doSessionExistsCheck')
+        && $options->doSessionExistsCheck 
+        && isset($_SESSION['currentUser']) 
+        && !is_null($_SESSION['currentUser'])) {
       $result['msg'] = lang_get('login_msg_session_exists1') . 
                        ' <a style="color:white;" href="logout.php">' . 
                        lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');

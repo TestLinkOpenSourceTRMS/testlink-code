@@ -247,6 +247,7 @@ function getGrants($dbHandler,$user,$tproject_id,$forceToNo=false)
           'keyword_assignment' => "keyword_assignment",
           'keywords_edit' => "mgt_modify_key",
           'platform_management' => "platform_management",
+          'platform_view' => "platform_view",
           'issuetracker_management' => "issuetracker_management",
           'issuetracker_view' => "issuetracker_view",
           'codetracker_management' => "codetracker_management",

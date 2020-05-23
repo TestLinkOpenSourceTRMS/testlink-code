@@ -59,23 +59,28 @@ switch($args->action) {
 
     // Switch between oauth providers
     // validate providers
-    switch ($args->oauth_name) {
-      case 'azure':
-      case 'github':
-      case 'google':
-      case 'microsoft':
-        if (!include_once('lib/functions/oauth_providers/' .
-            $args->oauth_name . '.php')) {
-            die("Oauth client doesn't exist");
-        }
-      break;
-      
-      default:
-        renderLoginScreen($gui);
-        die();
-      break;  
+    $includeOK = false;
+    $OAuthProviders = config_get('OAuthServers');
+    foreach ($OAuthProviders as $providerCfg) {
+      if ($args->oauth_name == trim($providerCfg['oauth_name'])) {
+        $g2i = $args->oauth_name . '.php';
+        $oauth_params = $providerCfg;
+        if (!include_once($g2i)) {
+          die("Oauth client doesn't exist");
+        } else {
+          $includeOK = true;
+          break;
+        }       
+      }
     }
 
+    // No good!
+    if ($includeOK == false) {
+      renderLoginScreen($gui);
+      die();      
+    }
+   
+    /*  
     $oau = config_get('OAuthServers');
     foreach ($oau as $oprov) {
       if (strcmp($oprov['oauth_name'],$args->oauth_name) == 0){
@@ -83,6 +88,7 @@ switch($args->action) {
         break;
       }
     }
+    */
 
     $user_token = oauth_get_token($oauth_params, $args->oauth_code);
     if($user_token->status['status'] == tl::OK) {

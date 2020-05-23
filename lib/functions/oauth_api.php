@@ -13,7 +13,6 @@
 
 function oauth_link($oauthCfg)
 {
-
   $oap = array();
 
   $oap['redirect_uri'] = trim($oauthCfg['redirect_uri']);
@@ -25,12 +24,8 @@ function oauth_link($oauthCfg)
 
   switch ($oauthCfg['oauth_name']) {
     case 'gitlab':
-      $providerCfg = ['clientId' => $oauthCfg['oauth_client_id'],
-                      'clientSecret' => $oauthCfg['oauth_client_secret'],
-                      'redirectUri' => $oap['redirect_uri']]; 
-
-      $provider = new Omines\OAuth2\Client\Provider\Gitlab($providerCfg);
-      $url = $provider->getAuthorizationUrl();
+      // @20200523 it seems that with relative can work 
+      $url = 'lib/functions/oauth_providers/OAuth2Call.php?oauth2=gitlab';
     break;
 
     default:

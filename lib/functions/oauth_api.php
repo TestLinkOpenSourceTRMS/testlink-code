@@ -59,7 +59,21 @@ function oauth_link($oauthCfg)
 
   }
 
-
-
   return $url;
+}
+
+
+/**
+ * getOAuthProviderCfg
+ *
+ */
+function getOAuthProviderCfg($provider) 
+{
+  $OAuthProviders = config_get('OAuthServers');
+  foreach ($OAuthProviders as $providerCfg) {
+    if ($provider == trim($providerCfg['oauth_name'])) {
+      return $providerCfg;
+    }
+  }
+  return null;
 }

@@ -60,18 +60,14 @@ switch($args->action) {
     // Switch between oauth providers
     // validate providers
     $includeOK = false;
-    $OAuthProviders = config_get('OAuthServers');
-    foreach ($OAuthProviders as $providerCfg) {
-      if ($args->oauth_name == trim($providerCfg['oauth_name'])) {
-        $g2i = $args->oauth_name . '.php';
-        $oauth_params = $providerCfg;
-        if (!include_once($g2i)) {
-          die("Oauth client doesn't exist");
-        } else {
-          $includeOK = true;
-          break;
-        }       
-      }
+    $oauth_params = getOAuthProviderCfg($args->oauth_name);
+    if ($oauth_params != null) {
+      $g2i = $args->oauth_name . '.php';
+      if (!include_once($g2i)) {
+        die("Oauth client doesn't exist");
+      } else {
+        $includeOK = true;
+      }             
     }
 
     // No good!

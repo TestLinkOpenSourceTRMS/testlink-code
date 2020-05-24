@@ -463,79 +463,19 @@ $tlCfg->noExpDateUsers = array('admin');
 $tlCfg->OAuthServers = array();
 
 // Google
-// $tlCfg->OAuthServers = array();
-// $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
-// $tlCfg->OAuthServers[1]['oauth_name'] = 'google';
-
-// Get from /gui/themes/default/images
-// $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
-// $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
-// Can be authorization_code (by default), client_credentials or password
-// $tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';  
-// $tlCfg->OAuthServers[1]['oauth_url'] = 'https://accounts.google.com/o/oauth2/auth';
-// $tlCfg->OAuthServers[1]['token_url'] = 'https://accounts.google.com/o/oauth2/token';
-// false => then the only user will be selected automatically (applied for google)
-// $tlCfg->OAuthServers[1]['oauth_force_single'] = false; 
-// the domain you want to whitelist
-// $tlCfg->OAuthServers[1]['oauth_domain'] = 'google.com'; 
-// $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
-// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
+// see cfg/oauth.google.inc.php
 
 // Github
-// $tlCfg->OAuthServers[2]['oauth_enabled'] = true;
-// $tlCfg->OAuthServers[2]['oauth_name'] = 'github';
-// $tlCfg->OAuthServers[2]['oauth_client_id'] = 'CLIENT_ID';
-// $tlCfg->OAuthServers[2]['oauth_client_secret'] = 'CLIENT_SECRET';
+// see cfg/oauth.github.inc.php
 
-// Can be authorization_code (by default), client_credentials or password
-// $tlCfg->OAuthServers[2]['oauth_grant_type'] = 'authorization_code';  
-// $tlCfg->OAuthServers[2]['oauth_url'] = 'https://github.com/login/oauth/authorize';
+// Gitlab
+// see cfg/oauth.gitlab.inc.php
 
-// $tlCfg->OAuthServers[2]['token_url'] = 'https://github.com/login/oauth/access_token';
-// false => then the only user will be selected automatically (applied for google)
-// $tlCfg->OAuthServers[2]['oauth_force_single'] = false; 
-// $tlCfg->OAuthServers[2]['oauth_profile'] = 'https://api.github.com/user';
-// $tlCfg->OAuthServers[2]['oauth_scope'] = 'user:email';
-
-//Microsoft
-//$tlCfg->OAuthServers[1]['oauth_enabled'] = true;
-//$tlCfg->OAuthServers[1]['oauth_name'] = 'microsoft';
-//$tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
-//$tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
-
-// Can be authorization_code (by default), client_credentials or password
-//$tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';
-//$tlCfg->OAuthServers[1]['oauth_url'] = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
-
-//$tlCfg->OAuthServers[1]['token_url'] = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
-//$tlCfg->OAuthServers[1]['oauth_force_single'] = true;
-//$tlCfg->OAuthServers[1]['oauth_profile'] = 'https://graph.microsoft.com/v1.0/me';
-//$tlCfg->OAuthServers[1]['oauth_scope'] = 'User.Read';
-
-//$tlCfg->OAuthServers[1]['redirect_uri'] = 'TESTLINKURL/microsoftoauth.php';
-
+// Microsoft
+// see cfg/oauth.microsoft.inc.php
 
 // Azure AD 
-// Fill in CLIENT_ID,CLIENT_SECRET,YOURTESTLINKSERVER and TENANTID with your information
-// See this article for registering an application: https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-oauth-code
-// Make sure, you grant admint consent for it: https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/configure-user-consent
-
-// $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
-// $tlCfg->OAuthServers[1]['oauth_name'] = 'azuread'; //do not change this
-
-// $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
-// $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
-// $tlCfg->OAuthServers[1]['redirect_uri'] = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . '/login.php';
-
-// $tlCfg->OAuthServers[1]['oauth_force_single'] = true; 
-
-// $tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';  
-// $tlCfg->OAuthServers[1]['oauth_url'] = 'https://login.microsoftonline.com/TENANTID/oauth2/authorize';
-// $tlCfg->OAuthServers[1]['token_url'] = 'https://login.microsoftonline.com/TENANTID/oauth2/token';
-// the domain you want to whitelist (email domains)
-// $tlCfg->OAuthServers[1]['oauth_domain'] = 'autsoft.hu'; 
-// $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://login.microsoftonline.com/TENANTID/openid/userinfo';
-// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/mail.read https://graph.microsoft.com/user.read openid profile email';
+// see cfg/oauth.azuread.inc.php
 
 /**
  * Single Sign On authentication

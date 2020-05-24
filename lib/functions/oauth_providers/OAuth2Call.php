@@ -25,8 +25,11 @@ if ($cfg == null) {
 
 // Go ahead
 if (!isset($_GET['code'])) {
+
+  $doIt = true;
   switch ($oauth2Name) {
     case 'gitlab':
+    case 'github':
       if( isset($_SERVER['HTTPS']) ) {
         $cfg['redirect_uri'] = str_replace('http://'
                                            ,'https://' 
@@ -35,19 +38,39 @@ if (!isset($_GET['code'])) {
       $providerCfg = ['clientId' => $cfg['oauth_client_id'],
                       'clientSecret' => $cfg['oauth_client_secret'],
                       'redirectUri' => $cfg['redirect_uri'] ]; 
-
-      $provider = new Omines\OAuth2\Client\Provider\Gitlab($providerCfg);
-      $authUrl = $provider->getAuthorizationUrl();
-
-      // We are setting this to be able to check given state 
-      // against previously stored one (this one!!) 
-      // to mitigate CSRF attack
-      // This check will be done in method oauth_get_token()
-      // 
-      session_start();
-      $_SESSION['oauth2state'] = $provider->getState();
-      header('Location: '.$authUrl);
-      exit;
     break;
+  }
+  
+  switch ($oauth2Name) {
+    case 'gitlab':
+      $provider = new Omines\OAuth2\Client\Provider\Gitlab($providerCfg);
+      $urlOpt = [];
+    break;
+
+    case 'github':
+      $provider = new \League\OAuth2\Client\Provider\Github($providerCfg);
+      $urlOpt = ['scope' => ['user','user:email','public_profile']];
+    break;
+  
+    default:
+      $doIt = false;
+    break;
+  }
+
+  if ($doIt) {
+    // Give a look to
+    // https://github.com/omines/oauth2-gitlab#managing-scopes
+    // 
+    $authUrl = $provider->getAuthorizationUrl($urlOpt);
+
+    // We are setting this to be able to check given state 
+    // against previously stored one (this one!!) 
+    // to mitigate CSRF attack
+    // This check will be done in method oauth_get_token()
+    // 
+    session_start();
+    $_SESSION['oauth2state'] = $provider->getState();
+    header('Location: '.$authUrl);
+    exit;
   }
 }

@@ -7,12 +7,12 @@
 # https://github.com/thephpleague/oauth2-client
 # https://github.com/omines/oauth2-gitlab
 #
-$tlCfg->OAuthServers[2]['oauth_enabled'] = true;
-$tlCfg->OAuthServers[2]['oauth_name'] = 'gitlab';
-$tlCfg->OAuthServers[2]['oauth_client_id'] = 
+$tlCfg->OAuthServers['gitlab']['oauth_enabled'] = true;
+$tlCfg->OAuthServers['gitlab']['oauth_name'] = 'gitlab';
+$tlCfg->OAuthServers['gitlab']['oauth_client_id'] = 
 '27a03c93d60b5ddb4e0cef92149678fbe37c099733605e046a5428a9da4177ba';
-$tlCfg->OAuthServers[2]['oauth_client_secret'] = 'c157df291b81dbfd8084d38b155029baded3cf76c7449670bd2da889fe8b99eb';
-$tlCfg->OAuthServers[2]['redirect_uri'] = 'http://fman.hopto.org/login.php?oauth=gitlab';
+$tlCfg->OAuthServers['gitlab']['oauth_client_secret'] = 'c157df291b81dbfd8084d38b155029baded3cf76c7449670bd2da889fe8b99eb';
+$tlCfg->OAuthServers['gitlab']['redirect_uri'] = 'http://fman.hopto.org/login.php?oauth=gitlab';
 
 
 // The following configuration options are not needed when using 

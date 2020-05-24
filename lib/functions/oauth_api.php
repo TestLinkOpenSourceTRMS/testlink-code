@@ -25,6 +25,7 @@ function oauth_link($oauthCfg)
   switch ($oauthCfg['oauth_name']) {
     case 'gitlab':
     case 'github':
+    case 'microsoft':
       // @20200523 it seems that with relative can work 
       $url = 'lib/functions/oauth_providers/OAuth2Call.php?oauth2='
              . trim($oauthCfg['oauth_name']);
@@ -47,7 +48,7 @@ function oauth_link($oauthCfg)
       $oap['response_type'] = 'code';
       $oap['client_id'] = $oauthCfg['oauth_client_id'];
       $oap['scope'] = $oauthCfg['oauth_scope'];
-      $oap['state'] = $oauthCfg['oauth_name'];
+      $oap['state'] = $oauthCfg['oauth_name'] . '$$$' . uniqid();
 
 
 

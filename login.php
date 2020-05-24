@@ -7,11 +7,10 @@
  *
  * @filesource  login.php
  * @package     TestLink
- * @copyright   2006,2019 TestLink community 
+ * @copyright   2006,2020 TestLink community 
  * @link        http://www.testlink.org
  * 
  **/
-
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 require_once('config.inc.php');
@@ -181,8 +180,16 @@ function init_args() {
     $args->oauth_name = $pParams['oauth'];
     $args->oauth_code = $pParams['code'];
   } else if (!is_null($pParams['state']) && !is_null($pParams['code'])) {
+   
+    // We use state to undertand the provider when the redirect url
+    // can not have query string, as happens with Microsoft
+    // state will be 'testlink provider id'$$$state(random string)
+    //
+    // read https://auth0.com/docs/protocols/oauth2/oauth-state
+    //
     $args->action = 'oauth';
-    $args->oauth_name = $pParams['state'];
+    $args->oauth_name = explode('$$$',$pParams['state']);
+    $args->oauth_name = $args->oauth_name[0];
     $args->oauth_code = $pParams['code'];
   } else {
     $args->action = 'loginform';

@@ -26,21 +26,23 @@ if ($cfg == null) {
 // Go ahead
 if (!isset($_GET['code'])) {
 
-  $doIt = true;
+  if (isset($_SERVER['HTTPS'])) {
+    $cfg['redirect_uri'] = str_replace('http://'
+                                       ,'https://' 
+                                       ,$cfg['redirect_uri']);  
+  }  
+
+  $clientType = 'ThePHPLeague';
   switch ($oauth2Name) {
     case 'gitlab':
     case 'github':
-      if( isset($_SERVER['HTTPS']) ) {
-        $cfg['redirect_uri'] = str_replace('http://'
-                                           ,'https://' 
-                                           ,$cfg['redirect_uri']);  
-      }  
       $providerCfg = ['clientId' => $cfg['oauth_client_id'],
                       'clientSecret' => $cfg['oauth_client_secret'],
                       'redirectUri' => $cfg['redirect_uri'] ]; 
     break;
   }
   
+  session_start();
   switch ($oauth2Name) {
     case 'gitlab':
       $provider = new Omines\OAuth2\Client\Provider\Gitlab($providerCfg);
@@ -51,26 +53,57 @@ if (!isset($_GET['code'])) {
       $provider = new \League\OAuth2\Client\Provider\Github($providerCfg);
       $urlOpt = ['scope' => ['user','user:email','public_profile']];
     break;
+
+    case 'microsoft':
+      $clientType = 'testLink';
+      $_SESSION['oauth2state'] = 'microsoft$$$' . 
+                                 bin2hex(random_bytes(32));
+
+      // see https://docs.microsoft.com/en-us/azure/
+      //             active-directory/develop/v1-protocols-oauth-code 
+      // for details
+      $oap = [];
+      $oap['state'] = $_SESSION['oauth2state'];
+      $oap['redirect_uri'] = $cfg['redirect_uri'];
+      $oap['client_id'] = $cfg['oauth_client_id'];
+      $oap['scope'] = $cfg['oauth_scope'];
+
+      $oap['prompt'] = 'none';
+      $oap['response_type'] = 'code';
+
+      if ($cfg['oauth_force_single']) {
+        $oap['prompt'] = 'consent';
+      }
+
+      // http_build_query — Generate URL-encoded query string
+      $authUrl = $cfg['oauth_url'] . '?' . http_build_query($oap);
+    break;
   
     default:
-      $doIt = false;
+      $clientType = 'testLink';
     break;
   }
 
-  if ($doIt) {
-    // Give a look to
-    // https://github.com/omines/oauth2-gitlab#managing-scopes
-    // 
-    $authUrl = $provider->getAuthorizationUrl($urlOpt);
+  
+  switch ($clientType) {
+    case 'ThePHPLeague':
+      // Give a look to
+      // https://github.com/omines/oauth2-gitlab#managing-scopes
+      // 
+      $authUrl = $provider->getAuthorizationUrl($urlOpt);
 
-    // We are setting this to be able to check given state 
-    // against previously stored one (this one!!) 
-    // to mitigate CSRF attack
-    // This check will be done in method oauth_get_token()
-    // 
-    session_start();
-    $_SESSION['oauth2state'] = $provider->getState();
-    header('Location: '.$authUrl);
-    exit;
-  }
+      // We are setting this to be able to check given state 
+      // against previously stored one (this one!!) 
+      // to mitigate CSRF attack
+      // This check will be done in method oauth_get_token()
+      // 
+      $_SESSION['oauth2state'] = $provider->getState();
+      header('Location: ' . $authUrl);
+      exit;
+    break;
+
+    default:
+      header('Location: ' . $authUrl);
+    break;
+  }  
 }

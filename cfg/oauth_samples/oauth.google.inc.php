@@ -7,10 +7,15 @@
 # does not overwrite other or will be overwritten
 #
 # HOW TO use this file ?
-# just add the following line to your custom_config.inc.php
+# 1. copy this file to 
+#     [TESTLINK_INSTALL]/cfg/
 #
-# require('aouth.google.inc.php');
+# 2. configure according your application
 #
+# 3. add the following line to your custom_config.inc.php
+#    require('aouth.google.inc.php');
+#
+# #############################################################
 # Client implemented using 
 # https://github.com/thephpleague/oauth2-google
 ##

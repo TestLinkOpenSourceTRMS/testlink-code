@@ -22,9 +22,11 @@ $templateCfg = templateConfiguration();
 $doRenderLoginScreen = false;
 $doAuthPostProcess = false;
 
+
 doDBConnect($db, database::ONERROREXIT);
 $args = init_args();
 $gui = init_gui($db,$args);
+
 
 // if these checks fail => we will redirect to login screen with some message
 doBlockingChecks($db,$gui);
@@ -75,16 +77,6 @@ switch($args->action) {
       die();      
     }
    
-    /*  
-    $oau = config_get('OAuthServers');
-    foreach ($oau as $oprov) {
-      if (strcmp($oprov['oauth_name'],$args->oauth_name) == 0){
-        $oauth_params = $oprov;
-        break;
-      }
-    }
-    */
-
     $user_token = oauth_get_token($oauth_params, $args->oauth_code);
     if($user_token->status['status'] == tl::OK) {
       doSessionStart(true);

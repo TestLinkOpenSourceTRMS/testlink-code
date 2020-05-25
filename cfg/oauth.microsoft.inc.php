@@ -12,6 +12,9 @@
 //
 // require('aouth.microsoft.inc.php');
 //
+$tlCfg->OAuthServers['microsoft'] = array();
+$tlCfg->OAuthServers['microsoft']['redirect_uri'] = '';
+
 $tlCfg->OAuthServers['microsoft']['oauth_enabled'] = true;
 $tlCfg->OAuthServers['microsoft']['oauth_name'] = 'microsoft';
 $tlCfg->OAuthServers['microsoft']['oauth_client_id'] = 'CLIENT_ID';
@@ -27,4 +30,3 @@ $tlCfg->OAuthServers['microsoft']['oauth_force_single'] = true;
 $tlCfg->OAuthServers['microsoft']['oauth_profile'] = 'https://graph.microsoft.com/v1.0/me';
 $tlCfg->OAuthServers['microsoft']['oauth_scope'] = 'User.Read';
 
-$tlCfg->OAuthServers['microsoft']['redirect_uri'] = 'TESTLINKURL/microsoftoauth.php';

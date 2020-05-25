@@ -22,6 +22,7 @@
 //
 // require('aouth.azuread.inc.php');
 //
+$tlCfg->OAuthServers['azuread'] = array();
 $tlCfg->OAuthServers['azuread']['oauth_enabled'] = true;
 $tlCfg->OAuthServers['azuread']['oauth_name'] = 'azuread'; //do not change this
 

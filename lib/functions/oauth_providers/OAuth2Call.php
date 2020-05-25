@@ -36,6 +36,7 @@ if (!isset($_GET['code'])) {
   switch ($oauth2Name) {
     case 'gitlab':
     case 'github':
+    case 'google':
       $providerCfg = ['clientId' => $cfg['oauth_client_id'],
                       'clientSecret' => $cfg['oauth_client_secret'],
                       'redirectUri' => $cfg['redirect_uri'] ]; 
@@ -53,6 +54,12 @@ if (!isset($_GET['code'])) {
       $provider = new \League\OAuth2\Client\Provider\Github($providerCfg);
       $urlOpt = ['scope' => ['user','user:email','public_profile']];
     break;
+
+    case 'google':
+      $provider = new League\OAuth2\Client\Provider\Google($providerCfg);
+      $urlOpt = [];
+    break;
+
 
     case 'microsoft':
       $clientType = 'testLink';

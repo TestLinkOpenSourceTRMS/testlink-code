@@ -26,6 +26,8 @@
 # This is only a working example that is useful
 # for the TestLink Development Team
 #
+$tlCfg->OAuthServers['gitlab'] = array();
+
 $tlCfg->OAuthServers['gitlab']['redirect_uri'] = 
    'http://fman.hopto.org/login.php?oauth=gitlab';
 

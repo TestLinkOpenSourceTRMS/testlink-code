@@ -3,9 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource  google.php
+ * @filesource  microsoft.php
  *
- * Google OAUTH API (authentication)
+ * Microsoft OAUTH API (authentication)
  *
  *
  */
@@ -31,10 +31,18 @@ function oauth_get_token($authCfg, $code)
   $providerCfg = ['clientId' => $authCfg['oauth_client_id'],
                   'clientSecret' => $authCfg['oauth_client_secret'],
                   'redirectUri' => $oauthParams['redirect_uri'] ]; 
+  $base = 'https://login.microsoftonline.com/common/oauth2/v2.0/';
+  $providerCfg['urlAuthorize'] = $base . 'authorize';
+  $providerCfg['urlAccessToken'] = $base . 'token';
+  $providerCfg['urlResourceOwnerDetails'] = 
+                    'https://graph.microsoft.com/v1.0/me';
 
-  $provider = new League\OAuth2\Client\Provider\Google($providerCfg);
+  $provider = new Stevenmaguire\OAuth2\Client\
+                  Provider\Microsoft($providerCfg);
 
-  // 
+  // echo '<br>state from SESSION: '. $_SESSION['oauth2state'];
+  // echo '<br>state from GET: ' . $_GET['state'];
+
   // CRITICAL
   // Suggested in https://github.com/thephpleague/oauth2-client
   // 
@@ -42,7 +50,9 @@ function oauth_get_token($authCfg, $code)
   // ($_SESSION) to mitigate CSRF attack
   if (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
     $msg = "OAuth CSRF Check using \$_SESSION['oauth2state'] -> Failed!";
-    throw new Exception("OAuth CSRF Check using ", 1);
+    $msg .= '\$_GET:' . $_GET['state'];
+    // $msg .= '\$_SESSION:' . $_SESSION['oauth2state'];
+    throw new Exception("OAuth CSRF Check using " . $msg, 1);
   }
 
     
@@ -58,22 +68,21 @@ function oauth_get_token($authCfg, $code)
     // printf('<br>getName %s!', $user->getName());
     // printf('<br>getEmail %s!', $user->getEmail());
     // printf('<br>getUserName %s!', $user->getUserName());
-    //echo '<pre>';
-    //var_dump($user->toArray());
-    //echo '</pre>';
 
+    $firstLast = $user->getName();
     $result->options = new stdClass();
-    $result->options->givenName = $user->getFirstName();
-    $result->options->familyName = $user->getLastName();
+    $result->options->givenName = $firstLast;
+    $result->options->familyName = $firstLast;
     $result->options->user = $user->getEmail();
     $result->options->email = $user->getEmail();
-    $result->options->login = $user->getEmail();
+    $result->options->login = $user->getUserName();
     $result->options->auth = 'oauth';
     
     return $result;
 
   } catch (Exception $e) {
      // Failed to get user details
+     var_dump($e->getMessage());
      exit('Oh dear...');
   }
 }

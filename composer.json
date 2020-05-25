@@ -20,6 +20,7 @@
         "symfony/polyfill-mbstring": "^1.15",
         "league/oauth2-client": "^2.4",
         "omines/oauth2-gitlab": "^3.2",
-        "league/oauth2-github": "^2.0"
+        "league/oauth2-github": "^2.0",
+        "league/oauth2-google": "^3.0"
     }
 }

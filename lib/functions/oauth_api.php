@@ -21,8 +21,8 @@ function oauth_link($oauthCfg)
       str_replace('http://', 'https://', $oap['redirect_uri']);
   }
 
-
   switch ($oauthCfg['oauth_name']) {
+    case 'azuread':
     case 'gitlab':
     case 'github':
     case 'google':
@@ -34,29 +34,7 @@ function oauth_link($oauthCfg)
 
 
     default:
-      $oap['prompt'] = 'none';
-      // see https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-oauth-code for details
-      if ($oauthCfg['oauth_name'] == 'azuread') {
-        if (!is_null($oauthCfg['oauth_domain']))
-          $oap['domain_hint'] = $oauthCfg['oauth_domain'];
-      } else {
-        if ($oauthCfg['oauth_force_single']) {
-          $oap['prompt'] = 'consent';
-        }
-      }
-
-
-      $oap['response_type'] = 'code';
-      $oap['client_id'] = $oauthCfg['oauth_client_id'];
-      $oap['scope'] = $oauthCfg['oauth_scope'];
-      $oap['state'] = $oauthCfg['oauth_name'] . '$$$' . uniqid();
-
-
-
-      // http_build_query — Generate URL-encoded query string
-      $url = $oauthCfg['oauth_url'] . '?' . http_build_query($oap);
     break;
-
   }
 
   return $url;

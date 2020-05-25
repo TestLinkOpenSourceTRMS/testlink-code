@@ -18,7 +18,7 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2018, TestLink community
+ * @copyright   2005-2020, TestLink community
  * @link        http://www.testlink.org
  *
  *
@@ -463,19 +463,19 @@ $tlCfg->noExpDateUsers = array('admin');
 $tlCfg->OAuthServers = array();
 
 // Google
-// see cfg/oauth.google.inc.php
+// see cfg/oauth_samples/oauth.google.inc.php
 
 // Github
-// see cfg/oauth.github.inc.php
+// see cfg/oauth_samples/oauth.github.inc.php
 
 // Gitlab
-// see cfg/oauth.gitlab.inc.php
+// see cfg/oauth_samples/oauth.gitlab.inc.php
 
 // Microsoft
-// see cfg/oauth.microsoft.inc.php
+// see cfg/oauth_samples/oauth.microsoft.inc.php
 
 // Azure AD 
-// see cfg/oauth.azuread.inc.php
+// see cfg/oauth_samples/oauth.azuread.inc.php
 
 /**
  * Single Sign On authentication

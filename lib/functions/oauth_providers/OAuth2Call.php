@@ -5,8 +5,6 @@
  *
  * @filesource  OAuth2Call.php
  *
- * Gitlab OAUTH API (authentication)
- *
  *
  */
 $where = explode('lib',__DIR__);
@@ -60,10 +58,10 @@ if (!isset($_GET['code'])) {
       $urlOpt = [];
     break;
 
-
     case 'microsoft':
+    case 'azuread';
       $clientType = 'testLink';
-      $_SESSION['oauth2state'] = 'microsoft$$$' . 
+      $_SESSION['oauth2state'] = $oauth2Name . '$$$' . 
                                  bin2hex(random_bytes(32));
 
       // see https://docs.microsoft.com/en-us/azure/
@@ -78,8 +76,14 @@ if (!isset($_GET['code'])) {
       $oap['prompt'] = 'none';
       $oap['response_type'] = 'code';
 
-      if ($cfg['oauth_force_single']) {
-        $oap['prompt'] = 'consent';
+      if ($oauth2Name == 'azuread') {
+        if (!is_null($oauthCfg['oauth_domain'])) {
+          $oap['domain_hint'] = $oauthCfg['oauth_domain'];
+        }
+      } else {
+        if ($oauthCfg['oauth_force_single']) {
+          $oap['prompt'] = 'consent';
+        }
       }
 
       // http_build_query — Generate URL-encoded query string

@@ -2,11 +2,10 @@
 1.9.20 will be the last version of the 1.9.x family.  
 Next TestLink version will 2.x with a new UX based on the Dashio - Bootstrap Admin Template (https://templatemag.com/dashio-bootstrap-admin-template/)
 
-
-
 # TestLink 1.9.20 Raijin - Read me
 
 ## Contents
+
  1. [Introduction](#1-introduction)
  2. [Release notes / Critical Configuration Notes](2-release-notes--critical-configuration-notes)
  3. [System Requirements](#3-system-requirements---server)
@@ -16,6 +15,7 @@ Next TestLink version will 2.x with a new UX based on the Dashio - Bootstrap Adm
  7. [Bug Reports and Feedback](#7-bug-reports-and-feedback)
  8. [Supporting our work](#8-supporting-our-work)
  9. [Regarding forum usage](#9-regarding-forum-usage-wwwtestlinkorg) www.testlink.org
+
 10. [Changes](#10-changes)
 11. [Testlink & FreeTest](#11-testlink--freetest)
 12. [Security](#12-security)
@@ -56,15 +56,15 @@ missed. Management suddenly wants a status update at seven in the evening.
 In these situations you need the support of a test management tool, such
 as TestLink. The purpose of TestLink is to answer questions such as:
 
-- For which requirements do we still need to write or update test cases?
-- Which tests do you want me to run for this version?
-- How much progress have we made on testing this release?
-- Which test cases are currently failing, and what are the errors?
-- On which version was this group of test cases last run, and is it time we ran them again?
-- And ultimately: is this version of the product fit for release?
+* For which requirements do we still need to write or update test cases?
+* Which tests do you want me to run for this version?
+* How much progress have we made on testing this release?
+* Which test cases are currently failing, and what are the errors?
+* On which version was this group of test cases last run, and is it time we ran them again?
+* And ultimately: is this version of the product fit for release?
 
 TestLink helps you to keep the test process under control. It forms a
-repository for requirements and test cases, and relates these to builds,
+repository for requirements and test cases, and relates these to builds, 
 platforms and staff. You allocate tests to staff who carry them out and
 record the results. A wide variety of reports provide information on what
 has been done and what still needs to be done.
@@ -78,7 +78,7 @@ Give a look also to:
 https://github.com/TestLinkOpenSourceTRMS/testlink-code/wiki
 https://github.com/TestLinkOpenSourceTRMS/testlink-documentation/wiki
 
-### CRITICAL PHP.INI Settings
+### CRITICAL PHP. INI Settings
 
 #### max_input_vars
 
@@ -107,13 +107,18 @@ Currently it configured to work with Google OAuth and Github, but you can add
 any OAuth server that support protocol 2.0 and 2-step authentication.
 
 #### There are some restrictions in using OAuth:
-1. OAuth should not be specified as Default Authentication method
-2. If user does not exist in DB and you try to login through oauth - userID
+
+1\. OAuth should not be specified as Default Authentication method
+
+2\. If user does not exist in DB and you try to login through oauth - userID
+
 will be saved to db with special auth type. And for secure reasons you can't
 logon via regular email/password into Testlink.
-3. If user already exists in DB then you can logon via password or via OAuth
+
+3\. If user already exists in DB then you can logon via password or via OAuth
 
 #### To configure OAuth you should set in config provided by OAuth provider
+
  oauth_client_id - id of OAuth program
  oauth_client_secret - secret code
  oauth_grant_type - authorization_code is default value
@@ -122,6 +127,41 @@ logon via regular email/password into Testlink.
  oauth_profile - url of OAuth profile page
 
  oauth_grant_type, oauth_scope - specific parameters for several OAuth providers. They are not necessary
+
+#### Examples
+
+1\. gitlab
+
+- step 1: Create an application on gitlab.
+
+  `admin area -> applications -> new application`,redirect url may like this `https://testlink.yourhost.com/login.php?oauth=gitlab`,
+  also you should check `api,read_user,profile,email`. 
+
+- step 2: add following content to `custom_config.inc.php`
+
+``` php
+$tlCfg->OAuthServers[2]['redirect_uri'] =
+  'https://testlink.yourhost.com/login.php?oauth=gitlab';
+// client id from gitlab application
+$tlCfg->OAuthServers[2]['oauth_client_id'] ='';
+// client secret from gitlab application
+$tlCfg->OAuthServers[2]['oauth_client_secret'] = '';
+
+$tlCfg->OAuthServers[2]['oauth_enabled'] = true;
+// oauth_name should be gitlab
+$tlCfg->OAuthServers[2]['oauth_name'] = 'gitlab';
+
+// Can be authorization_code (by default), client_credentials or password
+$tlCfg->OAuthServers[2]['oauth_grant_type'] = 'authorization_code';  
+$tlCfg->OAuthServers[2]['oauth_url'] = 'https://gitlab.yourhost.com/oauth/authorize';
+
+$tlCfg->OAuthServers[2]['token_url'] = 'https://gitlab.yourhost.com/oauth/token';
+$tlCfg->OAuthServers[2]['oauth_force_single'] = false; 
+// profile 
+$tlCfg->OAuthServers[2]['oauth_profile'] = 'https://gitlab.yourhost.com/api/v4/user/';
+$tlCfg->OAuthServers[2]['oauth_scope'] = '';
+
+```
 
 ### Changes on LDAP CONFIGURATION
 
@@ -153,27 +193,29 @@ here:
     $tlCfg->authentication['ldap'][1]['ldap_bind_passwd'] = 'XYZw';
     $tlCfg->authentication['ldap'][1]['ldap_tls'] = false;
 
-
 ## 3. System Requirements - server
 
 Server environment should consist of:
-- web-server: Apache 2.x
-- PHP > 5.5 It will be better if you use PHP 7.2.x 
-- PHP IMPORTANTE NOTICE: next TestLink Version will require minimum PHP 7.3.x
--       
-- DBMS
-  - MySQL 5.7.x
+
+* web-server: Apache 2.x
+* PHP > 5.5 It will be better if you use PHP 7.2.x 
+* PHP IMPORTANTE NOTICE: next TestLink Version will require minimum PHP 7.3.x
+*       
+* DBMS
+  + MySQL 5.7.x
     - The `log_bin_trust_function_creators` option must be enabled.
-  - MariaDB 10.1.x
+  + MariaDB 10.1.x
     - The `log_bin_trust_function_creators` option must be enabled.
-  - Postgres 9.x
-  - MS-SQL 201x -> SUPPORT IS INCOMPLETE
+  + Postgres 9.x
+  + MS-SQL 201x -> SUPPORT IS INCOMPLETE
 
 Tested on web-browsers:
-- Firefox
-- Chrome
+
+* Firefox
+* Chrome
 
 ATTENTION: we have not enough resources to test on all kind of browsers.
+
            Right now development is done using Chrome & Firefox.
 
 ## 4. Installation & SECURITY
@@ -189,12 +231,13 @@ Short summary:
  2. Uncompress files
  3. Launch web based installer
 
-1. First, transfer the file to your web-server using whatever method
+1\. First, transfer the file to your web-server using whatever method
+
 you like best (ftp, scp, etc).
 
 You will need to telnet/ssh into the server machine for the next steps.
 
-2. Next, untar/gunzip it to the directory that you want.
+2\. Next, untar/gunzip it to the directory that you want\.
 
 The usual command is (1 step):
 
@@ -215,8 +258,8 @@ different to 'testlink'.
 
 You need to configure:
 
-- log directory 	(`$tlCfg->log_path`)
-- upload directory  (`$g_repositoryPath`)
+* log directory 	( `$tlCfg->log_path` )
+* upload directory  ( `$g_repositoryPath` )
 
 According to your installation, default values provided. However, these are
 examples **THAT DO NOT WORK OUT OF THE BOX**.
@@ -227,8 +270,8 @@ Take a look at [bug 5147][5147], [bug 5148][5148], [bug 4977][4977] and
 You should also need to configure write access for logging, upload and
 template directories.
 
-
 ### SELINUX 
+
 If you use Linux Operating System, SELINUX can create some issues:  
 
 **ATTENTION with /var/www/html and selinux**  
@@ -243,7 +286,8 @@ TestLink & SELINUX
 
 **ATTENTION: We now use CKEDITOR** (see [forum post][cke])
 
-3. Launch web based installer
+3\. Launch web based installer
+
 We will create the necessary database tables and a basic configuration
 file. From your web server, access http://yoursite/testlink/
 or similar URL and follow instructions.
@@ -255,17 +299,21 @@ Check Installation manual and TestLink forum if you meet a problem.
 When accessing Installer page you will find only the **new installation**
 option. The migration **has to be done manually** for these special cases:
 
-- Upgrade from 1.9.3 to 1.9.4/5/6/7/../16/17/18/19
-- Upgrade from 1.9.4/5 to 1.9.7
-- Upgrade from 1.9.7 to 1.9.8
-- Migration from other releases than 1.9.3
+* Upgrade from 1.9.3 to 1.9.4/5/6/7/../16/17/18/19
+* Upgrade from 1.9.4/5 to 1.9.7
+* Upgrade from 1.9.7 to 1.9.8
+* Migration from other releases than 1.9.3
 
 ### General Steps
-1. Make a backup of your current database.
-2. Using a **new directory** (**DO NOT OVERWRITE** your old installation),
+
+1\. Make a backup of your current database\.
+2\. Using a \*\*new directory\*\* \(\*\*DO NOT OVERWRITE\*\* your old installation\),
+
    do only following steps from Install procedure:
+
        - Transfer files
        - Uncompress files
+
  - Copy your old `config_db.inc.php` and `custom_config.inc.php` over to the
    **new directory**.
  - Launch TestLink
@@ -294,13 +342,15 @@ case steps and expected results, also test case ID's are empty in GUI
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/step1/db_schema_update.sql`
-  b. Execute `install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/step1/db_schema_update.sql` 
+  b. Execute `install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql` 
 
-then look at sections: 'Upgrade from 1.9.4/5 to 1.9.7',
+then look at sections: 'Upgrade from 1.9.4/5 to 1.9.7', 
+
                        'Upgrade from 1.9.7 to 1.9.8'
 
 **Hint**: When using MySQL Query Browser make sure you are not using single
+
           command execution. (open script or use special script tab to
           execute the whole script at once)
 
@@ -308,10 +358,11 @@ then look at sections: 'Upgrade from 1.9.4/5 to 1.9.7',
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/step1/db_schema_update.sql`
-  b. Execute `install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/step1/db_schema_update.sql` 
+  b. Execute `install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/stepZ/z_final_step.sql` 
 
-then look at sections: 'Upgrade from 1.9.4/5 to 1.9.7',
+then look at sections: 'Upgrade from 1.9.4/5 to 1.9.7', 
+
                        'Upgrade from 1.9.7 to 1.9.8',
                        'Upgrade from 1.9.8 to 1.9.9',
                        'Upgrade from 1.9.9 to 1.9.10',
@@ -330,99 +381,98 @@ then look at sections: 'Upgrade from 1.9.4/5 to 1.9.7',
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/step1/db_schema_update.sql`
-  b. Execute `install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/step1/db_schema_update.sql` 
+  b. Execute `install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/stepZ/z_final_step.sql` 
 
  4. Upgrade from 1.9.8 to 1.9.9
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/step1/db_schema_update.sql`
-  b. Execute `install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/step1/db_schema_update.sql` 
+  b. Execute `install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/stepZ/z_final_step.sql` 
 
  5. Upgrade from 1.9.9 to 1.9.10
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.10/<your_db>/DB.1.9.10/step1/db_data_update.sql`
+  a. Execute `install/sql/alter_tables/1.9.10/<your_db>/DB.1.9.10/step1/db_data_update.sql` 
 
  6. Upgrade from 1.9.10 to 1.9.11
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/step1/db_schema_update.sql`
-  b. Execute `install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/step1/db_schema_update.sql` 
+  b. Execute `install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/stepZ/z_final_step.sql` 
 
  7. Upgrade from 1.9.11 to 1.9.12
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.12/<your_db>/DB.1.9.12/step1/db_schema_update.sql`
-  b. Execute `install/sql/alter_tables/1.9.12/<your_db>/DB.1.9.12/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.12/<your_db>/DB.1.9.12/step1/db_schema_update.sql` 
+  b. Execute `install/sql/alter_tables/1.9.12/<your_db>/DB.1.9.12/stepZ/z_final_step.sql` 
 
  8. Upgrade from 1.9.12 to 1.9.13
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.13/<your_db>/DB.1.9.13/step1/db_schema_update.sql`
-  b. Execute `install/sql/alter_tables/1.9.13/<your_db>/DB.1.9.13/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.13/<your_db>/DB.1.9.13/step1/db_schema_update.sql` 
+  b. Execute `install/sql/alter_tables/1.9.13/<your_db>/DB.1.9.13/stepZ/z_final_step.sql` 
 
  9. Upgrade from 1.9.13 to 1.9.14
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.14/<your_db>/DB.1.9.14/step1/db_schema_update.sql`
-  b. Execute `install/sql/alter_tables/1.9.14/<your_db>/DB.1.9.14/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.14/<your_db>/DB.1.9.14/step1/db_schema_update.sql` 
+  b. Execute `install/sql/alter_tables/1.9.14/<your_db>/DB.1.9.14/stepZ/z_final_step.sql` 
 
 10. Upgrade from 1.9.14 to 1.9.15
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.15/<your_db>/DB.1.9.15/step1/db_schema_update.sql`
-  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.15/<your_db>/DB.1.9.15/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.15/<your_db>/DB.1.9.15/step1/db_schema_update.sql` 
+  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.15/<your_db>/DB.1.9.15/stepZ/z_final_step.sql` 
 
 11. Upgrade from 1.9.15 to 1.9.16
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.16/<your_db>/DB.1.9.16/step1/db_schema_update.sql`
-  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.16/<your_db>/DB.1.9.16/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.16/<your_db>/DB.1.9.16/step1/db_schema_update.sql` 
+  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.16/<your_db>/DB.1.9.16/stepZ/z_final_step.sql` 
 
 12. Upgrade from 1.9.16 to 1.9.17
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.17/<your_db>/DB.1.9.17/step1/db_schema_update.sql`
-  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.17/<your_db>/DB.1.9.17/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.17/<your_db>/DB.1.9.17/step1/db_schema_update.sql` 
+  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.17/<your_db>/DB.1.9.17/stepZ/z_final_step.sql` 
 
 13. Upgrade from 1.9.17 to 1.9.18
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.18/<your_db>/DB.1.9.18/step1/db_schema_update.sql`
-  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.18/<your_db>/DB.1.9.18/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.18/<your_db>/DB.1.9.18/step1/db_schema_update.sql` 
+  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.18/<your_db>/DB.1.9.18/stepZ/z_final_step.sql` 
 
 14. Upgrade from 1.9.18 to 1.9.19
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.19/<your_db>/DB.1.9.19/step1/db_schema_update.sql`
-  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.19/<your_db>/DB.1.9.19/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.19/<your_db>/DB.1.9.19/step1/db_schema_update.sql` 
+  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.19/<your_db>/DB.1.9.19/stepZ/z_final_step.sql` 
 
 15. Upgrade from 1.9.19 to 1.9.20
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.20/<your_db>/DB.1.9.20/step1/db_schema_update.sql`
-  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.20/<your_db>/DB.1.9.20/stepZ/z_final_step.sql`
-
+  a. Execute `install/sql/alter_tables/1.9.20/<your_db>/DB.1.9.20/step1/db_schema_update.sql` 
+  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.20/<your_db>/DB.1.9.20/stepZ/z_final_step.sql` 
 
 **Hint**: When using MySQL Query Browser make sure you are not using single
+
           command execution. (open script or use special script tab to
           execute the whole script at once)
 
 **USE THE [FORUM SECTION][upgf] and the [USER UPGRADE SECTION][uupg]**
-
 
 14. Migration from other releases before 1.9.3
 
@@ -444,71 +494,78 @@ This list comprises people who have helped:
 
 ### Most Active on this release
 
-  * Francisco Mancardi - Project lead, builds, core developer, contributors
+  + Francisco Mancardi - Project lead, builds, core developer, contributors
+
                          code reviewer (well, really the One Man Band ;) )
-  * Asiel Brumfield - Infrastructure
+
+  + Asiel Brumfield - Infrastructure
 
  
 
 ### Contributors and developers active on older releases
 
-  * Maradana Amardeep - Leader of testlink-qa group effort on 1.9.5
-  * Bruno de Paula Kinoshita - some work on API, CSRF, Turn Key Linux
-  * Julian Krien - Leader of testlink-qa group effort on 1.9.1,1.9.2,1.9.3
-  * Andreas Simon
-  * Erik Eloff
-  * Martin Havlat - Project lead, builds, infrastructure, developer
-  * Andreas Morsing - core developer
-  * Amit Khullar
-  * Netzuleando Development OpenSource (netzuleando@gmail.com)
+  + Maradana Amardeep - Leader of testlink-qa group effort on 1.9.5
+  + Bruno de Paula Kinoshita - some work on API, CSRF, Turn Key Linux
+  + Julian Krien - Leader of testlink-qa group effort on 1.9.1, 1.9.2, 1.9.3
+  + Andreas Simon
+  + Erik Eloff
+  + Martin Havlat - Project lead, builds, infrastructure, developer
+  + Andreas Morsing - core developer
+  + Amit Khullar
+  + Netzuleando Development OpenSource (netzuleando@gmail.com)
+
   
+
 ### TestLink - QA Team - for 1.9.4
 
-  * Romoy Headly - QA Manager
-  * Sujata Verma
-  * Damien Mathieu
-  * Amardeep Maradana
-  * Amit Khullar
-  * Andreas Simon
-  * Ngoc Vu
-  * Biache Benoit
+  + Romoy Headly - QA Manager
+  + Sujata Verma
+  + Damien Mathieu
+  + Amardeep Maradana
+  + Amit Khullar
+  + Andreas Simon
+  + Ngoc Vu
+  + Biache Benoit
 
 ### TestLink - QA - for 1.9 RC1
 
-  * Andreia Balani
-  * Andreas Simon
-  * Biache Benoit
-  * James Bohnert
-  * Micky Zhang
-  * Rocky Yang
+  + Andreia Balani
+  + Andreas Simon
+  + Biache Benoit
+  + James Bohnert
+  + Micky Zhang
+  + Rocky Yang
 
-  * Masami Ichikawa - Automated Testing
+  + Masami Ichikawa - Automated Testing
 
-  * Toshiyuki Kawanishi - Japanese localization, developer
-  * Chad Rosen - (Originator - version 1.0.x)
-  * Kevin Levy - Developer
-  * Asiel Brumfield - Infrastructure, developer
-  * Jason B. Archibald - Developer
+  + Toshiyuki Kawanishi - Japanese localization, developer
+  + Chad Rosen - (Originator - version 1.0.x)
+  + Kevin Levy - Developer
+  + Asiel Brumfield - Infrastructure, developer
+  + Jason B. Archibald - Developer
 
-  * Tools R Us - contributing team
-  * Oscar Castroviejo - trackplus interface
-  * Seweryn Plywaczyk - text area custom field
-  * grdscarabe@grdscarabe.net and Alexandre Da Costa - French localization
-  * Walter Giaquinto/Alessandro Lia	and bruno.busco@gmail.com - Italian localization
-  * Alessandro Lia - Javascript and CSS advice.
-  * Leonardo Molinari - Portuguese (Brazil) localization
-  * Hélio Guilherme - Portuguese localization
-  * jorgesf@jsf.jazztel.es - Spanish localization
-  * Jonas Fleer - search test case by custom field on test projects
-  * Lightbulb Technology Services Pvt. Ltd. - techpartners: import test cases from XLS file
+  + Tools R Us - contributing team
+  + Oscar Castroviejo - trackplus interface
+  + Seweryn Plywaczyk - text area custom field
+  + grdscarabe@grdscarabe.net and Alexandre Da Costa - French localization
+  + Walter Giaquinto/Alessandro Lia	and bruno.busco@gmail.com - Italian localization
+  + Alessandro Lia - Javascript and CSS advice.
+  + Leonardo Molinari - Portuguese (Brazil) localization
+  + Hélio Guilherme - Portuguese localization
+  + jorgesf@jsf.jazztel.es - Spanish localization
+  + Jonas Fleer - search test case by custom field on test projects
+  + Lightbulb Technology Services Pvt. Ltd. - techpartners: import test cases from XLS file
+
     abhishek.kulkarni@gmail.com and amit.dixit@lbtp.co.in
-  * Kester Mielke <kmielke@pironet-ndh.com> (execution tree colouring and counters by tc status)
-  * Peter Rooms - Bug coloring and labeling according status using same colors as Mantis.
-  * Eugenia Drosdezki
+
+  + Kester Mielke <kmielke@pironet-ndh.com> (execution tree colouring and counters by tc status)
+  + Peter Rooms - Bug coloring and labeling according status using same colors as Mantis.
+  + Eugenia Drosdezki
       * Move/copy multiple testcases
       * Access to content of docs folder on combo box
       * Multiselect OR keywords filter
-  * Japanese Testing Engineer's Forum (TEF) in Japan
+  + Japanese Testing Engineer's Forum (TEF) in Japan
+
     Working Group of [TestLink Japanese Translation Project][tjp]
 
     Atsushi Nagata,       AZMA Daisuke,         Hiromi Nishiyama,
@@ -528,7 +585,6 @@ We try to follow as much as possible the following principle:
 
 We use code and documentation from other Open Source Systems
 (see `CODE_REUSE` document for details).
-
 
 ## 7. Bug Reports and Feedback
 
@@ -553,94 +609,112 @@ You can donate using PayPal or Flattr.
 
 PLEASE: read these short hints before you write a topic:
 
-  - :!: Use search forum before you add a new question.
-  - :!: Did you search User or Installation manual before?
-  - :!: Don't use the forum as a Bug Tracker, use [Mantis][mbug].
+  + :!: Use search forum before you add a new question.
+  + :!: Did you search User or Installation manual before?
+  + :!: Don't use the forum as a Bug Tracker, use [Mantis][mbug].
+
   **Bug issues reported here will be DELETED**
-  - :!: Consider that some issues are related to Apache, browser or database
+
+  + :!: Consider that some issues are related to Apache, browser or database
+
         instead of TestLink. Use Google first.
 
 ## 10. Changes (Just a glance)
 
 ### 1.9.20
-  - DB Schema changes new views, tables.
-  - Platforms can be used during Test Case Design
-  - Security Fixes
-  - MD5 replaced with BCRYPT for DB stored password
-  - Roles issues fixed
-  - new right to allow add/remove keywords from executed test case versions
-  - Heads Ups on execution through use of special Keyword
-  - A couple of new reports
+
+  + DB Schema changes new views, tables.
+  + Platforms can be used during Test Case Design
+  + Security Fixes
+  + MD5 replaced with BCRYPT for DB stored password
+  + Roles issues fixed
+  + new right to allow add/remove keywords from executed test case versions
+  + Heads Ups on execution through use of special Keyword
+  + A couple of new reports
+
  ... and more (read CHANGELOG file)
 
-
 ### 1.9.19
-  - DB Schema changes new unique indexes.
 
+  + DB Schema changes new unique indexes.
 
 ### 1.9.18
-  - DB Schema changes to allow fine grain management of different entities.
-  - more features on requirements/test case links
-  - more features on attachments & keywords
-  - more on data management
+
+  + DB Schema changes to allow fine grain management of different entities.
+  + more features on requirements/test case links
+  + more features on attachments & keywords
+  + more on data management
+
     ... and more (read CHANGELOG file)
 
 ### 1.9.17
-  - oAuth Authentication with GitHub
-  - code repository integration (to manage external scripts)
-  - more features on requirements
+
+  + oAuth Authentication with GitHub
+  + code repository integration (to manage external scripts)
+  + more features on requirements
+
     ... and more (read CHANGELOG file)
 
-
 ### 1.9.16
-  - issues on step are saved on TestLink DB wth step ID
-  - redmine integration: reported will be testlink user creating issue.
-  - ADODB upgraded
-  - Ckeditor upgraded
+
+  + issues on step are saved on TestLink DB wth step ID
+  + redmine integration: reported will be testlink user creating issue.
+  + ADODB upgraded
+  + Ckeditor upgraded
+
     ... and more (read CHANGELOG file)
 
 ### 1.9.15
-  - plugin system by Collabnet
+
+  + plugin system by Collabnet
+
     ... and more (read CHANGELOG file)
 
 ### 1.9.14
-  - proxy config available for MANTISSOAP & JIRASOAP Integration
+
+  + proxy config available for MANTISSOAP & JIRASOAP Integration
 
 ### 1.9.13
-  - new tag to allow inline images in test case summary, preconditions, and steps
-  - new tag to allow inline images in test suite details
-  - new tag to allow inline images in requirement scope
-  - Test Step execution - Attachment management
-  - Automatically copy linked bugs from previous execution to the new one
-  - Export Test Spec - add option to export external ID WITH PREFIX
-  - Improvements on JIRA integration:
+
+  + new tag to allow inline images in test case summary, preconditions, and steps
+  + new tag to allow inline images in test suite details
+  + new tag to allow inline images in requirement scope
+  + Test Step execution - Attachment management
+  + Automatically copy linked bugs from previous execution to the new one
+  + Export Test Spec - add option to export external ID WITH PREFIX
+  + Improvements on JIRA integration:
     - user can set values on GUI for Components, Priorities, Versions, IssueTypes
     - getting domain values from JIRA.
+
     ... and more (read CHANGELOG file)
 
 ### 1.9.12
-  - Test case relations
-  - Improvements on Issue Tracker integration (edit notes when linking)
-  - Requirements Overview performance improvements
+
+  + Test case relations
+  + Improvements on Issue Tracker integration (edit notes when linking)
+  + Requirements Overview performance improvements
 
 ### 1.9.10
-  - Long-awaited feature: execution notes & results for test steps
+
+  + Long-awaited feature: execution notes & results for test steps
 
 ### 1.9.9
-  - User can have two different (mutually exclusive) kinds of authentication
+
+  + User can have two different (mutually exclusive) kinds of authentication
 
 ### 1.9.6
-  - Admin role can not be edit any more
+
+  + Admin role can not be edit any more
 
 ### 1.9.7
-  - Reports do not use Custom fields any more:
-    - `CF_ESTIMATED_EXEC_TIME`
-    - `CF_EXEC_TIME`
+
+  + Reports do not use Custom fields any more:
+    - `CF_ESTIMATED_EXEC_TIME` 
+    - `CF_EXEC_TIME` 
 
    Specific columns have been added to tcversions and executions tables.
 
-  - Smarty 3 is the default.
-
+  + Smarty 3 is the default.
 
 ## 11. Testlink & FreeTest
 
@@ -654,24 +728,30 @@ If you are interested you can [get some info][free]:
 ## 12. Security
 
 ### 1.9.20
-  - Multiple XSS and Blind SQL Injection
 
+  + Multiple XSS and Blind SQL Injection
 
 ### 1.9.15
-  - Multiple XSS and Blind SQL Injection by
+
+  + Multiple XSS and Blind SQL Injection by
+
     Netsparker Web Application Security Scanner.
     They have also provided a free account.
 
 ### 1.9.12
-  - Research team of Portcullis Computer Security Ltd
+
+  + Research team of Portcullis Computer Security Ltd
+
     cedric (mantis.testlink.org user name)
 
 ### 1.9.10
-  - We want to thank xistence (xistence@0x90.nl) for his tests.
+
+  + We want to thank xistence (xistence@0x90.nl) for his tests.
 
 ## 13. JIRA DB interface changes
 
-  - TICKET 6028: Integration with Jira 6.1 broken.
+  + TICKET 6028: Integration with Jira 6.1 broken.
+
     (Due to JIRA schema changes)
     Contribution by adnkoks
 
@@ -684,20 +764,22 @@ Without this property TestLink **WILL CRASH** => this is a desired behaviour
 
 ## 14. People/Companies supporting TestLink
 
-  - Bitnami: provided a VM on Cloud to do tests
+  + Bitnami: provided a VM on Cloud to do tests
 
-  - Team Cortado (Germany): paid for custom development of a long-awaited
+  + Team Cortado (Germany): paid for custom development of a long-awaited
+
     feature: execution notes & results for test steps, **donating** feature
     to community (it is not the first time they are doing this!)
 
-  - MAMP PRO
+  + MAMP PRO
 
-  - [Hitek School][hitek]: Group of students helped to test TestLink
+  + [Hitek School][hitek]: Group of students helped to test TestLink
 
-  - [Wellington Institute of Technology][welt]: Group of students working on
+  + [Wellington Institute of Technology][welt]: Group of students working on
+
     creating automation infrastructure to test TestLink
 
-  - [CSRF Prevention Cheat Sheet][csrf]
+  + [CSRF Prevention Cheat Sheet][csrf]
 
 ## 15. Use forum.testlink.org
 
@@ -711,24 +793,27 @@ Information has been collected with users' help
 
 ## 16. User cries: I WANT HELP !!!
 
-Relax, as usual I've to say the resources are limited,
+Relax, as usual I've to say the resources are limited, 
 that this effort is not supported by a company or a foundation
 but is result of usage of free time.
 
 Guidelines for getting help and/or solving a situation are what I use everyday:
 First try for yourself searching on:
-  - mantis.testlink.org
-  - forum.testlink.org
-  - https://github.com/TestLinkOpenSourceTRMS/testlink-documentation/wiki/Execution-Feature---Configuration
-  - https://github.com/TestLinkOpenSourceTRMS/testlink-documentation/wiki/Execution-Feature---Test-Step-Execution-configuration
+
+  + mantis.testlink.org
+  + forum.testlink.org
+  + https://github.com/TestLinkOpenSourceTRMS/testlink-documentation/wiki/Execution-Feature---Configuration
+  + https://github.com/TestLinkOpenSourceTRMS/testlink-documentation/wiki/Execution-Feature---Test-Step-Execution-configuration
 
 Please do not operate on lazy mode: just asking.
 First thing will be always asked will be:
-- have you already did some searches ?
 
-When you report a potential issue on a TestLink version,
+* have you already did some searches ?
+
+When you report a potential issue on a TestLink version, 
 first thing that will be requested will be the 30minTest:
-- get latest code from github, do fresh install, retest & provide feedback.
+
+* get latest code from github, do fresh install, retest & provide feedback.
 
 Do not send PRIVATE email to ask for things that have to be PUBLIC, this is
 a bad approach. Use PRIVATE CHANNELS only on Dev Team Request.

@@ -118,12 +118,35 @@ Ext.onReady(function(){
 });
 //-->
 </script>
+
+<style>
+#gafixed {
+  top:  0;
+  position: fixed;
+  background: yellow;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 6px #000;
+  color: #fff;
+}
+#gaga {
+  border-bottom:  1px solid #000;
+  height: 200px;
+  position: fixed;
+  top:  0;
+  width:  100%;
+  background: yellow;
+}
+</style>
 </head>
 <body class="fixedheader">
 <form name="addTcForm" id="addTcForm" method="post" 
       onSubmit="javascript:return checkDelete(js_remove_executed_counter);">
 
-  <div id="header-wrap">
+  <div id="gaga2">
 	  	<h1 class="title">
         {$gui->pageTitle|escape}{$tlCfg->gui->title_separator_2}{$gui->actionTitle}
 	  	  {include file="inc_help.tpl" helptopic="hlp_planAddTC" show_help_icon=true}
@@ -348,11 +371,14 @@ Ext.onReady(function(){
                         {/foreach}
                         </script>
              				    
-                        <select name="tcversion_for_tcid[{$tcID}]" 
-             				      onchange="updTCAttr({$tcID},this.options[this.selectedIndex].value);"
-             				      {if $linked_version_id != 0} disabled{/if}>
-             				        {html_options options=$tcase.tcversions selected=$linked_version_id}
-             				    </select>
+                        {if $linked_version_id == 0} 
+                          <select name="tcversion_for_tcid[{$tcID}]" 
+               				      onchange="updTCAttr({$tcID},this.options[this.selectedIndex].value);">
+               				        {html_options options=$tcase.tcversions selected=$linked_version_id}
+               				    </select>
+                        {else}
+                          {$tcase.tcversions[$linked_version_id]}
+                        {/if}
                     	</td>
 
 

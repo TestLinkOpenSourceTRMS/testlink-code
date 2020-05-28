@@ -81,6 +81,7 @@ giving visual experience that body goes under the section on top
 body.fixedheader {
 	padding-top:	200px !important;
 	padding-top:	0; /* IE 6 does not understand fixed */
+	background-color: yellow !important;
 }
 
 img {
@@ -201,12 +202,21 @@ present on page (example grid())
 On chrome seems not work
 */
 #header-wrap {
-	border-bottom:	1px solid #000;
-	height: 200px;
-	position: fixed;
-	top:  0;
-	width:  100%;
-	z-index:  999;
+  border-bottom:  1px solid #000;
+  height: 200px;
+  position: fixed;
+  top:  0;
+  width:  100%;
+  background: yellow;
+}
+
+#gaga2 {
+  border-bottom:  1px solid #000;
+  height: 200px;
+  position: fixed;
+  top:  0;
+  width:  100%;
+  background: white;
 }
 
 /* background for working area (tables and forms) */

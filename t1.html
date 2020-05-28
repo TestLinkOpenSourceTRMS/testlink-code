@@ -1,0 +1,50 @@
+<style>
+.fixed {
+  top:  0;
+
+  position: fixed;
+  background: yellow;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 6px #000;
+  color: #fff;
+}
+.extra,
+.wrapper {
+  width: 75%;
+  margin: auto;
+  background-color: #ccc;
+}
+.wrapper {
+  height: 800px;
+}
+.extra {
+  height: 100px;
+}
+body {
+  font-family: georgia;
+  height: 1000px;
+}
+h4 {
+  text-align: center;
+}
+@media (min-height: 768px) {
+  #wrapper{
+    height: 2000px;
+  }
+}
+</style>
+  
+<h4>A fixed element is not confined to the parent it is in.</h4>
+<div class="extra"></div>
+<br />
+<div class="wrapper">
+  <div class="fixed">
+    fixed
+  </div>
+</div>
+<br />
+<div class="extra"></div>

@@ -200,13 +200,20 @@ present on page (example grid())
 
 On chrome seems not work
 */
+/* @20200528 I've discovered a regression
+   the header wrap does not cover what is scrolling
+   under it.
+   I need to understand when was introduced
+   but adding 	background: white; is enough to fix it 
+   */
 #header-wrap {
 	border-bottom:	1px solid #000;
 	height: 200px;
 	position: fixed;
 	top:  0;
 	width:  100%;
-	z-index:  999;
+	background: white;
+	/* z-index:  999;*/
 }
 
 /* background for working area (tables and forms) */

@@ -348,11 +348,18 @@ Ext.onReady(function(){
                         {/foreach}
                         </script>
              				    
-                        <select name="tcversion_for_tcid[{$tcID}]" 
-             				      onchange="updTCAttr({$tcID},this.options[this.selectedIndex].value);"
-             				      {if $linked_version_id != 0} disabled{/if}>
-             				        {html_options options=$tcase.tcversions selected=$linked_version_id}
-             				    </select>
+                        {* 20200528 - disabled items are not
+                           covered by header-wrap.
+                        *}
+                        
+                       {if $linked_version_id == 0}
+                          <select name="tcversion_for_tcid[{$tcID}]" 
+               				      onchange="updTCAttr({$tcID},this.options[this.selectedIndex].value);">
+               				        {html_options options=$tcase.tcversions selected=$linked_version_id}
+               				    </select>
+                       {else}
+                         {$tcase.tcversions[$linked_version_id]}
+                       {/if}   
                     	</td>
 
 

@@ -67,7 +67,7 @@ has clicked on 'Create Issue' checkbox
       {if $itMetaData.issueTypes != ''          
           && $itMetaData.issueTypes.items != ''
           && is_array($itMetaData.issueTypes.items)}
-        <label class="label" for="{$issueTypeName}">{$labels.issueType}</label>
+        <label class="label" for="{$issueTypeID}">{$labels.issueType}</label>
         {if $gui->issueTrackerCfg->editIssueAttr == 0}
           <input type="hidden" name="{$issueTypeName}" id="hidden{$issueTypeID}"
                  value="{$gui->issueType}">
@@ -82,7 +82,7 @@ has clicked on 'Create Issue' checkbox
       {if $itMetaData.priorities != ''
           && $itMetaData.priorities.items != ''
           && is_array($itMetaData.priorities.items)}
-        <label class="label" for="{$issuePriorityName}">{$labels.issuePriority}
+        <label class="label" for="{$issuePriorityID}">{$labels.issuePriority}
         </label> 
         {if $gui->issueTrackerCfg->editIssueAttr == 0}
           <input type="hidden" name="{$issuePriorityName}" id="hidden{$issuePriorityID}"
@@ -99,7 +99,7 @@ has clicked on 'Create Issue' checkbox
       {if $itMetaData.versions != '' 
           && $itMetaData.versions.items != '' 
           && is_array($itMetaData.versions.items)}
-        <label class="label" for="{$artifactVersionName}">{$labels.artifactVersion}</label> 
+        <label class="label" for="{$artifactVersionID}">{$labels.artifactVersion}</label> 
         {if $gui->issueTrackerCfg->editIssueAttr == 0}
           <select style="display:none" 
                   {if $itMetaData.versions.isMultiSelect}
@@ -127,7 +127,8 @@ has clicked on 'Create Issue' checkbox
       {if $itMetaData.components != '' 
           && $itMetaData.components.items != '' 
           && is_array($itMetaData.components.items)}
-        <label class="label" for="{$artifactComponentName}">{$labels.artifactComponent}</label>        
+        <label class="label" 
+               for="{$artifactComponentID}">{$labels.artifactComponent}</label>        
         {if $gui->issueTrackerCfg->editIssueAttr == 0}
           <select style="display:none" 
                   {if $itMetaData.components.isMultiSelect}

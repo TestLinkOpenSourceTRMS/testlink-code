@@ -347,48 +347,43 @@ class jirarestInterface extends issueTrackerInterface
    */
   public function addIssue($summary,$description,$opt=null)
   {
-    try
-    {
+    try {
       $issue = array('fields' =>
-                     array('project' => array('key' => (string)$this->cfg->projectkey),
+                     array('project' => 
+                            array('key' => (string)$this->cfg->projectkey),
                            'summary' => $summary,
                            'description' => $description,
-                           'issuetype' => array( 'id' => (int)$this->cfg->issuetype)
-                           ));
+                           'issuetype' => 1 /*Bug*/));
+
+      if ( property_exists($this->cfg,'issuetype') ) {
+        $issue['fields']['issuetype'] = array('id' => 
+                                              (int)$this->cfg->issuetype);
+      }
 
       $prio = null;
-      if(property_exists($this->cfg, 'issuepriority'))
-      {
+      if(property_exists($this->cfg, 'issuepriority')) {
         $prio = $this->cfg->issuepriority;
-
       }  
-      if( !is_null($opt) && property_exists($opt, 'issuePriority') )
-      {
+      if( !is_null($opt) && property_exists($opt, 'issuePriority') ) {
         $prio = $opt->issuePriority;
       }
-      if( !is_null($prio) )
-      {
+      if( !is_null($prio) ) {
         // CRITIC: if not casted to string, you will get following error from JIRA
         // "Could not find valid 'id' or 'name' in priority object."
         $issue['fields']['priority'] = array('id' => (string)$prio);
       }    
   
 
-      if(!is_null($this->issueAttr))
-      {
+      if(!is_null($this->issueAttr)) {
         $issue['fields'] = array_merge($issue['fields'],$this->issueAttr);
       }
 
-      if(!is_null($opt))
-      {
-
+      if(!is_null($opt)) {
         // these can have multiple values
-        if(property_exists($opt, 'artifactComponent'))
-        {
+        if(property_exists($opt, 'artifactComponent')) {
           // YES is plural!!
           $issue['fields']['components'] = array();
-          foreach( $opt->artifactComponent as $vv)
-          {
+          foreach( $opt->artifactComponent as $vv) {
             $issue['fields']['components'][] = array('id' => (string)$vv);
           }  
         }
@@ -410,7 +405,10 @@ class jirarestInterface extends issueTrackerInterface
           $issue['fields']['issuetype'] = array('id' => $opt->issueType);
         }
         
-        if (preg_grep("/(?:\/.*\/{1,})(.*) - Execution/", $summary, $matches)) {
+        // @20200531 - documentation is needed
+        $matches = preg_grep("/(?:\/.*\/{1,})(.*) - Execution/", 
+                             (array)$summary);
+        if (count($matches) > 0 && isset($matches[1])) {
           $issue['fields']['customfield_10311'] = $matches[1];
         }
       }  

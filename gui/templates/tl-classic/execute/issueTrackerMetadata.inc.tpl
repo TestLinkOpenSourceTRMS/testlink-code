@@ -30,7 +30,7 @@ has clicked on 'Create Issue' checkbox
      {$required = ''}
      {$chosenClass = 'chosen-select-artifact'}
      {if $gui->allIssueAttrOnScreen == 1}
-       {$required = 'required'}
+       {$required = ' required '}
        {$chosenClass = 'chosen-select'}
      {/if} 
      {$issueTypeName = "issueType"}     
@@ -113,7 +113,7 @@ has clicked on 'Create Issue' checkbox
           </select>
         {/if}
         <select class="{$chosenClass}" data-placeholder="{$lbl_required_warning}" 
-                required="{$required}"
+                {$required}
                 {if $itMetaData.versions.isMultiSelect}
                  name="{$artifactVersionName}[]" size="2" multiple
                 {else}
@@ -143,7 +143,7 @@ has clicked on 'Create Issue' checkbox
         {/if}
          <select class="{$chosenClass}"  
                  data-placeholder="{$lbl_required_warning}" 
-                 required="{$required}"
+                 {$required}
                  {if $gui->issueTrackerMetaData.components.isMultiSelect}
                    name="{$artifactComponentName}[]" size="2" multiple
                  {else}

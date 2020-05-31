@@ -676,14 +676,24 @@ function addIssue($dbHandler,$argsObj,$itsObj,$opt=null) {
   }  
 
   $opt = new stdClass();
-  if( $setReporter ) {
+  if ($setReporter) {
     $opt->reporter = $argsObj->user->login;
     $opt->reporter_email = trim($argsObj->user->emailAddress);
-    if( '' == $opt->reporter_email ) {
+    if ('' == $opt->reporter_email) {
       $opt->reporter_email = $opt->reporter;
     }
-  }
 
+    // Specific for JIRA after Atlassian GDRP Changes
+    if (method_exists($itsObj,'getUserAccountID')) {
+       if ($opt->reporter_email != '') {
+         $opt->reporter = $itsObj->getUserAccountID($opt->reporter_email);
+       }
+    }  
+  }
+  if ($opt->reporter == null) {
+    $opt = new stdClass();
+  }
+  
   $p2check = array('issueType','issuePriority',
                    'artifactComponent','artifactVersion');
   foreach($p2check as $prop) {

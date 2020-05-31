@@ -100,6 +100,20 @@ class Jira
         return $user;
     }
 
+
+    /**
+     *
+     */
+    public function getUserByEmail($email)
+    {
+        $this->request->openConnect($this->host . 
+            'user/query=' . $email, 'GET');
+        $this->request->execute();
+        $user = json_decode($this->request->getResponseBody());
+
+        return $user;
+    }
+
     /**
      * https://docs.atlassian.com/jira/REST/latest/
      * https://docs.atlassian.com/jira/REST/latest/#api/2/myself

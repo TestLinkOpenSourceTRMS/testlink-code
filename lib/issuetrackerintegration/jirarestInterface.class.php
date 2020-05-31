@@ -398,7 +398,12 @@ class jirarestInterface extends issueTrackerInterface
 
 
         if (property_exists($opt, 'reporter')) {
-          $issue['fields']['reporter'] = array('name' => (string)$opt->reporter);
+
+          // After Atlassian GDRP Changes
+          // $issue['fields']['reporter'] = 
+          //  array('name' => (string)$opt->reporter);
+          $issue['fields']['reporter'] = 
+            array('id' => (string)$opt->reporter);
         }
 
         if (property_exists($opt, 'issueType')) {
@@ -907,6 +912,24 @@ class jirarestInterface extends issueTrackerInterface
       }
     }
     $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
+  }
+
+
+  /**
+   *
+   */
+  public function getUserAccountID($email)
+  {
+    try {
+      $u = $this->APIClient->getUserByEmail($email);
+      if (null != $u) {
+        return $u->accountId;
+      }
+      return null;
+    }
+    catch(Exception $e) {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }
   }
 
 

@@ -405,12 +405,17 @@ class jirarestInterface extends issueTrackerInterface
           $issue['fields']['issuetype'] = array('id' => $opt->issueType);
         }
         
+        // @20200531 - Will revert because it's not clear what is the intent
+        //
         // @20200531 - documentation is needed
+        // accepted Pull Request #231
+        /*
         $matches = preg_grep("/(?:\/.*\/{1,})(.*) - Execution/", 
                              (array)$summary);
         if (count($matches) > 0 && isset($matches[1])) {
           $issue['fields']['customfield_10311'] = $matches[1];
         }
+        */
       }  
 
       $op = $this->APIClient->createIssue($issue);

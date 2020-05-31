@@ -212,7 +212,7 @@ include 'installHead.inc';
       ?>
     </p>
     <p>
-      <input type="submit" value="Process TestLink Setup!">
+      <input type="submit" id="setup" value="Process TestLink Setup!">
     </p>
         
   </form> 

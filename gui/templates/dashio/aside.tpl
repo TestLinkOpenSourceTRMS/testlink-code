@@ -56,7 +56,7 @@ Left side menu
                   <li><a id="issueTrackerView" href="{$gui->uri->issueTrackerView}">{$labels.href_issuetracker_management}</a></li>
                 {/if}
                 {if $gui->access.codetracker == 'yes'}
-                  <li><a id="codeTrackerView" href="{$gui->codeTrackerView}">{$labels.href_codetracker_management}</a></li>
+                  <li><a id="codeTrackerView" href="{$gui->uri->codeTrackerView}">{$labels.href_codetracker_management}</a></li>
                 {/if}
               </ul>
             </li>

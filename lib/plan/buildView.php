@@ -10,11 +10,11 @@
  */
 require('../../config.inc.php');
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
-$tplCfg = templateConfiguration();
 $gui = initEnv($db);
 
+$tplCfg = templateConfiguration();
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($tplCfg->template_dir . $tplCfg->default_template);
@@ -26,7 +26,7 @@ $smarty->display($tplCfg->template_dir . $tplCfg->default_template);
 function initEnv(&$dbHandler) {
 
   list($context,$env) = initContext();
-  list($add2args,$gui) = initUserEnv($dbHandler,$context);
+  list($args,$gui) = initUserEnv($dbHandler,$context);
   $gui->activeMenu['plans'] = 'active';
 
   if( $gui->tplan_id == 0 ) {
@@ -49,13 +49,16 @@ function initEnv(&$dbHandler) {
   $cfg = getWebEditorCfg('build');
   $gui->editorType = $cfg['type'];
   
+
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $gui->tproject_id;
+  $env['tplan_id'] = $gui->tplan_id;
+  $args->user->checkGUISecurityClearance(dbHandler,$env,
+                    array('testplan_create_build'),'and');
+  // ----------------------------------------------------------------
+
   return $gui;  
-}
-
-
-/**
- *
- */
-function checkRights(&$db,&$user) {
-  return $user->hasRight($db,'testplan_create_build');
 }

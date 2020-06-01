@@ -13,7 +13,7 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $date_format_cfg = config_get('date_format');
@@ -178,6 +178,17 @@ function init_args($date_format,&$tplanMgr,&$buildMgr) {
 
   $args->user = $_SESSION['currentUser'];
   $args->userID = intval($_SESSION['userID']);
+
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $args->tproject_id;
+  $env['tplan_id'] = $args->tplan_id;
+  $args->user->checkGUISecurityClearance(dbHandler,$env,
+                    array('testplan_create_build'),'and');
+  // ----------------------------------------------------------------
+
   return $args;
 }
 
@@ -628,11 +639,6 @@ function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
       }
     }
   }
-}
-
-function checkRights(&$db,&$user)
-{
-  return $user->hasRight($db,'testplan_create_build');
 }
 
 /**

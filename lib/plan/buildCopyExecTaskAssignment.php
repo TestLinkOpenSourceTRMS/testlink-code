@@ -101,7 +101,7 @@ function init_args(&$dbH,&$tplanMgr,&$buildMgr)
   $env['tproject_id'] = $args->tproject_id;
   $env['tplan_id'] = $args->tplan_id;
   $args->user->checkGUISecurityClearance(dbHandler,$env,
-                    array('testplan_create_build'),'and');
+                    array('testplan_planning'),'and');
   // ----------------------------------------------------------------
 
   return $args;
@@ -172,14 +172,3 @@ function getBuildDomainForGUI(&$tplanMgr, &$argsObj)
   
   return $htmlMenu;
 } 
-
-/**
- *
- */
-function checkRights(&$dbHandler,&$user) 
-{
-  if( !$user->hasRight($dbHandler, 'testplan_planning') )
-  {
-    exit();
-  }  
-}

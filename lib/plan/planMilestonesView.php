@@ -15,7 +15,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("testplan.class.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 list($args,$gui) = initScript($db);
@@ -32,7 +32,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function initScript(&$dbH) 
 {
-  $args = init_args();
+  $args = init_args($dbH);
   $gui = initialize_gui($dbH,$args);  
 
  return array($args,$gui);
@@ -41,8 +41,21 @@ function initScript(&$dbH)
 /**
  *
  */
-function init_args() {
+function init_args(&$dbH) {
 	list($args,$env) = initContext();
+
+  $args->user = $_SESSION['currentUser'];
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  // This feature is affected only for right at Test Project Level
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $args->tproject_id;
+  $env['tplan_id'] = $args->tplan_id;
+  $args->user->checkGUISecurityClearance($dbHandler,$env,
+                    array('testplan_planning'),'and');
+  // ----------------------------------------------------------------
+
 	return $args;
 }
 
@@ -81,12 +94,4 @@ function initialize_gui(&$dbHandler,&$argsObj) {
                      "?tproject_id=$gui->tproject&tplan_id=$gui->tplan_id";
 
 	return $gui;
-}
-
-
-/**
- *
- */
-function checkRights(&$db,&$user) {
-	return $user->hasRight($db,"testplan_planning");
 }

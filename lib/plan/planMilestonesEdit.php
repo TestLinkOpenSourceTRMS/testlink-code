@@ -10,7 +10,7 @@
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
@@ -97,6 +97,19 @@ function init_args(&$dbHandler)
   }  
   $args->tproject_name = 
     testproject::getName($dbHandler,$args->tproject_id);
+
+  $args->user = $_SESSION['currentUser'];
+
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  // This feature is affected only for right at Test Project Level
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $args->tproject_id;
+  $env['tplan_id'] = $args->tplan_id;
+  $args->user->checkGUISecurityClearance($dbHandler,$env,
+                    array('testplan_planning'),'and');
+  // ----------------------------------------------------------------
 
 	return $args;
 }
@@ -198,12 +211,3 @@ function initialize_gui(&$dbHandler,&$argsObj) {
 
   return $gui;
 }
-
-/**
- *
- *
- */
-function checkRights(&$db,&$user) {
-	return ($user->hasRight($db,"testplan_planning"));
-}
-?>

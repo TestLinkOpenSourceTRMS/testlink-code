@@ -115,13 +115,3 @@ function init_gui(&$dbHandler, &$argsObj) {
 	
 	return $gui;
 }
-
-
-/**
- *
- */
-function checkRights(&$dbHandler,&$user) {
-	return $user->hasRight($dbHandler, 'testplan_planning');
-}
-
-?>

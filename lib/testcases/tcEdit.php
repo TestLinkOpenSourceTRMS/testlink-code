@@ -36,7 +36,8 @@ $tplCfg = templateConfiguration('tcEdit');
 $commandMgr = new testcaseCommands($db,$args->user,$args->tproject_id);
 $commandMgr->setTemplateCfg(templateConfiguration());
 
-$testCaseEditorKeys = array('summary' => 'summary','preconditions' => 'preconditions');
+$testCaseEditorKeys = array('summary' => 'summary',
+                            'preconditions' => 'preconditions');
 $init_inputs = true;
 $opt_cfg = initializeOptionTransferCfg($optTransferName,$args,$tproject_mgr);
 $gui = initializeGui($db,$args,$cfg,$tcase_mgr,$tproject_mgr);
@@ -529,7 +530,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   args :
   returns: 
 */
-function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
+function initializeOptionTransferCfg($otName,&$argsObj,&$tprojMgr)
 {
   $otCfg = new stdClass();
   $otCfg->js_ot_name = $otName;

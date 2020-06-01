@@ -117,9 +117,10 @@ function jsCallDeleteFile(btn, text, o_id)
 
   {if $gui->modify_tc_rights == 'yes'}
     {$bDownloadOnly=false}
-
-  <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tproject_control_panel');"
-       title="{$labels.actions}" />
+  <i class="fa fa-cog" aria-hidden="true"
+     onclick="javascript:toogleShowHide('tproject_control_panel');"
+     title="{$labels.actions}">
+  </i>
   <div id="tproject_control_panel" style="display:{$tlCfg->gui->op_area_display->test_spec_container};">
     <fieldset class="groupBtn">
     <b>{$labels.testsuite_operations}</b>

@@ -389,16 +389,17 @@ function init_args(&$dbH,&$tplanMgr)
   $args->user_id = intval($_SESSION['userID']);
   $args->user = $_SESSION['currentUser'];
 
-  return $args;
-}
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  // This feature is affected only for right at Test Project Level
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $args->tproject_id;
+  $args->user->checkGUISecurityClearance($dbH,$env,
+                    array('mgt_testplan_create'),'and');
+  // ----------------------------------------------------------------
 
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$user)
-{
-  return $user->hasRight($db,'mgt_testplan_create');
+  return $args;
 }
 
 /**

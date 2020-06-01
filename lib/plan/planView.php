@@ -10,13 +10,11 @@ require_once('../../config.inc.php');
 require_once("common.php");
 require_once("planViewUtils.php");
 
-testlinkInitPage($db,false,false,"checkRights");
-
-$tplCfg = templateConfiguration();
-
+testlinkInitPage($db);
 $args = init_args($db);
-list($gui,$tproject_mgr,$tplan_mgr) = initializeGui($db,$args);
 
+
+list($gui,$tproject_mgr,$tplan_mgr) = initializeGui($db,$args);
 if ($args->tproject_id) {  
   if (!is_null($gui->tplans) && count($gui->tplans) > 0) {
     $gui->getTestPlans = false;
@@ -24,6 +22,8 @@ if ($args->tproject_id) {
   }
 }
 
+
+$tplCfg = templateConfiguration();
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($tplCfg->template_dir . $tplCfg->default_template);
@@ -50,6 +50,17 @@ function init_args(&$dbH) {
   $info = $tprojMgr->get_by_id($args->tproject_id);
   $args->tproject_name = $info['name'];
   $args->user = $_SESSION['currentUser'];
+
+
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  // This feature is affected only for right at Test Project Level
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $args->tproject_id;
+  $args->user->checkGUISecurityClearance($dbH,$env,
+                    array('mgt_testplan_create'),'and');
+  // ----------------------------------------------------------------
 
   return $args;
 }

@@ -113,13 +113,3 @@ function initializeGui(&$dbHandler,$argsObj) {
   $gui->actions = $tplan_mgr->getViewActions($ctx);
   return array($gui,$tproject_mgr,$tplan_mgr);
 }
-
-
-/**
- * checkRights
- *
- */
-function checkRights(&$db,&$user)
-{
-  return $user->hasRight($db,'mgt_testplan_create');
-}

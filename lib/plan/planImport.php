@@ -105,15 +105,6 @@ $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-/**
- * called magically by TL to check if user trying to use this feature
- * has enough rights.
- *
- */
-function checkRights(&$db,&$user)
-{
-  return $user->hasRight($db,'mgt_testplan_create');
-}
 
 /**
  * process input data, creating a kind of namespace
@@ -154,6 +145,18 @@ function init_args(&$dbH)
   $tplan = new testplan($dbH);
   $info = $tplan->get_by_id($args->tplan_id);
   $args->tproject_id = $info['testproject_id'];
+
+
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  // This feature is affected only for right at Test Project Level
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $args->tproject_id;
+  $args->user->checkGUISecurityClearance($dbH,$env,
+                    array('mgt_testplan_create'),'and');
+  // ----------------------------------------------------------------
+
   
   return $args;
 }

@@ -47,7 +47,6 @@ function init_args(&$dbH) {
   $args->user = $_SESSION['currentUser'];
   // ----------------------------------------------------------------
   // Feature Access Check
-  // This feature is affected only for right at Test Project Level
   $env = array()
   $env['script'] = basename(__FILE__);
   $env['tproject_id'] = $args->tproject_id;

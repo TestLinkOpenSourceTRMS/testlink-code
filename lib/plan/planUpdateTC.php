@@ -12,7 +12,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("specview.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
@@ -149,6 +149,19 @@ function init_args(&$tplanMgr)
 	if (isset($cache[$ft])) {
 		$args->keywordsFilterType = $cache[$ft];
 	}
+
+  $args->user = $_SESSION['currentUser'];
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  // This feature is affected only for right at Test Project Level
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $args->tproject_id;
+  $env['tplan_id'] = $args->tplan_id;
+  $args->user->checkGUISecurityClearance($dbHandler,$env,
+                    array('testplan_planning'),'and');
+  // ----------------------------------------------------------------
+
 	
   return $args;
 }
@@ -403,9 +416,4 @@ function tideUpForGUI(&$output)
     	}
     
     } 
-}
-
-function checkRights(&$db,&$user)
-{
-	return $user->hasRight($db,'testplan_planning');
 }

@@ -7,7 +7,7 @@
 require('../../config.inc.php');
 require_once("common.php");
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
@@ -91,11 +91,17 @@ function init_args(&$dbH)
   // Can be a list (string with , (comma) has item separator), 
   $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
 
+  $args->user = $_SESSION['currentUser'];
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $args->tproject_id;
+  $env['tplan_id'] = $args->tplan_id;
+  $args->user->checkGUISecurityClearance($dbH,$env,
+                    array('testplan_planning'),'and');
+  // ----------------------------------------------------------------
+
+
   return $args;  
 }
-
-function checkRights(&$db,&$user)
-{
-	return $user->hasRight($db,'testplan_planning');
-}
-?>

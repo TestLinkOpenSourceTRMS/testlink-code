@@ -14,7 +14,7 @@
  
 require('../../config.inc.php');
 require_once('common.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $tplan_mgr = new testPlanUrgency($db);
 $args = init_args($db,$tplan_mgr);
@@ -106,6 +106,18 @@ function init_args(&$dbH,&$tplanMgr)
     $args->urgency_tc = $_REQUEST['urgency'];
   }
 
+
+  $args->user = $_SESSION['currentUser'];
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $args->tproject_id;
+  $env['tplan_id'] = $args->tplan_id;
+  $args->user->checkGUISecurityClearance($dbH,$env,
+                    array('testplan_planning'),'and');
+  // ----------------------------------------------------------------
+
       
   return $args;
 }
@@ -162,11 +174,4 @@ function doProcess(&$argsObj,&$tplanMgr)
   }
 
   return $userFeedback;
-}
-
-
-
-function checkRights(&$db,&$user)
-{
-  return $user->hasRight($db,'testplan_planning');
 }

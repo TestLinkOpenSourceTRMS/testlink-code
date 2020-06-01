@@ -9,7 +9,7 @@ Purpose: smarty template - create containers
 {$myJS = $smarty.template|basename|replace:".tpl":"JS.inc.tpl"}
 {config_load file="input_dimensions.conf" section="containerEdit"}
 
-
+{$inc = "testcases/include"}
 {$action="lib/testcases/containerEdit.php?containerID="}
 {$action="$basehref$action$containerID"}
 
@@ -19,7 +19,7 @@ Purpose: smarty template - create containers
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
-{include file="testcases/$myJS"}
+{include file="{$inc}/$myJS"}
 
 </head>
 
@@ -64,7 +64,7 @@ Purpose: smarty template - create containers
              onclick="show_modified_warning=false; 
                      javascript: {if isset($gui->cancelActionJS)}{$gui->cancelActionJS} {else} history.back() {/if};"/>
     </div>  
-    {include file="testcases/inc_testsuite_viewer_rw.tpl"}
+    {include file="{$inc}/tsuiteViewerRW.inc.tpl"}
 
    {* Custom fields *}
    {if $cf neq ""}

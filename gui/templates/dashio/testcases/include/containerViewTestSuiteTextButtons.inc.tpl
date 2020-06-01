@@ -1,14 +1,17 @@
-    {$tlImages.toggle_direct_link} &nbsp;
+  {$calledByOK = property_exists($gui,'calledByMethod')} 
+  {$tprojIDOK = property_exists($gui,'tproject_id')} 
+  {$tlIMGTags.toggle_direct_link} &nbsp;
+  <i class="fa fa-cog" aria-hidden="true"
+     onclick="javascript:toogleShowHide('tsuite_control_panel');"
+     title="{$labels.actions}">
+  </i>
+ 
+  <div class="direct_link" style='display:none'>
+    <a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a>
+  </div>
 
-    {$calledByOK = property_exists($gui,'calledByMethod')} 
-    {$tprojIDOK = property_exists($gui,'tproject_id')} 
-    
-    <img class="clickable" src="{$tlImages.cog}" 
-         onclick="javascript:toogleShowHide('tsuite_control_panel');"  title="{$labels.actions}" />
-    
-   <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
-
-    <div id="tsuite_control_panel" style="display:{$tlCfg->gui->op_area_display->test_spec_container};">
+  <div id="tsuite_control_panel" 
+      style="display:{$tlCfg->gui->op_area_display->test_spec_container};">
       <fieldset class="groupBtn">
         <b>{$labels.testsuite_operations}</b>
         <form method="post" action="{$basehref}lib/testcases/containerEdit.php">
@@ -61,7 +64,7 @@
         </form>
       </fieldset>
 
-      {* ----- Work with test cases ----------------------------------------------- *}
+      {* ----- Work with test cases -------------------------- *}
       <fieldset class="groupBtn">
         <b>{$labels.testcase_operations}</b>
         <form method="post" action="{$basehref}lib/testcases/tcEdit.php">
@@ -113,5 +116,4 @@
                title="{$labels.btn_create_from_issue_xml}" />
         </form>
       </fieldset>
-
-    </div>  
+  </div>  

@@ -18,7 +18,7 @@ require_once('email_api.php');
 require_once("specview.php");
 require_once('Zend/Validate/EmailAddress.php');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $objMgr = array();
 $objMgr['tree'] = new tree($db);
@@ -236,6 +236,7 @@ function init_args(&$dbH,&$tplanMgr)
   list($args,$env) = initContext();
 
   $args->user_id = intval($_SESSION['userID']);
+  $args->user = intval($_SESSION['currentUser']);
 
   // For more information about the data accessed in session here, 
   // see the comment
@@ -327,6 +328,18 @@ function init_args(&$dbH,&$tplanMgr)
       $args->alien_id = $args->alien_id[0];
     }
   }
+
+  // ----------------------------------------------------------------
+  // Feature Access Check
+  // This feature is affected only for right at Test Project Level
+  $env = array()
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = $args->tproject_id;
+  $env['tplan_id'] = $args->tplan_id;
+  $args->user->checkGUISecurityClearance($dbH,$env,
+                    array('exec_assign_testcases'),'and');
+  // ----------------------------------------------------------------
+
 
 
   return $args;
@@ -625,10 +638,4 @@ function doBulkUserRemove(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
     }   
 
   }
-}
-
-
-function checkRights(&$db,&$user)
-{
-  return $user->hasRight($db,'exec_assign_testcases');
 }

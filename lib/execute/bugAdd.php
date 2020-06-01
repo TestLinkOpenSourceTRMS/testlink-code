@@ -337,6 +337,6 @@ function getDirectLinkToExec(&$dbHandler,$execID)
  * @return boolean return true if the page can be viewed, false if not
  */
 function checkRights(&$db,&$user) {
-	$hasRights = $user->hasRight($db,"testplan_execute");
+	$hasRights = $user->hasRightOnProj($db,"testplan_execute");
 	return $hasRights;
 }

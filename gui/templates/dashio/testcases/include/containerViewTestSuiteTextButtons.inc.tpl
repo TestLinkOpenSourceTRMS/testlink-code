@@ -34,18 +34,30 @@
                   value="{$gui->calledByMethod}" />
           {/if}
 
+          <button style="border:0;" name="new_testsuite" id="new_testsuite"
+             onclick="doAction.value='new_testsuite'">
+            <i class="fas fa-plus-circle" 
+               title="{$labels.btn_new_testsuite}"></i>
+          </button>
+               
+          <button style="border:0;" name="edit_testsuite" id="edit_testsuite"
+            onclick="doAction.value='edit_testsuite'">
+            <i class="fas fa-pencil-alt" 
+               title="{$labels.btn_edit_testsuite}"></i>
+          </button>
+        
+          <button style="border:0;" name="move_testsuite_viewer" 
+            id="move_testsuite_viewer"
+            onclick="doAction.value='move_testsuite_viewer'"
+            <i class="fas fa-copy" title="{$labels.alt_move_cp_testsuite}"></i>
+          </button>
 
-          <input type="image" src="{$tlImages.add}" name="new_testsuite" id="new_testsuite" 
-                 onclick="doAction.value='new_testsuite'" title="{$labels.btn_new_testsuite}">
-
-          <input type="image" src="{$tlImages.edit}" name="edit_testsuite" id="edit_testsuite" 
-                 onclick="doAction.value='edit_testsuite'" title="{$labels.btn_edit_testsuite}">
-
-          <input type="image" src="{$tlImages.move_copy}" name="move_testsuite_viewer" id="move_testsuite_viewer" 
-                 onclick="doAction.value='move_testsuite_viewer'" title="{$labels.alt_move_cp_testsuite}">
-          
-          <input type="image" src="{$tlImages.delete}" name="delete_testsuite" id="delete_testsuite" 
-                 onclick="doAction.value='delete_testsuite'" title="{$labels.alt_del_testsuite}">
+          <button style="border:0;" name="delete_testsuite" 
+            id="delete_testsuite"
+            onclick="doAction.value='delete_testsuite'"
+            <i class="fas fa-times-circle" 
+               title="{$labels.alt_del_testsuite}"></i>
+          </button>
 
           <input type="image" src="{$tlImages.order_alpha}" name="reorder_testsuites_alpha" id="reorder_testsuites_alpha" 
                  onclick="doAction.value='reorder_testsuites_alpha'" title="{$labels.btn_reorder_testsuites_alpha}">
@@ -59,8 +71,19 @@
           <img src="{$tlImages.report_word}" onclick="window.open('{$testSuiteWordDocAction}')" 
                title="{$labels.btn_gen_test_suite_spec_word}" />
 
-          <img src="{$tlImages.import}" onclick="location='{$importToTSuiteAction}'" title="{$labels.btn_import_testsuite}" />
-          <img src="{$tlImages.export}" onclick="location='{$tsuiteExportAction}'" title="{$labels.btn_export_testsuite}" />
+          <button style="border:0;" name="importItem" 
+            id="importItem"
+            onclick="location='{$importToTSuiteAction}'"
+            <i class="fas fa-file-import"
+              title="{$labels.btn_import_testsuite}"></i>
+          </button>
+
+          <button style="border:0;" name="exportItem" 
+            id="exportItem"
+            onclick="location='{$tsuiteExportAction}'"
+            <i class="fas fa-file-export"
+              title="{$labels.btn_export_testsuite}"></i>
+          </button>
         </form>
       </fieldset>
 

@@ -71,19 +71,15 @@
           <img src="{$tlImages.report_word}" onclick="window.open('{$testSuiteWordDocAction}')" 
                title="{$labels.btn_gen_test_suite_spec_word}" />
 
-          <button style="border:0;" name="importItem" 
+          <i class="fas fa-file-import"
             id="importItem"
             onclick="location='{$importToTSuiteAction}'"
-            <i class="fas fa-file-import"
-              title="{$labels.btn_import_testsuite}"></i>
-          </button>
+            title="{$labels.btn_import_testsuite}"></i>
 
-          <button style="border:0;" name="exportItem" 
+          <i class="fas fa-file-export"
             id="exportItem"
             onclick="location='{$tsuiteExportAction}'"
-            <i class="fas fa-file-export"
-              title="{$labels.btn_export_testsuite}"></i>
-          </button>
+            title="{$labels.btn_export_testsuite}"></i>
         </form>
       </fieldset>
 

@@ -48,35 +48,46 @@
         
           <button style="border:0;" name="move_testsuite_viewer" 
             id="move_testsuite_viewer"
-            onclick="doAction.value='move_testsuite_viewer'"
+            onclick="doAction.value='move_testsuite_viewer'">
             <i class="fas fa-copy" title="{$labels.alt_move_cp_testsuite}"></i>
           </button>
 
           <button style="border:0;" name="delete_testsuite" 
             id="delete_testsuite"
-            onclick="doAction.value='delete_testsuite'"
+            onclick="doAction.value='delete_testsuite'">
             <i class="fas fa-times-circle" 
                title="{$labels.alt_del_testsuite}"></i>
           </button>
 
-          <input type="image" src="{$tlImages.order_alpha}" name="reorder_testsuites_alpha" id="reorder_testsuites_alpha" 
-                 onclick="doAction.value='reorder_testsuites_alpha'" title="{$labels.btn_reorder_testsuites_alpha}">
-          
-          <input type="image" src="{$tlImages.testcases_table_view}" name="testcases_table_view" id="testcases_table_view" 
-                 onclick="doAction.value='testcases_table_view'" title="{$labels.btn_testcases_table_view}">
+          <button style="border:0;" name="reorder_testsuites_alpha" 
+            id="reorder_testsuites_alpha"
+            onclick="doAction.value='reorder_testsuites_alpha'">
+            <i class="fas fa-sort-alpha-down" 
+              title="{$labels.btn_reorder_testsuites_alpha}"></i>
+          </button>
 
-          <img src="{$tlImages.report}" onclick="window.open('{$testSuiteDocAction}')" 
-               title="{$labels.btn_gen_test_suite_spec_new_window}" />
+          <button style="border:0;" name="testcases_table_view" 
+            id="testcases_table_view"
+            onclick="doAction.value='testcases_table_view'">
+            <i class="fas fa-table" 
+              title="{$labels.btn_testcases_table_view}"></i>
+          </button>
+                 
 
-          <img src="{$tlImages.report_word}" onclick="window.open('{$testSuiteWordDocAction}')" 
-               title="{$labels.btn_gen_test_suite_spec_word}" />
+          <i class="fas fa-book" style="padding:1px 6px;"
+            onclick="window.open('{$testSuiteDocAction}')" 
+            title="{$labels.btn_gen_test_suite_spec_new_window}"></i>   
 
-          <i class="fas fa-file-import"
+          <i class="far fa-file-word" style="padding:1px 6px;"
+            onclick="window.open('{$testSuiteWordDocAction}')" 
+            title="{$labels.btn_gen_test_suite_spec_word}"></i>
+
+          <i class="fas fa-file-import" style="padding:1px 6px;"
             id="importItem"
             onclick="location='{$importToTSuiteAction}'"
             title="{$labels.btn_import_testsuite}"></i>
 
-          <i class="fas fa-file-export"
+          <i class="fas fa-file-export" style="padding:1px 6px;"
             id="exportItem"
             onclick="location='{$tsuiteExportAction}'"
             title="{$labels.btn_export_testsuite}"></i>

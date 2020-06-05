@@ -52,10 +52,10 @@ View test specification containers
 {$testSpecFullWordDocAction="$basehref$testSpecFullWordDocAction"}
 
 {$testSuiteDocAction="lib/results/printDocument.php?type=testspec&level=testsuite&allOptionsOn=1&format=0&id=$container_id&form_token=$ft"}
-{$testSuiteDocAction="$basehref$testSuiteDocAction"}
+{$testSuiteDocAction="$basehref$testSuiteDocAction&tproject_id=$tproject_id&tplan_id=$tplan_id"}
 
 {$testSuiteWordDocAction="lib/results/printDocument.php?type=testspec&level=testsuite&allOptionsOn=1&format=4&id=$container_id"}
-{$testSuiteWordDocAction="$basehref$testSuiteWordDocAction"}
+{$testSuiteWordDocAction="$basehref$testSuiteWordDocAction&tproject_id=$tproject_id&tplan_id=$tplan_id"}
 
 
 {$tsuiteExportAction="$basehref$tcExportAction&amp;useRecursion=1&amp;form_token=$ft"}

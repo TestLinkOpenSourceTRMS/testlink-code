@@ -6,6 +6,10 @@ Purpose: Default TestLink CSS
 
 */
 
+/* Import fonts */
+@import url(http://fonts.googleapis.com/css?family=Ruda:400,700,900);
+
+
 /* ***** GLOBAL HTML ***************************************************************** */
 html, body {
 	height:100%;
@@ -14,7 +18,7 @@ html, body {
 }
 body, body.testlink {
 	background-color: #eaeaea !important;
-	font-family: 	'Trebuchet MS', Arial, Verdana, sans-serif;
+	font-family: 	'Ruda', sans-serif;
 	font-size: 		small;
 	margin:			0px;
 	padding:		0px;
@@ -108,6 +112,7 @@ h1, h1.title {
 	text-align: 	left;
 	font-size:		85%;
 	font-weight:    bold;
+	font-family: 	'Ruda', sans-serif;
 }
 
 h1.big-font {

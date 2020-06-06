@@ -20,7 +20,7 @@ Purpose: show form for search through test cases in test specification
 <form method="post" action="{$basehref}lib/testcases/tcSearch.php">
   <input type="hidden" name="doAction" id="doAction" value="doSearch">
   <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
-  <table class="simple" style="width:100%">
+  <table class="table table-condensed" style="width:100%">
     <tr>
      <td colspan="8">
      <img src="{$tlImages.info}" title =" {$labels.filter_mode_and} {$gui->search_important_notice|escape}.

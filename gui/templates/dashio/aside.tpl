@@ -21,16 +21,22 @@ Left side menu
           {/if}
           {if $gui->showMenu.search == true}
             <li class="sub-menu">
-              <a href="javascript:;" class="{$gui->activeMenu.search}">
+              <a id="a_search" href="javascript:;" class="{$gui->activeMenu.search}">
                 <i class="fa fa-search"></i>
                 <span>{$labels.search}</span>
                 </a>
               <ul class="sub">
-                <li><a href="{$gui->uri->tcSearch}">{$labels.quick_search}</a>
+                <li>
+                  <a id="quick_search"
+                     href="{$gui->uri->tcSearch}">{$labels.quick_search}</a>
                 </li>
-                <li><a href="{$gui->uri->tcSearch}">{$labels.href_search_tc}</a>
+                <li>
+                  <a id="href_search_tc"
+                     href="{$gui->uri->tcSearch}">{$labels.href_search_tc}</a>
                 </li>
-                <li><a href="{$gui->uri->fullTextSearch}">{$labels.advanced_search}</a>
+                <li>
+                  <a id="advanced_search"
+                     href="{$gui->uri->fullTextSearch}">{$labels.advanced_search}</a>
                 </li>
               </ul>
             </li>
@@ -43,14 +49,20 @@ Left side menu
                 </a>
               <ul class="sub">
                 {if $gui->grants->event_viewer == "yes"}
-                  <li><a id="events" href="{$gui->uri->events}">{$labels.event_viewer}</a></li>
+                  <li>
+                   <a id="events"
+                      href="{$gui->uri->events}">{$labels.event_viewer}</a>
+                  </li>
                 {/if}
                 {if $gui->grants->user_mgmt == "yes"}
-                  <li><a id="userMgmt" href="{$gui->uri->userMgmt}">{$labels.title_user_mgmt}</a></li>
+                  <li>
+                    <a id="userMgmt" href="{$gui->uri->userMgmt}">{$labels.title_user_mgmt}</a>
+                  </li>
                 {/if}
 
                 {if $gui->grants->cfield_management == "yes"}
-                  <li><a id="cfieldsView" href="{$gui->uri->cfieldsView}">{$labels.href_cfields_management}</a></li>
+                  <li><a id="cfieldsView" href="{$gui->uri->cfieldsView}">{$labels.href_cfields_management}</a>
+                  </li>
                 {/if}
                 {if $gui->access.issuetracker == 'yes'}
                   <li><a id="issueTrackerView" href="{$gui->uri->issueTrackerView}">{$labels.href_issuetracker_management}</a></li>

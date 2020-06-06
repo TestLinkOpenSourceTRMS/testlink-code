@@ -103,9 +103,11 @@
           <input type="hidden" name="doAction" id="doAction" value="" />
           <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
 
-          <input type="image" src="{$tlImages.add}" 
-                 name="create_tc" id="create_tc" 
-                 onclick="doAction.value='create'" title="{$labels.btn_new_tc}">
+          <button style="border:0;" name="create_tc" id="create_tc"
+             onclick="doAction.value='create'">
+            <i class="fas fa-plus-circle" 
+               title="{$labels.labels.btn_new_tc}"></i>
+          </button>
         </form>
 
         <form method="post" action="{$basehref}lib/testcases/containerEdit.php">
@@ -124,26 +126,45 @@
                   value="{$gui->calledByMethod}" />
           {/if}
 
+          <button style="border:0;" name="move_testcases_viewer" 
+            id="move_testcases_viewer"
+            onclick="doAction.value='move_testcases_viewer'">
+            <i class="fas fa-copy" title="{$labels.alt_move_cp_testcases}"></i>
+          </button>
 
+          <button style="border:0;" name="delete_testcases" 
+            id="delete_testcases"
+            onclick="doAction.value='delete_testcases'">
+            <i class="fas fa-times-circle" 
+               title="{$labels.delete_testcases}"></i>
+          </button>
 
-          <input type="image" src="{$tlImages.move_copy}" name="move_testcases_viewer" id="move_testcases_viewer" 
-                 onclick="doAction.value='move_testcases_viewer'" title="{$labels.alt_move_cp_testcases}">
-
-          <input type="image" src="{$tlImages.delete}" name="delete_testcases" id="delete_testcases" 
-                 onclick="doAction.value='delete_testcases'" title="{$labels.btn_delete_testcases}">
-
-          <input type="image" src="{$tlImages.reorder}" name="reorder_testcases" id="reorder_testcases" 
-                 onclick="doAction.value='reorder_testcases'" title="{$gui->btn_reorder_testcases}">
+          <button style="border:0;" name="reorder_testcases" 
+            id="reorder_testcases"
+            onclick="doAction.value='reorder_testcases'">
+            <i class="fas fa-random" 
+               title="{$gui->btn_reorder_testcases}"></i>
+          </button>
         </form>
 
         <form method="post" action="{$basehref}lib/testcases/tcEdit.php">
           <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
           <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
           <input type="hidden" name="doAction" id="doAction" value="" />
-          <img src="{$tlImages.import}" onclick="location='{$importTestCasesAction}'" title="{$labels.btn_import_tc}" />
-          <img src="{$tlImages.export}" onclick="location='{$exportTestCasesAction}'" title="{$labels.btn_export_tc}" />
-          <img src="{$tlImages.create_from_xml}" onclick="location='{$createTCFromIssueMantisXMLAction}'" 
-               title="{$labels.btn_create_from_issue_xml}" />
+
+          <i class="fas fa-file-import" style="padding:1px 6px;"
+            id="importItem"
+            onclick="location='{$importTestCasesAction}'"
+            title="{$labels.btn_import_tc}"></i>
+
+          <i class="fas fa-file-export" style="padding:1px 6px;"
+            id="exportItem"
+            onclick="location='{$exportTestCasesAction}'"
+            title="{$labels.btn_export_tc}"></i>
+          
+          <i class="fas fa-magic"
+            onclick="location='{$createTCFromIssueMantisXMLAction}'" 
+               title="{$labels.btn_create_from_issue_xml}"></i>
         </form>
       </fieldset>
   </div>  

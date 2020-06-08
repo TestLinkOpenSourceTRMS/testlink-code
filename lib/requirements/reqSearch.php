@@ -49,7 +49,7 @@ if ($args->tprojectID) {
   // key: req id (db id)
   // value: array of versions and revisions
   //
-  $map = $db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
+  $map = (array)$db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
 
   // dont show requirements from different testprojects than the selected one
   if (count($map)) {
@@ -290,13 +290,17 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
   //         value: table alias
   //  
   $likeKeys = array('name' => 
-                      array('name' => array('ver' => "NH_REQ", 'rev' => "REQR")),
+                      array('name' => 
+                            array('ver' => "NH_REQ", 'rev' => "REQR")),
                     'requirement_document_id' => 
-                      array('req_doc_id' => array('ver' => 'REQ', 'rev' => 'REQR')),
+                      array('req_doc_id' => 
+                            array('ver' => 'REQ', 'rev' => 'REQR')),
                     'scope' => 
-                      array('scope' => array('ver' => 'REQV', 'rev' => 'REQR')),
+                      array('scope' => 
+                            array('ver' => 'REQV', 'rev' => 'REQR')),
                     'log_message' 
-                      => array('log_message'=> array('ver' => 'REQV','rev' =>'REQR')));
+                      => array('log_message' => 
+                               array('ver' => 'REQV','rev' =>'REQR')));
 
   foreach($likeKeys as $key => $fcfg) {
     if($argsObj->$key) {
@@ -309,7 +313,8 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
   }           
 
   $char_keys = array( 'reqType' => 
-                 array('type' => array('ver' => "REQV", 'rev' => "REQR")),
+                 array('type' => 
+                          array('ver' => "REQV", 'rev' => "REQR")),
                        'reqStatus' => 
                          array('status' => array('ver' => 'REQV', 'rev' => 'REQR')));
 
@@ -338,7 +343,7 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
   
   
   // Complex processing
-  if(!is_null($argsObj->relation_type)) {
+  if(!is_null($argsObj->relation_type) && intval($argsObj->relation_type) >0) {
     // search by relation type    
     // $argsObj->relation_type is a string in following form
     // e.g. 3_destination or 2_source or only 4

@@ -24,23 +24,22 @@ $smarty = new TLSmarty();
 list($args,$gui) = initEnv($db);
 
 
-switch($args->operation)
-{
+switch($args->operation) {
 	case 'disable':
 	// user cannot disable => inactivate itself
-		if ($args->user_id != $args->currentUserID)
-		{
+		if ($args->user_id != $args->currentUserID) {
       // some minor CSRF protection checking referer
       $refe = $_SERVER['HTTP_REFERER'];
-      if (strpos($refe,'/lib/usermanagement/usersView.php') == FALSE) {
+      $target = trim($_SESSION['basehref'],'/') .
+                '/lib/usermanagement/usersView.php';
+      if (strpos($refe,$target) === FALSE) {
         // No good
         exit();
       }
 
 			$user = new tlUser($args->user_id);
 			$gui->result = $user->readFromDB($db);
-			if ($gui->result >= tl::OK)
-			{
+			if ($gui->result >= tl::OK) {
 				$gui->result = $user->setActive($db,0);
 				if ($gui->result >= tl::OK)
 				{

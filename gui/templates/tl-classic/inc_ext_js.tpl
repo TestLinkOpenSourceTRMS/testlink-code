@@ -82,6 +82,10 @@ Purpose: include files for:
   
       {* 20100927 - franciscom - convert HTML table in ext-js grid *}
       <script type="text/javascript" src="{$basehref}{$ext_location}/ux/TableGrid.js" language="javascript"></script>
+
+     {* 20170203 - one-testlink@variant.ch - add localStorage Ext state provider *}
+      <script type="text/javascript" src="{$basehref}{$ext_location}/ux/LocalStorageProvider.js" language="javascript"></script>
+
   {/if}
 
 {/if}

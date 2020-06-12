@@ -375,7 +375,7 @@ function initializeGui(&$dbH,$argsObj) {
   $guiObj->reqSpecEditorType = $reqCfg['type'];
 
   $guiObj->req_tcase_link_management = 
-    $argsObj->user->hasRight($dbH,'req_tcase_link_management');
+    $argsObj->user->hasRightOnProj($dbH,'req_tcase_link_management');
 
   return $guiObj;
 }

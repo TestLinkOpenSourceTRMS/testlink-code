@@ -1967,3 +1967,19 @@ alert(page);
   // second parameter(window name) with spaces caused bug on IE
   window.open(fRoot+feature_url,"Keywords",windowCfg);
 }
+
+
+/**
+ *
+ */
+function showHideByDataEntity(target)
+{
+  var tg = '[data-entity="' + target + '"]';
+  var you = $(tg);
+  if (you.css('display') == 'block') {
+    you.hide();
+  } else {
+    you.show();
+  }
+}
+

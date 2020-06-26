@@ -1677,9 +1677,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
      */
     public function getProjects($args) {
         $this->_setArgs( $args );
-        // TODO: NEED associated RIGHT
         if($this->authenticate()) {
-            return $this->tprojectMgr->get_all();
+            return $this->tprojectMgr->get_accessible_for_user($this->userID, array('output' => 'array_of_map'));
         } else {
             return $this->errors;
         }
@@ -6189,7 +6188,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $status_ok = $this->_runChecks( $checkFunctions, $messagePrefix );
         if($status_ok) {
-            $user_id = tlUser::doesUserExist( $this->dbObj, $this->args[self::$userParamName] );
+            if( $this->user->globalRole->dbID == TL_ROLES_ADMIN || $this->user->login == $this->args[self::$userParamName] )
+            {
+                $user_id = tlUser::doesUserExist( $this->dbObj, $this->args[self::$userParamName] );
+            }
             if(!($status_ok = ! is_null( $user_id ))) {
                 $msg = $msg_prefix . sprintf( NO_USER_BY_THIS_LOGIN_STR, $this->args[self::$userParamName] );
                 $this->errors[] = new IXR_Error( NO_USER_BY_THIS_LOGIN, $msg );
@@ -6237,7 +6239,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $status_ok = $this->_runChecks( $checkFunctions, $messagePrefix );
         if($status_ok) {
-            $user = tlUser::getByID( $this->dbObj, $this->args[self::$userIDParamName] );
+            if( $this->user->globalRole->dbID == TL_ROLES_ADMIN || $this->userID == $this->args[self::$userIDParamName] )
+            {
+                $user = tlUser::getByID( $this->dbObj, $this->args[self::$userIDParamName] );
+            }
             if(is_null( $user )) {
                 $status_ok = false;
                 $msg = $messagePrefix . sprintf( NO_USER_BY_THIS_ID_STR, $this->args[self::$userIDParamName] );

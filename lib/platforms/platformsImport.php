@@ -108,16 +108,13 @@ function doImport(&$dbHandler,$testproject_id)
 	$dest = TL_TEMP_PATH . session_id(). "-import_platforms.tmp";
 	$fInfo = $_FILES[$key];
 	$source = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : null;
-	if (($source != 'none') && ($source != ''))
-	{ 
+	if (($source != 'none') && ($source != '')) { 
 		$file_check['filename'] = $fInfo['name'];
 		$xml = false;
-		if (move_uploaded_file($source, $dest))
-		{
+		if (move_uploaded_file($source, $dest)) {
       // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
       $xml = @simplexml_load_file_wrapper($dest);
     }
-         
 		if ($xml !== FALSE) {
      	$file_check['status_ok'] = 1;
       $file_check['show_results'] = 1;
@@ -130,20 +127,21 @@ function doImport(&$dbHandler,$testproject_id)
         if (property_exists($platform, 'name')) {  
          	// Check if platform with this name already exists on test Project
          	// if answer is yes => update fields
-         	$name = trim($platform->name);
-         	if(isset($platformsOnSystem[$name]))
-         	{
-         		$import_msg['ok'][] = sprintf(lang_get('platform_updated'),$platform->name);
-            $platform_mgr->update($platformsOnSystem[$name]['id'],$name,$platform->notes);
+         	$name = trim((string)$platform->name);
+         	if(isset($platformsOnSystem[$name])) {
+         		$import_msg['ok'][] = sprintf(lang_get('platform_updated'),$name);
+            $platform_mgr->update($platformsOnSystem[$name]['id'],
+                                  $name,(string)$platform->notes);
+         	} else {
+         		$import_msg['ok'][] = sprintf(lang_get('platform_imported'),$name);
+            $item = new stdClass();
+            $item->name = $name;
+            $item->notes = (string)$platform->notes;
+            $item->enable_on_design = intval($platform->enable_on_design);
+            $item->enable_on_execution = intval($platform->enable_on_execution);
+            $platform_mgr->create($item);
          	}
-         	else
-         	{
-         		$import_msg['ok'][] = sprintf(lang_get('platform_imported'),$platform->name);
-            $platform_mgr->create($name,$platform->notes);
-         	}
-        }
-        else
-        {
+        } else {
           $import_msg['ko'][] = lang_get('bad_line_skipped');
         }  
       }      

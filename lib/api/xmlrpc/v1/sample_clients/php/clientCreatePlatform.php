@@ -7,6 +7,8 @@
  * @Author: francisco.mancardi@gmail.com
  *
  * @internal revisions 
+ *
+ * [SERVER]/lib/api/xmlrpc/v1/sample_clients/php/clientCreatePlatform.php
  */
 require_once 'util.php';
 require_once 'sample.inc.php';
@@ -17,8 +19,8 @@ $unitTestDescription="Test - {$method}";
 $idx=1;
 
 $args=array();
-$args["devKey"]=DEV_KEY;
-$args["testprojectname"]='API TEST';
+$args["devKey"]='dev01';
+$args["testprojectname"]='GAGA';
 $args["platformname"] = "Nian";
 $args["notes"] = "Blue Notte XX";
 
@@ -27,4 +29,3 @@ $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args,$idx);
 $idx++;
-?>

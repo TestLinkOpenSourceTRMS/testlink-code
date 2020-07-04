@@ -6096,10 +6096,12 @@ class TestlinkXMLRPCServer extends IXR_Server {
         }
 
         if($status_ok) {
-            $notes = $this->_isNotePresent() ? $this->args[self::$noteParamName] : '';
+            $notes = $this->_isNotePresent() 
+                     ? $this->args[self::$noteParamName] : '';
+
             $plot = new stdClass();
             $plot->name = $name;
-            $plot->$notes = $notes;
+            $plot->notes = $notes;
             $op = $this->platformMgr->create($plot);
             $resultInfo = $op;
         }

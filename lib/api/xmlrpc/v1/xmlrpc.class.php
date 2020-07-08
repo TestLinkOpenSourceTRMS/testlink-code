@@ -6126,7 +6126,14 @@ class TestlinkXMLRPCServer extends IXR_Server {
             if(is_null( $this->platformMgr )) {
                 $this->platformMgr = new tlPlatform( $this->dbObj, $testProjectID );
             }
-            $itemSet = $this->platformMgr->getAllAsMap( 'name', 'allinfo' );
+
+            $optPlat = array('accessKey' => 'name',
+                             'output' => 'allinfo',
+                             'orderBy' => ' ORDER BY name ',
+                             'enable_on_design' => null,
+                             'enable_on_execution' => null);
+
+            $itemSet = $this->platformMgr->getAllAsMap($optPlat);
             return $itemSet;
         } else {
             return $this->errors;

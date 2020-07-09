@@ -3348,6 +3348,249 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
+     * Return test plan item params "executionorder" (positive integer as specifed in test plan) and "urgency" (1:low, 2:med, 3:high)
+     *
+     * @param
+     *            args['testprojectid']
+     * @param
+     *            args['testplanid']
+     * @param
+     *            args['testcaseexternalid']
+     * @param
+     *            args['version']
+     * @param
+     *            args['platformid'] - OPTIONAL Only if test plan has no platforms
+     */
+    public function getTestPlanItemParams($args) {
+        $operation = __FUNCTION__;
+        $msg_prefix = "({$operation}) - ";
+        $this->_setArgs( $args );
+
+        $op_result = null;
+        $hasPlatforms = false;
+        $hasPlatformIDArgs = false;
+        $platform_id = 0;
+        $checkFunctions = array(
+                'authenticate',
+                'checkTestProjectID',
+                'checkTestCaseVersionNumber',
+                'checkTestCaseIdentity',
+                'checkTestPlanID'
+        );
+
+        $status_ok = $this->_runChecks( $checkFunctions, $messagePrefix );
+
+        // Test Plan belongs to test project ?
+        if($status_ok) {
+            $tproject_id = $this->args[self::$testProjectIDParamName];
+            $tplan_id = $this->args[self::$testPlanIDParamName];
+            $tplan_info = $this->tplanMgr->get_by_id( $tplan_id );
+
+            $sql = " SELECT id FROM {$this->tables['testplans']}" . " WHERE testproject_id={$tproject_id} AND id = {$tplan_id}";
+
+            $rs = $this->dbObj->get_recordset( $sql );
+
+            if(count( $rs ) != 1) {
+                $status_ok = false;
+                $tproject_info = $this->tprojectMgr->get_by_id( $tproject_id );
+                $msg = sprintf( TPLAN_TPROJECT_KO_STR, $tplan_info['name'], $tplan_id, $tproject_info['name'], $tproject_id );
+                $this->errors[] = new IXR_Error( TPLAN_TPROJECT_KO, $msg_prefix . $msg );
+            }
+        }
+
+        // Test Case belongs to test project ?
+        if($status_ok) {
+            $ret = $this->checkTestCaseAncestry();
+            $status_ok = $ret['status_ok'];
+
+            if(! $ret['status_ok']) {
+                $this->errors[] = new IXR_Error( $ret['error_code'], $msg_prefix . $ret['error_msg'] );
+            }
+        }
+
+        // Does this Version number exist for this test case ?
+        if($status_ok) {
+            $tcase_id = $this->args[self::$testCaseIDParamName];
+            $version_number = $this->args[self::$versionNumberParamName];
+            $sql = " SELECT TCV.version,TCV.id " . " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " . " WHERE NH.parent_id = {$tcase_id} " . " AND TCV.version = {$version_number} " . " AND TCV.id = NH.id ";
+            $target_tcversion = $this->dbObj->fetchRowsIntoMap( $sql, 'version' );
+
+            if(is_null( $target_tcversion ) || count( $target_tcversion ) != 1) {
+                $status_ok = false;
+                $tcase_info = $this->tcaseMgr->get_by_id( $tcase_id );
+                $msg = sprintf( TCASE_VERSION_NUMBER_KO_STR, $version_number, $tcase_external_id, $tcase_info[0]['name'] );
+                $this->errors[] = new IXR_Error( TCASE_VERSION_NUMBER_KO, $msg_prefix . $msg );
+            }
+        }
+        
+        if( $status_ok ) {
+            $opt = array(
+                'outputFormat' => 'mapAccessByID'
+            );
+            $platformSet = $this->tplanMgr->getPlatforms( $tplan_id, $opt );
+            $hasPlatforms = ! is_null( $platformSet );
+            $hasPlatformIDArgs = $this->_isParamPresent( self::$platformIDParamName );
+            if($hasPlatforms) {
+                if($hasPlatformIDArgs) {
+                    // Check if platform id belongs to test plan
+                    $platform_id = $this->args[self::$platformIDParamName];
+                    $status_ok = isset( $platformSet[$platform_id] );
+                    if(! $status_ok) {
+                        $msg = sprintf( PLATFORM_ID_NOT_LINKED_TO_TESTPLAN_STR, $platform_id, $tplan_info['name'] );
+                        $this->errors[] = new IXR_Error( PLATFORM_ID_NOT_LINKED_TO_TESTPLAN, $msg );
+                    }
+                } else {
+                    $msg = sprintf( MISSING_PLATFORMID_BUT_NEEDED_STR, $tplan_info['name'], $tplan_id );
+                    $this->errors[] = new IXR_Error( MISSING_PLATFORMID_BUT_NEEDED, $msg_prefix . $msg );
+                    $status_ok = false;
+                }
+            } else {
+                if($hasPlatformIDArgs) {
+                    // test plan has no platforms, but platform specified
+                    $platform_id = $this->args[self::$platformIDParamName];
+                    $msg = sprintf( PLATFORM_ID_NOT_LINKED_TO_TESTPLAN_STR, $platform_id, $tplan_info['name'] );
+                    $this->errors[] = new IXR_Error( PLATFORM_ID_NOT_LINKED_TO_TESTPLAN, $msg );
+                    $status_ok = false;
+                }
+            }
+        }    
+
+        if( $status_ok) {
+            $sql = "SELECT TPV.id, TPV.node_order, TPV.urgency  FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV, {$this->tables['testplan_tcversions']} TPV WHERE NH.parent_id = {$tcase_id}  AND TCV.version = {$version_number} AND TPV.tcversion_id = TCV.id AND testplan_id = {$tplan_id} AND TCV.id = NH.id";
+            if( $hasPlatforms ) {
+                $sql .= " AND platform_id=" . intval( $platform_id );
+            }
+
+            $res = $this->dbObj->get_recordset( $sql );
+
+            if( is_null( $res ) || count( $res ) != 1) {
+                $status_ok = false;
+                $tcase_id = $this->args[self::$testCaseIDParamName];
+                $version_number = $this->args[self::$versionNumberParamName];
+                $tcase_external_id = $this->tcaseMgr->getExternalID( $tcase_id )[0];
+                $msg = sprintf( TCVERSIONID_NOT_IN_TPLANID_STR, $tcase_id, $tcase_external_id, $tplan_info['name'], $tplan_id );
+                $this->errors[] = new IXR_Error( TCVERSIONID_NOT_IN_TPLANID, $msg_prefix . $msg );
+            } else {
+                $data = array(
+                    "executionorder" => $res[0]['node_order'],
+                    "urgency" => $res[0]['urgency'],
+                    "id" => $res[0]['id']
+                );
+            }   
+        }
+
+        return($status_ok ? $data : $this->errors);
+    }
+
+    /**
+     * Set test plan item params
+     *
+     * @param
+     *            args['testprojectid']
+     * @param
+     *            args['testplanid']
+     * @param
+     *            args['testcaseexternalid']
+     * @param
+     *            args['version']
+     * @param
+     *            args['platformid'] - OPTIONAL Only if test plan has no platforms     
+     * @param
+     *            args['executionorder'] positive integer - OPTIONAL only if urgency is given
+     * @param
+     *            args['urgency'] 1:low, 2:med, 3:high - OPTIONAL only if executionorder is given
+     */
+    public function setTestPlanItemParams($args) {
+        $operation = __FUNCTION__;
+        $msg_prefix = "({$operation}) - ";
+        $this->_setArgs( $args );
+
+        $checkFunctions = array(
+                'authenticate',
+                'checkTestProjectID',
+                'checkTestCaseVersionNumber',
+                'checkTestCaseIdentity',
+                'checkTestPlanID'
+        );
+
+        $status_ok = $this->_runChecks( $checkFunctions, $messagePrefix );
+
+        $urgency = $this->args[self::$urgencyParamName];
+        $executionOrder = $this->args[self::$executionOrderParamName];
+
+        $updateOrder = ! is_null($executionOrder);
+        $updateUrgency = ! is_null($urgency);
+
+        if( ! $updateOrder && ! $updateUrgency){
+            $status_ok = false;
+            $msg = sprintf( MISSING_REQUIRED_PARAMETER_STR, '"urgency" AND/OR "executionOrder"' );
+            $this->errors[] = new IXR_Error( MISSING_REQUIRED_PARAMETER, $msg_prefix . $msg );
+        }
+        
+        if( $updateOrder && (! is_int($executionOrder) || $executionOrder < 0 )) {
+            $status_ok = false;
+            $msg = sprintf( PARAMETER_NOT_INT_STR, '"executionOrder"', $executionOrder );
+            $this->errors[] = new IXR_Error( PARAMETER_NOT_INT, $msg_prefix . $msg );
+        }
+
+        if( $updateUrgency && (! in_array($urgency, array(1,2,3)))) {
+            $status_ok = false;
+            $msg = sprintf( ILLEGAL_PARAMETER_VALUE_STR, '"urgency"', '[1, 2, 3]', $urgency );
+            $this->errors[] = new IXR_Error( ILLEGAL_PARAMETER_VALUE, $msg_prefix . $msg );
+        }
+        
+        if( $status_ok ) {
+            $act = self::getTestPlanItemParams($args);
+            if( count($this->errors) ) {
+                $status_ok = false;
+            }
+        }
+        
+        if( $status_ok ) {
+            if(! $this->userHasRight( "testplan_planning", self::CHECK_PUBLIC_PRIVATE_ATTR )) {
+                $status_ok = false;
+                $msg = sprintf( INSUFFICIENT_RIGHTS_STR );
+                $this->errors[] = new IXR_Error( INSUFFICIENT_RIGHTS, $msg_prefix . $msg );
+            }
+        }
+        
+        if( $status_ok ){
+            $tp_tcvers_id = $act['id'];
+            $act_executionorder = $act['executionorder'];
+            $act_urgency = $act['urgency'];
+            
+            $sql = "UPDATE {$this->tables['testplan_tcversions']} TPV SET";
+            
+            $update = false;
+            if( $updateOrder && $act_executionorder != $executionOrder){
+                $sql .= " node_order = {intval($executionOrder)}";
+                $update = true;
+            }
+            if( $updateUrgency && $act_urgency != $urgency){
+                if( $update ){
+                    $sql .= " ,";
+                }
+                $sql .= " urgency = {intval($urgency)}";
+                $update = true;
+            }
+            
+            if( $update ) {
+                $sql .= " WHERE TPV.id = {$tp_tcvers_id}";
+                $this->dbObj->exec_query( $sql );
+                $op_result['operation'] = $operation;
+                $op_result['status'] = true;
+                $op_result['message'] = 'Update done.';
+            } else {            
+                $op_result['operation'] = $operation;
+                $op_result['status'] = true;
+                $op_result['message'] = 'Already matching.';
+            }           
+        }
+
+        return($status_ok ? $op_result : $this->errors);
+    }
+
+    /**
      * get set of test suites AT TOP LEVEL of tree on a Test Project
      *
      * @param
@@ -8329,6 +8572,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 'tl.uploadAttachment' => 'this:uploadAttachment',
                 'tl.assignRequirements' => 'this:assignRequirements',
                 'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
+                'tl.getTestPlanItemParams' => 'this:getTestPlanItemParams',
+                'tl.setTestPlanItemParams' => 'this:setTestPlanItemParams',
                 'tl.addPlatformToTestPlan' => 'this:addPlatformToTestPlan',
                 'tl.removePlatformFromTestPlan' => 'this:removePlatformFromTestPlan',
                 'tl.getExecCountersByBuild' => 'this:getExecCountersByBuild',
@@ -8395,3 +8640,4 @@ class TestlinkXMLRPCServer extends IXR_Server {
         );
     }
 } // class end
+

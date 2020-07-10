@@ -180,6 +180,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
     public static $parentIDParamName = "parentid";
     public static $platformNameParamName = "platformname";
     public static $platformIDParamName = "platformid";
+    public static $platformOnDesignParamName = "platformondesign";
+    public static $platformOnExecutionParamName = "platformonexecution";
     public static $preconditionsParamName = "preconditions";
     public static $publicParamName = "public";
     public static $releaseDateParamName = "releasedate";
@@ -6048,6 +6050,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["testprojectname"]
      * @param string $args["platformname"]
      * @param string $args["notes"]
+     * @param boolean $args["platformondesign"]
+     * @param boolean $args["platformonexecution"]
      * @return mixed $resultInfo
      * @internal revisions
      */
@@ -6102,6 +6106,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $plot = new stdClass();
             $plot->name = $name;
             $plot->notes = $notes;
+            $plot->enable_on_design = $this->_isParamPresent( self::$platformOnDesignParamName )
+                ? $this->args[self::$platformOnDesignParamName] : false;
+            $plot->enable_on_execution = $this->_isParamPresent( self::$platformOnExecutionParamName )
+                ? $this->args[self::$platformOnExecutionParamName] : false;
             $op = $this->platformMgr->create($plot);
             $resultInfo = $op;
         }

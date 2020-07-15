@@ -149,7 +149,7 @@ function checkRights(&$db,&$user,$context = null)
     $context->getAccessAttr = false; 
   }
 
-  $check = $user->hasRight($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
+  $check = $user->hasRightOnProj($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
   return $check;
 }
 

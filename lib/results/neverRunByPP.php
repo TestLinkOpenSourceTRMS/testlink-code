@@ -164,7 +164,7 @@ if( $doChoice ) {
   $tpl = 'neverRunByPPLauncher.tpl';
   $gui->url2call = $args->basehref .
     "lib/results/neverRunByPP.php?tplan_id=$gui->tplan_id" .
-    "&tproject_id=$gui->tproject_id&doAction=result";
+    "&tproject_id=$gui->tproject_id&format=$gui->format&doAction=result";
 }
 
 displayReport($tplCfg->template_dir . $tpl, 

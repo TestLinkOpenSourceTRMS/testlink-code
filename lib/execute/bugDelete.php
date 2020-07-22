@@ -76,6 +76,6 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-  $hasRights = $user->hasRight($db,"testplan_execute");
+  $hasRights = $user->hasRightOnProj($db,"testplan_execute");
   return $hasRights;
 }

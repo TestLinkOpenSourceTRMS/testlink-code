@@ -5,8 +5,6 @@
  *
  * @filesource  execHistory.php
  *
- * @internal revisions
- * @since 1.9.14
  *
 **/
 require_once('../../config.inc.php');
@@ -166,7 +164,7 @@ function getCustomFields(&$tcaseMgr,&$execSet)
     {
       $exec_id = $execSet[$tcvid][$idx]['execution_id'];
       $tplan_id = $execSet[$tcvid][$idx]['testplan_id'];
-      $dummy = $tcaseMgr->html_table_of_custom_field_values($tcvid,'execution',null,$exec_id,$tplan_id);
+      $dummy = (array)$tcaseMgr->html_table_of_custom_field_values($tcvid,'execution',null,$exec_id,$tplan_id);
       $cf[$exec_id] = (count($dummy) > 0) ? $dummy : '';
     } 
   }

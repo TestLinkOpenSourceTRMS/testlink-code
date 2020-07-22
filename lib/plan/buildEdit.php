@@ -13,7 +13,7 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 $templateCfg = templateConfiguration();
 
 $date_format_cfg = config_get('date_format');
@@ -30,6 +30,11 @@ $build_mgr = new build_mgr($db);
 
 $args = init_args($_REQUEST,$_SESSION,$date_format_cfg,$tplan_mgr);
 $gui = initializeGui($args,$build_mgr);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+$context->tplan_id = $args->tplan_id;
+checkRights($db,$_SESSION['currentUser'],$context);
 
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
@@ -166,11 +171,14 @@ function init_args($request_hash, $session_hash,$date_format,&$tplanMgr) {
   }  
 
   $args->testprojectID = intval($session_hash['testprojectID']);
+  $args->tproject_id = intval($session_hash['testprojectID']);
+
   $args->testprojectName = $session_hash['testprojectName'];
   $args->userID = intval($session_hash['userID']);
 
-  $args->exec_status_filter = isset($request_hash['exec_status_filter']) ?
-                                    $request_hash['exec_status_filter'] : null;
+  $args->exec_status_filter = 
+    isset($request_hash['exec_status_filter']) ?
+          $request_hash['exec_status_filter'] : null;
 
   $args->user = $_SESSION['currentUser'];
   return $args;
@@ -193,6 +201,8 @@ function initializeGui(&$argsObj,&$buildMgr) {
   foreach($dummy['status_label_for_exec_ui'] as $kv => $vl) {
     $guiObj->exec_status_filter['items'][$dummy['status_code'][$kv]] = lang_get($vl);  
   }  
+  $guiObj->exec_status_filter['selected'] = 
+    $argsObj->exec_status_filter;
 
   $guiObj->tplan_id = $argsObj->tplan_id;
   return $guiObj;
@@ -380,20 +390,17 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat) {
     $user_feedback = lang_get("cannot_add_build");
 
     $oBuild = new stdClass();
+    // 'creation_ts'
     $prop = array('tplan_id','release_date','notes',
                   'commit_id', 'tag',
                   'branch', 'release_candidate',
-                  'is_active','is_open','creation_ts');
+                  'is_active','is_open');
 
     $oBuild->name = $argsObj->build_name;
     foreach( $prop as $pp ) {
       $oBuild->$pp = $argsObj->$pp;
     }
 
-    /*
-    $buildID = $buildMgr->create($argsObj->tplan_id,$argsObj->build_name,$argsObj->notes,
-    $argsObj->is_active,$argsObj->is_open,$argsObj->release_date);
-    */
     $buildID = $buildMgr->createFromObject($oBuild);
 
     if ($buildID) {
@@ -632,10 +639,17 @@ function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
     }
 }
 
-function checkRights(&$db,&$user)
+
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($db,'testplan_create_build');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_create_build"];
+  pageAccessCheck($db, $user, $context);
 }
+
 
 /**
  * Initialize the HTML select box for selection of a source build when
@@ -676,4 +690,3 @@ function init_source_build_selector(&$testplan_mgr, &$argsObj)
 
   return $htmlMenu;
 } // end of method
-?>

@@ -6,7 +6,7 @@
  * @filesource  tree.class.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2005-2019, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @link        http://www.testlink.org/
  *
  */
@@ -408,9 +408,8 @@ class tree extends tlObject
   function get_path($node_id,$to_node_id = null,$format = 'full')  {
     $the_path = array();
     $this->_get_path($node_id,$the_path,$to_node_id,$format); 
-    
     if( !is_null($the_path) && count($the_path) > 0 ) {
-      $the_path=array_reverse($the_path);  
+      $the_path = array_reverse($the_path);  
     }
     return $the_path;
   }
@@ -470,28 +469,23 @@ class tree extends tlObject
            " FROM {$this->object_table} WHERE id = " . intval($node_id);
     
     $result = $this->db->exec_query($sql);
-    if( $this->db->num_rows($result) == 0 )
-    {
+    if( $this->db->num_rows($result) == 0 ) {
       $node_list=null;
       return;   
     }
     
-    while ( $row = $this->db->fetch_array($result) )
-    {
+    while ( $row = $this->db->fetch_array($result) ) {
       // check & abort
-      if($row['parent_id'] == $row['id'])
-      {
+      if ($row['parent_id'] == $row['id']) {
         throw new Exception("id = parent_id = " . $row['id'], 1);
       } 
 
       // only continue if this $node isn't the root node
       // (that's the node with no parent)
-      if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 
-      {
+      if ($row['parent_id'] != '' && $row['id'] != $to_node_id) {
         // the last part of the path to $node, is the name
         // of the parent of $node
-        switch($format)
-        {
+        switch($format) {
           case 'full':
             $row['node_table'] = $this->node_tables_by['id'][$row['node_type_id']];
             $node_list[] = $row;
@@ -507,12 +501,9 @@ class tree extends tlObject
           break;    
 
           case 'simple_me':
-            if( is_null($node_list) )
-            {
+            if( is_null($node_list) ) {
               $node_list[$row['id']] = $row['id'];
-            }
-            else
-            {
+            } else {
               $node_list[$row['parent_id']] = $row['parent_id'];
             }            
           break;    
@@ -546,18 +537,26 @@ class tree extends tlObject
   */
   function change_parent($node_id, $parent_id) 
   {
-    $debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
-    if( is_array($node_id) )
-    {
-      $id_list = implode(",",$node_id);
+    $debugMsg = 'Class:' .__CLASS__ . ' - Method:' 
+                         . __FUNCTION__ . ' :: ';
+
+    if (is_array($node_id)) {
+      $safeSet = array_map('intval',$node_id);
+      $id_list = implode(",",$safeSet);
       $where_clause = " WHERE id IN ($id_list) ";
+    } else {    
+      $safe = intval($node_id);
+      if ($safe <= 0) {
+        throw new Exception("BAD node_id", 1);
+      }
+      $where_clause=" WHERE id = $safe";
     }
-    else
-    {
-      $where_clause=" WHERE id = {$node_id}";
-    }
-    $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
-           " SET parent_id = " . $this->db->prepare_int($parent_id) . " {$where_clause}";
+
+    $safeP = $this->db->prepare_int($parent_id);
+    $sql = "/* $debugMsg */ 
+            UPDATE {$this->object_table}
+            SET parent_id = $safeP 
+            $where_clause ";
     
     $result = $this->db->exec_query($sql);
     
@@ -1690,4 +1689,30 @@ class tree extends tlObject
     return null != $rs ? current($rs) : null;         
   }
   
+  /**
+   *
+   */
+  function getNameL2($node_id,$opt=null)
+  {
+    $options = array('l2CutFirst' => 0);
+
+    $options = array_merge($options,(array)$opt);
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $concat = " CONCAT(NHL1.name,':',NHL2.name) ";
+    if ($options['l2CutFirst'] > 0) {
+      $where2cut = $options['l2CutFirst'];
+      $concat = " CONCAT(NHL1.name,':'," .
+                " SUBSTRING(NHL2.name,{$where2cut}) )";
+    }
+    $sql = "SELECT $concat AS name
+            FROM {$this->tables['nodes_hierarchy']} NHL2
+            JOIN {$this->tables['nodes_hierarchy']} NHL1
+            ON NHL1.id = NHL2.parent_id
+            WHERE NHL2.id = " . intval($node_id);
+    $rs = $this->db->get_recordset($sql);
+    $result = !is_null($rs) ? $rs[0]['name'] : '';
+    return $result;
+  }
 }// end class

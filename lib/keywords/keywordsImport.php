@@ -7,7 +7,7 @@
  *
  * @filesource  keywordsImport.php
  * @package     TestLink
- * @copyright   2005,2015 TestLink community 
+ * @copyright   2005,2020 TestLink community 
  * @link        http://www.testlink.org/
  *
  */
@@ -22,50 +22,41 @@ $templateCfg = templateConfiguration();
 $args = init_args($db);
 $gui = initializeGui($args);
 
-if(!$gui->msg && $args->UploadFile)
-{
-  if(($args->source != 'none') && ($args->source != ''))
-  { 
-    if (move_uploaded_file($args->source, $args->dest))
-    {
+if (!$gui->msg && $args->UploadFile) {
+
+  if(($args->source != 'none') && ($args->source != '')) { 
+    if (move_uploaded_file($args->source, $args->dest)) {
       $pfn = null;
-      switch($args->importType)
-      {
+      switch($args->importType) {
         case 'iSerializationToCSV':
           $pfn = "importKeywordsFromCSV";
-          break;
+        break;
  
         case 'iSerializationToXML':
           $pfn = "importKeywordsFromXMLFile";
-          break;
+        break;
       }
  
-      if($pfn)
-      {
+      if ($pfn) {
         $tproject = new testproject($db);
         $result = $tproject->$pfn($args->tproject_id,$args->dest);
-        if ($result != tl::OK)
-        {  
+        if ($result != tl::OK) {  
           $gui->msg = lang_get('wrong_keywords_file'); 
-        }
-        else
-        {
+        } else {
           header("Location: keywordsView.php?tproject_id={$gui->tproject_id}");
           exit();   
         }
       }
       @unlink($args->dest);
     }
-  } 
-  else
-  {  
+  } else {  
     $gui->msg = lang_get('please_choose_keywords_file');
   }
 }
       
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+$smarty->display($templateCfg->tpl);
 
 /**
  * @return object returns the arguments for the page
@@ -74,15 +65,15 @@ function init_args(&$dbHandler)
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $ipcfg = array("UploadFile" => array(tlInputParameter::STRING_N,0,1),
-                 "importType" => array(tlInputParameter::STRING_N,0,100),
-                 "tproject_id" => array(tlInputParameter::INT_N));
+  $ipcfg = 
+    array("UploadFile" => array(tlInputParameter::STRING_N,0,1),
+          "importType" => array(tlInputParameter::STRING_N,0,100),
+          "tproject_id" => array(tlInputParameter::INT_N));
 
   $args = new stdClass();
   R_PARAMS($ipcfg,$args);
 
-  if( $args->tproject_id <= 0 )
-  {
+  if ($args->tproject_id <= 0) {
     throw new Exception(" Error Invalid Test Project ID", 1);
   }
 
@@ -98,13 +89,32 @@ function init_args(&$dbHandler)
   checkAccess($dbHandler,$user,$env,$check);
  
   $tproj_mgr = new testproject($dbHandler);
-  $dm = $tproj_mgr->get_by_id($args->tproject_id,array('output' => 'name'));
+  $dm = $tproj_mgr->get_by_id($args->tproject_id,
+                              array('output' => 'name'));
   $args->tproject_name = $dm['name'];
 
   $args->UploadFile = ($args->UploadFile != "") ? 1 : 0; 
   $args->fInfo = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
   $args->source = isset($args->fInfo['tmp_name']) ? $args->fInfo['tmp_name'] : null;
-  $args->dest = TL_TEMP_PATH . session_id() . "-importkeywords." . $args->importType;
+
+  // whitelist
+  switch($args->importType) {
+    case 'iSerializationToCSV':
+    case 'iSerializationToXML':
+    break;
+
+    default:
+      $args->importType = 'iSerializationToXML';
+    break;
+  }
+
+  $tlkw = new tlKeyword();
+  $args->importTypes = $tlkw->getSupportedSerializationInterfaces();
+  $args->keywordFormatStrings = $tlkw->getSupportedSerializationFormatDescriptions();
+
+  $args->dest = TL_TEMP_PATH . session_id() . 
+                "-importkeywords." . 
+                $args->importTypes[$args->importType];
 
   return $args;
 }
@@ -123,9 +133,8 @@ function initializeGui(&$argsObj)
   $gui->import_type_selected = $argsObj->importType;
   $gui->msg = getFileUploadErrorMessage($argsObj->fInfo);
 
-  $tlkw = new tlKeyword();
-  $gui->importTypes = $tlkw->getSupportedSerializationInterfaces();
-  $gui->keywordFormatStrings = $tlkw->getSupportedSerializationFormatDescriptions();
+  $gui->importTypes = $argsObj->importTypes;
+  $gui->keywordFormatStrings = $argsObj->keywordFormatStrings;;
 
   $fslimit = config_get('import_file_max_size_bytes');
   $gui->fileSizeLimitMsg = 

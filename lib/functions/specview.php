@@ -6,7 +6,7 @@
  * @filesource  specview.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2004-2019, TestLink community 
+ * @copyright   2004-2020, TestLink community 
  * @link        http://www.testlink.org
  *
  *
@@ -133,15 +133,17 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 
   $my = array();
-  $my['options'] = array('write_button_only_if_linked' => 0,'prune_unlinked_tcversions' => 0,
+  $my['options'] = array('write_button_only_if_linked' => 0,
+                         'prune_unlinked_tcversions' => 0,
                          'add_custom_fields' => 0) + (array)$options;
 
-  $my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 
-                         'importance' => null, 'cfields' => null);
-  foreach( $my as $key => $settings)
-  {
-    if( !is_null($$key) && is_array($$key) )
-    {
+  $my['filters'] = array('keywords' => 0, 'testcases' => null ,
+                         'exec_type' => null, 
+                         'importance' => null, 'cfields' => null,
+                         'platforms' => null);
+
+  foreach( $my as $key => $settings) {
+    if( !is_null($$key) && is_array($$key) ) {
       $my[$key] = array_merge($my[$key],$$key);
     }
   }              
@@ -150,26 +152,26 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   $is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
   $is_uncovered_view_type = ($spec_view_type == 'uncoveredtestcases') ? 1 : 0;
   
-  if( !$is_tplan_view_type && is_null($tproject_id) )
-  {
+  if (!$is_tplan_view_type && is_null($tproject_id)) {
     $tproject_id = $tobj_id;
   }
   
   $testplan_id = $is_tplan_view_type ? $tobj_id : null;
-  
-  
+    
   $tcase_mgr = new testcase($db); 
   $hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
   $hash_id_descr = array_flip($hash_descr_id);
 
   $key2map = array('keyword_id' => 'keywords', 'tcase_id' => 'testcases', 
-                   'execution_type' => 'exec_type', 'importance' => 'importance',
-                   'cfields' => 'cfields','tcase_name' => 'tcase_name',
-                   'status' => 'workflow_status');
+                   'execution_type' => 'exec_type', 
+                   'importance' => 'importance',
+                   'cfields' => 'cfields',
+                   'tcase_name' => 'tcase_name',
+                   'status' => 'workflow_status',
+                   'platform_id' => 'platforms');
 
   $pfFilters = array('tcase_node_type_id' => $hash_descr_id['testcase']);
-  foreach($key2map as $tk => $fk)
-  {
+  foreach($key2map as $tk => $fk) {
     $pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
   }
   
@@ -183,14 +185,13 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 
   $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 
-
   $platforms = getPlatforms($db,$tproject_id,$testplan_id);
   $idx = 0;
   $a_tcid = array();
   $a_tsuite_idx = array();
-  if(count($test_spec))
-  {
-    $cfg = array('node_types' => $hash_id_descr, 'write_status' => $write_status,
+  if (count($test_spec)) {
+    $cfg = array('node_types' => $hash_id_descr, 
+                 'write_status' => $write_status,
                  'is_uncovered_view_type' => $is_uncovered_view_type);
                  
     // $a_tsuite_idx
@@ -200,9 +201,6 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
     list($a_tcid,$a_tsuite_idx,$tsuite_tcqty,$out) = buildSkeleton($id,$name,$cfg,$test_spec,$platforms);
   } 
   
-
-
-
   // This code has been replace (see below on Remove empty branches)
   // Once we have created array with testsuite and children testsuites
   // we are trying to remove nodes that has 0 test case count.
@@ -212,13 +210,10 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   // This process is needed to prune whole branches that are empty
   // Need to look for every call in TL and understand if this can be removed
   //
-  if(!is_null($map_node_tccount))
-  {
-    foreach($out as $key => $elem)
-    {
-      if(isset($map_node_tccount[$elem['testsuite']['id']]) &&
-          $map_node_tccount[$elem['testsuite']['id']]['testcount'] == 0)  
-      {
+  if (!is_null($map_node_tccount)) {
+    foreach($out as $key => $elem) {
+      if (isset($map_node_tccount[$elem['testsuite']['id']]) 
+         && $map_node_tccount[$elem['testsuite']['id']]['testcount'] == 0) {
         // why not unset ?
         $out[$key]=null;
       }
@@ -235,22 +230,19 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
     $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items,$options);
   }
 
-  // Try to prune empty test suites, to reduce memory usage and to remove elements
+  // Try to prune empty test suites, to reduce memory usage and 
+  // to remove elements
   // that do not need to be displayed on user interface.
-  if( count($result['spec_view']) > 0)
-  {
+  if (count($result['spec_view']) > 0) {
     removeEmptyTestSuites($result['spec_view'],$tcase_mgr->tree_manager,
                         ($my['options']['prune_unlinked_tcversions'] && $is_tplan_view_type),$hash_descr_id);
   }
   
   // Remove empty branches
   // Loop to compute test case qty ($tsuite_tcqty) on every level and prune test suite branchs that are empty
-  if( count($result['spec_view']) > 0)
-  {
+  if (count($result['spec_view']) > 0) {
     removeEmptyBranches($result['spec_view'],$tsuite_tcqty);
   }   
-  
-  
   
   /** @TODO: maybe we can integrate this into already present loops above? */
   // This is not right condition for identifing an empty test suite for the porpouse
@@ -283,7 +275,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   {    
     addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
   }
-  // --------------------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   unset($tcase_mgr);
   
   // with array_values() we reindex array to avoid "holes"
@@ -346,11 +338,10 @@ $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 	$idx = 0;
 	$a_tcid = array();
 	$a_tsuite_idx = array();
-	if(count($test_spec))
-	{
-
-		$cfg = array('node_types' => $hash_id_descr, 'write_status' => $write_status,
-				'is_uncovered_view_type' => $is_uncovered_view_type);
+	if (count($test_spec)) {
+		$cfg = array('node_types' => $hash_id_descr, 
+                 'write_status' => $write_status,
+				         'is_uncovered_view_type' => $is_uncovered_view_type);
  
 		// $a_tsuite_idx
 		// key: test case version id
@@ -466,43 +457,38 @@ return $result;
  * @param map $options:  default null   (at today 20110820 seems not be used).
  * @param boolean $isTestSuite: filter testGroupBy, default true 
  *  
- * 
- *
- * @internal revisions
- * @since 1.9.14
- * 
  */
-function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, 
+function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, 
+                                   &$tcaseMgr, 
                                    $options = null, $isTestSuite=true)
 {
   static $tsuite_mgr;
-  $doFilterByKeyword = (!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
+  $doFilterByKeyword = (!is_null($argsObj->keyword_id) 
+                        && $argsObj->keyword_id > 0) ? true : false;
   
-
   // Multiple step algoritm to apply keyword filter on type=AND
   // get_*_tcversions filters by keyword ALWAYS in OR mode.
   //
-  $filters = array('keyword_id' => $argsObj->keyword_id, 'platform_id' => null);
+  $filters = array('keyword_id' => $argsObj->keyword_id, 
+                   'platform_id' => null);
   if( property_exists($argsObj,'control_panel') && 
       isset($argsObj->control_panel['setting_platform']) && 
       intval($argsObj->control_panel['setting_platform']) > 0 ) {
     $filters['platform_id'] = intval($argsObj->control_panel['setting_platform']);
   }          
   
-  if( isset($options['assigned_on_build']) && $options['assigned_on_build'] > 0)
-  {
+  if( isset($options['assigned_on_build']) 
+      && $options['assigned_on_build'] > 0) {
     $filters['assigned_on_build'] = $options['assigned_on_build'];
   }
   
   // get test suites in branch to limit search
   if($isTestSuite) {
 	  $itemID = property_exists($argsObj,'object_id') ? $argsObj->object_id : $argsObj->id;
-	  if( !is_null($itemID) )
-	  {
+	  if( !is_null($itemID) ) {
 	    // will get all test suites in this branch, in order to limit amount of data returned by 
 	    // get_*_tcversions
-	    if(!$tsuite_mgr)
-	    {
+	    if (!$tsuite_mgr) {
 	      $tsuite_mgr = new testsuite($dbHandler);
 	    }
 	    $xx = $tsuite_mgr->get_branch($itemID);
@@ -516,8 +502,7 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
                             'tlFeature' => 'none'),
                       (array)$options );
   
-  switch($opx['tlFeature'])
-  {
+  switch ($opx['tlFeature']) {
     case 'testCaseExecTaskAssignment':
       $method2call = 'getLinkedTCVXmen';
     break;
@@ -528,13 +513,13 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
     break;
   }
 
-  if(isset($argsObj->testcases_to_show) && !is_null($argsObj->testcases_to_show))
-  {
+  if (isset($argsObj->testcases_to_show) 
+      && !is_null($argsObj->testcases_to_show)) {
     $filters['tcase_id'] = $argsObj->testcases_to_show;
   }  
 
-  if(isset($argsObj->platform_id) && $argsObj->platform_id > 0)
-  {
+  if (isset($argsObj->platform_id) 
+      && $argsObj->platform_id > 0) {
     $filters['platform_id'] = $argsObj->platform_id;
   }
 
@@ -564,11 +549,11 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
  * @param map $filters:  keys keywordsFilter, testcaseFilter,assignedToFilter,
  *                executionTypeFilter, cfieldsFilter
  *
- *             IMPORTANT NOTICE: not all filters are here, other arrive via argsObj
+ *             IMPORTANT NOTICE: not all filters are here, 
+ *                               other arrive via argsObj
  * @param map $options:  keys  ??
- *             USED TO PASS options to other method called here -> see these method docs.
- *
- * @internal revisions
+ *             USED TO PASS options to other method called here 
+ *             -> see these method docs.
  *
  */
 function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $filters=null, $options=null) 
@@ -612,35 +597,36 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
   if( $tryNextFilter && !is_null($my['filters']['testcaseFilter']))
   {
     $filterApplied = true;
-    if( is_null($testCaseSet) )
-    {
+    if (is_null($testCaseSet)) {
       $testCaseSet = $my['filters']['testcaseFilter'];
-    }
-    else
-    {
+    } else {
       // wrong use of array() instead of (array)
       $testCaseSet = array_intersect($testCaseSet, (array)$my['filters']['testcaseFilter']);
     }
   }
 
-  // when $testCaseSet is null because we have applied filters => we do not need to call other
+  // when $testCaseSet is null because we have 
+  // applied filters => we do not need to call other
   // method because we know we are going to get NOTHING
-  $testCaseSet = !is_null($testCaseSet) ? array_combine($testCaseSet, $testCaseSet) : null;
-  if($filterApplied && is_null($testCaseSet))
-  {
+  $testCaseSet = !is_null($testCaseSet) ? 
+                 array_combine($testCaseSet, $testCaseSet) : null;
+  if ($filterApplied && is_null($testCaseSet)) {
     return null;
   } 
 
-  $genSpecFilters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet,
-                          'exec_type' => $my['filters']['executionTypeFilter'],'cfields' => null);
+  $genSpecFilters = array('keywords' => $argsObj->keyword_id, 
+                          'testcases' => $testCaseSet,
+                          'exec_type' => $my['filters']['executionTypeFilter'],
+                          'cfields' => null);
               
   
-  if( isset($my['filters']['cfieldsFilter']) )
-  {
+  if( isset($my['filters']['cfieldsFilter']) ) {
     $genSpecFilters['cfields'] = $my['filters']['cfieldsFilter'];
   }           
-  $out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
-                       $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
+
+  $out = gen_spec_view($dbHandler, 'testplan', 
+           $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
+           $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
   return $out;
 }
 
@@ -697,11 +683,14 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   $key2loop = null;
   $useAllowed = false;
   
-  $nullCheckFilter = array('tcase_id' => false, 'importance' => false,
-    'tcase_name' => false, 'cfields' => false, 'status' => false);
+  $nullCheckFilter = array('tcase_id' => false, 
+                           'importance' => false,
+                           'tcase_name' => false, 
+                           'cfields' => false, 'status' => false);
 
   $zeroNullCheckFilter = array('execution_type' => false);
-  $useFilter = array('keyword_id' => false) + $nullCheckFilter + $zeroNullCheckFilter;
+  $useFilter = array('keyword_id' => false, 'platform_id' => false) 
+               + $nullCheckFilter + $zeroNullCheckFilter;
 
   $applyFilters = false;
 
@@ -752,6 +741,24 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     }
   }  
 
+  $tcpl_map = null;
+  if(($useFilter['platforms']=$filters['platform_id'][0] > 0)) {
+    $applyFilters = true;
+    switch ($specViewType) {
+      case 'testplan':
+        $tobj_mgr = new testplan($dbHandler); 
+        $tcpl_map = $tobj_mgr->getPlatformsLinkedTCVersions($masterContainerId,
+                                $filters['platforms']);
+      break;
+
+      default:
+        $tcpl_map = $tobj_mgr->getPlatformsLatestTCV($masterContainerId,
+                                $filters['platforms']);
+      break;
+    }
+  }  
+
+
 
   if( $applyFilters ) {
     $key2loop = array_keys($test_spec);
@@ -767,11 +774,17 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 
     foreach($itemKeys as $key => $tspecKey) {
       // case insensitive search 
-      if( ($useFilter['keyword_id'] && !isset($tck_map[$test_spec[$tspecKey]['id']]) ) ||
-          ($useFilter['tcase_id'] && !in_array($test_spec[$tspecKey]['id'],$testCaseSet)) ||
-          ($useFilter['tcase_name'] && (stripos($test_spec[$tspecKey]['name'],$filters['tcase_name']) === false))       
-        ) 
-      {
+      if( ($useFilter['keyword_id'] 
+           && !isset($tck_map[$test_spec[$tspecKey]['id']]) ) 
+
+          || ($useFilter['platforms'] 
+              && !isset($tcpl_map[$test_spec[$tspecKey]['id']]) ) 
+        
+          || ($useFilter['tcase_id'] 
+              && !in_array($test_spec[$tspecKey]['id'],$testCaseSet)) 
+          || ($useFilter['tcase_name'] 
+              && (stripos($test_spec[$tspecKey]['name'],$filters['tcase_name']) === false))       
+        ) {
         $test_spec[$tspecKey]=null; 
         unset($itemSet[$key]);
       }
@@ -791,7 +804,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
         $getFilters['status'] = array('not_in' => array_keys($s2h));   
       }
       
-      //var_dump($getFilters);
       $tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
       
       switch($specViewType) {
@@ -839,6 +851,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
           $options = null;
           $doFilter = true;
           $allowedSet = null;
+          $emptySet = false;
 
           // a first clean will not be bad, ok may be we are going to do more 
           // loops that needed, but think logic will be more clear 
@@ -849,13 +862,15 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
             }
           }
 
-          if( $useFilter['execution_type'] ) {
+          if ($useFilter['execution_type']) {
             // Potential Performance ISSUE
             $allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['execution_type'],$options);
-            $doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
+
+             $doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
+             $emptySet = !$doFilter;
           }
 
-          if( $doFilter ) {
+          if ((false == $emptySet)  && $doFilter) {
             // Add another filter on cascade mode
             // @20130426 - seems we are applying TWICE the Custom Fields Filter
             // because we have applied it before on:
@@ -874,9 +889,11 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
                 unset($dummySet);
               }
             }
+            $doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
+            $emptySet = !$doFilter;
           }
           
-          if( !is_null($allowedSet) &&  count($allowedSet) > 0 ) {
+          if( $doFilter && !is_null($allowedSet) &&  count($allowedSet) > 0 ) {
             $useAllowed = true;
             foreach($allowedSet as $key => $value) {
               $tspecKey = $itemSet[$value['testcase_id']];  
@@ -884,7 +901,11 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
             }
             reset($allowedSet);
           }
-             
+          
+          if ($emptySet) {
+            $test_spec = null;
+          }
+
           $setToRemove = array_diff_key($tcversionSet,$allowedSet);
           if( !is_null($setToRemove) &&  count($setToRemove) > 0 ) {
             foreach($setToRemove as $key => $value) {
@@ -896,7 +917,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
       }  // end switch
     }
   } // if apply filters
-  unset($tobj_mgr);
   return $test_spec;
 }
 
@@ -1238,8 +1258,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
     $tc_id = $testCase['testcase_id'];
     
     // Needed when having multiple platforms
-    if($pivot_id != $tc_id )
-    {
+    if ($pivot_id != $tc_id ) {
       $pivot_id = $tc_id;
       $result['num_tc']++;
     }
@@ -1252,10 +1271,9 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
     // also we need to explain !is_null($out[$parent_idx])
     //
     if($testCase['active'] == 1 && !isset($tcStatus2exclude[$testCase['status']]) && 
-       !is_null($out[$parent_idx]) )
-    {       
-      if( !isset($outRef['execution_order']) )
-      {
+       !is_null($out[$parent_idx]) ) {  
+
+      if( !isset($outRef['execution_order']) ){
         // Doing this I will set order for test cases that still are not linked.
         // But Because I loop over all versions (linked and not) if I always write, 
         // will overwrite right execution order of linked tcversion.
@@ -1271,24 +1289,19 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
       $outRef['importance'][$testCase['id']] = $testCase['importance'];
       $outRef['status'][$testCase['id']] = $testCase['status'];
       
-      if (!isset($outRef['tcversions_qty']))  
-      {
+      if (!isset($outRef['tcversions_qty'])) {
         $outRef['tcversions_qty']=0;
       }
       $outRef['tcversions_qty']++;
     }
     
-    if(!is_null($linked_items))
-    {
-      foreach($linked_items as $linked_testcase)
-      {
+    if (!is_null($linked_items)) {
+      foreach($linked_items as $linked_testcase) {
         $target = current($linked_testcase);
         if(($target['tc_id'] == $testCase['testcase_id']) &&
-           ($target['tcversion_id'] == $testCase['id']) )
-        {
+           ($target['tcversion_id'] == $testCase['id']) ) {
           // This can be written only once no matter platform qty
-          if( !isset($outRef['tcversions'][$testCase['id']]) )
-          {
+          if( !isset($outRef['tcversions'][$testCase['id']]) ) {
             $outRef['tcversions'][$testCase['id']] = $testCase['version'];
             $outRef['tcversions_active_status'][$testCase['id']] = 0;
             $outRef['external_id'] = $testCase['tc_external_id'];
@@ -1354,8 +1367,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
   } //foreach
   
   // Again DAMM 0!!
-  if( !is_null($out[$firstElemIDX]) )
-  {
+  if (!is_null($out[$firstElemIDX])) {
     $result['spec_view'] = $out;
   }
   return $result; 
@@ -1363,25 +1375,21 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
 
 /**
  * 
- * @internal revisions
- * @since 1.9.12
  * changed return type when there are no platforms
  */
 function getPlatforms($db,$tproject_id,$testplan_id)
 {
   $platform_mgr = new tlPlatform($db, $tproject_id);
 
-  if (is_null($testplan_id)) 
-  {
-    $platforms = $platform_mgr->getAll();
-  } 
-  else 
-  {
+  if (is_null($testplan_id)) {
+    $opx = array('enable_on_design' => null,
+                 'enable_on_execution' => true);
+    $platforms = $platform_mgr->getAll($opx);
+  } else {
     $platforms = $platform_mgr->getLinkedToTestplan($testplan_id);
   }
 
-  if( is_null($platforms) )
-  {
+  if (is_null($platforms)) {
     // need to create fake data for platform 0 in order 
     // to have only simple logic
     // $platforms= array( 'id' => 0, 'name' => '');
@@ -1399,12 +1407,17 @@ function getFilteredSpecViewFlat(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
   $tsuite_data = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->id);    
   
   $my = array();  // some sort of local scope
-  $my['filters'] = array('keywordsFilter' => null, 'testcaseFilter' => null,
-                         'assignedToFilter' => null,'executionTypeFilter' => null);
+  $my['filters'] = array('keywordsFilter' => null, 
+                         'testcaseFilter' => null,
+                         'assignedToFilter' => null,
+                         'executionTypeFilter' => null,
+                         'platformsFilter' => null,);
   $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-  $my['options'] = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
+  $my['options'] = array('write_button_only_if_linked' => 1, 
+                         'prune_unlinked_tcversions' => 1);
   $my['options'] = array_merge($my['options'],(array)$options);
+
   
   // This does filter on keywords ALWAYS in OR mode.
   $tplan_linked_tcversions = 
@@ -1415,13 +1428,8 @@ function getFilteredSpecViewFlat(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
   $tryNextFilter = true;
   $filterApplied = false;
   if(!is_null($my['filters']['keywordsFilter']) && !is_null($my['filters']['keywordsFilter']->items)) { 
-
-    /*
-    $keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
-      $my['filters']['keywordsFilter']->items,
-      $my['filters']['keywordsFilter']->type);
-    */
-    $keywordsTestCases = $tprojectMgr->getKeywordsLatestTCV($argsObj->tproject_id,
+    $keywordsTestCases = $tprojectMgr->getKeywordsLatestTCV(
+                           $argsObj->tproject_id,
                            $my['filters']['keywordsFilter']->items,
                            $my['filters']['keywordsFilter']->type);
 
@@ -1430,39 +1438,39 @@ function getFilteredSpecViewFlat(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
     $filterApplied = true;
   }
 
-  if( $tryNextFilter && !is_null($my['filters']['testcaseFilter']))
-  {
+  if( $tryNextFilter && !is_null($my['filters']['testcaseFilter'])) {
     $filterApplied = true;
-    if( is_null($testCaseSet) )
-    {
+    if( is_null($testCaseSet) ) {
       $testCaseSet = $my['filters']['testcaseFilter'];
-    }
-    else
-    {
+    } else {
       // wrong use of array() instead of (array)
       $testCaseSet = array_intersect($testCaseSet, (array)$my['filters']['testcaseFilter']);
     }
   }
 
-  // when $testCaseSet is null because we have applied filters => we do not need to call other
+  // when $testCaseSet is null because we have applied filters 
+  // => we do not need to call other
   // method because we know we are going to get NOTHING
   $testCaseSet = !is_null($testCaseSet) ? array_combine($testCaseSet, $testCaseSet) : null;
-  if($filterApplied && is_null($testCaseSet))
-  {
+  if ($filterApplied && is_null($testCaseSet)) {
     return null;
   } 
 
-  $genSpecFilters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet,
-                          'exec_type' => $my['filters']['executionTypeFilter'],'cfields' => null);
+  $genSpecFilters = array('keywords' => $argsObj->keyword_id, 
+                          'testcases' => $testCaseSet,
+                          'exec_type' => $my['filters']['executionTypeFilter'],
+                          'cfields' => null,
+                          'platforms' => $argsObj->platform_id);
               
-  
-  if( isset($my['filters']['cfieldsFilter']) )
-  {
+  if (isset($my['filters']['cfieldsFilter'])) {
     $genSpecFilters['cfields'] = $my['filters']['cfieldsFilter'];
   }           
   
-  $out = genSpecViewFlat($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
-                         $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
+  $out = genSpecViewFlat($dbHandler, 'testplan', 
+                         $argsObj->tplan_id, $argsObj->id, 
+                         $tsuite_data['name'],
+                         $tplan_linked_tcversions, null, 
+                         $genSpecFilters, $my['options']);
   return $out;
 }
 
@@ -1477,15 +1485,16 @@ function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $na
   $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 
   $my = array();
-  $my['options'] = array('write_button_only_if_linked' => 0,'prune_unlinked_tcversions' => 0,
+  $my['options'] = array('write_button_only_if_linked' => 0,
+                         'prune_unlinked_tcversions' => 0,
                          'add_custom_fields' => 0) + (array)$options;
 
-  $my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 
+  $my['filters'] = array('keywords' => 0, 'testcases' => null ,
+                         'exec_type' => null, 
                          'importance' => null, 'cfields' => null);
-  foreach( $my as $key => $settings)
-  {
-    if( !is_null($$key) && is_array($$key) )
-    {
+
+  foreach( $my as $key => $settings) {
+    if( !is_null($$key) && is_array($$key) ) {
       $my[$key] = array_merge($my[$key],$$key);
     }
   }              
@@ -1494,8 +1503,7 @@ function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $na
   $is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
   $is_uncovered_view_type = ($spec_view_type == 'uncoveredtestcases') ? 1 : 0;
   
-  if( !$is_tplan_view_type && is_null($tproject_id) )
-  {
+  if( !$is_tplan_view_type && is_null($tproject_id) ) {
     $tproject_id = $tobj_id;
   }
   
@@ -1517,16 +1525,15 @@ function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $na
     $pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
   }
   
-  
   $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 
   $platforms = getPlatforms($db,$tproject_id,$testplan_id);
   $idx = 0;
   $a_tcid = array();
   $a_tsuite_idx = array();
-  if(count($test_spec))
-  {
-    $cfg = array('node_types' => $hash_id_descr, 'write_status' => $write_status,
+  if(count($test_spec)) {
+    $cfg = array('node_types' => $hash_id_descr, 
+                 'write_status' => $write_status,
                  'is_uncovered_view_type' => $is_uncovered_view_type);
                  
     // $a_tsuite_idx
@@ -1539,22 +1546,27 @@ function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $na
   // Collect information related to linked testcase versions
   // DAMMED 0!!!!
   $firtsElemIDX = key($out);
-  if(!is_null($out) && count($out) > 0 && !is_null($out[$firtsElemIDX]) && count($a_tcid))
-  {
+  if(!is_null($out) && count($out) > 0 && !is_null($out[$firtsElemIDX]) && count($a_tcid)) {
     $optGBI = array('output' => 'full_without_users',
                     'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
+    
+    if (isset($options['onlyLatestTCV']) 
+        && $options['onlyLatestTCV']) {
+      $whatSet = testcase::LATEST_VERSION;
+      $tcaseVersionSet = $tcase_mgr->getLTCVInfo($a_tcid);
+    } else {
+      $whatSet = testcase::ALL_VERSIONS;
+      $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,$whatSet,null,$optGBI);
+    } 
 
-    $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS,null,$optGBI);
     $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items,$options);
   }
 
-  if( count($result['spec_view']) > 0 && $my['options']['add_custom_fields'])
-  {    
+  if( count($result['spec_view']) > 0 && $my['options']['add_custom_fields']) {    
     addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
   }
-  // --------------------------------------------------------------------------------------------
-  unset($tcase_mgr);
-  
+
+  // ------------------------------------------------------------------  
   // with array_values() we reindex array to avoid "holes"
   $result['spec_view']= array_values($result['spec_view']);
   return $result;

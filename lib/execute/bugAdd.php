@@ -127,8 +127,7 @@ function initEnv(&$dbHandler)
   $uaWhiteList = array();
   $uaWhiteList['elements'] = array('link','create','doCreate','add_note');
   $uaWhiteList['lenght'] = array();
-  foreach($uaWhiteList['elements'] as $xmen)
-  {
+  foreach ($uaWhiteList['elements'] as $xmen) {
     $uaWhiteList['lenght'][] = strlen($xmen);
   }  
   $user_action['maxLengh'] = max($uaWhiteList['lenght']);
@@ -198,16 +197,34 @@ function initEnv(&$dbHandler)
   $gui->user_action = $args->user_action;
   $gui->bug_id = $args->bug_id;
 
+  
+
+  // ---------------------------------------------------------------
+  // Special processing
+  list($itObj,$itCfg) = getIssueTracker($dbHandler,$args,$gui);
+  $itsDefaults = $itObj->getCfg();
+
   $gui->issueType = $args->issueType;
   $gui->issuePriority = $args->issuePriority;
   $gui->artifactVersion = $args->artifactVersion;
   $gui->artifactComponent = $args->artifactComponent;
-  
+  $gui->issueTrackerCfg->editIssueAttr = $itsDefaults->userinteraction;
 
-  // -----------------------------------------------------------------------
-  // Special processing
-  list($itObj,$itCfg) = getIssueTracker($dbHandler,$args,$gui);
+  // This code has been verified with JIRA REST
+  if ($itsDefaults->userinteraction == 0) {
+    $singleVal = array('issuetype' => 'issueType',
+                       'issuepriority' => 'issuePriority');
+    foreach ($singleVal as $kj => $attr) {
+      $gui->$attr = $itsDefaults->$kj;  
+    }  
 
+    $multiVal = array('version' => 'artifactVersion',
+                      'component' => 'artifactComponent');
+    foreach ($multiVal as $kj => $attr) {
+      $gui->$attr = (array)$itsDefaults->$kj;  
+    }  
+  } 
+  $gui->allIssueAttrOnScreen = 1;
 
   // Second access to user input
   $bug_summary['minLengh'] = 1; 
@@ -219,11 +236,9 @@ function initEnv(&$dbHandler)
   I_PARAMS($inputCfg,$args);
 
   $args->bug_id = trim($args->bug_id);
-  switch($args->user_action)
-  {
+  switch ($args->user_action) {
     case 'create':
-      if( $args->bug_id == '' && $args->exec_id > 0)  
-      {
+      if( $args->bug_id == '' && $args->exec_id > 0) {
         $map = get_execution($dbHandler,$args->exec_id);
         $args->bug_notes = $map[0]['notes'];    
       }  
@@ -268,14 +283,13 @@ function getIssueTracker(&$dbHandler,$argsObj,&$guiObj)
   $guiObj->issueTrackerCfg->tlCanCreateIssue = false;
   $guiObj->issueTrackerCfg->tlCanAddIssueNote = true;
 
-  if($info['issue_tracker_enabled'])
-  {
+  if($info['issue_tracker_enabled']) {
   	$it_mgr = new tlIssueTracker($dbHandler);
   	$issueTrackerCfg = $it_mgr->getLinkedTo($argsObj->tproject_id);
-
-  	if( !is_null($issueTrackerCfg) )
-  	{
+    
+  	if( !is_null($issueTrackerCfg) ) {
   		$its = $it_mgr->getInterfaceObject($argsObj->tproject_id);
+    
   		$guiObj->issueTrackerCfg->VerboseType = $issueTrackerCfg['verboseType'];
   		$guiObj->issueTrackerCfg->VerboseID = $issueTrackerCfg['issuetracker_name'];
   		$guiObj->issueTrackerCfg->bugIDMaxLength = $its->getBugIDMaxLength();
@@ -323,6 +337,6 @@ function getDirectLinkToExec(&$dbHandler,$execID)
  * @return boolean return true if the page can be viewed, false if not
  */
 function checkRights(&$db,&$user) {
-	$hasRights = $user->hasRight($db,"testplan_execute");
+	$hasRights = $user->hasRightOnProj($db,"testplan_execute");
 	return $hasRights;
 }

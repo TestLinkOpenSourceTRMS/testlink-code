@@ -100,6 +100,20 @@ class Jira
         return $user;
     }
 
+
+    /**
+     *
+     */
+    public function getUserByEmail($email)
+    {
+        $this->request->openConnect($this->host . 
+            'user/query=' . $email, 'GET');
+        $this->request->execute();
+        $user = json_decode($this->request->getResponseBody());
+
+        return $user;
+    }
+
     /**
      * https://docs.atlassian.com/jira/REST/latest/
      * https://docs.atlassian.com/jira/REST/latest/#api/2/myself
@@ -234,15 +248,19 @@ class Jira
      *       JIRA+REST+API+Example+-+Discovering+meta-data+for+creating+issues
      *
      *
-     * @return  object reponse body (ATTENTION: can be null if something wrong has happened) 
+     * @return  object reponse body 
+     *          (ATTENTION: can be null if something wrong has happened) 
      *          properties: id,key,self
      *          Example:
-     *          {"id":"12505","key":"ZOFF-186","self":"https://testlink.atlassian.net/rest/api/latest/issue/12505"}
+     *          {"id":"12505","key":"ZOFF-186",
+     *           "self":"https://testlink.atlassian.net/
+     *                           rest/api/latest/issue/12505"}
      *
      */
     public function createIssue($issueFields)
     {
-        $this->request->openConnect($this->host . 'issue/', 'POST', $issueFields);
+        $this->request->openConnect($this->host . 'issue/', 'POST', 
+                                    $issueFields);
         $this->request->execute();
 
         return json_decode($this->request->getResponseBody());

@@ -1,0 +1,7 @@
+{
+ "name":"TestSuite  TS100-B",
+ "testProjectID":1,
+ "parentID":1,
+ "notes":"This is my first TOP TestSuite via REST", 
+ "order":100
+}

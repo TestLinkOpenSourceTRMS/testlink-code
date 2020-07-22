@@ -9,8 +9,6 @@
  * Import ONLY requirements to a req specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
  *
- * @internal revisions
- * since 1.9.12
  *
  */
 require_once("../../config.inc.php");
@@ -19,7 +17,7 @@ require_once('requirements.inc.php');
 require_once('xml.inc.php');
 require_once('csv.inc.php');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
@@ -27,20 +25,22 @@ $req_mgr = new requirement_mgr($db);
 
 $args = init_args();
 $gui = initializeGui($db,$args,$_SESSION,$req_spec_mgr,$req_mgr);
-switch($args->doAction)
-{
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$args->user,$context);
+
+
+
+switch ($args->doAction) {
   case 'uploadFile':
     $dummy = doExecuteImport($gui->fileName,$args,$req_spec_mgr,$req_mgr);
     $gui->items = $dummy->items;        
     $gui->file_check = $dummy->file_check;
     $gui->userFeedback = (array)$dummy->userFeedback;
-    if(array_key_exists("syntaxError", $gui->userFeedback) && count($gui->userFeedback['syntaxError']) > 0) 
-    {
+    $gui->importResult = lang_get('import_done');
+    if(array_key_exists("syntaxError", $gui->userFeedback) && count($gui->userFeedback['syntaxError']) > 0) {
       $gui->importResult = lang_get('import_syntax_error');
-    } 
-    else 
-    {
-      $gui->importResult = lang_get('import_done');
     }
     $gui->refreshTree = $args->refreshTree && $gui->file_check['status_ok'];  
   break;
@@ -78,44 +78,32 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
     
   // manage file upload process
   $source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
-  if (($source != 'none') && ($source != '' ))
-  { 
-    if (move_uploaded_file($source, $fileName))
-    {
-      if( $argsObj->importType == 'XML' )
-      {
+  if (($source != 'none') && ($source != '' )) { 
+    if (move_uploaded_file($source, $fileName)) {
+      if( $argsObj->importType == 'XML' ) {
         $retval->file_check['status_ok']=!(($xml=simplexml_load_file_wrapper($fileName)) === FALSE);
-        if( !$retval->file_check['status_ok'] )
-        {
+        if( !$retval->file_check['status_ok'] ) {
           $retval->file_check['msg'] = lang_get('import_failed_xml_load_failed');
         }  
       }
     } 
-  }
-  else
-  {
+  } else {
     $retval->file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_req_file'));
   } 
-  // ----------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------
 
-  if($retval->file_check['status_ok'])
-  {
-    if($argsObj->importType == 'XML')
-    {
+  if($retval->file_check['status_ok']) {
+    if($argsObj->importType == 'XML') {
       // If there is no req_spec in XML, and req_spec_id 
       // from context is null, we must raise an error, to avoid ghots requirements in DB
       $isReqSpec = property_exists($xml,'req_spec');
-      if(!$isReqSpec && $argsObj->req_spec_id <= 0) 
-      {
+      if(!$isReqSpec && $argsObj->req_spec_id <= 0) {
         $retval->file_check = array('status_ok' => FALSE, 'msg' => lang_get('please_create_req_spec_first'));
-      }
-      else
-      {  
+      } else {  
         $retval->items = doReqImportFromXML($reqSpecMgr,$reqMgr,$xml,$context,$opts);
       }  
-    }
-    else
-    {
+    } else {
+      echo __LINE__; die();
       $dummy = doReqImportOther($reqMgr,$fileName,$context,$opts);
       $retval->items = $dummy['items'];
       $retval->userFeedback = $dummy['userFeedback'];
@@ -174,6 +162,11 @@ function init_args()
   $args->tproject_id = intval($_SESSION['testprojectID']);
   $args->tproject_name = $_SESSION['testprojectName'];
   $args->user_id = intval(isset($_SESSION['userID']) ? $_SESSION['userID'] : 0);
+  
+  $args->user = isset($_SESSION['currentUser']) 
+                ? $_SESSION['currentUser'] : null;
+
+
   $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
 
   $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? 
@@ -265,12 +258,13 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr,&$reqMgr)
 
 
 /**
- * 
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$user,&$context)
 {
-  return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+  $context->rightsOr = [];
+  $context->rightsAnd = ["mgt_view_req","mgt_modify_req"];
+  pageAccessCheck($db, $user, $context);
 }
 
 
@@ -282,26 +276,21 @@ function doReqImportFromXML(&$reqSpecMgr,&$reqMgr,&$simpleXMLObj,$importContext,
 {
   $items = array();
   $isReqSpec = property_exists($simpleXMLObj,'req_spec');
-  if($isReqSpec)
-  {
-    foreach($simpleXMLObj->req_spec as $xkm)
-    {
+  if ($isReqSpec) {
+    foreach($simpleXMLObj->req_spec as $xkm) {
       $dummy = $reqSpecMgr->createFromXML($xkm,$importContext->tproject_id,$importContext->req_spec_id,
                         $importContext->user_id,null,$importOptions);
       $items = array_merge($items,$dummy);
     }
-  }   
-  else
-  {
+  } else {
     $loop2do = count($simpleXMLObj->requirement);
-    for($kdx=0; $kdx < $loop2do; $kdx++)
-    {   
+    for($kdx=0; $kdx < $loop2do; $kdx++) {   
       $dummy = $reqMgr->createFromXML($simpleXMLObj->requirement[$kdx],$importContext->tproject_id,
-                                        $importContext->req_spec_id,$importContext->user_id,null,$importOptions);
+          $importContext->req_spec_id,$importContext->user_id,null,$importOptions);
       $items = array_merge($items,$dummy);
     }
   }
-    return $items;
+  return $items;
 }
 
 

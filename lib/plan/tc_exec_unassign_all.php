@@ -4,19 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @package		TestLink
- * @author		Andreas Simon
- * @copyright	2005-2010, TestLink community 
- * @version		CVS: $Id: tc_exec_unassign_all.php,v 1.3 2010/07/26 19:00:57 asimon83 Exp $
- * @link		http://www.teamst.org/index.php
- *
- * @internal revisions:
+ * @copyright	2005-2020, TestLink community 
  * 
  */
 
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
 
-testlinkInitPage($db, false, false, "checkRights");
+testlinkInitPage($db, false, false);
 
 $assignment_mgr = new assignment_mgr($db);
 $testplan_mgr = new testplan($db);
@@ -25,6 +20,12 @@ $templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = init_gui($db, $args);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
 
 $assignment_count = 0;
 
@@ -69,11 +70,12 @@ function init_args() {
 	
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	
-	$args->build_id = isset($_REQUEST['build_id']) ? $_REQUEST['build_id'] : 0;
+	$args->build_id = isset($_REQUEST['build_id']) ? 
+	                  intval($_REQUEST['build_id']) : 0;
 	$args->confirmed = isset($_REQUEST['confirmed']) && $_REQUEST['confirmed'] == 'yes' ? true : false;
 	
 	$args->user_id = $_SESSION['userID'];
-	$args->testproject_id = $_SESSION['testprojectID'];
+	$args->testproject_id = intval($_SESSION['testprojectID']);
 	$args->testproject_name = $_SESSION['testprojectName'];
 	
 	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
@@ -107,8 +109,10 @@ function init_gui(&$dbHandler, &$argsObj) {
 /**
  *
  */
-function checkRights(&$dbHandler,&$user) {
-	return $user->hasRight($dbHandler, 'testplan_planning');
+function checkRights(&$db,&$user,&$context)
+{
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_planning"];
+  pageAccessCheck($db, $user, $context);
 }
 
-?>

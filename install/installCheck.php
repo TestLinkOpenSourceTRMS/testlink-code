@@ -63,7 +63,7 @@ reportCheckingPermissions($errors,$inst_type);
 ?>
   	
 	<div style="float:right;"><form action="installDbInput.php">
-		<input type="submit" id="submit" value="Continue" />
+		<input type="submit" id="continue" value="Continue" />
 	</form></div>
 	<div>
 	<p class="success">Your system is prepared for TestLink configuration (no fatal problem found).</p>

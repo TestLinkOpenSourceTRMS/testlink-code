@@ -6,7 +6,6 @@ Purpose: show results for requirement search.
 
 {include file="inc_head.tpl" openHead='yes'}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {$tableID="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}

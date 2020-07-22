@@ -255,13 +255,13 @@ class testplan extends tlObjectWithAttachments
       }  
 
       if( property_exists($item, 'notes') ) {
-        $upd = ($upd != '' ? ',' : '') . " notes = '" . $this->db->prepare_string($item->notes) . "' ";
+        $upd .= ($upd != '' ? ',' : '') . " notes = '" . $this->db->prepare_string($item->notes) . "' ";
       }
 
       $intAttr = array('active','is_public');
       foreach($intAttr as $key) {
         if( property_exists($item, $key) ) {
-          $upd = ($upd != '' ? ',' : '') . $key . ' = ' . (intval($item->$key) > 0 ? 1 : 0);
+          $upd .= ($upd != '' ? ',' : '') . $key . ' = ' . (intval($item->$key) > 0 ? 1 : 0);
         }
       }  
 
@@ -646,7 +646,9 @@ class testplan extends tlObjectWithAttachments
     // Get human readeable info for audit
     $title_separator = config_get('gui_title_separator_1');
     $auditInfo=$this->tcversionInfoForAudit($id,$items_to_link['tcversion']);
-    $platformInfo = $this->platform_mgr->getLinkedToTestplanAsMap($id);
+
+    $optLTT = null;
+    $platformInfo = $this->platform_mgr->getLinkedToTestplanAsMap($id,$optLTT);
     $platformLabel = lang_get('platform');
     
     // Important: MySQL do not support default values on datetime columns that are functions
@@ -1397,6 +1399,41 @@ class testplan extends tlObjectWithAttachments
     return $keywords;
   } // end function
 
+  /**
+   * args :
+   *     [$platform_id]: can be an array
+   */
+  function getPlatformsLinkedTCVersions($id,$platform_id=0) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $platforms = null;
+    $safeID = intval($id);
+
+    $platFilter= '' ;
+    if (is_array($platform_id) ) {
+      $platFilter = " AND platform_id IN (" . implode(',',$platform_id) . ")"; 
+    }
+    else if( $platform_id > 0 ) {
+      $platFilter = " AND $platform_id = {$platform_id} ";
+    }
+
+    $sql = " /* $debugMsg */ ";
+    $sql .= " SELECT TCPL.testcase_id,TCPL.platform_id,PL.name 
+              FROM {$this->tables['platforms']} PL
+              JOIN {$this->tables['testcase_platforms']} TCPL
+              ON PL.id = TCPL.platform_id
+              JOIN {$this->tables['testplan_tcversions']} TPTCV
+              ON TCPL.tcversion_id = TPTCV.tcversion_id
+              WHERE TPTCV.testplan_id = " . intval($id) . 
+            " {$platFilter} ORDER BY name ASC ";
+
+    // CUMULATIVE is needed to get all platforms assigned 
+    // to each testcase linked to testplan         
+    $platforms = 
+        $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
+
+    return $platforms;
+  } // end function
 
 
   /*
@@ -4598,7 +4635,7 @@ class testplan extends tlObjectWithAttachments
     
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
 
-    $dummy = (array)$statusSet;
+    $dummy = $this->sanitizeExecStatus( (array)$statusSet );
     $statusInClause = implode("','",$dummy);
 
     // ATTENTION:
@@ -4783,6 +4820,7 @@ class testplan extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
+    $statusSet = $this->sanitizeExecStatus( $statusSet );
     $statusInClause = implode("','",$statusSet);
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
 
@@ -4839,6 +4877,8 @@ class testplan extends tlObjectWithAttachments
   function getHitsSameStatusFullOnPlatform($id,$platformID,$statusSet,$buildSet=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $statusSet = $this->sanitizeExecStatus( $statusSet );
+
     return $this->helperGetHitsSameStatusOnPlatform('full',$id,$platformID,$statusSet,$buildSet);
   }
 
@@ -4911,8 +4951,8 @@ class testplan extends tlObjectWithAttachments
     }
         
     $get['otherStatus'] = count($statusSet) > 0;
-    if($get['otherStatus'])
-    {
+    if($get['otherStatus']) {
+      $statusSet = $this->sanitizeExecStatus($statusSet);
       $statusInClause = implode("','",$statusSet);
             
       // ATTENTION:
@@ -4969,16 +5009,11 @@ class testplan extends tlObjectWithAttachments
     $hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
     $hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
 
-    if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'])
-    {
+    if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus']) {
       $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
-    }
-    else if($hitsFoundOn['notRun'])
-    {
+    } else if($hitsFoundOn['notRun']) {
       $items = array_keys($hits['notRun']);
-    }
-    else if($hitsFoundOn['otherStatus'])
-    {
+    } else if($hitsFoundOn['otherStatus']) {
       $items = array_keys($hits['otherStatus']);
     }
 
@@ -5084,13 +5119,12 @@ class testplan extends tlObjectWithAttachments
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,null,array('buildID' => $buildID));
     
     $safe_id['build'] = intval($buildID);
-    $statusList = (array)$statusSet;
+    $statusList = $this->sanitizeExecStatus( (array)$statusSet );
 
     // Manage also not run
     $notRunHits = null;
     $dummy = array_flip($statusList);
-    if( isset($dummy[$this->notRunStatusCode]) )
-    {
+    if( isset($dummy[$this->notRunStatusCode]) ) {
       tLog(__FUNCTION__ . ':: getHitsNotRunOnBuildPlatform','DEBUG');
       $notRunHits = $this->getHitsNotRunOnBuildPlatform($safe_id['tplan'],$safe_id['platform'],$safe_id['build']);
       unset($statusList[$dummy[$this->notRunStatusCode]]);
@@ -5154,13 +5188,12 @@ class testplan extends tlObjectWithAttachments
                                         'ignorePlatform' => true));
     
     $safe_id['build'] = intval($buildID);
-    $statusList = (array)$statusSet;
+    $statusList = $this->sanitizeExecStatus( (array)$statusSet );
 
     // Manage also not run
     $notRunHits = null;
     $dummy = array_flip($statusList);
-    if( isset($dummy[$this->notRunStatusCode]) )
-    {
+    if( isset($dummy[$this->notRunStatusCode]) ) {
       $notRunHits = $this->getHitsNotRunOnBuildALOP($safe_id['tplan'],$safe_id['build']);
       unset($statusList[$dummy[$this->notRunStatusCode]]);
     }
@@ -5228,7 +5261,7 @@ class testplan extends tlObjectWithAttachments
                                       'ignoreBuild' => true));
     
     // Check if 'not run' in present in statusSet => throw exception
-    $statusList = (array)$statusSet;
+    $statusList = $this->sanitizeExecStatus( (array)$statusSet );
     $dummy = array_flip($statusList);
     if( isset($dummy[$this->notRunStatusCode]) )
     {
@@ -5301,7 +5334,7 @@ class testplan extends tlObjectWithAttachments
                                   array('ignoreBuild' => true));
     
     // Check if 'not run' in present in statusSet => throw exception
-    $statusList = (array)$statusSet;
+    $statusList = $this->sanitizeExecStatus( (array)$statusSet );
     $dummy = array_flip($statusList);
     if( isset($dummy[$this->notRunStatusCode]) )
     {
@@ -5366,6 +5399,7 @@ class testplan extends tlObjectWithAttachments
   function getHitsSameStatusPartialOnPlatform($id,$platformID,$statusSet,$buildSet=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $statusSet = $this->sanitizeExecStatus( (array)$statusSet );
     return $this->helperGetHitsSameStatusOnPlatform('partial',$id,$platformID,$statusSet,$buildSet);
   } 
 
@@ -5391,7 +5425,7 @@ class testplan extends tlObjectWithAttachments
     $getHitsStatusSetMethod = 'getHitsStatusSetPartialALOP';
         
     // Needed because, may be we will need to remove an element
-    $statusSetLocal = (array)$statusSet;  
+    $statusSetLocal = $this->sanitizeExecStatus( (array)$statusSet );  
 
     $items = null;
     $hits = array('notRun' => array(), 'otherStatus' => array());
@@ -5452,6 +5486,7 @@ class testplan extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
+    $statusSet = $this->sanitizeExecStatus( $statusSet );
     $statusInClause = implode("','",$statusSet);
     list($safe_id,$buildsCfg,$sqlLEX) = $this->helperGetHits($id,null,$buildSet,
                                      array('ignorePlatform' => true));
@@ -5604,7 +5639,7 @@ class testplan extends tlObjectWithAttachments
     }
     
     // Needed because, may be we will need to remove an element
-    $statusSetLocal = (array)$statusSet;  
+    $statusSetLocal = $this->sanitizeExecStatus( $statusSet );
 
     $items = null;
     $hits = array('notRun' => array(), 'otherStatus' => array());
@@ -7865,10 +7900,6 @@ class testplan extends tlObjectWithAttachments
         $my['where']['where'];
 
     $xql = is_null($union['not_run']) ? $union['exec'] : $union;
-    //echo '<pre>';
-    //var_dump($xql);
-    //echo '</pre>';
-    //die();
 
     return $xql;
   }
@@ -7953,6 +7984,7 @@ class testplan extends tlObjectWithAttachments
           COALESCE(E.status,'" . $notrun . "') AS exec_status 
           FROM {$this->tables['testplan_tcversions']} TPTCV                 
           JOIN $nht NH_TCV ON NH_TCV.id = TPTCV.tcversion_id 
+          JOIN {$this->tables['tcversions']} TCV ON TCV.id = NH_TCV.id
           JOIN $nht NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
           $my['join']['keywords'] .
           $my['join']['ua'] .
@@ -7998,7 +8030,38 @@ class testplan extends tlObjectWithAttachments
   }
 
 
+  /**
+   * Rules
+   * 1. code is a string of length = 1 => one character
+   * 2. domain will be a-z
+   * 
+   */
+  function sanitizeExecStatus( $status ) {
 
+    $statusSet = (array)$status;
+    $sane = array();
+    foreach ($statusSet as $code) {
+      $oascii = ord($code[0]);
+      if( $oascii >= ord('a') && $oascii <= ord('z') ) {
+        $sane[] = $code[0];
+      }
+    } 
+    return $sane; 
+  }
+
+  /**
+   *
+   */
+  static function getName(&$dbh,$id) {
+    $sch = tlDBObject::getDBTables(array('nodes_hierarchy','testplans'));
+    $sql = "SELECT name FROM {$sch['nodes_hierarchy']} NH
+            JOIN {$sch['testplans']} TPLAN
+            ON TPLAN.id = NH.id
+            WHERE TPLAN.id=" . intval($id);
+    $rs = $dbh->get_recordset($sql);
+    return is_null($rs) ? $rs : $rs[0]['name'];
+  }
+  
 } // end class testplan
 
 
@@ -8244,11 +8307,6 @@ class build_mgr extends tlObject {
 
     $members = array_merge($members,(array)$attr);
 
- /*   echo '<pre>';
-    var_dump($attr);
-    var_dump($members);
-    echo '</pre>';
-    die(); */
     $closure_date = '';
     $targetDate = trim($members['release_date']);
     $sql = " UPDATE {$this->tables['builds']} " .

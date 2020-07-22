@@ -22,7 +22,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action=fRoot+'lib/codetrackers/codeTrackerEdit.php?doAction=doDelete&id=';
 </script>
- 
+
+{include file="bootstrap.inc.tpl"} 
 </head>
 <body {$body_onload}>
 <h1 class="title">{$labels.title_codetracker_mgmt}</h1>
@@ -87,8 +88,9 @@ var del_action=fRoot+'lib/codetrackers/codeTrackerEdit.php?doAction=doDelete&id=
 	  	  <input type="hidden" name="doAction" value="" />
 	
 		{if $gui->canManage != ""}
-	  		<input type="submit" id="create" name="create" value="{$labels.btn_create}" 
-	  	           onclick="doAction.value='create'"/>
+	  		<input class="btn btn-primary" 
+	  		       type="submit" id="create" name="create" value="{$labels.btn_create}" 
+	  	         onclick="doAction.value='create'"/>
 		{/if}
 	  	</form>
 	</div>

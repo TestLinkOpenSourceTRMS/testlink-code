@@ -6,8 +6,6 @@
  * @filesource  reqSpecViewRevision.php
  * @author francisco.mancardi@gmail.com
  * 
- *
- * @internal revisions
  * 
  */
 require_once('../../config.inc.php');
@@ -15,12 +13,17 @@ require_once('common.php');
 require_once('attachments.inc.php');
 require_once('requirements.inc.php');
 require_once('users.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = initialize_gui($db,$args);
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
 $smarty = new TLSmarty();
 
 $smarty->assign('gui',$gui);
@@ -87,12 +90,13 @@ function initialize_gui(&$dbHandler,$argsObj)
 }
 
 
+
 /**
- * 
  *
  */
-function checkRights(&$dbHandler,&$user)
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($dbHandler,'mgt_view_req');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["mgt_view_req"];
+  pageAccessCheck($db, $user, $context);
 }
-?>

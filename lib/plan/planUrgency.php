@@ -7,29 +7,33 @@
  * @filesource  planUrgency.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2003-2014, TestLink community 
+ * @copyright   2003-2020, TestLink community 
  * @link        http://www.testlink.org
  * 
- * @internal revisions
- * @since 1.9.13
  **/
  
 require('../../config.inc.php');
 require_once('common.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 $args = init_args();
 
-if($args->show_help)
-{
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+$context->tplan_id = $args->tplan_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
+
+if ($args->show_help) {
   show_instructions('test_urgency');
   exit();  
 }
+
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testPlanUrgency($db);
 $gui = initializeGui($args,$tplan_mgr->tree_manager);
 
-if( $args->urgency != OFF || isset($args->urgency_tc) )
-{
+if ($args->urgency != OFF || isset($args->urgency_tc)){
   $gui->user_feedback = doProcess($args,$tplan_mgr);
 }  
 
@@ -80,26 +84,18 @@ function init_args()
 
   // Sets urgency for suite
  
-  if (isset($_REQUEST['high_urgency']))
-  {  
+  if (isset($_REQUEST['high_urgency'])) {  
     $args->urgency = HIGH;
-  }
-  elseif (isset($_REQUEST['medium_urgency']))
-  {  
+  } elseif (isset($_REQUEST['medium_urgency'])) {  
     $args->urgency = MEDIUM;
-  }
-  elseif (isset($_REQUEST['low_urgency']))
-  {  
+  } elseif (isset($_REQUEST['low_urgency'])) {  
     $args->urgency = LOW;
-  }
-  else
-  {
+  } else {
     $args->urgency = OFF;
   }  
 
   // Sets urgency for every single tc
-  if (isset($_REQUEST['urgency'])) 
-  {
+  if (isset($_REQUEST['urgency']))  {
     $args->urgency_tc = $_REQUEST['urgency'];
   }
 
@@ -151,11 +147,10 @@ function doProcess(&$argsObj,&$tplanMgr)
   }
 
   // Set urgency for individual testcases
-  if(isset($argsObj->urgency_tc))
-  {
-    foreach ($argsObj->urgency_tc as $id => $urgency) 
-    {
-      $tplanMgr->setTestUrgency($argsObj->tplan_id, $id, $urgency);
+  if (isset($argsObj->urgency_tc)) {
+    foreach ($argsObj->urgency_tc as $id => $urgency)  {
+      $tplanMgr->setTestUrgency($argsObj->tplan_id, 
+                                intval($id), intval($urgency));
     }
   }
 
@@ -163,8 +158,12 @@ function doProcess(&$argsObj,&$tplanMgr)
 }
 
 
-
-function checkRights(&$db,&$user)
+/**
+ *
+ */
+function checkRights(&$db,&$user,&$context)
 {
-  return $user->hasRight($db,'testplan_planning');
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_planning"];
+  pageAccessCheck($db, $user, $context);
 }

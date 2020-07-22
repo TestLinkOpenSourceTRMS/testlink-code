@@ -8,12 +8,9 @@
  * @filesource  userInfo.php
  * @package     TestLink
  * @author      -
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://www.testlink.org
  *
- *
- * @internal revisions
- * @since 1.9.10
  * 
  */
 require_once('../../config.inc.php');
@@ -22,6 +19,9 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
+list($add2args,$gui) = initUserEnv($db,$args);
+
+$gui->optLocale = config_get('locales');
 
 $user = new tlUser($args->userID);
 $user->readFromDB($db);
@@ -34,12 +34,10 @@ $update_title_bar = 0;
 
 
 $doUpdate = false;
-switch($args->doAction)
-{
+switch($args->doAction) {
   case 'editUser':
     $doUpdate = true;
-    foreach($args->user as $key => $value)
-    {
+    foreach($args->user as $key => $value) {
       $user->$key = $value;
     }
     $op->status = tl::OK;
@@ -59,11 +57,9 @@ switch($args->doAction)
   break;
 }
 
-if($doUpdate)
-{
+if($doUpdate) {
   $op->status = $user->writeToDB($db);
-  if ($op->status >= tl::OK) 
-  {
+  if ($op->status >= tl::OK) {
     logAuditEvent(TLS($op->auditMsg,$user->login),"SAVE",$user->dbID,"users");
     $_SESSION['currentUser'] = $user;
     setUserSession($db,$user->login, $args->userID, $user->globalRoleID, $user->emailAddress, $user->locale);
@@ -74,20 +70,17 @@ $loginHistory = new stdClass();
 $loginHistory->failed = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN_FAILED",10);
 $loginHistory->ok = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN",10);
 
-if ($op->status != tl::OK && empty($op->user_feedback))
-{
+if ($op->status != tl::OK && empty($op->user_feedback)) {
   $op->user_feedback = getUserErrorMessage($op->status);
 }
 $user->readFromDB($db);
 
 // set a string if not generated key yet
-if (null == $user->userApiKey)
-{
+if (null == $user->userApiKey) {
   $user->userApiKey = TLS('none');
 }
 
-$gui = new stdClass();
-$gui->optLocale = config_get('locales');
+
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -146,11 +139,10 @@ function init_args()
 function changePassword(&$dbHandler,&$argsObj,&$userMgr)
 {
   $op = new stdClass();
-  $op->status = $userMgr->comparePassword($argsObj->oldpassword);
+  $op->status = $userMgr->comparePassword($dbHandler,$argsObj->oldpassword);
   $op->user_feedback = '';
   $op->auditMsg = '';
-  if ($op->status == tl::OK)
-  {
+  if ($op->status == tl::OK) {
     $userMgr->setPassword($argsObj->newpassword,$userMgr->authentication);
     $userMgr->writePasswordToDB($dbHandler);
     $op->user_feedback = lang_get('result_password_changed');

@@ -9,9 +9,6 @@
  * @see https://developer.atlassian.com/jiradev/api-reference/jira-rest-apis/jira-rest-api-tutorials/
  *
  *
- * @internal revisions
- * @since 1.9.16
- *
 **/
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/RestRequest.php");
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/Jira.php");
@@ -39,10 +36,16 @@ class jirarestInterface extends issueTrackerInterface
     $this->support = new jiraCommons();
     $this->support->guiCfg = array('use_decoration' => true);
 
-	  $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+    // This is the right way to overwrite ONLY 
+    // the keys we want, and preserve the default 
+    // configuration present in the issueTrackerInterface class
+	  $this->methodOpt['buildViewBugLink'] = 
+      array_merge($this->methodOpt['buildViewBugLink'], 
+                  array('addSummary' => true, 
+                        'colorByStatus' => false)
+                  );
 
-    if($this->setCfg($config) && $this->checkCfg())
-    {
+    if ($this->setCfg($config) && $this->checkCfg()) {
       $this->completeCfg();
       $this->connect();
       $this->guiCfg = array('use_decoration' => true);
@@ -344,75 +347,80 @@ class jirarestInterface extends issueTrackerInterface
    */
   public function addIssue($summary,$description,$opt=null)
   {
-    try
-    {
+    try {
       $issue = array('fields' =>
-                     array('project' => array('key' => (string)$this->cfg->projectkey),
+                     array('project' => 
+                            array('key' => (string)$this->cfg->projectkey),
                            'summary' => $summary,
                            'description' => $description,
-                           'issuetype' => array( 'id' => (int)$this->cfg->issuetype)
-                           ));
+                           'issuetype' => 1 /*Bug*/));
+
+      if ( property_exists($this->cfg,'issuetype') ) {
+        $issue['fields']['issuetype'] = array('id' => 
+                                              (int)$this->cfg->issuetype);
+      }
 
       $prio = null;
-      if(property_exists($this->cfg, 'issuepriority'))
-      {
+      if(property_exists($this->cfg, 'issuepriority')) {
         $prio = $this->cfg->issuepriority;
-
       }  
-      if( !is_null($opt) && property_exists($opt, 'issuePriority') )
-      {
+      if( !is_null($opt) && property_exists($opt, 'issuePriority') ) {
         $prio = $opt->issuePriority;
       }
-      if( !is_null($prio) )
-      {
+      if( !is_null($prio) ) {
         // CRITIC: if not casted to string, you will get following error from JIRA
         // "Could not find valid 'id' or 'name' in priority object."
         $issue['fields']['priority'] = array('id' => (string)$prio);
       }    
   
 
-      if(!is_null($this->issueAttr))
-      {
+      if(!is_null($this->issueAttr)) {
         $issue['fields'] = array_merge($issue['fields'],$this->issueAttr);
       }
 
-      if(!is_null($opt))
-      {
-
+      if(!is_null($opt)) {
         // these can have multiple values
-        if(property_exists($opt, 'artifactComponent'))
-        {
+        if(property_exists($opt, 'artifactComponent')) {
           // YES is plural!!
           $issue['fields']['components'] = array();
-          foreach( $opt->artifactComponent as $vv)
-          {
+          foreach( $opt->artifactComponent as $vv) {
             $issue['fields']['components'][] = array('id' => (string)$vv);
           }  
         }
 
-        if(property_exists($opt, 'artifactVersion'))
-        {
+        if (property_exists($opt, 'artifactVersion')) {
           // YES is plural!!
           $issue['fields']['versions'] = array();
-          foreach( $opt->artifactVersion as $vv)
-          {
+          foreach ( $opt->artifactVersion as $vv) {
             $issue['fields']['versions'][] = array('id' => (string)$vv);
           }  
         }
 
 
+        if (property_exists($opt, 'reporter')) {
 
-        if(property_exists($opt, 'reporter'))
-        {
-          $issue['fields']['reporter'] = array('name' => (string)$opt->reporter);
+          // After Atlassian GDRP Changes
+          // $issue['fields']['reporter'] = 
+          //  array('name' => (string)$opt->reporter);
+          $issue['fields']['reporter'] = 
+            array('id' => (string)$opt->reporter);
         }
 
-        if(property_exists($opt, 'issueType'))
-        {
+        if (property_exists($opt, 'issueType')) {
           $issue['fields']['issuetype'] = array('id' => $opt->issueType);
         }
         
-
+        // @20200531 - Will revert because it's not clear what is the intent
+        //
+        // @20200531 - documentation is needed
+        // accepted Pull Request #231
+        /*
+        $matches = preg_grep("/(?:\/.*\/{1,})(.*) - Execution/", 
+                             (array)$summary);
+        if (count($matches) > 0 && isset($matches[1])) {
+          $issue['fields']['customfield_10311'] = $matches[1];
+        }
+        */
       }  
 
       $op = $this->APIClient->createIssue($issue);
@@ -807,9 +815,16 @@ class jirarestInterface extends issueTrackerInterface
         break;
 
         case 'radiobutton':
+          $dummy = array('value' => (string)$valueSet['value']);
+        break;
         case 'selectlist':
           // "customfield_10012": { "value": "red" }
-          $dummy = array('value' => (string)$valueSet['value']);
+          $dummy = array('id' => (string)$valueSet['value']);
+        break;
+
+        case 'userpicker':
+          // "customfield_10012": { "value": "admin" }
+          $dummy = array('name' => (string)$valueSet['value']);
         break;
 
         case 'labels':
@@ -897,6 +912,24 @@ class jirarestInterface extends issueTrackerInterface
       }
     }
     $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
+  }
+
+
+  /**
+   *
+   */
+  public function getUserAccountID($email)
+  {
+    try {
+      $u = $this->APIClient->getUserByEmail($email);
+      if (null != $u) {
+        return $u->accountId;
+      }
+      return null;
+    }
+    catch(Exception $e) {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }
   }
 
 

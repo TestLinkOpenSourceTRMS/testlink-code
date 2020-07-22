@@ -55,7 +55,8 @@ $aa_tfp = array(
      'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
      'executeTest' => array('lib/execute/execNavigator.php?setting_testplan=', 'lib/execute/execDashboard.php?id='),
      'showMetrics' => 'lib/results/resultsNavigator.php',
-     'reqSpecMgmt' => array('lib/requirements/reqSpecListTree.php','lib/project/project_req_spec_mgmt.php?id=')
+     'reqSpecMgmt' => array('lib/requirements/reqSpecListTree.php',
+                            'lib/project/project_req_spec_mgmt.php?id=')
 );
 
 $full_screen = array('newest_tcversions' => 1);
@@ -65,22 +66,19 @@ $_SESSION['currentSrsId'] = null;
 
 /** feature to display */
 $showFeature = $args->feature;
-if (isset($aa_tfp[$showFeature]) === FALSE)
-{
+if (isset($aa_tfp[$showFeature]) === FALSE) {
   // argument is wrong
   tLog("Wrong page argument feature = ".$showFeature, 'ERROR');
   exit();
 }
 
 // features that need to run the validate build function
-if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment')))
-{
+if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'))) {
   // Check if for test project selected at least a test plan exist
   if( isset($_SESSION['testplanID']) || !is_null($args->tplan_id))
   {
     // Filter on build attributes: ACTIVE,OPEN
-    switch($showFeature)
-    {
+    switch($showFeature) {
       case 'executeTest':
         $hasToBe['active'] = true;
         $hasToBe['open'] = true;
@@ -108,8 +106,7 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
     $tplanIDCard->name = $_SESSION['testplanName'];
     $tplanMgr = new testplan($db);
 
-    if(!is_null($args->tplan_id))
-    {
+    if(!is_null($args->tplan_id)) {
       $tplanIDCard->id = intval($args->tplan_id);
       $dummy = $tplanMgr->tree_manager->get_node_hierarchy_info($tplanIDCard->id);
       $tplanIDCard->name = $dummy['name'];
@@ -136,30 +133,25 @@ $smarty = new TLSmarty();
 
 // try to add context in order to avoid using global coupling via $_SESSION
 // this will be useful to open different test projects on different browser TAB
-if( is_array($aa_tfp[$showFeature]) )
-{
+if( is_array($aa_tfp[$showFeature]) ) {
   $leftPane = $aa_tfp[$showFeature][0];
   $rightPane = $aa_tfp[$showFeature][1];
   
-  if($rightPane[strlen($rightPane)-1] == '=')
-  {
+  if($rightPane[strlen($rightPane)-1] == '=') {
     $rightPane .= intval($_SESSION['testprojectID']);
   }  
   
-  if($showFeature == 'executeTest')
-  {
+  if($showFeature == 'executeTest') {
     $leftPane .= $args->tplan_id;
   }
   // new dBug($leftPane);
 
-} 
-else
-{
+} else {
   $leftPane = $aa_tfp[$showFeature];
   $rightPane = 'lib/general/staticPage.php?key=' . $showFeature;
 } 
 
-if( intval($args->tproject_id) > 0 || intval($args->tproject_id) > 0)
+if( intval($args->tproject_id) > 0 || intval($args->tplan_id) > 0)
 {  
   $leftPane .= (strpos($leftPane,"?") === false) ? "?" : "&";
   $leftPane .= "tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
@@ -170,12 +162,9 @@ if( intval($args->tproject_id) > 0 || intval($args->tproject_id) > 0)
   $rightPane .= "tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
 }
 
-if(isset($full_screen[$showFeature]))
-{
+if(isset($full_screen[$showFeature])) {
   redirect($leftPane);
-}
-else
-{
+} else {
   $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
   $smarty->assign('treeframe', $leftPane);
   $smarty->assign('workframe', $rightPane);

@@ -3,8 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource  rolesEdit.tpl
 Purpose: smarty template - create/edit user role
 
-@internal revisions
-@since 1.9.15
 *}
 
 {lang_get var="labels"

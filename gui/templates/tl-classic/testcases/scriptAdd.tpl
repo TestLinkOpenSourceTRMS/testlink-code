@@ -1,9 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource scriptAdd.tpl
-@internal revisions
-@since 1.9.15
-
 *}
 {include file="inc_head.tpl"}
 

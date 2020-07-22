@@ -50,7 +50,9 @@ switch ($action) {
 if($op->status == 1) {
   $tpl = $op->template;
 } else {
-  $tpl = $tplCfg->default_template;
+  $tpl = (property_exists($op,'template') 
+          && null != $op->template) ? $op->template :
+         $tplCfg->default_template;
   $gui->user_feedback = getKeywordErrorMessage($op->status);
 }
 
@@ -68,7 +70,7 @@ if ($tpl != $tplCfg->default_template) {
   $gui->submitCode="return dialog_onSubmit($gui->dialogName)";
 }
 
-if( $setUpDialog ) {
+if ($setUpDialog) {
   $gui->dialogName = 'kw_dialog';
   $gui->bodyOnLoad = "dialog_onLoad($gui->dialogName)";
   $gui->bodyOnUnload = "dialog_onUnload($gui->dialogName)";  
@@ -237,7 +239,7 @@ function do_delete(&$args,&$guiObj,&$tproject_mgr) {
 
 /*
  *  initialize variables to launch user interface (smarty template)
- *  to get information to accomplish create task.
+ *  to get information to accomplish create and link task.
 */
 function cfl(&$argsObj,&$guiObj) {
   $guiObj->submit_button_action = 'do_cfl';
@@ -252,17 +254,19 @@ function cfl(&$argsObj,&$guiObj) {
 }
 
 /*
- * Creates the keyword
+ * Creates & Link the keyword
  */
 function do_cfl(&$args,&$guiObj,&$tproject_mgr) {
   $guiObj->submit_button_action = 'do_cfl';
-  $guiObj->submit_button_label = lang_get('btn_save');
+  $guiObj->submit_button_label = lang_get('btn_create_and_link');
   $guiObj->main_descr = lang_get('keyword_management');
-  $guiObj->action_descr = lang_get('create_keyword');
+  $guiObj->action_descr = lang_get('create_keyword_and_link');
 
   $op = $tproject_mgr->addKeyword($args->tproject_id,$args->keyword,$args->notes);
   
-  if( $op['status'] ) {
+  $ret = new stdClass();
+  if ($op['status'] >= tl::OK) {
+    $ret->template = 'keywordsView.tpl';
     $tcaseMgr = new testcase($tproject_mgr->db);
     $tbl = tlObject::getDBTables('nodes_hierarchy');
     $sql = "SELECT parent_id FROM {$tbl['nodes_hierarchy']}
@@ -272,13 +276,9 @@ function do_cfl(&$args,&$guiObj,&$tproject_mgr) {
     $tcaseMgr->addKeywords($tcase_id,$args->tcversion_id,
         array($op['id']));
   }
-
-  $ret = new stdClass();
-  $ret->template = 'keywordsView.tpl';
   $ret->status = $op['status'];
   return $ret;
 }
-
 
 
 /**
@@ -289,23 +289,24 @@ function getKeywordErrorMessage($code) {
   switch($code) {
     case tlKeyword::E_NAMENOTALLOWED:
       $msg = lang_get('keywords_char_not_allowed'); 
-      break;
+    break;
 
     case tlKeyword::E_NAMELENGTH:
       $msg = lang_get('empty_keyword_no');
-      break;
+    break;
 
     case tlKeyword::E_DBERROR:
     case ERROR: 
       $msg = lang_get('kw_update_fails');
-      break;
+    break;
 
     case tlKeyword::E_NAMEALREADYEXISTS:
       $msg = lang_get('keyword_already_exists');
-      break;
+    break;
 
     default:
       $msg = 'ok';
+    break;  
   }
   return $msg;
 }

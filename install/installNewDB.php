@@ -8,7 +8,7 @@
  * @filesource  installNewDB.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2008,2018 TestLink community
+ * @copyright   2008,2019 TestLink community
  * @copyright   inspired by Etomite Content Management System
  *              2003, 2004 Alexander Andrew Butter 
  *
@@ -38,8 +38,15 @@ if( !isset($_SESSION) ) {
 }
 
 // catch DB input data
-foreach($_POST as $key => $val) {
-  $_SESSION[$key] = $val;
+$validKeys = array("databasetype","databasehost",
+                   "databasename","tableprefix",
+                   "databaseloginname","databaseloginpassword",
+                   "tl_loginname","tl_loginpassword");
+foreach ($validKeys as $key) {
+  $_SESSION[$key] = '';
+  if( isset($_POST[$key]) ) {
+    $_SESSION[$key] = $_POST[$key];
+  }
 }
 
 //assure that no timeout happens for large data
@@ -88,7 +95,9 @@ if (!$validator->isValid($dbHost)) {
   die();
 }
 
-$san = '/[^A-Za-z0-9\-]/';
+// Allows only certan kind of letters, numbers, minus, underscore
+$san = '/[^A-Za-z0-9\-_]/';
+
 $db_name = trim($_SESSION['databasename']);
 $db_name = preg_replace($san,'',$db_name);
 
@@ -106,6 +115,7 @@ $tl_db_passwd = trim($_SESSION['tl_loginpassword']);
 
 // will limit length to avoi some kind of injection
 // Choice: 32 
+// Allows only certan kind of letters, numbers, minus, underscore
 $tl_db_login = trim($_SESSION['tl_loginname']);
 $tl_db_login = substr(preg_replace($san,'',$tl_db_login),0,32);
 

@@ -7,9 +7,6 @@
  *
  * View existing and create a new req. specification.
  *
- * @internal revisions
- * @since 1.9.15
- *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -19,13 +16,17 @@ $editorCfg = getWebEditorCfg('requirement_spec');
 require_once(require_web_editor($editorCfg['type']));
 $req_cfg = config_get('req_cfg');
 
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
 $commandMgr = new reqSpecCommands($db,$args->tproject_id);
-
 $gui = initialize_gui($db,$args,$req_cfg,$commandMgr);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+checkRights($db,$args->user,$context);
+
 
 $auditContext = new stdClass();
 $auditContext->tproject = $args->tproject_name;
@@ -99,6 +100,8 @@ function init_args()
     }  
   }  
   
+  $args->user = $_SESSION['currentUser'];
+
   return $args;
 }
 
@@ -209,13 +212,13 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
       $tpd = isset($key2loop['template_dir']) ? $opObj->template_dir : $templateCfg->template_dir;
 
       $pos = strpos($tpl, '.php');
-      if($pos === false)
-      {
+      if ($pos === false) {
         $tpl = $tpd . $tpl;
-      }
-      else
-      {
-        $renderType = 'redirect';  
+      } else {
+        $renderType = 'redirect'; 
+        if (null != $guiObj->uploadOp && $guiObj->uploadOp->statusOK == false) {
+          $tpl .= "&uploadOPStatusCode=" . $guiObj->uploadOp->statusCode;
+        }
       }
     break;
   }
@@ -258,11 +261,13 @@ function initialize_gui(&$dbHandler, &$argsObj, &$req_cfg, &$commandMgr)
   return $gui;
 }
 
+
 /**
- * 
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$user,&$context)
 {
-  return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+  $context->rightsOr = [];
+  $context->rightsAnd = ["mgt_view_req","mgt_modify_req"];
+  pageAccessCheck($db, $user, $context);
 }

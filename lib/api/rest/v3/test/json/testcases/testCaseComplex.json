@@ -1,0 +1,16 @@
+{
+  "name":"Test Scenarios for Filter Criteria",
+  "testSuiteID":378,"testProjectID":358,
+  "preconditions":"No preconditions for this testcase. 
+  <br>If you use an array [] can be empty
+  <br>If you need to use a object {}",
+  "order":100,"authorID":1,"importance":2,"executionType":1,
+  "summary": 
+  "<br>1. User should be able to filter results using all parameters on the page
+   <br>2. Refine search functionality should load search page with all user selected search parameters
+   <br>3. When there is at least one filter criteria is required to perform search operation, 
+   <br>   make sure proper error message is displayed when user submits the page without selecting any filter criteria.
+   <br>4. When at least one filter criteria selection is not compulsory user 
+   <br>   should be able to submit page and default search criteria should get used to query results
+  <br>5. Proper validation messages should be displayed for invalid values for filter criteria"
+}

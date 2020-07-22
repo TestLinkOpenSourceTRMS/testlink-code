@@ -9,18 +9,15 @@ rev:
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
+{include file="bootstrap.inc.tpl"}
 
 {lang_get var="labels" 
           s='btn_export,btn_cancel,warning,export_filename,file_type,
              view_file_format_doc,export_with_keywords,warning_empty_filename'}
 
-{literal}
 <script type="text/javascript">
-{/literal}
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
@@ -32,7 +29,6 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 </head>
 
 
@@ -68,9 +64,11 @@ function validateForm(f)
   	
   	<div class="groupBtn">
   	  <input type="hidden" name="doAction" id="doAction" value="" />
-  		<input type="submit" name="doExport" id="doExport" value="{$labels.btn_export}" 
+  		<input class="btn btn-primary" 
+             type="submit" name="doExport" id="doExport" value="{$labels.btn_export}" 
   		                     onclick="doAction.value=this.id" />
-  		<input type="button" name="cancel" value="{$labels.btn_cancel}"
+  		<input class="btn btn-primary" type="button" 
+             name="cancel" value="{$labels.btn_cancel}"
     		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
     		     {else}  onclick="javascript:history.back();" {/if} />
 

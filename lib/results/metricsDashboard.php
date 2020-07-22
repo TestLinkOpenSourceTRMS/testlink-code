@@ -77,7 +77,15 @@ if(count($gui->tplan_metrics) > 0)
           $rowData[] = strip_tags($platform_metric['platform_name']);
         }
         
-        $rowData[] = $platform_metric['total'];
+        if( isset($platform_metric['total']) )
+        {
+          $rowData[] = $platform_metric['total'];
+        }
+        else
+        {
+          $rowData[] = 0;
+        }
+        
         foreach ($statusSetForDisplay as $status_verbose => $status_label)
         {
           if( isset($platform_metric[$status_verbose]) )

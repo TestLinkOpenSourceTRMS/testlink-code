@@ -7,74 +7,73 @@
  *
  * Google OAUTH API (authentication)
  *
- * @internal revisions
- * @since 1.9.17
  *
  */
+//$where = explode('lib',__DIR__);
+//require($where[0] . '/config.inc.php');
+require('autoload.php');
 
-//Get token
-function oauth_get_token($authCfg, $code) {
-
+/**
+ *
+ */
+function oauth_get_token($authCfg, $code) 
+{
   $result = new stdClass();
   $result->status = array('status' => tl::OK, 'msg' => null);
 
-  //Params to get token
-  $oauthParams = array(
-    'code'          => $code,
-    'grant_type'    => $authCfg['oauth_grant_type'],
-    'client_id'     => $authCfg['oauth_client_id'],
-    'client_secret' => $authCfg['oauth_client_secret']
-  );
-
-  $oauthParams['redirect_uri'] = trim($authCfg['redirect_uri']);  
+  $oauthParams['redirect_uri'] = $authCfg['redirect_uri'];
   if( isset($_SERVER['HTTPS']) ) {
     $oauthParams['redirect_uri'] = 
-      str_replace('http://', 'https://', $oauthParams['redirect_uri']);  
+      str_replace('http://', 'https://', 
+                  $oauthParams['redirect_uri']);  
   }  
 
-  $curl = curl_init();
-  curl_setopt($curl, CURLOPT_URL, $authCfg['token_url']);
-  curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($oauthParams));
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-  $result_curl = curl_exec($curl);
-  curl_close($curl);
-  $tokenInfo = json_decode($result_curl, true);
+  $providerCfg = ['clientId' => $authCfg['oauth_client_id'],
+                  'clientSecret' => $authCfg['oauth_client_secret'],
+                  'redirectUri' => $oauthParams['redirect_uri'] ]; 
 
-  //If token is received start session
-  if (isset($tokenInfo['access_token'])){
-    $oauthParams['access_token'] = $tokenInfo['access_token'];
-    $userInfo = json_decode(file_get_contents($authCfg['oauth_profile'] . '?' . 
-          http_build_query($oauthParams)), true);
+  $provider = new League\OAuth2\Client\Provider\Google($providerCfg);
 
-    if (isset($userInfo['id'])){
-      if (isset($authCfg['oauth_domain'])) {
-        $domain = substr(strrchr($userInfo['email'], "@"), 1);
-        if ($domain !== $authCfg['oauth_domain']){
-          $result->status['msg'] = 
-          "TestLink Oauth policy - User email domain:$domain does not 
-           match \$authCfg['oauth_domain']:{$authCfg['oauth_domain']} ";
-          $result->status['status'] = tl::ERROR;
-        }
-      }
-    } else {
-      $result->status['msg'] = 'TestLink - User ID is empty';
-      $result->status['status'] = tl::ERROR;
-    }
-
-    $options = new stdClass();
-    $options->givenName = $userInfo['given_name'];
-    $options->familyName = $userInfo['family_name'];
-    $options->user = $userInfo['email'];
-    $options->auth = 'oauth';
-
-    $result->options = $options;
-  } else {
-    $result->status['msg'] = 'TestLink - An error occurred during get token';
-    $result->status['status'] = tl::ERROR;
+  // 
+  // CRITICAL
+  // Suggested in https://github.com/thephpleague/oauth2-client
+  // 
+  // Check given state ($_GET) against previously stored one 
+  // ($_SESSION) to mitigate CSRF attack
+  if (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
+    $msg = "OAuth CSRF Check using \$_SESSION['oauth2state'] -> Failed!";
+    throw new Exception("OAuth CSRF Check using ", 1);
   }
 
-  return $result;
+    
+  // Try to get an access token (using the authorization code grant)
+  $token = $provider->getAccessToken('authorization_code', 
+                                     ['code' => $_GET['code']]);
 
+  // Now you have a token you can look up a users profile data
+  try {
+    // We got an access token, let's now get the user's details
+    $user = $provider->getResourceOwner($token);
+
+    // printf('<br>getName %s!', $user->getName());
+    // printf('<br>getEmail %s!', $user->getEmail());
+    // printf('<br>getUserName %s!', $user->getUserName());
+    //echo '<pre>';
+    //var_dump($user->toArray());
+    //echo '</pre>';
+
+    $result->options = new stdClass();
+    $result->options->givenName = $user->getFirstName();
+    $result->options->familyName = $user->getLastName();
+    $result->options->user = $user->getEmail();
+    $result->options->email = $user->getEmail();
+    $result->options->login = $user->getEmail();
+    $result->options->auth = 'oauth';
+    
+    return $result;
+
+  } catch (Exception $e) {
+     // Failed to get user details
+     exit('Oh dear...');
+  }
 }

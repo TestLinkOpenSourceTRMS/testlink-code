@@ -199,7 +199,7 @@ function TreePanelState(mytree,cookiePrefix)
 
 TreePanelState.prototype.init = function() 
 {
-    this.cp = new Ext.state.CookieProvider();
+    this.cp = new Ext.ux.LocalStorageProvider();
     this.state = this.cp.get(this.cookiePrefix + this.mytree.id, new Array() );
 }
 

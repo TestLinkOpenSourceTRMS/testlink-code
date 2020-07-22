@@ -57,7 +57,7 @@ $forum_url = 'forum.testlink.org';
     <a href="https://www.youtube.com/watch?v=6s48WGuX2WE" target="#">TestLink Walkthrough</a><br>
     </b>
 
-    <p><ul><li><a href="installIntro.php?type=new">New installation</a></li></ul></p>
+    <p><ul><li><a id="new_inst" href="installIntro.php?type=new">New installation</a></li></ul></p>
 
     <br>
     <i>

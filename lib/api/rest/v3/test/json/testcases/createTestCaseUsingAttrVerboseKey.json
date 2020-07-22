@@ -1,0 +1,15 @@
+{
+  "name":"Test Case ALFA",
+  "summary":"This is a summary for Test Case",
+  "preconditions":"No preconditions",
+  "order":100,
+ 
+  "testProject":{"prefix":"APR"},
+  "testSuite":{"id":360},
+ 
+  "author":{"login":"Mr Spock"},
+  "importance":{"name":"high"},
+  "executionType":{"name":"manual"},
+  "status":{"name":"draft"},
+  "estimatedExecutionTime":0
+}

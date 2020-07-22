@@ -7,11 +7,10 @@
  *
  * @filesource  login.php
  * @package     TestLink
- * @copyright   2006,2019 TestLink community 
+ * @copyright   2006,2020 TestLink community 
  * @link        http://www.testlink.org
  * 
  **/
-
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 require_once('config.inc.php');
@@ -23,9 +22,11 @@ $templateCfg = templateConfiguration();
 $doRenderLoginScreen = false;
 $doAuthPostProcess = false;
 
+
 doDBConnect($db, database::ONERROREXIT);
 $args = init_args();
 $gui = init_gui($db,$args);
+
 
 // if these checks fail => we will redirect to login screen with some message
 doBlockingChecks($db,$gui);
@@ -51,35 +52,41 @@ switch($args->action) {
 
 
   case 'oauth':
-    //If code is empty then break
+    // If code is empty then break
     if (!isset($args->oauth_code)){
         renderLoginScreen($gui);
         die();
     }
 
-    //Switch between oauth providers
-    if (!include_once('lib/functions/oauth_providers/'.$args->oauth_name.'.php')) {
+    // Switch between oauth providers
+    // validate providers
+    $includeOK = false;
+    $oauth_params = getOAuthProviderCfg($args->oauth_name);
+    if ($oauth_params != null) {
+      $g2i = $args->oauth_name . '.php';
+      if (!include_once($g2i)) {
         die("Oauth client doesn't exist");
+      } else {
+        $includeOK = true;
+      }             
     }
 
-    $oau = config_get('OAuthServers');
-    foreach ($oau as $oprov) {
-      if (strcmp($oprov['oauth_name'],$args->oauth_name) == 0){
-        $oauth_params = $oprov;
-        break;
-      }
+    // No good!
+    if ($includeOK == false) {
+      renderLoginScreen($gui);
+      die();      
     }
-
+   
     $user_token = oauth_get_token($oauth_params, $args->oauth_code);
     if($user_token->status['status'] == tl::OK) {
       doSessionStart(true);
       $op = doAuthorize($db,$user_token->options->user,'oauth',$user_token->options);
       $doAuthPostProcess = true;
     } else {
-	$gui->note = $user_token->status['msg'];
-	$gui->draw=true;    
-        renderLoginScreen($gui);
-        die();
+    	$gui->note = $user_token->status['msg'];
+    	$gui->draw=true;    
+      renderLoginScreen($gui);
+      die();
     }
   break;
 
@@ -151,7 +158,8 @@ function init_args() {
   $args->destination = urldecode($pParams['destination']);
   $args->loginform_token = urldecode($pParams['loginform_token']);
 
-  $args->viewer = $pParams['viewer']; 
+  // $args->viewer = $pParams['viewer']; 
+  $args->viewer = '';
 
   $k2c = array('ajaxcheck' => 'do','ajaxlogin' => 'do');
   if (isset($k2c[$pParams['action']]))  {
@@ -164,14 +172,46 @@ function init_args() {
     $args->oauth_name = $pParams['oauth'];
     $args->oauth_code = $pParams['code'];
   } else if (!is_null($pParams['state']) && !is_null($pParams['code'])) {
+   
+    // We use state to undertand the provider when the redirect url
+    // can not have query string, as happens with Microsoft
+    // state will be 'testlink provider id'$$$state(random string)
+    //
+    // read https://auth0.com/docs/protocols/oauth2/oauth-state
+    //
     $args->action = 'oauth';
-    $args->oauth_name = $pParams['state'];
+    $args->oauth_name = explode('$$$',$pParams['state']);
+    $args->oauth_name = $args->oauth_name[0];
     $args->oauth_code = $pParams['code'];
   } else {
     $args->action = 'loginform';
   }
 
+  // whitelist oauth_name
+  if (strcasecmp($args->action,'oauth') == 0) {
+    validateOauth($args->oauth_name);
+  }
+
   return $args;
+}
+
+/**
+ *
+ */
+function validateOauth($name) {
+  $name = trim($name);
+  $oauthServers = config_get('OAuthServers');
+  $whitelistOK = false;
+  foreach ($oauthServers as $serverCfg) {
+    if (strcasecmp($name, $serverCfg['oauth_name']) == 0) {
+      $whitelistOK = true;
+      break;
+    }
+  }
+
+  if ($whitelistOK == false) {
+    die("Invalid Oauth Service");
+  } 
 }
 
 /**
@@ -202,7 +242,7 @@ function init_gui(&$db,$args) {
         $gui->oauth[$name] = new stdClass();
         $gui->oauth[$name]->name = ucfirst($name);
         $gui->oauth[$name]->link = oauth_link($oauth_prov);
-        $gui->oauth[$name]->icon = $oauth_prov['oauth_icon'];
+        $gui->oauth[$name]->icon = $name . '.png';
     }
   }
 

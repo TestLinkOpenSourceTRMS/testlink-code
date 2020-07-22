@@ -36,10 +36,12 @@ function getUniqueFileName($fExt)
 function getFileExtension($fName,$default)
 {
 	$fExt = pathinfo($fName);
-	if (isset($fExt['extension']))
+	if (isset($fExt['extension'])) {
 		$fExt = $fExt['extension'];
-	else
+	}
+	else {
 		$fExt = $default;
+	}
 
 	return $fExt;
 }

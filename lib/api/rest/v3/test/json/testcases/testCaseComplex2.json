@@ -1,0 +1,18 @@
+{
+  "name":"Test Scenarios for a Window",
+  "testSuiteID":378,"testProjectID":358,
+  "preconditions":"No preconditions for this testcase. 
+  <br>If you use an array [] can be empty
+  <br>If you need to use a object {}",
+  "order":100,"authorID":1,"importance":2,"executionType":1,
+  "summary": 
+  "<br>1. Check if default window size is correct
+   <br>2. Check if child window size is correct
+   <br>3. Check if there is any field on page with default focus (in general, the focus should be set on first input field of the screen)
+   <br>4. Check if child windows are getting closed on closing parent/opener window
+   <br>5. If child window is opened, user should not be able to use or update any field on background or parent window
+   <br>6. Check window minimize, maximize and close functionality
+   <br>7. Check if window is re-sizable
+   <br>8. Check scroll bar functionality for parent and child windows
+   <br>9. Check cancel button functionality for child window"
+}

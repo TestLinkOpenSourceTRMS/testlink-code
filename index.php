@@ -80,7 +80,29 @@ function initEnv() {
   
   $args = new stdClass();
   $args->ssodisable = getSSODisable();
-  $args->reqURI = ($pParams["reqURI"] != '') ? $pParams["reqURI"] : 'lib/general/mainPage.php';
+
+  // CWE-79: 
+  // Improper Neutralization of Input 
+  // During Web Page Generation ('Cross-site Scripting')
+  // 
+  // https://cxsecurity.com/issue/WLB-2019110139
+  $args->reqURI = '';
+  if ($pParams["reqURI"] != '') {
+    $args->reqURI = $pParams["reqURI"];
+
+    // some sanity checks
+    // strpos ( string $haystack , mixed $needle
+    if (stripos($args->reqURI,'javascript') !== false) {
+      $args->reqURI = null; 
+    }
+  }
+  if (null == $args->reqURI) {
+    $args->reqURI = 'lib/general/mainPage.php';
+  }
+  $args->reqURI = $_SESSION['basehref'] . $args->reqURI;
+
+
+
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 

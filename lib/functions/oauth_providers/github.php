@@ -7,99 +7,102 @@
  *
  * Github OAUTH API (authentication)
  *
- * @internal revisions
- * @since 1.9.17
  *
  */
+//$where = explode('lib',__DIR__);
+//require($where[0] . '/config.inc.php');
+require('autoload.php');
 
-// Get token
-function oauth_get_token($authCfg, $code) {
-
+/**
+ *
+ */
+function oauth_get_token($authCfg, $code) 
+{
   $result = new stdClass();
   $result->status = array('status' => tl::OK, 'msg' => null);
 
-  // Params to get token
-  $oauthParams = array(
-     'code'          => $code,
-     'client_id'     => $authCfg['oauth_client_id'],
-     'client_secret' => $authCfg['oauth_client_secret']
-  );
-
-  $oauthParams['redirect_uri'] = $oauthCfg['redirect_uri'];  
+  $oauthParams['redirect_uri'] = $authCfg['redirect_uri'];
   if( isset($_SERVER['HTTPS']) ) {
     $oauthParams['redirect_uri'] = 
-      str_replace('http://', 'https://', $oauthParams['redirect_uri']);  
+      str_replace('http://', 'https://', 
+                  $oauthParams['redirect_uri']);  
   }  
 
-  $curlAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1';
-  $curlContentType = array('Content-Type: application/xml','Accept: application/json');
+  $providerCfg = ['clientId' => $authCfg['oauth_client_id'],
+                  'clientSecret' => $authCfg['oauth_client_secret'],
+                  'redirectUri' => $oauthParams['redirect_uri']]; 
 
-  // Step #1 - Get the token
-  $curl = curl_init();
-  curl_setopt($curl, CURLOPT_URL, $authCfg['token_url']);
-  curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_HTTPHEADER, array('Accept: application/json'));
-  curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($oauthParams));
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($curl, CURLOPT_COOKIESESSION, true);
-  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-  $result_curl = curl_exec($curl);
+  $provider = new \League\OAuth2\Client\Provider\Github($providerCfg);  
 
-  if( $result_curl === false ) {
-    echo 'Curl error: ' . curl_error($curl);
+  // echo '<br>state from SESSION: '. $_SESSION['oauth2state'];
+  // echo '<br>state from GET: ' . $_GET['state'];
+
+  // CRITICAL
+  // Suggested in https://github.com/thephpleague/oauth2-client
+  // 
+  // Check given state ($_GET) against previously stored one 
+  // ($_SESSION) to mitigate CSRF attack
+  if (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
+    $msg = "OAuth CSRF Check using \$_SESSION['oauth2state'] -> Failed!";
+    throw new Exception("OAuth CSRF Check using ", 1);
+  }
+
+    
+  // Try to get an access token (using the authorization code grant)
+  $token = $provider->getAccessToken('authorization_code', 
+                                     ['code' => $_GET['code']]);
+
+  // Now you have a token you can look up a users profile data
+  try {
+    // We got an access token, let's now get the user's details
+    $user = $provider->getResourceOwner($token);
+
+    /*
+    printf('<br>getName %s!', $user->getName());
+    printf('<br>getEmail %s!', $user->getEmail());
+    printf('<br>getUserName %s!', $user->getUserName());
+    
     echo '<pre>';
-    var_dump(curl_getinfo($curl));
+    var_dump($user->toArray());
+    var_dump($user->getNickname());
     echo '</pre>';
     die();
-  }
-  curl_close($curl);
-  $tokenInfo = json_decode($result_curl);
+    */
 
-  // If token is received start session
-  if (isset($tokenInfo->access_token)) {
-    $oauthParams['access_token'] = $tokenInfo->access_token;
-
-    $queryString = http_build_query($tokenInfo);
-    $targetURL = array();
-    $targetURL['user'] = $authCfg['oauth_profile'] . '?' . $queryString;
-    $targetURL['email'] = $authCfg['oauth_profile'] . '/emails?'. $queryString;
-
-    // Get User
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $targetURL['user']);
-    curl_setopt($curl, CURLOPT_USERAGENT, $curlAgent);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $curlContentType);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result_curl = curl_exec($curl);
-    $userInfo = json_decode($result_curl, true);
-    curl_close($curl);
-
-    if (!isset($userInfo['login'])) {
-      $result->status['msg'] = 'User ID is empty';
-      $result->status['status'] = tl::ERROR;
-    }
-
-    // Get email
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $targetURL['email'] );
-    curl_setopt($curl, CURLOPT_USERAGENT, $curlAgent);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $curlContentType);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result_curl = curl_exec($curl);
-    $emailInfo = json_decode($result_curl, true);
-    curl_close($curl);
-
-
+    $firstLast = $user->getName();
     $result->options = new stdClass();
-    $result->options->givenName = $userInfo['login'];
-    $result->options->familyName = $userInfo['id'];
-    $result->options->user = $emailInfo[0]['email'];
+    $result->options->givenName = $firstLast;
+    $result->options->familyName = $firstLast;
+
+    // Github does not provide the email in the getResourceOwner()
+    // response if the user has configured the mail as Private.
+    // Solution from:
+    // https://github.com/thephpleague/oauth2-github/issues/3
+    //
+    $email = $user->getEmail();
+    if ($email == null) {
+      $request = $provider->getAuthenticatedRequest(
+                  'GET', 
+                  'https://api.github.com/user/emails', 
+                  $token // Your access token
+      );
+      $array = $provider->getParsedResponse($request);
+      foreach ($array as $item) {
+          if ($item['primary'] === true) {
+              $email = $item['email'];
+              break;
+          }
+      }
+    }
+    $result->options->user = $email;
+    $result->options->email = $email;
+    //$result->options->login = $user->getUserName();
     $result->options->auth = 'oauth';
+    
+    return $result;
 
-  } else {
-    $result->status['msg'] = 'An error occurred during getting token';
-    $result->status['status'] = tl::ERROR;
+  } catch (Exception $e) {
+     // Failed to get user details
+     exit('Oh dear...');
   }
-
-  return $result;
 }

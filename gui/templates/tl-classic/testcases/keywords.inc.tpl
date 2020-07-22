@@ -51,10 +51,13 @@ var pF_remove_keyword = remove_keyword;
 
 </script>
 
-<form method="post" id="kwf" name="kwf" action="{$basehref}lib/testcases/tcEdit.php">
-  <input type="hidden" id="kwf_doAction" name="doAction" value="removeKeyword" />
-  <input type="hidden" name="tcase_id" id="tcase_id" value="{$args_tcase_id}" />
-  <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$args_tcversion_id}" />
+<form method="post" id="kwf" name="kwf" 
+  action="{$basehref}lib/testcases/tcEdit.php">
+  <input type="hidden" id="kwf_doAction" name="doAction"
+         value="removeKeyword" />
+  <input type="hidden" name="tcase_id" value="{$args_tcase_id}" />
+  <input type="hidden" name="tcversion_id" 
+         value="{$args_tcversion_id}" />
 
   {if property_exists($gui,'tplan_id') } 
     <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />

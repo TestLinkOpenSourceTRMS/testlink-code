@@ -5,7 +5,7 @@
  * 
  * @filesource  testproject.class.php
  * @package     TestLink
- * @copyright   2005-2018, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * 
  **/
@@ -253,17 +253,13 @@ public function setSessionProject($projectId)
     $tproject_info = $this->get_by_id($projectId);
   }
 
-  if ($tproject_info)
-  {
+  if ($tproject_info) {
     $_SESSION['testprojectID'] = $tproject_info['id'];
     $_SESSION['testprojectName'] = $tproject_info['name'];
     $_SESSION['testprojectColor'] = $tproject_info['color'];
     $_SESSION['testprojectPrefix'] = $tproject_info['prefix'];
 
-        if(!isset($_SESSION['testprojectOptions']) )
-        {
-          $_SESSION['testprojectOptions'] = new stdClass();
-        }
+    $_SESSION['testprojectOptions'] = new stdClass();
     $_SESSION['testprojectOptions']->requirementsEnabled = 
             isset($tproject_info['opt']->requirementsEnabled) 
             ? $tproject_info['opt']->requirementsEnabled : 0;
@@ -420,8 +416,8 @@ public function get_by_prefix($prefix, $addClause = null) {
   $condition = "testprojects.prefix='{$safe_prefix}'";
   $condition .= is_null($addClause) ? '' : " AND {$addClause} ";
 
-  $result = $this->getTestProject($condition);
-  return $result[0];
+  $rs = $this->getTestProject($condition);
+  return $rs != null ? $rs[0] : null;
 }
 
 
@@ -777,27 +773,31 @@ function get_subtree($id,$filters=null,$opt=null)
 function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
 {
   $gui = $guiObj;
-  $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
-  $gui->mgt_modify_product = has_rights($this->db,"mgt_modify_product");
+
+  if (!property_exists($gui, 'uploadOp')) {
+    $gui->uploadOp = null;
+  } 
 
   $gui->sqlResult = '';
   $gui->sqlAction = '';
-  if($sqlResult)
-  {
+  if ($sqlResult) {
     $gui->sqlResult = $sqlResult;
   }
 
   $p2ow = array('refreshTree' => false, 'user_feedback' => '');
-  foreach($p2ow as $prop => $value)
-  {
-    if( !property_exists($gui,$prop) )
-    {
+  foreach ($p2ow as $prop => $value) {
+    if (!property_exists($gui,$prop)) {
       $gui->$prop = $value;
     }
   }
 
   $safeID = intval($id);
   $gui->tproject_id = $safeID;
+  $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc",$safeID);
+  $gui->mgt_modify_product = has_rights($this->db,"mgt_modify_product");
+
+
+
   $gui->container_data = $this->get_by_id($safeID);
   $gui->moddedItem = $gui->container_data;
   $gui->level = 'testproject';
@@ -1143,9 +1143,11 @@ function setPublicStatus($id,$status)
     $kw->initialize(null,$testprojectID,$keyword,$notes);
     $op = array('status' => tlKeyword::E_DBERROR, 'id' => -1, 
                 'msg' => 'ko DB Error');
+
     $op['status'] = $kw->writeToDB($this->db);
+    $op['id'] = $kw->dbID;
+
     if ($op['status'] >= tl::OK) {
-      $op['id'] = $kw->dbID;
       logAuditEvent(TLS("audit_keyword_created",$keyword),"CREATE",$op['id'],"keywords");
     } else {
       $op['msg'] = tlKeyword::getError($op['status']);
@@ -1452,6 +1454,27 @@ function setPublicStatus($id,$status)
     }
     return $keywordMap;
   }
+
+  /**
+   * Returns keywords that are linked to test cases
+   *
+   *  @param  integer $id testproject
+   *  @return array   map: key: keyword_id, value: keyword
+   */
+  function getUsedKeywordsMap($id) {
+    $debugMsg = $this->debugMsg . __FUNCTION__;
+    $sql = "/* $debugMsg */
+            SELECT DISTINCT KW.id,KW.keyword
+            FROM {$this->tables['keywords']} KW
+            JOIN {$this->tables['testcase_keywords']} TCKW
+            ON TCKW.keyword_id = KW.id
+            WHERE KW.testproject_id =" . intval($id);  
+    $sql .= " ORDER BY keyword";
+    $rs = $this->db->fetchColumnsIntoMap($sql,'id','keyword');        
+    return $rs;
+  }
+
+
   /* END KEYWORDS RELATED */
 
   /* REQUIREMENTS RELATED */
@@ -2277,6 +2300,64 @@ function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
     return $items;
 } //end function
 
+/**
+ *
+ * 20200117 
+ * it seems I've duplicated code
+ * designed to be used by
+ * @used-by specview.php
+ */
+function XXXgetPlatformsLatestTCV($tproject_id, $platform_id=0, $filterType='Or') {
+
+    $platFilter= '' ;
+    $subquery='';
+    $ltcvJoin = " JOIN {$this->views['latest_tcase_version_id']} LTCV
+                  ON LTCV.tcversion_id = TK.tcversion_id ";
+
+    if( is_array($platform_id) ) {
+      $platFilter = " AND platform_id IN (" . implode(',',$platform_id) . ")";                  
+      if($filterType == 'And') {
+        $ltcvJoin = " ";
+        $sqlCount = " /* SQL COUNT */ " .
+                    " SELECT COUNT(TK.tcversion_id) AS HITS,TPL.tcversion_id
+                      FROM {$this->tables['platforms']} K
+                      JOIN {$this->tables['testcase_platforms']} TPL
+                      ON platform_id = PL.id
+                      
+                      JOIN {$this->views['latest_tcase_version_id']} LTCV
+                      ON LTCV.tcversion_id = TPL.tcversion_id
+                      
+                      WHERE testproject_id = {$tproject_id}
+                      {$platFilter}
+                      GROUP BY TPL.tcversion_id ";
+
+        $subquery = " AND tcversion_id IN (" .
+                    " SELECT FOXDOG.tcversion_id FROM
+                          ( $sqlCount ) AS FOXDOG " .
+                        " WHERE FOXDOG.HITS=" . count($platform_id) . ")";
+        $platFilter ='';
+      }    
+    }
+    else if( $platform_id > 0 ) {
+      $platFilter = " AND platform_id = {$platform_id} ";
+    }
+    
+    $items = null;
+    $sql = " SELECT TPL.testcase_id,TPL.keyword_id,PL.name
+             FROM {$this->tables['platforms']} K
+             JOIN {$this->tables['testcase_platforms']} TPL
+             ON TPL.platforms = PL.id
+             {$ltcvJoin}
+             WHERE PL.testproject_id = {$tproject_id}
+             {$platFilter} {$subquery}
+             ORDER BY name ASC ";
+
+    $items = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','platform_id');
+
+    return $items;
+} //end function
+
+
 
 /*
   function: get_all_testplans
@@ -2635,9 +2716,6 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
   // Platforms
   $oldNewMappings['platforms'] = $this->copy_platforms($id,$new_id);
   
-  //var_dump($my['options']);
-  //die();
-
   // Requirements
   if( $my['options']['copy_requirements'] ) {
     list($oldNewMappings['requirements'],$onReqSet) = 
@@ -3058,6 +3136,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
       $tcversionFilter['enabled'] = $tcversionFilter['enabled'] ||  $tcversionFilter[$target];
     }  
 
+   
     $childFilterOn = $tcaseFilter['enabled'] || $tcversionFilter['enabled'];
 
     if( !is_null($my['options']['remove_empty_nodes_of_type']) ) {
@@ -3119,8 +3198,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
   $tclist = null;
   $ks = array_keys($rs);
   foreach($ks as $ikey) {
-    if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] )
-    {
+    if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] ) {
       $tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
     }
   }    
@@ -3822,7 +3900,7 @@ function getActiveTestPlansCount($id)
   function checkKeywordIsLinkedAndNotExecuted($keyword_id,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
              WHERE id = {$keyword_id} ";
 
@@ -3866,7 +3944,7 @@ function getActiveTestPlansCount($id)
   function checkKeywordIsLinkedToFrozenVersions($keyword_id,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
              WHERE id = {$keyword_id} ";
 
@@ -3920,7 +3998,7 @@ function getActiveTestPlansCount($id)
   function getKeywordsExecStatus($keywordSet,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     if( null != $tproject_id ) {
       $whereAdd = " AND testproject_id = " . intval($tproject_id);
     }         
@@ -3952,7 +4030,7 @@ function getActiveTestPlansCount($id)
   function getKeywordsFreezeStatus($keywordSet,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     if( null != $tproject_id ) {
       $whereAdd = " AND testproject_id = " . intval($tproject_id);
     }         
@@ -4004,15 +4082,14 @@ function getActiveTestPlansCount($id)
  */
 function getPlatformsLatestTCV($tproject_id, $platform_id=0) {
 
-  $filter= '' ;
-  $subquery='';
+  $filter = '' ;
   $ltcvJoin = " JOIN {$this->views['latest_tcase_version_id']} LTCV
                 ON LTCV.tcversion_id = TPL.tcversion_id ";
 
   if( is_array($platform_id) ) {
     $filter = " AND platform_id IN (" . implode(',',$platform_id) . ")";   
   }
-  else if( $keyword_id > 0 ) {
+  else if( $platform_id > 0 ) {
     $filter = " AND platform_id = {$platform_id} ";
   }
   
@@ -4020,10 +4097,10 @@ function getPlatformsLatestTCV($tproject_id, $platform_id=0) {
   $sql = " SELECT TPL.testcase_id,TPL.platform_id,PL.name
            FROM {$this->tables['platforms']} PL
            JOIN {$this->tables['testcase_platforms']} TPL
-           ON TK.platform_id = PL.id
+           ON TPL.platform_id = PL.id
            {$ltcvJoin}
            WHERE PL.testproject_id = {$tproject_id}
-           {$filter} {$subquery}
+           {$filter}
            ORDER BY name ASC ";
 
   $items = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','platform_id');
@@ -4140,6 +4217,18 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
   return $hits;
 }
 
+  /**
+   *
+   */
+  static function getName(&$dbh,$id) {
+    $sch = tlDBObject::getDBTables(array('nodes_hierarchy','testprojects'));
+    $sql = "SELECT name FROM {$sch['nodes_hierarchy']} NH
+            JOIN {$sch['testprojects']} TPRJ 
+            ON TPRJ.id = NH.id
+            WHERE TPRJ.id=" . intval($id);
+    $rs = $dbh->get_recordset($sql);
+    return is_null($rs) ? $rs : $rs[0]['name'];
+  }
 
 
 } // end class

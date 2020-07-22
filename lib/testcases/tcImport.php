@@ -270,6 +270,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $name = $tc['name'];
     $summary = $tc['summary'];
     $steps = $tc['steps'];
+    $internalid = $tc['internalid'];
+    $externalid = $tc['externalid'];
 
     $doCreate = true;
     if( $duplicatedLogic['actionOnHit'] == 'update_last_version' || 

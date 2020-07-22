@@ -46,9 +46,13 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
   }
   
   $t_lang = $p_lang;
-  if (null === $t_lang)
-  {
-    $t_lang = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+  if (null === $t_lang) {
+    $t_lang = TL_DEFAULT_LOCALE;
+    if (isset($_SESSION['locale']) 
+        && is_string($_SESSION['locale']) 
+        && strlen($_SESSION['locale']) == 5) {
+        $t_lang = $_SESSION['locale'];
+    } 
   }
   
   lang_ensure_loaded($t_lang);

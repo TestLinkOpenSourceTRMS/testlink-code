@@ -5,8 +5,10 @@
 */
 
 /**
- * \brief CKEditor class that can be used to create editor
+ * CKEditor class that can be used to create editor
  * instances in PHP pages on server side.
+ * VALID ONLY for CKEditor version < 5.
+ *
  * @see http://ckeditor.com
  *
  * Sample usage:
@@ -17,18 +19,6 @@
  */
 class CKEditor
 {
-	/**
-	 * The version of %CKEditor.
-	 */
-	const version = '4.11.3';
-
-	/**
-	 * A constant string unique for each release of %CKEditor.
-	 * Get it from ckeditor.js
-	 *
-	 * @see also var timestamp
-	 */
-	const timestamp = 'J1QB';
 
 	/**
 	 * URL to the %CKEditor installation directory (absolute or relative to document root).
@@ -91,7 +81,8 @@ class CKEditor
 	 *
 	 * @see also const timestamp
 	 */
-	public $timestamp = "J1QB";
+	// 20200102 - DEPRECATED 
+	// public $timestamp = "J1QB";
 	
   /**
 	 * An array that holds event listeners.
@@ -460,27 +451,14 @@ class CKEditor
 			return "";
 		}
 
-		$args = "";
 		$ckeditorPath = $this->ckeditorPath();
-
-		if (!empty($this->timestamp) && $this->timestamp != "%"."TIMESTAMP%") {
-			$args = '?t=' . $this->timestamp;
-		}
 
 		// Skip relative paths...
 		if (strpos($ckeditorPath, '..') !== 0) {
 			$out .= $this->script("window.CKEDITOR_BASEPATH='". $ckeditorPath ."';");
 		}
 
-		$out .= "<script type=\"text/javascript\" src=\"" . $ckeditorPath . 'ckeditor.js' . $args . "\"></script>\n";
-
-		$extraCode = "";
-		if ($this->timestamp != self::timestamp) {
-			$extraCode .= ($extraCode ? "\n" : "") . "CKEDITOR.timestamp = '". $this->timestamp ."';";
-		}
-		if ($extraCode) {
-			$out .= $this->script($extraCode);
-		}
+		$out .= "<script type=\"text/javascript\" src=\"" . $ckeditorPath . 'ckeditor.js' . "\"></script>\n";
 
 		$initComplete = $this->initialized = true;
 

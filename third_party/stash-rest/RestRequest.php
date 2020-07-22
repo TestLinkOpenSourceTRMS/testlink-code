@@ -185,7 +185,7 @@ class RestRequest
             CURLOPT_HTTPHEADER,
             array(
                 'Accept: ' . $this->acceptType,
-                $this->contentType, 'X-Atlassian-Token: nocheck'
+                $this->contentType, 'X-Atlassian-Token: no-check'
             )
         );
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false); // ignore self signed certs

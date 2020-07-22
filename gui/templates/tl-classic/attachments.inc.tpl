@@ -24,7 +24,8 @@ $gsmarty_attachments
           s='title_upload_attachment,enter_attachment_title,
              btn_upload_file,warning,attachment_title,alt_delete_attachment,click_to_get_attachment,
              display_inline,local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,display_ea_string,
-             max_size_file_upload,display_inline_string'}
+             max_size_file_upload,display_inline_string,
+             allowed_files,allowed_filenames_regexp'}
 
 {lang_get s='warning_delete_attachment' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -134,9 +135,6 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
         {/if}
 
         <label for="uploadedFile" class="labelHolder">{$labels.local_file} </label>
-        <img class="clickable" src="{$tlImages.activity}" 
-             title="{$labels.max_size_file_upload}: {$gui->import_limit} Bytes)">
-
           {* restrict file size *}
           <input type="hidden" name="MAX_FILE_SIZE" value="{$gui->import_limit}" /> 
           <input type="file" name="uploadedFile" id="uploadedFile" 
@@ -147,6 +145,18 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
                  size="{#ATTACHMENT_TITLE_SIZE#}" />
           <input type="submit" value="{$labels.btn_upload_file}"/>
       </form>
+      <img class="clickable" src="{$tlImages.activity}" 
+             title="{$labels.max_size_file_upload}: {$gui->import_limit} Bytes)">
+
+      {if $tlCfg->attachments->allowed_filenames_regexp != ''}
+        <img class="clickable" src="{$tlImages.activity}" 
+             title="{$labels.allowed_filenames_regexp}{$tlCfg->attachments->allowed_filenames_regexp}">      
+      {/if}
+      {if $tlCfg->attachments->allowed_files != ''}
+        <img class="clickable" src="{$tlImages.activity}" 
+             title="{$labels.allowed_files}{$tlCfg->attachments->allowed_files}">  
+      {/if}
+
       {if $gui->fileUploadMsg != ''}
         <p class="bold" style="color:red">{$gui->fileUploadMsg}</p>
       {/if}

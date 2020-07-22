@@ -77,7 +77,7 @@ with community. Please, confirm your understanding below.</p>
 <script>
 function ableButton() {
 	check = document.getElementById("licenseOK");
-	button = document.getElementById("submit");
+	button = document.getElementById("continue");
 	
 	if(check.checked==true) {
 		button.disabled = false;	
@@ -88,7 +88,7 @@ function ableButton() {
 </script>
 <p>
   	<form action="installCheck.php">
-	<div style="float:right;"><input type="submit" id="submit" value="Continue" 
+	<div style="float:right;"><input type="submit" id="continue" value="Continue" 
 			disabled="disabled" /></div>
 	<div><input type="checkbox" id="licenseOK" name="licenseOK" onClick="ableButton()" />
 	<label for="licenseOK">I agree to the terms set out in this license.</label>

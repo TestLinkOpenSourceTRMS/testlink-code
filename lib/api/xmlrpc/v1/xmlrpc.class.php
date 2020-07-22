@@ -180,6 +180,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
     public static $parentIDParamName = "parentid";
     public static $platformNameParamName = "platformname";
     public static $platformIDParamName = "platformid";
+    public static $platformOnDesignParamName = "platformondesign";
+    public static $platformOnExecutionParamName = "platformonexecution";
     public static $preconditionsParamName = "preconditions";
     public static $publicParamName = "public";
     public static $releaseDateParamName = "releasedate";
@@ -1717,9 +1719,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
      */
     public function getProjects($args) {
         $this->_setArgs( $args );
-        // TODO: NEED associated RIGHT
         if($this->authenticate()) {
-            return $this->tprojectMgr->get_all();
+            return $this->tprojectMgr->get_accessible_for_user($this->userID, array('output' => 'array_of_map'));
         } else {
             return $this->errors;
         }
@@ -3210,7 +3211,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $sql = " SELECT TCV.version,TCV.id " . " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " . " WHERE NH.parent_id = {$tcase_id} " . " AND TCV.version = {$version_number} " . " AND TCV.id = NH.id ";
 
             $target_tcversion = $this->dbObj->fetchRowsIntoMap( $sql, 'version' );
-            if(! is_null( $target_tcversion ) && count( $target_tcversion ) != 1) {
+            if(is_null( $target_tcversion ) || count( $target_tcversion ) != 1) {
                 $status_ok = false;
                 $tcase_info = $this->tcaseMgr->get_by_id( $tcase_id );
                 $msg = sprintf( TCASE_VERSION_NUMBER_KO_STR, $version_number, $tcase_external_id, $tcase_info[0]['name'] );
@@ -5125,9 +5126,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
 
             $docRepo = tlAttachmentRepository::create( $this->dbObj );
-            $uploadedFile = $docRepo->insertAttachment( $fkId, $fkTable, $title, $fInfo );
+            $uploadOp = $docRepo->insertAttachment( $fkId, $fkTable, $title, $fInfo );
             
-            if(!$uploadedFile) {
+
+            if($uploadOp->statusOK == false) {
               $msg = $msg_prefix . ATTACH_DB_WRITE_ERROR_STR;
               $this->errors[] = new IXR_ERROR( ATTACH_DB_WRITE_ERROR, $msg );
               $statusOK = false;
@@ -6088,6 +6090,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["testprojectname"]
      * @param string $args["platformname"]
      * @param string $args["notes"]
+     * @param boolean $args["platformondesign"]
+     * @param boolean $args["platformonexecution"]
      * @return mixed $resultInfo
      * @internal revisions
      */
@@ -6123,7 +6127,11 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
             // lazy way
             $name = trim( $this->args[self::$platformNameParamName] );
-            $itemSet = $this->platformMgr->getAllAsMap( 'name', 'allinfo' );
+
+            $opx = array('accessKey' => 'name',
+                         'output' => 'allinfo');
+
+            $itemSet = $this->platformMgr->getAllAsMap($opx);
             if(isset( $itemSet[$name] )) {
                 $status_ok = false;
                 $msg = $msg_prefix . sprintf( PLATFORMNAME_ALREADY_EXISTS_STR, $name, $itemSet[$name]['id'] );
@@ -6132,8 +6140,17 @@ class TestlinkXMLRPCServer extends IXR_Server {
         }
 
         if($status_ok) {
-            $notes = $this->_isNotePresent() ? $this->args[self::$noteParamName] : '';
-            $op = $this->platformMgr->create( $name, $notes );
+            $notes = $this->_isNotePresent() 
+                     ? $this->args[self::$noteParamName] : '';
+
+            $plot = new stdClass();
+            $plot->name = $name;
+            $plot->notes = $notes;
+            $plot->enable_on_design = $this->_isParamPresent( self::$platformOnDesignParamName )
+                ? $this->args[self::$platformOnDesignParamName] : false;
+            $plot->enable_on_execution = $this->_isParamPresent( self::$platformOnExecutionParamName )
+                ? $this->args[self::$platformOnExecutionParamName] : false;
+            $op = $this->platformMgr->create($plot);
             $resultInfo = $op;
         }
 
@@ -6157,7 +6174,14 @@ class TestlinkXMLRPCServer extends IXR_Server {
             if(is_null( $this->platformMgr )) {
                 $this->platformMgr = new tlPlatform( $this->dbObj, $testProjectID );
             }
-            $itemSet = $this->platformMgr->getAllAsMap( 'name', 'allinfo' );
+
+            $optPlat = array('accessKey' => 'name',
+                             'output' => 'allinfo',
+                             'orderBy' => ' ORDER BY name ',
+                             'enable_on_design' => null,
+                             'enable_on_execution' => null);
+
+            $itemSet = $this->platformMgr->getAllAsMap($optPlat);
             return $itemSet;
         } else {
             return $this->errors;
@@ -6224,7 +6248,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $status_ok = $this->_runChecks( $checkFunctions, $messagePrefix );
         if($status_ok) {
-            $user_id = tlUser::doesUserExist( $this->dbObj, $this->args[self::$userParamName] );
+            if( $this->user->globalRole->dbID == TL_ROLES_ADMIN || $this->user->login == $this->args[self::$userParamName] )
+            {
+                $user_id = tlUser::doesUserExist( $this->dbObj, $this->args[self::$userParamName] );
+            }
             if(!($status_ok = ! is_null( $user_id ))) {
                 $msg = $msg_prefix . sprintf( NO_USER_BY_THIS_LOGIN_STR, $this->args[self::$userParamName] );
                 $this->errors[] = new IXR_Error( NO_USER_BY_THIS_LOGIN, $msg );
@@ -6272,7 +6299,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $status_ok = $this->_runChecks( $checkFunctions, $messagePrefix );
         if($status_ok) {
-            $user = tlUser::getByID( $this->dbObj, $this->args[self::$userIDParamName] );
+            if( $this->user->globalRole->dbID == TL_ROLES_ADMIN || $this->userID == $this->args[self::$userIDParamName] )
+            {
+                $user = tlUser::getByID( $this->dbObj, $this->args[self::$userIDParamName] );
+            }
             if(is_null( $user )) {
                 $status_ok = false;
                 $msg = $messagePrefix . sprintf( NO_USER_BY_THIS_ID_STR, $this->args[self::$userIDParamName] );
@@ -6472,9 +6502,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
 
             if($checkRight) {
-                $r2c = array(
-                        'testproject_edit_executed_testcases'
-                );
+                $r2c = array('testproject_edit_executed_testcases' );
                 foreach( $r2c as $right ) {
                     $status_ok = $this->userHasRight( $right, $ck, $ctx );
                     if(! $status_ok) {

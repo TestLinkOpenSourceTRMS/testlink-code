@@ -680,7 +680,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $status = false;
         } else {
             // See if this ITS ID exists in the db
-            $its = $this->getIssueTrackerSystem( $this->args, 'internal' );
+            $its = $this->getITSMgr()->getByID( $this->args[self::$itsIDParamName] );
             $status = is_null($its);
         }
 
@@ -1226,6 +1226,18 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $maxbuild[] = $builds[$maxkey];
 
         return $maxbuild;
+    }
+
+    /**
+     * ITS manager getter
+     *
+     */
+    private function getITSMgr() {
+        if(is_null( $this->itsMgr )) {
+            $this->itsMgr = new tlIssueTracker( $this->dbObj );
+        }
+
+        return $this->itsMgr;
     }
 
     /**
@@ -1898,7 +1910,6 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
             $its = null;
             if($optional[self::$itsNameParamName] != "") {
-                $this->itsMgr = new tlIssueTracker( $this->dbObj );
                 $its = $this->getIssueTrackerSystem( $this->args, 'internal' );
 
                 $itsOK = ! is_null( $its );
@@ -1915,7 +1926,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             // link & enable its?
             if($itsOK && $tproject_id > 0) {
                 // link
-                $this->itsMgr->link( $its["id"], $tproject_id );
+                $this->getITSMgr()->link( $its["id"], $tproject_id );
 
                 // enable
                 if($optional[self::$itsEnabledParamName] > 0) {
@@ -7822,12 +7833,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $this->authenticate();
         }
 
-        $ret = null;
-        if(is_null( $this->itsMgr )) {
-            $this->itsMgr = new tlIssueTracker( $this->dbObj );
-        }
-
-        $ret = $this->itsMgr->getByName( $this->args[self::$itsNameParamName] );
+        $ret = $this->getITSMgr()->getByName( $this->args[self::$itsNameParamName] );
         $status_ok = ! is_null( $ret );
         if(! $status_ok) {
             $msg = $msg_prefix . sprintf( ITS_NOT_FOUND_STR, $this->args[self::$itsNameParamName] );
@@ -8370,13 +8376,13 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $this->_setArgs($args);
 
-        $params = array(self::$$itsNameParamName,
+        $params = array(self::$itsNameParamName,
                         self::$itsTypeParamName,
                         self::$itsCfgParamName);
 
         $missingArg = false;
         foreach($params as $param) {
-            $missingArg = $missingArg || _isParamPresent($param);
+            $missingArg = $missingArg || ! $this->_isParamPresent($param, $msg_prefix, true);
         }
         if ($missingArg) {
             return $this->errors;
@@ -8390,11 +8396,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $item->type = $this->args[self::$itsTypeParamName];
             $item->cfg  = $this->args[self::$itsCfgParamName];
 
-            if(is_null( $this->itsMgr )) {
-                $this->itsMgr = new tlIssueTracker( $this->dbObj );
-            }
-
-            return $this->itsMgr->create($item);
+            return $this->getITSMgr()->create($item);
         } else {
             return $this->errors;
         }
@@ -8421,13 +8423,13 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $this->_setArgs($args);
 
-        $params = array(self::$$itsNameParamName,
+        $params = array(self::$itsNameParamName,
                         self::$itsTypeParamName,
                         self::$itsCfgParamName);
 
         $missingArg = false;
         foreach($params as $param) {
-            $missingArg = $missingArg || _isParamPresent($param);
+            $missingArg = $missingArg || ! $this->_isParamPresent($param, $msg_prefix, true);
         }
         if ($missingArg) {
             return $this->errors;
@@ -8445,11 +8447,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $item->type = $this->args[self::$itsTypeParamName];
             $item->cfg  = $this->args[self::$itsCfgParamName];
 
-            if(is_null( $this->itsMgr )) {
-                $this->itsMgr = new tlIssueTracker( $this->dbObj );
-            }
-
-            return $this->itsMgr->update($item);
+            return $this->getITSMgr()->update($item);
 
         } else {
             return $this->errors;
@@ -8485,11 +8483,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $itsID = intval($this->args[self::$itsIDParamName]);
             $projectID = intval($this->args[self::$testProjectIDParamName]);
 
-            if(is_null( $this->itsMgr )) {
-                $this->itsMgr = new tlIssueTracker( $this->dbObj );
-            }
-
-            $this->itsMgr->link($itsID, $projectID);
+            $this->getITSMgr()->link($itsID, $projectID);
             $resultInfo = array();
             $resultInfo[]= array("operation" => "link ITS",
                                  "additionalInfo" => "ITS ID " . $itsID,
@@ -8541,14 +8535,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         if($this->_runChecks($checkFunctions, $msg_prefix) && $this->userHasRight( "mgt_modify_product" )) {
 
-            if(is_null( $this->itsMgr )) {
-                $this->itsMgr = new tlIssueTracker( $this->dbObj );
-            }
-
             $itsID = intval($this->args[self::$itsIDParamName]);
             $projectID = intval($this->args[self::$testProjectIDParamName]);
 
-            $this->itsMgr->unlink($itsID, $projectID);
+            $this->getITSMgr()->unlink($itsID, $projectID);
             $resultInfo = array();
             $resultInfo[]= array("operation" => "unlink ITS",
                                  "status" => true,

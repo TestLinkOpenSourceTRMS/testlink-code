@@ -400,9 +400,9 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
-     * Check if authenticated user is site admin
+     * Check if authenticated user has System Wide Role admin
      *
-     * Useful for services reserved to site admin
+     * Useful for services reserved to System Wide Role admin
      *
      * @param string $messagePrefix
      *            used to be prepended to error message
@@ -410,10 +410,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @return boolean
      * @access protected
      */
-    protected function checkIsSiteAdmin($messagePrefix = '') {
-        $res= $this->user->globalRole->dbID == TL_ROLES_ADMIN;
+    protected function checkIsSystemWideAdmin($messagePrefix = '') {
+        $res = ($this->user->globalRole->dbID == TL_ROLES_ADMIN);
 
-        if (! $res) {
+        if (!$res) {
             $this->errors[] = new IXR_Error( MUST_BE_ADMIN, $messagePrefix . MUST_BE_ADMIN_STR );
         }
 
@@ -4935,8 +4935,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["firstname"]
      * @param string $args["lastname"]
      * @param string $args["email"]
-     * @param string $args["password"]
-     *               OPTIONAL
+     * @param string $args["password"] - OPTIONAL
+     *               
      *
      * @return ID the new user if OK, otherwise error structure
      *
@@ -4947,49 +4947,46 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $status_ok = true;
         $this->_setArgs( $args );
 
-        $checkFunctions = array(
-                'authenticate',
-                'checkIsSiteAdmin'
-        );
+        $checkFunctions = array('authenticate',
+                                'checkIsSystemWideAdmin');
         $status_ok = $this->_runChecks( $checkFunctions, $msg_prefix );
 
+        $password = null;  
         if ($status_ok) {
-
-            if (isset($this->args[self::$userPasswordParamName])) {
-                $password = $this->args[self::$userPasswordParamName];
-                $res = $this->userMgr->checkPasswordQuality($password);
-                if ( $res['status_ok'] == tl::ERROR ) {
-                    $status_ok = false;
-                    $this->errors[] = new IXR_Error(GENERAL_ERROR_CODE, $res['msg']);
-                }
-            } else {
-                $password = null;
+          if (isset($this->args[self::$userPasswordParamName])) {
+            $password = $this->args[self::$userPasswordParamName];
+            $res = $this->userMgr->checkPasswordQuality($password);
+            if ( $res['status_ok'] == tl::ERROR ) {
+              $status_ok = false;
+              $this->errors[] = new IXR_Error(GENERAL_ERROR_CODE, $res['msg']);
             }
+          }  
+        } 
 
-            if ($status_ok) {
-                $res = tl::OK;
+        if ($status_ok) {
+          $res = tl::OK;
 
-                if ($password)
-                    $res = $this->userMgr->setPassword($password);
+          if ($password) {
+            $res = $this->userMgr->setPassword($password);
+          }
 
-                if ($res == tl::OK) {
-                    $this->userMgr->dbID = null;
-                    $this->userMgr->login = $this->args[self::$userLoginParamName];
-                    $this->userMgr->firstName = $this->args[self::$userFirstNameParamName];
-                    $this->userMgr->lastName = $this->args[self::$userLastNameParamName];
-                    $this->userMgr->emailAddress = $this->args[self::$userEmailParamName];
-                    $res = $this->userMgr->writeToDB($this->dbObj);
-                }
+          if ($res == tl::OK) {
+            $this->userMgr->dbID = null;
+            $this->userMgr->login = $this->args[self::$userLoginParamName];
+            $this->userMgr->firstName = $this->args[self::$userFirstNameParamName];
+            $this->userMgr->lastName = $this->args[self::$userLastNameParamName];
+            $this->userMgr->emailAddress = $this->args[self::$userEmailParamName];
+            $res = $this->userMgr->writeToDB($this->dbObj);
+          }
 
-                if ($res != tl::OK) {
-                    $status_ok = false;
-                    $msg = getUserErrorMessage($res);
-                    $this->errors[] = new IXR_Error(USER_CREATION_ERROR, $msg);
-                } else {
-                    logAuditEvent(TLS("audit_user_created", $this->userMgr->login),"CREATE",
+          if ($res != tl::OK) {
+            $status_ok = false;
+            $msg = getUserErrorMessage($res);
+            $this->errors[] = new IXR_Error(USER_CREATION_ERROR, $msg);
+          } else {
+            logAuditEvent(TLS("audit_user_created", $this->userMgr->login),"CREATE",
                                   $this->userMgr->dbID, "users");
-                }
-            }
+          }
         }
 
         return $status_ok ? $this->userMgr->dbID : $this->errors;
@@ -4998,12 +4995,12 @@ class TestlinkXMLRPCServer extends IXR_Server {
     /**
      * Set a role to a user at project level
      *
-     * Restricted to site admin
+     * Restricted to users with System Wide Role Admin
      *
      * @param struct $args
      * @param struct $args["userid"]
-     * @param struct $args["testprojectid"]
      * @param struct $args["rolename"]
+     * @param struct $args["testprojectid"]
      *
      * @return true if OK, otherwise error structure
      *
@@ -5017,7 +5014,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $checkFunctions = array(
                 'authenticate',
-                'checkIsSiteAdmin',
+                'checkIsSystemWideAdmin',
                 'checkTestProjectID',
                 'checkUserID',
                 'checkRoleIdentity'

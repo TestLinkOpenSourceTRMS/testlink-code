@@ -445,6 +445,9 @@ class TLSmarty extends Smarty {
 
     $imi = config_get('images');
     if(count($imi) >0) {
+      foreach($imi as $key => $img) {
+        $imi[$key] = str_replace('%imgLoc%', $imgLoc, $img);
+      }
       $dummy = array_merge($dummy,$imi);
     }                 
     return $dummy;

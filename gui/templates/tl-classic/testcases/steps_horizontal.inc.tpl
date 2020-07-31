@@ -15,8 +15,16 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {$inExec = 1}
   {/if}  
 
+{* 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/TableDnD/0.9.1/jquery.tablednd.js" integrity="sha256-d3rtug+Hg1GZPB7Y/yTcRixO/wlI78+2m08tosoRn7A=" crossorigin="anonymous"></script>
+*}
+<script type="text/javascript" language="javascript" 
+  src="{$basehref}node_modules/tablednd/js/jquery.tablednd.js">
+</script>
+
+
 <div class="workBack">
-  <table class="simple">
+  <table class="simple" id="stepsOnTable">
   <tr>
     <th width="40px"><nobr>
     {if $edit_enabled && $steps != '' && !is_null($steps) && $args_frozen_version=="no"}
@@ -25,7 +33,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
            onclick="showHideByClass('span','order_info');">
       <img class="clickable" src="{$tlImages.ghost_item}" align="left"
            title="{$inc_steps_labels.show_ghost_string}"
-           onclick="showHideByClass('tr','ghost');">
+           onclick="showHideByClass('span','ghost');">
     {/if}
     {$inc_steps_labels.step_number}
     </th>
@@ -61,7 +69,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
               $tlCfg->exec_cfg->steps_exec_attachments}
 
   {foreach from=$steps item=step_info}
-  <tr id="step_row_{$step_info.step_number}">
+  <tr id="step_row_{$step_info.id}" style="border: 1px solid white;">
     <td style="text-align:left;">
       <span class="order_info" style='display:none'>
       {if $edit_enabled && $args_frozen_version=="no"}
@@ -73,6 +81,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       {/if}
       </span>
       {$step_info.step_number}
+      {if $ghost_control}
+        <span class='ghost' style='display:none'>{$step_info.ghost_action}</span>    
+      {/if}
     </td>
     <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.actions|nl2br}{else}{$step_info.actions}{/if}
     </td>
@@ -140,13 +151,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     </tr> 
   {/if} 
 
-  {if $ghost_control}
-    <tr class='ghost' style='display:none'><td></td><td>{$step_info.ghost_action}</td><td>{$step_info.ghost_result}</td></tr>    
-  {/if}
-
+    {* 
     {$rCount=$row+$step_info.step_number}
     {if ($rCount < $rowCount) && ($rowCount>=1)}
-      <tr width="100%">
+      <tr width="100%" class="nodrag">
         {if $session['testprojectOptions']->automationEnabled}
         <td colspan=6>
         {else}
@@ -156,7 +164,27 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         </td>
       </tr>
     {/if}
+    *}
 
   {/foreach}
  </table>
 </div>
+
+<input type="hidden" name="stepSeq" id="stepSeq" value="">
+<script type="text/javascript">
+$(document).ready(function() {
+    // Initialise the table
+    $("#stepsOnTable").tableDnD({
+      onDrop: function(table, row) {
+          var xx = $.tableDnD.serialize()
+                    .replace(/stepsOnTable/g,'')
+                    .replace(/%5D/g,'')
+                    .replace(/%5B/g,'')
+                    .replace(/=/g,'')
+                    .replace(/step_row_/g,'');
+          $('#stepSeq').val(xx);
+      alert('Use the Resequence Steps Button To Save');    
+      }
+    });
+});
+</script>

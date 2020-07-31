@@ -1,0 +1,7 @@
+organization=isocra
+projectKey=TableDnD
+serverUrl=https://sonarcloud.io
+serverVersion=7.0.0.35052
+dashboardUrl=https://sonarcloud.io/dashboard/index/TableDnD
+ceTaskId=AWCoUo8vzhfPH6zNRdlG
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AWCoUo8vzhfPH6zNRdlG

@@ -2491,15 +2491,17 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["customfields"]
      *            - optional
      *            contains an map with key:Custom Field Name, value: value for CF.
-     *            VERY IMPORTANT: value must be formatted in the way it's written to db,
+     *            VERY IMPORTANT: value must be formatted in the way 
+     *            it's written to db,
      *            this is important for types like:
      *
      *            DATE: strtotime()
      *            DATETIME: mktime()
-     *            MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
+     *            MULTISELECTION LIST / CHECKBOX / RADIO: 
+     *            character '!'' as separator when multiple values are allowed
      *
-     *
-     *            these custom fields must be configured to be writte during execution.
+     *            these custom fields must be configured to be writte during 
+     *            execution.
      *            If custom field do not meet condition value will not be written
      *
      * @param boolean $args["overwrite"]

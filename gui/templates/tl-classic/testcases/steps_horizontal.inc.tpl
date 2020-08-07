@@ -25,7 +25,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 <div class="workBack">
   <table class="simple" id="stepsOnTable">
-  <tr>
+  <tr class="nodrag">
     <th width="40px"><nobr>
     {if $edit_enabled && $steps != '' && !is_null($steps) && $args_frozen_version=="no"}
       <img class="clickable" src="{$tlImages.reorder}" align="left"
@@ -58,10 +58,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
        <img class="clickable" src="{$tlImages.reset}" 
           onclick="javascript:clearSelectByClassName('step_status');" title="{$inc_steps_labels.clear_all_status}"></th>
     {/if}    
-
-
   </tr>
-  
+
   {$rowCount=$steps|@count} 
   {$row=0}
 
@@ -70,7 +68,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
   {foreach from=$steps item=step_info}
   <tr id="step_row_{$step_info.id}" style="border: 1px solid white;">
-    <td style="text-align:left;">
+    <td style="text-align:center;">
       <span class="order_info" style='display:none'>
       {if $edit_enabled && $args_frozen_version=="no"}
         <input type="text" class="step_number{$args_testcase.id}" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
@@ -80,7 +78,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         {include file="error_icon.tpl" field="step_number"}
       {/if}
       </span>
-      {$step_info.step_number}
+      <span id="tcstep_{$step_info.id}">{$step_info.step_number}</span>
       {if $ghost_control}
         <span class='ghost' style='display:none'>{$step_info.ghost_action}</span>    
       {/if}
@@ -150,22 +148,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       </td>
     </tr> 
   {/if} 
-
-    {* 
-    {$rCount=$row+$step_info.step_number}
-    {if ($rCount < $rowCount) && ($rowCount>=1)}
-      <tr width="100%" class="nodrag">
-        {if $session['testprojectOptions']->automationEnabled}
-        <td colspan=6>
-        {else}
-        <td colspan=5>
-        {/if}
-        <hr align="center" width="100%" color="grey" size="1">
-        </td>
-      </tr>
-    {/if}
-    *}
-
   {/foreach}
  </table>
 </div>
@@ -183,7 +165,35 @@ $(document).ready(function() {
                     .replace(/=/g,'')
                     .replace(/step_row_/g,'');
           $('#stepSeq').val(xx);
-      alert('Use the Resequence Steps Button To Save');    
+
+          // alert('Before jQuery AJAX');    
+          url2call = fRoot+'lib/ajax/stepReorder.php';
+          // alert(url2call);
+
+          // -------------------------------------
+          jQuery.ajax({
+                  url: url2call,
+                  data: {
+                      'stepSeq': xx,
+                  },
+                  success:function(data) {
+                    /* 
+                     update screen
+                    */
+                    var parsec = JSON.parse(data);
+                    for(var prop in parsec) {
+                      jQuery("span#tcstep_" + prop).html(parsec[prop]);
+                    } 
+                    alert('Steps numbers have been re-sequenced'); 
+                    // console.log(data);
+                    // console.log('done');
+                  },
+                  error: function(){
+                    console.log('FAILURE AJAX CALL -> ' + url2call);
+                  }
+              });  
+
+          // alert('Use the Resequence Steps Button To Save');    
       }
     });
 });

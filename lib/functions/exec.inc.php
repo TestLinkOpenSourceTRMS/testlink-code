@@ -655,7 +655,11 @@ function addIssue($dbHandler,$argsObj,$itsObj,$opt=null) {
   $ret['status_ok'] = true;             
   $ret['msg'] = '';
 
-  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj,$opt);  
+  if(method_exists($itsObj,'completeOpt')) {
+      $opt = $itsObj->completeOpt($opt);
+  }
+
+  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj,$opt);
 
   $issueTrackerCfg = $itsObj->getCfg();
   if(property_exists($issueTrackerCfg, 'issuetype')) {

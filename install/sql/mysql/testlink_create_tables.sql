@@ -268,15 +268,15 @@ CREATE TABLE /*prefix*/execution_tcsteps_wip (
 
 CREATE TABLE /*prefix*/inventory (
   id int(10) unsigned NOT NULL auto_increment,
-  `testproject_id` INT( 10 ) UNSIGNED NOT NULL ,
-  `owner_id` INT(10) UNSIGNED NOT NULL ,
-  `name` VARCHAR(255) NOT NULL ,
-  `ipaddress` VARCHAR(255)  NOT NULL ,
-  `content` TEXT NULL ,
-  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modification_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY /*prefix*/inventory_idx1 (`testproject_id`)
+	`testproject_id` INT( 10 ) UNSIGNED NOT NULL ,
+	`owner_id` INT(10) UNSIGNED NOT NULL ,
+	`name` VARCHAR(255) NOT NULL ,
+	`ipaddress` VARCHAR(255)  NOT NULL ,
+	`content` TEXT NULL ,
+	`creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`modification_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`),
+	KEY /*prefix*/inventory_idx1 (`testproject_id`)
 ) DEFAULT CHARSET=utf8; 
 
 
@@ -798,15 +798,16 @@ CREATE TABLE /*prefix*/testcase_platforms (
 ) DEFAULT CHARSET=utf8;
 
 
+# 20200905 change to avoid issues with MySQL 5.7.24
 CREATE TABLE /*prefix*/baseline_l1l2_context (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   testplan_id int(10) unsigned NOT NULL DEFAULT '0',
   platform_id int(10) unsigned NOT NULL DEFAULT '0',
-  being_exec_ts timestamp NOT NULL,
-  end_exec_ts timestamp NOT NULL,
+  begin_exec_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  end_exec_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   creation_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY udx1 (testplan_id,platform_id,creation_ts)
+  UNIQUE KEY udx1_context (testplan_id,platform_id,creation_ts)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -819,20 +820,9 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   qty int(10) unsigned NOT NULL DEFAULT '0',
   total_tc int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY udx1 (context_id,top_tsuite_id,child_tsuite_id,status)
+  UNIQUE KEY udx1_details (context_id,top_tsuite_id,child_tsuite_id,status)
 ) DEFAULT CHARSET=utf8;
 
-
-CREATE TABLE /*prefix*/testcase_aliens (
-  id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  testproject_id int(10) unsigned NOT NULL default '0',
-  testcase_id int(10) unsigned NOT NULL DEFAULT '0',
-  tcversion_id int(10) NOT NULL,
-  alien_id varchar(64) NOT NULL default '0',
-  PRIMARY KEY (id),
-  UNIQUE KEY idx01_testcase_aliens (testcase_id,tcversion_id,alien_id),
-  KEY idx02_testcase_aliens (tcversion_id)
-) DEFAULT CHARSET=utf8;
 
 
 # VIEWS

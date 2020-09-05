@@ -497,23 +497,17 @@ class TLSmarty extends Smarty {
   static function getIMGTagsSet() {
     $burl = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
     $imgLoc = $burl . TL_THEME_IMG_DIR;
-    // var_dump($imgLoc);
  
-
-    // $dummy = array('checked' => '<img src="' . $imgLoc . 'apply_f2_16.png">');
     $dummy = array('displayOnExec' => '<i class="fa fa-desktop"></i>'
                    ,'cog' => '<i class="fa fa-cog" aria-hidden="true"></i>'
                   );
 
+    $msg = lang_get('show_hide_direct_link');
     $dummy['toggle_direct_link'] = 
       "<i class=\"fas fa-link\" title=\"{$msg}\" alt=\"{$msg}\" " .
       " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
       "></i>";
 
-    // var_dump($dummy);
     return $dummy;
   }
-
-
-
 } 

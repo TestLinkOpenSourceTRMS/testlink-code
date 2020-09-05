@@ -15,23 +15,23 @@
  
 
 /* [GLOBAL SETTINGS] */
-define('TL_SMARTY_VERSION',3);  // @since 1.9.8
-define('TL_JQUERY','third_party/jquery/jquery-3.4.1.min.js');  
 
+define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_VERSION_NUMBER', '2.0.0'); 
 define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] '); 
-define('TL_FACE_DIR', 'buenosaires'); 
+define('TL_FACE_DIR', 'prague'); 
 
 /** Latest Database version that is used to give users feedback 
  *  about necesssary upgrades
  *  if you set this parameter also upgrade 
  *  lib/functions/configCheck.php - checkSchemaVersion() */
-define('TL_LATEST_DB_VERSION', 'DB ' . '2.0.0');
 
-// needed to avoid problems in install scripts 
-// that do not include config.inc.php
+// @TODO need to be changed to 2.0.0
+define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.20');
+
+// needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
 if (!defined('TL_ABS_PATH')) {
   define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
@@ -62,7 +62,7 @@ if ( file_exists($tf) ) {
 }
 
 
-// -----------------------------------------------------------------
+// --------------------------------------------------------------------------------
 /* [GENERAL MAGIC NUMBERS] */
 
 /** PHPMAILER */
@@ -83,9 +83,15 @@ define('OK',    1 );
 define('ERROR',    0 );
 
 /** More Descriptive constant names */
-define('HIGH', 3);
-define('MEDIUM', 2);
-define('LOW',1);
+define('HIGH',    3 );
+define('MEDIUM',   2 );
+define('LOW',     1 );
+
+/** user for notes - see BUGID 0002469: $tlCfg->exec_cfg->expand_collapse 
+  very important do not change values, logic depends on values*/
+define('LAST_USER_CHOICE',2);
+define('COLLAPSE', 0);
+define('EXPAND',1 );
 
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS', 0);
@@ -960,13 +966,4 @@ define('USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS',2);
 define('USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS',3);
 
 
-define('TL_ALIEN_REL_TYPE_FIX', 1);
-define('TL_ALIEN_REL_TYPE_REGRESSION', 2);
-define('TL_ALIEN_REL_TYPE_REQUIREMENT', 3);
-define('TL_ALIEN_REL_TYPE_RESERVED_4', 4);
-define('TL_ALIEN_REL_TYPE_RESERVED_5', 5);
-define('TL_ALIEN_REL_TYPE_RESERVED_6', 6);
-define('TL_ALIEN_REL_TYPE_RESERVED_7', 7);
-define('TL_ALIEN_REL_TYPE_RESERVED_8', 8);
-define('TL_ALIEN_REL_TYPE_RESERVED_9', 9);
 // END 

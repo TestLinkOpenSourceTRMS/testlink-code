@@ -92,7 +92,7 @@ var del_action=fRoot+'{$deleteAction}';
         <th class="icon_cell">{$labels.th_active}</th>
         <th class="icon_cell">{$labels.public}</th>
         {if $gui->canManage == "yes"}
-        <th class="icon_cell" data-orderable="false">{$labels.th_delete}</th>
+        <th class="icon_cell" data-orderable="false"></th>
         {/if}
       </tr>
     </thead>

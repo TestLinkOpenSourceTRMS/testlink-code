@@ -445,6 +445,14 @@ class TLSmarty extends Smarty {
 
     $imi = config_get('images');
     if(count($imi) >0) {
+      foreach($imi as $key => $img) {
+
+        // You need to configure in your custom config something like this
+        // $tlCfg->images['test_status_passed_with_remarks'] = 
+        // '%imgLoc%test_status_passed_with_remarks.png';
+        // PAY ATTENTION to the place holder %imgLoc%
+        $imi[$key] = str_replace('%imgLoc%', $imgLoc, $img);
+      }
       $dummy = array_merge($dummy,$imi);
     }                 
     return $dummy;

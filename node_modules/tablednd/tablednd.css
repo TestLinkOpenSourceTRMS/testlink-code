@@ -1,0 +1,340 @@
+body {
+    color:#333333;
+    font-family:'Lucida Grande',Verdana,Arial,Sans-Serif;
+    font-size: 80%;
+    margin: 1em 9em;
+    background-color: #F0F0F0;
+    line-height: 1.4em;
+}
+
+p {
+    padding: 10px;
+    width: 60%;
+}
+
+h1 {
+    color: #114477;
+}
+
+pre.prettyprint {
+    margin-bottom: 20px;
+    padding-top: 15px;
+}
+.prettyprint {
+    background-color: #F7F7F9;
+}
+code, pre {
+    display: block;
+    margin: 0 0 10px;
+    line-height: 20px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+pre {
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: pre;
+    font-weight:normal;
+}
+
+pre, code {
+    color:#264A94;
+    font-family:Monaco,Lucida Console,monospace;
+    font-size:90%;
+}
+
+div#page {
+    background-color: white;
+    padding: 1em;
+}
+
+.tableDemo {
+    background-color: white;
+    border: 1px solid #666699;
+    margin-right: 10px;
+    padding: 6px;
+}
+
+.tableDemo table {
+    border: 1px solid silver;
+}
+
+.tableDemo td {
+ padding: 2px 6px
+}
+
+.tableDemo th {
+    color: white;
+    text-shadow: 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A, 0 0 18px #29215A;
+    border-bottom: 8px double #29215A;
+    padding: 10px;
+}
+
+#table-2 th {
+    background-color: #29215A;
+    color: white;
+}
+
+#table-2 td, th {
+    padding-right: 8px;
+}
+
+.category td {
+    background-color: #E4EBF3;
+}
+
+table {
+    /*position: relative;*/
+    border-collapse: separate;
+    border-spacing: 0;
+}
+tr {
+    /*position: relative;*/
+
+    /*display: block;*/
+}
+
+.tDnD_whileDrag {
+    /*z-index: 500;*/
+    /*width: 90%;*/
+    /*margin: -10px;*/
+    /*display: table-cell;*/
+    /*color: transparent;*/
+    /*width: 0px*/
+}
+.tDnD_whileDrag td {
+    background-color: #eee;
+    /*-webkit-box-shadow: 11px 5px 12px 2px #333, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+    -webkit-box-shadow: 6px 3px 5px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;
+    /*-moz-box-shadow: 6px 4px 5px 1px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+    /*-box-shadow: 6px 4px 5px 1px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+}
+/*.tDnD_whileDrag td:first-child {*/
+    /*-webkit-box-shadow: 5px 4px 5px 1px #111, 0 1px 0 #ccc inset, 1px -1px 0 #ccc inset;*/
+    /*-moz-box-shadow: 6px 3px 5px 2px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset, 1px 0 0 #ccc inset;*/
+    /*-box-shadow: 6px 3px 5px 2px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset, 1px 0 0 #ccc inset;*/
+/*}*/
+.tDnD_whileDrag td:last-child {
+    /*-webkit-box-shadow: 8px 7px 12px 0 #333, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+    -webkit-box-shadow: 1px 8px 6px -4px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;
+    /*-moz-box-shadow: 0 9px 4px -4px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset, -1px 0 0 #ccc inset;*/
+    /*-box-shadow: 0 9px 4px -4px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset, -1px 0 0 #ccc inset;*/
+}
+    /*-webkit-box-shadow:  0 0 40px white, 10px 10px 15px black;*/
+    /*-moz-box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.5) inset;*/
+    /*-webkit-box-shadow: 0px 0px 40px 1px white, 0px 1px 1px 1px black;*/
+    /*box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.5) inset;*/
+/*}*/
+/*.tDnD_whileDrag {*/
+    /*background-color: black;*/
+    /*position: relative;*/
+    /*display: block;*/
+    /*-moz-box-shadow: 0px 0px 40px 1px white, 0px 1px 1px 1px black;*/
+    /*-webkit-box-shadow: 0px 0px 40px 1px white, 0px 1px 1px 1px black;*/
+    /*box-shadow:        0px 0px 40px 1px white, 0px 1px 1px 1px black ;*/
+    /*-webkit-box-shadow: 0 15px 10px -10px black, 0 1px 4px black, 0 0 10px darkgray inset;*/
+    /*-webkit-box-shadow: 0 15px 10px -10px black, 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;*/
+    /*-moz-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;*/
+    /*box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;*/
+    /*width: 90%;*/
+    /*height: 90%;*/
+    /*width: 100%;*/
+    /*overflow: visible;*/
+    /*z-index: 10000;*/
+    /*opacity: .4;*/
+    /*border-collapse: separate;*/
+    /*filter:Alpha(Opacity=50);*/
+    /*width: auto;*/
+
+/*}*/
+
+/*tr.alt td {*/
+    /*width:200px*/
+    /*-ms-transform:rotate(1deg;*/
+    /*-moz-transform: rotate(0deg);*/
+    /*-webkit-transform:rotate(0deg);*/
+    /*-o-transform:rotate(0deg);*/
+/*}*/
+
+tr.alt td {
+    background-color: #ecf6fc;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    white-space: nowrap;
+}
+
+tr.myDragClass td {
+    /*position: fixed;*/
+    color: yellow;
+    text-shadow: 0 0 10px black, 0 0 10px black, 0 0 8px black, 0 0 6px black, 0 0 6px black;
+    background-color: #999;
+    -webkit-box-shadow: 0 12px 14px -12px #111 inset, 0 -2px 2px -1px #333 inset;
+}
+tr.myDragClass td:first-child {
+    -webkit-box-shadow: 0 12px 14px -12px #111 inset, 12px 0 14px -12px #111 inset, 0 -2px 2px -1px #333 inset;
+}
+tr.myDragClass td:last-child {
+    -webkit-box-shadow: 0 12px 14px -12px #111 inset, -12px 0 14px -12px #111 inset, 0 -2px 2px -1px #333 inset;
+}
+
+#table-2 {
+    margin: 0 0 1em 0; padding: 0
+}
+tr.nodrop td {
+    border-bottom: 1px solid #00bb00;
+    color: #00bb00;
+}
+tr.nodrag td {
+    border-bottom: 1px solid #FF6600;
+    color: #FF6600;
+}
+div.result {
+    background-color: #F7F7F9;
+}
+
+tr.alt tr:after, .group:after {
+    visibility: hidden;
+    display: block;
+    content: "";
+    clear: both;
+    height: 0;
+}
+
+table input,
+tr td input,
+tr input,
+tr.myDragClass input,
+tbody tr td input {
+    z-index: -10;
+        text-align: right;
+        float: right;
+    height: 12px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+td.dragHandle {
+
+}
+
+td.showDragHandle {
+	background-image: url(images/updown2.gif);
+	background-repeat: no-repeat;
+	background-position: center center;
+	cursor: move;
+}
+
+.versionHistory td {
+    vertical-align: top;
+    padding: 0.3em;
+    white-space: normal;
+}
+
+div.indent {
+    width: 30px;
+    float: left;
+}
+
+#sprintlist_table th {
+    color: white;
+    /*border-style: ;*/
+    text-shadow: 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600, 0 0 18px #FF6600;
+    border-bottom: 14px double #FF6600;
+    padding: 10px;
+}
+.sprintlist-drag td.small_buttons div button {
+    /*font-size: xx-small;*/
+    /*height: 18px;*/
+    /*color: #333;*/
+    /*cursor: pointer;*/
+    /*background-color: #f4a460;*/
+    box-shadow:0px 2px 3px black inset;
+    -moz-box-shadow:0px 2px 3px black inset;
+    -webkit-box-shadow:0px 2px 3px black inset;
+    /*border: 0px;*/
+    /*background-color: #ccc;*/
+}
+.sprintlist-drag td.small_buttons div button:first-child {
+    box-shadow:2px 2px 3px black inset;
+    -moz-box-shadow:2px 2px 3px black inset;
+    -webkit-box-shadow:2px 2px 3px black inset;
+    /*border: 0px;*/
+    /*background-color: #ccc;*/
+}
+.sprintlist-drag td {
+    background-color: #f4a460;
+    /*-webkit-box-shadow: 11px 5px 12px 2px #333, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+    -webkit-box-shadow: 6px 3px 5px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;
+    /*-moz-box-shadow: 6px 4px 5px 1px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+    /*-box-shadow: 6px 4px 5px 1px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+}
+.sprintlist-drag td:last-child {
+    /*-webkit-box-shadow: 8px 7px 12px 0 #333, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+    -webkit-box-shadow: 1px 8px 6px -4px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;
+/*-moz-box-shadow: 0 9px 4px -4px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset, -1px 0 0 #ccc inset;*/
+}
+tr.group_heading td eojq
+    border-bottom: 8px double #FF6600;
+    color: #FF6600;
+    font-size: larger;
+    font-weight: bolder;
+}
+
+td.small_buttons div {
+    display: inline-block;
+    position: relative;
+}
+#table-6 tr {
+    background-color: red;
+    z-index: -1000;
+    /*background-color:rgb(165, 182, 229);*/
+    display: block;
+    margin-bottom: 5px;
+    /*box-shadow:0 0 0 black;*/
+    /*-moz-box-shadow:0 0 0 black,;*/
+    /*-webkit-box-shadow:0 0 0 black;*/
+}
+#table-6 td {
+    padding:5px;
+    /*text-align:left;*/
+}
+
+#table-7 {
+    border: #000000 solid 1px;
+}
+
+td.small_buttons div button {
+    font-size: xx-small;
+    height: 18px;
+    color: #333;
+    cursor: pointer;
+    background-color: whiteSmoke;
+}
+
+td.small_buttons div button:first-child
+{
+    margin-left: 0;
+    -webkit-border-bottom-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    -webkit-border-top-left-radius: 4px;
+    border-top-left-radius: 4px;
+    -moz-border-radius-bottomleft: 4px;
+    -moz-border-radius-topleft: 4px;
+}
+
+td.small_buttons div button:last-child
+{
+    margin-left: -2px;
+    -webkit-border-bottom-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    -webkit-border-top-right-radius: 4px;
+    border-top-right-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+    -moz-border-radius-topright: 4px;
+}

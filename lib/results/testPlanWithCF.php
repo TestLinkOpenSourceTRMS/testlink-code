@@ -205,4 +205,3 @@ function checkRights(&$db,&$user)
 {
 	return $user->hasRightOnProj($db,'testplan_metrics');
 }
-?>

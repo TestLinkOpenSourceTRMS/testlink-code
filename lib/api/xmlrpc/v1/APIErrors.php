@@ -109,7 +109,6 @@ define('TSUITE_NOT_ON_TCASE_TPROJ', 238);
 define('TSUITE_NOT_ON_TCASE_TPROJ_STR', 
 	   lang_get('API_TSUITE_NOT_ON_TCASE_TPROJ',null,1));
 
-
 /**
  * 2000 level - authentication errors
  */
@@ -120,6 +119,8 @@ define('INSUFFICIENT_RIGHTS_STR', lang_get('API_INSUFFICIENT_RIGHTS',null,1));
 define('UPDATER_INSUFFICIENT_RIGHTS', 2015);
 define('UPDATER_INSUFFICIENT_RIGHTS_STR', 
 	    lang_get('API_UPDATER_INSUFFICIENT_RIGHTS',null,1));
+define('MUST_BE_ADMIN', 2016);
+define('MUST_BE_ADMIN_STR', lang_get('API_MUST_BE_ADMIN',null,1));
 
 
 /**
@@ -363,3 +364,33 @@ define('PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK_STR', lang_get('API_PLATFORM_REMO
  */
 define('ITS_NOT_FOUND',13000);
 define('ITS_NOT_FOUND_STR', lang_get('API_ITS_NOT_FOUND',null,1));
+
+/**
+ * 14000 level - Users
+ */
+define('NO_USERID',14000);
+define('NO_USERID_STR', lang_get('API_NO_USERID',null,1));
+
+define('INVALID_USERID',14001);
+define('INVALID_USERID_STR', lang_get('API_INVALID_USERID',null,1));
+
+define('USER_LOGIN_DOESNOT_EXIST',14002);
+define('USER_LOGIN_DOESNOT_EXIST_STR', lang_get('API_USER_LOGIN_DOESNOT_EXIST',null,1));
+
+define('USER_CREATION_ERROR',14003);
+// for message see getUserErrorMessage
+
+/**
+ * 15000 level - Roles
+ */
+define('NO_ROLEID',15000);
+define('NO_ROLEID_STR', lang_get('API_NO_ROLEID',null,1));
+
+define('INVALID_ROLEID',15001);
+define('INVALID_ROLEID_STR', lang_get('API_INVALID_ROLEID',null,1));
+
+define('ROLE_NAME_DOESNOT_EXIST',15002);
+define('ROLE_NAME_DOESNOT_EXIST_STR', lang_get('API_ROLE_NAME_DOESNOT_EXIST',null,1));
+
+define('ROLE_SETTING_ERROR',15003);
+define('ROLE_SETTING_ERROR_STR', lang_get('API_ROLE_SETTING_ERROR',null,1));

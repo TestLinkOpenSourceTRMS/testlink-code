@@ -976,13 +976,22 @@ class testcaseCommands {
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
 
-    // Get all existent steps - info needed to do renumbering
-    $stepNumberSet = array();
-    $stepSet = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
-    $stepsQty = count($stepSet);
-    for($idx=0; $idx < $stepsQty; $idx++) {
-      $renumbered[$stepSet[$idx]['id']] = $idx+1; 
+    if ($argsObj->stepSeq != '') {
+      $xx = explode('&', $argsObj->stepSeq);
+      $point = 1;
+      foreach($xx as $step_id) {
+        $renumbered[$step_id] = $point++; 
+      }
+    } else {
+      // Get all existent steps - info needed to do renumbering
+      $stepNumberSet = array();
+      $stepSet = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+      $stepsQty = count($stepSet);
+      for($idx=0; $idx < $stepsQty; $idx++) {
+        $renumbered[$stepSet[$idx]['id']] = $idx+1; 
+      }
     }
+
     $this->tcaseMgr->set_step_number($renumbered);
 
     $guiObj->template = 

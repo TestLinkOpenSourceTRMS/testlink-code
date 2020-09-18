@@ -214,6 +214,8 @@
  *   - $tlCfg->results['charts']['status_colour'] (in this file)
  *   - /locale/<your_language>/custom_strings.txt (see custom_strings.txt.example)
  *   - /gui/themes/default/css/custom.css (see custom.css.example)
+ *   - $tlCfg->results['status_icons_for_exec_ui'] = 
+ *   - $tlCfg->results['status_icons_for_exec_next_ui'] = 
  */
 
 // This Example shows how to add the status 'my_status'

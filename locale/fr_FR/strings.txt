@@ -314,8 +314,8 @@ $TLS_btn_remove_all_users = "Supprimer TOUTES les affectations";
 $TLS_btn_apply_assign = "Appliquer l'affectation";
 $TLS_btn_save_assign = "Sauver les affectations";
 $TLS_btn_remove = "Supprimer";
-$TLS_btn_remove_assignments = "Supprimer les affections";
-$TLS_btn_remove_current_assignments = "Supprimer toutes les affections";
+$TLS_btn_remove_assignments = "Supprimer les affectations";
+$TLS_btn_remove_current_assignments = "Supprimer toutes les affectations";
 
 
 
@@ -1917,7 +1917,7 @@ $TLS_info_report_milestones_no_prio = "Ce rapport affiche les indicateurs d'avan
 $TLS_info_res_by_kw = "Ce rapport affiche les résultats pour chaque mot-clé. Si une fiche de test a de multiples " .
                       "mots-clés affectés, cela est comptabilisé pour chaque mot-clé affecté.";
 $TLS_info_gen_test_rep = "<b>Information générale</b><br />" .
-                         "Tous les rapports considèrent uniquement la dernière exécution pour chaque fiche de test.<br />";
+                         "Tous les rapports se basent uniquement la dernière exécution pour chaque fiche de test.<br />";
 
 // ----- gui/templates/resultsMoreBuilds_query_form.tpl -----
 $TLS_results_latest = "Derniers résultats uniquement";
@@ -4032,8 +4032,8 @@ $TLS_link_report_exec_timeline = 'Exécution par date/heure';
 $TLS_qty_of_executions = 'Exécutions de cas de test';
 $TLS_assignOnlyToTestCasesInTestSuite = 'Affecter seulement aux enfants directs de ce dossier de test';
 $TLS_target_kword = "Mots clés cibles (Affecter/Supprimer)";
-$TLS_link_report_by_tsuite = "Metrics by Level 1 & Level 2 Test Suites";
-$TLS_metrics_by_l1l2_testsuite = "Metrics by Level 1 & Level 2 Test Suites";
+$TLS_link_report_by_tsuite = "Métriques de niveau 1 et 2 des campagnes de tests";
+$TLS_metrics_by_l1l2_testsuite = "Métriques de niveau 1 et 2 des campagnes de tests";
 $TLS_you_can_sort = "Vous pouvez trier le tableau en cliquant sur les en-têtes de colonne.";
 $TLS_firstExec = 'Première exécution : ';
 $TLS_latestExec = 'Dernière exécution : ';
@@ -4042,7 +4042,7 @@ $TLS_l1l2 = 'Top : Child (Test Suites)';
 $TLS_not_enough_rights = 'Vous ne disposez pas d’assez de droits pour utiliser cette fonction';
 $TLS_saveForBaseline = 'Sauver pour créer la référence';
 $TLS_baseline_saved_ok = 'Référence sauvée';
-$TLS_baseline_l1l2 = 'Baselines Level 1 & Level 2 Test Suites';
+$TLS_baseline_l1l2 = 'Référence de niveau1 et 2 des campagne de tests';
 $TLS_baselineTimestamp = 'Référence prise le :';
 $TLS_on_design = 'On Design';
 $TLS_on_exec = 'On Execution';

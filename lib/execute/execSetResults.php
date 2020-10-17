@@ -433,7 +433,7 @@ if(!is_null($linked_tcversions)) {
       $gui->kw = $tcase_mgr->getKeywordsByIdCard($idCard,array('output' => 'kwfull'));
 
       if(!is_null($cts)) {
-        $gui->scripts[$tcversion_id]=$tcase_mgr->get_scripts_for_testcase($cts, $tcversion_id);
+        $gui->scripts[$tcversion_id]=$tcase_mgr->getScriptsForTestCaseVersion($cts, $tcversion_id);
       }
 
       $gui->other_execs = getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);

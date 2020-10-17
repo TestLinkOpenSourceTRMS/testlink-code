@@ -5503,12 +5503,12 @@ class testcase extends tlObjectWithAttachments {
     }
 
     if(!is_null($result) && $my['options']['renderImageInline']) {
-      // for attachments we need main entity => Test case
-      $tcvnode = $this->tree_manager->get_node_hierarchy_info($tcversion_id);
+      // for attachments we need the Test Case Version ID
+      // (time ago we used the Test Case ID)
       $k2l = count($result);
       $gaga = array('actions','expected_results');
       for($idx=0; $idx < $k2l; $idx++) {
-        $this->renderImageAttachments($tcvnode['parent_id'],$result[$idx],$gaga);
+        $this->renderImageAttachments($tcversion_id,$result[$idx],$gaga);
       }
     }
 

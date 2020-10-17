@@ -226,14 +226,14 @@ function initializeGui(&$argsObj) {
   $guiObj->keyword_assignment_subtitle = null;
 
   $guiObj->canAddRemoveKWFromExecuted = 
-    $argsObj->user->hasRight($db,
+    $argsObj->user->hasRightOnProj($db,
     'testproject_add_remove_keywords_executed_tcversions') ||
-    $argsObj->user->hasRight($db,'testproject_edit_executed_testcases');
+    $argsObj->user->hasRightOnProj($db,'testproject_edit_executed_testcases');
 
   return $guiObj;
 }
 
 
 function checkRights(&$db,&$user) {
-  return $user->hasRight($db,'keyword_assignment');
+  return $user->hasRightOnProj($db,'keyword_assignment');
 }

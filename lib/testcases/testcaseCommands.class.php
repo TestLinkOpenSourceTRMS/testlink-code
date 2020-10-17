@@ -51,6 +51,7 @@ class testcaseCommands {
     $this->grants->requirement_mgmt = $this->grants->mgt_modify_req ||
       $this->grants->req_tcase_link_management;
 
+    $this->tables = $this->tcaseMgr->getDBTables(array('keywords','platforms'));  
   }
 
   function setTemplateCfg($cfg) {

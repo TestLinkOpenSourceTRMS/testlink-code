@@ -121,8 +121,8 @@ function initArgs(&$dbH) {
 
   $sch = tlObject::getDBTables(array('testprojects','nodes_hierarchy'));
   $sql = " SELECT NH.id FROM {$sch['nodes_hierarchy']} NH " .
-           " JOIN {$sch['testprojects']} TPRJ " .
-           " ON TPRJ.id = NH.id ";
+         " JOIN {$sch['testprojects']} TPRJ " .
+         " ON TPRJ.id = NH.id ";
   $rs = (array)$dbH->get_recordset($sql);
 
   if (count($rs) == 0) {

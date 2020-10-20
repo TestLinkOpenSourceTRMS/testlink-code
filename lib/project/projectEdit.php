@@ -6,7 +6,7 @@
  * test project management
  *
  * @package     TestLink
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @filesource  projectEdit.php
  * @uses        projectCommon.php
  * @link        http://www.testlink.org
@@ -23,6 +23,8 @@ require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db,true,false,"checkRights");
 
+
+// OK, user has the rights to proceed
 $gui_cfg = config_get('gui');
 $templateCfg = templateConfiguration();
 

@@ -78,7 +78,8 @@ $tplEngine->display('../dashio/main.tpl');
 function initArgs() {
   $iParams = array(
               "reqURI" => array(tlInputParameter::STRING_N,0,4000),
-              "action" => array(tlInputParameter::STRING_N,1,15));
+              "action" => array(tlInputParameter::STRING_N,1,15),
+              "activeMenu" => array(tlInputParameter::STRING_N,6,20));
   
   $args = new stdClass();
   R_PARAMS($iParams,$args);
@@ -109,6 +110,13 @@ function initArgs() {
     $args->$pp = isset($_REQUEST[$pp]) ? intval($_REQUEST[$pp]) : 0;
   } 
 
+
+  // active menu needs to be validated using white list
+  $items = getFirstLevelMenuStructure();
+  $args->activeMenu = trim($args->activeMenu);
+  if (!isset($args->activeMenu) ) {
+    $args->activeMenu = '';
+  }
   return $args;
 }
 
@@ -125,8 +133,8 @@ function initGui(&$dbH,&$argsObj) {
   $gui->navbar_height = config_get('navbar_height');
 
   $sso = ($argsObj->ssodisable ? '&ssodisable' : '');
-
   $gui->logout = 'logout.php?viewer=' . $sso;
+
   $gui->current_tproject_id = $argsObj->current_tproject_id;
   if( $argsObj->current_tproject_id == 0 ) {
     $gui->current_tproject_id = $argsObj->tproject_id;
@@ -147,8 +155,14 @@ function initGui(&$dbH,&$argsObj) {
   } else {
     $gui->mainframe .= "?";    
   }
+
+  // 20201022
+  $activateMenu = "";
+  if ($argsObj->activeMenu != "") {
+    $activateMenu = "&activeMenu=$argsObj->activeMenu";
+  }
   $gui->mainframe .= "tproject_id={$gui->tproject_id}&" .
-                     "tplan_id={$gui->tplan_id}";    
+                     "tplan_id={$gui->tplan_id}{$activateMenu}";    
 
   return $gui;
 }

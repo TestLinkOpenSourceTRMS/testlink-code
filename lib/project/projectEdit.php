@@ -585,7 +585,7 @@ function crossChecks($argsObj,&$tprojectMgr) {
     $check_op['msg'][] = $op['msg'];
   }
   
-  var_dump($check_op);
+  //  var_dump($check_op);
   return $check_op;
 }
 

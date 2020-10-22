@@ -755,7 +755,8 @@ function checkPhpVersion(&$errCounter)
 {
   // 20200215
   // MAMP PRO from MAC provides 7.2.21
-  $min_version = '7.2.21'; 
+  // $min_version = '7.2.21';
+  $min_version = '7.1'; 
   $my_version = phpversion();
 
   // version_compare:

@@ -67,6 +67,13 @@ switch($args->doAction) {
     $ui = $op->ui;
     $status_ok = $op->status_ok;
     $gui->user_feedback = $op->msg;
+
+    // 20201022
+    /* We are creating the FIRST Test Project
+       special processing is needed */
+    if ($args->projectCount == 0) {
+      $gui->tproject_id = $op->id;      
+    }
     $reloadType = $op->reloadType;
   break;
 
@@ -83,6 +90,14 @@ switch($args->doAction) {
     $op = doDelete($args,$tproject_mgr);
     $status_ok = $op->status_ok;
     $gui->user_feedback = $op->msg;
+
+    // 20201022
+    if ($status_ok) {
+      $args->projectCount--;
+    }
+    if ($args->projectCount <= 0) {
+      $gui->tproject_id = 0;            
+    }
     $reloadType = $op->reloadType;
   break;
 

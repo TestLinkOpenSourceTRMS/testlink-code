@@ -28,7 +28,8 @@ function init_args(&$dbH,$context) {
                    "tproject_id" => array(tlInputParameter::INT_N),
                    "caller" => array(tlInputParameter::STRING_N,1,6),
                    "viewer" => array(tlInputParameter::STRING_N, 0, 3),
-                   "tplan_id" => array(tlInputParameter::INT_N)
+                   "tplan_id" => array(tlInputParameter::INT_N),
+                   "updateMainPage" => array(tlInputParameter::INT_N)
                   );
 	$args = new stdClass();
 	$pParams = G_PARAMS($iParams,$args);
@@ -178,15 +179,20 @@ function initializeGui(&$db,&$args,$context) {
   // Use this clue to launch a refresh of other 
   // frames present on the screen
   // using the onload HTML body attribute
-  $gui->updateMainPage = 0;
-  if( $gui->tproject_id > 0) {
-    // set test project ID for the next session
-    $gui->updateMainPage = is_null($args->caller);
+  // 20201022 $gui->updateMainPage = 0;
 
-    $ckObj = new stdClass();
-    $ckObj->name = $ckCfg->testProjectMemory . $args->user->dbID;
-    $ckObj->value = $args->testProject;
-    tlSetCookie($ckObj);
+
+  $gui->updateMainPage = $args->updateMainPage;
+  if ($gui->updateMainPage == 0) {
+    if( $gui->tproject_id > 0) {
+      // set test project ID for the next session
+      $gui->updateMainPage = is_null($args->caller);
+
+      $ckObj = new stdClass();
+      $ckObj->name = $ckCfg->testProjectMemory . $args->user->dbID;
+      $ckObj->value = $args->testProject;
+      tlSetCookie($ckObj);
+    }
   }
   $gui->updateNavBar = $gui->updateMainPage;
 

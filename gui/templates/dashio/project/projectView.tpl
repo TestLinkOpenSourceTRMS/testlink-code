@@ -177,16 +177,31 @@ var del_action=fRoot+'{$deleteAction}';
 
 {if $gui->doViewReload == true}
   <script type="text/javascript">
+  
+  // According to amount of test projects the user has found while accessing
+  // the project edit feature TO CREATE a test project
+  // the type and target of refresh will change
+  //
   // remove query string to avoid reload of home page,
   // instead of reload only navbar
-  //DEBUG -
-  console.log('parent.titlebar.location.href -> ' + parent.titlebar.location.href);
-
+  // DEBUG -console.log('parent.titlebar.location.href -> ' + parent.titlebar.location.href);
   var href_pieces = parent.titlebar.location.href.split('?');
-  var hn = href_pieces[0] + '?tproject_id={$gui->tproject_id}';
-  //DEBUG 
-  console.log('planView.tpl -> ' + hn);
-  parent.titlebar.location = hn;
+
+  {if $gui->projectCount > 0}  
+    // will refresh ONLY the NAVBAR
+    // It seems that when operation is DELETE we will need to refresh also
+    // the left side menu, but this has a minore annoyance
+    // How to do this without exiting from the project view page??
+    //
+    var hn = href_pieces[0] + '?tproject_id={$gui->tproject_id}&updateMainPage=1';
+    //DEBUG console.log('planView.tpl -> ' + hn);
+    parent.titlebar.location = hn;
+  {else}
+    // we are creating the FIRST Test Project, we need to update also the left side menu
+    var hn = href_pieces[0] + '?tproject_id={$gui->tproject_id}&updateMainPage=1';  
+    hn = hn.replace('lib/general/navBar.php','index.php');
+    parent.location = hn;
+  {/if}
   </script>
 {/if}
 

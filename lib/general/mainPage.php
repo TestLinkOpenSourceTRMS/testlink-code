@@ -21,6 +21,10 @@ testlinkInitPage($db,TRUE);
 
 $smarty = new TLSmarty();
 
+echo '<pre>';
+var_dump($_REQUEST);
+echo '</pre>';
+
 $args = initArgs($db);
 $opt = array('forceCreateProj' => $args->newInstallation,
              'caller' => basename(__FILE__));

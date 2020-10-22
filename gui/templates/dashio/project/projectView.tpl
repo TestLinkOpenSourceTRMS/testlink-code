@@ -4,7 +4,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - display Test Project List
 
 Development hint:
-some variables smarty and javascript are created on the inc_*.tpl files.
+- some variables smarty and javascript are created on the inc_*.tpl files.
+
+CRITICAL
+- $gui->doViewReload -> reload Logic!!
+
 *}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -175,11 +179,13 @@ var del_action=fRoot+'{$deleteAction}';
   <script type="text/javascript">
   // remove query string to avoid reload of home page,
   // instead of reload only navbar
-  //DEBUG -alert(parent.titlebar.location.href);
+  //DEBUG -
+  console.log('parent.titlebar.location.href -> ' + parent.titlebar.location.href);
 
   var href_pieces = parent.titlebar.location.href.split('?');
   var hn = href_pieces[0] + '?tproject_id={$gui->tproject_id}';
-  //DEBUG alert('planView.tpl -> ' + hn);
+  //DEBUG 
+  console.log('planView.tpl -> ' + hn);
   parent.titlebar.location = hn;
   </script>
 {/if}

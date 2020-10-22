@@ -13,12 +13,20 @@
  * 
  **/
 
-require_once('lib/functions/configCheck.php');
-checkConfiguration();
+/**
+ * Architecture Notes
+ *
+ * Cookie is used get the latest test project used by user. 
+ *
+ **/
+
 require_once('config.inc.php');
 require_once('common.php');
 require_once('oauth_api.php');
 require_once('doAuthorize.php');
+
+require_once('configCheck.php');
+checkConfiguration();
 
 $templateCfg = templateConfiguration();
 $doRenderLoginScreen = false;
@@ -116,7 +124,7 @@ switch($args->action)
 
 if( $doAuthPostProcess ) 
 {
-  list($doRenderLoginScreen,$gui->note) = authorizePostProcessing($args,$op);
+  list($doRenderLoginScreen,$gui->note) = authorizePostProcessing($db,$args,$op);
 }
 
 if( $doRenderLoginScreen ) 
@@ -176,8 +184,6 @@ function init_args()
   {
     $args->action = 'loginform';
   }
-
-
   return $args;
 }
 
@@ -324,15 +330,14 @@ function renderLoginScreen($guiObj)
 
 
 /**
- * 
+ * @param object $dbH DataBase Handle
  * @param stdClassObject $argsObj
  * @param hash $op
  */
-function authorizePostProcessing($argsObj,$op) {
+function authorizePostProcessing($dbH,$argsObj,$op) {
   $note = null;
   $renderLoginScreen = false;
-  if($op['status'] == tl::OK)
-  {
+  if ($op['status'] == tl::OK) {
     // Login successful, redirect to destination
     logAuditEvent(TLS("audit_login_succeeded",$argsObj->login,
                   $_SERVER['REMOTE_ADDR']),"LOGIN",$_SESSION['currentUser']->dbID,"users");
@@ -342,28 +347,41 @@ function authorizePostProcessing($argsObj,$op) {
     } 
     else {
       // If destination param is set redirect to given page ...
-      if (!empty($argsObj->destination) && preg_match("/linkto.php/", $argsObj->destination)) {
+      if (!empty($argsObj->destination) && 
+          preg_match("/linkto.php/", $argsObj->destination)) {
         redirect($argsObj->destination);
       }
       else {
         // ... or show main page
         $_SESSION['viewer'] = $argsObj->viewer;
         $ad = $argsObj->ssodisable ? '&ssodisable=1' : '';
-        $ad .= ($argsObj->preqURI ? "&reqURI=".urlencode($argsObj->preqURI) :"");
+        $ad .= ($argsObj->preqURI ? "&reqURI=" . urlencode($argsObj->preqURI) :"");
 
         // Get memory from cookie
         $tproject_id = 0;
         $ckCfg = config_get('cookie');    
         $ckObj = new stdClass();
         $ckObj->name = $ckCfg->testProjectMemory . $_SESSION['userID'];
+  
         if (isset($_COOKIE[$ckObj->name])) {
-            $tproject_id = $_COOKIE[$ckObj->name];
+          $tproject_id = intval($_COOKIE[$ckObj->name]);
+  
+          // ATTENTION
+          // we need to validate that test project already exists.
+          $tables = tlObjectWithDB::getDBTables(array('testprojects'));
+          $sql = "SELECT id FROM {$tables['testprojects']}
+                  WHERE id = {$tproject_id}";
+          $rs = (array)$dbH->get_recordset($sql);
+
+          if (count($rs) == 0) {
+            $tproject_id = 0;
+          }
         }
+
         $rul = $_SESSION['basehref'] . 
                  "index.php?caller=login&tproject_id=" . 
                  intval($tproject_id) . $ad;
 
-        
         redirect($rul);
       }
       exit(); // hmm seems is useless

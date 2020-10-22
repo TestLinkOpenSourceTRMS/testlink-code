@@ -283,6 +283,8 @@ function init_args($tprojectMgr) {
   $args->testprojects = null;
   $args->projectOptions = prepareOptions($args);
 
+  $args->projectCount = $tprojectMgr->getItemCount();
+
   return $args;
 }
 
@@ -386,9 +388,7 @@ function doCreate($argsObj,&$tprojectMgr) {
       $tprojectMgr->copy_as($argsObj->copy_from_tproject_id,$new_id,
                             $argsObj->userID,trim($argsObj->tprojectName),$options);
     }
-  }
-  else
-  {
+  } else {
     $op->ui->doActionValue = 'doCreate';
     $op->ui->buttonValue = lang_get('btn_create');
     $op->ui->caption = lang_get('caption_new_tproject');

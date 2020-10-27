@@ -199,10 +199,17 @@ var del_action=fRoot+'{$deleteAction}';
     console.log('planView.tpl -> ' + hn);
     parent.titlebar.location = hn;
   {else}
+    alert('8888');
+    console.log('888888 p - planView.tpl ->>>>>> ');
+    
     // we are creating the FIRST Test Project, we need to update also the left side menu
-    var hn = href_pieces[0] + '?tproject_id={$gui->tproject_id}&updateMainPage=1&activeMenu=projects';  
+    // var hn = href_pieces[0] + '?tproject_id={$gui->tproject_id}&updateMainPage=1&activeMenu=projects';  
+    var hn = href_pieces[0] + '?tproject_id={$gui->tproject_id}' 
+                            + '&updateMainPage=1&activeMenu=projects&projectView=1';  
     hn = hn.replace('lib/general/navBar.php','index.php');
     console.log('0 p - planView.tpl -> ' + hn);
+    alert('9999');
+    alert('0 p - planView.tpl -> ' + hn);
 
     parent.location = hn;
   {/if}

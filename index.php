@@ -79,8 +79,11 @@ function initArgs() {
   $iParams = array(
               "reqURI" => array(tlInputParameter::STRING_N,0,4000),
               "action" => array(tlInputParameter::STRING_N,1,15),
-              "activeMenu" => array(tlInputParameter::STRING_N,6,20));
+              "activeMenu" => array(tlInputParameter::STRING_N,6,20),
+              "projectView" => array(tlInputParameter::INT_N));
   
+  //:q!dump($_REQUEST);
+
   $args = new stdClass();
   R_PARAMS($iParams,$args);
   $args->user = $_SESSION['currentUser'];
@@ -117,6 +120,9 @@ function initArgs() {
   if (!isset($args->activeMenu) ) {
     $args->activeMenu = '';
   }
+
+  $args->projectView = ($args->projectView > 0) ? 1 : 0;
+
   return $args;
 }
 
@@ -161,8 +167,11 @@ function initGui(&$dbH,&$argsObj) {
   if ($argsObj->activeMenu != "") {
     $activateMenu = "&activeMenu=$argsObj->activeMenu";
   }
+  $projView = "&projectView=$argsObj->projectView";
+
   $gui->mainframe .= "tproject_id={$gui->tproject_id}&" .
-                     "tplan_id={$gui->tplan_id}{$activateMenu}";    
+                     "tplan_id={$gui->tplan_id}{$activateMenu}{$projView}";
+
 
   return $gui;
 }

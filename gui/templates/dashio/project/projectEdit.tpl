@@ -29,7 +29,7 @@
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
 
-{if $gui_cfg->testproject_coloring neq 'none'}
+{if $gui->gui_cfg->testproject_coloring neq 'none'}
   {include file="inc_jsPicker.tpl"}
 {/if}
 
@@ -112,19 +112,21 @@ manageTracker('code_tracker_id','code_tracker_enabled');">
     <table id="item_view" style="width:100%;outline-style: solid; outline-width: 2px;">
 
       {if $gui->itemID eq 0}
+
+        {* Can we use other test project as SOURCE for copy? *}
         {if $gui->testprojects != ''}
-       <tr>
-         <td>{$labels.create_from_existent_tproject}</td>
-         <td>
-           <select id="copy_from_tproject_id" name="copy_from_tproject_id">
-           <option value="0">{$labels.opt_no}</option>
-           {foreach item=testproject from=$gui->testprojects}
-             <option value="{$testproject.id}">{$testproject.name|escape}</option>
-           {/foreach}
-           </select>
-         </td>
-       </tr>
-       {/if}
+          <tr>
+            <td>{$labels.create_from_existent_tproject}</td>
+            <td>
+              <select id="copy_from_tproject_id" name="copy_from_tproject_id">
+              <option value="0">{$labels.opt_no}</option>
+               {foreach item=testproject from=$gui->testprojects}
+                 <option value="{$testproject.id}">{$testproject.name|escape}</option>
+               {/foreach}
+              </select>
+            </td>
+          </tr>
+        {/if}
       {/if}
       <tr>
         <td {$tdStyle}>{$labels.name} *</td>
@@ -144,7 +146,7 @@ manageTracker('code_tracker_id','code_tracker_enabled');">
         <td {$tdStyle}>{$labels.testproject_description}</td>
         <td style="width:80%">{$notes}</td>
       </tr>
-      {if $gui_cfg->testproject_coloring neq 'none'}
+      {if $gui->gui_cfg->testproject_coloring neq 'none'}
       <tr>
         <th style="background:none;">{$labels.testproject_color}</th>
         <td {$tdStyle}>
@@ -304,6 +306,7 @@ manageTracker('code_tracker_id','code_tracker_enabled');">
   </div>
   {else}
     <p class="info">
+    <<<projectEdit.tpl>>>
     {if $gui->tprojectName != ''}
       {$labels.info_failed_loc_prod} - {$gui->tprojectName|escape}!<br />
     {/if}

@@ -19,22 +19,55 @@ require_once('../../config.inc.php');
 require_once("common.php");
 require_once("projectCommon.php");
 
-testlinkInitPage($db,false,false,"checkRights");
 
-$templateCfg = templateConfiguration();
+$log = "/tmp/trace.log";
+file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ ,FILE_APPEND);
+testlinkInitPage($db,false,false,"checkRights");
+file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ ,FILE_APPEND);
+
+$tplCfg = templateConfiguration();
+file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__  . json_encode($tplCfg),FILE_APPEND);
+
+
+$tpl2launch = $tplCfg->default_template;
+$tplDir = $tplCfg->template_dir; 
+if ( $tpl2launch !==  'projectView.tpl') {
+  $tpl2launch = 'projectView.tpl';
+  $tplDir = 'project/';
+  file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ ,FILE_APPEND);
+} 
+
 $args = init_args();
 list($gui,$smarty) = initializeGui($db,$args);
 
-$template2launch = $templateCfg->default_template;
-if(!is_null($gui->tprojects) || $args->doAction=='list') {  
-  if( $gui->itemQty == 0 ) {
-    $template2launch = "projectEdit.tpl"; 
-    $gui->doAction = "create";
-  } 
-}
 
+file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ .'$gui->tprojects > ' . json_encode($gui->tprojects),FILE_APPEND);
+file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ .'$gui->itemQty > ' . $gui->itemQty,FILE_APPEND);
+
+// we can arrive here because the user has deleted the latest test project in the system
+// in this situation we need to force the project edit feature
+if ($gui->itemQty == 0)  {
+  $tpl2launch = "projectEdit.tpl"; 
+  $tplDir = 'project/';
+  
+
+  $gui->gui_cfg = config_get('gui');
+
+  // $ff = initGuiForCreate($gui);
+  $gui->doAction = "create";  
+  $gui->itemID = 0;
+  $gui->found = "yes";
+  $gui->tprojectName = '';
+  $gui->tcasePrefix = '';
+  $gui->issue_tracker_enabled = 0;
+
+
+} 
+
+file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ . ' I will launch > ' . $tplDir . $tpl2launch,FILE_APPEND);
 $smarty->assign('gui',$gui);
-$smarty->display($templateCfg->template_dir . $template2launch);
+
+$smarty->display($tplDir . $tpl2launch);
 
 
 /**

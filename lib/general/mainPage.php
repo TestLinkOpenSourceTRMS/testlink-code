@@ -20,4 +20,11 @@ require_once('mainPageCommon.php');
 
 testlinkInitPage($db,TRUE);
 $args = initArgs($db);
-main($db,$args);
+
+$log = "/tmp/trace.log";
+if ($args->projectView) {
+  file_put_contents($log, "\n in file: " . __FILE__,FILE_APPEND);
+  require_once('projectView.php');
+} else {
+  main($db,$args);
+}

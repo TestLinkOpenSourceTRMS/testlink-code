@@ -19,6 +19,34 @@
 /**
  *
  */
+/*
+function initGuiForCreate(&$guiObj) 
+{
+  $guiObj->canManage = 1;
+  $guiObj->doAction = "create";  
+  $guiObj->itemID = 0;
+  $guiObj->found = "yes";
+  $guiObj->tprojectName = '';
+  $guiObj->tcasePrefix = '';
+  $guiObj->issue_tracker_enabled = 0;
+  $guiObj->active = 1;
+  $guiObj->is_public = 1;
+  
+  /*
+  $gui->tproject_id = 0;
+  $gui->tplan_id = 0;
+  */
+
+  $a2c = ['requirementsEnabled' = 0, 
+          'testPriorityEnabled' = 0, 
+          'automationEnabled' = 0];
+  $guiObj->projectOptions = (object) $a2c;
+}
+*/
+
+/**
+ *
+ */
 function initIntegrations(&$tprojSet,$tprojQty,&$tplEngine) {
   $labels = init_labels(array('active_integration' => null, 
                               'inactive_integration' => null));

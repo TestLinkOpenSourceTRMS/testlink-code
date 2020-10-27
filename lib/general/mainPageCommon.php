@@ -102,8 +102,8 @@ function initArgs(&$dbH) {
                    "tplan_id" => array(tlInputParameter::INT_N),
                    "caller" => array(tlInputParameter::STRING_N,1,6),
                    "viewer" => array(tlInputParameter::STRING_N, 0, 3),
-                  "activeMenu" => array(tlInputParameter::STRING_N,6,20)
-                  );
+                   "activeMenu" => array(tlInputParameter::STRING_N,6,20),
+                   "projectView" => array(tlInputParameter::INT_N));
   $args = new stdClass();
   $pParams = G_PARAMS($iParams,$args);
 

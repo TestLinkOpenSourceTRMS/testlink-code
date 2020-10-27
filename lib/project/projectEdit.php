@@ -25,7 +25,6 @@ testlinkInitPage($db,true,false,"checkRights");
 
 
 // OK, user has the rights to proceed
-$gui_cfg = config_get('gui');
 $templateCfg = templateConfiguration();
 
 $template = null;
@@ -663,6 +662,8 @@ function initializeGui(&$dbHandler,$argsObj,&$tprojMgr) {
   foreach($add2guiObj as $prop => $value) {
     $guiObj->$prop = $value;
   }
+
+  $guiObj->gui_cfg = config_get('gui');
 
   $guiObj->user_feedback = '';
   $guiObj->activeMenu['projects'] = 'active';

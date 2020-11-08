@@ -153,8 +153,6 @@ function jsCallDeleteFile(btn, text, o_id) {
          title="{$labels.actions}" />
 
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
-
-EDEDEDED
     {include file="testcases/tcView_viewer.tpl" 
 
              args_tcase_is_artifact=$gui->currentVersionIsArtifact

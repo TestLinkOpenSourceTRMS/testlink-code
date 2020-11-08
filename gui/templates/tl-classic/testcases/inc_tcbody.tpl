@@ -26,58 +26,57 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   {$displayPreconditions = false}
 {/if}
 
-<div class="mainAttrContainer"> 
-  <div class="summaryCONTAINER">
-    {if $inc_tcbody_cf.before_summary neq ''}
-      <div id="cf_before_summary"
-            class="custom_field_container">
-        {$inc_tcbody_cf.before_summary}
-      </div>
-      <br>
-    {/if}
-    {if $displaySummary}    
-      <div class="labelHolder">{$inc_tcbody_labels.summary}</div>
-      <div>{if $inc_tcbody_editor_type == 'none'}{$tco.summary|nl2br}{else}{$tco.summary}{/if}</div>
-    {/if}
-    {if $inc_tcbody_cf.after_summary neq ''}
-      <br>
-      <div id="cf_after_summary"
-            class="custom_field_container">
-        {$inc_tcbody_cf.after_summary}
-      </div>
-    {/if}
-  </div>
 
-  <div class="spaceOne" style="margin-top:35px;"></div>
-
-  <div class="preconditionsCONTAINER">
-    {if $inc_tcbody_cf.before_preconditions neq ''}
-      <div id="cf_before_preconditions"
-            class="custom_field_container">
-        {$inc_tcbody_cf.before_preconditions}
-      </div>
-      <br>
-    {/if}
-    {if $displayPreconditions}
-      <div class="labelHolder">{$inc_tcbody_labels.preconditions}</div>
-      <div>{if $inc_tcbody_editor_type == 'none'}{$tco.preconditions|nl2br}{else}{$tco.preconditions}{/if}</div>
-    {/if}
-    {if $inc_tcbody_cf.after_summary neq ''}
-      <br>
-      <div id="cf_after_preconditions"
-            class="custom_field_container">
-        {$inc_tcbody_cf.after_preconditions}
-      </div>
-    {/if}
-  </div>
-  
-  {if $inc_tcbody_cf.before_steps_results neq ''}
-    <div class="CFBeforeStepsCONTAINER">
-      <div class="custom_field_container">
-        {$inc_tcbody_cf.before_steps_results}
-      </div>
+{if $inc_tcbody_args_tcase_is_artifact == false}
+  <div class="mainAttrContainer"> 
+    <div class="summaryCONTAINER">
+      {if $inc_tcbody_cf.before_summary neq ''}
+        <div id="cf_before_summary"
+              class="custom_field_container">
+          {$inc_tcbody_cf.before_summary}
+        </div>
+        <br>
+      {/if}
+      {if $displaySummary}    
+        <div class="labelHolder">{$inc_tcbody_labels.summary}</div>
+        <div>{if $inc_tcbody_editor_type == 'none'}{$tco.summary|nl2br}{else}{$tco.summary}{/if}</div>
+      {/if}
+      {if $inc_tcbody_cf.after_summary neq ''}
+        <br>
+        <div id="cf_after_summary"
+              class="custom_field_container">
+          {$inc_tcbody_cf.after_summary}
+        </div>
+      {/if}
     </div>
-  {/if}
-
-</div>
-<hr>
+    <div class="spaceOne" style="margin-top:35px;"></div>
+    <div class="preconditionsCONTAINER">
+      {if $inc_tcbody_cf.before_preconditions neq ''}
+        <div id="cf_before_preconditions"
+              class="custom_field_container">
+          {$inc_tcbody_cf.before_preconditions}
+        </div>
+        <br>
+      {/if}
+      {if $displayPreconditions}
+        <div class="labelHolder">{$inc_tcbody_labels.preconditions}</div>
+        <div>{if $inc_tcbody_editor_type == 'none'}{$tco.preconditions|nl2br}{else}{$tco.preconditions}{/if}</div>
+      {/if}
+      {if $inc_tcbody_cf.after_summary neq ''}
+        <br>
+        <div id="cf_after_preconditions"
+              class="custom_field_container">
+          {$inc_tcbody_cf.after_preconditions}
+        </div>
+      {/if}
+    </div>
+    {if $inc_tcbody_cf.before_steps_results neq ''}
+      <div class="CFBeforeStepsCONTAINER">
+        <div class="custom_field_container">
+          {$inc_tcbody_cf.before_steps_results}
+        </div>
+      </div>
+    {/if}
+  </div>
+  <hr>
+{/if}

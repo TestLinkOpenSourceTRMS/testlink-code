@@ -136,7 +136,7 @@ viewer for test case in test specification
     {/if}
 
     {if 'editOnExec' != $gui->show_mode && $args_hide_relations == "yes"}
-    	{$show_relations=0}
+    	  {$show_relations=0}
     {/if}
 
     <div style="display:{$tlCfg->gui->op_area_display->test_case};" 
@@ -186,7 +186,7 @@ viewer for test case in test specification
         </form> <!-- id="topControls" -->
       
       	{* bulk action *}
-      	{if $edit_enabled && $args_bulk_action=="yes"}
+      	{if $edit_enabled && $args_bulk_action=="yes" && $args_tcase_is_artifact==false}
       	  <form style="display: inline;" id="tcbulkact" name="tcbulkact" 
       			method="post" action="{$bulkOpAction}" >
       		<input type="hidden" name="tcase_id" id="tcase_id" value="{$args_testcase.testcase_id}" />
@@ -196,7 +196,7 @@ viewer for test case in test specification
       	
       	{* compare versions *}
       	<span>
-      	  {if $args_testcase.version > 1}
+      	  {if $args_testcase.version > 1 && $args_tcase_is_artifact==false}
         		<form style="display: inline;" id="version_compare" 
                   name="version_compare" method="post" 
                   action="{$basehref}lib/testcases/tcCompareVersions.php">
@@ -207,10 +207,12 @@ viewer for test case in test specification
       	</span>
 
         {* execution history *}
-      	<span>
-            <input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id},1);"
-                 value="{$tcView_viewer_labels.btn_show_exec_history}" />
-        </span>
+        {if $args_tcase_is_artifact==false}
+        	<span>
+              <input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id},1);"
+                   value="{$tcView_viewer_labels.btn_show_exec_history}" />
+          </span>
+        {/if}
       </fieldset>
     {/if}
     {* End of TC Section *}
@@ -263,7 +265,8 @@ viewer for test case in test specification
           {* activate/desactivate TC version *}
           {if $args_can_do->edit == "yes" 
               && $args_can_do->deactivate=='yes' 
-              && $args_frozen_version=="no"}
+              && $args_frozen_version=="no"
+              && $args_tcase_is_artifact==false}
 
               {$act_deact_btn="activate_this_tcversion"}
               {$act_deact_value="activate_this_tcversion"}
@@ -285,7 +288,8 @@ viewer for test case in test specification
         	{* freeze/unfreeze TC version *}
         	{if 'editOnExec' != $gui->show_mode 
               && $args_read_only != "yes" 
-              && $args_can_do->freeze=='yes'}
+              && $args_can_do->freeze=='yes'
+              && $args_tcase_is_artifact==false}
         		  {if $args_frozen_version=="yes"}
         			  {$freeze_btn="unfreeze"}
         			  {$freeze_value="unfreeze_this_tcversion"}
@@ -315,7 +319,7 @@ viewer for test case in test specification
         $args_tcversion_operation_only_edit_button == "no"}
         
         {* add TC version to testplan *}
-        {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
+        {if $args_can_do->add2tplan == "yes" && $args_has_testplans && $args_tcase_is_artifact==false}
         	<span>
         	  <form style="display: inline;" id="addToTestPlans" name="addToTestPlans" method="post" action="">
         		<input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
@@ -433,6 +437,7 @@ viewer for test case in test specification
 
   <div class="workBack">
     {include file="{$tplConfig.inc_tcbody}" 
+             inc_tcbody_args_tcase_is_artifact=$args_tcase_is_artifact
              inc_tcbody_close_table=false
              inc_tcbody_testcase=$args_testcase
              inc_tcbody_show_title=$args_show_title
@@ -472,153 +477,165 @@ viewer for test case in test specification
   </div>
 </form>
 
+
 <div class="workBack">
-  {include file="{$tplConfig['attributesLinearForViewer.inc']}"} 
-
-{if $args_cf.standard_location neq ''}
-  <div {$addInfoDivStyle}>
-        <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>
-  </div>
-{/if}
-
-<p>
-<div {$addInfoDivStyle}>
-   {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
-            $has_been_executed == 0} 
-   
-   {if $args_frozen_version=="no" && $has_been_executed == 1 }
-     {if $args_tcase_cfg->can_edit_executed == 1 || 
-         $args_tcase_cfg->can_add_remove_kw_on_executed == 1}
-       {$kwRW = 1}
-     {/if}
-   {/if}
-   
-   {include file="{$tplConfig['keywords.inc']}" 
-            args_edit_enabled=$kwRW
-            args_tcase_id=$tcase_id
-            args_tcversion_id=$tcversion_id
-   } 
-</div>
-  
-<p>
-<div {$addInfoDivStyle}>
-   {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
-            $has_been_executed == 0} 
-   
-   {$platRW = 1}
-   {if $args_frozen_version=="yes"}
-     {$platRW = 0}
-   {/if}
-   {if $has_been_executed == 1 }
-      {$platRW = 0}
-     {if $args_tcase_cfg->can_edit_executed == 1}
-       {$platRW = 1}
-     {/if}
-   {/if}
-   
-   {include file="{$tplConfig['platforms.inc']}" 
-            args_edit_enabled=$platRW
-            args_tcase_id=$tcase_id
-            args_tcversion_id=$tcversion_id
-   } 
-</div>
 
 
-{if $gui->requirementsEnabled == TRUE && 
-  ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
-  {$reqLinkingEnabled = 0}
-  {if $gui->req_tcase_link_management 
-      && $args_frozen_version == "no"
-      && $args_testcase.active == 1 
-      && $edit_enabled == 1 }
-         {$reqLinkingEnabled = 1}
-  {/if}    
-
-  {if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 
-      && $has_been_executed == 1 
-      && $args_tcase_cfg->can_edit_executed == 0}
-       {$reqLinkingEnabled = 0}
+  {if $args_tcase_is_artifact == false}  
+    {include file="{$tplConfig['attributesLinearForViewer.inc']}"} 
   {/if}
-  <div {$addInfoDivStyle}>
-    <table cellpadding="0" cellspacing="0" style="font-size:100%;">
-      <tr>
-        <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
-               target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
 
-              {if $reqLinkingEnabled && $args_testcase.isTheLatest == 1}
-                <img class="clickable" src="{$tlImages.item_link}"
-                     onclick="javascript:openReqWindow({$args_testcase.testcase_id},'a');"
-                     title="{$tcView_viewer_labels.link_unlink_requirements}" />
-              {/if}
-              : &nbsp;</span>
-        </td>
-        <td>
-              {section name=item loop=$args_reqs}
-                {$reqID=$args_reqs[item].id}
-                {$reqVersionID=$args_reqs[item].req_version_id}
-                {$reqVersionNum=$args_reqs[item].version}
-                
-                
-                <img class="clickable" src="{$tlImages.edit}"
-                     onclick="javascript:openLinkedReqVersionWindow({$reqID},{$reqVersionID});"
-                     title="{$tcView_viewer_labels.requirement}" />
-                {$openC}{$args_reqs[item].req_spec_title|escape}{$closeC}
-                {$args_reqs[item].req_doc_id|escape}&nbsp{$openC}{$tcView_viewer_labels.version_short}{$reqVersionNum}{$closeC}{$sepC}{$args_reqs[item].title|escape}
-                {if !$smarty.section.item.last}<br />{/if}
-              {sectionelse}
-                {$tcView_viewer_labels.none}
-              {/section}
-        </td>
-      </tr>
-    </table>
-  </div>
-{/if}
+  {if $args_cf.standard_location neq ''}
+    <div {$addInfoDivStyle}>
+          <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>
+    </div>
+  {/if}
 
-{if $gui->codeTrackerEnabled}
-  <br>
+
+
+  <p>
   <div {$addInfoDivStyle}>
-    <table cellpadding="0" cellspacing="0" style="font-size:100%;">
-      <tr>
-        <td colspan="{$tableColspan}" style="vertical-align:text-top;">
-          <span><a title="{$tcView_viewer_labels.code_mgmt}" href="{$gui->cts->cfg->uriview}"
-               target="_blank" class="bold">{$tcView_viewer_labels.code_mgmt}</a><b>: &nbsp;</b>
-            <a href="javascript:open_script_add_window({$gui->tproject_id},null,{$tcversion_id},'link')">
-            <img src="{$tlImages.new_f2_16}" title="{$tcView_viewer_labels.code_link_tl_to_cts}" style="border:none" /></a>
-              &nbsp;
-          </span>
-        </td>
-      </tr>
-      {* TestScript Links (if any) *}
-      {if isset($gui->scripts[$tcversion_id]) && !is_null($gui->scripts[$tcversion_id])}
-        <tr style="background-color: #d0d0d0">
-          {include file="{$tplConfig.inc_show_scripts_table}"
-           scripts_map=$gui->scripts[$tcversion_id]
-           can_delete=true
-           tcase_id=$tcversion_id
-           tproject_id=$tproject_id
-          }
-        </tr>
-      {/if}
-    </table>
+     {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
+              $has_been_executed == 0} 
+     
+     {if $args_frozen_version=="no" && $has_been_executed == 1 }
+       {if $args_tcase_cfg->can_edit_executed == 1 || 
+           $args_tcase_cfg->can_add_remove_kw_on_executed == 1}
+         {$kwRW = 1}
+       {/if}
+     {/if}
+     
+     {include file="{$tplConfig['keywords.inc']}" 
+              args_edit_enabled=$kwRW
+              args_tcase_id=$tcase_id
+              args_tcversion_id=$tcversion_id
+     } 
   </div>
-{/if}
   
-{if $show_relations}
-  <br />
-  {include file="{$tplConfig['relations.inc']}"
-           args_is_latest_tcv = $args_testcase.isTheLatest
-           args_relations = $args_relations
-           args_frozen_version = $args_frozen_version
-           args_edit_enabled = $edit_enabled} 
-{/if}
+  <p>
+  <div {$addInfoDivStyle}>
+     {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
+              $has_been_executed == 0} 
+     
+     {$platRW = 1}
+     {if $args_frozen_version=="yes"}
+       {$platRW = 0}
+     {/if}
+     {if $has_been_executed == 1 }
+        {$platRW = 0}
+       {if $args_tcase_cfg->can_edit_executed == 1}
+         {$platRW = 1}
+       {/if}
+     {/if}
+     
+     {include file="{$tplConfig['platforms.inc']}" 
+              args_edit_enabled=$platRW
+              args_tcase_id=$tcase_id
+              args_tcversion_id=$tcversion_id
+     } 
+  </div>
 
-{if 'editOnExec' != $gui->show_mode && 
-  $args_linked_versions != null && $tlCfg->spec_cfg->show_tplan_usage}
-  {* Test Case version Test Plan Assignment *}
-  <br />
-  {include file="{$tplConfig['quickexec.inc']}"
-           args_edit_enabled=$edit_enabled} 
-{/if}
+
+  {if $gui->requirementsEnabled == TRUE && 
+    ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
+    {$reqLinkingEnabled = 0}
+    {if $gui->req_tcase_link_management 
+        && $args_frozen_version == "no"
+        && $args_testcase.active == 1 
+        && $edit_enabled == 1 }
+           {$reqLinkingEnabled = 1}
+    {/if}    
+
+    {if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 
+        && $has_been_executed == 1 
+        && $args_tcase_cfg->can_edit_executed == 0}
+         {$reqLinkingEnabled = 0}
+    {/if}
+
+    {if $args_tcase_is_artifact == false}
+      <div {$addInfoDivStyle}>
+      <table cellpadding="0" cellspacing="0" style="font-size:100%;">
+        <tr>
+          <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
+                 target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
+
+                {if $reqLinkingEnabled && $args_testcase.isTheLatest == 1}
+                  <img class="clickable" src="{$tlImages.item_link}"
+                       onclick="javascript:openReqWindow({$args_testcase.testcase_id},'a');"
+                       title="{$tcView_viewer_labels.link_unlink_requirements}" />
+                {/if}
+                : &nbsp;</span>
+          </td>
+          <td>
+                {section name=item loop=$args_reqs}
+                  {$reqID=$args_reqs[item].id}
+                  {$reqVersionID=$args_reqs[item].req_version_id}
+                  {$reqVersionNum=$args_reqs[item].version}
+                  
+                  
+                  <img class="clickable" src="{$tlImages.edit}"
+                       onclick="javascript:openLinkedReqVersionWindow({$reqID},{$reqVersionID});"
+                       title="{$tcView_viewer_labels.requirement}" />
+                  {$openC}{$args_reqs[item].req_spec_title|escape}{$closeC}
+                  {$args_reqs[item].req_doc_id|escape}&nbsp{$openC}{$tcView_viewer_labels.version_short}{$reqVersionNum}{$closeC}{$sepC}{$args_reqs[item].title|escape}
+                  {if !$smarty.section.item.last}<br />{/if}
+                {sectionelse}
+                  {$tcView_viewer_labels.none}
+                {/section}
+          </td>
+        </tr>
+      </table>
+      </div>
+    {/if}
+  {/if}
+
+  {if $gui->codeTrackerEnabled && $args_tcase_is_artifact == false}
+    <br>
+    <div {$addInfoDivStyle}>
+      <table cellpadding="0" cellspacing="0" style="font-size:100%;">
+        <tr>
+          <td colspan="{$tableColspan}" style="vertical-align:text-top;">
+            <span><a title="{$tcView_viewer_labels.code_mgmt}" href="{$gui->cts->cfg->uriview}"
+                 target="_blank" class="bold">{$tcView_viewer_labels.code_mgmt}</a><b>: &nbsp;</b>
+              <a href="javascript:open_script_add_window({$gui->tproject_id},null,{$tcversion_id},'link')">
+              <img src="{$tlImages.new_f2_16}" title="{$tcView_viewer_labels.code_link_tl_to_cts}" style="border:none" /></a>
+                &nbsp;
+            </span>
+          </td>
+        </tr>
+        {* TestScript Links (if any) *}
+        {if isset($gui->scripts[$tcversion_id]) && !is_null($gui->scripts[$tcversion_id])}
+          <tr style="background-color: #d0d0d0">
+            {include file="{$tplConfig.inc_show_scripts_table}"
+             scripts_map=$gui->scripts[$tcversion_id]
+             can_delete=true
+             tcase_id=$tcversion_id
+             tproject_id=$tproject_id
+            }
+          </tr>
+        {/if}
+      </table>
+    </div>
+  {/if}
+    
+  {if $show_relations && $args_tcase_is_artifact == false}
+    <br />
+    {include file="{$tplConfig['relations.inc']}"
+             args_is_latest_tcv = $args_testcase.isTheLatest
+             args_relations = $args_relations
+             args_frozen_version = $args_frozen_version
+             args_edit_enabled = $edit_enabled} 
+  {/if}
+
+  {if 'editOnExec' != $gui->show_mode && 
+    $args_linked_versions != null && 
+    $tlCfg->spec_cfg->show_tplan_usage &&
+    $args_tcase_is_artifact == false}
+    {* Test Case version Test Plan Assignment *}
+    <br />
+    {include file="{$tplConfig['quickexec.inc']}"
+             args_edit_enabled=$edit_enabled} 
+  {/if}
 
 </div>
 

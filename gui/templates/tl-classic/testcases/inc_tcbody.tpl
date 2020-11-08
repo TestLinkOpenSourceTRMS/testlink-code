@@ -15,6 +15,17 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   </div  
 {/if}
 
+
+{$displaySummary = true}
+{if $tlCfg->testcase_cfg->viewerHideEmptyFields->summary == true && trim($tco.summary) == ''}
+  {$displaySummary = false}
+{/if}
+
+{$displayPreconditions = true}
+{if $tlCfg->testcase_cfg->viewerHideEmptyFields->preconditions == true && trim($tco.preconditions) == ''}
+  {$displayPreconditions = false}
+{/if}
+
 <div class="mainAttrContainer"> 
   <div class="summaryCONTAINER">
     {if $inc_tcbody_cf.before_summary neq ''}
@@ -24,9 +35,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       </div>
       <br>
     {/if}
-    <div class="labelHolder">{$inc_tcbody_labels.summary}</div>
-    <div>{if $inc_tcbody_editor_type == 'none'}{$tco.summary|nl2br}{else}{$tco.summary}{/if}</div>
-
+    {if $displaySummary}    
+      <div class="labelHolder">{$inc_tcbody_labels.summary}</div>
+      <div>{if $inc_tcbody_editor_type == 'none'}{$tco.summary|nl2br}{else}{$tco.summary}{/if}</div>
+    {/if}
     {if $inc_tcbody_cf.after_summary neq ''}
       <br>
       <div id="cf_after_summary"
@@ -46,8 +58,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       </div>
       <br>
     {/if}
-    <div class="labelHolder">{$inc_tcbody_labels.preconditions}</div>
-    <div>{if $inc_tcbody_editor_type == 'none'}{$tco.preconditions|nl2br}{else}{$tco.preconditions}{/if}</div>
+    {if $displayPreconditions}
+      <div class="labelHolder">{$inc_tcbody_labels.preconditions}</div>
+      <div>{if $inc_tcbody_editor_type == 'none'}{$tco.preconditions|nl2br}{else}{$tco.preconditions}{/if}</div>
+    {/if}
     {if $inc_tcbody_cf.after_summary neq ''}
       <br>
       <div id="cf_after_preconditions"

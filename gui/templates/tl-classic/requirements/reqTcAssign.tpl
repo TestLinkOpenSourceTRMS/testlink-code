@@ -241,7 +241,7 @@ function refreshAndClose(tcase_id,callback) {
 
 <script type="text/javascript">
 jQuery( document ).ready(function() {
-jQuery(".idSRS").chosen({ width: "10%", search_contains: true });
+jQuery(".idSRS").chosen({ width: "70%", search_contains: true });
 });
 </script>   
 </body>

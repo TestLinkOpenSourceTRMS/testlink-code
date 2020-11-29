@@ -218,7 +218,8 @@ class githubrestInterface extends issueTrackerInterface
       {
         $issue = new stdClass();
         $issue->IDHTMLString = "<b>{$issueID} : </b>";
-        $issue->id = $jsonObj->id;
+        $issue->id = $jsonObj->number;
+        $issue->web_url = $jsonObj->url;
         $issue->statusCode = (string)$jsonObj->state;
         $issue->statusVerbose = (string)$jsonObj->state;
         $issue->statusHTMLString = "[$issue->statusVerbose] ";
@@ -297,7 +298,7 @@ class githubrestInterface extends issueTrackerInterface
       if(is_null($op)){
         throw new Exception("Error creating issue", 1);
       }
-      $ret = array('status_ok' => true, 'id' => (string)$op->id, 
+      $ret = array('status_ok' => true, 'id' => (string)$op->number, 
                    'msg' => sprintf(lang_get('github_bug_created'),
                     $summary, $this->APIClient->repo));
      }

@@ -186,9 +186,23 @@ class github
   }
 
   /**
+   * Function to get the list of comment on the issue
    * 
-   *
    */
+  function getNotes($filters=null)
+  {
+    try
+    {
+      //return $this->get('/repos/'.rawurlencode($username).'/'.rawurlencode($repository).'/issues/'.$id);
+      $item = $this->_get("/repos/".$this->projectId."/issues/$issueID/comments");    
+      $ret = is_object($item) ? $item : null;
+      return $ret;
+    }
+    catch(Exception $e)
+    {
+      return null;
+    }
+  } 
   function getIssue($issueID)
   {
     try

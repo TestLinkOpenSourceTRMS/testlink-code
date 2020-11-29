@@ -223,7 +223,15 @@ class githubrestInterface extends issueTrackerInterface
         $issue->statusCode = (string)$jsonObj->state;
         $issue->statusVerbose = (string)$jsonObj->state;
         $issue->statusHTMLString = "[$issue->statusVerbose] ";
-        $issue->summary = $issue->summaryHTMLString = (string)$jsonObj->title;                    
+        $issue->summaryHTMLString = (string)$jsonObj->title.":</br>".(string)$jsonObj->body; 
+        $issue->summary =  (string)$jsonObj->title.":\n".(string)$jsonObj->body;
+        $Notes = json_decode($this->APIClient->getNotes((int)$issueID));
+        if(json_last_error() == JSON_ERROR_NONE && is_array($Notes) && count($Notes)>0){
+          foreach($Notes as $note){
+            $issue->summaryHTMLString .= "</br>[Note $note->id]:$note->body";
+            $issue->summary.="\n[Note $note->id]$note->body";
+          }
+        }
         $issue->isResolved = $this->state == 'closed'; 
       }
     }

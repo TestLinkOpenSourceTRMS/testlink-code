@@ -168,7 +168,7 @@ class githubrestInterface extends issueTrackerInterface
   	if($processCatch)
   	{
   		$logDetails = '';
-  		foreach(array('url','apikey', 'owner', 'repo') as $v)
+  		foreach(array('url', 'user', 'apikey', 'owner', 'repo') as $v)
   		{
   			$logDetails .= "$v={$this->cfg->$v} / "; 
   		}
@@ -219,17 +219,17 @@ class githubrestInterface extends issueTrackerInterface
         $issue = new stdClass();
         $issue->IDHTMLString = "<b>{$issueID} : </b>";
         $issue->id = $jsonObj->number;
-        $issue->web_url = $jsonObj->url;
+        $issue->url = $jsonObj->html_url;
         $issue->statusCode = (string)$jsonObj->state;
         $issue->statusVerbose = (string)$jsonObj->state;
         $issue->statusHTMLString = "[$issue->statusVerbose] ";
         $issue->summaryHTMLString = (string)$jsonObj->title.":</br>".(string)$jsonObj->body; 
         $issue->summary =  (string)$jsonObj->title.":\n".(string)$jsonObj->body;
-        $Notes = json_decode($this->APIClient->getNotes((int)$issueID));
-        if(json_last_error() == JSON_ERROR_NONE && is_array($Notes) && count($Notes)>0){
-          foreach($Notes as $note){
-            $issue->summaryHTMLString .= "</br>[Note $note->id]:$note->body";
-            $issue->summary.="\n[Note $note->id]$note->body";
+        $Notes = $this->APIClient->getNotes((int)$issueID);
+        if(is_array($Notes) && count($Notes)>0){
+          foreach($Notes as $key => $note){
+            $issue->summaryHTMLString .= "</br>[Note $key]:$note->body";
+            $issue->summary.= "\n[Note $key]$note->body";
           }
         }
         $issue->isResolved = $this->state == 'closed'; 

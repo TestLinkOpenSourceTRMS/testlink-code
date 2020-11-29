@@ -182,19 +182,19 @@ class github
   function getIssueURL($issueID)
   {
     $issue = $this->getIssue($issueID);
-    return is_object($issue) ? $issue->web_url : null;
+    return is_object($issue) ? $issue->html_url : null;
   }
   /**
    * Function to get the list of comment on the issue
    *
    */
-  function getNotes($filters=null)
+  function getNotes($issueID)
   {
     try
     {
       //return $this->get('/repos/'.rawurlencode($username).'/'.rawurlencode($repository).'/issues/'.$id);
-      $item = $this->_get("/repos/".$this->projectId."/issues/$issueID/comments");    
-      $ret = is_object($item) ? $item : null;
+      $item = $this->_get("/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo)."/issues/$issueID/comments");    
+      $ret = is_array($item) ? $item : null;
       return $ret;
     }
     catch(Exception $e)

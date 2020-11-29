@@ -32,6 +32,11 @@ class github
    * @var string 
    */
   public $apiKey = '';
+
+  /**
+   * @var string 
+   */
+  public $user = '';
   
   /**
    * Owner identifier
@@ -64,10 +69,10 @@ class github
    *
    * @return void
    */
-  public function __construct($url, $apiKey, $owner, $repo,  $cfg=null) 
+  public function __construct( $url, $user, $apiKey, $owner, $repo,  $cfg=null) 
   {
     // if the values are not empty, we'll assign them to our matching properties
-    $args = array('apiKey','url', 'owner', 'repo');
+    $args = array('user,', 'apiKey','url', 'owner', 'repo');
     foreach ($args as $arg) 
     {
       if (!empty($$arg)) 
@@ -227,21 +232,13 @@ class github
   /**
    *
    */
-  public function getRepos() 
+  public function getRepo() 
   {                        
-    $items = $this->_get("/repos");
+    $items = $this->_get("/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo));
     return $items;
   }                                                   
 
-  /**
-   * @param mixed $id: identifier => string
-   *                   id => int
-   */
-  public function getProjectByIdentity($id) 
-  {                        
-    $item = $this->_get("/repos".rawurlencode($this->owner)."/{$id}");
-    return $item;
-  }                                                   
+                                           
 
   /**
    *
@@ -311,12 +308,14 @@ class github
     curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
   
     $header = array();
-    $header[] = "PRIVATE-TOKEN: {$this->apiKey}";
+    //$header[] = "PRIVATE-TOKEN: {$this->apiKey}";
     $header[] = 'Accept: application/vnd.github.v3+json';
 
     curl_setopt($this->curl, CURLOPT_HEADER, 0); 
     curl_setopt($this->curl, CURLOPT_HTTPHEADER, $header); 
-
+    $userpwd = $this->user.':'.$this->apiKey;
+    curl_setopt($this->curl, CURLOPT_USERPWD, $userpwd);
+    curl_setopt($this->curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     switch ($method) 
     {
       case 'GET':

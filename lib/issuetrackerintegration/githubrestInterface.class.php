@@ -139,18 +139,19 @@ class githubrestInterface extends issueTrackerInterface
   	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
   	  // to cast properties BEFORE using it.
       $url = (string)trim($this->cfg->url);
+      $user = (string)trim($this->cfg->user);
       $apiKey = (string)trim($this->cfg->apikey);
       $repo = (string)trim($this->cfg->repo); //TODO: check integer value
       $owner = (string)trim($this->cfg->owner); //TODO: check integer value
       $pxy = new stdClass();
       $pxy->proxy = config_get('proxy');
-      $this->APIClient = new github($url,$apiKey, $owner, $repo, $pxy);
+      $this->APIClient = new github($url, $user, $apiKey, $owner, $repo, $pxy);
 
       // to undestand if connection is OK, I will ask for projects.
       // I've tried to ask for users but get always ERROR from github (not able to understand why).
       try
       {
-        $items = $this->APIClient->getRepos();
+        $items = $this->APIClient->getRepo();
         $this->connected = count($items) > 0 ? true : false;
         unset($items);
       }
@@ -335,8 +336,9 @@ class githubrestInterface extends issueTrackerInterface
   {
     $tpl = "<!-- Template " . __CLASS__ . " -->\n" .
            "<issuetracker>\n" .
-           "<apikey>github API KEY</apikey>\n" .
-           "<url>https://github.mydomain.com</url>\n" .
+           "<apikey>github user</apikey>\n" .
+           "<apikey>github TOKEN</apikey>\n" .
+           "<url>https://api.github.com</url>\n" .
            "<owner>GitHub Org or User</owner>\n" .
            "<repo>github REPOSITORY</repo>\n" .
            "</issuetracker>\n";

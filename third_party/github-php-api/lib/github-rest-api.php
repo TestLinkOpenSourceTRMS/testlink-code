@@ -4,18 +4,16 @@
  *
  * Bare bones implementation, just to cover TestLink needs
  *
- * @author   jlguardi <jlguardi@gmail.com>
- * @created  20170630
- * @link     https://docs.github.com/ee/api/
+ * @author delcroip <delcroip@gmail:com> 
+ * file derived from GITlab integration done by jlguardi <jlguardi@gmail.com> 
+ * @created  202011
+ * @link     https://docs.github.com/en/rest/
  *
  * @internal revisions
- * @since 1.9.16
+ * @since 1.9.20-fixed
  */
 
-/* TO DO
 
-
-*/
 
 /**
  *

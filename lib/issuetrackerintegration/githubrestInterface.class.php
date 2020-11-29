@@ -3,10 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
  * @filesource	githubrestInterface.class.php
- * @author jlguardi <jlguardi@gmail.com>
+ * @author delcroip <delcroip@gmail:com> 
+ * file derived from GITlab integration done by jlguardi <jlguardi@gmail.com> 
  *
  * @internal revisions
- * @since 1.9.16
+ * @since 1.9.20-fixed
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/github-php-api/lib/github-rest-api.php");
@@ -229,7 +230,7 @@ class githubrestInterface extends issueTrackerInterface
         if(is_array($Notes) && count($Notes)>0){
           foreach($Notes as $key => $note){
             $issue->summaryHTMLString .= "</br>[Note $key]:$note->body";
-            $issue->summary.= "\n[Note $key]$note->body";
+            $issue->summary .= "\n[Note $key]: $note->body";
           }
         }
         $issue->isResolved = $this->state == 'closed'; 
@@ -339,13 +340,14 @@ class githubrestInterface extends issueTrackerInterface
 
   /**
    *
-   * @author francisco.mancardi@gmail.com>
+   * 
+   *    
    **/
   public static function getCfgTemplate()
   {
     $tpl = "<!-- Template " . __CLASS__ . " -->\n" .
            "<issuetracker>\n" .
-           "<apikey>github user</apikey>\n" .
+           "<user>github user</user>\n" .
            "<apikey>github TOKEN</apikey>\n" .
            "<url>https://api.github.com</url>\n" .
            "<owner>GitHub Org or User</owner>\n" .

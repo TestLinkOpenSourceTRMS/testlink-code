@@ -184,10 +184,9 @@ class github
     $issue = $this->getIssue($issueID);
     return is_object($issue) ? $issue->web_url : null;
   }
-
   /**
    * Function to get the list of comment on the issue
-   * 
+   *
    */
   function getNotes($filters=null)
   {
@@ -208,7 +207,7 @@ class github
     try
     {
       //return $this->get('/repos/'.rawurlencode($username).'/'.rawurlencode($repository).'/issues/'.$id);
-      $item = $this->_get("/repos/".$this->projectId."/issues/$issueID");    
+      $item = $this->_get("/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo)."/issues/$issueID");
       $ret = is_object($item) ? $item : null;
       return $ret;
     }
@@ -216,38 +215,40 @@ class github
     {
       return null;
     }
-  } 
+  }
 
   /**
-   * 
+   *
    *
    */
   function getIssues($filters=null)
   {
     $items = $this->_get("/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo)."/issues");
     return $items;
-  } 
+  }
 
   // with the help of http://tspycher.com/2011/03/using-the-redmine-api-with-php/
   // public function addIssue($summary, $description)
   public function addIssue($title, $text)
   {
-    $url =  "/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo)."/issues?title=".urlencode($title)."&description=".urlencode($text);
-    $op = $this->_request_json('POST',$url);
+    $url =  "/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo)."/issues";
+    $data = array("title"=>urlencode($title),"body" => urlencode($text), "label" => array("testlink"));
+    $op = $this->_request_json('POST',$url, json_encode($data));
     return $op;
   }
 
   public function addNote($issueID, $noteText)
   {
-    $url = "/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo)."/issues/".$issueID."/comments?body=".urlencode($noteText);
-    $op = $this->_request_json('POST',$url);
+    $url = "/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo)."/issues/$issueID/comments";
+    $data = array("body" => urlencode($noteText));
+    $op = $this->_request_json('POST',$url,  json_encode($data));
     return $op;
   }
   /**
    *
    */
-  public function getRepo() 
-  {                        
+  public function getRepo()
+  {
     $items = $this->_get("/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo));
     return $items;
   }                                                   

@@ -232,7 +232,7 @@ class github
   public function addIssue($title, $text)
   {
     $url =  "/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo)."/issues";
-    $data = array("title"=>urlencode($title),"body" => urlencode($text), "label" => array("testlink"));
+    $data = array("title"=>$title,"body" => $text, "label" => array("testlink"));
     $op = $this->_request_json('POST',$url, json_encode($data));
     return $op;
   }
@@ -240,7 +240,7 @@ class github
   public function addNote($issueID, $noteText)
   {
     $url = "/repos/".rawurlencode($this->owner)."/".rawurlencode($this->repo)."/issues/$issueID/comments";
-    $data = array("body" => urlencode($noteText));
+    $data = array("body" => $noteText);
     $op = $this->_request_json('POST',$url,  json_encode($data));
     return $op;
   }

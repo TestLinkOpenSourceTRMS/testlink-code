@@ -803,7 +803,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   testplan_id int(10) unsigned NOT NULL DEFAULT '0',
   platform_id int(10) unsigned NOT NULL DEFAULT '0',
   being_exec_ts timestamp NOT NULL,
-  end_exec_ts timestamp NOT NULL,
+  end_exec_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   creation_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY udx1 (testplan_id,platform_id,creation_ts)

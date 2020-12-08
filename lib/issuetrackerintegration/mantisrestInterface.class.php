@@ -75,6 +75,14 @@ class mantisrestInterface extends issueTrackerInterface {
         $this->options[$name] = (string)$elem;     
       }
     } 
+
+    if( !property_exists($this->cfg,'userinteraction') ) {
+      $this->cfg->userinteraction = 0;
+    }
+
+    if( !property_exists($this->cfg,'createissueviaapi') ) {
+      $this->cfg->createissueviaapi = 0;
+    }
   }
 
 	/**

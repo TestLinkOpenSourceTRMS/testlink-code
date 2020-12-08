@@ -1455,7 +1455,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->issueSummaryForStep = null;
   $gui->addIssueOp = null;
   $gui->allowStepAttachments = true;
-  $gui->tlCanCreateIssue = !is_null($issueTracker) && method_exists($issueTracker,'addIssue');
+
+
   $gui->remoteExecFeedback = $gui->user_feedback = '';
   $gui->tplan_id=$argsObj->tplan_id;
   $gui->tproject_id=$argsObj->tproject_id;
@@ -1587,44 +1588,59 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->platform_div_title = lang_get('platform') . ' ' . $gui->platform_info['name'];
     
 
-  $gui->issueTrackerIntegrationOn = $gui->tlCanCreateIssue = $gui->tlCanAddIssueNote = false;
-  
   $gui->node_id = $argsObj->id;
   $gui->draw_save_and_exit = ($argsObj->caller == 'tcAssignedToMe');
 
+  // ------------------------------------------------------------------------------------- 
+  // Issue Tracker Integration
+  $issueTrackerExists = !is_null($issueTracker); 
+  $gui->tlCanCreateIssue = false;
+  $gui->tlCanAddIssueNote = false; 
+  $gui->issueTrackerIntegrationOn = false;
+  if ($issueTrackerExists) {
+    $gui->tlCanCreateIssue = method_exists($issueTracker,'addIssue') &&
+                             $issueTracker->canCreateViaAPI();
+    $gui->tlCanAddIssueNote = method_exists($issueTracker,'addNote') &&
+                              $issueTracker->canAddNoteViaAPI();
+  }
+  
   $gui->bug_summary = '';  
   $gui->issueTrackerCfg = new stdClass(); 
   $gui->issueTrackerCfg->bugSummaryMaxLength = 100;  // MAGIC I'm sorry
   $gui->issueTrackerCfg->editIssueAttr = false;
+  $gui->issueTrackerCfg->crudIssueViaAPI = false;
 
+  $gui->issueTrackerMetaData = null;
   $issueTrackerUpAndRunning = 0;
-  if(!is_null($issueTracker)) {    
-    if( $issueTracker->isConnected() ) {
+  if($issueTrackerExists) {    
+    if ( $issueTracker->isConnected() ) {
       $issueTrackerUpAndRunning = 1;
-      $itsCfg = $issueTracker->getCfg();
 
+      $itsCfg = $issueTracker->getCfg();
       $gui->issueTrackerCfg->bugSummaryMaxLength = $issueTracker->getBugSummaryMaxLength();
-      $gui->issueTrackerCfg->editIssueAttr = intval($itsCfg->userinteraction);
+      $gui->issueTrackerCfg->editIssueAttr = (intval($itsCfg->userinteraction) > 0);
+      $gui->issueTrackerCfg->crudIssueViaAPI = (intval($itsCfg->createissueviaapi) > 0);
 
       $gui->issueTrackerIntegrationOn = true;
       $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . 
                                    "({$argsObj->itsCfg['issuetracker_name']})"; 
-
       $gui->createIssueURL = $issueTracker->getEnterBugURL();
-      $gui->tlCanCreateIssue = method_exists($issueTracker,'addIssue') && 
-                               $issueTracker->canCreateViaAPI();
+      
+      if ($gui->issueTrackerCfg->crudIssueViaAPI) {
+        // get metadata
+        $gui->issueTrackerMetaData = getIssueTrackerMetaData($issueTracker);
+        $gui->tlCanCreateIssue = method_exists($issueTracker,'addIssue') && 
+                                 $issueTracker->canCreateViaAPI();
 
-      $gui->tlCanAddIssueNote = method_exists($issueTracker,'addNote');
+        $gui->tlCanAddIssueNote = method_exists($issueTracker,'addNote') &&
+                                  $issueTracker->canAddNoteViaAPI();
+      }
+
     } else {
       $gui->user_feedback = lang_get('issue_tracker_integration_problems');
     }
   }
   
-  // get matadata
-
-  $gui->issueTrackerMetaData = null;
-  $gui->issueTrackerMetaData = !is_null($issueTracker) ? 
-    getIssueTrackerMetaData($issueTracker) : null;
 
   if ($gui->issueTrackerCfg->editIssueAttr == 1) {
     $k2c = array('issueType','issuePriority','artifactVersion',
@@ -1644,7 +1660,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
         $gui->$attr = null;  
         if (property_exists($itsCfg, $kj)) {
           $gui->$attr = $itsCfg->$kj;
-        }    
+        } else {
+          /* Provide warning */
+          tLog("Issue Tracker Config Issue? - Attribute:$kj doesn't exist","WARNING");
+        }
         $forStep = $attr . 'ForStep';
         $gui->$forStep = $gui->$attr; 
       }  
@@ -1655,12 +1674,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
         $gui->$attr = null;  
         if (property_exists($itsCfg, $kj)) {
           $gui->$attr = (array)$itsCfg->$kj;  
+        } else {
+          /* Provide warning */
+          tLog("Issue Tracker Config Issue? - Attribute:$kj doesn't exist","WARNING");
         }
         $forStep = $attr . 'ForStep';
         $gui->$forStep = $gui->$attr; 
       }  
-
-      // something similar needs to be done for steps      
     }
   }
 

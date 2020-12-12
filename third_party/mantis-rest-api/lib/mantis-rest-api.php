@@ -142,127 +142,32 @@ class mantis {
    * 
    *
    */
-  public function addIssue($title, $descr, $opt=null) {
-
-    // Limit title length
-    $ellipsis = '...';
-    $safeTitle = $title;
-    $titleLen = strlen($title);
-    if( $titleLen > $this->summaryLengthLimit ) {
-      $safeTitle = $ellipsis . 
-        substr($title, -1*($this->summaryLengthLimit + strlen($ellipsis)));
-    }
-
-    $url = '/cards';
-    $body = [
-      'title' => $safeTitle,
-      'description' => $descr,
-      'board_id' => (int)$this->boardId,
-    ];
-
-    $options = array('int' => array(),'string' => array(),
-                     'bool' => array());
-
-    $options['bool'] = ['asap' => 'asap'];
-
-    $options['int'] = [
-      'columnid' => 'column_id',
-      'laneid' => 'lane_id',
-      'ownerid' => 'owner_id',
-      'typeid' => 'type_id',
-      'sortorder' => 'sort_order',
-      'position' => 'position'
-    ];
-
-    $options['string'] = [
-      'sizetext' => 'size_text', 
-      'businessvalue' => 'business_value'
-    ];
-
-    if( property_exists($this->cfg,'setcardowneremail') &&
-        $this->cfg->setcardowneremail ) {
-      $options['string']['reporter_email'] = 'owner_email';
-    }
-
-    foreach ($options as $optType => $elem) {
-      foreach ($elem as $key => $name) {
-        $doSetValue = false;
-        if( !empty($this->options[$key]) ) {
-          $value = $this->options[$key];
-          $doSetValue = true;
-        }
-        if( null != $opt && property_exists($opt,$key) && 
-            !empty( $opt->$key ) ) {
-          $value = $opt->$key;
-          $doSetValue = true;
-        }
-
-        if( $doSetValue == false ) {
-          continue;
-        }
-
-        switch($optType) {
-          case 'int':
-            $body[$name] = (int)$value;
-          break;
-
-          case 'string':
-            $body[$name] = (string)$value;
-          break;
-
-          case 'bool':
-            $body[$name] = (bool)$value;
-          break;
-        }
-      }
-    }
-
-    $op = $this->_request_json('POST',$url, $body);
-
-    return $op;
+  public function addIssue($title, $descr, $opt=null) 
+  {
   }
 
   /**
    * 
    *
    */
-  public function addNote($issueID, $noteText) {
-    $url = "/cards/{$issueID}/comments";
-    $body = [ 'text' => $noteText ];
-    $op = $this->_request_json('POST',$url,$body);
-    return $op;
+  public function addNote($issueID, $noteText) 
+  {
   }
   
   /**
    * 
    *
    */
-  function addExternalLinks($cardID, $links) {
-    $url = "/cards/{$cardID}/external-links";
-    $op = null;
-    foreach ($links as $link) {
-      $op = $this->_request_json('POST',$url,$link);
-      if (is_null($op)) {
-        break;
-      }
-    }
-    return $op;
+  function addExternalLinks($cardID, $links) 
+  {
   }
 
   /**
    * 
    *
    */
-  function addTags($cardID, $tags) {
-    $url = "/cards/{$cardID}/tags";
-    $op = null;
-    foreach ($tags as $tag) {
-      $op = $this->_request_json('POST',$url,$tag);
-      if (is_null($op)) {
-        break;
-      }
-    }
-    return $op;
+  function addTags($cardID, $tags) 
+  {
   }
 
   /**

@@ -5,7 +5,9 @@ use Slim\App;
 
 
 return function (App $app) {
-  $app->get('/',World::class . ':hello');
+
+  // @20201124 - I do not understand this
+  // $app->get('/',World::class . ':hello');
 
   // using array(), was the way in Slim3 and 
   // still seems valid

@@ -66,14 +66,25 @@ function displayITSCfgExample(oid,displayOID) {
 
 /**
  *
+ * naming convention
+ * displayOID: usedByEnvelope
+ *
  */
 function displayITSUsedBy(displayOID) {
   var HTMLTxt;
   var ztr;
+  var outer = document.getElementById('usedByOuter');
 
   HTMLTxt = document.getElementById(displayOID).innerText;
   ztr = HTMLTxt.trim();
+  
+  if (outer.style.display == 'none') {
+    outer.style.display = 'block';  
+  } else {
+    outer.style.display = 'none';    
+  }
 
+  
   // Toogle -> remove
   if (ztr.length > 0) {
     var skip = false;
@@ -103,6 +114,7 @@ function displayITSUsedBy(displayOID) {
   {/if}
   txt += "<div>";
   document.getElementById(displayOID).innerHTML = txt;  
+
 
 }
 
@@ -153,7 +165,7 @@ function displayITSUsedBy(displayOID) {
               <form class="form-horizontal style-form" name="edit" method="post" action="{$edit_url}"">
                 <div class="form-group">
                   <label for="name" class="{$cellLabel}">{$labels.th_issuetracker}</label>
-                  <a href="javascript:displayITSUsedBy('cfg_example')">
+                  <a href="javascript:displayITSUsedBy('usedByEnvelope')">
                       <i class="fas fa-info-circle" title="{$labels.show_hide_linked_to_project}"></i>
                   </a>
                   <div class="{$cellContent}">
@@ -162,6 +174,14 @@ function displayITSUsedBy(displayOID) {
                            maxlength="{#ISSUETRACKER_NAME_MAXLEN#}" 
                            value="{$gui->item.name|escape}" />
                   </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
+
+                <div class="form-group" 
+                     id="usedByOuter" style="padding-bottom:5px;marging-bottom:5px;display:none;">
+                  <label class="{$cellLabel}">&nbsp;</label>
+                  <div name="usedByEnvelope" id="usedByEnvelope" class="{$cellContent}">
+                    &nbsp;
+                  </div> <!-- cellContent -->        
                 </div> <!-- class="form-group" -->
 
 

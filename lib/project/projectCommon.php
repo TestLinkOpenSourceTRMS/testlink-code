@@ -7,7 +7,7 @@
  *
  * @package 	  TestLink
  * @author 		  TestLink community
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @filesource  projectCommon.php
  * @used-by     projectView.php 
  * @used-by     projectEdit.php 
@@ -19,9 +19,9 @@
 /**
  *
  */
-/*
 function initGuiForCreate(&$guiObj) 
 {
+/*
   $guiObj->canManage = 1;
   $guiObj->doAction = "create";  
   $guiObj->itemID = 0;
@@ -37,12 +37,11 @@ function initGuiForCreate(&$guiObj)
   $gui->tplan_id = 0;
   */
 
-  $a2c = ['requirementsEnabled' = 0, 
-          'testPriorityEnabled' = 0, 
-          'automationEnabled' = 0];
+  $a2c = ['requirementsEnabled' => 0, 
+          'testPriorityEnabled' => 0, 
+          'automationEnabled' => 0];
   $guiObj->projectOptions = (object) $a2c;
 }
-*/
 
 /**
  *

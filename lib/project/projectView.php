@@ -49,19 +49,7 @@ file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ .'$gui->
 if ($gui->itemQty == 0)  {
   $tpl2launch = "projectEdit.tpl"; 
   $tplDir = 'project/';
-  
-
-  $gui->gui_cfg = config_get('gui');
-
-  // $ff = initGuiForCreate($gui);
-  $gui->doAction = "create";  
-  $gui->itemID = 0;
-  $gui->found = "yes";
-  $gui->tprojectName = '';
-  $gui->tcasePrefix = '';
-  $gui->issue_tracker_enabled = 0;
-
-
+  initGuiForCreate($db,$args,$gui);
 } 
 
 file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ . ' I will launch > ' . $tplDir . $tpl2launch,FILE_APPEND);
@@ -74,7 +62,8 @@ $smarty->display($tplDir . $tpl2launch);
  * 
  *
  */
-function init_args() {
+function init_args() 
+{
   $_REQUEST = strings_stripSlashes($_REQUEST);
    
   list($args,$env) = initContext();
@@ -95,6 +84,8 @@ function init_args() {
     }  
   } 
 
+  $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null;
+
   return $args;  
 }
 
@@ -112,6 +103,8 @@ function initializeGui(&$dbHandler,&$argsObj) {
   $guiObj->doViewReload = $argsObj->doViewReload;
 
   $guiObj->canManage = $argsObj->user->hasRight($dbHandler,"mgt_modify_product");
+  $guiObj->mgt_view_events = $argsObj->user->hasRight($dbHandler,"mgt_view_events");
+  
   $guiObj->name = is_null($argsObj->name) ? '' : $argsObj->name;
   $guiObj->feedback = '';
   

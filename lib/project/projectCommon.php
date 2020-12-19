@@ -16,14 +16,17 @@
  */
 
 
+require_once("web_editor.php");
+
 /**
  *
+ * @used-by projectView.php
  */
-function initGuiForCreate(&$guiObj) 
+function initGuiForCreate(&$dbH,&$argsObj,&$guiObj) 
 {
-/*
-  $guiObj->canManage = 1;
-  $guiObj->doAction = "create";  
+  $guiObj->canManage = "yes";
+  $guiObj->doActionValue = "doCreate";
+    
   $guiObj->itemID = 0;
   $guiObj->found = "yes";
   $guiObj->tprojectName = '';
@@ -31,16 +34,39 @@ function initGuiForCreate(&$guiObj)
   $guiObj->issue_tracker_enabled = 0;
   $guiObj->active = 1;
   $guiObj->is_public = 1;
+  $guiObj->api_key = '';
+  $guiObj->testprojects = '';
   
-  /*
-  $gui->tproject_id = 0;
-  $gui->tplan_id = 0;
-  */
+  $guiObj->buttonValue = lang_get('btn_create');
+  $guiObj->caption = lang_get('caption_new_tproject');
+
 
   $a2c = ['requirementsEnabled' => 0, 
-          'testPriorityEnabled' => 0, 
-          'automationEnabled' => 0];
+          'testPriorityEnabled' => 1, 
+          'automationEnabled' => 1];
   $guiObj->projectOptions = (object) $a2c;
+
+  $guiObj->editorCfg = getWebEditorCfg('testproject');
+  $guiObj->editorType = $guiObj->editorCfg['type'];    
+
+  require_once(require_web_editor($guiObj->editorType));
+  $guiObj->of = web_editor('notes',$_SESSION['basehref'],$guiObj->editorCfg) ;
+  $guiObj->of->Value = getItemTemplateContents('project_template', $guiObj->of->InstanceName,'');
+  $guiObj->notes = $guiObj->of->CreateHTML();
+
+
+  $guiObj->issue_tracker_id = 0;
+  $guiObj->code_tracker_id = 0;
+
+  $ent2loop = array('tlIssueTracker' => 'issueTrackers', 
+                    'tlCodeTracker' => 'codeTrackers');
+  
+  foreach($ent2loop as $cl => $pr) {
+    $mgr = new $cl($dbH);
+    $guiObj->$pr = $mgr->getAll();
+    unset($mgr);
+  }
+
 }
 
 /**

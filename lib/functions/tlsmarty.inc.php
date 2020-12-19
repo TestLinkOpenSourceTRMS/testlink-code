@@ -363,7 +363,8 @@ class TLSmarty extends Smarty {
   /**
    *
    */
-  static function getImageSet() {
+  static function getImageSet() 
+  {
     $burl = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
     $imgLoc = $burl . TL_THEME_IMG_DIR;
 
@@ -494,7 +495,8 @@ class TLSmarty extends Smarty {
   /**
    *
    */
-  static function getIMGTagsSet() {
+  static function getIMGTagsSet() 
+  {
     $burl = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
     $imgLoc = $burl . TL_THEME_IMG_DIR;
  

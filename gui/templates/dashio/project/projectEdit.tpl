@@ -29,10 +29,6 @@
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
 
-{if $gui->gui_cfg->testproject_coloring neq 'none'}
-  {include file="inc_jsPicker.tpl"}
-{/if}
-
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_tcase_prefix = "{$labels.warning_empty_tcase_prefix|escape:'javascript'}";
@@ -88,7 +84,7 @@ manageTracker('code_tracker_id','code_tracker_enabled');">
 <div id="main-content">
 <h1 class="{#TITLE_CLASS#}">
   {$gui->pageTitle|escape} 
-  {if $mgt_view_events eq "yes" and $gui->itemID}
+  {if $gui->mgt_view_events eq "yes" and $gui->itemID}
     <img style="margin-left:5px;" class="clickable" src="{$tlImages.help}" 
            onclick="showEventHistoryFor('{$gui->itemID}','testprojects')" 
            alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
@@ -132,34 +128,18 @@ manageTracker('code_tracker_id','code_tracker_enabled');">
         <td {$tdStyle}>{$labels.name} *</td>
         <td><input type="text" id="tprojectName" name="tprojectName" size="{#TESTPROJECT_NAME_SIZE#}"
             value="{$gui->tprojectName|escape}" maxlength="{#TESTPROJECT_NAME_MAXLEN#}" required />
-            {include file="error_icon.tpl" field="tprojectName"}
         </td>
       </tr>
       <tr>
         <td {$tdStyle}>{$labels.testproject_prefix} *</td>
         <td><input type="text" id="tcasePrefix" name="tcasePrefix" size="{#TESTCASE_PREFIX_SIZE#}"
                    value="{$gui->tcasePrefix|escape}" maxlength="{#TESTCASE_PREFIX_MAXLEN#}" required />
-            {include file="error_icon.tpl" field="tcasePrefix"}
         </td>
       </tr>
       <tr>
         <td {$tdStyle}>{$labels.testproject_description}</td>
-        <td style="width:80%">{$notes}</td>
+        <td style="width:80%">{$gui->notes}</td>
       </tr>
-      {if $gui->gui_cfg->testproject_coloring neq 'none'}
-      <tr>
-        <th style="background:none;">{$labels.testproject_color}</th>
-        <td {$tdStyle}>
-          <input type="text" id="color" name="color" value="{$color|escape}" maxlength="12" />
-          {* this function below calls the color picker javascript function.
-          It can be found in the color directory *}
-          <a href="javascript: TCP.popup(document.forms['edit_testproject'].elements['color'], '{$basehref}third_party/color_picker/picker.html');">
-            <img width="15" height="13" border="0" alt="{$labels.testproject_alt_color}"
-            src="third_party/color_picker/img/sel.gif" />
-          </a>
-        </td>
-      </tr>
-      {/if}
       <tr>
         <td {$tdStyle}>{$labels.testproject_features}</td><td></td>
       </tr>
@@ -284,10 +264,10 @@ manageTracker('code_tracker_id','code_tracker_enabled');">
       <tr><td cols="2" {$tdStyle}>
         {if $gui->canManage == "yes"}
         <div class="groupBtn">
-          <input type="hidden" name="doAction" value="{$doActionValue}" />
+          <input type="hidden" name="doAction" value="{$gui->doActionValue}" />
           <input class="{#BUTTON_CLASS#}" type="submit"
                  name="doActionButton" id="doActionButton"
-                 value="{$buttonValue}" />
+                 value="{$gui->buttonValue}" />
                  
           <input class="{#BUTTON_CLASS#}" type="button" 
                  name="go_back" id="go_back"
@@ -299,7 +279,7 @@ manageTracker('code_tracker_id','code_tracker_enabled');">
           <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
 
         </div>
-      {/if}
+        {/if}
       </td></tr>
     </table>
     </form>

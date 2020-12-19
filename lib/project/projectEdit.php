@@ -16,32 +16,19 @@
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once("projectCommon.php");
-require_once("web_editor.php");
 
-$editorCfg = getWebEditorCfg('testproject');
-require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,true,false,"checkRights");
+testlinkInitPage($db,true,false,"checkUserRights");
 
 
 // OK, user has the rights to proceed
 $templateCfg = templateConfiguration();
-
 $template = null;
 
-
-$ui = new stdClass();
-$ui->doActionValue = '';
-$ui->buttonValue = '';
-$ui->caption = '';
-$ui->main_descr = lang_get('title_testproject_management');
-
-$reloadType = 'none';  // domain 'none','reloadNavBar'
-
 $tproject_mgr = new testproject($db);
-$args = init_args($tproject_mgr);
-$gui = initializeGui($db,$args,$tproject_mgr);
-$of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
+list($args,$gui,$ui) = initScriptEnv($tproject_mgr);
+
+
 $status_ok = 1;
 
 switch($args->doAction) {
@@ -73,7 +60,7 @@ switch($args->doAction) {
     if ($args->projectCount == 0) {
       $gui->tproject_id = $op->id;      
     }
-    $reloadType = $op->reloadType;
+    $gui->reloadType = $op->reloadType;
   break;
 
   case 'doUpdate':
@@ -82,7 +69,7 @@ switch($args->doAction) {
     $ui = $op->ui;
     $status_ok = $op->status_ok;
     $gui->user_feedback = $op->msg;
-    $reloadType = $op->reloadType;
+    $gui->reloadType = $op->reloadType;
   break;
 
   case 'doDelete':
@@ -97,7 +84,7 @@ switch($args->doAction) {
     if ($args->projectCount <= 0) {
       $gui->tproject_id = 0;            
     }
-    $reloadType = $op->reloadType;
+    $gui->reloadType = $op->reloadType;
   break;
 
   case 'setActive':
@@ -110,17 +97,13 @@ switch($args->doAction) {
     $ui = new stdClass();
     $status_ok = 1;
     $gui->user_feedback = '';
-    $reloadType = 'reloadNavBar';
+    $gui->reloadType = 'reloadNavBar';
   break;
 
 }
 
 $ui->main_descr = lang_get('title_testproject_management');
 $smarty = new TLSmarty();
-$smarty->assign('gui_cfg',$gui_cfg);
-$smarty->assign('editorType',$editorCfg['type']);
-$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
-
 
 $feedback_type = '';  
 if(!$status_ok) {
@@ -143,7 +126,7 @@ switch($args->doAction) {
       $gui->feedback = '';  
     }  
 
-    $gui->doAction = $reloadType;
+    //??? 20201219 $gui->doAction = $reloadType;
     $opt = array('output' => 'array_of_map', 
                  'order_by' => " ORDER BY nodes_hierarchy.name ",
                  'add_issuetracker' => $addIssueTracker, 
@@ -152,37 +135,63 @@ switch($args->doAction) {
     $gui->tprojects = (array)$tproject_mgr->get_accessible_for_user($args->userID,$opt);
       
     $gui->pageTitle = lang_get('title_testproject_management');
+ 
+    $gui->doViewReload = ($template == 'projectView.tpl');
+
     $gui->itemQty = count($gui->tprojects);
     if($gui->itemQty > 0) {
       initIntegrations($gui->tprojects,$gui->itemQty,$smarty);
     }  
- 
-    $gui->doViewReload = ($template == 'projectView.tpl');
-    $gui->editorType = $editorCfg['type'];    
-    $smarty->assign('gui',$gui);
-    $smarty->display($templateCfg->template_dir . $template);
   break;
 
 
   case "ErrorOnAction":
   default:
+    // CRITIC do not move
+    $gui = $args;
     if( $args->doAction != "edit" && $args->doAction != "ErrorOnAction") {
-      $of->Value = getItemTemplateContents('project_template', $of->InstanceName, $args->notes);
+      $gui->of->Value = getItemTemplateContents('project_template', $gui->of->InstanceName, $args->notes);
     } else {
-      $of->Value = $args->notes;
+      $gui->of->Value = $args->notes;
     }
+    $gui->doViewReload = ($template == 'projectView.tpl');
+    $gui->notes = $gui->of->CreateHTML();
+
       
     foreach($ui as $prop => $value) {
       $smarty->assign($prop,$value);
+      $gui->$prop = $value;
     }
 
-    $gui = $args;
-    $gui->doViewReload = ($template == 'projectView.tpl');
 
-    $smarty->assign('gui', $args);
-    $smarty->assign('notes', $of->CreateHTML());
-    $smarty->display($templateCfg->template_dir . $template);
   break;
+}
+
+$smarty->assign('gui',$gui);
+$smarty->display($templateCfg->template_dir . $template);
+
+
+
+
+
+/**
+ *
+ */
+function initScriptEnv(&$tprojMgr)
+{
+  $ui = new stdClass();
+  $ui->doActionValue = '';
+  $ui->buttonValue = '';
+  $ui->caption = '';
+  $ui->main_descr = lang_get('title_testproject_management');
+
+
+
+  $args = init_args($tprojMgr);
+  $gui = initializeGui($tprojMgr->db,$args,$tprojMgr);
+  $args->of = $gui->of;
+
+  return [$args,$gui,$ui];  
 }
 
 
@@ -198,7 +207,8 @@ switch($args->doAction) {
  *                   generated variables.
  * @internal
  */
-function init_args($tprojectMgr) {
+function init_args($tprojectMgr) 
+{
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   list($args,$env) = initContext();
@@ -308,7 +318,8 @@ function init_args($tprojectMgr) {
  * @param array $argsObj the page input
  * @return singleton data to be stored
  */
-function prepareOptions($argsObj) {
+function prepareOptions($argsObj) 
+{
   $opts = new stdClass();
   $opts->requirementsEnabled = $argsObj->optReq;
   $opts->testPriorityEnabled = $argsObj->optPriority;
@@ -323,7 +334,8 @@ function prepareOptions($argsObj) {
  * ATTENTION: logEvent() is done on testproject->create()
  *
  */
-function doCreate($argsObj,&$tprojectMgr) {
+function doCreate($argsObj,&$tprojectMgr) 
+{
   $key2get=array('status_ok','msg');
   
   $op = new stdClass();
@@ -415,7 +427,8 @@ function doCreate($argsObj,&$tprojectMgr) {
  * function: doUpdate
  *
  */
-function doUpdate($argsObj,&$tprojectMgr) {
+function doUpdate($argsObj,&$tprojectMgr) 
+{
   $key2get = array('status_ok','msg');
 
   $op = new stdClass();
@@ -555,7 +568,8 @@ function edit(&$argsObj,&$tprojectMgr)
 
 
 */
-function crossChecks($argsObj,&$tprojectMgr) {
+function crossChecks($argsObj,&$tprojectMgr) 
+{
   $op = new stdClass();
   $updateAdditionalSQLFilter = null ;
   $op = $tprojectMgr->checkName($argsObj->tprojectName);
@@ -629,7 +643,8 @@ function create(&$argsObj,&$tprojectMgr)
   returns:
 
 */
-function doDelete($argsObj,&$tprojectMgr) {
+function doDelete($argsObj,&$tprojectMgr) 
+{
   $tprojectMgr->setAuditLogOn();
   $ope_status = $tprojectMgr->delete($argsObj->itemID);
 
@@ -654,9 +669,17 @@ function doDelete($argsObj,&$tprojectMgr) {
  * @internal revisions
  *
  */
-function initializeGui(&$dbHandler,$argsObj,&$tprojMgr) {
-
+function initializeGui(&$dbHandler,$argsObj,&$tprojMgr) 
+{
   $guiObj = $argsObj;
+  $guiObj->reloadType = 'none';
+
+
+  $guiObj->editorCfg = getWebEditorCfg('testproject');
+  $guiObj->editorType = $guiObj->editorCfg['type'];    
+
+  require_once(require_web_editor($guiObj->editorType));
+  $guiObj->of = web_editor('notes',$_SESSION['basehref'],$guiObj->editorCfg) ;
 
   list($add2args,$add2guiObj) = initUserEnv($dbHandler,$argsObj);
   foreach($add2guiObj as $prop => $value) {
@@ -669,6 +692,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tprojMgr) {
   $guiObj->activeMenu['projects'] = 'active';
 
   $guiObj->canManage = $argsObj->user->hasRight($dbHandler,"mgt_modify_product");
+  $guiObj->mgt_view_events = $argsObj->user->hasRight($dbHandler,"mgt_view_events");
   $guiObj->found = 'yes';
 
   $ent2loop = array('tlIssueTracker' => 'issueTrackers', 
@@ -696,7 +720,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tprojMgr) {
 /**
  *
  */
-function checkRights(&$db,&$user) {
+function checkUserRights(&$db,&$user) {
   csrfguard_start(); //?? 20190812
   return $user->hasRight($db,'mgt_modify_product');
 }

@@ -59,7 +59,7 @@ var del_action=fRoot+'{$deleteAction}';
   <div class="workBack">
     <div class="groupBtn">
       {if $gui->canManage}
-      <form method="post" action="{$createAction}" style="display:inline;">
+      <form id="createItem" id="createItem" method="post" action="{$createAction}" style="display:inline;">
         <input class="{#BUTTON_CLASS#}" type="submit" 
                id="create" name="create"
                value="{$labels.btn_create}" />
@@ -90,11 +90,11 @@ var del_action=fRoot+'{$deleteAction}';
                 <th>{$labels.tcase_id_prefix}</th>
                 <th>{$labels.th_issuetracker}</th>
                 <th>{$labels.th_codetracker}</th>
-                <th data-orderable="false">{$labels.th_requirement_feature}</th>
+                <th class="icon_cell" data-orderable="false">{$labels.th_requirement_feature}</th>
                 <th class="icon_cell">{$labels.th_active}</th>
                 <th class="icon_cell">{$labels.public}</th>
                 {if $gui->canManage == "yes"}
-                <th class="icon_cell" data-orderable="false"></th>
+                  <th class="icon_cell" data-orderable="false"></th>
                 {/if}
               </tr>
             </thead>
@@ -125,44 +125,35 @@ var del_action=fRoot+'{$deleteAction}';
               </td>
               <td class="clickable_icon">
                 {if $testproject.opt->requirementsEnabled}
-                    <input type="image" style="border:none" 
-                           title="{$labels.click_to_disable}"  alt="{$labels.click_to_disable}" 
-                           onClick = "doAction.value='disableRequirements';itemID.value={$testproject.id};"
-                           src="{$tlImages.on}"/>
-                  {else}
-                    <input type="image" style="border:none" 
-                           title="{$labels.click_to_enable}"  alt="{$labels.click_to_enable}" 
-                           onClick = "doAction.value='enableRequirements';itemID.value={$testproject.id};"
-                           src="{$tlImages.off}"/>
-                  {/if}
+                  <i class="fas fa-toggle-on" title="{$labels.active_click_to_change}"
+                     onclick = "doAction.value='disableRequirements';itemID.value={$testproject.id};$('#testProjectView').submit();"></i>       
+                {else}
+                  <i class="fas fa-toggle-off" title="{$labels.inactive_click_to_change}"   
+                     onclick = "doAction.value='enableRequirements';itemID.value={$testproject.id};$('#testProjectView').submit();"></i>       
+                {/if}
               </td>
               <td class="clickable_icon">
                 {if $testproject.active}
-                    <input type="image" style="border:none" 
-                           title="{$labels.active_click_to_change}"  alt="{$labels.active_click_to_change}" 
-                           onClick = "doAction.value='setInactive';itemID.value={$testproject.id};"
-                           src="{$tlImages.on}"/>
-                  {else}
-                    <input type="image" style="border:none" 
-                           title="{$labels.inactive_click_to_change}"  alt="{$labels.inactive_click_to_change}" 
-                           onClick = "doAction.value='setActive';itemID.value={$testproject.id};"
-                           src="{$tlImages.off}"/>
-                  {/if}
+                  <i class="fas fa-toggle-on" title="{$labels.active_click_to_change}"
+                     onclick="doAction.value='setInactive';itemID.value={$testproject.id};$('#testProjectView').submit();"></i>       
+                {else}
+                  <i class="fas fa-toggle-off" title="{$labels.inactive_click_to_change}"   
+                     onclick="doAction.value='setActive';itemID.value={$testproject.id};$('#testProjectView').submit();"></i>       
+                {/if}
               </td>
               <td class="clickable_icon">
                 {if $testproject.is_public}
-                    <img style="border:none"  title="{$labels.public}" alt="{$labels.public}" src="{$tlImages.choiceOn}" />
-                  {else}
-                    &nbsp;
-                  {/if}
+                  <i class="fas fa-check-circle" title="{$labels.public}"></i>
+                {else}
+                  &nbsp;
+                {/if}
               </td>
               {if $gui->canManage == "yes"}
               <td class="clickable_icon">
-                  <img style="border:none;cursor: pointer;"  alt="{$labels.testproject_alt_delete}"
-                       title="{$labels.testproject_alt_delete}"
-                       onclick="delete_confirmation({$testproject.id},'{$testproject.name|escape:'javascript'|escape}',
-                                                  '{$del_msgbox_title}','{$warning_msg}');"
-                       src="{$tlImages.delete}"/>
+                <i class="fas fa-minus-circle" title="{$labels.testproject_alt_delete}" 
+                   onclick="delete_confirmation({$testproject.id},'{$testproject.name|escape:'javascript'|escape}',
+                                                '{$del_msgbox_title}','{$warning_msg}');"></i>
+
               </td>
               {/if}
             </tr>

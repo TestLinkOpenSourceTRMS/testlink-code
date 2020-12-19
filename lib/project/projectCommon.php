@@ -76,7 +76,7 @@ function initIntegrations(&$tprojSet,$tprojQty,&$tplEngine) {
   $labels = init_labels(array('active_integration' => null, 
                               'inactive_integration' => null));
 
-  $imgSet = $tplEngine->getImages();
+  $imgSet = $tplEngine->getFontawesomeSet();
 
   $intk = array('it' => 'issue', 'ct' => 'code');
   for($idx=0; $idx < $tprojQty; $idx++) {  
@@ -85,10 +85,14 @@ function initIntegrations(&$tprojSet,$tprojQty,&$tplEngine) {
       if($tprojSet[$idx][$short . 'name'] != '') {
         $ak = ($tprojSet[$idx][$item . '_tracker_enabled']) ? 
               'active' : 'inactive';
+        /*
         $tprojSet[$idx][$short . 'statusImg'] = 
           ' <img title="' . $labels[$ak . '_integration'] . '" ' .
           ' alt="' . $labels[$ak . '_integration'] . '" ' .
           ' src="' . $imgSet[$ak] . '"/>';
+        */
+        $tprojSet[$idx][$short . 'statusImg'] = 
+          sprintf($imgSet[$ak],$labels[$ak . '_integration']);
       } 
     }
   }

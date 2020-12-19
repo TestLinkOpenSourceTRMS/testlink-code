@@ -136,6 +136,11 @@ function initializeGui(&$dbHandler,&$argsObj) {
   $guiObj->itemQty = count($guiObj->tprojects);
   if($guiObj->itemQty > 0) {
     initIntegrations($guiObj->tprojects,$guiObj->itemQty,$tplEngine);
+
+    //echo '<pre>';
+    //var_dump($guiObj->tprojects);
+    //echo '</pre>';
+
   }  
 
   $guiObj->actions = $tproject_mgr->getViewActions($argsObj);

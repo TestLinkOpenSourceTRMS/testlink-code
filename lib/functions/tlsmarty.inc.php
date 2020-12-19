@@ -512,4 +512,19 @@ class TLSmarty extends Smarty {
 
     return $dummy;
   }
+  
+
+  /**
+   *
+   */
+  static function getFontawesomeSet() 
+  {
+
+    $dummy = array('active' => '<i class="fas fa-heart" title="%s"></i>',
+                   'inactive' => '<i class="far fa-heart" title="%s"></i>');
+
+    return $dummy;
+  }
+
+
 } 

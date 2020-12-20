@@ -44,7 +44,7 @@ The _top value of the target attribute specifies that the URL should open in the
         </a>
       </div>
       <div class="sidebar-toggle-box">
-        <div class="fa fa-bars tooltips" data-placement="right" data-original-title="$labels.toggle_navigation"></div>
+        <div class="fa fa-bars tooltips" data-placement="right" data-original-title="{$labels.toggle_navigation}"></div>
       </div>
       <a class="logo" 
          href="index.php?tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}" target="{$topBrowsingContext}" title="{$labels.reload_main_view}">

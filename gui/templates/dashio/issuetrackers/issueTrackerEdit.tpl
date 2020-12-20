@@ -21,7 +21,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {include file="inc_del_onclick.tpl"}
 <script type="text/javascript">
 /* AJAX CALL */
-function displayITSCfgExample(oid,displayOID) {
+function displayCfgExample(oid,displayOID) {
 	var type;
 	var HTMLTxt;
   var ztr;
@@ -70,7 +70,7 @@ function displayITSCfgExample(oid,displayOID) {
  * displayOID: usedByEnvelope
  *
  */
-function displayITSUsedBy(displayOID) {
+function displayUsedBy(displayOID) {
   var HTMLTxt;
   var ztr;
   var outer = document.getElementById('usedByOuter');
@@ -165,7 +165,7 @@ function displayITSUsedBy(displayOID) {
               <form class="form-horizontal style-form" name="edit" method="post" action="{$edit_url}"">
                 <div class="form-group">
                   <label for="name" class="{$cellLabel}">{$labels.th_issuetracker}</label>
-                  <a href="javascript:displayITSUsedBy('usedByEnvelope')">
+                  <a href="javascript:displayUsedBy('usedByEnvelope')">
                       <i class="fas fa-info-circle" title="{$labels.show_hide_linked_to_project}"></i>
                   </a>
                   <div class="{$cellContent}">
@@ -196,7 +196,7 @@ function displayITSUsedBy(displayOID) {
 
                 <div class="form-group">
                   <label for="cfg" class="{$cellLabel}">{$labels.config}</label>
-                  <a title="{$labels.show_hide_config_example}"" href="javascript:displayITSCfgExample('type','cfg_example')">
+                  <a title="{$labels.show_hide_config_example}"" href="javascript:displayCfgExample('type','cfg_example')">
                       <i class="fas fa-eye"></i>
                   </a>
                   <div class="{$cellContent}">

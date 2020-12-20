@@ -11,10 +11,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 {lang_get var='labels'
-          s='warning,warning_empty_codetracker_name,warning_empty_codetracker_type,
+          s='warning,
              show_event_history,th_codetracker,th_codetracker_type,config,btn_cancel,
-             codetracker_show_cfg_example,codetracker_cfg_example,used_on_testproject,btn_check_connection,
-             codeTracker_connection_ok,codeTracker_connection_ko'}
+             show_hide_config_example,
+             used_on_testproject,btn_check_connection,show_hide_linked_to_project,
+             codeTracker_connection_ok,codeTracker_connection_ko,codetracker_not_used_linked'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_del_onclick.tpl"}

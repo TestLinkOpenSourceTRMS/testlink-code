@@ -192,7 +192,7 @@ function displayUsedBy(displayOID) {
 
                 <div class="form-group">
                   <label for="cfg" class="{$cellLabel}">{$labels.config}</label>
-                  <a title="{$labels.show_hide_config_example}"" href="javascript:displayITSCfgExample('type','cfg_example')">
+                  <a title="{$labels.show_hide_config_example}"" href="javascript:displayCfgExample('type','cfg_example')">
                       <i class="fas fa-eye"></i>
                   </a>
                   <div class="{$cellContent}">

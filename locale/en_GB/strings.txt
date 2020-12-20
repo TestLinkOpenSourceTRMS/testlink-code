@@ -4088,4 +4088,7 @@ $TLS_testing_a_requirement = 'Requirement';
 $TLS_alien_relTypeVerbose = ' ';
 $TLS_show_hide_linked_to_project = 'Show/hide test project usage';
 $TLS_show_hide_config_example = 'Show/hide configuration template';
+
+$TLS_issuetracker_not_used_linked = 'Issue Tracker not in use';
+$TLS_codetracker_not_used_linked = 'Code Tracker not in use';
 // ----- END -----------------------------------------------------

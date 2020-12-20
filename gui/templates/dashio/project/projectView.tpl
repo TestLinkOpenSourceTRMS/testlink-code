@@ -176,7 +176,7 @@ var del_action=fRoot+'{$deleteAction}';
   // remove query string to avoid reload of home page,
   // instead of reload only navbar
   // DEBUG -
-  console.log('parent.titlebar.location.href -> ' + parent.titlebar.location.href);
+  //DEBUG console.log('parent.titlebar.location.href -> ' + parent.titlebar.location.href);
   var href_pieces = parent.titlebar.location.href.split('?');
 
   {if $gui->projectCount > 0}  
@@ -186,21 +186,20 @@ var del_action=fRoot+'{$deleteAction}';
     // How to do this without exiting from the project view page??
     //
     var hn = href_pieces[0] + '?tproject_id={$gui->tproject_id}&updateMainPage=1';
-    //DEBUG 
-    console.log('planView.tpl -> ' + hn);
+    //DEBUG console.log('planView.tpl -> ' + hn);
     parent.titlebar.location = hn;
   {else}
-    alert('8888');
-    console.log('888888 p - planView.tpl ->>>>>> ');
+    //DEBUG alert('8888');
+    //DEBUG console.log('888888 p - planView.tpl ->>>>>> ');
     
     // we are creating the FIRST Test Project, we need to update also the left side menu
     // var hn = href_pieces[0] + '?tproject_id={$gui->tproject_id}&updateMainPage=1&activeMenu=projects';  
     var hn = href_pieces[0] + '?tproject_id={$gui->tproject_id}' 
                             + '&updateMainPage=1&activeMenu=projects&projectView=1';  
     hn = hn.replace('lib/general/navBar.php','index.php');
-    console.log('0 p - planView.tpl -> ' + hn);
-    alert('9999');
-    alert('0 p - planView.tpl -> ' + hn);
+    //DEBUG console.log('0 p - planView.tpl -> ' + hn);
+    //DEBUG alert('9999');
+    //DEBUG alert('0 p - planView.tpl -> ' + hn);
 
     parent.location = hn;
   {/if}

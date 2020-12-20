@@ -53,6 +53,15 @@ This is done to simplify logic.
 {$name_maxlength = #CFIELD_NAME_MAXLEN#}
 {$label_size = #CFIELD_LABEL_SIZE#}
 {$label_maxlength = #CFIELD_LABEL_MAXLEN#}
+{$possible_values_size = #CFIELD_POSSIBLE_VALUES_SIZE#}
+{$possible_values_maxlength = #CFIELD_POSSIBLE_VALUES_MAXLEN#}
+
+
+{$possible_values_display_style="none"}
+{if $gui->show_possible_values }
+  {$possible_values_display_style=""}
+{/if}
+
 
 <body onload="configure_cf_attr('combo_cf_node_type_id',js_enable_on_cfg,js_show_on_cfg);">
   {include file="aside.tpl"}  
@@ -85,7 +94,7 @@ This is done to simplify logic.
                     <input class="{$inputClass}" required type="text" name="label" id="label"  
                            size="{$label_size}" 
                            maxlength="{$label_maxlength}" 
-                           value="{$gui->item.label|escape}" />
+                           value="{$gui->cfield.label|escape}" />
                   </div> <!-- cellContent -->  
                 </div> <!-- class="form-group" -->
 
@@ -107,6 +116,39 @@ This is done to simplify logic.
                       {html_options options=$gui->cfieldCfg->cf_allowed_nodes selected=$gui->cfield.node_type_id}
                       </select>
                     {/if}
+                  </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
+
+
+                <div class="form-group">
+                  <label for="type" class="{$cellLabel}">{$labels.type}</label>
+                  <div class="{$cellContent}">
+                    {if $gui->cfield_is_used}
+                      {$idx=$gui->cfield.type}
+                      {$gui->cfield_types.$idx}
+                      <input type="hidden" id="hidden_cf_type"
+                             value={$gui->cfield.type} name="cf_type" />
+                    {else}
+                      <select onchange="cfg_possible_values_display(js_possible_values_cfg,
+                                                                    'combo_cf_type',
+                                                                    'possible_values');"
+                              id="combo_cf_type"
+                              name="cf_type">
+                      {html_options options=$gui->cfield_types selected=$gui->cfield.type}
+                      </select>
+                    {/if}
+                  </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
+
+
+                <div id="possible_values" class="form-group" style="display:{$possible_values_display_style};">
+                  <label for="cf_possible_values" class="{$cellLabel}">{$labels.possible_values}</label>
+                  <div class="{$cellContent}">
+                    <input class="{$inputClass}" required type="text" 
+                           name="cf_possible_values" id="cf_possible_values"  
+                           size="{$possible_values_size}" 
+                           maxlength="{$possible_values_maxlength}" 
+                           value="{$gui->cfield.possible_values}" />
                   </div> <!-- cellContent -->  
                 </div> <!-- class="form-group" -->
 

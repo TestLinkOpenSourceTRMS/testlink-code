@@ -49,6 +49,10 @@ This is done to simplify logic.
 {$buttonGroupLayout = "form-group"} {* Domain: form-group, groupBtn *}
 {$inputClass = ""}
 {$edit_url = "lib/cfields/cfieldsEdit.php"}
+{$name_size = #CFIELD_NAME_SIZE#}
+{$name_maxlength = #CFIELD_NAME_MAXLEN#}
+{$label_size = #CFIELD_LABEL_SIZE#}
+{$label_maxlength = #CFIELD_LABEL_MAXLEN#}
 
 <body onload="configure_cf_attr('combo_cf_node_type_id',js_enable_on_cfg,js_show_on_cfg);">
   {include file="aside.tpl"}  
@@ -64,6 +68,49 @@ This is done to simplify logic.
               <form class="form-horizontal style-form" name="cfields_edit" 
                 method="post" action="{$edit_url}" onSubmit="javascript:return validateForm(this);">
                  <input type="hidden" id="hidden_id" name="cfield_id" value="{$gui->cfield.id}" />
+
+                <div class="form-group">
+                  <label for="name" class="{$cellLabel}">{$labels.name}</label>
+                  <div class="{$cellContent}">
+                    <input class="{$inputClass}" required type="text" name="name" id="name"  
+                           size="{$name_size}" 
+                           maxlength="{$name_maxlength}" 
+                           value="{$gui->item.name|escape}" />
+                  </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
+
+                <div class="form-group">
+                  <label for="label" class="{$cellLabel}">{$labels.label}</label>
+                  <div class="{$cellContent}">
+                    <input class="{$inputClass}" required type="text" name="label" id="label"  
+                           size="{$label_size}" 
+                           maxlength="{$label_maxlength}" 
+                           value="{$gui->item.label|escape}" />
+                  </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
+
+                <div class="form-group">
+                  <label for="available_on" class="{$cellLabel}">{$labels.available_on}</label>
+                  <div class="{$cellContent}">
+                    {if $gui->cfield_is_used} 
+                      {* Type CAN NOT BE CHANGED *}
+                      {$idx=$gui->cfield.node_type_id}
+                      {$gui->cfieldCfg->cf_allowed_nodes.$idx}
+                      <input type="hidden" id="combo_cf_node_type_id"
+                             value={$gui->cfield.node_type_id} name="cf_node_type_id" />
+                    {else}
+                      <select onchange="configure_cf_attr('combo_cf_node_type_id',
+                                                          js_enable_on_cfg,
+                                                          js_show_on_cfg);"
+                              id="combo_cf_node_type_id"
+                              name="cf_node_type_id">
+                      {html_options options=$gui->cfieldCfg->cf_allowed_nodes selected=$gui->cfield.node_type_id}
+                      </select>
+                    {/if}
+                  </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
+
+
               </form>
             </div> <!-- class="form-panel" -->
           </div> <!-- class="col-lg-12" -->

@@ -81,7 +81,7 @@ This is done to simplify logic.
                 <div class="form-group">
                   <label for="name" class="{$cellLabel}">{$labels.name}</label>
                   <div class="{$cellContent}">
-                    <input class="{$inputClass}" required type="text" name="name" id="name"  
+                    <input class="{$inputClass}" required type="text" name="cf_name" id="cf_name"  
                            size="{$name_size}" 
                            maxlength="{$name_maxlength}" 
                            value="{$gui->item.name|escape}" />
@@ -91,7 +91,7 @@ This is done to simplify logic.
                 <div class="form-group">
                   <label for="label" class="{$cellLabel}">{$labels.label}</label>
                   <div class="{$cellContent}">
-                    <input class="{$inputClass}" required type="text" name="label" id="label"  
+                    <input class="{$inputClass}" required type="text" name="cf_label" id="cf_label"  
                            size="{$label_size}" 
                            maxlength="{$label_maxlength}" 
                            value="{$gui->cfield.label|escape}" />
@@ -151,6 +151,48 @@ This is done to simplify logic.
                            value="{$gui->cfield.possible_values}" />
                   </div> <!-- cellContent -->  
                 </div> <!-- class="form-group" -->
+
+                <div class="{$buttonGroupLayout}">
+                  <input type="hidden" name="do_action" id="do_action" value="" />
+
+                  {if $buttonGroupLayout == "form-group"}
+                    <div class="col-sm-offset-2 col-sm-10">
+                  {/if}  
+                  {if $user_action eq 'edit'  or $user_action eq 'do_update'}
+                      <input type="hidden" name="id" id="id" value="{$gui->item.id}">
+                      <input type="hidden" name="doAction" value="{$gui->operation}" />
+                      
+                      <input class="{#BUTTON_CLASS#}" type="submit" 
+                             name="do_update" value="{$labels.btn_upd}"
+                             onclick="do_action.value='do_update'"/>
+
+                      {* Allow delete , just give warning *}
+                      <input class="{#BUTTON_CLASS#}" type="button" 
+                             name="do_delete" id="do_delete"
+                             value="{$labels.btn_delete}"
+                             onclick="delete_confirmation({$gui->cfield.id},
+                                     '{$gui->cfield.name|escape:'javascript'|escape}',
+                                     '{$del_msgbox_title}','{$warning_msg}');">
+
+                  {else}    
+                      <input class="{#BUTTON_CLASS#}" type="submit" 
+                             name="do_update" value="{$labels.btn_add}"
+                             onclick="do_action.value='do_add'"/>
+
+
+                      <input class="{#BUTTON_CLASS#}" type="submit" 
+                             name="do_add_and_assign" id="do_add_and_assign"
+                             value="{$labels.btn_add_and_assign_to_current}"
+                             onclick="do_action.value='do_add_and_assign'"/>                  
+                  {/if}
+                  <input class="{#BUTTON_CLASS#}" type="button" 
+                         name="cancel" id="cancel" 
+                         value="{$labels.btn_cancel}"
+                         onclick="javascript: location.href=fRoot+'lib/cfields/cfieldsView.php';" />
+
+                  {if $buttonGroupLayout == "form-group"}
+                    </div>
+                  {/if}
 
 
               </form>

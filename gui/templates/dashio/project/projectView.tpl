@@ -42,11 +42,15 @@ CRITICAL
 var del_action=fRoot+'{$deleteAction}';
 </script>
 
-{if $tlCfg->gui->projectView->pagination->enabled}
-  {$ll = $tlCfg->gui->projectView->pagination->length}
+{if $gui->tprojects != ''}
+  {$ll = #pagination_length#}
+  {if $tlCfg->gui->projectView->pagination->enabled}
+    {$ll = $tlCfg->gui->projectView->pagination->length}
+  {/if}
   {include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
                                      DataTableslengthMenu=$ll}
 {/if}
+
 
 {include file="bootstrap.inc.tpl"}
 </head>

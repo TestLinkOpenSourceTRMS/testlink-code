@@ -23,10 +23,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&id=';
 </script> 
 
-{$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" 
-         DataTablesSelector="#item_view"
-         DataTableslengthMenu=$ll}
+{if $gui->items != ''}
+  {$ll = #pagination_length#}
+  {include file="DataTables.inc.tpl" 
+           DataTablesSelector="#item_view"
+           DataTableslengthMenu=$ll}
+{/if}
 
 </head>
 <body {$body_onload}>

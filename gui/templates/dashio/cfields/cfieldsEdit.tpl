@@ -84,7 +84,7 @@ This is done to simplify logic.
                     <input class="{$inputClass}" required type="text" name="cf_name" id="cf_name"  
                            size="{$name_size}" 
                            maxlength="{$name_maxlength}" 
-                           value="{$gui->item.name|escape}" />
+                           value="{$gui->cfield.name|escape}" />
                   </div> <!-- cellContent -->  
                 </div> <!-- class="form-group" -->
 
@@ -144,7 +144,7 @@ This is done to simplify logic.
                 <div id="possible_values" class="form-group" style="display:{$possible_values_display_style};">
                   <label for="cf_possible_values" class="{$cellLabel}">{$labels.possible_values}</label>
                   <div class="{$cellContent}">
-                    <input class="{$inputClass}" required type="text" 
+                    <input class="{$inputClass}" type="text" 
                            name="cf_possible_values" id="cf_possible_values"  
                            size="{$possible_values_size}" 
                            maxlength="{$possible_values_maxlength}" 
@@ -159,9 +159,6 @@ This is done to simplify logic.
                     <div class="col-sm-offset-2 col-sm-10">
                   {/if}  
                   {if $user_action eq 'edit'  or $user_action eq 'do_update'}
-                      <input type="hidden" name="id" id="id" value="{$gui->item.id}">
-                      <input type="hidden" name="doAction" value="{$gui->operation}" />
-                      
                       <input class="{#BUTTON_CLASS#}" type="submit" 
                              name="do_update" value="{$labels.btn_upd}"
                              onclick="do_action.value='do_update'"/>

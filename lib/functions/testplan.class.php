@@ -8293,4 +8293,28 @@ class testplan extends tlObjectWithAttachments
     }  
     return array($sql['join'],$sql['filter']);
   }
+
+  /**
+   * returns: html string
+   * 
+   */
+  function customFieldInputsForUX($id,$parent_id=null,$scope='design',$name_suffix='',$input_values=null) 
+  {
+    $cf_smarty='';
+    $method_suffix = $scope=='design' ? $scope : 'execution';
+    $method_name = "get_linked_cfields_at_{$method_suffix}";
+    $cf_map=$this->$method_name($id,$parent_id);
+
+    if(!is_null($cf_map))
+    {
+      $cf_smarty = $this->cfield_mgr->htmlInputs($cf_map,$name_suffix,$input_values);
+    }
+    return($cf_smarty);
+  }
+
+
+
+
+
+
 } // end class testplan

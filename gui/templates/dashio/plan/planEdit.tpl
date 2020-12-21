@@ -114,13 +114,9 @@ Purpose: smarty template - create/edit Test Plan
               </div> <!-- class="form-group" -->
 
               {if $gui->cfields neq ''}
-                <div class="form-group">
-                  <div class="{$cellContent}">
-                    <div id="custom_field_container">  {* class="custom_field_container"> *}
-                      {$gui->cfields}
-                    </div>
-                 </div>
-                </div> <!-- class="form-group" -->
+                <div id="custom_field_container" class="form-group"> {* class="custom_field_container"> *}
+                  {$gui->cfields}
+                </div>
               {/if}
 
 

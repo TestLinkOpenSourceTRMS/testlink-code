@@ -461,10 +461,16 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,
     $guiObj->notes = '';    
   } else {
 
-    $guiObj->cfields = 
-      $tplan_mgr->html_table_of_custom_field_inputs(
+    $guiObj->cfields =  
+      $tplan_mgr->customFieldInputsForUX(
          $argsObj->itemID,$argsObj->tproject_id,
          'design','',$_REQUEST);
+
+
+      /*$tplan_mgr->html_table_of_custom_field_inputs(
+         $argsObj->itemID,$argsObj->tproject_id,
+         'design','',$_REQUEST);*/
+
 
   }
  

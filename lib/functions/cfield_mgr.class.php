@@ -3030,4 +3030,78 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
     return $gogo;
   }
     
+
+/**
+ * 
+ *
+ */
+function htmlInputs($cfields_map,$name_suffix='',$input_values=null,$opt=null)
+{
+  $cf_smarty = '';
+  $getOpt = array('name_suffix' => $name_suffix);
+
+  $my['opt'] = array('addCheck' => false, 'addTable' => true, 'forceOptional' => false);
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+  if(!is_null($cfields_map))
+  {
+    $uxCfg = config_get('layout');
+
+    $lbl_upd = lang_get('update_hint');
+    $cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
+
+    $NO_WARNING_IF_MISSING=true;
+    $add_img = "<image title=\"{$lbl_upd}\""  . 
+               'src="' . TL_THEME_IMG_DIR . 'basket_put.png">'; 
+
+    $cf_smarty = '';
+    foreach($cf_map as $cf_id => $cf_info)
+    {
+      $label=str_replace(TL_LOCALIZE_TAG,'',
+                         lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
+
+
+      // IMPORTANT NOTICE
+      // assigning an ID with this format is CRITIC to Javascript logic used
+      // to validate input data filled by user according to CF type
+      // extract input html id
+      // Want to give an html id to <td> used as labelHolder, to use it in Javascript
+      // logic to validate CF content
+      if($my['opt']['forceOptional'])
+      {
+        $cf_info['required'] = 0; 
+      } 
+
+      $cf_html_string = $this->string_custom_field_input($cf_info,$getOpt);
+
+      $dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
+      $td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
+
+      $cf_smarty .= $uxCfg->rowBegin;
+      if($my['opt']['addCheck'])
+      {
+        $check_id = str_replace('id="', 'id="check_', $dummy[0]);
+        $check_name = str_replace('id="', 'name="check_', $dummy[0]);
+
+        $cf_smarty .= "  <div class=\"{$uxCfg->$cellContent}\"> " . $add_img .         
+                      " <input type=\"checkbox\" {$check_name}>" .
+                      "  </div>";   
+      }  
+
+      // Label
+      $cf_smarty .= "<label for=\"{$td_label_id}\" class=\"{$uxCfg->cellLabel}\">" .
+                    htmlspecialchars($label) . "</label>\n";
+
+      // Input
+      $cf_smarty .= "  <div class=\"{$uxCfg->cellContent}\"> " .  
+                    $this->string_custom_field_input($cf_info,$getOpt) . 
+                    "  </div>";
+
+      $cf_smarty .= $uxCfg->rowEnd . "\n";              
+    }
+  }
+  return $cf_smarty;
+}
+
+
 } // end class

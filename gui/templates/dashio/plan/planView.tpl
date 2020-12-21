@@ -54,17 +54,17 @@ var del_action=fRoot+'{$gui->actions->deleteAction}';
 {/if}
 
 <div class="workBack">
-{if $gui->createEnabled && !is_null($gui->tplans) && 
-    count($gui->tplans) > $tlCfg->gui->planView->itemQtyForTopButton}
-   <div class="groupBtn">
-     <form method="post" action="{$gui->actions->createAction}"
-           name="topCreateForm">
-       <input class="{#BUTTON_CLASS#}" type="submit" 
-              name="create_testplan_top" id="create_testplan_top" 
-              value="{$labels.btn_testplan_create}" />
-     </form>
-   </div>
-{/if}
+  {if $gui->createEnabled && !is_null($gui->tplans) && 
+      count($gui->tplans) > $tlCfg->gui->planView->itemQtyForTopButton}
+     <div class="groupBtn">
+       <form method="post" action="{$gui->actions->createAction}"
+             name="topCreateForm">
+         <input class="{#BUTTON_CLASS#}" type="submit" 
+                name="create_testplan_top" id="create_testplan_top" 
+                value="{$labels.btn_testplan_create}" />
+       </form>
+     </div>
+  {/if}
 
 <div id="testplan_management_list">
 {if $gui->tproject_id <= 0}
@@ -72,9 +72,10 @@ var del_action=fRoot+'{$gui->actions->deleteAction}';
 {else}
   <form method="post" id="testPlanView" 
         name="testPlanView" action="{$gui->actions->managerURL}">
-    <input type="hidden" name="do_action" id="do_action" value="">
     <input type="hidden" name="itemID" id="itemID" value="">
-
+    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+    <input type="hidden" name="do_action" id="do_action" value="NONE">
+  
     {* table id MUST BE item_view to use show/hide API info *}
     <table class="{#item_view_table#}" id="item_view">
       <thead class="{#item_view_thead#}">
@@ -116,26 +117,21 @@ var del_action=fRoot+'{$gui->actions->deleteAction}';
           {$testplan.platform_qty}
         </td>
       {/if} 
-
       <td class="clickable_icon">
-        {if $testplan.active==1} 
-            <input type="image" style="border:none" 
-                   title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
-                   onClick = "do_action.value='setInactive';itemID.value={$testplan.id};"
-                   src="{$tlImages.on}"/>
-          {else}
-            <input type="image" style="border:none" 
-                 title="{$labels.inactive_click_to_change}" alt="{$labels.inactive_click_to_change}" 
-                 onClick = "do_action.value='setActive';itemID.value={$testplan.id};"
-                 src="{$tlImages.off}"/>
-          {/if}
+        {if $testplan.active}
+          <i class="fas fa-toggle-on" title="{$labels.active_click_to_change}"
+             onclick="itemID.value={$testplan.id};do_action.value='setInactive';$('#testPlanView').submit();"></i>       
+        {else}
+          <i class="fas fa-toggle-off" title="{$labels.inactive_click_to_change}"   
+             onclick="do_action.value='setActive';itemID.value={$testplan.id};$('#testPlanView').submit();"></i>       
+        {/if}
       </td>
       <td class="clickable_icon">
-        {if $testplan.is_public eq 1} 
-            <img style="border:none" title="{$labels.public}"  alt="{$labels.public}" src="{$tlImages.checked}"/>
-          {else}
-            &nbsp;        
-          {/if}
+        {if $testplan.is_public}
+          <i class="fas fa-check-circle" title="{$labels.public}"></i>
+        {else}
+          &nbsp;
+        {/if}
       </td>
       <td style="width:8%;">
           <img style="border:none;cursor: pointer;" 

@@ -28,8 +28,14 @@ Purpose: smarty template - create/edit Test Plan
   {$loadOnCancelURL=""}
 {/if}
 
+{* 
 {$cellContent = "col-sm-10"}
 {$cellLabel = "col-sm-2 col-sm-2 control-label"}
+*}
+{$cellContent = $tlCfg->layout->cellContent}
+{$cellLabel = $tlCfg->layout->cellLabel}
+
+
 {$buttonGroupLayout = "form-group"} {* Domain: form-group, groupBtn *}
 {$inputClass = ""}
 {$textAreaCfg.rows = #TESTPLAN_CFG_ROWS#}
@@ -114,8 +120,10 @@ Purpose: smarty template - create/edit Test Plan
 
               {if $gui->cfields neq ''}
                 <div class="form-group">
-                 <div id="custom_field_container" class="custom_field_container">
-                   {$gui->cfields}
+                  <div class="{$cellContent}">
+                    <div id="custom_field_container">  {* class="custom_field_container"> *}
+                      {$gui->cfields}
+                    </div>
                  </div>
                 </div> <!-- class="form-group" -->
               {/if}

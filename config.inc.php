@@ -52,6 +52,7 @@ $tlCfg->custom_execution_types = null;
 
 $tlCfg->gui = new stdClass();
 $tlCfg->gui->custom_fields = new stdClass();
+$tlCfg->layout = new stdClass();
 $tlCfg->testcase_cfg = new stdClass();
 $tlCfg->req_cfg = new stdClass();
 $tlCfg->validation_cfg = new stdClass();
@@ -82,6 +83,14 @@ $tlCfg->keywords->byTestProject = array();
 $tlCfg->keywords->headsUpTSuiteOnExec = 'CMD_OPEN_ON_EXEC';
 
 $tlCfg->accessWithoutLogin = array();
+
+
+// Bootstrap UX
+$tlCfg->layout->cellContent = "col-sm-10";
+$tlCfg->layout->cellContent = "col-sm-2 col-sm-2 control-label";
+$tlCfg->layout->rowBegin = '<div class="form-group">';
+$tlCfg->layout->rowEnd = '</div> <!-- class="form-group"> -->';
+
 
 
 /** @uses database access definition (generated automatically by TL installer) */ 

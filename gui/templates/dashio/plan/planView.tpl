@@ -33,11 +33,13 @@ var del_action=fRoot+'{$gui->actions->deleteAction}';
 
 {include file="bootstrap.inc.tpl"}
 
+{$ll = #pagination_length#}
 {if $tlCfg->gui->planView->pagination->enabled}
   {$ll = $tlCfg->gui->planView->pagination->length}
-  {include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
-                                     DataTableslengthMenu=$ll}
 {/if}
+{include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
+                                   DataTableslengthMenu=$ll}
+
 </head>
 
 <body {$body_onload}>
@@ -67,8 +69,6 @@ var del_action=fRoot+'{$gui->actions->deleteAction}';
 <div id="testplan_management_list">
 {if $gui->tproject_id <= 0}
   {$labels.error_no_testprojects_present}
-{elseif $gui->tplans eq ''}
-  {$labels.testplan_txt_empty_list}
 {else}
   <form method="post" id="testPlanView" 
         name="testPlanView" action="{$gui->actions->managerURL}">

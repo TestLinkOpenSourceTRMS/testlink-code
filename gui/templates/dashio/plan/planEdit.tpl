@@ -28,157 +28,174 @@ Purpose: smarty template - create/edit Test Plan
   {$loadOnCancelURL=""}
 {/if}
 
+{$cellContent = "col-sm-10"}
+{$cellLabel = "col-sm-2 col-sm-2 control-label"}
+{$buttonGroupLayout = "form-group"} {* Domain: form-group, groupBtn *}
+{$inputClass = ""}
+{$textAreaCfg.rows = #TESTPLAN_CFG_ROWS#}
+{$textAreaCfg.cols = #TESTPLAN_CFG_COLS#}
+
+
+
+{$form_action='create'}
+{if $gui->itemID != 0}
+  {$form_action='update'}
+{/if} 
+{$url_args="lib/plan/planEdit.php?action="}
+{$edit_url="$basehref$url_args$form_action"}
 
 <body>
-{if $gui->uploadOp != null }
-  <script>
-  var uplMsg = "{$labels.file_upload_ko}<br>";
-  var doAlert = false;
-  {if $gui->uploadOp->statusOK == false}
-    uplMsg += "{$gui->uploadOp->msg}<br>";
-    doAlert = true;
-  {/if}
-  if (doAlert) {
-    bootbox.alert(uplMsg);
-  }
-  </script>
-{/if}
-
-{include file="aside.tpl"}  
-<div id="main-content">
-<h1 class="{#TITLE_CLASS#}">{$gui->main_descr|escape}</h1>
-
-<div class="workBack">
-{include file="inc_update.tpl" user_feedback=$gui->user_feedback}
-  {$form_action='create'}
-  {if $gui->itemID != 0}
-    <h2>
-    {$labels.testplan_title_edit} {$gui->testplan_name|escape}
-    {$form_action='update'}
-    {if $gui->userGrants->mgt_view_events eq "yes"}
-      <img style="margin-left:5px;" class="clickable" src="{$tlImages.help}" 
-           onclick="showEventHistoryFor('{$gui->itemID}','testplans')" alt="{$labels.show_event_history}" 
-           title="{$labels.show_event_history}"/>
+  {if $gui->uploadOp != null }
+    <script>
+    var uplMsg = "{$labels.file_upload_ko}<br>";
+    var doAlert = false;
+    {if $gui->uploadOp->statusOK == false}
+      uplMsg += "{$gui->uploadOp->msg}<br>";
+      doAlert = true;
     {/if}
-    </h2>
+    if (doAlert) {
+      bootbox.alert(uplMsg);
+    }
+    </script>
   {/if}
 
-  <form method="post" name="testplan_mgmt" id="testplan_mgmt"
-        action="lib/plan/planEdit.php?action={$form_action}"
-        onSubmit="javascript:return validateForm(this);">
-    <input type="hidden" id="itemID" name="itemID" 
-           value="{$gui->itemID}" />
-    <input type="hidden" id="tproject_id" name="tproject_id"
-           value="{$gui->tproject_id}" />
-    <input type="hidden" id="tplan_id" name="tplan_id"
-           value="{$gui->itemID}" />
+  {include file="aside.tpl"}  
+  <div id="main-content">
+  	<h1 class="{#TITLE_CLASS#}">{$gui->main_descr|escape}</h1>
 
-  <table class="common" width="80%">
+    <div style="margin: 8px;" id="8container">
+      {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
-    <tr><th style="background:none;">{$labels.testplan_th_name}</th>
-      <td><input type="text" name="testplan_name"
-                 size="{#TESTPLAN_NAME_SIZE#}"
-                 maxlength="{#TESTPLAN_NAME_MAXLEN#}"
-                 value="{$gui->testplan_name|escape}" required />
-          {include file="error_icon.tpl" field="testplan_name"}
-      </td>
-    </tr>
-    <tr><th style="background:none;">{$labels.testplan_th_notes}</th>
-      <td >{$gui->notes}</td>
-    </tr>
-    {if $gui->itemID eq 0}
-      {if $gui->tplans}
-        <tr><th style="background:none;">{$labels.testplan_question_create_tp_from}</th>
-        <td>
-        <select name="copy_from_tplan_id"
-                onchange="manage_copy_ctrls('copy_controls',this.value,'0')">
-        <option value="0">{$labels.opt_no}</option>
-        {foreach item=testplan from=$gui->tplans}
-          <option value="{$testplan.id}">{$testplan.name|escape}</option>
-        {/foreach}
-        </select>
+      <div class="row mt">
+        <div class="col-lg-12">
+          <div class="form-panel">
+            <form class="form-horizontal style-form" name="testplan_mgmt" id="testplan_mgmt" 
+              method="post" action="{$edit_url}"">
+              <input type="hidden" id="itemID" name="itemID" 
+                     value="{$gui->itemID}" />
+              <input type="hidden" id="tproject_id" name="tproject_id"
+                     value="{$gui->tproject_id}" />
+              <input type="hidden" id="tplan_id" name="tplan_id"
+                     value="{$gui->itemID}" />
 
-            <div id="copy_controls" style="display:none;">
-            {assign var=this_template_dir value=$smarty.template|dirname}
-            {include file="$this_template_dir/inc_controls_planEdit.tpl"}
-            </div>
-        </td>
-        </tr>
-      {/if}
-    {/if}
-      <tr>
-        <th style="background:none;">{$labels.testplan_th_active}</th>
-          <td>
-            <input type="checkbox" name="active" {if $gui->is_active eq 1}  checked="checked" {/if} />
-          </td>
-      </tr>
-      <tr>
-        <th style="background:none;">{$labels.public}</th>
-          <td>
-            <input type="checkbox" name="is_public" {if $gui->is_public eq 1} checked="checked" {/if} />
-          </td>
-      </tr>
 
-      {if isset($gui->api_key) && $gui->api_key != ''}
-      <tr>
-        <th style="background:none;">{$labels.api_key}</th>
-        <td>{$gui->api_key}</td>
-      </tr>
-      {/if}
+              <div class="form-group">
+                <label for="name" class="{$cellLabel}">{$labels.testplan_th_name}</label>
+                <div class="{$cellContent}">
+                  <input type="text" name="testplan_name"
+                     size="{#TESTPLAN_NAME_SIZE#}"
+                     maxlength="{#TESTPLAN_NAME_MAXLEN#}"
+                     value="{$gui->testplan_name|escape}" required />
+                </div> <!-- cellContent -->  
+              </div> <!-- class="form-group" -->
+
+
+              <div class="form-group">
+                <label for="notes" class="{$cellLabel}">{$labels.testplan_th_notes}</label>
+                <div class="{$cellContent}">
+                  {$gui->notes}
+                </div> <!-- cellContent -->  
+              </div> <!-- class="form-group" -->
+
+
+              <div class="form-group">
+                <label for="active" class="{$cellLabel}">{$labels.testplan_th_active}</label>
+                <div class="{$cellContent}">
+                  <input type="checkbox" name="active" {if $gui->is_active eq 1}  checked="checked" {/if} />
+                </div> <!-- cellContent -->  
+              </div> <!-- class="form-group" -->
+
+              <div class="form-group">
+                <label for="public" class="{$cellLabel}">{$labels.public}</label>
+                <div class="{$cellContent}">
+                  <input type="checkbox" name="public" {if $gui->is_public eq 1}  checked="checked" {/if} />
+                </div> <!-- cellContent -->  
+              </div> <!-- class="form-group" -->
+
+              {if $gui->cfields neq ''}
+                <div class="form-group">
+                 <div id="custom_field_container" class="custom_field_container">
+                   {$gui->cfields}
+                 </div>
+                </div> <!-- class="form-group" -->
+              {/if}
 
 
 
-    {if $gui->cfields neq ''}
-    <tr>
-      <td  colspan="2">
-     <div id="custom_field_container" class="custom_field_container">
-     {$gui->cfields}
-     </div>
-      </td>
-    </tr>
-    {/if}
-  </table>
+              {if isset($gui->api_key) && $gui->api_key != ''}
+                <div class="form-group">
+                  <label for="name" class="{$cellLabel}">{$labels.api_key}</label>
+                  <div class="{$cellContent}">
+                    {$gui->api_key}
+                  </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
+              {/if}
 
-  <div class="groupBtn">
-    {if $gui->itemID eq 0}
-      <input type="hidden" name="do_action" value="do_create" />
-      <input class="{#BUTTON_CLASS#}" type="submit" 
-             name="do_create" id="do_create" 
-             value="{$labels.btn_testplan_create}"
-             onclick="do_action.value='do_create'"/>
-    {else}
 
-      <input type="hidden" name="do_action" value="do_update" />
-      <input class="{#BUTTON_CLASS#}" type="submit" 
-             name="do_update" id="do_update"
-             value="{$labels.btn_upd}"
-             onclick="do_action.value='do_update'"/>
-    {/if}
-    <input class="{#BUTTON_CLASS#}" type="button" 
-           name="go_back" id="go_back"
-           value="{$labels.cancel}"
-           onclick="javascript: location.href=fRoot+'{$gui->actions->displayListURL};'"/>
-  </div>
+              {if $gui->itemID eq 0 && $gui->tplans != null}
+                <div class="form-group">
+                  <label for="name" class="{$cellLabel}">{$labels.testplan_question_create_tp_from}</label>
+                  <div class="{$cellContent}">
+                      <select name="copy_from_tplan_id"
+                              onchange="manage_copy_ctrls('copy_controls',this.value,'0')">
+                      <option value="0">{$labels.opt_no}</option>
+                      {foreach item=testplan from=$gui->tplans}
+                        <option value="{$testplan.id}">{$testplan.name|escape}</option>
+                      {/foreach}
+                      </select>
+                  </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
 
-  </form>
-{if $planID != 0}
-  {$downloadOnly=true}
-  {if $gui->userGrants->testplan_create eq 'yes'}
-    {$downloadOnly=false}
-  {/if}
+                <div class="form-group">
+                  <label class="{$cellLabel}">&nbsp;</label>
+                  <div class="{$cellContent}" id="copy_controls" style="display:none;">
+                      {assign var=this_template_dir value=$smarty.template|dirname}
+                      {include file="$this_template_dir/inc_controls_planEdit.tpl"}
+                  </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
 
-  {include file="attachments.inc.tpl" 
-                attach_id=$planID
-                attach_tableName=$gui->attachmentTableName
-                attach_attachmentInfos=$gui->attachments  
-                attach_downloadOnly=$downloadOnly
-                attach_loadOnCancelURL=$loadOnCancelURL}
-{/if}
-             
-<p>{$labels.testplan_txt_notes}</p>
+              {/if}
 
-</div>
-</div>
-{include file="supportJS.inc.tpl"}
+              <div class="groupBtn">
+                {if $gui->itemID eq 0}
+                  <input type="hidden" name="do_action" value="do_create" />
+                  <input class="{#BUTTON_CLASS#}" type="submit" 
+                         name="do_create" id="do_create" 
+                         value="{$labels.btn_testplan_create}"
+                         onclick="do_action.value='do_create'"/>
+                {else}
+
+                  <input type="hidden" name="do_action" value="do_update" />
+                  <input class="{#BUTTON_CLASS#}" type="submit" 
+                         name="do_update" id="do_update"
+                         value="{$labels.btn_upd}"
+                         onclick="do_action.value='do_update'"/>
+                {/if}
+                <input class="{#BUTTON_CLASS#}" type="button" 
+                       name="go_back" id="go_back"
+                       value="{$labels.cancel}"
+                       onclick="javascript: location.href=fRoot+'{$gui->actions->displayListURL};'"/>
+              </div>
+
+              {if $planID != 0}
+                {$downloadOnly=true}
+                {if $gui->userGrants->testplan_create eq 'yes'}
+                  {$downloadOnly=false}
+                {/if}
+
+                {include file="attachments.inc.tpl" 
+                              attach_id=$planID
+                              attach_tableName=$gui->attachmentTableName
+                              attach_attachmentInfos=$gui->attachments  
+                              attach_downloadOnly=$downloadOnly
+                              attach_loadOnCancelURL=$loadOnCancelURL}
+              {/if}
+            </form>  
+          </div> <!-- class="form-panel" -->
+        </div> <!-- class="col-lg-12" -->
+      </div> <!-- class="row mt" -->
+    </div> <!-- id="8container" -->
+  </div> <!-- id="main-content" -->
+  {include file="supportJS.inc.tpl"}
 </body>
 </html>

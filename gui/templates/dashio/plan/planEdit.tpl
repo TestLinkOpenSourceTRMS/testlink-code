@@ -28,13 +28,8 @@ Purpose: smarty template - create/edit Test Plan
   {$loadOnCancelURL=""}
 {/if}
 
-{* 
-{$cellContent = "col-sm-10"}
-{$cellLabel = "col-sm-2 col-sm-2 control-label"}
-*}
 {$cellContent = $tlCfg->layout->cellContent}
 {$cellLabel = $tlCfg->layout->cellLabel}
-
 
 {$buttonGroupLayout = "form-group"} {* Domain: form-group, groupBtn *}
 {$inputClass = ""}

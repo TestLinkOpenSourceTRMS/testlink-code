@@ -87,7 +87,7 @@ $tlCfg->accessWithoutLogin = array();
 
 // Bootstrap UX
 $tlCfg->layout->cellContent = "col-sm-10";
-$tlCfg->layout->cellContent = "col-sm-2 col-sm-2 control-label";
+$tlCfg->layout->cellLabel = "col-sm-2 col-sm-2 control-label";
 $tlCfg->layout->rowBegin = '<div class="form-group">';
 $tlCfg->layout->rowEnd = '</div> <!-- class="form-group"> -->';
 

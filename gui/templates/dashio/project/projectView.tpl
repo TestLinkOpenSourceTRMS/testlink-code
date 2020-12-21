@@ -90,15 +90,15 @@ var del_action=fRoot+'{$deleteAction}';
             <thead class="{#item_view_thead#}">
               <tr>
                 <th>{$tlImages.toggle_api_info}{$labels.th_name}</th>
-                <th data-orderable="false">{$labels.th_notes}</th>
+                <th {#NOT_SORTABLE#}>{$labels.th_notes}</th>
                 <th>{$labels.tcase_id_prefix}</th>
                 <th>{$labels.th_issuetracker}</th>
                 <th>{$labels.th_codetracker}</th>
-                <th class="icon_cell" data-orderable="false">{$labels.th_requirement_feature}</th>
+                <th class="icon_cell" {#NOT_SORTABLE#}>{$labels.th_requirement_feature}</th>
                 <th class="icon_cell">{$labels.th_active}</th>
                 <th class="icon_cell">{$labels.public}</th>
                 {if $gui->canManage == "yes"}
-                  <th class="icon_cell" data-orderable="false"></th>
+                  <th class="icon_cell" {#NOT_SORTABLE#}></th>
                 {/if}
               </tr>
             </thead>

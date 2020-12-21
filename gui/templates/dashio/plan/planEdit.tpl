@@ -106,9 +106,9 @@ Purpose: smarty template - create/edit Test Plan
               </div> <!-- class="form-group" -->
 
               <div class="form-group">
-                <label for="public" class="{$cellLabel}">{$labels.public}</label>
+                <label for="is_public" class="{$cellLabel}">{$labels.public}</label>
                 <div class="{$cellContent}">
-                  <input type="checkbox" name="public" {if $gui->is_public eq 1}  checked="checked" {/if} />
+                  <input type="checkbox" name="is_public" {if $gui->is_public eq 1}  checked="checked" {/if} />
                 </div> <!-- cellContent -->  
               </div> <!-- class="form-group" -->
 

@@ -86,8 +86,8 @@ var del_action=fRoot+'{$gui->actions->deleteAction}';
       {if $gui->drawPlatformQtyColumn}
         <th title="{$labels.platform_number_help}">{$labels.platform_qty}</th>
       {/if} 
-      <th {#NOT_SORTABLE#}>{$labels.testplan_th_active}</th>
-      <th {#NOT_SORTABLE#}>{$labels.public}</th>
+      <th {#NOT_SORTABLE#} class="icon_cell">{$labels.testplan_th_active}</th>
+      <th {#NOT_SORTABLE#} class="icon_cell">{$labels.public}</th>
       <th {#NOT_SORTABLE#}>&nbsp;</th>
     </tr>
     </thead>

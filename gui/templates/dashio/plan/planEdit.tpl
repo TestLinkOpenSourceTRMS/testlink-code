@@ -177,23 +177,32 @@ Purpose: smarty template - create/edit Test Plan
                        onclick="javascript: location.href=fRoot+'{$gui->actions->displayListURL};'"/>
               </div>
 
-              {if $planID != 0}
-                {$downloadOnly=true}
-                {if $gui->userGrants->testplan_create eq 'yes'}
-                  {$downloadOnly=false}
-                {/if}
-
-                {include file="attachments.inc.tpl" 
-                              attach_id=$planID
-                              attach_tableName=$gui->attachmentTableName
-                              attach_attachmentInfos=$gui->attachments  
-                              attach_downloadOnly=$downloadOnly
-                              attach_loadOnCancelURL=$loadOnCancelURL}
-              {/if}
             </form>  
           </div> <!-- class="form-panel" -->
         </div> <!-- class="col-lg-12" -->
       </div> <!-- class="row mt" -->
+
+      {if $planID != 0}
+        <div class="row mt">
+          <div class="col-lg-12">
+            <div class="form-panel">
+              {$downloadOnly=true}
+              {if $gui->userGrants->testplan_create eq 'yes'}
+                {$downloadOnly=false}
+              {/if}
+
+              {include file="attachments.inc.tpl" 
+                                attach_id=$planID
+                                attach_tableName=$gui->attachmentTableName
+                                attach_attachmentInfos=$gui->attachments  
+                                attach_downloadOnly=$downloadOnly
+                                attach_loadOnCancelURL=$loadOnCancelURL}
+            </div> <!-- class="form-panel" -->
+          </div> <!-- class="col-lg-12" -->
+        </div> <!-- class="row mt" -->
+      {/if}
+
+
     </div> <!-- id="8container" -->
   </div> <!-- id="main-content" -->
   {include file="supportJS.inc.tpl"}

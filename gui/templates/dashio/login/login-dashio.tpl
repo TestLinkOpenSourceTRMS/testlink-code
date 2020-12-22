@@ -114,7 +114,7 @@
   <script type="text/javascript" 
           src="{$dashioHome}lib/jquery.backstretch.min.js"></script>
   <script>
-    $.backstretch("{$dashioHome}img/wp-testing04.jpg", {
+    $.backstretch("{$gui->loginBackgroundImg}", {
       speed: 500
     });
   </script>

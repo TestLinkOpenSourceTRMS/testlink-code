@@ -84,7 +84,7 @@ class TLSmarty extends Smarty {
   private $tlImages;
   private $tlIMGTags;
   var $tlTemplateCfg;
-	private $dashioHome;
+	var $dashioHome;
 
   function __construct() {
     global $tlCfg;
@@ -524,6 +524,28 @@ class TLSmarty extends Smarty {
                    'inactive' => '<i class="far fa-heart" title="%s"></i>');
 
     return $dummy;
+  }
+
+
+  /**
+   *
+   */
+  function getLoginBackgroundImg($mode='random') 
+  {
+
+    $imgRepo = $this->dashioHome . 'img/login-background';
+    switch($mode) {
+      case 'random':
+        $files = glob($imgRepo . '/*');
+        $img = $files[rand(0, count($files) - 1)];
+      break;
+
+      case 'fixed':
+      default:
+        $img = $imgRepo . '/wp-testing04.jpg';
+      break;
+    }
+    return $img;
   }
 
 

@@ -266,6 +266,7 @@ function init_gui(&$db,$args)
   $gui->destination = $args->destination;
   $gui->pwdInputMaxLenght = config_get('loginPagePasswordMaxLenght');
   
+
   return $gui;
 }
 
@@ -320,13 +321,18 @@ function renderLoginScreen($guiObj)
   $g_tlLogger->deleteEventsFor(null, strtotime("-{$logPeriodToDelete} days UTC"));
   
   $smarty = new TLSmarty();
+  $guiObj->loginBackgroundImg = $smarty->getLoginBackgroundImg();
   $smarty->assign('gui', $guiObj);
 
   // $tpl = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-  $tpl = 'login/login-model-marcobiedermann.tpl';
+  // $tpl = 'login/login-model-marcobiedermann.tpl';
   $tpl = '../dashio/login/login-dashio.tpl';
   $smarty->display($tpl);
 }
+
+
+
+
 
 
 /**

@@ -541,9 +541,21 @@ class TLSmarty extends Smarty {
       break;
 
       case 'fixed':
-      default:
         $img = $imgRepo . '/wp-testing04.jpg';
       break;
+      
+      case 'unsplash-random':
+        $img='https://source.unsplash.com/random';
+      break;
+
+      case 'unsplash-daily':
+        $img='https://source.unsplash.com/daily';
+      break;
+
+      default:
+        $img=$mode;
+      break;
+
     }
     return $img;
   }

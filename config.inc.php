@@ -147,6 +147,24 @@ $tlCfg->instance_id = 'TLM';
 
 $tlCfg->gui->ux = 'tl-classic';
 
+
+/*
+Images present in filesystem
+(location dashioHome . 'img/login-background')
+ - fixed
+ - random
+
+Dynamic access of Images from Internet
+ - unsplash
+ - unsplash-daily
+
+Dynamic access of Images from Internet by URL
+
+'https://source.unsplash.com/featured/?water,rock'
+*/
+$tlCfg->gui->loginImageAlgorithm = 'https://source.unsplash.com/featured/?water,rock';
+
+
 /**
  * Copied from MantisBT
  * 

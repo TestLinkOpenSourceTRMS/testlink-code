@@ -321,7 +321,8 @@ function renderLoginScreen($guiObj)
   $g_tlLogger->deleteEventsFor(null, strtotime("-{$logPeriodToDelete} days UTC"));
   
   $smarty = new TLSmarty();
-  $guiObj->loginBackgroundImg = $smarty->getLoginBackgroundImg();
+  $algo = config_get('gui')->loginImageAlgorithm;
+  $guiObj->loginBackgroundImg = $smarty->getLoginBackgroundImg($algo);
   $smarty->assign('gui', $guiObj);
 
   // $tpl = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));

@@ -22,7 +22,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   src="{$basehref}node_modules/tablednd/js/jquery.tablednd.js">
 </script>
 
-
 <div class="workBack">
   <table class="simple" id="stepsOnTable">
   <tr class="nodrag">
@@ -40,9 +39,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <th>{$inc_steps_labels.step_actions}
     </th>
     <th>{$inc_steps_labels.expected_results}</th>
-    {if $session['testprojectOptions']->automationEnabled}
     <th width="25">{$inc_steps_labels.execution_type_short_descr}</th>
-    {/if}
     {if $edit_enabled}
     <th>&nbsp;</th>
     <th>&nbsp;</th>
@@ -70,15 +67,20 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <tr id="step_row_{$step_info.id}" style="border: 1px solid white;">
       <td style="text-align:center;">
         <span class="order_info" style='display:none'>
-        {if $edit_enabled && $args_frozen_version=="no"}
-          <input type="text" class="step_number{$args_testcase.id}" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
-            value="{$step_info.step_number}"
-            size="{#STEP_NUMBER_SIZE#}"
-            maxlength="{#STEP_NUMBER_MAXLEN#}">
-          {include file="error_icon.tpl" field="step_number"}
-        {/if}
+          {if $edit_enabled && $args_frozen_version=="no"}
+            <input type="text" class="step_number{$args_testcase.id}" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
+              value="{$step_info.step_number}"
+              size="{#STEP_NUMBER_SIZE#}"
+              maxlength="{#STEP_NUMBER_MAXLEN#}">
+            {include file="error_icon.tpl" field="step_number"}
+          {/if}
         </span>
-        <span id="tcstep_{$step_info.id}">{$step_info.step_number}</span>
+        <span id="tcstep_{$step_info.id}">{$step_info.step_number}
+          {if $step_info.upload_on_execution_enabled}
+            <br><img src="{$tlImages.upload}" title="{$inc_steps_labels.upload_on_exec_is_enabled}">
+            {if $step_info.upload_on_execution_mandatory}<img src="{$tlImages.mandatory}" title="{$inc_steps_labels.upload_on_exec_is_mandatory}">{/if}
+          {/if}
+        </span>
         {if $ghost_control}
           <span class='ghost' style='display:none'>{$step_info.ghost_action}</span>    
         {/if}

@@ -16,7 +16,8 @@ $@filesource inc_steps.tpl
              latest_exec_notes,step_exec_status,
              clear_all_notes,step_exec_notes,
              execution_type_short_descr,delete_step,
-             insert_step,show_ghost_string"}
+             insert_step,show_ghost_string,
+             and,upload_on_exec_is_enabled,upload_on_exec_is_mandatory"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}

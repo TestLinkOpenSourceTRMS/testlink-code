@@ -4067,5 +4067,6 @@ $TLS_mandatory = 'Mandatory';
 $TLS_upload_on_execution = 'Upload on Execution is ';
 $TLS_and = 'and';
 
-
+$TLS_upload_on_exec_is_enabled = 'Upload On Exec IS ENABLED';
+$TLS_upload_on_exec_is_mandatory = 'Upload On Exec IS Mandatory';
 // ----- END -----------------------------------------------------

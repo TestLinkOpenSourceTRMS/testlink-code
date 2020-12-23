@@ -401,6 +401,7 @@ class TLSmarty extends Smarty {
                    'log_message_small' => $imgLoc . 'history_small.png',
                    'logout' => $imgLoc . 'computer_go.png',
                    'magnifier' => $imgLoc . 'magnifier.png',
+                   'mandatory' => $imgLoc . 'asterisk_yellow.png',
                    'move_copy' => $imgLoc . 'application_double.png',
                    'new_f2_16' => $imgLoc . 'new_f2_16.png',
                    'note_edit' => $imgLoc . 'note_edit.png',

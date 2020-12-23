@@ -26,7 +26,8 @@ Purpose: create/edit test case step
              expected_results,step_actions,step_number_verbose,btn_cancel,btn_create_step,ghost,
              show_ghost_string,display_author_updater,
              btn_create,btn_cp,btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr,
-             title_created,version,by,summary,preconditions,title_last_mod,upload_on_execution,and"}
+             title_created,version,by,summary,preconditions,title_last_mod,
+             upload_on_execution,and,upload_on_exec_is_enabled,upload_on_exec_is_mandatory"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 
@@ -203,22 +204,27 @@ function validateForm(the_form,step_set,step_number_on_edit)
           {$row=0}
           {foreach from=$gui->tcaseSteps item=step_info}
             <tr id="step_row_{$step_info.step_number}">
-            {if $step_info.step_number == $gui->step_number}
-              <td style="text-align:left;">{$gui->step_number}</td>
-              <td>{$steps}
-              </td>
-              <td>{$expected_results}</td>
-              <td>
-                <select name="exec_type" onchange="content_modified = true">
-                  {html_options options=$gui->execution_types selected=$gui->step_exec_type}
-                </select><br>
-              </td>
-            {else}
-              <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
-              <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
-              <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
-              <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
-            {/if}
+              {if $step_info.step_number == $gui->step_number}
+                <td style="text-align:left;">{$gui->step_number}</td>
+                <td>{$steps}
+                </td>
+                <td>{$expected_results}</td>
+                <td>
+                  <select name="exec_type" onchange="content_modified = true">
+                    {html_options options=$gui->execution_types selected=$gui->step_exec_type}
+                  </select><br>
+                </td>
+              {else}
+                <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a>
+                {if $step_info.upload_on_execution_enabled}
+                  <br><img src="{$tlImages.upload}" title="{$labels.upload_on_exec_is_enabled}">
+                  {if $step_info.upload_on_execution_mandatory}<img src="{$tlImages.mandatory}" title="{$labels.upload_on_exec_is_mandatory}">{/if}
+                {/if}
+                </td>
+                <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
+                <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
+                <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
+              {/if}
             {$rCount=$row+$step_info.step_number}
             </tr>
 

@@ -5756,32 +5756,39 @@ class testcase extends tlObjectWithAttachments {
   }
 
   /**
-     *
-     *
-     */
-  function update_step($step_id,$step_number,$actions,$expected_results,$execution_type)
+   *
+   *
+   */
+  //function update_step($step_id,$step_number,$actions,$expected_results,$execution_type)
+  //{
+
+  function update_step($step)
   {
+
+    $safeStep = $step;
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $ret = array();
 
     $k2e = array('actions','expected_results');
     $item = new stdClass();
-    $item->actions = $actions;
-    $item->expected_results = $expected_results;
+    $item->actions = $safeStep['actions'];
+    $item->expected_results = $safeStep['expected_results'];
     $this->CKEditorCopyAndPasteCleanUp($item,$k2e); 
 
     $sql = "/* $debugMsg */ UPDATE {$this->tables['tcsteps']} " .
-           " SET step_number=" . $this->db->prepare_int($step_number) . "," .
+           " SET step_number=" . $this->db->prepare_int($safeStep['step_number']) . "," .
            " actions='" . $this->db->prepare_string($item->actions) . "', " .
            " expected_results='" . 
            $this->db->prepare_string($item->expected_results) . "', " .
-           " execution_type = " . $this->db->prepare_int($execution_type)  .
-           " WHERE id = " . $this->db->prepare_int($step_id);
+           " execution_type = " . $this->db->prepare_int($safeStep['execution_type']) . "," .
+           " upload_on_execution_enabled = " . $this->db->prepare_int($safeStep['upload_on_exec_enabled']) . "," .
+           " upload_on_execution_mandatory = " . $this->db->prepare_int($safeStep['upload_on_exec_mandatory'])  .
+           " WHERE id = " . $this->db->prepare_int($safeStep['step_id']);
 
     $result = $this->db->exec_query($sql);
     $ret = array('msg' => 'ok', 'status_ok' => 1, 'sql' => $sql);
-    if (!$result)
-    {
+    if (!$result) {
       $ret['msg'] = $this->db->error_msg();
       $ret['status_ok']=0;
     }

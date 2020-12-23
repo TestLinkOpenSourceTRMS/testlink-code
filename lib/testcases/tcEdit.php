@@ -486,15 +486,13 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
   $tcaseMgr->setTestProject($args->tproject_id);
 
 
-
-  // 20201223 
   $args->upload_on_exec_enabled = 1;
   if (isset($_REQUEST['upload_on_exec_enabled'])) {
     $args->upload_on_exec_enabled = intval($_REQUEST['upload_on_exec_enabled']) > 0 ? 1 : 0;
   }  
   $args->upload_on_exec_mandatory = 0;
   if (isset($_REQUEST['upload_on_exec_mandatory'])) {
-    $args->upload_on_exec_enabled = intval($_REQUEST['upload_on_exec_mandatory']) > 0 ? 1 : 0;
+    $args->upload_on_exec_mandatory = intval($_REQUEST['upload_on_exec_mandatory']) > 0 ? 1 : 0;
   }  
 
   return $args;

@@ -731,8 +731,7 @@ class testcaseCommands {
     $stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
         
     $oWebEditorKeys = array('steps' => 'actions', 'expected_results' => 'expected_results');
-    foreach($oWebEditorKeys as $key => $field)
-    {
+    foreach($oWebEditorKeys as $key => $field) {
       $argsObj->$key = $stepInfo[$field];
       $guiObj->$key = $stepInfo[$field];
     }
@@ -746,6 +745,8 @@ class testcaseCommands {
     $guiObj->step_id = $argsObj->step_id;
     $guiObj->step_exec_type = $stepInfo['execution_type'];
     $guiObj->step_number = $stepInfo['step_number'];
+    $guiObj->upload_on_exec_enabled = $stepInfo['upload_on_execution_enabled'];
+    $guiObj->upload_on_exec_mandatory = $stepInfo['upload_on_execution_mandatory'];
 
     // Get all existent steps
     $guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
@@ -781,8 +782,17 @@ class testcaseCommands {
                           $guiObj->testcase['tc_external_id'] . ':' . 
                           $guiObj->testcase['name'], $guiObj->testcase['version']); 
 
-    $op = $this->tcaseMgr->update_step($argsObj->step_id,$argsObj->step_number,$argsObj->steps,
-                                       $argsObj->expected_results,$argsObj->exec_type);    
+
+    $stepItem = ['step_id' => $argsObj->step_id,
+                 'step_number' => $argsObj->step_number,
+                 'actions' => $argsObj->steps,
+                 'expected_results' => $argsObj->expected_results,
+                 'execution_type' => intval($argsObj->exec_type),
+                 'upload_on_exec_enabled' => intval($argsObj->upload_on_exec_enabled),
+                 'upload_on_exec_mandatory' => intval($argsObj->upload_on_exec_mandatory)
+                ];
+
+    $op = $this->tcaseMgr->update_step($stepItem);    
 
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
     $this->initTestCaseBasicInfo($argsObj,$guiObj);

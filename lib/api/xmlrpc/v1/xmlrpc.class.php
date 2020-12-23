@@ -5962,12 +5962,12 @@ class TestlinkXMLRPCServer extends IXR_Server {
      *            NOT IMPLEMENTED YET
      * @param array $args["steps"]:
      *            each element is a hash with following keys
-     *            step_number,actions,expected_results,execution_type
+     *            step_number,actions,expected_results,execution_type,
+     *            upload_on_exec_enabled,
+     *            upload_on_exec_mandatory
      *
      * @return mixed $resultInfo
      *
-     * @internal revisions
-     *           20111018 - franciscom - TICKET 4774: New methods to manage test case steps
      */
     function createTestCaseSteps($args) {
         $operation = __FUNCTION__;
@@ -6073,14 +6073,27 @@ class TestlinkXMLRPCServer extends IXR_Server {
                             'operation' => $op,
                             'step_number' => $si['step_number']
                     );
+
                     switch($op) {
                         case 'update' :
+                            $si['step_id'] = $step_id;
+                            $si['execution_type'] = $execution_type;
+
+                            /*
                             $this->tcaseMgr->update_step( $step_id, $si['step_number'], $si['actions'], $si['expected_results'], $execution_type );
+                            */ 
+                            $this->tcaseMgr->update_step($si); 
                             break;
 
                         case 'create' :
+                            $si['tcversion_id'] = $tcversion_id;
+                            $si['execution_type'] = $execution_type;
+
+                            /*
                             $this->tcaseMgr->create_step( $tcversion_id, $si['step_number'], $si['actions'], $si['expected_results'], $execution_type );
-                            break;
+                            */  
+                            $this->tcaseMgr->create_step($si); 
+                        break;
 
                         case 'push' :
                             // First action renumber existent steps

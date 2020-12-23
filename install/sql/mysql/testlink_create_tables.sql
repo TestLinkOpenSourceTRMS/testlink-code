@@ -475,6 +475,8 @@ CREATE TABLE /*prefix*/tcsteps (
   expected_results TEXT,
   active tinyint(1) NOT NULL default '1',
   execution_type tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
+  upload_on_execution_enabled tinyint(1) NOT NULL default '1' COMMENT '0 -> disabled, 1 -> ENABLED',
+  upload_on_execution_mandatory tinyint(1) NOT NULL default '0' COMMENT '0 -> optional, 1 -> Mandatory',
   PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 

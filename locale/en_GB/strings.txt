@@ -4058,4 +4058,14 @@ $TLS_before_preconditions = "Before Preconditions";
 $TLS_after_title = "After Title";
 $TLS_after_summary = "After summary";
 $TLS_after_preconditions = "After Preconditions";
+
+$TLS_enabled = 'Enabled';
+$TLS_disabled = 'Disabled';
+
+$TLS_optional = 'Optional';
+$TLS_mandatory = 'Mandatory';
+$TLS_upload_on_execution = 'Upload on Execution is ';
+$TLS_and = 'and';
+
+
 // ----- END -----------------------------------------------------

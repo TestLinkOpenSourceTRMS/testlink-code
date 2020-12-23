@@ -22,6 +22,8 @@ class testcaseCommands {
   private $execution_types;
   private $grants;
   private $tproject_id;
+  private $upload_on_exec_enabled_domain;
+  private $upload_on_exec_mandatory_domain;
 
   const UPDATECFONDB = true;
 
@@ -38,6 +40,10 @@ class testcaseCommands {
     $this->tproject_id = $tproject_id;
 
     $this->execution_types = $this->tcaseMgr->get_execution_types();
+
+    $this->upload_on_exec_enabled_domain = $this->tcaseMgr->uploadOnExecEnabledForUX();
+    $this->upload_on_exec_mandatory_domain = $this->tcaseMgr->uploadOnExecMandatoryForUX();
+
     $this->grants = new stdClass();
 
     $g2c = array('mgt_modify_tc','mgt_view_req','testplan_planning',
@@ -72,6 +78,8 @@ class testcaseCommands {
     $obj->direct_link = null;
     $obj->execution_types = $this->execution_types;
 
+    $obj->upload_on_exec_enabled_domain = $this->upload_on_exec_enabled_domain;
+    $obj->upload_on_exec_mandatory_domain = $this->upload_on_exec_mandatory_domain;
 
     $obj->grants = $this->grants;
 
@@ -179,6 +187,15 @@ class testcaseCommands {
     if( !is_null($guiObj->testcase['updater_id']) ) {
       $guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id']);
     } 
+
+
+    if (property_exists($guiObj, 'upload_on_exec_enabled') == false) {
+      $guiObj->upload_on_exec_enabled = 1;
+    }
+
+    if (property_exists($guiObj, 'upload_on_exec_mandatory') == false) {
+      $guiObj->upload_on_exec_mandatory = 0;
+    }
 
     $cfCtx = array('scope' => 'design',
                    'tproject_id' => $argsObj->testproject_id,
@@ -637,8 +654,17 @@ class testcaseCommands {
 
     $new_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
     $new_step++;
-    $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$new_step,
-                                       $argsObj->steps,$argsObj->expected_results,$argsObj->exec_type);  
+
+    $stepItem = ['tcversion_id' => $argsObj->tcversion_id,
+                 'step_number' => $new_step,
+                 'actions' => $argsObj->steps,
+                 'expected_results' => $argsObj->expected_results,
+                 'execution_type' => $argsObj->exec_type,
+                 'upload_on_exec_enabled' => $argsObj->upload_on_exec_enabled,
+                 'upload_on_exec_mandatory' => $argsObj->upload_on_exec_mandatory 
+                ];
+
+    $op = $this->tcaseMgr->create_step($stepItem);  
                               
     $guiObj->doExit = false;
     if( $op['status_ok'] )
@@ -856,11 +882,12 @@ class testcaseCommands {
 
     $source_info = $this->tcaseMgr->get_steps($argsObj->tcversion_id,$argsObj->step_number);
     $source_info = current($source_info);
-    $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$new_step,$source_info['actions'],
-                                       $source_info['expected_results'],$source_info['execution_type']);      
 
-    if( $op['status_ok'] )
-    {
+    $source_info['tcversion_id'] = $argsObj->tcversion_id;
+    $source_info['step_number'] = $new_step;
+    $op = $this->tcaseMgr->create_step($source_info);      
+
+    if( $op['status_ok'] ) {
       $guiObj->user_feedback = sprintf(lang_get('step_number_x_created_as_copy'),$new_step,$argsObj->step_number);
       $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
 
@@ -913,7 +940,15 @@ class testcaseCommands {
     
     $stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
     $newStepNumber = $stepInfo['step_number'] + 1;
-    $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$newStepNumber,'','');
+    
+    $stepItem = ['tcversion_id' => $argsObj->tcversion_id,
+                 'step_number' => $newStepNumber,
+                 'actions' => '',
+                 'expected_results' => '' 
+                ];
+    $op = $this->tcaseMgr->create_step($stepItem);
+
+
     $guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$newStepNumber,
                                   $guiObj->testcase['tc_external_id'] . ':' . 
                                   $guiObj->testcase['name'], $guiObj->testcase['version']); 

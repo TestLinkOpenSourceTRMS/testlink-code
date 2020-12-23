@@ -26,7 +26,7 @@ Purpose: create/edit test case step
              expected_results,step_actions,step_number_verbose,btn_cancel,btn_create_step,ghost,
              show_ghost_string,display_author_updater,
              btn_create,btn_cp,btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr,
-             title_created,version,by,summary,preconditions,title_last_mod"}
+             title_created,version,by,summary,preconditions,title_last_mod,upload_on_execution,and"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 
@@ -195,15 +195,13 @@ function validateForm(the_form,step_set,step_number_on_edit)
            *}
           <th width="45%">{$labels.step_actions}</th>
           <th>{$labels.expected_results}</th>
-          {if $session['testprojectOptions']->automationEnabled}
-            <th width="25">{$labels.execution_type_short_descr}</th>
-          {/if}  
+          <th width="25">&nbsp;</th>
         </tr>
         {* this means we have steps to display *}
         {if $gui->tcaseSteps != ''}
           {$rowCount=$gui->tcaseSteps|@count} 
           {$row=0}
-          
+          VVVVV
           {foreach from=$gui->tcaseSteps item=step_info}
             <tr id="step_row_{$step_info.step_number}">
             {if $step_info.step_number == $gui->step_number}
@@ -234,29 +232,27 @@ function validateForm(the_form,step_set,step_number_on_edit)
 
               </td>
               <td>{$expected_results}</td>
-              {if $session['testprojectOptions']->automationEnabled}
               <td>
                 <select name="exec_type" onchange="content_modified = true">
-                    {html_options options=$gui->execution_types selected=$gui->step_exec_type}
-                </select>
-                </td>
-                {/if}
+                  {html_options options=$gui->execution_types selected=$gui->step_exec_type}
+                </select><br>
+                KKKK <br>
+                <select name="exec_type" onchange="content_modified = true">
+                  {html_options options=$gui->execution_types selected=$gui->step_exec_type}
+                </select><br>
+
+              
+              </td>
             {else}
               <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
               <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
               <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
-              {if $session['testprojectOptions']->automationEnabled}
-                <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
-              {/if}  
+              <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
             {/if}
           {$rCount=$row+$step_info.step_number}
           {if ($rCount < $rowCount) && ($rowCount>=1)}
             <tr width="100%">
-              {if $session['testprojectOptions']->automationEnabled}
               <td colspan=6>
-              {else}
-              <td colspan=5>
-              {/if}
               <hr align="center" width="100%" color="grey" size="1">
               </td>
             </tr>
@@ -319,26 +315,33 @@ function validateForm(the_form,step_set,step_number_on_edit)
             <td style="text-align:left;">{$gui->step_number}</td>
             <td>{$steps}</td>
             <td>{$expected_results}</td>
-              {if $session['testprojectOptions']->automationEnabled}
               <td>
                 <select name="exec_type" onchange="content_modified = true">
-                    {html_options options=$gui->execution_types selected=$gui->step_exec_type}
+                  {html_options options=$gui->execution_types selected=$gui->step_exec_type}
                 </select>
               </td>
-              {/if}
+          </tr>
+          <tr id="new_step_upload">
+            <td colspan="2">
+                {$labels.upload_on_execution}<select name="upload_on_exec_enabled" onchange="content_modified = true">
+                  {html_options options=$gui->upload_on_exec_enabled_domain selected=$gui->upload_on_exec_enabled}
+                </select>
+                {$labels.and}
+                <select name="upload_on_exec_mandatory" onchange="content_modified = true">
+                  {html_options options=$gui->upload_on_exec_mandatory_domain selected=$gui->upload_on_exec_mandatory}
+                </select>
+            </td>
           </tr>
         
         {else}
           <tr id="new_step">
             <th width="20">{$args_labels.step_number} {$gui->step_number}</th>
             <th>{$labels.step_actions}</th>
-            {if $session['testprojectOptions']->automationEnabled}
               <th width="200">{$labels.execution_type_short_descr}:
                   <select name="exec_type" onchange="content_modified = true">
                     {html_options options=$gui->execution_types selected=$gui->step_exec_type}
                   </select>
               </th>
-            {/if}
             <tr>
               <td>&nbsp;</td>
               <td colspan="2">{$steps}</td>

@@ -124,14 +124,16 @@ class testcase extends tlObjectWithAttachments {
   /**
    *
    */
-  function setTestProject($tproject_id) {
+  function setTestProject($tproject_id) 
+  {
     $this->tproject_id = intval($tproject_id);
   }
 
   /**
    *
    */
-  static function getExecutionTypes() {
+  static function getExecutionTypes() 
+  {
     $stdSet = array(self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
                     self::EXECUTION_TYPE_AUTO => lang_get('automated'));
 
@@ -144,6 +146,44 @@ class testcase extends tlObjectWithAttachments {
     }
     return $stdSet;
   }
+
+  /*
+     function: get_execution_types
+               getter
+
+     args: -
+
+     returns: map
+              key: execution type code
+              value: execution type verbose description
+
+  */
+  function get_execution_types()
+  {
+    return $this->execution_types;
+  }
+
+
+  /**
+   *
+   */
+  static function uploadOnExecEnabledForUX() 
+  {
+    $stdSet = array( 0 => lang_get('disabled'),
+                     1 => lang_get('enabled'));
+    return $stdSet;
+  }
+
+  /**
+   *
+   */
+  static function uploadOnExecMandatoryForUX() 
+  {
+    $stdSet = array( 0 => lang_get('optional'),
+                     1 => lang_get('mandatory'));
+    return $stdSet;
+  }
+
 
 
   /**
@@ -273,21 +313,6 @@ class testcase extends tlObjectWithAttachments {
     return $this->import_file_types;
   }
 
-  /*
-     function: get_execution_types
-               getter
-
-     args: -
-
-     returns: map
-              key: execution type code
-              value: execution type verbose description
-
-  */
-  function get_execution_types()
-  {
-    return $this->execution_types;
-  }
 
 
   /**
@@ -749,12 +774,8 @@ class testcase extends tlObjectWithAttachments {
           $item->steps[$jdx] = (array)$item->steps[$jdx];
         }
 
-        $this->create_step($tcase_version_id,
-                           $item->steps[$jdx]['step_number'],
-                           $item->steps[$jdx]['actions'],
-                           $item->steps[$jdx]['expected_results'],
-                           $item->steps[$jdx]['execution_type']);
-      }
+        $item->steps[$jdx]['tcversion_id'] = $tcase_version_id; 
+        $this->create_step($item->steps[$jdx]);      }
     }
 
     if (!$result) {
@@ -2025,17 +2046,25 @@ class testcase extends tlObjectWithAttachments {
                     $act = sprintf(self::GHOSTSTEPMASK,$step['step_number'],
                                    $pfx,$tcversion['version']); 
 
-                    $this->create_step($to_tcversion_id,
+                    $step['tcversion_id'] = $to_tcversion_id;
+                    $step['actions'] = $act;
+                    $step['expected_results'] = $act; 
+                    $this->create_step($step);
+
+                    /*$this->create_step($to_tcversion_id,
                                        $step['step_number'],$act,$act,
-                                       $step['execution_type']);
+                                       $step['execution_type']); */
                   }
                 } else {
                   foreach($stepsSet as $key => $step) {
-                    $this->create_step($to_tcversion_id,
+                    $step['tcversion_id'] = $to_tcversion_id;
+                    
+                    $this->create_step($step);
+                    /*$to_tcversion_id,
                                        $step['step_number'],
                                        $step['actions'],
                                        $step['expected_results'],
-                                       $step['execution_type']);
+                                       $step['execution_type']);*/
                   }
                 }
               }
@@ -2291,9 +2320,12 @@ class testcase extends tlObjectWithAttachments {
     $stepsSet = $this->get_steps($from_tcversion_id,0,$gso);
     if( !is_null($stepsSet) && count($stepsSet) > 0) {
       foreach($stepsSet as $key => $step) {
-        $op = $this->create_step($to_tcversion_id,$step['step_number'],
+        $step['tcversion_id'] = $to_tcversion_id;
+        $op = $this->create_step($step);
+
+          /*$to_tcversion_id,$step['step_number'],
                                  $step['actions'],$step['expected_results'],
-                                 $step['execution_type']);
+                                 $step['execution_type']);*/
       }
     }
   }
@@ -5409,36 +5441,92 @@ class testcase extends tlObjectWithAttachments {
      *
      *
      */
-  function create_step($tcversion_id,$step_number,$actions,$expected_results,
-                         $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL)
+  //function create_step($tcversion_id,$step_number,$actions,$expected_results,
+  //                     $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL)
+  //{
+
+  /**
+   * $step []
+   *   tcversion_id
+   *   step_number
+   *   actions
+   *   expected_results
+   *   execution_type
+   *   upload_on_exec_enabled
+   *   upload_on_exec_mandatory   
+   */
+  function create_step($step) 
   {
+
+    $safeStep = $step;
+    if( !isset($safeStep['execution_type'])) {
+      $safeStep['execution_type'] = testcase::EXECUTION_TYPE_MANUAL;
+    }
+
+
+    /*
+    if( !isset($safeStep['upload_on_exec_enabled'])) {
+      $safeStep['upload_on_exec_enabled'] = 1;
+    }
+
+    if( !isset($safeStep['upload_on_exec_mandatory'])) {
+      $safeStep['upload_on_exec_mandatory'] = 1;
+    }
+    */
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $ret = array();
 
     // defensive programming
-    $dummy = $this->db->prepare_int($execution_type);
+    $dummy = $this->db->prepare_int($safeStep['execution_type']);
     $dummy = (isset($this->execution_types[$dummy])) ? $dummy : TESTCASE_EXECUTION_TYPE_MANUAL;
 
-    $item_id = $this->tree_manager->new_node($tcversion_id,$this->node_types_descr_id['testcase_step']);
+    $item_id = $this->tree_manager->new_node($safeStep['tcversion_id'],$this->node_types_descr_id['testcase_step']);
 
     $k2e = array('actions','expected_results');
     $item = new stdClass();
-    $item->actions = $actions;
-    $item->expected_results = $expected_results;
+    $item->actions = $safeStep['actions'];
+    $item->expected_results = $safeStep['expected_results'];
     $this->CKEditorCopyAndPasteCleanUp($item,$k2e); 
 
-    $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcsteps']} " .
-           " (id,step_number,actions,expected_results,execution_type) " .
-           " VALUES({$item_id},{$step_number},'" . 
-           $this->db->prepare_string($item->actions) . "','" .
-           $this->db->prepare_string($item->expected_results) . "', " . 
-           $this->db->prepare_int($dummy) . ")";
+
+    $cwD = ['upload_on_exec_enabled','upload_on_exec_mandatory'];
+
+    $sql = " /* $debugMsg */ 
+             INSERT INTO {$this->tables['tcsteps']}
+             (id,step_number,actions,expected_results,execution_type";
+
+    // Columns with DB Defaults       
+    foreach ($cwD as $col) {
+      if ( isset($safeStep['col'])) {
+        $sql .= "," . $col;
+      }
+    }
+    $sql .= " )";
+
+    $sql .= " VALUES({$item_id},{$safeStep['step_number']},'" . 
+                     $this->db->prepare_string($item->actions) . "','" .
+                     $this->db->prepare_string($item->expected_results) . "', " . 
+                     $this->db->prepare_int($dummy);
+
+    // values for Columns with DB Defaults       
+    foreach ($cwD as $col) {
+      if ( isset($safeStep['col'])) {
+        $sql .= "," . (intval($safeStep['col']) > 0 ? 1 : 0);
+      }
+    }
+    $sql .=")";
+
+    echo '<pre>';
+    var_dump($safeStep);
+    echo '</pre>';
+
+    echo $sql;
 
     $result = $this->db->exec_query($sql);
     $ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 
                  'sql' => $sql);
-    if (!$result)
-    {
+    if (!$result) {
       $ret['msg'] = $this->db->error_msg();
       $ret['status_ok']=0;
       $ret['id']=-1;
@@ -5971,12 +6059,9 @@ class testcase extends tlObjectWithAttachments {
 
     // Now insert steps
     $loop2do = count($steps);
-    for($idx=0; $idx < $loop2do; $idx++)
-    {
-      $this->create_step($tcversion_id,$steps[$idx]['step_number'],
-                         $steps[$idx]['actions'],
-                         $steps[$idx]['expected_results'],
-                         $steps[$idx]['execution_type']);
+    for($idx=0; $idx < $loop2do; $idx++) {
+      $steps[$idx]['tcversion_id'] = $tcversion_id;
+      $this->create_step($steps[$idx]);
     }
   }
 
@@ -9648,6 +9733,9 @@ class testcase extends tlObjectWithAttachments {
     return $rs;
   }
 
-
+  /**
+   *
+   */
+   // function buildStepItem($tcase_version_id,$item->steps[$jdx]);
 
 }  // Class end

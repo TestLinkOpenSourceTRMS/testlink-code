@@ -67,87 +67,87 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
               $tlCfg->exec_cfg->steps_exec_attachments}
 
   {foreach from=$steps item=step_info}
-  <tr id="step_row_{$step_info.id}" style="border: 1px solid white;">
-    <td style="text-align:center;">
-      <span class="order_info" style='display:none'>
-      {if $edit_enabled && $args_frozen_version=="no"}
-        <input type="text" class="step_number{$args_testcase.id}" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
-          value="{$step_info.step_number}"
-          size="{#STEP_NUMBER_SIZE#}"
-          maxlength="{#STEP_NUMBER_MAXLEN#}">
-        {include file="error_icon.tpl" field="step_number"}
-      {/if}
-      </span>
-      <span id="tcstep_{$step_info.id}">{$step_info.step_number}</span>
-      {if $ghost_control}
-        <span class='ghost' style='display:none'>{$step_info.ghost_action}</span>    
-      {/if}
-    </td>
-    <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.actions|nl2br}{else}{$step_info.actions}{/if}
-    </td>
-    <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.expected_results|nl2br}{else}{$step_info.expected_results}{/if}</td>
-    {if $session['testprojectOptions']->automationEnabled}
-    <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
-    {/if}
-
-    {if $edit_enabled && $args_frozen_version=="no"}
-    <td class="clickable_icon">
-      <img style="border:none;cursor: pointer;"
-           title="{$inc_steps_labels.delete_step}"
-           alt="{$inc_steps_labels.delete_step}"
-           onclick="delete_confirmation({$step_info.id},'{$step_info.step_number|escape:'javascript'|escape}',
-                                         '{$del_msgbox_title}','{$warning_msg}');"
-           src="{$tlImages.delete}"/>
-    </td>
-    
-    <td class="clickable_icon">
-      <img style="border:none;cursor: pointer;"  title="{$inc_steps_labels.insert_step}"    
-           alt="{$inc_steps_labels.insert_step}"
-           onclick="launchInsertStep({$step_info.id});"    src="{$tlImages.insert_step}"/>
-    </td>
-    
-    {/if}
-
-    {if $inExec}
-      <td class="exec_tcstep_note">
-        <textarea class="step_note_textarea" 
-          name="step_notes[{$step_info.id}]" id="step_notes_{$step_info.id}" 
-          cols="40" rows="5">{$step_info.execution_notes|escape}</textarea>
-      </td>
-
-      <td>
-        <select class="step_status" name="step_status[{$step_info.id}]" id="step_status_{$step_info.id}">
-          {html_options options=$gui->execStepStatusValues selected=$step_info.execution_status}
-
-        </select> <br>
-        
-        {if $gui->tlCanCreateIssue}
-          {include file="execute/add_issue_on_step.inc.tpl" 
-                   args_labels=$labels
-                   args_step_id=$step_info.id}
+    <tr id="step_row_{$step_info.id}" style="border: 1px solid white;">
+      <td style="text-align:center;">
+        <span class="order_info" style='display:none'>
+        {if $edit_enabled && $args_frozen_version=="no"}
+          <input type="text" class="step_number{$args_testcase.id}" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
+            value="{$step_info.step_number}"
+            size="{#STEP_NUMBER_SIZE#}"
+            maxlength="{#STEP_NUMBER_MAXLEN#}">
+          {include file="error_icon.tpl" field="step_number"}
+        {/if}
+        </span>
+        <span id="tcstep_{$step_info.id}">{$step_info.step_number}</span>
+        {if $ghost_control}
+          <span class='ghost' style='display:none'>{$step_info.ghost_action}</span>    
         {/if}
       </td>
+      <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.actions|nl2br}{else}{$step_info.actions}{/if}
+      </td>
+      <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.expected_results|nl2br}{else}{$step_info.expected_results}{/if}</td>
+      {if $session['testprojectOptions']->automationEnabled}
+      <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
+      {/if}
 
+      {if $edit_enabled && $args_frozen_version=="no"}
+      <td class="clickable_icon">
+        <img style="border:none;cursor: pointer;"
+             title="{$inc_steps_labels.delete_step}"
+             alt="{$inc_steps_labels.delete_step}"
+             onclick="delete_confirmation({$step_info.id},'{$step_info.step_number|escape:'javascript'|escape}',
+                                           '{$del_msgbox_title}','{$warning_msg}');"
+             src="{$tlImages.delete}"/>
+      </td>
+      
+      <td class="clickable_icon">
+        <img style="border:none;cursor: pointer;"  title="{$inc_steps_labels.insert_step}"    
+             alt="{$inc_steps_labels.insert_step}"
+             onclick="launchInsertStep({$step_info.id});"    src="{$tlImages.insert_step}"/>
+      </td>
+      
+      {/if}
+
+      {if $inExec}
+        <td class="exec_tcstep_note">
+          <textarea class="step_note_textarea" 
+            name="step_notes[{$step_info.id}]" id="step_notes_{$step_info.id}" 
+            cols="40" rows="5">{$step_info.execution_notes|escape}</textarea>
+        </td>
+
+        <td>
+          <select class="step_status" name="step_status[{$step_info.id}]" id="step_status_{$step_info.id}">
+            {html_options options=$gui->execStepStatusValues selected=$step_info.execution_status}
+
+          </select> <br>
+          
+          {if $gui->tlCanCreateIssue}
+            {include file="execute/add_issue_on_step.inc.tpl" 
+                     args_labels=$labels
+                     args_step_id=$step_info.id}
+          {/if}
+        </td>
+
+      {/if}
+     
+    </tr>
+    {if $inExec && $gui->tlCanCreateIssue} 
+      <tr>
+        <td colspan=6>
+        {include file="execute/issue_inputs_on_step.inc.tpl"
+                 args_labels=$labels
+                 args_step_id=$step_info.id}
+        </td>
+      </tr> 
     {/if}
-   
-  </tr>
-  {if $inExec && $gui->tlCanCreateIssue} 
-    <tr>
-      <td colspan=6>
-      {include file="execute/issue_inputs_on_step.inc.tpl"
-               args_labels=$labels
-               args_step_id=$step_info.id}
-      </td>
-    </tr> 
-  {/if}
 
-  {if $gui->allowStepAttachments && $att_ena}
-    <tr>
-      <td colspan=6>
-      {include file="attachments_simple.inc.tpl" attach_id=$step_info.id}
-      </td>
-    </tr> 
-  {/if} 
+    {if $gui->allowStepAttachments && $att_ena}
+      <tr>
+        <td colspan=6>
+        {include file="attachments_simple.inc.tpl" attach_id=$step_info.id}
+        </td>
+      </tr> 
+    {/if} 
   {/foreach}
  </table>
 </div>

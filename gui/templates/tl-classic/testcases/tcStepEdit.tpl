@@ -201,63 +201,77 @@ function validateForm(the_form,step_set,step_number_on_edit)
         {if $gui->tcaseSteps != ''}
           {$rowCount=$gui->tcaseSteps|@count} 
           {$row=0}
-          VVVVV
           {foreach from=$gui->tcaseSteps item=step_info}
             <tr id="step_row_{$step_info.step_number}">
-            {if $step_info.step_number == $gui->step_number}
-            <td style="text-align:left;">{$gui->step_number}</td>
-              <td>{$steps}
-            <div class="groupBtn">
-              <input id="do_update_step" type="submit" name="do_update_step" 
-                     onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" 
-                     value="{$labels.btn_save}" />
-
-              <input type="submit" id="do_update_step_and_insert" name="do_update_step_and_insert" 
-                     onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndInsert'" 
-                     value="{$labels.btn_save_and_insert}" />
-
-              <input id="do_update_step_and_exit" type="submit" name="do_update_stepand_exit" 
-                     onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
-                     value="{$labels.btn_save_and_exit}" />
-
-              {if $gui->operation == 'doUpdateStep'}
-                <input id="do_copy_step" type="submit" name="do_copy_step" 
-                       onclick="doAction.value='doCopyStep'" value="{$labels.btn_cp}" />
+              {if $step_info.step_number == $gui->step_number}
+                <td style="text-align:left;">{$gui->step_number}</td>
+                <td>{$steps}
+                </td>
+                <td>{$expected_results}</td>
+                <td>
+                  <select name="exec_type" onchange="content_modified = true">
+                    {html_options options=$gui->execution_types selected=$gui->step_exec_type}
+                  </select><br>
+                </td>
+              {else}
+                <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
+                <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
+                <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
+                <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
               {/if}
-              <input id="doExit206" type="submit" name="doExit" 
-                onclick="doAction.value='doStepOperationExit'" 
-                value="{$labels.btn_cancel}" />
-            </div>  
-          
+              {$rCount=$row+$step_info.step_number}
+            </tr>
 
+            <tr id="edit_step_upload">
+              <td>&nbsp;</td>
+              <td colspan="3">
+                  {$labels.upload_on_execution}<select name="upload_on_exec_enabled" onchange="content_modified = true">
+                    {html_options options=$gui->upload_on_exec_enabled_domain selected=$gui->upload_on_exec_enabled}
+                  </select>
+                  {$labels.and}
+                  <select name="upload_on_exec_mandatory" onchange="content_modified = true">
+                    {html_options options=$gui->upload_on_exec_mandatory_domain selected=$gui->upload_on_exec_mandatory}
+                  </select>
               </td>
-              <td>{$expected_results}</td>
-              <td>
-                <select name="exec_type" onchange="content_modified = true">
-                  {html_options options=$gui->execution_types selected=$gui->step_exec_type}
-                </select><br>
-                KKKK <br>
-                <select name="exec_type" onchange="content_modified = true">
-                  {html_options options=$gui->execution_types selected=$gui->step_exec_type}
-                </select><br>
+            </tr>
 
-              
-              </td>
-            {else}
-              <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
-              <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
-              <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
-              <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
+            <tr>
+              <td>&nbsp;</td>
+              <td colspan="3">
+                  <div class="groupBtn">
+                    <input id="do_update_step" type="submit" name="do_update_step" 
+                           onclick="show_modified_warning=false; doAction.value='{$gui->operation}'" 
+                           value="{$labels.btn_save}" />
+
+                    <input type="submit" id="do_update_step_and_insert" name="do_update_step_and_insert" 
+                           onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndInsert'" 
+                           value="{$labels.btn_save_and_insert}" />
+
+                    <input id="do_update_step_and_exit" type="submit" name="do_update_stepand_exit" 
+                           onclick="show_modified_warning=false; doAction.value='{$gui->operation}AndExit'" 
+                           value="{$labels.btn_save_and_exit}" />
+
+                    {if $gui->operation == 'doUpdateStep'}
+                      <input id="do_copy_step" type="submit" name="do_copy_step" 
+                             onclick="doAction.value='doCopyStep'" value="{$labels.btn_cp}" />
+                    {/if}
+                    <input id="doExit206" type="submit" name="doExit" 
+                      onclick="doAction.value='doStepOperationExit'" 
+                      value="{$labels.btn_cancel}" />
+                  </div>
+               </td>     
+            </tr>
+            
+
+            {if ($rCount < $rowCount) && ($rowCount>=1)}
+              <tr width="100%">
+                <td colspan=6>
+                  <hr align="center" width="100%" color="grey" size="1">
+                </td>
+              </tr>
             {/if}
-          {$rCount=$row+$step_info.step_number}
-          {if ($rCount < $rowCount) && ($rowCount>=1)}
-            <tr width="100%">
-              <td colspan=6>
-              <hr align="center" width="100%" color="grey" size="1">
-              </td>
-            </tr>
-          {/if}
-            </tr>
+
+
           {/foreach}
         {/if}
       {else} 

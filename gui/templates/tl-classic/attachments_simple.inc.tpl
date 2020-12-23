@@ -7,13 +7,9 @@ Generic attachment management
 Input:
   $attach_attachmentsInfos
   $attach_id
-  $attach_tableName
   $attach_show_upload_btn
   $attach_downloadOnly
-  $attach_tableClassName
-  $attach_inheritStyle
-  $attach_tableStyles
-
+  $attach_required: required or blank
   
 
 Smarty global variables:
@@ -72,7 +68,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 
 
         <input type="file" name="uploadedFile[{$attach_id}][]" id="uploadedFile_{$attach_id}" multiple 
-               size="{#UPLOAD_FILENAME_SIZE#}" />
+               size="{#UPLOAD_FILENAME_SIZE#}" {$attach_required}/>
         &nbsp;&nbsp;&nbsp;&nbsp;
   </div>
   {/if}

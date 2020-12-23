@@ -629,7 +629,7 @@ class testcaseCommands {
         
     // Get all existent steps
     $guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
-        
+
     $templateCfg = templateConfiguration('tcStepEdit');
     $guiObj->template = $templateCfg->default_template;
     $guiObj->action = __FUNCTION__;
@@ -641,7 +641,8 @@ class testcaseCommands {
    * doCreateStep
    *
    */
-  function doCreateStep(&$argsObj,$request,$doAndExit=false) {
+  function doCreateStep(&$argsObj,$request,$doAndExit=false) 
+  {
     $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
     $guiObj->step_exec_type = $argsObj->exec_type;
@@ -667,8 +668,7 @@ class testcaseCommands {
     $op = $this->tcaseMgr->create_step($stepItem);  
                               
     $guiObj->doExit = false;
-    if( $op['status_ok'] )
-    {
+    if ( $op['status_ok'] ) {
       $guiObj->doExit = $doAndExit;
       $guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
       $guiObj->step_exec_type = $guiObj->testcase['execution_type'];
@@ -677,8 +677,7 @@ class testcaseCommands {
       $this->initTestCaseBasicInfo($argsObj,$guiObj);
     }  
 
-    if(!$guiObj->doExit)
-    {  
+    if (!$guiObj->doExit) {  
       $guiObj->action = __FUNCTION__;
 
       // Get all existent steps
@@ -701,7 +700,8 @@ class testcaseCommands {
    * doCreateStepAndExit
    *
    */
-  function doCreateStepAndExit(&$argsObj,$request) {
+  function doCreateStepAndExit(&$argsObj,$request) 
+  {
     $guiObj = $this->doCreateStep($argsObj,$request,true);
     if($guiObj->doExit) {
       // when working on step, refreshing tree is nonsense

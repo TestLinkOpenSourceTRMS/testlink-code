@@ -229,17 +229,31 @@ function validateForm(f) {
   }
 
 
-  // 20201224 
   // check for mandatory upload 
   //  DO NOT CHECK on partial execution save
   //
   if( status_ok && saveStepsPartialExecClicked == false ) {
     var itemSet = $("input[id^='mandatory_upload_step_']");
-    if (itemSet.length > 0) {
-      status_ok = confirm('{$labels.mandatory_upload_warning}');
-    }
+    bootbox.confirm({
+      message: "{$labels.mandatory_upload_warning}",
+      buttons: {
+          confirm: {
+              label: 'Yes',
+              className: 'btn-success'
+          },
+          cancel: {
+              label: 'No',
+              className: 'btn-danger'
+          }
+      },
+      callback: function (result) {
+          if (result) {
+             f.submit();
+          }
+      }
+     });
+     return false;
   }
-  
   return status_ok;
 }
 

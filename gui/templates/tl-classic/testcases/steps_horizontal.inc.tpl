@@ -77,7 +77,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         </span>
         <span id="tcstep_{$step_info.id}">{$step_info.step_number}
           {if $step_info.upload_on_execution_enabled}
-            <br><img src="{$tlImages.upload}" title="{$inc_steps_labels.upload_on_exec_is_enabled}">
+            <br> 
+            {if $att_ena == false}
+              <img src="{$tlImages.upload}" title="{$inc_steps_labels.upload_on_exec_is_enabled}">
+            {/if}
             {if $step_info.upload_on_execution_mandatory}<img src="{$tlImages.mandatory}" title="{$inc_steps_labels.upload_on_exec_is_mandatory}">{/if}
           {/if}
         </span>

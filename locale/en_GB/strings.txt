@@ -4069,4 +4069,5 @@ $TLS_and = 'and';
 
 $TLS_upload_on_exec_is_enabled = 'Upload On Exec IS ENABLED';
 $TLS_upload_on_exec_is_mandatory = 'Upload On Exec IS Mandatory';
+$TLS_mandatory_upload_warning = 'One of more Steps requires that you upload files.\n Are you sure you can save the execution result?';
 // ----- END -----------------------------------------------------

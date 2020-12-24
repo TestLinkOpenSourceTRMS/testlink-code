@@ -1,7 +1,7 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 
-@filesource	execSetResults.tpl
+@filesource execSetResults.tpl
 @internal smarty template - show tests to add results
 *}
 {$attachment_model=$cfg->exec_cfg->att_model}
@@ -123,7 +123,7 @@ updateLinkToLatestTCVersion,
 version,
 warning,
 warning_delete_execution,
-warning_nothing_will_be_saved,file_upload_ko,pleaseOpenTSuite'}
+warning_nothing_will_be_saved,file_upload_ko,pleaseOpenTSuite,mandatory_upload_warning'}
 
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -193,19 +193,19 @@ function load_notes(panel,exec_id) {
 Set value for a group of combo (have same prefix).
 */
 function set_combo_group(formid,combo_id_prefix,value_to_assign) {
-	var f=document.getElementById(formid);
-	var all_comboboxes = f.getElementsByTagName('select');
-	var input_element;
-	var idx=0;
-		
-	for(idx = 0; idx < all_comboboxes.length; idx++) {
-		input_element=all_comboboxes[idx];
-		if( input_element.type == "select-one" && 
-		    input_element.id.indexOf(combo_id_prefix)==0 &&
-		   !input_element.disabled) {
-			input_element.value=value_to_assign;
-		}	
-	}
+  var f=document.getElementById(formid);
+  var all_comboboxes = f.getElementsByTagName('select');
+  var input_element;
+  var idx=0;
+    
+  for(idx = 0; idx < all_comboboxes.length; idx++) {
+    input_element=all_comboboxes[idx];
+    if( input_element.type == "select-one" && 
+        input_element.id.indexOf(combo_id_prefix)==0 &&
+       !input_element.disabled) {
+      input_element.value=value_to_assign;
+    } 
+  }
 }
 
 // Escape all messages (string)
@@ -230,15 +230,15 @@ function validateForm(f) {
 
 
   // 20201224 
-  // check for mandatory upload
-  var itemSet = $("input[id^='mandatory_upload_step_']");
-
-    bootbox.alert('have you uploaded the required files?');
- 
-  if (itemSet.length > 0) {
-    bootbox.alert('have you uploaded the required files?');
+  // check for mandatory upload 
+  //  DO NOT CHECK on partial execution save
+  //
+  if( status_ok && saveStepsPartialExecClicked == false ) {
+    var itemSet = $("input[id^='mandatory_upload_step_']");
+    if (itemSet.length > 0) {
+      status_ok = confirm('{$labels.mandatory_upload_warning}');
+    }
   }
-  
   
   return status_ok;
 }
@@ -260,7 +260,7 @@ function OLDvalidateForm(f)
     
   if( document.getElementById(access_key) != null )
   {    
- 	    cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
+      cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
       cfValidityChecks=validateCustomFields(cfields_inputs);
       if( !cfValidityChecks.status_ok )
       {
@@ -314,9 +314,9 @@ function openExportTestCases(windows_title,tsuite_id,tproject_id,tplan_id,build_
   wargs = "tsuiteID=" + tsuite_id + "&tprojectID=" + tproject_id + "&tplanID=" + tplan_id; 
   wargs += "&buildID=" + build_id + "&platformID=" + platform_id;
   wargs += "&tcversionSet=" + tcversion_set;
-	wref = window.open(fRoot+"lib/execute/execExport.php?"+wargs,
-	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
-	wref.focus();
+  wref = window.open(fRoot+"lib/execute/execExport.php?"+wargs,
+                     windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
+  wref.focus();
 }
 
 
@@ -326,9 +326,9 @@ function openExportTestCases(windows_title,tsuite_id,tproject_id,tplan_id,build_
 *}
 panel_init_functions = new Array();
 Ext.onReady(function() {
-	for(var i=0;i<panel_init_functions.length;i++) {
-		panel_init_functions[i]();
-	}
+  for(var i=0;i<panel_init_functions.length;i++) {
+    panel_init_functions[i]();
+  }
 });
 
 /**
@@ -403,29 +403,29 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 
 <h1 class="title">
-	{$labels.title_t_r_on_build} {$gui->build_name|escape}
-	{if $gui->platform_info.name != ""}
-	  {$title_sep_type3}{$labels.platform}{$title_sep}{$gui->platform_info.name|escape}
-	{/if}
+  {$labels.title_t_r_on_build} {$gui->build_name|escape}
+  {if $gui->platform_info.name != ""}
+    {$title_sep_type3}{$labels.platform}{$title_sep}{$gui->platform_info.name|escape}
+  {/if}
 </h1>
 
 {if $gui->ownerDisplayName != ""}
   <h1 class="title">
     {$labels.only_test_cases_assigned_to}{$title_sep}
-	  {foreach from=$gui->ownerDisplayName item=assignedUser}
-	    {$assignedUser|escape}
-	  {/foreach}
-	  {if $gui->include_unassigned}
-	    <br />{$labels.or_unassigned_test_cases}
-	  {/if}
+    {foreach from=$gui->ownerDisplayName item=assignedUser}
+      {$assignedUser|escape}
+    {/foreach}
+    {if $gui->include_unassigned}
+      <br />{$labels.or_unassigned_test_cases}
+    {/if}
   </h1>
 {/if}
 
 <div id="main_content" class="workBack">
 
-	{if $gui->user_feedback != ''}
-		<div class="error">{$gui->user_feedback}</div>
-	{/if}
+  {if $gui->user_feedback != ''}
+    <div class="error">{$gui->user_feedback}</div>
+  {/if}
   {if $gui->build_is_open == 0}
   <div class="messages" style="align:center;">
      {$labels.build_is_closed}<br />
@@ -525,7 +525,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     {if $gui->platform_info.id > 0}
       {$div_id='platform_notes'}
       {$memstatus_id=$platform_notes_view_memory_id}
-  	  {if $gui->platformEditorType == 'none'}{$content=$gui->platform_info.notes|nl2br}{else}{$content=$gui->platform_info.notes}{/if}
+      {if $gui->platformEditorType == 'none'}{$content=$gui->platform_info.notes|nl2br}{else}{$content=$gui->platform_info.notes}{/if}
 
       {include file="inc_show_hide_mgmt.tpl"
                  show_hide_container_title=$gui->platform_div_title
@@ -586,17 +586,17 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               </div>
           {/if}
       {/if}
-  	{/if}
+    {/if}
 
     {if $bulkExec}
       {include file="execute/execSetResultsBulk.inc.tpl"}
     {/if}
 
     {if $singleExec}
-    	{if $tlCfg->exec_cfg->enable_test_automation && 
+      {if $tlCfg->exec_cfg->enable_test_automation && 
           $gui->remoteExecFeedback != ''}
         {include file="execute/execSetResultsRemoteExec.inc.tpl"}
-    	{/if}
+      {/if}
 
       {include file="execute/inc_exec_show_tc_exec.tpl"}
       {if isset($gui->refreshTree) && $gui->refreshTree}

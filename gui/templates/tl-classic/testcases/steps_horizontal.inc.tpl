@@ -144,12 +144,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {/if}
 
     {if $gui->allowStepAttachments && $att_ena && $step_info.upload_on_execution_enabled}
-      {$attach_required=""} 
-      {if $step_info.upload_on_execution_mandatory} 
-        {$attach_required="required"} 
-      {/if}
       <tr>
         <td colspan=6>
+          {$attach_required=""} 
+          {if $step_info.upload_on_execution_mandatory} 
+            {$attach_required="required"} 
+            {$attach_required=""} 
+            <input type="hidden" id="mandatory_upload_step_{$step_info.step_number}">
+          {/if}
         {include file="attachments_simple.inc.tpl" attach_id=$step_info.id attach_required=$attach_required}
         </td>
       </tr> 

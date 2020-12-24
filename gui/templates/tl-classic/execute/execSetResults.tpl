@@ -228,6 +228,18 @@ function validateForm(f) {
     status_ok = checkStepsHaveContent(msg);
   }
 
+
+  // 20201224 
+  // check for mandatory upload
+  var itemSet = $("input[id^='mandatory_upload_step_']");
+
+    bootbox.alert('have you uploaded the required files?');
+ 
+  if (itemSet.length > 0) {
+    bootbox.alert('have you uploaded the required files?');
+  }
+  
+  
   return status_ok;
 }
 

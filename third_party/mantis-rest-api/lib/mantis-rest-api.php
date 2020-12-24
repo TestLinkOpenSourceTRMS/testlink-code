@@ -10,7 +10,8 @@
 /**
  *
  */
-class mantis {
+class mantis 
+{
   /**
    * Url to site, 
    * @var string 
@@ -41,7 +42,8 @@ class mantis {
    *
    * @return void
    */
-  public function __construct($context,$cfg=null)  {
+  public function __construct($context,$cfg=null)  
+  {
 
     // if the values are not empty, 
     // we'll assign them to our matching properties
@@ -73,7 +75,8 @@ class mantis {
    * 
    *
    */
-  public function initCurl($cfg=null) {
+  public function initCurl($cfg=null) 
+  {
     $agent = "TestLink ". TL_VERSION_NUMBER;
     try {
       $this->curl = curl_init();
@@ -127,7 +130,8 @@ class mantis {
    * 
    *
    */
-  function getIssue($issueID) {
+  function getIssue($issueID) 
+  {
     try {
       $item = $this->_get("/api/rest/issues/{$issueID}");    
       $ret = is_object($item) ? $item : null;

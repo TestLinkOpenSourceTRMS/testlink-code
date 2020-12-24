@@ -54,8 +54,9 @@ class bareBonesRestAPI {
    *
    * @return void
    */
-  public function __construct()  {
-    $this->initCurl();
+  public function __construct()  
+  {
+    // $this->initCurl();
   }
 
   /**
@@ -124,20 +125,60 @@ class bareBonesRestAPI {
    * @internal notice
    * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
    **/
-  protected function _get($url) {
-    return $this->_request_json('GET', $url);
+  protected function _get($cmd) 
+  {
+    // GET must returns a JSON object ALWAYS
+    return $this->_request_json('GET', $cmd);
   }
 
+
+  /**
+   *
+   * Use it when the API called will return 
+   * - response
+   * - JSON content
+   *
+   */
+  protected function _postWithContent($cmd,$body=null) {
+    return $this->_request_json('POST', $cmd, $body);
+  }
+
+
+  /**
+   *
+   * Use it when the API called will return 
+   * - response
+   *
+   */
+  protected function _post($cmd,$body=null) {
+    return $this->_request('POST', $cmd, $body);
+  }
+
+
   /** 
-  *
-  * @internal notice
-  * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
-  **/
-  protected function _request_json($method, $url, $body = NULL, $ignore_status = 0,$reporter=null) {
-    $r = $this->_request($method, $url, $body, $ignore_status,$reporter);
+   *
+   * @internal notice
+   * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
+   **/
+  protected function _request_json($method, $cmd, $body = NULL, $ignore_status = 0,$reporter=null) {
+    $r = $this->_request($method, $cmd, $body, $ignore_status,$reporter);
     $response = $r['response'];
     $content = $r['content'];
-    return ($content != '' ? json_decode($content) : null);
+
+    $content = json_decode($r['content']);
+    if (json_last_error() == JSON_ERROR_NONE) {
+      return $content;
+    }
+
+    // Oh no!!! 
+    $msg = 'Bad Response!!';
+    if (null != $response && isset($response['http_code'])) {
+      $msg = "http_code:" . $response['http_code'];
+    }
+    $msg = "Error Parsing JSON In TESTLINK -> " . $msg . 
+           " -> Give a look to TestLink Event Viewer";
+
+    throw new Exception($msg, 1);
   }
   
  /** 
@@ -155,7 +196,6 @@ class bareBonesRestAPI {
     } 
 
 
-
     // this can happens because if I save object on _SESSION PHP is not able to
     // save resources.
     if( !is_resource($this->curl) ) {
@@ -169,13 +209,13 @@ class bareBonesRestAPI {
     $url = $this->url . $additional . $cmd;
     
     curl_setopt($this->curl, CURLOPT_URL, $url);
-
-
-
     curl_setopt($this->curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
     curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
     curl_setopt($this->curl, CURLOPT_HEADER, 0); 
-    curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->curlHeader); 
+
+    if (count($this->curlHeader) >0) {
+      curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->curlHeader); 
+    }
 
     switch ($method) {
       case 'GET':
@@ -199,8 +239,7 @@ class bareBonesRestAPI {
     $response = curl_getinfo($this->curl);
     $curlError =  curl_error($this->curl);
     $httpCode = (int)$response['http_code'];
-    if ($httpCode != 200 && $httpCode != 201 && $httpCode != $ignoreStatusCode) 
-    {
+    if ($httpCode != 200 && $httpCode != 201 && $httpCode != $ignoreStatusCode) {
       throw new exception(__METHOD__ . "url:$this->url - response:" .
                           json_encode($response) . ' - content: ' . json_encode($content) );
     }

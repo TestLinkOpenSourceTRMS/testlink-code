@@ -135,7 +135,17 @@ class mantisrestInterface extends issueTrackerInterface {
   	  // to cast properties BEFORE using it.
       $context = [
         'url' => (string)trim($this->cfg->uribase),
-        'apikey' => (string)trim($this->cfg->apikey) ];
+        'apikey' => (string)trim($this->cfg->apikey)];
+
+      if ((int)$this->cfg->createissueviaapi == 1) {
+        $isu = [
+        'project' => (string)trim($this->cfg->project),
+        'category' => (string)trim($this->cfg->category),
+        'severity' => (string)trim($this->cfg->severity),
+        'priority' => (string)trim($this->cfg->priority)
+         ];
+        $context += $isu;
+      }
 
       $tlContext = [ 'proxy' => config_get('proxy') ];
 

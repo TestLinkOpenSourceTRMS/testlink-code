@@ -79,63 +79,16 @@ class mantis extends bareBonesRestAPI
         $this->cfg = $cfg['cfg'];
       }  
     }  
+
+    // declared in parent Class
+    // @used-by parent::_request() & parent::_request_json()
+    $this->curlHeader = [ "Authorization: {$this->apikey}",       
+                          "Content-Type: application/json",
+                          "Agent-Name: testlink",
+                          "Agent-Version: " . TL_VERSION_NUMBER ];
     $this->initCurl();
   }
 
-  /**
-   * 
-   *
-   */
-  public function initCurl($cfg=null) 
-  {
-    $agent = "TestLink ". TL_VERSION_NUMBER;
-    try {
-      $this->curl = curl_init();
-    }
-    catch (Exception $e) {
-      var_dump($e);
-    }
-    
-    // set the agent, forwarding, and turn off ssl checking
-    // Timeout in Seconds
-    $curlCfg = [CURLOPT_USERAGENT => $agent,
-                CURLOPT_VERBOSE => 0,
-                CURLOPT_FOLLOWLOCATION => TRUE,
-                CURLOPT_RETURNTRANSFER => TRUE,
-                CURLOPT_AUTOREFERER => TRUE,
-                CURLOPT_TIMEOUT => 60,
-                CURLOPT_SSL_VERIFYPEER => FALSE];
-
-    if(!is_null($this->proxy)) {
-      $doProxyAuth = false;
-      $curlCfg[CURLOPT_PROXYTYPE] = 'HTTP';
-
-      foreach($this->proxy as $prop => $value) {
-        switch($prop) {
-          case 'host':
-            $curlCfg[CURLOPT_PROXY] = $value;
-          break;
-
-          case 'port':
-            $curlCfg[CURLOPT_PROXYPORT] = $value;
-          break;
-
-          case 'login':
-          case 'password':
-            $doProxyAuth = true;
-          break;
-        }
-      }
-
-      if($doProxyAuth && !is_null($this->proxy->login) && 
-         !is_null($this->proxy->password) ) {
-        $curlCfg[CURLOPT_PROXYUSERPWD] = 
-          $this->proxy->login . ':' . $this->proxy->password;
-      }  
-    } 
-
-    curl_setopt_array($this->curl,$curlCfg);
-  }
 
   /**
    * 

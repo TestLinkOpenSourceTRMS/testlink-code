@@ -219,7 +219,8 @@ object(stdClass)#587 (31) {
 
    *
    */
-  function getIssue($issueID) {
+  function getIssue($issueID) 
+  {
     try {
       $item = $this->_get("/cards/{$issueID}?{$this->authQueryString}");    
       $ret = is_object($item) ? $item : null;
@@ -233,7 +234,8 @@ object(stdClass)#587 (31) {
    * 
    *
    */
-  public function addIssue($title, $descr, $opt=null) {
+  public function addIssue($title, $descr, $opt=null) 
+  {
 
     // Limit title length
     $ellipsis = '...';

@@ -10,7 +10,7 @@
 /**
  *
  */
-class mantis 
+class mantis extends bareBonesRestAPI 
 {
   /**
    * Url to site, 
@@ -39,6 +39,17 @@ class mantis
   /**
    * Constructor
    * 
+   * context: map
+   *          url
+   *          apikey
+   *          project
+   *          category
+   *          priority
+   *          severity
+   *
+   * cfg: map
+   *      proxy map
+   *      
    *
    * @return void
    */
@@ -148,6 +159,75 @@ class mantis
    */
   public function addIssue($title, $descr, $opt=null) 
   {
+
+    // Limit title length
+    $ellipsis = '...';
+    $safeTitle = $title;
+    $titleLen = strlen($title);
+    if( $titleLen > $this->summaryLengthLimit ) {
+      $safeTitle = $ellipsis . 
+        substr($title, -1*($this->summaryLengthLimit + strlen($ellipsis)));
+    }
+    
+    $body = ["summary" => $safeTitle,
+              "description" => $descr,
+              "project" => ["name" => $this->project],
+              "category" => ["name" => $this->category],
+              "priority" => ["name" => $this->priority],
+              "severity" => ["name" => $this->severity]
+             ];
+
+    $cmd = '/api/rest/issues';
+    $ret = $this->_postWithContent($cmd,$body);
+
+
+    /*         
+    {
+    "summary": "Sample REST issue",
+    "description": "Description for sample REST issue.",
+    "additional_information": "More info about the issue",
+    "project": {
+        "id": 1,
+        "name": "mantisbt"
+    },
+    "category": {
+        "id": 5,
+        "name": "bugtracker"
+    },
+    "handler": {
+        "name": "vboctor"
+    },
+    "view_state": {
+        "id": 10,
+        "name": "public"
+    },
+    "priority": {
+        "name": "normal"
+    },
+    "severity": {
+        "name": "trivial"
+    },
+    "reproducibility": {
+        "name": "always"
+    },
+    "sticky": false,
+    "custom_fields": [
+        {
+            "field": {
+                "id": 4,
+                "name": "The City"
+            },
+            "value": "Seattle"
+        }
+    ],
+    "tags": [
+        {
+            "name": "mantishub"
+        }
+    ]
+}
+'*/
+
   }
 
   /**
@@ -182,96 +262,6 @@ class mantis
     return $items;
   }                                                   
 
-
-  /* ------------------------------------------------------ */
-  /* General Methods used to build up communication process */
-  /* ------------------------------------------------------ */
-
-  /** 
-   *
-   * @internal notice
-   * copied and adapted from work on YouTrack API interface 
-   * by Jens Jahnke <jan0sch@gmx.net>
-   **/
-  protected function _get($url) {
-    return $this->_request_json('GET', $url);
-  }
-
-  /** 
-   *
-   * @internal notice
-   * copied and adapted from work on YouTrack API interface 
-   * by Jens Jahnke <jan0sch@gmx.net>
-   */
-  protected function _request_json($method, $url, $body = NULL, $ignore_status = 0,$reporter=null) {
-    $r = $this->_request($method, $url, $body, $ignore_status,$reporter);
-    $response = $r['response'];
-    $content = $r['content'];
-    return ($content != '' ? json_decode($content) : null);
-  }
-  
- /** 
-  *
-  * @internal notice
-  * copied and adapted from work on YouTrack API interface 
-  * by Jens Jahnke <jan0sch@gmx.net>
-  **/
-  protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0,$reporter = null) 
-  {
-    // this can happens because if I save object on _SESSION PHP is not able to
-    // save resources.
-    if( !is_resource($this->curl) ) {
-      $this->initCurl();
-    }  
-    $url = $this->url . $cmd;
-    curl_setopt($this->curl, CURLOPT_URL, $url);
-    if( empty($this->apikey) ){
-      throw new exception(__METHOD__ . 
-        " Can not work without apikey");
-    } 
-
-    curl_setopt($this->curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
-    curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
-  
-    $header = [ "Authorization: {$this->apikey}",       
-                "Content-Type: application/json",
-                "Agent-Name: testlink",
-                "Agent-Version: " . TL_VERSION_NUMBER ];
-
-    curl_setopt($this->curl, CURLOPT_HEADER, 0); 
-    curl_setopt($this->curl, CURLOPT_HTTPHEADER, $header); 
-
-    switch ($method) {
-      case 'GET':
-        curl_setopt($this->curl, CURLOPT_HTTPGET, TRUE);
-      break;
-    
-      case 'POST':
-      case 'PATCH':
-        curl_setopt($this->curl, CURLOPT_POST, TRUE);
-        if (!empty($body)) {
-          curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($body));
-        }
-      break;
-    
-      default:
-        throw new exception("Unknown method $method!");
-      break;
-    }
-    
-    $content = curl_exec($this->curl);
-    $response = curl_getinfo($this->curl);
-    $curlError =  curl_error($this->curl);
-    $httpCode = (int)$response['http_code'];
-    if ($httpCode != 200 && $httpCode != 201 && $httpCode != $ignoreStatusCode) 
-    {
-      throw new exception(__METHOD__ . "url:$this->url - response:" .
-                          json_encode($response) . ' - content: ' . json_encode($content) );
-    }
-    
-    $rr = ['content' => $content,'response' => $response,'curlError' => $curlError];
-    return $rr;
-  }
   
   /**
    * 

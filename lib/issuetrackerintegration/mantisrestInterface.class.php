@@ -85,6 +85,16 @@ class mantisrestInterface extends issueTrackerInterface {
     if( !property_exists($this->cfg,'createissueviaapi') ) {
       $this->cfg->createissueviaapi = 0;
     }
+
+    if ($this->cfg->createissueviaapi) {
+      if( !property_exists($this->cfg,'project') || 
+          !property_exists($this->cfg,'category') ||
+          !property_exists($this->cfg,'severity') ||
+          !property_exists($this->cfg,'priority') ) {
+        $this->cfg->createissueviaapi = 0;
+      }
+    }
+
   }
 
 	/**
@@ -310,7 +320,8 @@ class mantisrestInterface extends issueTrackerInterface {
   /**
    *
    */
-  public function addNote($issueID,$noteText,$opt=null) {
+  public function addNote($issueID,$noteText,$opt=null) 
+  {
     $op = $this->APIClient->addNote($issueID, $noteText);
     if(is_null($op)){
       throw new Exception("Error setting note", 1);
@@ -324,7 +335,8 @@ class mantisrestInterface extends issueTrackerInterface {
   /**
    *
    **/
-	public static function getCfgTemplate() {
+	public static function getCfgTemplate() 
+  {
     $tpl = "<!-- Template " . __CLASS__ . " -->\n" .
            "<issuetracker>\n" .
            "<!-- Mandatory parameters: -->\n" .
@@ -336,6 +348,11 @@ class mantisrestInterface extends issueTrackerInterface {
            "<!-- In this situation DO NOT COPY these config lines -->\n" .
            "<uriview>https://www.mantisbt.org/view.php?id=</uriview>\n" .
            "<uricreate>https://www.mantisbt.org/</uricreate>\n" .
+           "<createissueviaapi>0/1</createissueviaapi>\n" .
+           "<project>https://www.mantisbt.org/</project>\n" .
+           "<category>https://www.mantisbt.org/</category>\n" .
+           "<severity>https://www.mantisbt.org/</severity>\n" .
+           "<priority>https://www.mantisbt.org/</priority>\n" .
            "</issuetracker>\n";
 	  return $tpl;
   }

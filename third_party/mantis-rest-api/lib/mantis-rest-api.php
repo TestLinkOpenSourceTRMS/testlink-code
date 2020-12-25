@@ -132,7 +132,7 @@ class mantis extends bareBonesRestAPI
 
     $cmd = '/api/rest/issues';
     $ret = $this->_postWithContent($cmd,$body);
-
+    return $ret != null ? $ret->issue : $ret;
 
     /*         
     {

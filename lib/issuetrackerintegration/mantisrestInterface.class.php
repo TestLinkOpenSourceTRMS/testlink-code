@@ -227,11 +227,15 @@ class mantisrestInterface extends issueTrackerInterface {
         $issue->statusCode = intval($item->status->id);
         $issue->statusVerbose = (string)$item->status->label;
         $issue->statusHTMLString = "[{$issue->statusVerbose}]";
-        $issue->reportedBy = (string)$item->reporter->real_name;
-        $issue->handledBy = (string)$item->handler->real_name;
         $issue->summary = $issue->summaryHTMLString = (string)$item->summary;
-    
         $issue->isResolved = false;
+
+        $more = ['reporter' => 'reportedBy','handler' => 'handledBy'];
+        foreach ($more as $prop => $issueProp) {
+         if (property_exists($item, $prop)) {
+           $issue->$issueProp = (string)$item->$prop->real_name;
+         }
+        }
       }
     }
     catch(Exception $e) {
@@ -317,7 +321,7 @@ class mantisrestInterface extends issueTrackerInterface {
   
       $ret = ['status_ok' => true, 'id' => (string)$op->id, 
               'msg' => sprintf(lang_get('mantis_bug_created'),
-              $summary, (string)$op->board_id)];
+                                 $summary, (string)$op->id)];
     }
     catch (Exception $e) {
        $msg = "Create Mantis Issue Via REST FAILURE => " . $e->getMessage();

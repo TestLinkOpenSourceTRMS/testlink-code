@@ -184,7 +184,7 @@ class bareBonesRestAPI {
  /** 
   *
   * @internal notice
-  * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
+  * copied and adapted from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
   **/
   protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0,$reporter = null) 
   {

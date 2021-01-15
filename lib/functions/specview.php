@@ -1465,9 +1465,9 @@ function getFilteredSpecViewFlat(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
                           'cfields' => null,
                           'platforms' => $argsObj->platform_id);
               
-  echo '<pre>';
-  var_dump($genSpecFilters);
-  echo '</pre>';
+//  echo '<pre>';
+//  var_dump($genSpecFilters);
+//  echo '</pre>';
 
   if (isset($my['filters']['cfieldsFilter'])) {
     $genSpecFilters['cfields'] = $my['filters']['cfieldsFilter'];

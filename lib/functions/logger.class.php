@@ -124,8 +124,9 @@ class tlLogger extends tlObject
                                $activityCodes = null,$limit = -1,$startTime = null,
                                $endTime = null, $users = null)
   {
-    return $this->eventManager->getEventsFor($logLevels,$objectIDs,$objectTypes,$activityCodes,
-                                              $limit,$startTime,$endTime,$users);
+    return $this->eventManager->getEventsFor($logLevels,
+                    $objectIDs,$objectTypes,$activityCodes,
+                    $limit,$startTime,$endTime,$users);
   }
   
   public function deleteEventsFor($logLevels = null,$startTime = null)
@@ -1205,8 +1206,12 @@ class tlFileLogger extends tlObject
   {
     global $tlCfg;
     $uID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+    $lp = $tlCfg->log_path;
+    if ($uID > 0) {
+      return $lp . 'userlog' . $uID . ".log";
+    }
+    return $lp . 'testlinklog.log';
 
-    return $tlCfg->log_path . 'userlog' . $uID . ".log";
   }
 
   /**

@@ -15,7 +15,6 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 </script>
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {$tableID="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}

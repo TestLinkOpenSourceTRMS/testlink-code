@@ -1,7 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.18.2.3 2011/01/14 14:39:04 asimon83 Exp $
-Purpose: smarty template - create new testcase
+$Id: tcNew.tpl
+Purpose: smarty template - create a testcase
 *}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -11,6 +11,31 @@ Purpose: smarty template - create new testcase
                           warning_empty_tc_title,warning_unsaved,stay_here_tc'}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+
+<style>
+.mainAttrContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+#summaryCONTAINER {
+  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->summary};
+}
+
+#spaceOne {
+  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne};
+}
+
+
+#preconditionsCONTAINER {
+  order: {$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions};  
+}
+</style>
+
+
+
+
+
 {include file="inc_del_onclick.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
@@ -83,8 +108,11 @@ function validateForm(f)
 <h1 class="title">{$gui->main_descr|escape}</h1>
 <div class="workBack">
 
-{* BUGID 4067 *}
-{include file="inc_update.tpl" result=$gui->sqlResult item="testcase" name=$gui->name user_feedback=$gui->user_feedback refresh=$smarty.session.setting_refresh_tree_on_action}
+{include file="inc_update.tpl" 
+         result=$gui->sqlResult 
+         item="testcase" 
+         name=$gui->name 
+         user_feedback=$gui->user_feedback refresh=$smarty.session.setting_refresh_tree_on_action}
 
 <form method="post" action="{$basehref}lib/testcases/tcEdit.php?containerID={$gui->containerID}"
       name="tc_new" id="tc_new"
@@ -113,8 +141,6 @@ function validateForm(f)
   <p>
   <hr>
   {/if}
-
-
 
 	<div class="groupBtn">
 			<input type="hidden" id="do_create"  name="do_create" value="do_create" />

@@ -22,26 +22,19 @@ $gui->tableName = $args->tableName;
 $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
 $gui->id = $args->id;
 
-if ($args->bPostBack)
-{
+if ($args->bPostBack) {
   $fInfo = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
   $id = $_SESSION['s_upload_id'];
   $gui->tableName = $_SESSION['s_upload_tableName'];
 
-
-  if ($fInfo && $id && $gui->tableName != "")
-  {
+  if ($fInfo && $id && $gui->tableName != "") {
     $opt = null;
-    if(trim($gui->tableName) == 'executions')
-    {
+    if (trim($gui->tableName) == 'executions') {
       $opt['allow_empty_title'] = true;
     }  
 
     $l2d = count($fInfo);
-    new dBug($fInfo);
-    
-    for($fdx=0; $fdx <= $l2d; $fdx++)
-    {
+    for($fdx=0; $fdx <= $l2d; $fdx++) {
       $fSize = isset($fInfo['size'][$fdx]) ? $fInfo['size'][$fdx] : 0;
       $fTmpName = isset($fInfo['tmp_name'][$fdx]) ? 
                         $fInfo['tmp_name'][$fdx] : '';
@@ -53,20 +46,18 @@ if ($args->bPostBack)
       $fin['name'] = $fInfo['name'][$fdx];
       $fin['error'] = $fInfo['error'][$fdx];
       
-      if ($fSize && $fTmpName != "")
-      {
+      if ($fSize && $fTmpName != "") {
         $docRepo = tlAttachmentRepository::create($db);
         
-        $gui->uploaded = $docRepo->insertAttachment($id,$gui->tableName,$args->title,$fin,$opt);
-        if ($gui->uploaded)
-        {
-          logAuditEvent(TLS("audit_attachment_created",$args->title,$fin['name']),
+        $uploadOP = $docRepo->insertAttachment($id,$gui->tableName,$args->title,$fin,$opt);
+        $gui->uploaded = $uploadOP->statusOK; 
+        if ($gui->uploaded) {
+          logAuditEvent(TLS("audit_attachment_created",
+                        $args->title,$fin['name']),
                         "CREATE",$id,"attachments");
         } 
-      }
-      else
-      {
-        $gui->msg  = getFileUploadErrorMessage($fin);
+      } else {
+        $gui->msg  = getFileUploadErrorMessage($fin,$uploadOP);
       } 
     }
   }

@@ -3,16 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource  github.php
+ * @filesource  microsoft.php
  *
- * Github OAUTH API (authentication)
+ * microsoft OAUTH API (authentication)
  *
- * @internal revisions
- * @since 1.9.17
  *
  */
 
-// Get token
+/**
+ *
+ */
 function oauth_get_token($authCfg, $code) {
 
   $result = new stdClass();
@@ -63,7 +63,7 @@ function oauth_get_token($authCfg, $code) {
 
     $targetURL = array();
     $targetURL['user'] = $authCfg['oauth_profile'];
-    $curlContentType[] = 'Authorization: Bearer '.$oauthParams['access_token'];
+    $curlContentType[] = 'Authorization: Bearer ' . $oauthParams['access_token'];
 
     // Get User
     $curl = curl_init();

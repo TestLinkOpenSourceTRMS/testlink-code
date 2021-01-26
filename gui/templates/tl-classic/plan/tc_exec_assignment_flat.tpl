@@ -15,7 +15,7 @@ generate the list of TC that can be removed from a Test Plan
      exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
      th_test_case,version,assigned_to,assign_to,note_keyword_filter,priority,
      check_uncheck_all_tc,execution,design,execution_history,btn_apply_assign,
-     btn_save_assign,btn_remove_assignments,remove,btn_send_link,btn_remove_all_users,user_bulk_action"}
+     btn_save_assign,btn_remove_assignments,remove,btn_send_link,btn_remove_all_users,user_bulk_action,no_user_selected"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}

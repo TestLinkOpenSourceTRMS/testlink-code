@@ -5,14 +5,13 @@
  *
  * @filesource  reqSearch.php
  * @package     TestLink
- * @copyright   2005-2018, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @link        http://www.testlink.org/index.php
  *
  * Search results for requirements.
  *
  *
  */
-
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("requirements.inc.php");
@@ -50,7 +49,7 @@ if ($args->tprojectID) {
   // key: req id (db id)
   // value: array of versions and revisions
   //
-  $map = $db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
+  $map = (array)$db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
 
   // dont show requirements from different testprojects than the selected one
   if (count($map)) {
@@ -195,15 +194,21 @@ function init_args($dateFormat) {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $strnull = array('requirement_document_id', 'name','scope', 'reqStatus',
+  $strnull = array('requirement_document_id', 'name','scope', 
+                   'reqStatus',
                    'custom_field_value', 'targetRequirement',
-                   'version', 'tcid', 'reqType', 'relation_type',
-                   'creation_date_from','creation_date_to','log_message',
+                   'creation_date_from','creation_date_to',
+                   'log_message',
                    'modification_date_from','modification_date_to');
   
   foreach($strnull as $keyvar) {
     $args->$keyvar = isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;
     $args->$keyvar = !is_null($args->$keyvar) && strlen($args->$keyvar) > 0 ? trim($args->$keyvar) : null;
+  }
+
+  $intcheck = array('version', 'tcid', 'reqType', 'relation_type');
+  foreach($intcheck as $keyvar) {
+    $args->$keyvar = isset($_REQUEST[$keyvar]) ? intval($_REQUEST[$keyvar]) : null;
   }
 
   $int0 = array('custom_field_id', 'coverage');
@@ -212,46 +217,20 @@ function init_args($dateFormat) {
   }
   
   // convert "creation date from" to iso format for database usage
-  if (isset($args->creation_date_from) && $args->creation_date_from != '') {
-     $date_array = split_localized_date($args->creation_date_from, $dateFormat);
-      
-     if ($date_array != null) {
-       // set date in iso format
-       $args->creation_date_from = $date_array['year'] . "-" . 
-         $date_array['month'] . "-" . $date_array['day'];
-     }
-  }
-  
-  // convert "creation date to" to iso format for database usage
-  if (isset($args->creation_date_to) && $args->creation_date_to != '') {
-    $date_array = split_localized_date($args->creation_date_to, $dateFormat);
-    
-    if ($date_array != null) {
-      // set date in iso format
-      // date to means end of selected day -> add 23:59:59 to selected date
-      $args->creation_date_to = $date_array['year'] . "-" . $date_array['month'] . 
-                                  "-" . $date_array['day'] . " 23:59:59";
-    }
-  }
-  
-  // convert "modification date from" to iso format for database usage
-  if (isset($args->modification_date_from) && $args->modification_date_from != '') {
-    $date_array = split_localized_date($args->modification_date_from, $dateFormat);
-    if ($date_array != null) {
-      // set date in iso format
-      $args->modification_date_from= $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
-    }
-  }
-  
-  //$args->modification_date_to = strtotime($args->modification_date_to);
-  // convert "creation date to" to iso format for database usage
-  if (isset($args->modification_date_to) && $args->modification_date_to != '') {
-    $date_array = split_localized_date($args->modification_date_to, $dateFormat);
-    if ($date_array != null) {
-      // set date in iso format
-      // date to means end of selected day -> add 23:59:59 to selected date
-      $args->modification_date_to = $date_array['year'] . "-" . $date_array['month'] . "-" .
-                                $date_array['day'] . " 23:59:59";
+  $dk = array('creation_date_from' => ' 00:00:00',
+              'creation_date_to' => ' 23:59:59',
+              'modification_date_from' => ' 00:00:00',
+              'modification_date_to' => ' 23:59:59');
+  foreach( $dk as $tdk => $hhmmss ) {
+    if (isset($args->$tdk) && trim($args->$tdk) != '') {
+      $l10ndate = split_localized_date($args->$tdk, $dateFormat);
+      $args->$tdk = null;   
+      if ($l10ndate != null && is_array($l10ndate)) {
+        // set date in iso format
+        $args->$tdk = $l10ndate['year'] . "-" . 
+                      $l10ndate['month'] . "-" . 
+                      $l10ndate['day'] . $hhmmss;
+      }
     }
   }
   
@@ -289,6 +268,7 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
 
   // -----------------------------------------------------------------------
   // date filters can be build using algorithm
+  // Need to sanitize!!! 2019
   $date_fields = array('creation_ts' => 'ts' ,'modification_ts' => 'ts');
   $date_keys = array('date_from' => '>=' ,'date_to' => '<=');
   foreach($date_fields as $fx => $needle) {
@@ -310,13 +290,17 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
   //         value: table alias
   //  
   $likeKeys = array('name' => 
-                      array('name' => array('ver' => "NH_REQ", 'rev' => "REQR")),
+                      array('name' => 
+                            array('ver' => "NH_REQ", 'rev' => "REQR")),
                     'requirement_document_id' => 
-                      array('req_doc_id' => array('ver' => 'REQ', 'rev' => 'REQR')),
+                      array('req_doc_id' => 
+                            array('ver' => 'REQ', 'rev' => 'REQR')),
                     'scope' => 
-                      array('scope' => array('ver' => 'REQV', 'rev' => 'REQR')),
+                      array('scope' => 
+                            array('ver' => 'REQV', 'rev' => 'REQR')),
                     'log_message' 
-                      => array('log_message'=> array('ver' => 'REQV','rev' =>'REQR')));
+                      => array('log_message' => 
+                               array('ver' => 'REQV','rev' =>'REQR')));
 
   foreach($likeKeys as $key => $fcfg) {
     if($argsObj->$key) {
@@ -329,7 +313,8 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
   }           
 
   $char_keys = array( 'reqType' => 
-                 array('type' => array('ver' => "REQV", 'rev' => "REQR")),
+                 array('type' => 
+                          array('ver' => "REQV", 'rev' => "REQR")),
                        'reqStatus' => 
                          array('status' => array('ver' => 'REQV', 'rev' => 'REQR')));
 
@@ -358,7 +343,7 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
   
   
   // Complex processing
-  if(!is_null($argsObj->relation_type)) {
+  if(!is_null($argsObj->relation_type) && intval($argsObj->relation_type) >0) {
     // search by relation type    
     // $argsObj->relation_type is a string in following form
     // e.g. 3_destination or 2_source or only 4

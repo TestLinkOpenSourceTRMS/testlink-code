@@ -1,0 +1,32 @@
+<?php
+# Some useful examples/documentation
+# https://docs.gitlab.com/ce/api/oauth2.html
+# https://grafana.com/docs/grafana/latest/auth/gitlab/
+
+# Libraries used to create client
+# https://github.com/thephpleague/oauth2-client
+# https://github.com/omines/oauth2-gitlab
+#
+$tlCfg->OAuthServers['gitlab']['oauth_enabled'] = true;
+$tlCfg->OAuthServers['gitlab']['oauth_name'] = 'gitlab';
+$tlCfg->OAuthServers['gitlab']['oauth_client_id'] = 
+'27a03c93d60b5ddb4e0cef92149678fbe37c099733605e046a5428a9da4177ba';
+$tlCfg->OAuthServers['gitlab']['oauth_client_secret'] = 'c157df291b81dbfd8084d38b155029baded3cf76c7449670bd2da889fe8b99eb';
+$tlCfg->OAuthServers['gitlab']['redirect_uri'] = 'http://fman.hopto.org/login.php?oauth=gitlab';
+
+
+// The following configuration options are not needed when using 
+//
+// https://github.com/thephpleague/oauth2-client
+// https://github.com/omines/oauth2-gitlab
+//
+// Can be authorization_code (by default), client_credentials or password
+//
+//$tlCfg->OAuthServers[2]['oauth_grant_type'] = 'authorization_code';  
+//$tlCfg->OAuthServers[2]['oauth_url'] = 'https://gitlab.com/oauth/authorize';
+//$tlCfg->OAuthServers[2]['token_url'] = 'https://gitlab.com/oauth/token';
+//$tlCfg->OAuthServers[2]['oauth_force_single'] = false; 
+//
+//$tlCfg->OAuthServers[2]['oauth_profile'] = 'https://api.github.com/user';
+//$tlCfg->OAuthServers[2]['oauth_profile'] = 'https://gitlab.com/api/v4/user';
+//$tlCfg->OAuthServers[2]['oauth_scope'] = 'read_user';

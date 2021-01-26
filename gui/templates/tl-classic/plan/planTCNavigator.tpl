@@ -22,8 +22,11 @@ Scope: show test plan tree for execution
   treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
               loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
   Ext.onReady(function() {
-  Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
-  
+/* #3714 
+Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+*/
+Ext.state.Manager.setProvider(new Ext.ux.LocalStorageProvider());
+      
   // Use a collapsible panel for filter settings
   // and place a help icon in ther header
   var settingsPanel = new Ext.ux.CollapsiblePanel({

@@ -79,7 +79,7 @@ that remain always visible while rest of body content scrolls,
 giving visual experience that body goes under the section on top
 */
 body.fixedheader {
-	padding-top:	120px !important;
+	padding-top:	200px !important;
 	padding-top:	0; /* IE 6 does not understand fixed */
 }
 
@@ -200,13 +200,20 @@ present on page (example grid())
 
 On chrome seems not work
 */
+/* @20200528 I've discovered a regression
+   the header wrap does not cover what is scrolling
+   under it.
+   I need to understand when was introduced
+   but adding 	background: white; is enough to fix it 
+   */
 #header-wrap {
 	border-bottom:	1px solid #000;
-	height: 100px;
+	height: 200px;
 	position: fixed;
 	top:  0;
 	width:  100%;
-	z-index:  999;
+	background: white;
+	/* z-index:  999;*/
 }
 
 /* background for working area (tables and forms) */
@@ -285,10 +292,11 @@ div.menu_bubble h3{
  * Give buttons, submit, reset a gradient 3d look and other components
  * text/password-input, textarea and select a flat appearance.
  */
+
 input[type="button"],
+input[type="submit"],
 input[type="password"],
 input[type="reset"],
-input[type="submit"],
 input[type="text"],
 select,
 textarea,
@@ -299,7 +307,7 @@ button {
    margin: 4px 0 0 0;
    font-size: 9pt;
    color: black;
-   -moz-border-radius: 3px;
+   -border-radius: 3px;
    -webkit-border-radius: 3px;
    border-radius: 3px;
 }
@@ -486,7 +494,7 @@ span.unselected a, span.unselected a:visited {
 * "common" 		- often used for view arrays
 * "simple" 		- often used for forms
 * "smallGrey" 	- often used for options / filters
-* "invisible" 	- no borders
+* "no-border" 	- no border (former "invisible" but already used by bootstrap)
 * !!! Do not add new table kinds !!! (there is bunch of wild table definitions below)
 */
 
@@ -568,7 +576,7 @@ table.no-border {
 	width:			auto;
 }
 
-table.invisible {
+table.no-border {
 	border: 		0px none;
 	font-size:		90%;
 	margin:			5px 0px;

@@ -977,7 +977,7 @@ class reqCommands {
    *
    */
   function fileUpload(&$argsObj,$request) {
-    fileUploadManagement($this->db,$argsObj->req_version_id,
+    $argsObj->uploadOp = fileUploadManagement($this->db,$argsObj->req_version_id,
       $argsObj->fileTitle,$this->reqMgr->getAttachmentTableName());
 
     return $this->initGuiObjForAttachmentOperations($argsObj);
@@ -1007,6 +1007,7 @@ class reqCommands {
     $guiObj->req_id = $argsObj->req_id;
     $guiObj->suggest_revision = $guiObj->prompt_for_log = false;
     $guiObj->template = "reqView.php?refreshTree=0&requirement_id={$argsObj->req_id}";
+    $guiObj->uploadOp = $argsObj->uploadOp;
 
     return $guiObj;    
   }

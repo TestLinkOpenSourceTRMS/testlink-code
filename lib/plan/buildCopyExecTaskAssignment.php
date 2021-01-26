@@ -18,7 +18,6 @@ require_once("common.php");
 
 // TODO understand the new model for rights check
 testlinkInitPage($db);
-checkRights($db,$_SESSION['currentUser']);
 
 $tplan_mgr = new testplan($db);
 $assignment_mgr = &$tplan_mgr->assignment_mgr;
@@ -28,6 +27,13 @@ $templateCfg = templateConfiguration();
 
 $args = init_args($build_mgr);
 $gui = init_gui($db, $args, $tplan_mgr);
+
+$context = new stdClass();
+$context->tproject_id = $args->tproject_id;
+$context->tplan_id = $args->tplan_id;
+checkRights($db,$_SESSION['currentUser'],$context);
+
+
 
 switch( $args->doAction )
 {
@@ -86,6 +92,12 @@ function init_args(&$buildMgr)
   // Get test plan id from build
   $bi = $buildMgr->get_by_id($args->build_id);
   $args->tplan_id = $bi['testplan_id'];
+
+  $info = $buildMgr->tree_manager->
+            get_node_hierarchy_info($args->tplan_id,null,
+              array('nodeType' => 'testplan'));
+
+  $args->tproject_id = intval($info['testproject_id']);
 
   $args->confirmed = isset($_REQUEST['confirmed']) && $_REQUEST['confirmed'] == 'yes' ? true : false;
   
@@ -166,10 +178,9 @@ function getBuildDomainForGUI(&$tplanMgr, &$argsObj)
 /**
  *
  */
-function checkRights(&$dbHandler,&$user) 
+function checkRights(&$db,&$user,&$context)
 {
-  if( !$user->hasRight($dbHandler, 'testplan_planning') )
-  {
-    exit();
-  }  
+  $context->rightsOr = [];
+  $context->rightsAnd = ["testplan_planning"];
+  pageAccessCheck($db, $user, $context);
 }

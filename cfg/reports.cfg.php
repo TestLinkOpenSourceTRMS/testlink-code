@@ -4,7 +4,6 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	reports.cfg.php
- * @author 		Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
  * 
@@ -85,6 +84,26 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 	'format' => 'format_html,format_pseudo_ods'
 );
 
+$tlCfg->reports_list['report_by_tsuite'] = 
+  array('title' => 'link_report_by_tsuite',
+        'url' => 'lib/results/resultsByTSuite.php',
+        'enabled' => 'all',
+        'directLink' => 
+          '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=report_by_tsuite',
+        'format' => 'format_html'
+);
+
+$tlCfg->reports_list['baseline_l1l2'] = 
+  array('title' => 'baseline_l1l2',
+        'url' => 'lib/results/baselinel1l2.php',
+        'enabled' => 'all',
+        'directLink' => 
+          '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0' .
+          '&type=baseline_l1l2',
+        'format' => 'format_html'
+);
+
+
 $tlCfg->reports_list['results_by_tester_per_build'] = array( 
 	'title' => 'link_report_by_tester_per_build',
 	'url' => 'lib/results/resultsByTesterPerBuild.php',
@@ -122,6 +141,16 @@ $tlCfg->reports_list['results_flat'] = array(
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_flat',
 	'format' => 'format_html,format_mail_html'
 );
+
+/* 20191210 */
+$tlCfg->reports_list['abslatest_results_matrix'] = array( 
+	'title' => 'link_report_test_absolute_latest_exec',
+	'url' => 'lib/results/resultsTCAbsoluteLatest.php',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_matrix',
+	'format' => 'format_html,format_pseudo_ods'
+);
+
 
 $tlCfg->reports_list['list_tc_failed'] = array( 
 	'title' => 'link_report_failed',
@@ -221,6 +250,17 @@ $tlCfg->reports_list['free_tcases'] = array(
 'url' => 'lib/results/freeTestCases.php',
 'enabled' => 'all', 'directLink' => '',
 'format' => 'format_html'
+);
+
+$report = 'report_exec_timeline';
+$tlCfg->reports_list[$report] = array( 
+	'title' => 'link_report_exec_timeline',
+	'url' => 'lib/results/execTimelineStats.php',
+	'enabled' => 'all', 
+	'directLink' => 
+	   '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0' .
+	   '&type=' . $report,
+	'format' => 'format_html'
 );
 
 

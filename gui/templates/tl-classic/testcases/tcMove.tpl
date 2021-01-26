@@ -7,9 +7,10 @@ Purpose: smarty template - move/copy test case
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {lang_get var="labels"
-          s="test_case,title_mv_cp_tc,inst_move,inst_copy,inst_copy_move_warning,
-             copy_requirement_assignments,copy_keyword_assignments,btn_copy_ghost_zone,
-             choose_container,as_first_testcase,as_last_testcase,btn_mv,btn_cp,copy_new_name"}
+  s="test_case,title_mv_cp_tc,inst_move,inst_copy,inst_copy_move_warning,
+    copy_requirement_assignments,copy_keyword_assignments,btn_copy_ghost_zone,
+    choose_container,as_first_testcase,as_last_testcase,btn_mv,btn_cp,
+    copy_new_name,copy_only_latest_version"}
 
 {include file="inc_head.tpl"}
 
@@ -48,7 +49,12 @@ Purpose: smarty template - move/copy test case
 	  <br />
   {/if}
   <input type="checkbox" name="requirement_assignments" id='requirement_assignments'>
-     {$labels.copy_requirement_assignments}
+     {$labels.copy_requirement_assignments}<br>
+  <input type="checkbox" 
+         name="copy_latest_version" 
+         id='copy_latest_version' checked >
+
+     {$labels.copy_only_latest_version}
   </p>
 
 	 

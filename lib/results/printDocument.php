@@ -291,8 +291,6 @@ function init_args(&$dbHandler) {
   $args = new stdClass();
   $pParams = R_PARAMS($iParams,$args);
 
-  //var_dump($_REQUEST); die();
-
   // really UGLY HACK
   $typeDomain = array('test_plan' => 'testplan','test_report' => 'testreport');
   $args->type = isset($typeDomain[$args->type]) ? $typeDomain[$args->type] : $args->type;
@@ -740,6 +738,6 @@ function checkRights(&$db,&$user,$context = null)
     $context->getAccessAttr = false; 
   }
 
-  $check = $user->hasRight($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
+  $check = $user->hasRightOnProj($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
   return $check;
 }

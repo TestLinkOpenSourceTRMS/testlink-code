@@ -30,8 +30,10 @@ require_once('exec.inc.php'); // used for bug string lookup
 
 $tplCfg = templateConfiguration();
 
-$args = init_args($db);
-$tplan_mgr = new testplan($db);
+list($tplan_mgr,$args) = initArgsForReports($db);
+if( null == $tplan_mgr ) {
+  $tplan_mgr = new testplan($db);
+}
 $tcase_mgr = new testcase($db);
 
 $gui = initializeGui($db,$args,$tplan_mgr);
@@ -162,7 +164,7 @@ if( $doChoice ) {
   $tpl = 'neverRunByPPLauncher.tpl';
   $gui->url2call = $args->basehref .
     "lib/results/neverRunByPP.php?tplan_id=$gui->tplan_id" .
-    "&tproject_id=$gui->tproject_id&doAction=result";
+    "&tproject_id=$gui->tproject_id&format=$gui->format&doAction=result";
 }
 
 displayReport($tplCfg->template_dir . $tpl, 
@@ -292,7 +294,7 @@ function checkRights(&$db,&$user,$context = null) {
     $context->tproject_id = $context->tplan_id = null;
     $context->getAccessAttr = false; 
   }
-  $check = $user->hasRight($db,'testplan_metrics',
+  $check = $user->hasRightOnProj($db,'testplan_metrics',
     $context->tproject_id,$context->tplan_id,$context->getAccessAttr);
   return $check;
 }

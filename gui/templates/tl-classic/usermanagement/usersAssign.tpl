@@ -2,14 +2,13 @@
 Testlink: smarty template - 
 @filesource usersAssign.tpl
 
-@internal revisions
-@since 1.9.15
 *}
 {lang_get var="labels" 
           s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,show_only_authorized_users,
              warn_demo,User,btn_upd_user_data,btn_do,title_assign_roles'}
 
-{include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
+{include file="inc_head.tpl" jsValidate="yes" 
+  openHead="yes" enableTableSorting="yes"}
 {include file="inc_ext_js.tpl" css_only=1}
 
 {include file="bootstrap.inc.tpl"}
@@ -72,7 +71,8 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 
 {if $tlCfg->gui->usersAssign->pagination->enabled}
   {$ll = $tlCfg->gui->usersAssign->pagination->length}
-  {include file="DataTables.inc.tpl" DataTablesOID="item_view" DataTableslengthMenu=$ll}
+  {include file="DataTables.inc.tpl" 
+    DataTablesOID="item_view" DataTableslengthMenu=$ll}
 {/if}
 
 </head>
@@ -85,7 +85,11 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 {include file="usermanagement/menu.inc.tpl"}
 <div class="workBack">
 
-{include file="inc_update.tpl" result=$result item="$gui->featureType" action="$action" user_feedback=$gui->user_feedback}
+{include file="inc_update.tpl" 
+         result=$result 
+         item=$gui->featureType 
+         action=$action
+         user_feedback=$gui->user_feedback}
 
 {* 
 Because this page can be reloaded due to a test project change done by
@@ -130,11 +134,6 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 		    	   {/foreach}
 		    	   </select>
 		    	</td>
-			<td>
-          {* 
-					<input type="button" value="{$labels.btn_change}" onclick="changeFeature('{$gui->featureType}');"/>
-          *}
-		  </td>
 			</tr>
    		<tr>
    		<td class="labelHolder" style="{$styleLH}"">{$labels.set_roles_to}</td>{if $gui->featureType == 'testproject'} <td>&nbsp;</td> {/if}

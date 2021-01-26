@@ -11,7 +11,7 @@ Author : franciscom
         {$radio_id_prefix = "statusSingle"}
       {/if}
 
-  		<table class="invisible">
+  		<table class="no-border">
   		<tr>
   			<td style="text-align: center;">
   				<div class="title">{$args_labels.test_exec_notes}</div>

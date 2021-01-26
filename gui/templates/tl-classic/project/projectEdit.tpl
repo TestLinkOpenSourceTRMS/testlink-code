@@ -5,8 +5,6 @@
  *
  * @filesource  projectEdit.tpl
  *
- * @internal revisions
- * @since 1.9.14
  *
  *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -66,12 +64,14 @@ function manageTracker(selectOID,targetOID)
   var so;
   var to;
 
-  so = document.getElementById(selectOID);
   to = document.getElementById(targetOID);
+  if ( typeof(to) == 'undefined' || to == null) {
+    return;
+  }
 
+  so = document.getElementById(selectOID);
   to.disabled = false;
-  if(so.selectedIndex == 0)
-  {
+  if (so.selectedIndex == 0){
     to.checked = false;
     to.disabled = true;
   }  

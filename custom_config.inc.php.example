@@ -94,7 +94,6 @@
 // $tlCfg->authentication['oauth'][1]['oauth_name'] = 'google';
 
 // Get from /gui/themes/default/images
-// $tlCfg->authentication['oauth'][1]['oauth_icon'] = 'google.png'; 
 // $tlCfg->authentication['oauth'][1]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->authentication['oauth'][1]['oauth_client_secret'] = 'CLIENT_SECRET';
 // Can be authorization_code (by default), client_credentials or password
@@ -111,7 +110,6 @@
 // Github
 // $tlCfg->authentication['oauth'][2]['oauth_enabled'] = true;
 // $tlCfg->authentication['oauth'][2]['oauth_name'] = 'github';
-// $tlCfg->authentication['oauth'][2]['oauth_icon'] = 'github.png'; //Get from /gui/themes/default/images
 // $tlCfg->authentication['oauth'][2]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->authentication['oauth'][2]['oauth_client_secret'] = 'CLIENT_SECRET';
 
@@ -216,6 +214,8 @@
  *   - $tlCfg->results['charts']['status_colour'] (in this file)
  *   - /locale/<your_language>/custom_strings.txt (see custom_strings.txt.example)
  *   - /gui/themes/default/css/custom.css (see custom.css.example)
+ *   - $tlCfg->results['status_icons_for_exec_ui'] = 
+ *   - $tlCfg->results['status_icons_for_exec_next_ui'] = 
  */
 
 // This Example shows how to add the status 'my_status'

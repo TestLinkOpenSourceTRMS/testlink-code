@@ -52,7 +52,8 @@
     {$display_left_block_3=true}
 {/if}
 
-{if $gui->testprojectID && $gui->grants.view_tc == "yes"}
+{if $gui->testprojectID && 
+    ($gui->grants.view_tc == "yes" || $gui->grants.modify_tc == "yes") }
     {$display_left_block_4=true}
 {/if}
 
@@ -150,7 +151,8 @@
 
 {if $display_left_block_3}
   <div class="list-group" style="{$divStyle}">
-       {if $gui->grants.reqs_view == "yes" || $gui->grants.reqs_edit == "yes" }
+       {if $gui->grants.reqs_view == "yes" 
+           || $gui->grants.reqs_edit == "yes" }
           <a href="{$gui->launcher}?feature=reqSpecMgmt" class="list-group-item" style="{$aStyle}">{$labels.href_req_spec}</a>
           <a href="{$reqOverView}" class="list-group-item" style="{$aStyle}">{$labels.href_req_overview}</a>
           <a href="{$gui->launcher}?feature=printReqSpec" class="list-group-item" style="{$aStyle}">{$labels.href_print_req}</a>

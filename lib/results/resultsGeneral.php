@@ -17,7 +17,7 @@ require_once('displayMgr.php');
 $timerOn = microtime(true);
 $tplCfg = templateConfiguration();
 
-list($tplan_mgr,$args) = init_args($db);
+list($tplan_mgr,$args) = initArgsForReports($db);
 if( null == $tplan_mgr ) {
   $tplan_mgr = new testplan($db);
 }
@@ -646,6 +646,6 @@ function checkRights(&$db,&$user,$context = null) {
     $context->getAccessAttr = false; 
   }
 
-  $check = $user->hasRight($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
+  $check = $user->hasRightOnProj($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
   return $check;
 }

@@ -104,6 +104,18 @@ function init_args(&$dbHandler) {
   $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
   $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null;
 
+  // ---------------------------
+  // whitelist
+  $wl = array_flip(array('testcase','testproject','testsuite'));
+  $args->edit = trim($args->edit);
+
+  if (!isset($wl[$args->edit])) {
+    tLog('Argument "edit" has invalid value: ' . $args->edit , 'ERROR');
+    trigger_error($_SESSION['currentUser']->login . 
+                  '> Argument "edit" has invalid value.', E_USER_ERROR);
+  }
+  // ---------------------------
+  
   $args->feature = $args->edit;
   $args->tcaseTestProject = null;
   $args->viewerArgs = null;
@@ -208,14 +220,17 @@ function initializeEnv($dbHandler) {
           'keyword_assignment','req_tcase_link_management',
           'testproject_edit_executed_testcases',
           'testproject_delete_executed_testcases',
-          'testproject_add_remove_keywords_executed_tcversions');
+          'testproject_add_remove_keywords_executed_tcversions',
+          'delete_frozen_tcversion');
 
   $grants = new stdClass();
   foreach($grant2check as $right) {
     $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$args->tproject_id);
     $gui->$right = $grants->$right;
   }
-  
+
+  $gui->modify_tc_rights = $gui->mgt_modify_tc;
+
   $gui->form_token = $args->form_token;
   $gui->tproject_id = $args->tproject_id;
   $gui->tplan_id = $args->tplan_id;
@@ -355,6 +370,8 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg) {
       $gui->path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
     }
     $platform_mgr = new tlPlatform($dbHandler,$args->tproject_id);
+
+    $opx = array();
     $gui->platforms = $platform_mgr->getAllAsMap();
     $gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
 

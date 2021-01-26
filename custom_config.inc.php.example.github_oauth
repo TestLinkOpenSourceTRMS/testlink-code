@@ -2,7 +2,6 @@
 # ngrok http -region eu -subdomain=testlink 80
 $tlCfg->OAuthServers[2]['oauth_enabled'] = true;
 $tlCfg->OAuthServers[2]['oauth_name'] = 'github';
-$tlCfg->OAuthServers[2]['oauth_icon'] = 'github.png';
 
 $tlCfg->OAuthServers[2]['oauth_client_id'] = '98e37f6f3f91602e9538';
 $tlCfg->OAuthServers[2]['oauth_client_secret'] = 'b66f036df4210af08a5d7b7fbf564e731e0ff189';

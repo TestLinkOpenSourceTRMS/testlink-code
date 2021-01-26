@@ -9,7 +9,7 @@ DROP function IF EXISTS `UDFStripHTMLTags`;
 
 DELIMITER $$
 USE `YOUR_TL_DBNAME`$$ /* Replace before run */
-CREATE FUNCTION `UDFStripHTMLTags`(Dirty varchar(4000)) RETURNS varchar(4000) CHARSET utf8
+CREATE FUNCTION `UDFStripHTMLTags`(Dirty TEXT) RETURNS TEXT CHARSET utf8
 BEGIN
 DECLARE iStart, iEnd, iLength int;
    WHILE Locate( '<', Dirty ) > 0 And Locate( '>', Dirty, Locate( '<', Dirty )) > 0 DO

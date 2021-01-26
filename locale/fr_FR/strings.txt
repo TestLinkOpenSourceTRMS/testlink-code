@@ -314,7 +314,9 @@ $TLS_btn_remove_all_users = "Supprimer TOUTES les affectations";
 $TLS_btn_apply_assign = "Appliquer l'affectation";
 $TLS_btn_save_assign = "Sauver les affectations";
 $TLS_btn_remove = "Supprimer";
-$TLS_btn_remove_assignments = "Supprimer les affections";
+$TLS_btn_remove_assignments = "Supprimer les affectations";
+$TLS_btn_remove_current_assignments = "Supprimer toutes les affectations";
+
 
 
 // Status (used wide)
@@ -1915,10 +1917,7 @@ $TLS_info_report_milestones_no_prio = "Ce rapport affiche les indicateurs d'avan
 $TLS_info_res_by_kw = "Ce rapport affiche les résultats pour chaque mot-clé. Si une fiche de test a de multiples " .
                       "mots-clés affectés, cela est comptabilisé pour chaque mot-clé affecté.";
 $TLS_info_gen_test_rep = "<b>Information générale</b><br />" .
-                         "Tous les rapports considèrent uniquement la dernière exécution pour chaque fiche de test.<br />" .
-                         "Vous pouvez ordonner les tables en cliquant sur les titres de colonne.";
-
-
+                         "Tous les rapports se basent uniquement la dernière exécution pour chaque fiche de test.<br />";
 
 // ----- gui/templates/resultsMoreBuilds_query_form.tpl -----
 $TLS_results_latest = "Derniers résultats uniquement";
@@ -2632,7 +2631,7 @@ $TLS_kw_update_fails = "Erreur lors de la mise à jour du mot-clé";
 $TLS_assigned_kword = "Mot-clés affectés";
 $TLS_available_kword = "Mot-clés disponibles";
 $TLS_kword_to_be_assigned_to_testcases = "Mots-clés à affecter aux fiches de test";
-$TLS_assignToFilteredTestCases = 'Affecter SEULEMENT aux fiches de test filtrées';
+$TLS_assignToFilteredTestCases = 'Affecter seulement aux fiches de test filtrées';
 
 
 
@@ -3149,6 +3148,7 @@ $TLS_API_UPDATER_INSUFFICIENT_RIGHTS = "L'utilisateur %s " .
                  "n'a pas les droits suffisants pour effectuer cette action." .
                  " - Détails : droit %s, Identifiant Projet : %s, Identifiant Campagne de test : %s";
 
+$TLS_API_MUST_BE_ADMIN = "Cette fonction est réservée aux administrateurs du site.";
 
 $TLS_API_NO_DEV_KEY = "Aucune clé de développeur fournie.";
 $TLS_API_NO_TCASEID = "Aucun ID de fiche de test(ID interne) fourni.";
@@ -3162,6 +3162,8 @@ $TLS_API_NO_TESTSUITEID = "Aucun ID de dossier de test fourni.";
 $TLS_API_NO_TPID = "Aucun ID de campagne de test fourni.";
 $TLS_API_NO_TCID = "Aucun ID de fiche de test fourni.";
 $TLS_API_NO_PLATFORMID = "Aucun ID de plateforme fourni.";
+$TLS_API_NO_USERID = "Aucun ID utilisateur fourni.";
+$TLS_API_NO_ROLEID = "Aucun ID de rôle fourni.";
 
 
 $TLS_API_INVALID_TCASEID = "ID de fiche de test %s inconnu.";
@@ -3169,6 +3171,8 @@ $TLS_API_INVALID_BUILDID = "ID de version du produit %s inconnu.";
 $TLS_API_INVALID_TPLANID = "ID de campagne de test %s inconnu.";
 $TLS_API_INVALID_STATUS = "Etat %s non valide.";
 $TLS_API_INVALID_TESTCASE_EXTERNAL_ID = "ID externe de fiche de test %s inconnu.";
+$TLS_API_INVALID_USERID = "ID utilisateur %s inconnu.";
+$TLS_API_INVALID_ROLEID = "ID de rôle %s inconnu.";
 
 $TLS_API_TCASEID_NOT_INTEGER = "L’ID de fiche de test doit être un entier.";
 $TLS_API_TESTCASENAME_NOT_STRING = "Le nom de la fiche de test doit être une chaine de caractères.";
@@ -3295,6 +3299,11 @@ $TLS_API_INVALID_TIMESTAMP = "La date fournie '%s' est invalide";
 $TLS_API_ITS_NOT_FOUND = "ITS %s introuvable.";
 
 $TLS_API_TSUITE_NOT_ON_TCASE_TPROJ = "Le dossier de tests n'appartient pas à ce projet";
+
+$TLS_API_USER_LOGIN_DOESNOT_EXIST = "Login utilisateur %s inconnu.";
+
+$TLS_API_ROLE_NAME_DOESNOT_EXIST = "Role %s inconnu.";
+$TLS_API_ROLE_SETTING_ERROR = "Une erreur est survenue lors de l'affectation du rôle %s à l'utilisateur %s. Veuillez consulter les logs.";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Identification pour '{%1}' depuis '{%2}' réussie";
@@ -3835,6 +3844,9 @@ $TLS_add_link_to_tlexec_print_view = "Ajouter un lien dans le gestionnaire d’a
 $TLS_dl2tl = "Lien pour l’exécution TestLink : ";
 $TLS_dl2tlpv = "Lien pour la vue d’impression de l’exécution TestLink : ";
 
+$TLS_dlToTCSpecPV = 'Lien vers un cas de test Testlink : ';
+$TLS_dlToTCSpecPVCode = '[TLTC@:%s]';
+
 $TLS_old_style_login = 'Ecran de connexion bien connu';
 $TLS_new_style_login = 'Essayer le nouvel écran de connexion';
 
@@ -3947,6 +3959,9 @@ $TLS_copy_attachments_from_latest_exec = 'Copier les pièces attachées de la de
 $TLS_exec_tree_counters_logic = 'Compter les dernières exécutions à partir de';
 $TLS_use_latest_exec_on_testplan_for_counters = 'Campagne';
 $TLS_use_latest_exec_on_contex_for_counters = 'Build sélectionné';
+$TLS_use_latest_exec_on_testplan_plat_for_counters = 
+  'Campagne de la plateforme';
+
 
 $TLS_download_csv = 'Télécharger en CSV';
 $TLS_select_platforms = "Sélectionner les plateformes";
@@ -3957,6 +3972,88 @@ $TLS_createKW = 'Créer un mot-clé';
 
 $TLS_btn_create_and_link = 'Créer & Lier';
 $TLS_create_keyword_and_link = 'Créer un mot clé et le lier à une version de cas de test';
-$TLS_export_skel = 'Exporter un skelete';
+$TLS_export_skel = 'Exporter un squelette';
 
-// ----- END ------------------------------------------------------------------
+$TLS_title_res_by_kw_on_plat = "Résultats de la plateforme par mot clé : ";
+$TLS_title_res_by_prio_on_plat = "Résultats de la plateforme par priorité : ";
+$TLS_title_res_by_tl_testsuite_on_plat = 
+  "Résultats de la plateforme par dossier de premier niveau : ";
+
+$TLS_title_res_by_tl_testsuite = "Résultats par dossier de premier niveau";
+
+$TLS_title_res_by_build_on_plat = "Résultats de la plateforme par version :";
+$TLS_title_res_build = 'Résultats par version';
+$TLS_info_neverRunByPP_report = 
+  "Ce rapport montre les cas de tests n’ayant pas été exécutés pour chaque version active de la campagne (et de la plateforme) sélectionnée. <br />
+   Les cas de tests <b>avec ou sans testeur affecté</b>
+   sont pris en compte.<br />";
+
+$TLS_neverRunByPP_title = "Cas de test jamais exécutés";
+$TLS_link_report_never_run = "Cas de test jamais exécutés";
+
+
+$TLS_commit_id = 'id de commit';
+$TLS_branch = 'branche';
+$TLS_tag = 'étiquette';
+$TLS_release_candidate = 'release candidate';
+
+$TLS_allowed_files = "Fichiers autorisés :";
+$TLS_allowed_filenames_regexp = "Le nom du fichier doit respecter cette expression régulière :";
+
+$TLS_info_xls_report_results_by_status = '!!La feuille de calcul produite contient le résumé de cas de test';
+
+
+$TLS_link_report_test_absolute_latest_exec = "Absolute Latest Execution Matrix";
+$TLS_latest_execution = "Latest execution on Context";
+$TLS_resultsTCAbsoluteLatest = "La dernière exécution est calculée à partir de toutes les versions";
+$TLS_info_resultsTCAbsoluteLatest_report = $TLS_resultsTCAbsoluteLatest;
+
+$TLS_resultsTCAbsoluteLatest_title = "La dernière exécution pour la plateforme sélectionnée est calculée à partir de toutes les versions";
+
+$TLS_FILE_UPLOAD_allowed_filenames_regexp = 'Le nom du fichier ne respecte pas l’expression régulière';
+
+$TLS_FILE_UPLOAD_empty_extension = 'L’extension de fichier est obligatoire';
+$TLS_FILE_UPLOAD_allowed_files = 'Ce type de fichier n’est pas autorisé';
+
+$TLS_file_upload_ko = 'Problème lors du téléversement';
+$TLS_pleaseOpenTSuite = 'La section Détails du dossier de test contient des informations importantes pour ' .
+                   'l’exécution.<br />Veuillez la lire '.
+                   'avec attention.<br />Merci.';
+
+$TLS_delete_frozen_tcversion = "Suppression d’une version de cas de test figée";
+$TLS_right_delete_frozen_tcversion = "Suppression d’une version de cas de test figée";
+$TLS_copy_only_latest_version = 'Copier seulement la dernière version en tant que première version';
+$TLS_qty = 'Qté';
+$TLS_yyyy_mm = 'Année/Mois';
+$TLS_yyyy_mm_dd = 'Date';
+$TLS_hh = 'Heure';
+$TLS_execTimelineStats_report = 'Statistiques d’exécution par date/heure';
+$TLS_link_report_exec_timeline = 'Exécution par date/heure';
+$TLS_qty_of_executions = 'Exécutions de cas de test';
+$TLS_assignOnlyToTestCasesInTestSuite = 'Affecter seulement aux enfants directs de ce dossier de test';
+$TLS_target_kword = "Mots clés cibles (Affecter/Supprimer)";
+$TLS_link_report_by_tsuite = "Métriques de niveau 1 et 2 des campagnes de tests";
+$TLS_metrics_by_l1l2_testsuite = "Métriques de niveau 1 et 2 des campagnes de tests";
+$TLS_you_can_sort = "Vous pouvez trier le tableau en cliquant sur les en-têtes de colonne.";
+$TLS_firstExec = 'Première exécution : ';
+$TLS_latestExec = 'Dernière exécution : ';
+$TLS_section_link_report_by_tsuite_on_plat = "Résultats par plateforme : ";
+$TLS_l1l2 = 'Top : Child (Test Suites)';
+$TLS_not_enough_rights = 'Vous ne disposez pas d’assez de droits pour utiliser cette fonction';
+$TLS_saveForBaseline = 'Sauver pour créer la référence';
+$TLS_baseline_saved_ok = 'Référence sauvée';
+$TLS_baseline_l1l2 = 'Référence de niveau1 et 2 des campagne de tests';
+$TLS_baselineTimestamp = 'Référence prise le :';
+$TLS_on_design = 'On Design';
+$TLS_on_exec = 'On Execution';
+$TLS_note_platform_filter = 'Les cas de test sont filtrés suivant les platformes suivantes';
+$TLS_testers_qty = 'Nombre de testeurs';
+
+$TLS_report_test_automation = 'Rapport de spécification des tests automatiques';
+$TLS_btn_report_test_automation = 'Rapport de spécification des tests automatiques';
+$TLS_before_summary = "Avant le résumé";
+$TLS_before_preconditions = "Avant les pré-conditions";
+$TLS_after_title = "Après le titre";
+$TLS_after_summary = "Après le résumé";
+$TLS_after_preconditions = "Après les pré-conditions";
+// ----- END -----------------------------------------------------

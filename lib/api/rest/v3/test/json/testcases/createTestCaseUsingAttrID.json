@@ -1,0 +1,16 @@
+{
+  "name":"Test Case ALFA",
+  "summary":"This is a summary for Test Case",
+  "preconditions":"No preconditions",
+  "order":100,
+
+ 
+  "testProject":{"id":358},
+  "testSuite":{"id":360},
+ 
+  "author":{"id":1},
+  "importance":{"id":2},
+  "executionType":{"id":1},
+  "status":{"id":1},
+  "estimatedExecutionTime":0
+}

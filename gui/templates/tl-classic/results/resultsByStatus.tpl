@@ -44,6 +44,8 @@ show Test Results by Status
   <input type="image" name="sendSpreadSheetByMail" id="sendSpreadSheetByMail" 
          src="{$tlImages.email}" title="{$labels.send_spreadsheet_by_email}">
 
+  <p class="italic">{$gui->info_xls_report|escape}</p>
+
 </form>
 
 <div class="workBack">

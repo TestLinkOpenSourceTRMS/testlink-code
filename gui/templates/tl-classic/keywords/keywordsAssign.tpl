@@ -4,7 +4,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
 {lang_get var="labels" s='keyword_assignment,keyword_assignment_empty_tsuite,
                           btn_save,assignToFilteredTestCases,
-                          tcversion_executed_keyword_assignment_blocked'}
+                          tcversion_executed_keyword_assignment_blocked,
+                          assignOnlyToTestCasesInTestSuite,
+                          btn_assign,btn_remove,
+                          btn_remove_current_assignments'}
 
 
 {include file="inc_head.tpl" openHead='yes'}
@@ -44,16 +47,36 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
         <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}"> 
 
       {if $gui->level == 'testsuite'}
+        {$labels.assignOnlyToTestCasesInTestSuite}
+        <input type="checkbox" name="onlyDirectChildren" 
+               id="onlyDirectChildren" value="1" 
+               {if $gui->onlyDirectChildren} checked {/if} /><br>
+
         {$labels.assignToFilteredTestCases}
         <input type="checkbox" name="useFilteredSet" id="useFilteredSet" value="1" 
                {if $gui->useFilteredSet} checked {/if} />
+
+
       {/if}
 
       {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	    <br />
       {if $gui->hasBeenExecuted == 0 || 
           $gui->canAddRemoveKWFromExecuted == 1}
-    	<input type="submit" name="assign{$gui->level}" id="assign{$gui->level}" value="{$labels.btn_save}" />
+    	<input type="submit" name="assign{$gui->level}" 
+             id="assign{$gui->level}" 
+             value="{$labels.btn_assign}" />
+
+      {if $gui->level == 'testsuite'}
+        <input type="submit" name="remove{$gui->level}" 
+               id="remove{$gui->level}" 
+               value="{$labels.btn_remove}" />
+
+        <input type="submit" name="removeall{$gui->level}" 
+               id="removeall{$gui->level}" 
+               value="{$labels.btn_remove_current_assignments}" />
+      {/if}
+             
       {else}
         {$labels.tcversion_executed_keyword_assignment_blocked}
       {/if}

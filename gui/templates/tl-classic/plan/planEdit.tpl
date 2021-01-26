@@ -9,9 +9,7 @@ Purpose: smarty template - create Test Plan
           s="warning,warning_empty_tp_name,testplan_title_edit,public,api_key,
              testplan_th_name,testplan_th_notes,testplan_question_create_tp_from,
              opt_no,testplan_th_active,btn_testplan_create,btn_upd,cancel,
-             show_event_history,testplan_txt_notes"}
-
-
+             show_event_history,testplan_txt_notes,file_upload_ko"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
@@ -86,12 +84,30 @@ function jsCallDeleteFile(btn, text, o_id)
 }        
 </script>
 
+
+{include file="bootstrap.inc.tpl"}
+<script src="{$basehref}third_party/clipboard/clipboard.min.js"></script>
+<script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
 </head>
 
 <body>
+{if $gui->uploadOp != null }
+  <script>
+  var uplMsg = "{$labels.file_upload_ko}<br>";
+  var doAlert = false;
+  {if $gui->uploadOp->statusOK == false}
+    uplMsg += "{$gui->uploadOp->statusCode}<br>";
+    doAlert = true;
+  {/if}
+  if (doAlert) {
+    bootbox.alert(uplMsg);
+  }
+  </script>
+{/if}
+
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
-{$planID=$gui->tplan_id}
+{$planID=$gui->itemID}
 {if !isset($loadOnCancelURL)}
   {$loadOnCancelURL=""}
 {/if}
@@ -141,7 +157,7 @@ function jsCallDeleteFile(btn, text, o_id)
         </select>
 
             <div id="copy_controls" style="display:none;">
-            {assign var=this_template_dir value=$smarty.template|dirname}
+            {$this_template_dir=$smarty.template|dirname}
             {include file="$this_template_dir/inc_controls_planEdit.tpl"}
             </div>
         </td>

@@ -60,7 +60,7 @@ function showtr() {
 </head>
 
 <body>
-<h1 class="title">{$gui->mainTitle} 
+<h1 class="title">{$gui->mainTitle|escape} 
                   {if $gui->showHelpIcon}{include file="inc_help.tpl" helptopic="hlp_generateDocOptions" show_help_icon=true}{/if}
                 </h1>
 

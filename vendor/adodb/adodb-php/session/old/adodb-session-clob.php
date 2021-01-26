@@ -1,6 +1,6 @@
 <?php
 /*
-  @version   v5.20.13  06-Aug-2018
+  @version   v5.20.17  31-Mar-2020
   @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
   @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
@@ -426,7 +426,6 @@ function adodb_sess_gc($maxlifetime)
 	return true;
 }
 
-session_module_name('user');
 session_set_save_handler(
 	"adodb_sess_open",
 	"adodb_sess_close",

@@ -11,7 +11,12 @@ show requirement specifications tree menu
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 <script type="text/javascript">
 Ext.onReady(function() {
-  Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+/* #3714 
+Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+*/
+Ext.state.Manager.setProvider(new Ext.ux.LocalStorageProvider());
+    
+
 
   // collapsible panel for filters and settings
   var settingsPanel = new Ext.ux.CollapsiblePanel({

@@ -6,7 +6,7 @@
  *
  * @package     TestLink
  * @author      Andreas Simon
- * @copyright   2018 TestLink community
+ * @copyright   2018,2020 TestLink community
  * @filesource  reqOverview.php
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
@@ -18,7 +18,8 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
-testlinkInitPage($db,false,false,"checkRights");
+
+testlinkInitPage($db,false,false);
 
 $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
@@ -27,8 +28,11 @@ $req_mgr = new requirement_mgr($db);
 
 $cfg = getCfg();
 $args = init_args($tproject_mgr);
-
 $gui = init_gui($args);
+$ctx = new stdClass();
+$ctx->tproject_id = $args->tproject_id;
+checkRights($db,$args->user,$ctx);
+
 $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 
 $smarty = new TLSmarty();
@@ -43,11 +47,16 @@ if(count($gui->reqIDs) > 0)  {
   $type_labels = init_labels($cfg->req->type_labels);
   $status_labels = init_labels($cfg->req->status_labels);
   
-  $labels2get = array('no' => 'No', 'yes' => 'Yes', 'not_aplicable' => null,'never' => null,
-                      'req_spec_short' => null,'title' => null, 'version' => null, 'th_coverage' => null,
-                      'frozen' => null, 'type'=> null,'status' => null,'th_relations' => null, 'requirements' => null,
-                      'number_of_reqs' => null, 'number_of_versions' => null, 'requirement' => null,
-                      'version_revision_tag' => null, 'week_short' => 'calendar_week_short');
+  $labels2get = array('no' => 'No', 'yes' => 'Yes', 
+                      'not_aplicable' => null,'never' => null,
+                      'req_spec_short' => null,'title' => null, 
+                      'version' => null, 'th_coverage' => null,
+                      'frozen' => null, 'type'=> null,'status' => null,
+                      'th_relations' => null, 'requirements' => null,
+                      'number_of_reqs' => null, 'number_of_versions' => null, 
+                      'requirement' => null,
+                      'version_revision_tag' => null, 
+                      'week_short' => 'calendar_week_short');
           
   $labels = init_labels($labels2get);
   
@@ -64,23 +73,35 @@ if(count($gui->reqIDs) > 0)  {
   }
   else {
     $reqSet = $req_mgr->get_by_id($gui->reqIDs, $version_option,null,array('output_format' => 'mapOfArray'));
-  }  
+  }
 
-  
-  if($cfg->req->expected_coverage_management)  {
+  // conditions to generate reqVersion Set
+  // having this set, is useful to try to improve performance
+  // to get Custom Fields when req qty > 2000
+  //
+  if ( $cfg->req->expected_coverage_management ||
+       $gui->processCF )  {
     $xSet = array_keys($reqSet);
 
     foreach($xSet as $rqID) {
       $reqVersionSet[] = $reqSet[$rqID][0]['version_id'];
     }
+  }  
+  
+  if($cfg->req->expected_coverage_management)  {
 
     $coverageSet = $req_mgr->getLatestReqVersionCoverageCounterSet($reqVersionSet);
-
   }
 
   if($cfg->req->relations->enable) {
     $relationCounters = $req_mgr->getRelationsCounters($gui->reqIDs);
   }
+
+  if ($gui->processCF) {
+    // get custom field values bulk
+    $cfByReqVer = (array)$req_mgr->get_linked_cfields(null,$reqVersionSet,$args->tproject_id,array('access_key' => 'node_id'));
+  }  
+        
 
   // array to gather table data row per row
   $rows = array();    
@@ -90,7 +111,8 @@ if(count($gui->reqIDs) > 0)  {
     $req = $reqSet[$id];
 
     // create the link to display
-    $title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $cfg->charset) . $cfg->glue_char . 
+    $title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $cfg->charset) . 
+               $cfg->glue_char . 
              htmlentities($req[0]['title'], ENT_QUOTES, $cfg->charset);
     
     // reqspec-"path" to requirement
@@ -101,6 +123,14 @@ if(count($gui->reqIDs) > 0)  {
       }
       $pathCache[$req[0]['srs_id']] = htmlentities(implode("/", $path), ENT_QUOTES, $cfg->charset);
     }         
+
+
+    # get all cfield ids we have columns for in the req overview
+    $cfield_ids = array();
+    foreach ($gui->cfields4req as $cf){
+      $cfield_ids[] = $cf['id'];
+    }
+
 
     foreach($req as $version) {
       // get content for each row to display
@@ -181,29 +211,36 @@ if(count($gui->reqIDs) > 0)  {
         $rx = isset($relationCounters[$id]) ? $relationCounters[$id] : 0;
         $result[] = "<!-- " . str_pad($rx,10,'0') . " -->" . $rx;
       }
-     
       
-      if($gui->processCF) {
-        // get custom field values for this req version
-        $linked_cfields = (array)$req_mgr->get_linked_cfields($id,$version['version_id']);
-
-        foreach ($linked_cfields as $cf) {
-          $verbose_type = $req_mgr->cfield_mgr->custom_field_types[$cf['type']];
-          $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
-          if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 ) {
-            $value = strftime( $cfg->$verbose_type . " ({$label['week_short']} %W)" , $value);
-          }  
-          $result[] = $value;
+      #8792: append one item to $result for every displayed column (no content?: append empty string) 
+      if($gui->processCF) {  
+        $linkedCFWithContent = array();
+        if ( isset($cfByReqVer[$version['version_id']])) {      
+          $linkedCFWithContent = $cfByReqVer[$version['version_id']];
         }
-      }  
+
+        foreach ($cfield_ids as $cf_id) {
+          if (isset($linkedCFWithContent[$cf_id])) {
+            $cf = $linkedCFWithContent[$cf_id];
+            $verbose_type = $req_mgr->cfield_mgr->custom_field_types[$cf['type']];
+            $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
+            if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 ) {
+              $value = strftime( $cfg->$verbose_type . " ({$labels['week_short']} %W)" , $value);  #fix typo: missing 's' in labels
+            }
+            $result[] = $value;
+          }
+          else {
+            $result[]  = '';
+            continue;
+          }  
+        }
+      }
         
       $rows[] = $result;
     }
   }
     
-  // echo 'Elapsed Time since SCRIPT START to EXT-JS Phase START (sec) =' . round(microtime(true) - $chronoStart);
-  // die();
-  // -------------------------------------------------------------------------------------------------- 
+  // --------------------------------------------------------------------
   // Construction of EXT-JS table starts here    
   if(($gui->row_qty = count($rows)) > 0 ) {
     $version_string = ($args->all_versions) ? $labels['number_of_versions'] : $labels['number_of_reqs'];
@@ -297,6 +334,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args(&$tproject_mgr) {
   $args = new stdClass();
+  $args->user = isset($_SESSION['currentUser']) 
+                ? $_SESSION['currentUser'] : null;
 
   $all_versions = isset($_REQUEST['all_versions']) ? true : false;
   $all_versions_hidden = isset($_REQUEST['all_versions_hidden']) ? true : false;
@@ -362,11 +401,12 @@ function getCfg() {
   return $cfg;
 }
 
-
-/*
- * rights check function for testlinkInitPage()
+/**
+ *
  */
-function checkRights(&$db, &$user) {
-  return $user->hasRight($db,'mgt_view_req');
+function checkRights(&$db, &$user, $context) 
+{
+  $context->rightsOr = ["mgt_view_req"];
+  $context->rightsAnd = [];
+  pageAccessCheck($db, $user, $context);
 }
-

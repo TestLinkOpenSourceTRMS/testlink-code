@@ -5,12 +5,10 @@
  * 
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @filesource  testPlanUrgency.class.php
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.13
  */ 
 
 /** 
@@ -34,15 +32,17 @@ class testPlanUrgency extends testplan
    */
   public function setTestUrgency($testplan_id, $tc_id, $urgency)
   {
-    $sql = " UPDATE {$this->tables['testplan_tcversions']} SET urgency={$urgency} " .
-           " WHERE testplan_id=" . $this->db->prepare_int($testplan_id) .
+    $sql = " UPDATE {$this->tables['testplan_tcversions']} 
+             SET urgency=" 
+             . $this->db->prepare_int($urgency) . 
+           " WHERE testplan_id=" 
+             . $this->db->prepare_int($testplan_id) .
            " AND tcversion_id=" . $this->db->prepare_int($tc_id);
+
     $result = $this->db->exec_query($sql);
 
     return $result ? tl::OK : tl::ERROR;
   }
-
-
 
   /**
    * Set urgency for TCs (direct child only) within a Test Suite and Test Plan

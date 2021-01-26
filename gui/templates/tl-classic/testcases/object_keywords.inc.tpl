@@ -20,12 +20,12 @@ var remove_kw_msgbox_title = '{$remove_kw_msgbox_title|escape:'javascript'}';
  * 
  *
  */
-function keyword_remove_confirmation(item_id, kw_link_id, keyword, title, msg, pFunction) {
+function keyword_remove_confirmation(item_id, kw_link_id, keyword, title, msg, pFunction, project_id) {
   var my_msg = msg.replace('%i',keyword);
   var safe_title = escapeHTML(title);
   Ext.Msg.confirm(safe_title, my_msg,
                   function(btn, text) { 
-                    pFunction(btn,text,item_id,kw_link_id);
+                    pFunction(btn,text,item_id,kw_link_id,project_id);
                   });
 }
 
@@ -34,9 +34,9 @@ function keyword_remove_confirmation(item_id, kw_link_id, keyword, title, msg, p
  * 
  *
  */
-function remove_keyword(btn, text, item_id, kw_link_id) {
+function remove_keyword(btn, text, item_id, kw_link_id, project_id) {
   var my_action = fRoot + 'lib/testcases/containerEdit.php?doAction=removeKeyword&item_id='
-                     + item_id + '&kw_link_id=' + kw_link_id;
+                     + item_id + '&kw_link_id=' + kw_link_id + '&tproject_id=' + project_id;
   if( btn == 'yes' ) {
     window.location=my_action;
   }
@@ -51,6 +51,7 @@ var pF_remove_keyword = remove_keyword;
   <input type="hidden" name="item_id" id="item_id" value="{$args_item_id}" />
   <input type="hidden" name="containerType" id="containerType" 
     value="{$gui->level}" />
+  <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
 
 
   {$kwView = $gsmarty_href_keywordsView|replace:'%s%':$gui->tproject_id}
@@ -67,7 +68,7 @@ var pF_remove_keyword = remove_keyword;
                      {$kw_link_item.kw_link},
                      '{$kw_link_item.keyword|escape:'javascript'}', 
                      remove_kw_msgbox_title, remove_kw_msgbox_msg, 
-                     pF_remove_keyword);">
+                     pF_remove_keyword,{$gui->tproject_id});">
            <img src="{$tlImages.delete}" title="{$kw_labels.img_title_remove_keyword}"  style="border:none" /></a>
            {/if}
             <br />

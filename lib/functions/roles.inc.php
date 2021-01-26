@@ -9,8 +9,7 @@
  *
  * @filesource  roles.inc.php
  * @package     TestLink
- * @author      Martin Havlat, Chad Rosen, Francisco Mancardi
- * @copyright   2006-2018, TestLink community 
+ * @copyright   2006-2020, TestLink community 
  * 
  */
 
@@ -57,39 +56,45 @@ function init_global_rights_maps() {
   
 
   // @since 1.9.7
-  $l18nCfg = array('desc_testplan_execute' => null,'desc_testplan_create_build' => null,
-                   'desc_testplan_metrics' => null,'desc_testplan_planning' => null,
-                   'desc_user_role_assignment' => null,'desc_mgt_view_tc' => null,
-                   'desc_mgt_modify_tc'  => null,'mgt_testplan_create' => null,
-                   'desc_mgt_view_key' => null,'desc_mgt_modify_key' => null,
-                   'desc_keyword_assignment' => null,'desc_mgt_view_req' => null,
-                   'desc_monitor_requirement' => null,'desc_mgt_modify_req' => null,
-				   'desc_req_tcase_link_management' => null,'desc_mgt_modify_product' => null,
-                   'desc_project_inventory_management' => null,'desc_project_inventory_view' => null,
-                   'desc_cfield_view' => null,'desc_cfield_management' => null,
-                   'desc_cfield_assignment' => null,
-                   'desc_exec_assign_testcases' => null,
-                   'desc_platforms_view' => null,'desc_platforms_management' => null,
-                   'desc_issuetrackers_view' => null,'desc_issuetrackers_management' => null,
-                   'desc_codetrackers_view' => null,'desc_codetrackers_management' => null,
-                   'desc_mgt_modify_users' => null,'desc_role_management' => null,
-                   'desc_user_role_assignment' => null,
-                   'desc_mgt_view_events' => null, 'desc_events_mgt' => null,
-                   'desc_mgt_unfreeze_req' => null,'desc_mgt_plugins' => null,
-                   'right_exec_edit_notes' => null, 'right_exec_delete' => null,
-                   'right_testplan_unlink_executed_testcases' => null, 
-                   'right_testproject_delete_executed_testcases' => null,
-                   'right_testproject_edit_executed_testcases' => null,
-                   'right_testplan_milestone_overview' => null,
-                   'right_exec_testcases_assigned_to_me' => null,
-                   'right_testproject_metrics_dashboard' => null,
-                   'right_testplan_add_remove_platforms' => null,
-                   'right_testplan_update_linked_testcase_versions' => null,
-                   'right_testplan_set_urgent_testcases' => null,
-                   'right_testplan_show_testcases_newest_versions' => null,
-                   'right_testcase_freeze' => null,
-                   'right_exec_ro_access' => null,
-                   'right_testproject_add_remove_keywords_executed_tcversions' => null);
+  $l18nCfg = 
+    array('desc_testplan_execute' => null,'desc_testplan_create_build' => null,
+          'desc_testplan_metrics' => null,'desc_testplan_planning' => null,
+          'desc_user_role_assignment' => null,'desc_mgt_view_tc' => null,
+          'desc_mgt_modify_tc'  => null,'mgt_testplan_create' => null,
+          'desc_mgt_view_key' => null,'desc_mgt_modify_key' => null,
+          'desc_keyword_assignment' => null,'desc_mgt_view_req' => null,
+          'desc_monitor_requirement' => null,'desc_mgt_modify_req' => null,
+				  'desc_req_tcase_link_management' => null,
+          'desc_mgt_modify_product' => null,
+          'desc_project_inventory_management' => null,
+          'desc_project_inventory_view' => null,
+          'desc_cfield_view' => null,'desc_cfield_management' => null,
+          'desc_cfield_assignment' => null,
+          'desc_exec_assign_testcases' => null,
+          'desc_platforms_view' => null,'desc_platforms_management' => null,
+          'desc_issuetrackers_view' => null,
+          'desc_issuetrackers_management' => null,
+          'desc_codetrackers_view' => null,
+          'desc_codetrackers_management' => null,
+          'desc_mgt_modify_users' => null,'desc_role_management' => null,
+          'desc_user_role_assignment' => null,
+          'desc_mgt_view_events' => null, 'desc_events_mgt' => null,
+           'desc_mgt_unfreeze_req' => null,'desc_mgt_plugins' => null,
+           'right_exec_edit_notes' => null, 'right_exec_delete' => null,
+           'right_testplan_unlink_executed_testcases' => null, 
+           'right_testproject_delete_executed_testcases' => null,
+           'right_testproject_edit_executed_testcases' => null,
+           'right_testplan_milestone_overview' => null,
+           'right_exec_testcases_assigned_to_me' => null,
+           'right_testproject_metrics_dashboard' => null,
+           'right_testplan_add_remove_platforms' => null,
+           'right_testplan_update_linked_testcase_versions' => null,
+           'right_testplan_set_urgent_testcases' => null,
+           'right_testplan_show_testcases_newest_versions' => null,
+           'right_testcase_freeze' => null,
+           'right_exec_ro_access' => null,
+           'right_testproject_add_remove_keywords_executed_tcversions' => null,
+           'right_delete_frozen_tcversion' => null);
 
 
 
@@ -118,12 +123,14 @@ function init_global_rights_maps() {
           'testplan_show_testcases_newest_versions' => $l18n['right_testplan_show_testcases_newest_versions']);
             
 
-  $g_rights_mgttc = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
-                          "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
-                          "testproject_delete_executed_testcases" => null,
-                          "testproject_edit_executed_testcases" => null ,
-                          "testproject_add_remove_keywords_executed_tcversions" => null,
-                          "testcase_freeze" => null);
+  $g_rights_mgttc = 
+    array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
+          "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
+          "testproject_delete_executed_testcases" => null,
+          "testproject_edit_executed_testcases" => null ,
+          "testproject_add_remove_keywords_executed_tcversions" => null,
+          "testcase_freeze" => null,
+          "delete_frozen_tcversion" => null);
 
   foreach( $g_rights_mgttc as $tr => $lbl ) {
     if( null == $lbl ) {

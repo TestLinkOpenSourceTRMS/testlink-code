@@ -302,7 +302,7 @@ if (count($rspecSet))
                               '[' . $pname . $status_l10n . ']</span>';
 
             
-            $tc_name = $prefix . $ltcase['tc_external_id'] . $title_sep . $ltcase['name'];
+            $tc_name = $prefix . $ltcase['tc_external_id'] . $title_sep . $ltcase['name'] . " v" . $ltcase['version'];
             
             $exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
                                  "<img title=\"{$labels['execution_history']}\" " .
@@ -762,12 +762,17 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
         $rspec[$req['srs_id']]['requirements'] = array();
       }
 
-      $req['linked_testcases'] = (array)$reqMgr->get_coverage($id,$coverageContext,array('accessKey' => 'tcase_id'));
+      $req['linked_testcases'] = (array)$reqMgr->getActiveForReqVersion($req['version_id']);
 
-      // Now loop to mark test cases ASSIGNED to requirements as LINKED OR NOT to Test plan under analisys.
+      // Now loop to mark test cases ASSIGNED to requirements as LINKED OR NOT to Test plan under analysis.
+      // and exclude obsolete TC
       foreach($req['linked_testcases'] as $itemID => $dummy)
       {
-        $req['linked_testcases'][$itemID]['in_testplan'] = isset($itemsInTestPlan[$itemID]);  
+        if ($dummy['is_obsolete'] == "0") {
+          $req['linked_testcases'][$itemID]['in_testplan'] = isset($itemsInTestPlan[$itemID]);
+        } else {
+          unset($req['linked_testcases'][$itemID]);
+        }
       }  
 
       $rspec[$req['srs_id']]['requirements'][$id] = $req;

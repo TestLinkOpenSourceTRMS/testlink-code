@@ -198,7 +198,7 @@ function checkForInstallDir()
 
 
 /**
- * checks if the default password for the admin accout is still set
+ * checks if the default password for the admin account is still set
  *
  * @return boolean returns true if the default password for the admin account is set, 
  *         false else
@@ -394,7 +394,7 @@ function checkSchemaVersion(&$db)
     
   $myrow = $db->fetch_array($res);
   
-  $upgrade_msg = "You need to upgrade your Testlink Database to {$latest_version} - <br>" .
+  $upgrade_msg = "You need to upgrade your TestLink Database to {$latest_version} - <br>" .
                  '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
 
   $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$latest_version} - Read README file!";
@@ -456,7 +456,7 @@ function checkSchemaVersion(&$db)
     
     default:
       $result['msg'] = "Unknown Schema version " .  trim($myrow['version']) . 
-                       ", please upgrade your Testlink Database to " . $latest_version;
+                       ", please upgrade your TestLink Database to " . $latest_version;
       break;
   }
   
@@ -501,10 +501,13 @@ function check_php_settings(&$errCounter)
 {
   $max_execution_time_recommended = 120;
   $max_execution_time = ini_get('max_execution_time');
-  $memory_limit_recommended = 64;
+  $memory_limit_recommended = 256;
   $memory_limit = intval(str_ireplace('M','',ini_get('memory_limit')));
+  $max_input_vars_recommend = 10000;
+  $max_input_vars = ini_get('max_input_vars');
 
-  $final_msg = '<tr><td>Checking max. execution time (Parameter max_execution_time)</td>';
+
+  $final_msg = '<tr><td>Checking max. execution time<br>(Parameter max_execution_time)</td>';
   if($max_execution_time < $max_execution_time_recommended)
   {
     $final_msg .=  "<td><span class='tab-warning'>{$max_execution_time} seconds - " .
@@ -515,7 +518,7 @@ function check_php_settings(&$errCounter)
   {
     $final_msg .= '<td><span class="tab-success">OK ('.$max_execution_time.' seconds)</span></td></tr>';
   }
-  $final_msg .=  "<tr><td>Checking maximal allowed memory (Parameter memory_limit)</td>";
+  $final_msg .=  "<tr><td>Checking maximal allowed memory<br>(Parameter memory_limit)</td>";
   if($memory_limit < $memory_limit_recommended)
   {
     $final_msg .= "<td><span class='tab-warning'>$memory_limit MegaBytes - " .
@@ -536,6 +539,19 @@ function check_php_settings(&$errCounter)
   { 
     $final_msg .= "<td><span class='tab-success'>OK</span></td></tr>\n";
   }
+  $final_msg .= "<tr><td>Checking how many GET/POST/COOKIE input variables may be accepted<br>(Parameter max_input_vars)</td>";
+  if($max_input_vars < $max_input_vars_recommend)
+  {
+    $final_msg .= "<td><span class='tab-warning'>$max_input_vars - " .
+      "We suggest {$max_input_vars_recommend}" .
+      " in order to manage hundred of test cases</span></td></tr>";
+  }
+  else
+  {
+    $final_msg .= '<td><span class="tab-success">OK ('.$max_input_vars.')</span></td></tr>';
+  }
+
+
   return ($final_msg);
 }
 
@@ -576,7 +592,7 @@ function checkPhpExtensions(&$errCounter) {
   $extid = 'mssql';
   if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
     // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
-    // From PHP MANUAL - reganding mssql_* functions
+    // From PHP MANUAL - regarding mssql_* functions
     // These functions allow you to access MS SQL Server database.
     // This extension is not available anymore on Windows with PHP 5.3 or later.
     // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
@@ -622,6 +638,14 @@ function checkPhpExtensions(&$errCounter) {
   $checks[]=array('extension' => 'curl',
                   'msg' => array('feedback' => 'cURL library', 'ok' => $td_ok, 
                                  'ko' => " not enabled. You MUST install it to use REST Integration with issue trackers. "));
+
+  $checks[]=array('extension' => 'mbstring',
+                  'msg' => array('feedback' => 'mbstring library', 'ok' => $td_ok,
+                                 'ko' => " not enabled. You MUST install it to use TestLink"));
+
+  $checks[]=array('extension' => 'bcmath',
+                  'msg' => array('feedback' => 'bcmath library', 'ok' => $td_ok,
+                  'ko' => " not enabled. Some report functions will not work"));
 
   $out='';
   foreach($checks as $test)
@@ -682,8 +706,7 @@ function check_session(&$errCounter) {
  */
 function check_timeout(&$errCounter)
 {
-    $out = '<tr><td>Maximum Session Idle Time before Timeout</td>';
-
+  $out = '<tr><td>Maximum Session Idle Time before Timeout<br>(Parameter session.gc_maxlifetime)</td>';
   $timeout = ini_get("session.gc_maxlifetime");
   $gc_maxlifetime_min = floor($timeout/60);
   $gc_maxlifetime_sec = $timeout % 60;
@@ -760,7 +783,7 @@ function checkServerOs()
  */
 function checkPhpVersion(&$errCounter)
 {
-  $min_version = '5.5.0'; 
+  $min_version = '7.1.0';
   $my_version = phpversion();
 
   // version_compare:
@@ -873,7 +896,7 @@ function check_dir_permissions(&$errCounter)
 
   $final_msg .= 
     "<tr><td>For security reasons we suggest that directories tagged with [S]" .
-    " on following messages, will be made UNREACHEABLE from browser.<br>" .
+    " on following messages, will be made UNREACHABLE from browser.<br>" .
     "<span class='tab-success'>Give a look to README file, section 'Installation & SECURITY' " . 
     " to understand how to change the defaults.</span>";
 

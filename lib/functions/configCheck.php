@@ -645,7 +645,7 @@ function checkPhpExtensions(&$errCounter) {
 
   $checks[]=array('extension' => 'bcmath',
                   'msg' => array('feedback' => 'bcmath library', 'ok' => $td_ok,
-                  'ko' => " not enabled. Some report functions will not work"));
+                                 'ko' => " not enabled. Some report functions will not work"));
 
   $out='';
   foreach($checks as $test)

@@ -1608,10 +1608,10 @@ $TLS_info_milestone_create_no_prio = "Les indicateurs d'avancement prennent en c
                                      "de la campagne de test";
 
 $TLS_th_date_format = "Date cible";
-$TLS_th_perc_a_prio = "Exéutions réalisées avec priorité haute [0-100%]";
-$TLS_th_perc_b_prio = "Exéutions réalisées avec priorité moyenne [0-100%]";
-$TLS_th_perc_c_prio = "Exéutions réalisées avec priorité basse [0-100%]";
-$TLS_th_perc_testcases = "Exéutions réalisées [0-100%]";
+$TLS_th_perc_a_prio = "Exécutions réalisées avec priorité haute [0-100%]";
+$TLS_th_perc_b_prio = "Exécutions réalisées avec priorité moyenne [0-100%]";
+$TLS_th_perc_c_prio = "Exécutions réalisées avec priorité basse [0-100%]";
+$TLS_th_perc_testcases = "Exécutions réalisées [0-100%]";
 $TLS_title_existing_milestones = "Indicateurs d'avancement existants";
 $TLS_title_milestones = "Indicateurs d'avancement de la campagne de test";
 $TLS_delete_milestone = "Supprimer l'indicateur d'avancement";

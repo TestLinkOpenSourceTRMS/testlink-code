@@ -262,7 +262,8 @@ function getGrants($dbHandler,$user,$tproject_id,$forceToNo=false)
           'project_inventory_view' => 'project_inventory_view',
           'project_inventory_management' => 'project_inventory_management',
           'modify_tc' => 'mgt_modify_tc',
-          'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete',
+          'exec_edit_notes' => 'exec_edit_notes', 
+          'exec_delete' => 'exec_delete',
           'testplan_unlink_executed_testcases' => 'testplan_unlink_executed_testcases',
           'testproject_delete_executed_testcases' => 'testproject_delete_executed_testcases',
           'exec_ro_access' => 'exec_ro_access');

@@ -57,18 +57,6 @@ function oauth_get_token($authCfg, $code)
     // We got an access token, let's now get the user's details
     $user = $provider->getResourceOwner($token);
 
-    /*
-    printf('<br>getName %s!', $user->getName());
-    printf('<br>getEmail %s!', $user->getEmail());
-    printf('<br>getUserName %s!', $user->getUserName());
-    
-    echo '<pre>';
-    var_dump($user->toArray());
-    var_dump($user->getNickname());
-    echo '</pre>';
-    die();
-    */
-
     $firstLast = $user->getName();
     $result->options = new stdClass();
     $result->options->givenName = $firstLast;

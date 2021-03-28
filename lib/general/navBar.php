@@ -29,7 +29,7 @@ $smarty->display('navBar.tpl');
 function getGrants(&$db,&$userObj)
 {
   $grants = new stdClass();
-  $grants->view_testcase_spec = $userObj->hasRight($db,"mgt_view_tc");
+  $grants->view_testcase_spec = $userObj->hasRightOnProj($db,"mgt_view_tc");
   return $grants;  
 }
 

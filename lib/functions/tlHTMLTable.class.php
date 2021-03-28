@@ -5,32 +5,25 @@
  *
  * @package TestLink
  * @author Erik Eloff
- * @copyright 2009, TestLink community
- * @version CVS: $Id: tlHTMLTable.class.php,v 1.6 2010/08/30 21:11:29 erikeloff Exp $
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlHTMLTable.class.php?view=markup
- * @link http://www.teamst.org
+ * @copyright 2009,2021 TestLink community
  * @since 1.9
  *
- * @internal Revision:
- *  20100828 - eloff - Changed format on status column
- *  20100719 - eloff - Pass $tableID via constructor
- *  20100503 - franciscom - BUGID 3418 - changed in renderStatus(), due to changes on data structure
- *  20091223 - eloff - created class
  *
  **/
 
 require_once('table.class.php');
 
 /**
- * Helper class used to generate HTML-tables. Used to output tables meant for
- * documents and spreadsheets where EXT-tables don't work.
+ * Helper class used to generate HTML-tables. 
+ * Used to output tables meant for documents and spreadsheets 
+ * where EXT-tables don't work.
  */
 class tlHTMLTable extends tlTable
 {
-	public function __construct($columns, $data)
+	public function __construct($columns, $data, $tableID='tlHTMLTable')
 	{
 		// Save those for faster access in renderStatus() and renderPriority()
-		parent::__construct($columns, $data);
+		parent::__construct($columns, $data,  $tableID);
 		$resultsCfg = config_get('results');
 		$this->code_status = $resultsCfg['code_status'];
 		$this->status_color = $resultsCfg['charts']['status_colour'];

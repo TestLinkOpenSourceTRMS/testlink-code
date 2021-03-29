@@ -5503,12 +5503,12 @@ class testcase extends tlObjectWithAttachments {
     }
 
     if(!is_null($result) && $my['options']['renderImageInline']) {
-      // for attachments we need main entity => Test case
-      $tcvnode = $this->tree_manager->get_node_hierarchy_info($tcversion_id);
+      // for attachments we need the Test Case Version ID
+      // (time ago we used the Test Case ID)
       $k2l = count($result);
       $gaga = array('actions','expected_results');
       for($idx=0; $idx < $k2l; $idx++) {
-        $this->renderImageAttachments($tcvnode['parent_id'],$result[$idx],$gaga);
+        $this->renderImageAttachments($tcversion_id,$result[$idx],$gaga);
       }
     }
 
@@ -7109,7 +7109,6 @@ class testcase extends tlObjectWithAttachments {
     $tlEndMark = '[/ghost]';
     $tlEndMarkLen = strlen($tlEndMark);
 
-    $key2check = array('summary','preconditions');
 
     // I've discovered that working with Web Rich Editor generates
     // some additional not wanted entities, that disturb a lot
@@ -7118,24 +7117,24 @@ class testcase extends tlObjectWithAttachments {
     // 20130605 - after algorithm change, this seems useless
     //$replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
     // $replaceSetWebRichEditor = array('</p>', '<p>','&nbsp;');
-
-
+    $key2check = array('summary','preconditions');
     $rse = &$item2render;
     foreach($key2check as $item_key)
     {
+      if (!isset($rse[$item_key])) {
+        continue;
+      }
       $start = strpos($rse[$item_key],$tlBeginMark);
       $ghost = $rse[$item_key];
 
       // There is at least one request to replace ?
-      if($start !== FALSE)
-      {
+      if ($start !== FALSE) {
         $xx = explode($tlBeginMark,$rse[$item_key]);
 
         // How many requests to replace ?
         $xx2do = count($xx);
         $ghost = '';
-        for($xdx=0; $xdx < $xx2do; $xdx++)
-        {
+        for($xdx=0; $xdx < $xx2do; $xdx++) {
           $isTestCaseGhost = true;
 
           // Hope was not a false request.
@@ -7232,8 +7231,7 @@ class testcase extends tlObjectWithAttachments {
         }
       }
 
-      if($ghost != '')
-      {
+      if($ghost != '') {
         $rse[$item_key] = $ghost;
       }
     }

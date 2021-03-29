@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>TableDnD Server Example</title>
+	<meta name="generator" content="TextMate http://macromates.com/">
+	<meta name="author" content="DenisH">
+    <link rel="stylesheet" href="tablednd.css" type="text/css"/>
+</head>
+<body>
+
+<table id="table-1" cellspacing="0" cellpadding="2">
+    <tr id="1"><td>1</td><td>One</td><td>some text</td></tr>
+    <tr id="2"><td>2</td><td>Two</td><td>some text</td></tr>
+    <tr id="3"><td>3</td><td>Three</td><td>some text</td></tr>
+    <tr id="4"><td>4</td><td>Four</td><td>some text</td></tr>
+    <tr id="5"><td>5</td><td>Five</td><td>some text</td></tr>
+    <tr id="6"><td>6</td><td>Six</td><td>some text</td></tr>
+</table>
+<button onclick="alert('Serialized table is: '+$('#table-1').tableDnDSerialize())">Serialize</button>
+<form action="serverTest.php" method="get" accept-charset="utf-8">
+	<input type="hidden" name="....">
+	// TODO serialise doesn't work very well with a form does it!!!
+
+	<p><input type="submit" value="Continue &rarr;"></p>
+</form>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="js/jquery.tablednd.js" type="text/javascript"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+        // Initialise the table
+        $("#table-1").tableDnD();
+        // Make a nice striped effect on the table
+        $("#table-1 tr:even").addClass("alt");
+    })
+</script>
+</body>
+</html>

@@ -120,8 +120,16 @@ class jirasoapInterface extends issueTrackerInterface
         $this->issueAttr[$prop] = $default;
       }  
       // $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
-    }   
-	}
+    }
+
+    if( !property_exists($this->cfg,'userinteraction') ) {
+      $this->cfg->userinteraction = 0;
+    }
+
+    if( !property_exists($this->cfg,'createissueviaapi') ) {
+      $this->cfg->createissueviaapi = 0;
+    }
+  }
 
 
 	

@@ -3148,6 +3148,7 @@ $TLS_API_UPDATER_INSUFFICIENT_RIGHTS = "User %s " .
                  "has insufficient rights to perform this action" .
                  " - Details: right %s, test project id: %s, test plan id: %s";
 
+$TLS_API_MUST_BE_ADMIN = "This function is restricted to site admin.";
 
 $TLS_API_NO_DEV_KEY = "No devKey provided.";
 $TLS_API_NO_TCASEID = "No Test Case ID (internal id) provided.";
@@ -3162,6 +3163,8 @@ $TLS_API_NO_TPID = "No testplan ID (testplanid) provided.";
 $TLS_API_NO_TCID = "No testcase ID (testcaseid) provided.";
 $TLS_API_NO_PLATFORMID = "No Platform ID (platformid) provided.";
 $TLS_API_NO_ITSID = "No Issue Tracker System ID (itsid) provided.";
+$TLS_API_NO_USERID = "No user ID (userid) provided.";
+$TLS_API_NO_ROLEID = "No role ID (roleid) provided.";
 
 
 $TLS_API_INVALID_TCASEID = "The Test Case ID (testcaseid: %s) provided does not exist!";
@@ -3169,6 +3172,8 @@ $TLS_API_INVALID_BUILDID = "The Build ID (buildid: %s) provided does not exist!"
 $TLS_API_INVALID_TPLANID = "The Test Plan ID (%s) provided does not exist!";
 $TLS_API_INVALID_STATUS = "The status code (%s) provided is not valid!";
 $TLS_API_INVALID_TESTCASE_EXTERNAL_ID = "Test Case External ID (%s) does not exist!";
+$TLS_API_INVALID_USERID = "The user ID (userid: %s) provided does not exist!";
+$TLS_API_INVALID_ROLEID = "The role ID (roleid: %s) provided does not exist!";
 
 $TLS_API_TCASEID_NOT_INTEGER = "Test Case ID (testcaseid) must be an integer!";
 $TLS_API_TESTCASENAME_NOT_STRING = "testcasename must be a string!";
@@ -3295,6 +3300,11 @@ $TLS_API_INVALID_TIMESTAMP = "Timestamp provided (%s) is invalid";
 $TLS_API_ITS_NOT_FOUND = "Unable to find the ITS %s.";
 
 $TLS_API_TSUITE_NOT_ON_TCASE_TPROJ = "Test Suite does not belong to Test Case's Test Project";
+
+$TLS_API_USER_LOGIN_DOESNOT_EXIST = "User login (login: %s) provided does not exist.";
+
+$TLS_API_ROLE_NAME_DOESNOT_EXIST = "Role name (role: %s) provided does not exist.";
+$TLS_API_ROLE_SETTING_ERROR = "An error occured while setting a role (role: %s) to a user (userid: %s). Please consult log files.";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
@@ -3755,6 +3765,8 @@ $TLS_gitlab_bug_created = "GITLAB Issue Created (summary:%s) on project with ide
 $TLS_gitlab_bug_comment = "GITLAB Commented Issue (summary:%s)";
 $TLS_kaiten_bug_created = "KAITEN Issue Created (summary:%s) on project with identifier:%s";
 $TLS_kaiten_bug_comment = "KAITEN Commented Issue (summary:%s)";
+$TLS_trello_bug_created = "TRELLO Card/Issue Created (summary:%s) on project with identifier:%s";
+$TLS_trello_bug_comment = "TRELLO Commented Card/Issue (summary:%s)";
 $TLS_bts_check_ok = "Connection is OK";
 $TLS_bts_check_ko = "Connection is KO (detailed messages on TestLink Event Log), check configuration";
 $TLS_check_bts_connection = "Check connection";
@@ -4047,4 +4059,16 @@ $TLS_before_preconditions = "Before Preconditions";
 $TLS_after_title = "After Title";
 $TLS_after_summary = "After summary";
 $TLS_after_preconditions = "After Preconditions";
+
+$TLS_enabled = 'Enabled';
+$TLS_disabled = 'Disabled';
+
+$TLS_optional = 'Optional';
+$TLS_mandatory = 'Mandatory';
+$TLS_upload_on_execution = 'Upload on Execution is ';
+$TLS_and = 'and';
+
+$TLS_upload_on_exec_is_enabled = 'Upload On Exec IS ENABLED';
+$TLS_upload_on_exec_is_mandatory = 'Upload On Exec IS Mandatory';
+$TLS_mandatory_upload_warning = 'One of more Steps requires that you upload files.\n Are you sure you can save the execution result?';
 // ----- END -----------------------------------------------------

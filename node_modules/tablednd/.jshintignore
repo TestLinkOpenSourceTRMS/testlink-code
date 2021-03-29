@@ -1,0 +1,6 @@
+Gruntfile.js
+node_modules/**/*.js
+**/*.min.js
+**/*.rc1.js
+
+

@@ -57,13 +57,13 @@ class jirarestInterface extends issueTrackerInterface
     } 
 	}
 
-   /**
-    *
-    */
-    function getIssueAttr()
-    {
-      return $this->issueAttr;
-    }
+  /**
+   *
+   */
+  function getIssueAttr()
+  {
+    return $this->issueAttr;
+  }
 
 	/**
 	 *
@@ -93,12 +93,19 @@ class jirarestInterface extends issueTrackerInterface
       $this->cfg->uricreate = $base . '';
     }
 
-
     if( property_exists($this->cfg,'attributes') )
     {
       // echo __FUNCTION__ . "::Debug::Step#$step Going To Add attributes <br>";$step++;
       $this->processAttributes();
     }    
+
+    if( !property_exists($this->cfg,'userinteraction') ) {
+      $this->cfg->userinteraction = 0;
+    }
+
+    if( !property_exists($this->cfg,'createissueviaapi') ) {
+      $this->cfg->createissueviaapi = 0;
+    }
 	}
 
 	/**
@@ -131,8 +138,7 @@ class jirarestInterface extends issueTrackerInterface
    **/
   function connect()
   {
-    try
-    {
+    try {
   	  // CRITIC NOTICE for developers
   	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
   	  // to cast properties BEFORE using it.
@@ -141,10 +147,8 @@ class jirarestInterface extends issueTrackerInterface
                    'host' => (string)trim($this->cfg->uriapi));
   	  
       $this->jiraCfg['proxy'] = config_get('proxy');
-      if( !is_null($this->jiraCfg['proxy']) )
-      {
-        if( is_null($this->jiraCfg['proxy']->host) )
-        {
+      if( !is_null($this->jiraCfg['proxy']) ) {
+        if( is_null($this->jiraCfg['proxy']->host) ) {
           $this->jiraCfg['proxy'] = null;
         }  
       }  
@@ -152,25 +156,21 @@ class jirarestInterface extends issueTrackerInterface
       $this->APIClient = new JiraApi\Jira($this->jiraCfg);
 
       $this->connected = $this->APIClient->testLogin();
-      if($this->connected && ($this->cfg->projectkey != self::NOPROJECTKEY))
-      {
+      if($this->connected && ($this->cfg->projectkey != self::NOPROJECTKEY)) {
         // Now check if can get info about the project, to understand
         // if at least it exists.
         $pk = trim((string)$this->cfg->projectkey);
         $this->APIClient->getProject($pk);
 
         $statusSet = $this->APIClient->getStatuses();
-        foreach ($statusSet as $statusID => $statusName)
-        {
+        foreach ($statusSet as $statusID => $statusName) {
           $this->statusDomain[$statusName] = $statusID;
         }
 
         $this->defaultResolvedStatus = 
           $this->support->initDefaultResolvedStatus($this->statusDomain);
       }  
-    }
-  	catch(Exception $e)
-  	{
+    } catch(Exception $e) {
       $this->connected = false;
       tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
   	}
@@ -192,24 +192,20 @@ class jirarestInterface extends issueTrackerInterface
    **/
 	public function getIssue($issueID)
 	{
-	  if (!$this->isConnected())
-	  {
-        tLog(__METHOD__ . '/Not Connected ', 'ERROR');
-		return false;
+	  if (!$this->isConnected()) {
+      tLog(__METHOD__ . '/Not Connected ', 'ERROR');
+		  return false;
 	  }
 		
 	  $issue = null;
-    try
-	  {
-
+    try {
 			$issue = $this->APIClient->getIssue($issueID);
       
       // IMPORTANT NOTICE
       // $issue->id do not contains ISSUE ID as displayed on GUI, but what seems to be an internal value.
       // $issue->key has what we want.
       // Very strange is how have this worked till today ?? (2015-01-24)
-      if(!is_null($issue) && is_object($issue) && !property_exists($issue,'errorMessages'))
-      {
+      if (!is_null($issue) && is_object($issue) && !property_exists($issue,'errorMessages')) {
      
         // We are going to have a set of standard properties
         $issue->id = $issue->key;
@@ -235,15 +231,10 @@ class jirarestInterface extends issueTrackerInterface
 
         var_dump($tlIssue);
         */
-      }
-      else
-      {
+      } else {
         $issue = null;
       }  
-    	
-		}
-		catch(Exception $e)
-		{
+		} catch(Exception $e) {
       tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
       $issue = null;
 		}	

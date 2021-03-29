@@ -32,7 +32,8 @@ class mantisrestInterface extends issueTrackerInterface {
 	 * @param str $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
-	function __construct($type,$config,$name) {
+	function __construct($type,$config,$name) 
+  {
     $this->name = $name;
 	  $this->interfaceViaDB = false;
 	  $this->methodOpt['buildViewBugLink'] = [
@@ -58,7 +59,8 @@ class mantisrestInterface extends issueTrackerInterface {
 	/**
 	 *
 	 **/
-	function completeCfg() {
+	function completeCfg() 
+  {
 		$this->cfg->uribase = trim($this->cfg->uribase,"/"); 
     if(!property_exists($this->cfg, 'uricreate') ) {
       $this->cfg->uricreate = $this->cfg->uribase; 
@@ -75,6 +77,14 @@ class mantisrestInterface extends issueTrackerInterface {
         $this->options[$name] = (string)$elem;     
       }
     } 
+
+    if( !property_exists($this->cfg,'userinteraction') ) {
+      $this->cfg->userinteraction = 0;
+    }
+
+    if( !property_exists($this->cfg,'createissueviaapi') ) {
+      $this->cfg->createissueviaapi = 0;
+    }
   }
 
 	/**
@@ -82,7 +92,8 @@ class mantisrestInterface extends issueTrackerInterface {
    *
    *
    **/
-	function getAPIClient() {
+	function getAPIClient() 
+  {
 		return $this->APIClient;
 	}
 
@@ -93,7 +104,8 @@ class mantisrestInterface extends issueTrackerInterface {
    *
    * @return bool returns true if the bugid has the right format, false else
    **/
-  function checkBugIDSyntax($issueID) {
+  function checkBugIDSyntax($issueID) 
+  {
     return $this->checkBugIDSyntaxNumeric($issueID);
   }
 
@@ -103,7 +115,8 @@ class mantisrestInterface extends issueTrackerInterface {
    * @return bool 
    *
    **/
-  function connect() {
+  function connect() 
+  {
     $processCatch = false;
 
     try {
@@ -146,7 +159,8 @@ class mantisrestInterface extends issueTrackerInterface {
    * 
    *
    **/
-	function isConnected() {
+	function isConnected() 
+  {
 		return $this->connected;
 	}
 
@@ -167,7 +181,8 @@ class mantisrestInterface extends issueTrackerInterface {
    * 
    *
    **/
-	public function getIssue($issueID) {
+	public function getIssue($issueID) 
+  {
     if (!$this->isConnected()) {
       tLog(__METHOD__ . '/Not Connected ', 'ERROR');
       return false;
@@ -214,7 +229,8 @@ class mantisrestInterface extends issueTrackerInterface {
 	 *
 	 * @return 
 	 **/
-	function getIssueStatusCode($issueID) {
+	function getIssueStatusCode($issueID) 
+  {
 		$issue = $this->getIssue($issueID);
 		return !is_null($issue) ? $issue->state : false;
 	}
@@ -227,7 +243,8 @@ class mantisrestInterface extends issueTrackerInterface {
 	 * @return string 
 	 *
 	 **/
-	function getIssueStatusVerbose($issueID) {
+	function getIssueStatusVerbose($issueID) 
+  {
     $state = $this->getIssueStatusCode($issueID);
     if ($state) {
       return $this->resolvedStatus->byCode[$state];
@@ -242,7 +259,8 @@ class mantisrestInterface extends issueTrackerInterface {
 	 * @return string 
 	 *
 	 **/
-	function getIssueSummaryHTMLString($issueID) {
+	function getIssueSummaryHTMLString($issueID) 
+  {
     $issue = $this->getIssue($issueID);
     return $issue->summaryHTMLString;
 	}
@@ -252,7 +270,8 @@ class mantisrestInterface extends issueTrackerInterface {
    *
    * @return bool true if issue exists on BTS
    **/
-  function checkBugIDExistence($issueID) {
+  function checkBugIDExistence($issueID) 
+  {
     if(($status_ok = $this->checkBugIDSyntax($issueID))) {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
@@ -263,7 +282,8 @@ class mantisrestInterface extends issueTrackerInterface {
   /**
    *
    */
-  public function addIssue($summary,$moreInfo,$opt=null) {
+  public function addIssue($summary,$moreInfo,$opt=null) 
+  {
     $more = $moreInfo;
     try {
       $op = $this->APIClient->addIssue($summary, $more['descr'],$opt);

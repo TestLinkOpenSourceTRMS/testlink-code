@@ -310,6 +310,8 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
+  $args->stepSeq = isset($_REQUEST["stepSeq"])? $_REQUEST["stepSeq"] : "";
+
   $rightlist_html_name = $otName . "_newRight";
   $args->assigned_keywords_list = isset($_REQUEST[$rightlist_html_name])? $_REQUEST[$rightlist_html_name] : "";
   $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;

@@ -302,7 +302,7 @@ if (count($rspecSet))
                               '[' . $pname . $status_l10n . ']</span>';
 
             
-            $tc_name = $prefix . $ltcase['tc_external_id'] . $title_sep . $ltcase['name'];
+            $tc_name = $prefix . $ltcase['tc_external_id'] . $title_sep . $ltcase['name'] . " v" . $ltcase['version'];
             
             $exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
                                  "<img title=\"{$labels['execution_history']}\" " .
@@ -753,7 +753,6 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
     if( in_array($req['status'], $reqStatusFilter, true) || 
         in_array("0", $reqStatusFilter, true) ) 
     {
-      $total++;
       
       // some sort of Caching
       if (!isset($rspec[$req['srs_id']])) 
@@ -762,19 +761,25 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
         $rspec[$req['srs_id']]['requirements'] = array();
       }
 
-      $req['linked_testcases'] = (array)$reqMgr->get_coverage($id,$coverageContext,array('accessKey' => 'tcase_id'));
+      $req['linked_testcases'] = (array)$reqMgr->getActiveForReqVersion($req['version_id']);
 
-      // Now loop to mark test cases ASSIGNED to requirements as LINKED OR NOT to Test plan under analisys.
+      // Exclude obsolete TC or TC not linked to test plan under analysis
       foreach($req['linked_testcases'] as $itemID => $dummy)
       {
-        $req['linked_testcases'][$itemID]['in_testplan'] = isset($itemsInTestPlan[$itemID]);  
+        if ($dummy['is_obsolete'] == "1" || ! isset($itemsInTestPlan[$dummy['id']]) ) {
+          unset($req['linked_testcases'][$itemID]);
+        }
       }  
 
-      $rspec[$req['srs_id']]['requirements'][$id] = $req;
+      // if there is linked (active) test case
+      if (count($req['linked_testcases']) > 0) {
+        $total++;
+        $rspec[$req['srs_id']]['requirements'][$id] = $req;
 
-      foreach ($req['linked_testcases'] as $tc) 
-      {
-        $tc_ids[] = $tc['id'];
+        foreach ($req['linked_testcases'] as $tc) 
+        {
+          $tc_ids[] = $tc['id'];
+        }
       }
     }
   }
@@ -866,5 +871,5 @@ function doNotRunAnalysis($tcaseQty,$execStatusCounter,$notRunCode)
  */
 function checkRights(&$db, &$user)
 {
-  return $user->hasRight($db,'testplan_metrics');
+  return $user->hasRightOnProj($db,'testplan_metrics');
 }

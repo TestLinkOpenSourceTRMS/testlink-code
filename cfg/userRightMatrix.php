@@ -80,5 +80,3 @@ $cf_admin=array("$cf_admin_url/cfieldsEdit.php" => array("cfield_management",),
 // build rigth matrix
 $g_userRights=$user_admin+$proj_admin+$test_exec+$print_data+
               $tplan_admin+$reports+$tc_admin+$cf_admin;
-
-?>

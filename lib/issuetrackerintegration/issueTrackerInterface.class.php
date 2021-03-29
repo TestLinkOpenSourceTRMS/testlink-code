@@ -52,6 +52,7 @@ abstract class issueTrackerInterface
 
   var $guiCfg = array();
   var $summaryLengthLimit = 120;  // Mantis max is 128.  
+  var $forbidden_chars = '/[!|�%&()\/=?]/';
 
   /**
    * Construct and connect to BTS.
@@ -83,7 +84,15 @@ abstract class issueTrackerInterface
    **/
   function canCreateViaAPI()
   {
-    return true;
+    return false;
+  }
+
+ /**
+  *
+  **/
+  function canAddNoteViaAPI()
+  {
+    return false;
   }
 
 
@@ -280,13 +289,10 @@ abstract class issueTrackerInterface
   function checkBugIDSyntaxNumeric($issueID)
   {
     $valid = true;  
-    $forbidden_chars = '/\D/i';  
-    if (preg_match($forbidden_chars, $issueID))
-    {
+    $blackList = '/\D/i';  
+    if (preg_match($blackList, $issueID)) {
       $valid = false; 
-    }
-    else 
-    {
+    } else {
       $valid = (intval($issueID) > 0);  
     }
     return $valid;
@@ -304,8 +310,7 @@ abstract class issueTrackerInterface
     $status_ok = !(trim($issueID) == "");
     if($status_ok)
     {
-      $forbidden_chars = '/[!|�%&()\/=?]/';
-      if (preg_match($forbidden_chars, $issueID))
+      if (preg_match($this->forbidden_chars, $issueID))
       {
         $status_ok = false;
       }
@@ -536,11 +541,14 @@ abstract class issueTrackerInterface
       $statusCfg['status'] = $this->defaultResolvedStatus;
     }
     $this->resolvedStatus = new stdClass();
+    $this->resolvedStatus->byCode = [];
+    $this->resolvedStatus->byName = [];
+
     foreach ($statusCfg['status'] as $cfx) {
       $e = (array)$cfx;
       $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
     }
-    $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
+    $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);      
   }
   
   /**
@@ -603,6 +611,14 @@ abstract class issueTrackerInterface
    */
   function getBugSummaryMaxLength() {
     return $this->summaryLengthLimit;
+  }
+
+  /**
+   * 
+   **/
+  function normalizeBugID($issueID)
+  {
+    return $issueID;
   }
 
 }

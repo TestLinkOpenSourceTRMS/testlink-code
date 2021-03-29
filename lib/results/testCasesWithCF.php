@@ -310,5 +310,5 @@ function getColumnsDefinition($showPlatforms,$customFields,$platforms)
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	return $user->hasRightOnProj($db,'testplan_metrics');
 }

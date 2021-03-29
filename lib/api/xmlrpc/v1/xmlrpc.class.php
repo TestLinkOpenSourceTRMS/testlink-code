@@ -69,6 +69,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
     protected $reqMgr = null;
     protected $platformMgr = null;
     protected $itsMgr = null;
+    protected $userMgr = null;
 
     /**
      * Whether the server will run in a testing mode
@@ -185,8 +186,11 @@ class TestlinkXMLRPCServer extends IXR_Server {
     public static $preconditionsParamName = "preconditions";
     public static $publicParamName = "public";
     public static $releaseDateParamName = "releasedate";
+    public static $roleIDParamName = "roleid";
+    public static $roleNameParamName = "rolename";
     public static $requirementsParamName = "requirements";
     public static $requirementIDParamName = "requirementid";
+    public static $requirementVersionIDParamName = "requirementversionid";
     public static $requirementDocIDParamName = "requirementdocid";
     public static $reqSpecIDParamName = "reqspecid";
     public static $scopeParamName = "scope";
@@ -209,8 +213,13 @@ class TestlinkXMLRPCServer extends IXR_Server {
     public static $timeStampParamName = "timestamp";
     public static $titleParamName = "title";
     public static $urgencyParamName = "urgency";
-    public static $userParamName = "user";
+    public static $userEmailParamName = "email";
+    public static $userFirstNameParamName = "firstname";
     public static $userIDParamName = "userid";
+    public static $userLastNameParamName = "lastname";
+    public static $userLoginParamName = "login";
+    public static $userParamName = "user";
+    public static $userPasswordParamName = "password";
     public static $versionNumberParamName = "version";
     public static $estimatedExecDurationParamName = "estimatedexecduration";
     public static $executionDurationParamName = "execduration";
@@ -257,6 +266,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $this->tplanMetricsMgr = new tlTestPlanMetrics( $this->dbObj );
         $this->reqSpecMgr = new requirement_spec_mgr( $this->dbObj );
         $this->reqMgr = new requirement_mgr( $this->dbObj );
+        $this->userMgr = new tlUser( $this->dbObj );
 
         $this->tprojectMgr->setAuditEventSource( 'API-XMLRPC' );
 
@@ -395,6 +405,27 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
+     * Check if authenticated user has System Wide Role admin
+     *
+     * Useful for services reserved to System Wide Role admin
+     *
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function checkIsSystemWideAdmin($messagePrefix = '') {
+        $res = ($this->user->globalRole->dbID == TL_ROLES_ADMIN);
+
+        if (!$res) {
+            $this->errors[] = new IXR_Error( MUST_BE_ADMIN, $messagePrefix . MUST_BE_ADMIN_STR );
+        }
+
+        return $res;
+    }
+
+    /**
      * checks if a user has requested right on test project, test plan pair.
      *
      * @param string $rightToCheck
@@ -411,6 +442,12 @@ class TestlinkXMLRPCServer extends IXR_Server {
      */
     protected function userHasRight($rightToCheck, $checkPublicPrivateAttr = false, $context = null) {
         $status_ok = true;
+
+        // Site admin has all rights
+        if ($this->user->globalRole->dbID == TL_ROLES_ADMIN) {
+          return true;
+        }
+        
         $tprojectid = intval( isset( $context[self::$testProjectIDParamName] ) ? $context[self::$testProjectIDParamName] : 0 );
 
         if($tprojectid == 0 && isset( $this->args[self::$testProjectIDParamName] )) {
@@ -628,6 +665,156 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 $status = false;
                 $msg = $messagePrefix . sprintf( TPROJECT_PREFIX_DOESNOT_EXIST_STR, $target );
                 $this->errors[] = new IXR_Error( TPROJECT_PREFIX_DOESNOT_EXIST, $msg );
+            }
+        } else {
+            $status = false;
+        }
+
+        return $status;
+    }
+
+
+    /**
+     * Helper method to see if the UserID provided is valid
+     *
+     * This is the only method that should be called directly to check the UserID
+     *
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function checkUserID($messagePrefix = '') {
+        if(!($status = $this->_isUserIDPresent())) {
+            $this->errors[] = new IXR_Error( NO_USERID, $messagePrefix . NO_USERID_STR );
+        } else {
+            // See if this user ID exists in the DB
+            $userid = $this->dbObj->prepare_int( $this->args[self::$userIDParamName] );
+            $query = "SELECT id FROM {$this->tables['users']} WHERE id={$userid}";
+            $result = $this->dbObj->fetchFirstRowSingleColumn( $query, "id" );
+            if(null == $result) {
+                $msg = $messagePrefix . sprintf( INVALID_USERID_STR, $userid );
+                $this->errors[] = new IXR_Error( INVALID_USERID, $msg );
+                $status = false;
+            }
+        }
+        return $status;
+    }
+
+    /**
+     * Helper method to see if the user identity provided is valid
+     * Identity can be specified in one of these modes:
+     *
+     * - internal id(DB)
+     * - login
+     *
+     *
+     * If everything OK, user internal ID is setted.
+     *
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function checkUserIdentity($messagePrefix = '') {
+        $status = false;
+        $fromExternal = false;
+        $fromInternal = false;
+
+        if($this->_isUserIDPresent()) {
+            $fromInternal = true;
+            $status = $this->checkUserID( $messagePrefix );
+        } else if($this->_isParamPresent( self::$userLoginParamName, $messagePrefix, true )) {
+            // Go from the login
+            $fromExternal = true;
+
+            $target = $this->dbObj->prepare_string( $this->args[self::$userLoginParamName] );
+            $sql = " SELECT id FROM {$this->tables['users']} WHERE login='{$target}' ";
+
+            $fieldValue = $this->dbObj->fetchFirstRowSingleColumn( $sql, "id" );
+            $status =(! is_null( $fieldValue ) &&(intval( $fieldValue ) > 0));
+            if($status) {
+                $this->args[self::$UserIDParamName] = $fieldValue;
+            } else {
+                $status = false;
+                $msg = $messagePrefix . sprintf( USER_LOGIN_DOESNOT_EXIST_STR, $target );
+                $this->errors[] = new IXR_Error( USER_LOGIN_DOESNOT_EXIST, $msg );
+            }
+        } else {
+            $status = false;
+        }
+
+        return $status;
+    }
+
+    /**
+     * Helper method to see if the roleID provided is valid
+     *
+     * This is the only method that should be called directly to check the roleID
+     *
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function checkRoleID($messagePrefix = '') {
+        if(!($status = $this->_isRoleIDPresent())) {
+            $this->errors[] = new IXR_Error( NO_ROLEID, $messagePrefix . NO_ROLEID_STR );
+        } else {
+            // See if this role ID exists in the DB
+            $roleid = $this->dbObj->prepare_int( $this->args[self::$roleIDParamName] );
+            $query = "SELECT id FROM {$this->tables['roles']} WHERE id={$roleid}";
+            $result = $this->dbObj->fetchFirstRowSingleColumn( $query, "id" );
+            if(null == $result) {
+                $msg = $messagePrefix . sprintf( INVALID_ROLEID_STR, $roleid );
+                $this->errors[] = new IXR_Error( INVALID_ROLEID, $msg );
+                $status = false;
+            }
+        }
+        return $status;
+    }
+
+    /**
+     * Helper method to see if the role identity provided is valid
+     * Identity can be specified in one of these modes:
+     *
+     * - internal id(DB)
+     * - description
+     *
+     *
+     * If everything OK, role internal ID is setted.
+     *
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function checkRoleIdentity($messagePrefix = '') {
+        $status = false;
+        $fromExternal = false;
+        $fromInternal = false;
+
+        if($this->_isRoleIDPresent()) {
+            $fromInternal = true;
+            $status = $this->checkRoleID( $messagePrefix );
+        } else if($this->_isParamPresent( self::$roleNameParamName, $messagePrefix, true )) {
+            // Go from the name
+            $fromExternal = true;
+
+            $target = $this->dbObj->prepare_string( $this->args[self::$roleNameParamName] );
+            $sql = " SELECT id FROM {$this->tables['roles']} WHERE description='{$target}' ";
+
+            $fieldValue = $this->dbObj->fetchFirstRowSingleColumn( $sql, "id" );
+            $status =(! is_null( $fieldValue ) && (intval( $fieldValue ) > 0));
+            if($status) {
+                $this->args[self::$roleIDParamName] = $fieldValue;
+            } else {
+                $msg = $messagePrefix . sprintf( ROLE_NAME_DOESNOT_EXIST_STR, $target );
+                $this->errors[] = new IXR_Error( ROLE_NAME_DOESNOT_EXIST, $msg );
             }
         } else {
             $status = false;
@@ -920,6 +1107,56 @@ class TestlinkXMLRPCServer extends IXR_Server {
      */
     protected function _isTestProjectIDPresent() {
         return(isset( $this->args[self::$testProjectIDParamName] ) ? true : false);
+    }
+
+    /**
+     * Helper method to see if a UserID is given as one of the arguments
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function _isUserIDPresent() {
+        return(isset( $this->args[self::$userIDParamName] ));
+    }
+
+    /**
+     * Helper method to see if a RoleID is given as one of the arguments
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function _isRoleIDPresent() {
+        return(isset( $this->args[self::$roleIDParamName] ));
+    }
+
+    /**
+     * Helper method to see if a Requirement ID is given as one of the arguments
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function _isRequirementIDPresent() {
+        return(isset( $this->args[self::$requirementIDParamName] ));
+    }
+
+    /**
+     * Helper method to see if a Requirement Document ID is given as one of the arguments
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function _isRequirementDocIDPresent() {
+        return(isset( $this->args[self::$requirementDocIDParamName] ));
+    }
+
+    /**
+     * Helper method to see if a Requirement Version ID is given as one of the arguments
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function _isRequirementVersionIDPresent() {
+        return(isset( $this->args[self::$requirementVersionIDParamName] ));
     }
 
     /**
@@ -2342,15 +2579,17 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["customfields"]
      *            - optional
      *            contains an map with key:Custom Field Name, value: value for CF.
-     *            VERY IMPORTANT: value must be formatted in the way it's written to db,
+     *            VERY IMPORTANT: value must be formatted in the way 
+     *            it's written to db,
      *            this is important for types like:
      *
      *            DATE: strtotime()
      *            DATETIME: mktime()
-     *            MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
+     *            MULTISELECTION LIST / CHECKBOX / RADIO: 
+     *            character '!'' as separator when multiple values are allowed
      *
-     *
-     *            these custom fields must be configured to be writte during execution.
+     *            these custom fields must be configured to be writte during 
+     *            execution.
      *            If custom field do not meet condition value will not be written
      *
      * @param boolean $args["overwrite"]
@@ -3118,13 +3357,17 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
-     * checks if test case version number is positive integer
+     * Checks a version number
+     *
+     *  - is present
+     *  - is integer
+     *  - is strictly positive
      *
      * @return boolean
      *
      * @access protected
      */
-    protected function checkTestCaseVersionNumber() {
+    protected function checkVersionNumber() {
         $status = true;
         if(!($status = $this->_isParamPresent( self::$versionNumberParamName ))) {
             $msg = sprintf( MISSING_REQUIRED_PARAMETER_STR, self::$versionNumberParamName );
@@ -3142,6 +3385,20 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
         }
         return $status;
+    }
+
+    /**
+     * checks the validity of a Test Case version number
+     *
+     * This is the same thing as checkVersionNumber.
+     * Kept for backward compatibility.
+     *
+     * @return boolean
+     *
+     * @access protected
+     */
+    protected function checkTestCaseVersionNumber() {
+      return $this->checkVersionNumber();
     }
 
     /**
@@ -3540,6 +3797,178 @@ class TestlinkXMLRPCServer extends IXR_Server {
         }
         return $ret;
     }
+
+    /**
+     * Helper method to check if the requirement ID provided is valid
+     *
+     * It is valid when:
+     *  - is present
+     *  - is integer
+     *  - exists in DB
+     *
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function checkReqID($messagePrefix = '') {
+      $status = false;
+
+      if ($this->_isRequirementIDPresent()) {
+        $reqID = $this->args[self::$requirementIDParamName];
+        if (is_int($reqID)) {
+          // See if this req ID exists in the DB
+          $reqID = $this->dbObj->prepare_int($reqID);
+          $query = "SELECT NH.id AS id " .
+            "FROM {$this->tables['nodes_hierarchy']} NH, " .
+            "{$this->tables['node_types']} NT " .
+            "WHERE NH.id={$reqID} " .
+            "AND NH.node_type_id=NT.id " .
+            "AND NT.description='requirement'";
+          $result = $this->dbObj->fetchFirstRowSingleColumn( $query, "id" );
+
+          if($result) {
+            $status = true;
+
+          } else {
+            $msg = $messagePrefix . sprintf( REQ_KO_STR, $reqID );
+            $this->errors[] = new IXR_Error( REQ_KO, $msg );
+          }
+
+        } else {
+          $msg = $messagePrefix . sprintf( PARAMETER_NOT_INT_STR, self::$requirementIDParamName, $reqID );
+          $this->errors[] = new IXR_Error( PARAMETER_NOT_INT, $msg );
+        }
+
+      } else {
+        // required argument missing
+        $msg = $messagePrefix . sprintf( MISSING_REQUIRED_PARAMETER_STR, self::$requirementIDParamName );
+        $this->errors[] = new IXR_Error( MISSING_REQUIRED_PARAMETER, $msg );
+      }
+
+      return $status;
+    }
+
+    /**
+     * Helper method to check if the requirement version ID provided is valid
+     *
+     * It is valid when:
+     *  - is present
+     *  - is integer
+     *  - exists in DB
+     *
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function checkReqVersionID($messagePrefix = '') {
+      $status = false;
+
+      if ($this->_isRequirementVersionIDPresent()) {
+        $reqVersionID = $this->args[self::$requirementVersionIDParamName];
+        if (is_int($reqVersionID)) {
+          // See if this req ID exists in the DB
+          $reqVersionID = $this->dbObj->prepare_int($reqVersionID);
+          $query = "SELECT NH.id AS id " .
+            "FROM {$this->tables['nodes_hierarchy']} NH, " .
+            "{$this->tables['node_types']} NT " .
+            "WHERE NH.id={$reqVersionID} " .
+            "AND NH.node_type_id=NT.id " .
+            "AND NT.description='requirement_version'";
+          $result = $this->dbObj->fetchFirstRowSingleColumn( $query, "id" );
+
+          if($result) {
+            $status = true;
+
+          } else {
+            $msg = $messagePrefix . sprintf( REQ_KO_STR, $reqID );
+            $this->errors[] = new IXR_Error( REQ_KO, $msg );
+          }
+
+        } else {
+          $msg = $messagePrefix . sprintf( PARAMETER_NOT_INT_STR, self::$requirementIDParamName, $reqVersionID );
+          $this->errors[] = new IXR_Error( PARAMETER_NOT_INT, $msg );
+        }
+
+      } else {
+        // required argument missing
+        $msg = $messagePrefix . sprintf( MISSING_REQUIRED_PARAMETER_STR, self::$requirementIDParamName );
+        $this->errors[] = new IXR_Error( MISSING_REQUIRED_PARAMETER, $msg );
+      }
+
+      return $status;
+    }
+
+    /**
+     * Helper method to check if the requirement identity provided is valid
+     * Identity may be specified in on of theses modes:
+     *
+     *   - requirement Doc ID
+     *   - requirement internal ID
+     *
+     * If Doc ID is provided, the project ID must be provided.
+     *
+     * If everything OK, requirement internal ID is setted.
+     *
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     *
+     * @return boolean
+     * @access protected
+     */
+   protected function checkReqIdentity($messagePrefix = '') {
+
+     $status = false;
+
+     if ($this->_isRequirementIDPresent()) {
+
+       if (is_int($this->args[self::$requirementIDParamName])) {
+           $status = true;
+       } else {
+         $msg = $messagePrefix . sprintf( PARAMETER_NOT_INT_STR, self::$requirementIDParamName, $this->args[self::$requirementIDParamName] );
+         $this->errors[] = new IXR_Error( PARAMETER_NOT_INT, $msg );
+       }
+
+     } elseif ($this->_isRequirementDocIDPresent()) {
+
+       if ($this->checkTestProjectID()) {
+         // check req id exists in the project
+         $reqDocID = $this->args[self::$requirementDocIDParamName];
+         $req = $this->reqMgr->getByDocID( $reqDocID,
+                                           $this->args[self::$testProjectIDParamName],
+                                           null,
+                                           array(
+                                                 'access_key' => 'req_doc_id',
+                                                 'output' => 'minimun'
+                                                 ) );
+         if(! is_null( $req )) {
+           // set the requirement ID
+           $this->args[self::$requirementIDParamName] = (int) $req[$reqDocID]['id'];
+           $status = true;
+         } else {
+           $msg = $messagePrefix . sprintf( NO_REQ_IN_THIS_PROJECT_STR, $reqDocID, $this->args[self::$testProjectIDParamName] );
+           $this->errors[] = new IXR_Error( NO_REQ_IN_THIS_PROJECT, $msg );
+         }
+       }
+
+     } else {
+
+       // required argument missing
+       $msg = $messagePrefix . sprintf( MISSING_REQUIRED_PARAMETER_STR, self::$requirementIDParamName . ' or ' . self::$requirementDocIDParamName );
+       $this->errors[] = new IXR_Error( MISSING_REQUIRED_PARAMETER, $msg );
+
+     }
+
+     if ($status) {
+       $status = $this->checkReqID($messagePrefix);
+     }
+
+     return $status;
+   }
+
 
     /*
      * checks Quality of requirements spec
@@ -4773,6 +5202,134 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $this->errors[] = new IXR_Error( NO_USER_BY_THIS_LOGIN, $msg );
         }
         return $status_ok ? $status_ok : $this->errors;
+    }
+
+    /**
+     * Create a new user
+     *
+     * Restricted to site admin
+     *
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param string $args["login"]
+     * @param string $args["firstname"]
+     * @param string $args["lastname"]
+     * @param string $args["email"]
+     * @param string $args["password"] - OPTIONAL
+     *               
+     *
+     * @return ID the new user if OK, otherwise error structure
+     *
+     * @access public
+     */
+    public function createUser($args) {
+        $msg_prefix = "(" . __FUNCTION__ . ") - ";
+        $status_ok = true;
+        $this->_setArgs( $args );
+
+        $checkFunctions = array('authenticate',
+                                'checkIsSystemWideAdmin');
+        $status_ok = $this->_runChecks( $checkFunctions, $msg_prefix );
+
+        $password = null;  
+        if ($status_ok) {
+          if (isset($this->args[self::$userPasswordParamName])) {
+            $password = $this->args[self::$userPasswordParamName];
+            $res = $this->userMgr->checkPasswordQuality($password);
+            if ( $res['status_ok'] == tl::ERROR ) {
+              $status_ok = false;
+              $this->errors[] = new IXR_Error(GENERAL_ERROR_CODE, $res['msg']);
+            }
+          }  
+        } 
+
+        if ($status_ok) {
+          $res = tl::OK;
+
+          if ($password) {
+            $res = $this->userMgr->setPassword($password);
+          }
+
+          if ($res == tl::OK) {
+            $this->userMgr->dbID = null;
+            $this->userMgr->login = $this->args[self::$userLoginParamName];
+            $this->userMgr->firstName = $this->args[self::$userFirstNameParamName];
+            $this->userMgr->lastName = $this->args[self::$userLastNameParamName];
+            $this->userMgr->emailAddress = $this->args[self::$userEmailParamName];
+            $res = $this->userMgr->writeToDB($this->dbObj);
+          }
+
+          if ($res != tl::OK) {
+            $status_ok = false;
+            $msg = getUserErrorMessage($res);
+            $this->errors[] = new IXR_Error(USER_CREATION_ERROR, $msg);
+          } else {
+            logAuditEvent(TLS("audit_user_created", $this->userMgr->login),"CREATE",
+                                  $this->userMgr->dbID, "users");
+          }
+        }
+
+        return $status_ok ? $this->userMgr->dbID : $this->errors;
+    }
+
+    /**
+     * Set a role to a user at project level
+     *
+     * Restricted to users with System Wide Role Admin
+     *
+     * @param struct $args
+     * @param struct $args["userid"]
+     * @param struct $args["rolename"]
+     * @param struct $args["testprojectid"]
+     *
+     * @return true if OK, otherwise error structure
+     *
+     * @access public
+     */
+    public function setUserRoleOnProject($args)
+    {
+        $msg_prefix = "(" . __FUNCTION__ . ") - ";
+        $status_ok = true;
+        $this->_setArgs( $args );
+
+        $checkFunctions = array(
+                'authenticate',
+                'checkIsSystemWideAdmin',
+                'checkTestProjectID',
+                'checkUserID',
+                'checkRoleIdentity'
+        );
+        $status_ok = $this->_runChecks( $checkFunctions, $msg_prefix );
+
+        if ($status_ok) {
+
+            $userID = $this->args[self::$userIDParamName];
+            $projectID = $this->args[self::$testProjectIDParamName];
+
+            $role = $this->args[self::$roleNameParamName];
+            $roleID = tlRole::doesRoleExist($this->dbObj, $role, -1);
+            // role exists. It was checked by checkRoleIdentity
+
+            // delete existing user's role if any before adding the new one
+            $this->userMgr->dbID = $userID;
+            $this->userMgr->readTestProjectRoles($this->dbObj, $projectID);
+            if (isset($this->userMgr->tprojectRoles[$projectID])) {
+                if ($this->userMgr->tprojectRoles[$projectID]->dbID == $roleID) {
+                    // user already has given role -> OK nothing to do
+                    return true;
+                }
+                $this->tprojectMgr->deleteUserRoles($projectID, array($userID));
+            }
+
+            $res = $this->tprojectMgr->addUserRole($userID, $projectID, $roleID);
+            if ( $res != tl::OK ) {
+                $status_ok = false;
+                $msg = $msg_prefix . sprintf( ROLE_SETTING_ERROR_STR, $role, $userID );
+                $this->errors[] = new IXR_Error(ROLE_SETTING_ERROR, $msg);
+            }
+        }
+
+        return $status_ok ? true : $this->errors;
     }
 
     /**
@@ -7830,7 +8387,15 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $extCall = is_null( $call );
         if($extCall) {
-            $this->authenticate();
+            $status_ok = $this->authenticate();
+            if(! $status_ok) {
+                return $this->errors;
+            }
+            if(! $this->userHasRight( "issuetracker_view", self::CHECK_PUBLIC_PRIVATE_ATTR )) {
+                $msg = sprintf( INSUFFICIENT_RIGHTS_STR );
+                $this->errors[] = new IXR_Error( INSUFFICIENT_RIGHTS, $msg_prefix . $msg );
+                return $this->errors;
+            }
         }
 
         $ret = $this->getITSMgr()->getByName( $this->args[self::$itsNameParamName] );
@@ -7870,7 +8435,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["platformid"]
      *            OPTIONAL
      *
-     * @return mixed error if someting's wrong, else array of test cases
+     * @return mixed error if someting's wrong, else array of requirements
      *
      * @access public
      */
@@ -7902,6 +8467,13 @@ class TestlinkXMLRPCServer extends IXR_Server {
         }
 
         if($status_ok) {
+          $context_for_rights = array(self::$testProjectIDParamName => $this->args[self::$testProjectIDParamName],
+                                      self::$testPlanIDParamName    => $this->args[self::$testPlanIDParamName]
+                                      );
+          $status_ok = $this->userHasRight( 'mgt_view_req', self::CHECK_PUBLIC_PRIVATE_ATTR, $context_for_rights );
+        }
+
+        if($status_ok) {
             $dummy = $this->reqMgr->getAllByContext( $context );
             if(! is_null( $dummy ))
                 $req = array_values( $dummy );
@@ -7913,9 +8485,85 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
+     * Get requirement
+     *
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param string $args["testprojectid"]:
+     * @param int $args["requirementid"]:
+     *            OPTIONAL, if not present, reqdocid must be present
+     * @param string $args["requirementdocid"]:
+     *            OPTIONAL, if not present, reqid must be present
+     * @param string $args["version"]
+     *            OPTIONAL
+     * @param string $args["requirementversionid"]
+     *            OPTIONAL
+     * If neither version nor versionid are present, the latest version is used
+     *
+     * @return mixed error if someting's wrong, else a requirement version
+     *
+     * @access public
+     */
+    public function getRequirement($args) {
+      $msg_prefix = "(" . __FUNCTION__ . ") - ";
+      $this->_setArgs( $args );
+
+      $checkFunctions = array(
+              'authenticate',
+              'checkTestProjectID',
+              'checkReqIdentity'
+      );
+
+      $status = $this->_runChecks($checkFunctions, $msg_prefix);
+
+      if ($status) {
+        $context = array(self::$testProjectIDParamName => $this->args[self::$testProjectIDParamName]);
+        $status = $this->userHasRight( 'mgt_view_req', self::CHECK_PUBLIC_PRIVATE_ATTR, $context );
+      }
+      
+      if($status) {
+        $latest = true;
+        $version = false;
+
+        if ($this->_isParamPresent(self::$requirementVersionIDParamName)) {
+          if (! $this->checkReqVersionID($msg_prefix)) {
+            return false;
+          } else {
+            $reqVersionID = $this->args[self::$requirementVersionIDParamName];
+            $latest = false;
+          }
+
+        } elseif ($this->_isParamPresent(self::$versionNumberParamName)) {
+          if (! $this->checkVersionNumber()) {
+            return false;
+          } else {
+            $reqVersionNumber = $this->args[self::$versionNumberParamName];
+            $latest = false;
+            $version = true;
+          }
+
+        }
+
+        $reqID = $this->args[self::$requirementIDParamName];
+        if ($latest) {
+          $reqVersionID = requirement_mgr::LATEST_VERSION;
+        }
+
+        if ($version) {
+          $resultInfo = $this->reqMgr->get_by_id($reqID, null, $reqVersionNumber);
+        } else {
+          $resultInfo = $this->reqMgr->get_by_id($reqID, $reqVersionID);
+        }
+
+      }
+
+      return $status ? $resultInfo : $this->errors;
+    }
+
+    /**
      * Get requirement coverage
      *
-     * Retrieve the test cases associated to a requirement
+     * Retrieve the test cases versions associated to a requirement version
      *
      * @param struct $args
      * @param string $args["devKey"]:
@@ -7923,7 +8571,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
      *            if devKey is not valid => abort.
      *
      * @param string $args["testprojectid"]
-     * @param string $args["requirementdocid"]
+     * @param string $args["requirementversionid"]
      *
      * @return mixed error if someting's wrong, else array of test cases
      *
@@ -7936,24 +8584,19 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $resultInfo = array();
         $checkFunctions = array(
                 'authenticate',
-                'checkTestProjectID'
+                'checkTestProjectID',
+                'checkReqVersionID'
         );
-        $status_ok = $this->_runChecks( $checkFunctions, $msg_prefix ) && $this->userHasRight( 'mgt_view_req', self::CHECK_PUBLIC_PRIVATE_ATTR );
+        $status_ok = $this->_runChecks( $checkFunctions, $msg_prefix );
+
+        if ($status_ok) {
+          $context = array(self::$testProjectIDParamName => $this->args[self::$testProjectIDParamName]);
+          $status_ok = $this->userHasRight( 'mgt_view_req', self::CHECK_PUBLIC_PRIVATE_ATTR, $context );
+        }
 
         if($status_ok) {
-            // check req id exists in the project
-            $reqDocID = $this->args[self::$requirementDocIDParamName];
-            $req = $this->reqMgr->getByDocID( $reqDocID, $this->args[self::$testProjectIDParamName], null, array(
-                    'access_key' => 'req_doc_id',
-                    'output' => 'minimun'
-            ) );
-            if(! is_null( $req )) {
-                $resultInfo = $this->reqMgr->get_coverage( $req[$reqDocID]['id'] );
-            } else {
-                $msg = $msg_prefix . sprintf( NO_REQ_IN_THIS_PROJECT_STR, $reqDocID, $this->args[self::$testProjectIDParamName] );
-                $this->errors[] = new IXR_Error( NO_REQ_IN_THIS_PROJECT, $msg );
-                $status_ok = false;
-            }
+          $reqVersionID = $this->args[self::$requirementVersionIDParamName];
+          $resultInfo = $this->reqMgr->getActiveForReqVersion( $reqVersionID );
         }
         return $status_ok ? $resultInfo : $this->errors;
     }
@@ -8623,6 +9266,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 'tl.getUserByID' => 'this:getUserByID',
                 'tl.deleteExecution' => 'this:deleteExecution',
                 'tl.doesUserExist' => 'this:doesUserExist',
+                'tl.createUser' => 'this:createUser',
+                'tl.setUserRoleOnProject' => 'this:setUserRoleOnProject',
                 'tl.updateTestCaseCustomFieldDesignValue' => 'this:updateTestCaseCustomFieldDesignValue',
                 'tl.updateTestCase' => 'this:updateTestCase',
                 'tl.setTestCaseExecutionType' => 'this:setTestCaseExecutionType',
@@ -8635,6 +9280,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 'tl.getTestSuite' => 'this:getTestSuite',
                 'tl.updateTestSuite' => 'this:updateTestSuite',
                 'tl.getRequirements' => 'this:getRequirements',
+                'tl.getRequirement' =>  'this:getRequirement',
                 'tl.getReqCoverage' => 'this:getReqCoverage',
                 'tl.setTestCaseTestSuite' => 'this:setTestCaseTestSuite',
                 'tl.getExecutionSet' => 'this:getExecutionSet',

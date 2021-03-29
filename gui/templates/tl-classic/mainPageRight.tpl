@@ -22,6 +22,8 @@
 {$mileView="lib/plan/planMilestonesView.php"}
 {$platformAssign="lib/platforms/platformsAssign.php?tplan_id="}
 
+{$usersAssign="lib/usermanagement/usersAssign.php?featureType=testplan&featureID="}
+
 {$menuLayout=$tlCfg->gui->layoutMainPageRight}
 {$display_right_block_1=false}
 {$display_right_block_2=false}
@@ -118,6 +120,10 @@
 	    
       {if $gui->grants.testplan_milestone_overview == "yes" and $gui->countPlans > 0}
          <a href="{$mileView}" class="list-group-item" style="{$aStyle}">{$labels.href_plan_mstones}</a>
+      {/if}
+
+      {if $gui->grants.testplan_user_role_assignment == "yes"}
+        <a href="{$usersAssign}{$gui->testplanID}" class="list-group-item" style="{$aStyle}">{$labels.href_assign_user_roles}</a>
       {/if}
     </div>
   {/if}

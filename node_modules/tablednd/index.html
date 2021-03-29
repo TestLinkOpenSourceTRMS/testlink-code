@@ -1,0 +1,527 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Table Drag and Drop jQuery plugin</title>
+    <link rel="stylesheet" href="tablednd.css" type="text/css"/>
+    <link rel="stylesheet" href="//google-code-prettify.googlecode.com/svn/trunk/src/prettify.css" type="text/css"/>
+</head>
+<body>
+<div id="page">
+<h1>Table Drag and Drop jQuery plugin</h1>
+<p>This page contains documentation and tests for the TableDnD jQuery plug-in. For more information and
+to post comments, please go to <a href="http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin/">isocra.com</a>.
+</p>
+<p>If you have issues or bug reports, then you can post them at the <a href="https://github.com/isocra/TableDnD">TableDnD plug page</a>.</p>
+
+<h2>How do I use it?</h2>
+<ol>
+	<li>Since TableDnD is a jquery pligin you will need to include jquery in your page first.
+    <p>No need for any downloads simply reference <a href="https://developers.google.com/speed/libraries/devguide#jquery">jQuery from the Google CDN</a>
+        (Content Distribution Network)
+    All scripts are included at the bottom of the page, to facilitate quicker rendering of the HTML for more responsive pages.
+    The following is the way we are linking to jQuery in the examples and this method can be recommended for use in your implementations too.</p>
+    <pre class="prettyprint">&lt;script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"&gt;&lt;/script&gt;</pre></li>
+    <li>You will also need a copy of the <a href="https://github.com/isocra/TableDnD">TableDnD plugin</a> (current version 0.9) which you can reference in
+        the normal fashion, anywhere after jQuery.</li>
+	<li>In true jQuery style, the typical way to initialise the tabes is in the <code class="prettyprint">$(document).ready</code> code black function.
+        Use a selector to select your table and then call the following (You can optionally specify a set of properties (described below).
+        <pre class="prettyprint">tableDnD()</pre>
+    </li>
+</ol>
+
+<h2>A basic table</h2>
+<div class="tableDemo">
+<div id="debug" style="float:right;"></div>
+<table id="table-1" cellspacing="0" cellpadding="2">
+    <tr id="1"><td>1</td><td>One</td><td>some text</td></tr>
+    <tr id="2"><td>2</td><td>Two</td><td>some text</td></tr>
+    <tr id="3"><td>3</td><td>Three</td><td>some text</td></tr>
+    <tr id="4"><td>4</td><td>Four</td><td>some text</td></tr>
+    <tr id="5"><td>5</td><td>Five</td><td>some text</td></tr>
+    <tr id="6"><td>6</td><td>Six</td><td>some text</td></tr>
+</table>
+</div>
+<p>The HTML for the table is very straight forward (no Javascript, pure HTML):</p>
+
+<pre class="prettyprint">
+&lt;table id=&quot;table-1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;
+    &lt;tr id=&quot;1&quot;&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;One&lt;/td&gt;&lt;td&gt;some text&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr id=&quot;2&quot;&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;Two&lt;/td&gt;&lt;td&gt;some text&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr id=&quot;3&quot;&gt;&lt;td&gt;3&lt;/td&gt;&lt;td&gt;Three&lt;/td&gt;&lt;td&gt;some text&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr id=&quot;4&quot;&gt;&lt;td&gt;4&lt;/td&gt;&lt;td&gt;Four&lt;/td&gt;&lt;td&gt;some text&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr id=&quot;5&quot;&gt;&lt;td&gt;5&lt;/td&gt;&lt;td&gt;Five&lt;/td&gt;&lt;td&gt;some text&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr id=&quot;6&quot;&gt;&lt;td&gt;6&lt;/td&gt;&lt;td&gt;Six&lt;/td&gt;&lt;td&gt;some text&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+</pre>
+<p>To add in the "draggability" all we need to do is add a line to the <code class="prettyprint">$(document).ready(...)</code> function
+as follows:</p>
+<pre class="prettyprint">
+<span class="comment">&lt;script type=&quot;text/javascript&quot;&gt;</span>
+$(document).ready(function() {
+    <span class="comment">// Initialise the table</span>
+    $(&quot;#table-1&quot;).tableDnD();
+});
+<span class="comment">&lt;/script&gt;</span>
+</pre>
+<p>In the example above we're not setting any parameters at all so we get the default settings. There are a number
+	of parameters you can set in order to control the look and feel of the table and also to add custom behaviour
+	on drag or on drop. The parameters are specified as a map in the usual way and are described below:</p>
+
+<h2>Settings</h2>
+<dl>
+	<dt>onDragStyle</dt>
+	<dd>This is the style that is assigned to the row during drag. There are limitations to the styles that can be
+		associated with a row (such as you can't assign a border&mdash;well you can, but it won't be
+		displayed). (So instead consider using <code class="prettyprint">onDragClass</code>.) The CSS style to apply is specified as
+		a map (as used in the jQuery <code class="prettyprint">css(...)</code> function).</dd>
+	<dt>onDropStyle</dt>
+	<dd>This is the style that is assigned to the row when it is dropped. As for onDragStyle, there are limitations
+		to what you can do. Also this replaces the original style, so again consider using onDragClass which
+		is simply added and then removed on drop.</dd>
+	<dt>onDragClass</dt>
+	<dd>This class is added for the duration of the drag and then removed when the row is dropped. It is more
+		flexible than using onDragStyle since it can be inherited by the row cells and other content. The default
+		is class is <code class="prettyprint">tDnD_whileDrag</code>. So to use the default, simply customise this CSS class in your
+		stylesheet.</dd>
+	<dt>onDrop</dt>
+	<dd>Pass a function that will be called when the row is dropped. The function takes 2 parameters: the table
+	    and the row that was dropped. You can work out the new order of the rows by using
+	    <code class="prettyprint">table.tBodies[0].rows</code>.</dd>
+	<dt>onDragStart</dt>
+	<dd>Pass a function that will be called when the user starts dragging. The function takes 2 parameters: the
+		table and the row which the user has started to drag.</dd>
+	<dt>scrollAmount</dt>
+	<dd>This is the number of pixels to scroll if the user moves the mouse cursor to the top or bottom of the
+		window. The page should automatically scroll up or down as appropriate (tested in IE6, IE7, Safari, FF2,
+		FF3 beta)</dd>
+</dl>
+
+<h2>OnDrag custom table</h2>
+<p>This second table has has an onDrop function applied as well as an onDragClass. The javascript to set this up is
+as follows:</p>
+
+<pre class="prettyprint">
+$(document).ready(function() {
+
+	// Initialise the first table (as before)
+	$("#table-1").tableDnD();
+
+	// Make a nice striped effect on the table
+	$("#table-2 tr:even').addClass('alt')");
+
+	// Initialise the second table specifying a dragClass and an onDrop function that will display an alert
+	$("#table-2").tableDnD({
+	    onDragClass: "myDragClass",
+	    onDrop: function(table, row) {
+            var rows = table.tBodies[0].rows;
+            var debugStr = "Row dropped was "+row.id+". New order: ";
+            for (var i=0; i&lt;rows.length; i++) {
+                debugStr += rows[i].id+" ";
+            }
+	        $(table).parent().find('.result').text(debugStr);
+	    },
+		onDragStart: function(table, row) {
+			$(table).parent().find('.result').text("Started dragging row "+row.id);
+		}
+	});
+});
+</pre>
+<div class="tableDemo">
+<table id="table-2" cellspacing="0" cellpadding="0">
+    <tr id="2.1"><td>1</td><td>One</td><td><input type="text" name="one" value="one"/></td><td><input type="radio" name="rone" value="V" />V</td><td><input type="radio" name="rone" value="C" checked="checked" />C</td><td><input type="radio" name="rone" value="N" />N</td></tr>
+    <tr id="2.2"><td>2</td><td>Two</td><td><input type="text" name="two" value="two"/></td><td><input type="radio" name="rtwo" value="V" />V</td><td><input type="radio" name="rtwo" value="C" checked="checked" />C</td><td><input type="radio" name="rtwo" value="N" />N</td></tr>
+    <tr id="2.3"><td>3</td><td>Three</td><td><input type="text" name="three" value="three"/></td><td><input type="radio" name="rthree" value="V" />V</td><td><input type="radio" name="rthree" value="C" checked="checked" />C</td><td><input type="radio" name="rthree" value="N" />N</td></tr>
+    <tr id="2.4"><td>4</td><td>Four</td><td><input type="text" name="four" value="four"/></td><td><input type="radio" name="rfour" value="V" />V</td><td><input type="radio" name="rfour" value="C" checked="checked" />C</td><td><input type="radio" name="rfour" value="N" />N</td></tr>
+    <tr id="2.5"><td>5</td><td>Five</td><td><input type="text" name="five" value="five"/></td><td><input type="radio" name="rfive" value="V" />V</td><td><input type="radio" name="rfive" value="C" checked="checked" />C</td><td><input type="radio" name="rfive" value="N" />N</td></tr>
+    <tr id="2.6"><td>6</td><td>Six</td><td><input type="text" name="six" value="six"/></td><td><input type="radio" name="rsix" value="V" />V</td><td><input type="radio" name="rsix" value="C" checked="checked" />C</td><td><input type="radio" name="rsix" value="N" />N</td></tr>
+    <tr id="2.7"><td>7</td><td>Seven</td><td><input type="text" name="seven" value="7"/></td><td><input type="radio" name="rseven" value="V" />V</td><td><input type="radio" name="rseven" value="C" checked="checked" />C</td><td><input type="radio" name="rseven" value="N" />N</td></tr>
+    <tr id="2.8"><td>8</td><td>Eight</td><td><input type="text" name="eight" value="8"/></td><td><input type="radio" name="reight" value="V" />V</td><td><input type="radio" name="reight" value="C" checked="checked" />C</td><td><input type="radio" name="reight" value="N" />N</td></tr>
+    <tr id="2.9"><td>9</td><td>Nine</td><td><input type="text" name="nine" value="9"/></td><td><input type="radio" name="rnine" value="V" />V</td><td><input type="radio" name="rnine" value="C" checked="checked" />C</td><td><input type="radio" name="rnine" value="N" />N</td></tr>
+    <tr id="2.10"><td>10</td><td>Ten</td><td><input type="text" name="ten" value="10"/></td><td><input type="radio" name="rten" value="V" />V</td><td><input type="radio" name="rten" value="C" checked="checked" />C</td><td><input type="radio" name="rten" value="N" />N</td></tr>
+    <tr id="2.11"><td>11</td><td>Eleven</td><td><input type="text" name="eleven" value="11"/></td><td><input type="radio" name="releven" value="V" />V</td><td><input type="radio" name="releven" value="C" checked="checked" />C</td><td><input type="radio" name="releven" value="N" />N</td></tr>
+    <tr id="2.12"><td>12</td><td>Twelve</td><td><input type="text" name="twelve" value="12"/></td><td><input type="radio" name="rtwelve" value="V" />V</td><td><input type="radio" name="rtwelve" value="C" checked="checked" />C</td><td><input type="radio" name="rtwelve" value="N" />N</td></tr>
+    <tr id="2.13"><td>13</td><td>Thirteen</td><td><input type="text" name="thirteen" value="13"/></td><td><input type="radio" name="rthirteen" value="V" />V</td><td><input type="radio" name="rthirteen" value="C" checked="checked" />C</td><td><input type="radio" name="rthirteen" value="N" />N</td></tr>
+    <tr id="2.14"><td>14</td><td>Fourteen</td><td><input type="text" name="fourteen" value="14"/></td><td><input type="radio" name="rfourteen" value="V" />V</td><td><input type="radio" name="cfourteen" value="C" checked="checked" />C</td><td><input type="radio" name="rfourteen" value="N" />N</td></tr>
+</table>
+    <div class="result">&nbsp;</div>
+</div>
+<h2>Communicating with the back-end</h2>
+<p>Generally once the user has dropped a row, you need to inform the server of the new order. To do this, we've
+	added a method called <code class="prettyprint">serialize()</code>. It takes no parameters but knows the current table from the
+	context. The method returns a string of the form <code class="prettyprint"><i>tableId</i>[]=<i>rowId1</i>&amp;<i>tableId</i>[]=<i>rowId2</i>&amp;<i>tableId</i>[]=<i>rowId3</i>...</code>
+	You can then use this as part of an Ajax load.
+</p>
+<p>
+    Since version 0.9, instead of manually creating the serialized data string we instead use <a href="http://api.jquery.com/jQuery.param/">jQuery's param method</a> which has the added benefit of url encoding the data string as well.
+</p>
+<p>This third table demonstrates calling the serialize function inside onDrop (as shown below). It also
+	demonstrates the "nodrop" class on row 3 and "nodrag" class on row 5, so you can't pick up row 5 and
+	you can't drop any row on row 3 (but you can drag it).</p>
+<pre class="prettyprint">
+    $('#table-3').tableDnD({
+        onDrop: function(table, row) {
+            alert($.tableDnD.serialize());
+        }
+    });
+</pre>
+<div class="tableDemo">
+<div id="AjaxResult" style="float: right; width: 250px; border: 1px solid silver; padding: 4px; font-size: 90%">
+	<h3>Ajax result</h3>
+	<p>Drag and drop in this table to test out serialise and using JQuery.load()</p>
+</div>
+<table id="table-3" cellspacing="0" cellpadding="2">
+    <tr id="3.1"><td>1</td><td>One</td><td><input type="text" name="one" value="one"/></td></tr>
+    <tr id="3.2"><td>2</td><td>Two</td><td><input type="text" name="two" value="two"/></td></tr>
+    <tr id="3.3" class="nodrop"><td>3</td><td>Three (Can't drop on this row)</td><td><input type="text" name="three" value="three"/></td></tr>
+    <tr id="3.4" class="nodrop"><td>4</td><td>Four (Can't drop on this row)</td><td><input type="text" name="four" value="four"/></td></tr>
+    <tr id="3.5"><td>5</td><td>Five</td><td><input type="text" name="five" value="five"/></td></tr>
+    <tr id="3.6" class="nodrag"><td>6</td><td>Six (Can't drag this row)</td><td><input type="text" name="six" value="six"/></td></tr>
+    <tr id="3.7"><td>7</td><td>Seven</td><td><input type="text" name="seven" value="seven"/></td></tr>
+</table>
+    <div class="result"></div>
+</div>
+<h2>Multiple tbody table</h2>
+<p>This table has multiple TBODYs. The functionality isn't quite working properly. You can only drag the rows inside their
+own TBODY, you can't drag them outside it. Now this might or might not be what you want, but unfortunately if you then drop a row outside its TBODY you get a Javascript error because inserting after a sibling doesn't work. This will be fixed in the next version. The header rows all have the classes "nodrop" and "nodrag" so that they can't be dragged or dropped on.</p>
+<div class="tableDemo">
+<table id="table-4" cellspacing="0" cellpadding="2">
+	<thead>
+		<tr id="4.0" class="nodrop nodrag"><th>H1</th><th>H2</th><th>H3</th></tr>
+	</thead>
+	<tbody>
+        <tr id="4.1"><td>4.1</td><td>One</td><td><input type="text" name="one" value="one"/></td></tr>
+        <tr id="4.2"><td>4.2</td><td>Two</td><td><input type="text" name="two" value="two"/></td></tr>
+        <tr id="4.3"><td>4.3</td><td>Three</td><td><input type="text" name="three" value="three"/></td></tr>
+        <tr id="4.4"><td>4.4</td><td>Four</td><td><input type="text" name="four" value="four"/></td></tr>
+        <tr id="4.5"><td>4.5</td><td>Five</td><td><input type="text" name="five" value="five"/></td></tr>
+        <tr id="4.6"><td>4.6</td><td>Six</td><td><input type="text" name="six" value="six"/></td></tr>
+	</tbody>
+	<tbody>
+		<tr id="5.0" class="nodrop nodrag"><th>H1</th><th>H2</th><th>H3</th></tr>
+        <tr id="5.1"><td>5.1</td><td>One</td><td><input type="text" name="one" value="one"/></td></tr>
+        <tr id="5.2"><td>5.2</td><td>Two</td><td><input type="text" name="two" value="two"/></td></tr>
+        <tr id="5.3"><td>5.3</td><td>Three</td><td><input type="text" name="three" value="three"/></td></tr>
+        <tr id="5.4"><td>5.4</td><td>Four</td><td><input type="text" name="four" value="four"/></td></tr>
+        <tr id="5.5"><td>5.5</td><td>Five</td><td><input type="text" name="five" value="five"/></td></tr>
+        <tr id="5.6"><td>5.6</td><td>Six</td><td><input type="text" name="six" value="six"/></td></tr>
+	</tbody>
+	<tbody>
+		<tr id="6.0" class="nodrop nodrag"><th>H1</th><th>H2</th><th>H3</th></tr>
+        <tr id="6.1"><td>6.1</td><td>One</td><td><input type="text" name="one" value="one"/></td></tr>
+        <tr id="6.2"><td>6.2</td><td>Two</td><td><input type="text" name="two" value="two"/></td></tr>
+        <tr id="6.3"><td>6.3</td><td>Three</td><td><input type="text" name="three" value="three"/></td></tr>
+        <tr id="6.4"><td>6.4</td><td>Four</td><td><input type="text" name="four" value="four"/></td></tr>
+        <tr id="6.5"><td>6.5</td><td>Five</td><td><input type="text" name="five" value="five"/></td></tr>
+        <tr id="6.6"><td>6.6</td><td>Six</td><td><input type="text" name="six" value="six"/></td></tr>
+	</tbody>
+</table>
+</div>
+<h2>Identify rows</h2>
+<p>
+The following table demonstrates the use of the default regular expression. The rows have IDs of the
+form table5-row-1, table5-row-2, etc., but the regular expression is <code class="prettyprint">/[^\-]*$/</code> (this is the same
+as used in the <a href="http://plugins.jquery.com/project/NestedSortable">NestedSortable</a> plugin for consistency).
+This removes everything before and including the last hyphen, so the serialised string just has 1, 2, 3 etc.
+You can replace the regular expression by setting the <code class="prettyprint">serializeRegexp</code> option, you can also just set it
+to null to stop this behaviour.
+</p>
+<pre class="prettyprint">
+    $('#table-5').tableDnD({
+        onDrop: function(table, row) {
+            alert($.tableDnD.serialize());
+        },
+        dragHandle: ".dragHandle"
+    });
+</pre>
+<div class="tableDemo">
+<table id="table-5" cellspacing="0" cellpadding="2">
+    <tr id="table5-row-1"><td class="dragHandle">&nbsp;</td><td>1</td><td>One</td><td>some text</td></tr>
+    <tr id="table5-row-2"><td class="dragHandle">&nbsp;</td><td>2</td><td>Two</td><td>some text</td></tr>
+    <tr id="table5-row-3"><td class="dragHandle">&nbsp;</td><td>3</td><td>Three</td><td>some text</td></tr>
+    <tr id="table5-row-4"><td class="dragHandle">&nbsp;</td><td>4</td><td>Four</td><td>some text</td></tr>
+    <tr id="table5-row-5"><td class="dragHandle">&nbsp;</td><td>5</td><td>Five</td><td>some text</td></tr>
+    <tr id="table5-row-6"><td class="dragHandle">&nbsp;</td><td>6</td><td>Six</td><td>some text</td></tr>
+</table>
+    <div class="result"></div>
+</div>
+<p>In fact you will notice that I have also set the dragHandle on this table. This has two effects: firstly only
+the cell with the drag handle class is draggable and secondly it doesn't automatically add the <code class="prettyprint">cursor: move</code>
+style to the row (or the drag handle cell), so you are responsible for setting up the style as you see fit.</p>
+<p>Here I've actually added an extra effect which adds a background image to the first cell in the row whenever
+you enter it using the jQuery <code class="prettyprint">hover</code> function as follows:</p>
+<pre class="prettyprint">
+    $("#table-5 tr").hover(function() {
+          $(this.cells[0]).addClass('showDragHandle');
+    }, function() {
+          $(this.cells[0]).removeClass('showDragHandle');
+    });
+</pre>
+<p>This provides a better visualisation of what you can do to the row and where you need to go to drag it (I hope).</p>
+
+<h2>Meta table (auto configure)</h2>
+
+<script type="text/javascript">
+    function inline_sprintlist_ondrop(table, row) {
+        var result = $(table).parent().find('.result'),
+            pre = $('<pre class="prettyprint">');
+
+        result.html(pre.text($.tableDnD.jsonize(true)));
+        prettyPrint();
+//            pre.text($(table).tableDnD.jsonize())
+//        return true;
+        //// '<div class="indent">&nbsp;</div>',
+    }
+</script>
+<div class="tableDemo">
+
+<table id="table-6"
+       data-table="dnd"
+       cellspacing="0"
+       cellpadding="2"
+       style=""
+
+
+       data-ondragstyle="display: block; z-index: 5; background-color: #7777cc;"
+
+       data-ondragclass=""
+    >
+    <tr id="6-1"><td>Basic example with extra fancy</td></tr>
+    <tr id="6-2"><td>row styles bot this trick really</td></tr>
+    <tr id="6-3"><td>only works with single column</td></tr>
+    <tr id="6-4"><td>because it looses the corumn</td></tr>
+    <tr id="6-5"><td>width when displaying a table</td></tr>
+    <tr id="6-6"><td>in block style unfortunately</td></tr>
+</table>
+
+<table
+        id="sprintlist_table"
+        cellspacing="0" cellpadding="10"
+        data-table="dnd"
+        data-ondragstart="$(table).parent().find('.result').text('data-ondragstart');"
+        data-ondrop="inline_sprintlist_ondrop(table, row);"
+        data-serializeregexp="^.*sprints$|[^\_]*$"
+        data-ondragclass="sprintlist-drag"
+        data-ondragstyle=""
+        data-ondropstyle=""
+        data-scrollamount="100"
+        data-sensitivity="1"
+        data-hierarchylevel="2"
+        data-indentartifact="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+        data-autowidthadjust="1"
+        data-autocleanrelations="1"
+        data-jsonpretifyseparator="    "
+        data-serializeparamname="sprintlist"
+        data-draghandle=""
+
+    >
+    <thead id="sprintlist_header">
+        <tr><th class="name">Name</th><th class="start_date">Start Date</th><th class="end_date">End Date</th><th class="actions">Actions</th></tr>
+    </thead>
+    <tbody>
+        <tr id="present_sprints" class="group_heading nodrag"><td colspan="4">Present Sprints</td></tr>
+        <tr id="sprint_145664"><td>First round - in sprint</td><td>2012-09-19</td><td>2012-09-27</td>
+            <td class="small_buttons"><div><button onclick="return false;">Edit</button><button onclick="return false;">Delete</button></div></td></tr>
+        <tr id="future_sprints" class="group_heading nodrag"><td colspan="4">Future Sprints</td></tr>
+        <tr id="sprint_145665" class="toggler_row"><td>Second round</td><td>2012-09-28</td><td>2012-10-04</td>
+            <td class="small_buttons"><div><button onclick="return false;">Edit</button><button onclick="return false;">Delete</button></div></td></tr>
+        <tr id="sprint_145975" class="toggler_row"><td>Third round</td><td>2012-10-04</td><td>2012-10-11</td>
+            <td class="small_buttons"><div><button onclick="return false;">Edit</button><button onclick="return false;">Delete</button></div></td></tr>
+        <tr id="sprint_145965" class="toggler_row"><td>Fourth round</td><td>2012-10-13</td><td>2012-10-20</td>
+            <td class="small_buttons"><div><button onclick="return false;">Edit</button><button onclick="return false;">Delete</button></div></td></tr>
+        <tr id="sprint_145966" class="toggler_row"><td>Release prep</td><td>2012-10-20</td><td>2012-10-27</td>
+            <td class="small_buttons"><div><button onclick="return false;">Edit</button><button onclick="return false;">Delete</button></div></td></tr>
+        <tr id="sprint_145964" class="toggler_row"><td>Fifth run</td><td>2012-10-27</td><td>2012-11-03</td>
+            <td class="small_buttons"><div><button onclick="return false;">Edit</button><button onclick="return false;">Delete</button></div></td></tr>
+        <tr id="sprint_145974" class="toggler_row"><td>Sixth run</td><td>2012-11-03</td><td>2012-11-10</td>
+        <td class="small_buttons"><div><button onclick="return false;">Edit</button><button onclick="return false;">Delete</button></div></td></tr>
+        <tr id="sprint_145985" class="toggler_row"><td>Seventh run</td><td>2012-11-10</td><td>2012-11-17</td>
+            <td class="small_buttons"><div><button onclick="return false;">Edit</button><button onclick="return false;">Delete</button></div></td></tr>
+        <tr id="sprint_145976" class="toggler_row"><td>Release 2 prep</td><td>2012-11-17</td><td>2012-11-24</td>
+            <td class="small_buttons"><div><button onclick="return false;">Edit</button><button onclick="return false;">Delete</button></div></td></tr>
+        <tr id="past_sprints" class="group_heading nodrag"><td colspan="4">Past Sprints</td></tr>
+        <tr id="sprint_145996" class="toggler_row"><td>Backlog creation - complete</td><td>2012-09-01</td><td>2012-09-08</td>
+            <td class="small_buttons"><div><button onclick="return false;">Edit</button><button onclick="return false;">Delete</button></div></td></tr>
+        <tr id="no_sprints" class="group_heading nodrag"><td colspan="4">No Sprints</td></tr>
+    </tbody>
+</table>
+  <a class="toggle-json6" href="#">Hide JSON</a><div id="json6" class="result"></div>
+</div>
+
+<h2>Hierarchy table</h2>
+<p>This table allows row order to be dragged horizontally and placed in a hierarchy under a parent row (since version 0.9). We also get a chance to look at the new jsonize method for JSON serialized form of the data. </p>
+<p>In the onDrop event handler we pass the JSON as data to jquery through a HTTP POST ajax call to the server:</p>
+<pre class="prettyprint">
+    $.post("server/ajaxJSONTest.php", $.tableDnD.jsonize(), function (data) {
+        $('#table-7-response').html('<br>'+ data);
+    });
+</pre>
+<p>On the back-end we have a PHP example that simply retrieves the JSON POST data from the built in stream php://input, decodes the payload and proceeds to build the hierarchy through recursion.</p>
+<p>To keep the data simple and also stay compatible with the http variable methods as mentioned previously the data structure is formed with separate collections. If a parent has children the children first level are listed and if any of the children have subsequent children an additional collection is created for the first level of these.</p>
+<p>The following hierarchy for example would generate 3 collections:</p>
+<ul>
+    <li>7.00 <ul>
+        <li>7.01</li>
+        <li>7.02<ul><li>7.03</li></ul></li>
+    </ul></li>
+    <li>7.04</li>
+</ul>
+<p>In JSON the dataset looks like this:</p>
+<a class="toggle-json7" href="#">Hide JSON</a><pre id="json7" class="prettyprint">
+{
+	"table-7": [
+		"7.00",
+		"7.04"
+	],
+	"7.00": [
+		"7.01",
+		"7.02"
+	],
+	"7.02": [
+		"7.03"
+	]
+}
+</pre>
+<p>We use the setting hierarchyLevel to indicate how many levels are supported, the example uses 4 levels deep. When populating the table you can use the the data-leve tag to indicate at which level the current row is represented at.</p>
+
+<div class="hierarchyDemo">
+    <div style="float: right; width: 450px; border: 1px solid silver; padding: 4px; font-size: 90%">
+        <div id="table-7-response" style="float: right; margin-left: 20px">
+            <h3>Ajax result</h3>
+            <p>Drag and drop in this table to test out hierarcies and using JSON payload.</p>
+        </div>
+    </div>
+
+    <table id="table-7" cellspacing="0" cellpadding="2">
+        <tr id="7.00">               <td>7.0 One</td><td><input type="text" name="one" value="one"/></td></tr>
+        <tr id="7.01" data-level="1"><td>7.1 Two</td><td><input type="text" name="two" value="two"/></td></tr>
+        <tr id="7.02" data-level="1"><td>7.2 Three</td><td><input type="text" name="three" value="three"/></td></tr>
+        <tr id="7.03" data-level="2"><td>7.3 Four</td><td><input type="text" name="four" value="four"/></td></tr>
+        <tr id="7.04">               <td>7.4 Five</td><td><input type="text" name="five" value="five"/></td></tr>
+        <tr id="7.05" data-level="1"><td>7.5 Six</td><td><input type="text" name="six" value="six"/></td></tr>
+        <tr id="7.06" data-level="2"><td>7.6 Seven</td><td><input type="text" name="seven" value="seven"/></td></tr>
+        <tr id="7.07" data-level="3"><td>7.7 Eight</td><td><input type="text" name="eight" value="eight"/></td></tr>
+        <tr id="7.08" data-level="4"><td>7.8 Nine</td><td><input type="text" name="nine" value="nine"/></td></tr>
+        <tr id="7.09" data-level="2"><td>7.9 Ten</td><td><input type="text" name="ten" value="ten"/></td></tr>
+        <tr id="7.10" data-level="2"><td>7.0 One</td><td><input type="text" name="one" value="one"/></td></tr>
+        <tr id="7.11">               <td>7.1 Two</td><td><input type="text" name="two" value="two"/></td></tr>
+        <tr id="7.12">               <td>7.2 Three</td><td><input type="text" name="three" value="three"/></td></tr>
+        <tr id="7.13">               <td>7.3 Four</td><td><input type="text" name="four" value="four"/></td></tr>
+        <tr id="7.14">               <td>7.4 Five</td><td><input type="text" name="five" value="five"/></td></tr>
+        <tr id="7.15" data-level="1"><td>7.5 Six</td><td><input type="text" name="six" value="six"/></td></tr>
+        <tr id="7.16" data-level="2"><td>7.6 Seven</td><td><input type="text" name="seven" value="seven"/></td></tr>
+        <tr id="7.17" data-level="1"><td>7.7 Eight</td><td><input type="text" name="eight" value="eight"/></td></tr>
+        <tr id="7.18" data-level="2"><td>7.8 Nine</td><td><input type="text" name="nine" value="nine"/></td></tr>
+        <tr id="7.19">               <td>7.9 Ten</td><td><input type="text" name="ten" value="ten"/></td></tr>
+    </table>
+  <a class="toggle-json77" href="#">Hide JSON</a><div id="json77" class="result"></div>
+</div>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" src="js/jquery.tablednd.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Initialise the first table (as before)
+        $("#table-1").tableDnD();
+        // Make a nice striped effect on the table
+        table_2 = $("#table-2");
+        table_2.find("tr:even").addClass("alt");
+        // Initialise the second table specifying a dragClass and an onDrop function that will display an alert
+        table_2.tableDnD({
+            onDragClass: "myDragClass",
+            onDrop: function(table, row) {
+                var rows = table.tBodies[0].rows;
+                var debugStr = "Row dropped was "+row.id+". New order: ";
+                for (var i=0; i<rows.length; i++) {
+                    debugStr += rows[i].id+" ";
+                }
+                $(table).parent().find('.result').text(debugStr);
+            },
+            onDragStart: function(table, row) {
+                $(table).parent().find('.result').text("Started dragging row "+row.id);
+            }
+        });
+
+        $('#table-3').tableDnD({
+            onDragStart: function(table, row) {
+                $(table).parent().find('.result').text('');
+            },
+            onDrop: function(table, row) {
+                $('#AjaxResult').load("server/ajaxTest.php?"+$.tableDnD.serialize())
+                        .parent().find('.result').html($('<p>').append('Result of $.tableDnD.serialize() is url encoded: ')
+                        .append($('<pre class="prettyprint">').text($.tableDnD.serialize()))
+                        .append(' Which looks like this when decoded (decodeURI): ')
+                        .append($('<pre class="prettyprint">').text(decodeURI($.tableDnD.serialize()))));
+                prettyPrint();
+            }
+        });
+
+        $('#table-4').tableDnD(); // no options currently
+
+        $('#table-5').tableDnD({
+            onDragStart: function(table, row) {
+                $(table).parent().find('.result').text('');
+            },
+            onDrop: function(table, row) {
+                var data = $(table).tableDnDSerialize();
+                $(table).parent().find('.result').append(
+                        $('<strong>').text('The urlencoded serialized string:'))
+                        .append($('<pre class="prettyprint">').text(data))
+                        .append($('<strong>').text('Which looks like this through decodeURIComponent:'))
+                        .append($('<pre class="prettyprint">').text(decodeURIComponent(data)));
+                prettyPrint();
+            },
+            dragHandle: ".dragHandle"
+        });
+
+        $("#table-5 ").find("tr").hover(function() {
+            $(this.cells[0]).addClass('showDragHandle');
+        }, function() {
+            $(this.cells[0]).removeClass('showDragHandle');
+        });
+
+        $('#table-7').tableDnD({
+            hierarchyLevel: 4,
+            onDragStart: function(table, row) {
+                $(table).parent().find('.result').text('');
+            },
+            onDrop: function(table, row) {
+                $(table).parent().find('.result').append(
+                        $('<strong>').text('JSON.stringify result of $.tableDnD.tableData()'))
+                        .append($('<pre class="prettyprint">').text($.tableDnD.jsonize(true)));
+                prettyPrint();
+                $.post("server/ajaxJSONTest.php", $.tableDnD.jsonize(), function (data) {
+                    $('#table-7-response').html('<br>'+ data);
+                });
+            }
+        });
+
+        $('.toggle-json6').toggle(function() {
+          $(this).text('Show JSON');
+          $('json6').hide();
+          return false;
+        },
+        function() {
+          $(this).text('Hide JSON');
+          $('json6').show();
+          return false;
+        });
+        $('.toggle-json7').toggle(function() {
+                $(this).text('Show JSON');
+                $('json7').hide();
+                return false;
+              },
+              function() {
+                $(this).text('Hide JSON');
+                $('json7').show();
+                return false;
+              });
+
+        $('#radio-button-test').tableDnD();
+
+    });
+</script>
+
+</body>
+</html>

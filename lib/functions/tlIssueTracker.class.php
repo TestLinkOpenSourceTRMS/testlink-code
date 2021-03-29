@@ -38,7 +38,7 @@ class tlIssueTracker extends tlObject
            3 =>  array('type' => 'mantis', 'api' =>'soap', 
                        'enabled' => true, 'order' => 3),
            4 =>  array('type' => 'mantis', 'api' =>'db', 
-                       'enabled' => true, 'order' => 5),
+                       'enabled' => true, 'order' => 4),
            24 =>  array('type' => 'mantis','api' =>'rest',
                         'enabled' => true, 'order' => 5),
 
@@ -79,7 +79,11 @@ class tlIssueTracker extends tlObject
            22 =>  array('type' => 'gitlab','api' =>'rest',
                         'enabled' => true, 'order' => 23),
            23 =>  array('type' => 'kaiten','api' =>'rest',
-                        'enabled' => true, 'order' => 24)
+                        'enabled' => true, 'order' => 24),
+           25 =>  array('type' => 'github','api' =>'rest',
+                        'enabled' => false, 'order' => 25),
+           26 =>  array('type' => 'trello','api' =>'rest',
+                        'enabled' => true, 'order' => 26)
                      );
     
   var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');
@@ -126,12 +130,12 @@ class tlIssueTracker extends tlObject
       break;
     }   
     
-    $ret = array();
+    $ret = [];
+    $orderedSet = [];
     foreach($this->systems as $code => $elem)
     {
-      $idx = 0;
-      if($tval== null || $elem['enabled'] == $tval)
-      {
+      if ($tval== null || $elem['enabled'] == $tval) {
+        // $orderedSet[$elem['order']] = $code;
         $ret[$code] = $elem;
       }
     }

@@ -884,7 +884,7 @@ $tlCfg->metrics_dashboard->show_test_plan_status = false;
  * Leave text values empty if you would like to hide parameters.
  */
 $tlCfg->document_generator->company_name = 'TestLink Community [configure $tlCfg->document_generator->company_name]';
-$tlCfg->document_generator->company_copyright = '2012 &copy; TestLink Community';
+$tlCfg->document_generator->company_copyright = '2021 &copy; TestLink Community';
 $tlCfg->document_generator->confidential_msg = '';
 
 // Logo for generated documents

@@ -202,7 +202,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
     public static $testCaseNameParamName = "testcasename";
     public static $testCasePathNameParamName = "testcasepathname";
     public static $testCasePrefixParamName = "testcaseprefix";
-    public static $testCaseVersionIDParamName = "testcaseid";
+    public static $testCaseVersionIDParamName = "testcaseversionid";
     public static $testModeParamName = "testmode";
     public static $testPlanIDParamName = "testplanid";
     public static $testPlanNameParamName = "testplanname";
@@ -553,6 +553,32 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
         } else {
             $this->errors[] = new IXR_Error( NO_TCASEID, $msg . NO_TCASEID_STR );
+        }
+        return $status_ok;
+    }
+
+    /**
+     * Helper method to see if the testcaseversionid provided is valid
+     *
+     * This is the only method that should be called directly to check the tcversionid
+     *
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function checkTestCaseVersionID($messagePrefix = '') {
+        $msg = $messagePrefix;
+        $status_ok = $this->_isTestCaseVersionIDPresent();
+        if($status_ok) {
+            $tcaseversionid = $this->args[self::$testCaseVersionIDParamName];
+            if(! $this->_isTestCaseVersionIDValid( $tcaseversionid, "checkTestCaseVersionID", true )) {
+              $this->errors[] = new IXR_Error( INVALID_TCASEVERSIONID, sprintf($msg . INVALID_TCASEVERSIONID_STR, $tcaseversionid) );
+                $status_ok = false;
+            }
+        } else {
+            $this->errors[] = new IXR_Error( NO_TCASEVERSIONID, $msg . NO_TCASEVERSIONID_STR );
         }
         return $status_ok;
     }
@@ -1160,6 +1186,16 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
+     * Helper method to see if a testcaseversionid is given as one of the arguments
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function _isTestCaseVersionIDPresent() {
+        return(isset( $this->args[self::$testCaseVersionIDParamName] ) ? true : false);
+    }
+
+    /**
      * Helper method to see if the guess param is given as one of the arguments
      *
      * @return boolean
@@ -1222,6 +1258,32 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $status_ok = is_null( $result ) ? false : true;
         } else if($setError) {
             $this->errors[] = new IXR_Error( TCASEID_NOT_INTEGER, $messagePrefix . TCASEID_NOT_INTEGER_STR );
+        }
+        return $status_ok;
+    }
+
+    /**
+     * Helper method to see if the testcaseversionid provided is valid
+     *
+     * @param struct $tcaseversionid
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     * @param boolean $setError
+     *            default false
+     *            true: add predefined error code to $this->error[]
+     * @return boolean
+     * @access protected
+     */
+    protected function _isTestCaseVersionIDValid($tcaseversionid, $messagePrefix = '', $setError = false) {
+        $status_ok = is_numeric( $tcaseversionid );
+        if($status_ok) {
+            // must be of type 'testcaseversion' and show up in the nodes_hierarchy
+            $tcaseversionid = $this->dbObj->prepare_int( $tcaseversionid );
+            $query = "SELECT NH.id AS id FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['node_types']} NT WHERE NH.id={$tcaseversionid} AND node_type_id=NT.id AND NT.description='testcase_version'";
+            $result = $this->dbObj->fetchFirstRowSingleColumn( $query, "id" );
+            $status_ok = is_null( $result ) ? false : true;
+        } else if($setError) {
+            $this->errors[] = new IXR_Error( TCASEVERSIONID_NOT_INTEGER, $messagePrefix . TCASEVERSIONID_NOT_INTEGER_STR );
         }
         return $status_ok;
     }
@@ -7713,6 +7775,49 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
+     * Gets list of requirements for a given Test case version
+     *
+     * The user must have Req view mgt privilege on the project
+     * containing the given TC
+     *
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param int $args["testcaseversionid"]
+     *
+     * @return array
+     *         requirement list, if success
+     *         error info, if failure
+     *
+     * @access public
+     *
+     * compatible with TL version >= 1.9.18
+     *
+     */
+    public function getTestCaseRequirements($args)
+    {
+      $msgPrefix="(" .__FUNCTION__ . ") - ";
+      $this->_setArgs($args);
+      $checkFunctions = array('authenticate','checkTestCaseVersionID');
+
+      $status_ok=$this->_runChecks($checkFunctions,$msgPrefix);
+
+      if ($status_ok) {
+          // set the project as context
+          $tcaseVersionID = $this->args[self::$testCaseVersionIDParamName];
+          $tcase_tprojectID = $this->tcaseMgr->get_testproject( $tcaseVersionID );
+          $context[self::$testProjectIDParamName] = $tcase_tprojectID;
+
+          $status_ok = $this->userHasRight("mgt_view_req", false, $context);
+
+          if($status_ok) {
+              $itemSet = $this->reqMgr->getGoodForTCVersion($tcaseVersionID);
+          }
+      }
+
+      return $status_ok ? $itemSet : $this->errors;
+    }
+
+    /**
      * Delete a test plan and all related link to other items
      *
      * @param struct $args
@@ -8991,6 +9096,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 'tl.getTestCaseAssignedTester' => 'this:getTestCaseAssignedTester',
                 'tl.getTestCaseBugs' => 'this:getTestCaseBugs',
                 'tl.getTestCaseKeywords' => 'this:getTestCaseKeywords',
+                'tl.getTestCaseRequirements' => 'this:getTestCaseRequirements',
                 'tl.getTestProjectByName' => 'this:getTestProjectByName',
                 'tl.getTestPlanByName' => 'this:getTestPlanByName',
                 'tl.getTestPlanPlatforms' => 'this:getTestPlanPlatforms',

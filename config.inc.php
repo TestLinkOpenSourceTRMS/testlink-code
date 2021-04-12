@@ -537,6 +537,18 @@ $tlCfg->OAuthServers = array();
 // $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://login.microsoftonline.com/TENANTID/openid/userinfo';
 // $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/mail.read https://graph.microsoft.com/user.read openid profile email';
 
+// OIDC
+// $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
+// $tlCfg->OAuthServers[1]['oauth_name'] = 'oidc';
+// $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
+// $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
+// $tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';
+// $tlCfg->OAuthServers[1]['oauth_url'] = 'OAUTH_URL';
+// $tlCfg->OAuthServers[1]['token_url'] = 'TOKEN_URL';
+// $tlCfg->OAuthServers[1]['redirect_uri'] = 'redirect_uri';
+// $tlCfg->OAuthServers[1]['oauth_scope'] = 'openid profile email groups ext offline_access';
+// $tlCfg->OAuthServers[1]['https'] = $_SERVER['HTTPS'];
+
 /**
  * Single Sign On authentication
  *

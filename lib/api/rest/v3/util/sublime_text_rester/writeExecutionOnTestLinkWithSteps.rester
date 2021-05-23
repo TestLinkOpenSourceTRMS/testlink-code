@@ -1,0 +1,13 @@
+POST https://testlink.your-organization.com/testlink/lib/api/rest/v2/executions
+Authorization: Basic YjgzNTk0OTJjYTIzM2ZkMWNlNTVkNjM2M2NkMDI2Y2Y6dQ==
+
+{
+  "notes": "Automation - Test with steps - delete",
+  "testPlanID": 71945,
+  "buildID": 8474,
+  "platformID": 196,
+  "testCaseExternalID": "PPT-4105",
+  "statusCode": "p",
+  "executionType": "2",
+  "executionTimeStampISO": "2021-04-26 11:26:15"
+}

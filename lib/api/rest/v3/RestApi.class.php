@@ -872,18 +872,14 @@ class RestApi
    * An example:
       "steps":[
         {
-          "step_number":1,
+          "stepNumber":1,
           "notes":"This is an execution created via REST API",
-          "statusCode":"b",
-          "executionType":"1",
-          "executionTimeStampISO":"2013-04-27 12:09:00"
+          "statusCode":"b"
         },
         {
-          "step_number":12,
+          "stepNumber":12,
           "notes":"This is an execution created via REST API",
-          "statusCode":"f",
-          "executionType":"1",
-          "executionTimeStampISO":"2013-04-27 12:09:00"
+          "statusCode":"f"
         }
       ]   
 
@@ -941,8 +937,6 @@ class RestApi
 
       // This writes ONLY a test case level, not steps
       $op['id'] = $this->tplanMgr->writeExecution($ex);
-
-      
 
     } catch (Exception $e) {
       $response = new Response();

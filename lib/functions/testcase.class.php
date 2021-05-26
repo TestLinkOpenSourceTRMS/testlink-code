@@ -2642,7 +2642,7 @@ class testcase extends tlObjectWithAttachments {
         $step_set = $this->get_steps($recordset[$accessKey]['id'],0,$gsOpt);
         if($my['options']['withGhostString']) {
           // need to get test case prefix test project info
-          $pfx = $this->getPrefix($id);
+          $pfx = $this->getPrefix($recordset[$accessKey]['testcase_id']);
           $pfx = $pfx[0] . $this->cfg->testcase->glue_character . $recordset[$accessKey]['tc_external_id'];
 
           $k2l = array_keys((array)$step_set);
@@ -2659,9 +2659,9 @@ class testcase extends tlObjectWithAttachments {
     }
 
     if( $canProcess && $my['options']['getPrefix'] ) {
-      $pfx = $this->getPrefix($id);
       $key2loop = array_keys($recordset);
       foreach( $key2loop as $accessKey) {
+        $pfx = $this->getPrefix($recordset[$accessKey]['testcase_id']);
         $recordset[$accessKey]['fullExternalID'] =  $pfx[0] . $this->cfg->testcase->glue_character .
                                                     $recordset[$accessKey]['tc_external_id'];
       }

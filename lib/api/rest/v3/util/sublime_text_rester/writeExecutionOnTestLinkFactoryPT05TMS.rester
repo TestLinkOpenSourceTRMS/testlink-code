@@ -1,0 +1,13 @@
+POST https://testlink.your-organization.com/testlink/tl/lib/api/rest/v2/executions
+Authorization: Basic YjgzNTk0OTJjYTIzM2ZkMWNlNTVkNjM2M2NkMDI2Y2Y6dQ==
+
+{
+ "notes": "Automation - Factory - PT/05/TMS/Execution",
+ "testPlanID":71964,
+ "buildID":8498,
+ "platformID":196,
+ "testCaseExternalID":"PPT-1449",
+ "statusCode": "p",
+ "executionType":"2",
+ "executionTimeStampISO":"2026-04-26 17:44:00"
+}

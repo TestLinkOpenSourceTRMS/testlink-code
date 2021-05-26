@@ -868,8 +868,21 @@ class RestApi
    * $ex->testCaseExternalID
    * $ex->notes
    * $ex->statusCode
-   *
-   *
+   * $ex-steps []
+   * An example:
+      "steps":[
+        {
+          "stepNumber":1,
+          "notes":"This is an execution created via REST API",
+          "statusCode":"b"
+        },
+        {
+          "stepNumber":12,
+          "notes":"This is an execution created via REST API",
+          "statusCode":"f"
+        }
+      ]   
+
    * Checks to be done
    * 
    * A. User right & Test plan existence
@@ -921,7 +934,10 @@ class RestApi
         $ex->$prop = $value;
       }  
       $op = array('status' => 'ok', 'message' => 'ok');
+
+      // This writes ONLY a test case level, not steps
       $op['id'] = $this->tplanMgr->writeExecution($ex);
+
     } catch (Exception $e) {
       $response = new Response();
       $response->withStatus(500);

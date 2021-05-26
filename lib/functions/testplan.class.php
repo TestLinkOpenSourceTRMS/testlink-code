@@ -7227,7 +7227,48 @@ class testplan extends tlObjectWithAttachments
            "  {$ex->testerID},{$execTS}, {$ex->executionType}, '{$execNotes}')";
 
     $this->db->exec_query($sql);
-    return $this->db->insert_id($this->tables['executions']);    
+    $execID = $this->db->insert_id($this->tables['executions']); 
+
+    // Do we have steps exec info?
+    if (property_exists($ex,'steps')) {
+       // steps [] of stepExec
+       //
+       // Same execution ts that WHOLE Testcase, the field do not exists in table
+       //
+       // Here as JSON
+       // {
+       //   "stepNumber":1,
+       //   "notes":"This is an execution created via REST API",
+       //   "statusCode":"b",
+       // }
+       //
+       // Brute force approach:
+       // Get all steps from specification
+       $ALLSTEPS=0;
+       $gssOpt = ['fields2get' => 'TCSTEPS.id,TCSTEPS.step_number',
+                  'accessKey' => "step_number",
+                  'renderGhostSteps' => false,
+                  'renderImageInline' => false];
+       $stepsSpec = $this->tcase_mgr->getStepsSimple($ex->testCaseVersionID,$ALLSTEPS,$gssOpt);
+
+       foreach ($ex->steps as $stepExec) {
+         // if step number does not exist -> ignore it in silence
+         if (isset($stepsSpec[$stepExec->stepNumber])) {
+           $stepID = intval($stepsSpec[$stepExec->stepNumber]["id"]);
+           $sql = " INSERT INTO {$this->tables['execution_tcsteps']}
+                    (execution_id,tcstep_id,notes,status) ";
+           $values = " VALUES ( {$execID}, {$stepID}," .
+                      "'" . $this->db->prepare_string($stepExec->notes) . "'," .
+                      "'" . $this->db->prepare_string($stepExec->statusCode) . "')";
+           $sql .= " " . $values;
+
+           $this->db->exec_query($sql);
+         }
+       }
+    }
+
+
+    return $execID;    
   }
 
   /**

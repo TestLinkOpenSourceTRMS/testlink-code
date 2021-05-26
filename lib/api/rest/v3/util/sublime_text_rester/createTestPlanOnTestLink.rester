@@ -1,0 +1,10 @@
+POST https://testlink.your-organization.com/testlink/tl/lib/api/rest/v2/testplans
+Authorization: Basic YjgzNTk0OTJjYTIzM2ZkMWNlNTVkNjM2M2NkMDI2Y2Y6dQ==
+
+{
+ "testProjectID":33945,
+ "name": "Automation - Test Engineering - PT/08/TMS/Costing 72285 8673",
+ "active": 1,
+ "is_public": 1,
+ "notes": "Automation dei Test Cases disegnati dal Test Engineering"
+}

@@ -3744,6 +3744,8 @@ $TLS_issue_tplan = "Campagne : %s";
 $TLS_issue_build = " Version du produit : %s";
 $TLS_issue_platform = " Platforme : %s";
 $TLS_issue_exec_result = " Résultat d’exécution : %s";
+$TLS_tc_name = "Test : %s";
+$TLS_tc_external_id = "Test ID : %s";
 $TLS_issue_generated_description = " ID d’exécution : %s \n Testeur : %s \n Campagne : %s \n";
 
 $TLS_issue_subject_projectname = "Projet";

@@ -779,9 +779,10 @@ function generateIssueText($dbHandler,$argsObj,$itsObj,$opt=null) {
   $resultsCfg = config_get('results');                      
   $tcaseMgr = new testcase($dbHandler);
   $exec = current($tcaseMgr->getExecution($argsObj->exec_id,$argsObj->tcversion_id));
+  $tcase = $tcaseMgr->get_by_id(null, $argsObj->tcversion_id, null, array('output' => 'essential',
+                                                                          'getPrefix' => true));
 
-  $dummy = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->tcversion_id);
-  $ret->auditSign = $tcaseMgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
+  $ret->auditSign = $tcaseMgr->getAuditSignature((object)array('id' => $tcase[0]['testcase_id'])); 
 
 
   $exec['statusVerbose'] = $exec['status'];
@@ -801,12 +802,13 @@ function generateIssueText($dbHandler,$argsObj,$itsObj,$opt=null) {
   $ret->tagValue = new stdClass();
   $ret->tagValue->tag = array('%%EXECID%%','%%TESTER%%','%%TESTPLAN%%',
                               '%%PLATFORM_VALUE%%','%%BUILD%%', '%%EXECTS%%',
-                              '%%EXECSTATUS%%'); 
+                              '%%EXECSTATUS%%', '%%TCNAME%%', '%%TCEXTID%%'); 
 
   $ret->tagValue->value = array($argsObj->exec_id,$exec['tester_login'],
                                 $exec['testplan_name'],$platform_identity,
                                 $exec['build_name'],$exec['execution_ts'],
-                                $exec['statusVerbose']); 
+                                $exec['statusVerbose'], $tcase[0]['name'],
+                                $tcase[0]['fullExternalID']);
 
   $ret->execContext = array('testplan_name' => $exec['testplan_name'],
                             'platform_name' => $platform_identity,
@@ -818,7 +820,8 @@ function generateIssueText($dbHandler,$argsObj,$itsObj,$opt=null) {
 
   if(property_exists($argsObj, 'bug_notes')) {  
     $lblKeys = array('issue_exec_id','issue_tester','issue_tplan','issue_build',
-                     'execution_ts_iso','issue_exec_result','issue_platform');
+                     'execution_ts_iso','issue_exec_result','issue_platform',
+                     'tc_name', 'tc_external_id');
 
     $lbl = array();
     $l2d = count($lblKeys);
@@ -835,6 +838,8 @@ function generateIssueText($dbHandler,$argsObj,$itsObj,$opt=null) {
                     sprintf($lbl['issue_build'],$exec['build_name']),
                     sprintf($lbl['execution_ts_iso'],$exec['execution_ts']),
                     sprintf($lbl['issue_exec_result'],$exec['statusVerbose']),
+                    sprintf($lbl['tc_name'], $tcase[0]['name']),
+                    sprintf($lbl['tc_external_id'], $tcase[0]['fullExternalID']),
                     $exec['execution_notes']);
  
     $ret->description = str_replace($tags,$values,$argsObj->bug_notes);

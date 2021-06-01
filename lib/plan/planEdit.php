@@ -14,6 +14,8 @@
 
 require_once('../../config.inc.php');
 require_once("common.php");
+require_once("date_api.php");
+
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testplan');
 require_once(require_web_editor($editorCfg['type']));
@@ -238,8 +240,8 @@ switch($args->do_action)
     $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,
                                                            array('output' =>'mapfull','active' => null));
     $gui->drawPlatformQtyColumn = false;
-    if( !is_null($gui->tplans) )
-    {
+
+    if( !is_null($gui->tplans) ) {
       // do this test project has platform definitions ?
       $tplan_mgr->platform_mgr->setTestProjectID($args->tproject_id);
       $dummy = $tplan_mgr->platform_mgr->testProjectCount();
@@ -250,8 +252,50 @@ switch($args->do_action)
       $buildQty = $tplan_mgr->get_builds($tplanSet,null,null,array('getCount' => true));
 
       $rightSet = array('testplan_user_role_assignment');
-      foreach($tplanSet as $idk)
-      {
+
+      // --------------------------------------------------------------------------------------------------
+      $availableCF = (array)$tplan_mgr->get_linked_cfields_at_design(current($tplanSet),$gui->tproject_id);
+      $hasCF = count($availableCF);
+      $gui->cfieldsColumns = null; 
+      $initCFCol = true;
+      
+      $localeDateFormat = config_get('locales_date_format');
+      $localeDateFormat = $localeDateFormat[$args->user->locale];
+
+
+      // get CF used to configure HIDE COLS
+      $gopt['name'] = 'TL_TPLANVIEW_HIDECOL';
+      $col2hideCF = $tplan_mgr->cfield_mgr->get_linked_to_testproject($gui->tproject_id,null,$gopt);
+      if ($col2hideCF != null) {
+        $col2hideCF = current($col2hideCF);
+        $col2hide = array_flip(explode('|',$col2hideCF['possible_values']));
+        $col2hide[$gopt['name']] = ''; 
+      }
+      // --------------------------------------------------------------------------------------------------
+ 
+      foreach($tplanSet as $idk) {
+        // ---------------------------------------------------------------------------------------------  
+        if ($hasCF) {
+          $cfields = (array)$tplan_mgr->getCustomFieldsValues($idk,$gui->tproject_id);        
+          foreach ($cfields as $cfd) {
+            if ($initCFCol) {
+              if (!isset($col2hide[$cfd['name']])) {
+                $gui->cfieldsColumns[] = $cfd['label'];
+                $gui->cfieldsType[] = $cfd['type'];
+              }
+            }
+            $gui->tplans[$idk][$cfd['label']] = ['value' => $cfd['value'], 'data-order' => $cfd['value']];
+
+            if ($cfd['type'] == 'date') {
+              $gui->tplans[$idk][$cfd['label']]['data-order'] = locateDateToISO($cfd['value'], $localeDateFormat);
+            }          
+          } 
+          $initCFCol = false;
+        }
+        // ---------------------------------------------------------------------------------------------  
+
+
+
         $gui->tplans[$idk]['tcase_qty'] = isset($dummy[$idk]['qty']) ? intval($dummy[$idk]['qty']) : 0;
         $gui->tplans[$idk]['build_qty'] = isset($buildQty[$idk]['build_qty']) ? intval($buildQty[$idk]['build_qty']) : 0;
         if( $gui->drawPlatformQtyColumn )

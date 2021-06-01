@@ -2027,7 +2027,7 @@ if( !defined('TL_JQUERY') )
 
 if( !defined('TL_DATATABLES_DIR') )
 {
-  define('TL_DATATABLES_DIR','DataTables-1.10.4' );
+  define('TL_DATATABLES_DIR','DataTables-1.10.24' );
 }
 
 /** root of testlink directory location seen through the web server */

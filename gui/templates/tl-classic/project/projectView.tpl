@@ -40,9 +40,47 @@ var del_action=fRoot+'{$deleteAction}';
 </script>
 
 {if $tlCfg->gui->projectView->pagination->enabled}
-  {$ll = $tlCfg->gui->projectView->pagination->length}
-  {include file="DataTables.inc.tpl" DataTablesOID="item_view"
-                                     DataTableslengthMenu=$ll}
+  {$menuLen = $tlCfg->gui->projectView->pagination->length}
+  {include file="DataTables.inc.tpl"}
+
+  <script>
+  $(document).ready(function() {
+
+      // 20210530 
+      // stateSave: true produces weird behaivour when using filter on individual columns
+      var pimpedTable = $('#item_view').DataTable( {
+          orderCellsTop: true,
+          fixedHeader: true,
+          lengthMenu: [{$menuLen}],
+          // https://datatables.net/reference/option/dom
+          "dom": 'lrtip'
+      } );
+
+
+      // Setup - add a text input to each footer cell
+      // Clone & append the whole header row
+      // clone(false) -> is the solution to avoid sort action when clicking 
+      $('#item_view thead tr').clone(false).prop("id","column_filters").appendTo( '#item_view thead' );
+      $('#item_view thead tr:eq(1) th').each( function (idx) {
+          if (typeof  $(this).data('filter') != 'undefined') {
+            var title = $(this).text();
+            $(this).html( '<input type="text" placeholder="Filter by '+title+'" />' );
+     
+            $( 'input', this ).on( 'keyup change', function () {
+                if ( pimpedTable.column(idx).search() !== this.value ) {
+                    pimpedTable
+                        .column(idx)
+                        .search( this.value )
+                        .draw();
+                }
+            } );        
+          } else {
+            $(this).html( '' );
+          }
+      } );
+   
+  } );
+  </script>  
 {/if}
 
 {include file="bootstrap.inc.tpl"}
@@ -88,13 +126,13 @@ var del_action=fRoot+'{$deleteAction}';
   <table id="item_view" class="table table-bordered sortable">
     <thead class="thead-dark">
       <tr>
-        <th>{$tlImages.toggle_api_info}
+        <th data-filter>{$tlImages.toggle_api_info}
         {$tlImages.sort_hint}{$labels.th_name}</th>
-        <th class="{$noSortableColumnClass}">{$labels.th_notes}</th>
-        <th>{$tlImages.sort_hint}{$labels.tcase_id_prefix}</th>
-        <th>{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
-        <th>{$tlImages.sort_hint}{$labels.th_codetracker}</th>
-        <th claiss="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
+        <th data-filter class="{$noSortableColumnClass}">{$labels.th_notes}</th>
+        <th data-filter>{$tlImages.sort_hint}{$labels.tcase_id_prefix}</th>
+        <th data-filter>{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
+        <th data-filter>{$tlImages.sort_hint}{$labels.th_codetracker}</th>
+        <th class="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
         <th class="icon_cell">{$labels.th_active}</th>
         <th class="icon_cell">{$labels.public}</th>
         {if $gui->canManage == "yes"}

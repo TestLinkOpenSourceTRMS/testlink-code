@@ -8102,7 +8102,31 @@ class testplan extends tlObjectWithAttachments
     $rs = $dbh->get_recordset($sql);
     return is_null($rs) ? $rs : $rs[0]['name'];
   }
-  
+
+
+  /**  
+   *  
+   */  
+  function getCustomFieldsValues($id,$tproject_id,$scope='design',$filters=null)
+  {
+    $cf_map = $this->get_linked_cfields_at_design($id,$tproject_id,$filters);
+    $cf = [];
+    if( !is_null($cf_map) ) {
+      foreach($cf_map as $cf_id => $cf_info) {
+        $value = '';
+        if (isset($cf_info['node_id']) || $cf_info['node_id']) {
+          $value = $this->cfield_mgr->string_custom_field_value($cf_info,$id);
+        }
+        $cf[] = ["label" => $cf_info['label'],
+                 "name"  => $cf_info['name'],
+                 "type"  => trim($this->cfield_mgr->custom_field_types[$cf_info['type']]),
+                 "value" => $value];
+      }
+    }
+    return $cf;
+  }
+
+
 } // end class testplan
 
 

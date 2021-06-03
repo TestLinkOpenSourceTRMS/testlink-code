@@ -425,7 +425,7 @@ function authorizePostProcessing($argsObj,$op) {
         // 3) validate content after linkto.php?
         $dummy = explode($baseFolder . 'linkto.php?');
         $afterLinkTo = $baseFolder . 'linkto.php?' . cleanInput($dummy[1]);
-        redirect($argsObj->destination);
+        redirect($afterLinkTo);
       } else {
         // ... or show main page
         $_SESSION['viewer'] = $argsObj->viewer;

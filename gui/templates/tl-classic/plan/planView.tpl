@@ -40,17 +40,17 @@ var del_action=fRoot+'{$deleteAction}';
 
 <script>
 $(document).ready(function() {
-
-    // 20210530 
-    // stateSave: true produces weird behaivour when using filter on individual columns
     var pimpedTable = $('#item_view').DataTable( {
         orderCellsTop: true,
         fixedHeader: true,
         lengthMenu: [{$menuLen}],
+        stateSave: true, 
+
         // https://datatables.net/reference/option/dom
         "dom": 'lrtip'
     } );
 
+    var state = pimpedTable.state.loaded();
 
     // Setup - add a text input to each footer cell
     // Clone & append the whole header row
@@ -58,7 +58,6 @@ $(document).ready(function() {
     $('#item_view thead tr').clone(false).prop("id","column_filters").appendTo( '#item_view thead' );
     $('#item_view thead tr:eq(1) th').each( function (idx) {
         if (typeof  $(this).data('draw-filter') != 'undefined') {
-          // var title = $(this).text();
           var title = '';
           var dst = $(this).data('draw-filter');
           switch (dst) {
@@ -70,8 +69,19 @@ $(document).ready(function() {
             break;
           }
 
-          var html = '<input type="text" data-search-type="%dst%" placeholder="Filter %title%" />';
-          $(this).html(html.replace('%dst%',dst).replace('%title%',title));
+          var html = '<input type="text" data-search-type="%dst%" placeholder="Filter %title%" %value% style="color: #000000;" />';
+          var value=''; 
+          // --------------------------------------------------------------------------------
+          // Restore state
+          if (state) {
+            var colSearchSavedValue = state.columns[idx].search.search;
+            if (colSearchSavedValue) {
+              value=' value="' + colSearchSavedValue + '" ';
+            }
+          }
+          // -------------------------------------------------------------------------------- 
+          $(this).html(html.replace('%dst%',dst).replace('%title%',title).replace('%value%',value));
+
               
           $( 'input', this ).on( 'keyup change', function () {
               var use_regexp = false;

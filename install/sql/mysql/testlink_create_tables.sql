@@ -39,7 +39,7 @@
 # @internal revisions
 #
 # ---------------------------------------------------------------------------------------
-
+SET SQL_MODE='ALLOW_INVALID_DATES';
 
 CREATE TABLE /*prefix*/assignment_types (
   `id` int(10) unsigned NOT NULL auto_increment,

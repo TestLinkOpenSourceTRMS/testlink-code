@@ -264,13 +264,27 @@ switch($args->do_action)
 
 
       // get CF used to configure HIDE COLS
-      $gopt['name'] = 'TL_TPLANVIEW_HIDECOL';
-      $col2hideCF = $tplan_mgr->cfield_mgr->get_linked_to_testproject($gui->tproject_id,null,$gopt);
-      if ($col2hideCF != null) {
-        $col2hideCF = current($col2hideCF);
-        $col2hide = array_flip(explode('|',$col2hideCF['possible_values']));
-        $col2hide[$gopt['name']] = ''; 
+      // We want different configurations for different test projects
+      // then will do two steps algorithm
+      // 1. get test project prefix PPFX
+      // 2. look for TL_TPLANVIEW_HIDECOL_PPFX
+      // 3. if found proceed
+      // 4. else look for TL_TPLANVIEW_HIDECOL
+      //  
+      $ppfx = $tproject_mgr->getTestCasePrefix($gui->tproject_id);
+      $suffixSet = ['_' . $ppfx, ''];     
+      foreach($suffixSet as $suf) {
+        $gopt['name'] = 'TL_TPLANVIEW_HIDECOL' . $suf;
+        $col2hideCF = $tplan_mgr->cfield_mgr->get_linked_to_testproject($gui->tproject_id,null,$gopt);
+       
+        if ($col2hideCF != null) {
+          $col2hideCF = current($col2hideCF);
+          $col2hide = array_flip(explode('|',$col2hideCF['possible_values']));
+          $col2hide[$gopt['name']] = '';
+          break; 
+        }
       }
+
       // --------------------------------------------------------------------------------------------------
  
       foreach($tplanSet as $idk) {

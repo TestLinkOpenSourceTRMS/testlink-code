@@ -8635,9 +8635,9 @@ class build_mgr extends tlObject {
    */
   function get_linked_cfields_at_design($build_id,$tproject_id,$filters=null,$access_key='id') 
   {
-    $safeID = $build_id == 0 ? null : intval$build_id);
+    $safeID = $build_id == 0 ? null : intval($build_id);
     $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,
-                                                              $filters,'build',$id,$access_key);
+                                                              $filters,'build',$safeID,$access_key);
     return $cf_map;
   }
 

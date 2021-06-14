@@ -63,14 +63,14 @@ function initEnv(&$dbHandler)
   // We want different configurations for different test projects
   // then will do two steps algorithm
   // 1. get test project prefix PPFX
-  // 2. look for TL_TPLANVIEW_HIDECOL_PPFX
+  // 2. look for TL_BUILDVIEW_HIDECOL_PPFX
   // 3. if found proceed
-  // 4. else look for TL_TPLANVIEW_HIDECOL
+  // 4. else look for TL_BUILDVIEW_HIDECOL
   //  
   $ppfx = $tproject_mgr->getTestCasePrefix($gui->tproject_id);
   $suffixSet = ['_' . $ppfx, ''];     
   foreach($suffixSet as $suf) {
-    $gopt['name'] = 'TL_TPLANVIEW_HIDECOL' . $suf;
+    $gopt['name'] = 'TL_BUILDVIEW_HIDECOL' . $suf;
     $col2hideCF = $tplan_mgr->cfield_mgr->get_linked_to_testproject($gui->tproject_id,null,$gopt);
    
     if ($col2hideCF != null) {
@@ -83,8 +83,9 @@ function initEnv(&$dbHandler)
   $localeDateFormat = config_get('locales_date_format');
   $localeDateFormat = $localeDateFormat[$args->user->locale];
 
-  foreach($gui->buildSet as $idk) {
+  foreach($gui->buildSet as $elemBuild) {
     // ---------------------------------------------------------------------------------------------  
+    $idk = current($elemBuild);
     if ($hasCF) {
       $cfields = (array)$build_mgr->getCustomFieldsValues($idk,$gui->tproject_id);        
       foreach ($cfields as $cfd) {
@@ -95,7 +96,6 @@ function initEnv(&$dbHandler)
           }
         }
         $gui->buildSet[$idk][$cfd['label']] = ['value' => $cfd['value'], 'data-order' => $cfd['value']];
-
         if ($cfd['type'] == 'date') {
           $gui->buildSet[$idk][$cfd['label']]['data-order'] = locateDateToISO($cfd['value'], $localeDateFormat);
         }          
@@ -104,6 +104,7 @@ function initEnv(&$dbHandler)
     }
     // ---------------------------------------------------------------------------------------------  
   }
+
 
 
 

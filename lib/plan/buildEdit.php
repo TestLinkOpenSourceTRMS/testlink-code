@@ -106,7 +106,7 @@ $gui->buttonCfg = $op->buttonCfg;
 $gui->mgt_view_events = $args->user->hasRight($db,"mgt_view_events");
 $gui->editorType = $editorCfg['type'];
 
-renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
+renderGui($smarty,$args,$tplan_mgr,$build_mgr,$templateCfg,$of,$gui);
 
 /*
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION
@@ -205,6 +205,7 @@ function initializeGui(&$argsObj,&$buildMgr) {
     $argsObj->exec_status_filter;
 
   $guiObj->tplan_id = $argsObj->tplan_id;
+  $guiObj->tproject_id = $argsObj->tproject_id;
   return $guiObj;
 }
 
@@ -320,7 +321,7 @@ function doDelete(&$dbHandler,&$argsObj,&$buildMgr,&$tplanMgr) {
   returns:
 
 */
-function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$guiObj)
+function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,&$buildMgr,$templateCfg,$owebeditor,&$guiObj)
 {
     $doRender = false;
     switch($argsObj->do_action)

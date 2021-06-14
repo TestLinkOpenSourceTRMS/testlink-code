@@ -38,6 +38,7 @@ function initEnv(&$dbHandler)
   }  
 
   $tplan_mgr = new testplan($dbHandler);
+  $build_mgr = new build_mgr($dbHandler);
   $info = $tplan_mgr->tree_manager->
             get_node_hierarchy_info($gui->tplan_id,null,array('nodeType' => 'testplan'));
 
@@ -47,7 +48,7 @@ function initEnv(&$dbHandler)
     throw new Exception("Invalid Test Plan ID", 1);
   }  
  
-  $gui->tproject_id = intval($info['testproject_id']);
+  $gui->tproject_id = intval($info['parent_id']);
 
   $gui->buildSet = $tplan_mgr->get_builds($gui->tplan_id);
   $gui->user_feedback = null;
@@ -67,7 +68,7 @@ function initEnv(&$dbHandler)
   // 3. if found proceed
   // 4. else look for TL_BUILDVIEW_HIDECOL
   //  
-  $ppfx = $tproject_mgr->getTestCasePrefix($gui->tproject_id);
+  $ppfx = $tplan_mgr->tproject_mgr->getTestCasePrefix($gui->tproject_id);
   $suffixSet = ['_' . $ppfx, ''];     
   foreach($suffixSet as $suf) {
     $gopt['name'] = 'TL_BUILDVIEW_HIDECOL' . $suf;

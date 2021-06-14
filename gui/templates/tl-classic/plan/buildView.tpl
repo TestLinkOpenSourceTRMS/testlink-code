@@ -71,6 +71,14 @@ var del_action=fRoot+'{$deleteAction}';
     			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_title}</th>
     			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
     			<th class="{$noSortableColumnClass}" style="width:90px;">{$labels.release_date}</th>
+
+          {* Custom Fields *}
+          {if $gui->cfieldsColumns != null}
+             {foreach item=cflbl from=$gui->cfieldsColumns}
+              <th data-draw-filter="regexp" title="{$cflbl}">{$cflbl}</th>
+             {/foreach}
+          {/if}
+
     			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
     			<th class="{$noSortableColumnClass}">{$labels.th_open}</th>
     			<th class="{$noSortableColumnClass}">{$labels.th_delete}</th>
@@ -89,6 +97,14 @@ var del_action=fRoot+'{$deleteAction}';
   				</td>
   				<td>{if $gui->editorType == 'none'}{$build.notes|nl2br}{else}{$build.notes}{/if}</td>
   				<td>{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
+
+          {* Custom fields *}
+          {if $gui->cfieldsColumns != null}
+             {foreach item=cflbl from=$gui->cfieldsColumns}
+               <td data-sort="{$build[$cflbl]['data-order']}">{$build[$cflbl]['value']|escape}</td>
+             {/foreach}
+          {/if}
+
 
           <td class="clickable_icon">
             {if $build.active==1} 

@@ -8151,6 +8151,28 @@ class build_mgr extends tlObject {
     $this->cfield_mgr = new cfield_mgr($this->db);
   }
 
+  /**  
+   * builds  
+   */  
+  function getCustomFieldsValues($build_id,$tproject_id,$scope='design',$filters=null)
+  {
+    $cf_map = $this->get_linked_cfields_at_design($build_id,$tproject_id,$filters);
+    $cf = [];
+    if( !is_null($cf_map) ) {
+      foreach($cf_map as $cf_id => $cf_info) {
+        $value = '';
+        if (isset($cf_info['node_id']) || $cf_info['node_id']) {
+          $value = $this->cfield_mgr->string_custom_field_value($cf_info,$build_id);
+        }
+        $cf[] = ["label" => $cf_info['label'],
+                 "name"  => $cf_info['name'],
+                 "type"  => trim($this->cfield_mgr->custom_field_types[$cf_info['type']]),
+                 "value" => $value];
+      }
+    }
+    return $cf;
+  }
+
 
   /**
    * Build Manager
@@ -8611,11 +8633,11 @@ class build_mgr extends tlObject {
    *
    * NEWNEW
    */
-  function get_linked_cfields_at_design($id,$tproject_id,$filters=null,$access_key='id') 
+  function get_linked_cfields_at_design($build_id,$tproject_id,$filters=null,$access_key='id') 
   {
-    $safeID = $id == 0 ? null : intval($id);
+    $safeID = $build_id == 0 ? null : intval($build_id);
     $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,
-                                                              $filters,'build',$id,$access_key);
+                                                              $filters,'build',$safeID,$access_key);
     return $cf_map;
   }
 

@@ -106,7 +106,7 @@ $gui->buttonCfg = $op->buttonCfg;
 $gui->mgt_view_events = $args->user->hasRight($db,"mgt_view_events");
 $gui->editorType = $editorCfg['type'];
 
-renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
+renderGui($smarty,$args,$tplan_mgr,$build_mgr,$templateCfg,$of,$gui);
 
 /*
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION
@@ -205,6 +205,7 @@ function initializeGui(&$argsObj,&$buildMgr) {
     $argsObj->exec_status_filter;
 
   $guiObj->tplan_id = $argsObj->tplan_id;
+  $guiObj->tproject_id = $argsObj->tproject_id;
   return $guiObj;
 }
 
@@ -320,7 +321,7 @@ function doDelete(&$dbHandler,&$argsObj,&$buildMgr,&$tplanMgr) {
   returns:
 
 */
-function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$guiObj)
+function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,&$buildMgr,$templateCfg,$owebeditor,&$guiObj)
 {
     $doRender = false;
     switch($argsObj->do_action)
@@ -334,6 +335,62 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$g
       case "close":
         $doRender = true;
         $tpl = is_null($templateCfg->template) ? 'buildView.tpl' : $templateCfg->template;
+
+        // -----
+        // To create the CF columns we need to get the linked CF
+        // Attention this is affected by changes in templates
+        $guiObj->buildSet=$tplanMgr->get_builds($argsObj->tplan_id);
+        $availableCF = (array)$buildMgr->get_linked_cfields_at_design($guiObj->build,$guiObj->tproject_id);
+    
+        $hasCF = count($availableCF);
+        $guiObj->cfieldsColumns = null;
+        $guiObj->cfieldsType = null;
+
+        // get CF used to configure HIDE COLS
+        // We want different configurations for different test projects
+        // then will do two steps algorithm
+        // 1. get test project prefix PPFX
+        // 2. look for TL_BUILDVIEW_HIDECOL_PPFX
+        // 3. if found proceed
+        // 4. else look for TL_BUILDVIEW_HIDECOL
+        //
+        $ppfx = $tplanMgr->tproject_mgr->getTestCasePrefix($guiObj->tproject_id);
+        $suffixSet = ['_' . $ppfx, ''];
+        foreach($suffixSet as $suf) {
+          $gopt['name'] = 'TL_BUILDVIEW_HIDECOL' . $suf;
+          $col2hideCF = $tplanMgr->cfield_mgr->get_linked_to_testproject($guiObj->tproject_id,null,$gopt);
+          if ($col2hideCF != null) {
+            $col2hideCF = current($col2hideCF);
+            $col2hide = array_flip(explode('|',$col2hideCF['possible_values']));
+            $col2hide[$gopt['name']] = '';
+            break;
+          }
+        }
+
+        $localeDateFormat = config_get('locales_date_format');
+        $localeDateFormat = $localeDateFormat[$args->user->locale];
+        $initCFCol = true;
+
+        foreach($guiObj->buildSet as $elemBuild) {
+          $idk = current($elemBuild);
+          if ($hasCF) {
+              $cfields = (array)$buildMgr->getCustomFieldsValues($idk,$guiObj->tproject_id);
+              foreach ($cfields as $cfd) {
+                if ($initCFCol) {
+                  if (!isset($col2hide[$cfd['name']])) {
+                    $guiObj->cfieldsColumns[] = $cfd['label'];
+                    $guiObj->cfieldsType[] = $cfd['type'];
+                  }
+                }
+                $guiObj->buildSet[$idk][$cfd['label']] = ['value' => $cfd['value'], 'data-order' => $cfd['value']];
+                if ($cfd['type'] == 'date') {
+                  $guiObj->buildSet[$idk][$cfd['label']]['data-order'] = locateDateToISO($cfd['value'], $localeDateFormat);
+                }
+              }
+              $initCFCol = false;
+          }
+        }
+        //------
       break;
 
       case "edit":
@@ -346,8 +403,6 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$g
     if($doRender) {
       
       // Attention this is affected by changes in templates
-      $guiObj->buildSet=$tplanMgr->get_builds($argsObj->tplan_id);
-
       $guiObj->enable_copy = ($argsObj->do_action == 'create' || $argsObj->do_action == 'do_create') ? 1 : 0;
       $guiObj->notes = $owebeditor->CreateHTML();
       $guiObj->source_build = init_source_build_selector($tplanMgr, $argsObj);

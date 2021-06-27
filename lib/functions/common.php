@@ -280,13 +280,19 @@ function checkSessionValid(&$db, $redirect=true)
 /**
  * Start session
  */
-function doSessionStart($setPaths=false) {
-
+function doSessionStart($setPaths=false)
+{
   if( PHP_SESSION_NONE == session_status() ) {
     session_set_cookie_params(99999);
   }
-  
-  if(!isset($_SESSION)) {
+  if(!isset($_SESSION))
+  {
+    if (config_get('session_path') !== NULL) {
+        if (!file_exists(config_get('session_path'))) {
+            mkdir(config_get('session_path'));
+        }
+        session_save_path(config_get('session_path'));
+    }
     session_start();
     if(defined('KINT_ON') && KINT_ON) {
       Kint::enabled(true);      

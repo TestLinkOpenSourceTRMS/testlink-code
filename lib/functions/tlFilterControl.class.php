@@ -369,6 +369,11 @@ abstract class tlFilterControl extends tlObjectWithDB
         $verbose_type = trim($this->cfield_mgr->custom_field_types[$type]);
         $cf_input_name = "{$cf_prefix}{$type}_{$id}";
 
+        //set custom field filter type
+        if(isset($_REQUEST[$id.'_cf_filter_type'])){
+            $_SESSION[$id.'_cf_filter_type'] = $_REQUEST[$id.'_cf_filter_type'];
+        }
+
         // set special size for list inputs
         if ($verbose_type == 'list' || $verbose_type == 'multiselection list') 
         {
@@ -381,6 +386,7 @@ abstract class tlFilterControl extends tlObjectWithDB
 
         if ($this->args->reset_filters) 
         {
+          unset($_SESSION[$id.'_cf_filter_type']);
           $value = null;
         }
         else

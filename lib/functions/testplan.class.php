@@ -6865,6 +6865,15 @@ class testplan extends tlObjectWithAttachments
       $my[$mk] = array_merge($my[$mk], (array)$$mk);
     }
 
+    switch($my['options']['details'])
+    {
+      case 'full':
+      $my['options']['addPriority'] = true;
+      $my['options']['addImportance'] = true;
+      $my['options']['testSuiteInfo'] = true;
+      break;
+    }
+ 
     if( !is_null($sql2do = $this->getLinkedTCVersionsSQL($id,$my['filters'],$my['options'])) )
     {
       // need to document better
@@ -7064,7 +7073,7 @@ class testplan extends tlObjectWithAttachments
     
     if($my['options']['addExecInfo'])
     {
-      $commonFields .= ",COALESCE(E.id,0) AS exec_id,E.tcversion_number,E.build_id AS exec_on_build,E.testplan_id AS exec_on_tplan";
+      $commonFields .= ",COALESCE(E.id,0) AS exec_id,E.tcversion_number,E.build_id AS exec_on_build,E.testplan_id AS exec_on_tplan, E.execution_ts, E.notes as execution_notes ";
     }
     
     if($my['options']['specViewFields'])
@@ -7076,7 +7085,7 @@ class testplan extends tlObjectWithAttachments
     $my['join']['tsuites'] = '';
     if($my['options']['testSuiteInfo'])
     {
-      $commonFields .= ",NH_TSUITE.name AS tsuite_name ";
+      $commonFields .= ",NH_TSUITE.name AS tsuite_name, NH_TSUITE.id AS tsuite_id ";
       $my['join']['tsuites'] = " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
                                " ON NH_TSUITE.id = NH_TCASE.parent_id ";
     }

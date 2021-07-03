@@ -142,7 +142,7 @@ $(document).ready(function() {
   	<table id="item_view" class="table table-bordered no-sortable">
       <thead class="thead-dark">
     		<tr>
-    			<th data-draw-filter="smartsearch">{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_title}</th>
+    			<th data-draw-filter="smartsearch">{$tlImages.toggle_api_info}{$labels.th_title}</th>
     			<th data-draw-filter="smartsearch">{$labels.th_description}</th>
     			<th data-draw-filter="smartsearch"  style="width:90px;">{$labels.release_date}</th>
 

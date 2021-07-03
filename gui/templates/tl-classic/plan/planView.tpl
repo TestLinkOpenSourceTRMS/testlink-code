@@ -147,10 +147,10 @@ $(document).ready(function() {
   class="{$noSortableColumnClass}"  -> sortable.js
   *}
 
-  <table id='item_view' class="table table-bordered sortable">
+  <table id='item_view' class="table table-bordered">
     <thead class="thead-dark">
     <tr>
-      <th data-draw-filter="smartsearch">{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.testplan_th_name}</th>       
+      <th data-draw-filter="smartsearch">{$tlImages.toggle_api_info}{$labels.testplan_th_name}</th>       
       <th data-draw-filter="smartsearch" {#NOT_SORTABLE#}>{$labels.testplan_th_notes}</th>
 
       {if $gui->cfieldsColumns != null}
@@ -159,10 +159,10 @@ $(document).ready(function() {
         {/foreach}
       {/if}
 
-      <th data-draw-filter="smartsearch" title="{$labels.testcase_number_help}">{$tlImages.sort_hint}{$labels.testcase_qty}</th>
-      <th data-draw-filter="smartsearch" title="{$labels.build_number_help}">{$tlImages.sort_hint}{$labels.build_qty}</th>
+      <th data-draw-filter="smartsearch" title="{$labels.testcase_number_help}">{$labels.testcase_qty}</th>
+      <th data-draw-filter="smartsearch" title="{$labels.build_number_help}">{$labels.build_qty}</th>
       {if $gui->drawPlatformQtyColumn}
-        <th data-draw-filter="regex" title="{$labels.platform_number_help}">{$tlImages.sort_hint}{$labels.platform_qty}</th>
+        <th data-draw-filter="regex" title="{$labels.platform_number_help}">{$labels.platform_qty}</th>
       {/if} 
       <th {#NOT_SORTABLE#}>{$labels.testplan_th_active}</th>
       <th {#NOT_SORTABLE#}>{$labels.public}</th>

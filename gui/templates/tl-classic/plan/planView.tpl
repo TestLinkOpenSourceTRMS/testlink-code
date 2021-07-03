@@ -142,11 +142,16 @@ $(document).ready(function() {
 
 
 
+  {* 20210703 
+  data-orderable="false" -> {#NOT_SORTABLE#} jQuery Datatables
+  class="{$noSortableColumnClass}"  -> sortable.js
+  *}
+
   <table id='item_view' class="table table-bordered sortable">
     <thead class="thead-dark">
     <tr>
       <th data-draw-filter="smartsearch">{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.testplan_th_name}</th>       
-      <th data-draw-filter="smartsearch" class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
+      <th data-draw-filter="smartsearch" {#NOT_SORTABLE#}>{$labels.testplan_th_notes}</th>
 
       {if $gui->cfieldsColumns != null}
         {foreach item=cflbl from=$gui->cfieldsColumns}
@@ -159,9 +164,9 @@ $(document).ready(function() {
       {if $gui->drawPlatformQtyColumn}
         <th data-draw-filter="regex" title="{$labels.platform_number_help}">{$tlImages.sort_hint}{$labels.platform_qty}</th>
       {/if} 
-      <th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
-      <th class="{$noSortableColumnClass}">{$labels.public}</th>
-      <th class="{$noSortableColumnClass}">&nbsp;</th>
+      <th {#NOT_SORTABLE#}>{$labels.testplan_th_active}</th>
+      <th {#NOT_SORTABLE#}>{$labels.public}</th>
+      <th {#NOT_SORTABLE#}>&nbsp;</th>
     </tr>
     </thead>
     <tbody>

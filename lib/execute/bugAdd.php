@@ -239,6 +239,7 @@ function initEnv(&$dbHandler)
   $args->bug_id = trim($args->bug_id);
   switch ($args->user_action) {
     case 'create':
+    case 'link':
       if( $args->bug_id == '' && $args->exec_id > 0) {
         $map = get_execution($dbHandler,$args->exec_id);
         $args->bug_notes = $map[0]['notes'];    
@@ -247,7 +248,6 @@ function initEnv(&$dbHandler)
     
     case 'doCreate':
     case 'add_note':
-    case 'link':
     default:
     break;
   }

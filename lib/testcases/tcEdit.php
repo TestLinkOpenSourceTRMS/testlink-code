@@ -115,19 +115,13 @@ switch($args->doAction) {
   case "doStepOperationExit":
   case "removePlatform":
   case "addPlatform":
-
-/*
-var_dump($_REQUEST);
-die();
-    die();
-*/
     $op = $commandMgr->$pfn($args,$_REQUEST);
     $doRender = true;
   break;
 
   case "fileUpload":
     $args->uploadOp = fileUploadManagement($db,$args->tcversion_id,$args->fileTitle,$tcase_mgr->getAttachmentTableName());
-    $commandMgr->show($args,$_REQUEST,array('status_ok' => true),false);
+    $commandMgr->show($args,$_REQUEST,array('status_ok' => true),['updateCFOnDB' => false]);
   break;
 
   case "deleteFile":
@@ -135,7 +129,7 @@ die();
     if( $args->tcversion_id == 0 && null != $fileInfo ) {
       $args->tcversion_id = $fileInfo['fk_id'];
     }
-    $commandMgr->show($args,$_REQUEST,array('status_ok' => true),false);
+    $commandMgr->show($args,$_REQUEST,array('status_ok' => true),['updateCFOnDB' => false]);
   break;
 
 
@@ -148,8 +142,7 @@ die();
 }
 
 
-if( $doRender )
-{
+if ( $doRender ) {
   renderGui($args,$gui,$op,$templateCfg,$cfg,$testCaseEditorKeys);
   exit();
 }

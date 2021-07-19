@@ -1608,10 +1608,10 @@ $TLS_info_milestone_create_no_prio = "Les indicateurs d'avancement prennent en c
                                      "de la campagne de test";
 
 $TLS_th_date_format = "Date cible";
-$TLS_th_perc_a_prio = "Exéutions réalisées avec priorité haute [0-100%]";
-$TLS_th_perc_b_prio = "Exéutions réalisées avec priorité moyenne [0-100%]";
-$TLS_th_perc_c_prio = "Exéutions réalisées avec priorité basse [0-100%]";
-$TLS_th_perc_testcases = "Exéutions réalisées [0-100%]";
+$TLS_th_perc_a_prio = "Exécutions réalisées avec priorité haute [0-100%]";
+$TLS_th_perc_b_prio = "Exécutions réalisées avec priorité moyenne [0-100%]";
+$TLS_th_perc_c_prio = "Exécutions réalisées avec priorité basse [0-100%]";
+$TLS_th_perc_testcases = "Exécutions réalisées [0-100%]";
 $TLS_title_existing_milestones = "Indicateurs d'avancement existants";
 $TLS_title_milestones = "Indicateurs d'avancement de la campagne de test";
 $TLS_delete_milestone = "Supprimer l'indicateur d'avancement";
@@ -3153,6 +3153,7 @@ $TLS_API_MUST_BE_ADMIN = "Cette fonction est réservée aux administrateurs du s
 $TLS_API_NO_DEV_KEY = "Aucune clé de développeur fournie.";
 $TLS_API_NO_TCASEID = "Aucun ID de fiche de test(ID interne) fourni.";
 $TLS_API_NO_TCASEEXTERNALID = "Aucun ID externe de fiche de test fourni.";
+$TLS_API_NO_TCASEVERSIONID = "Aucun ID de version de fiche de test fourni.";
 $TLS_API_NO_TPLANID = "Aucun ID de campagne de test fourni.";
 $TLS_API_NO_TEST_MODE = "Le mode de test est obligatoire.";
 $TLS_API_NO_STATUS = "Aucun état fourni.";
@@ -3167,6 +3168,7 @@ $TLS_API_NO_ROLEID = "Aucun ID de rôle fourni.";
 
 
 $TLS_API_INVALID_TCASEID = "ID de fiche de test %s inconnu.";
+$TLS_API_INVALID_TCASEID = "ID de version de fiche de test %s inconnu.";
 $TLS_API_INVALID_BUILDID = "ID de version du produit %s inconnu.";
 $TLS_API_INVALID_TPLANID = "ID de campagne de test %s inconnu.";
 $TLS_API_INVALID_STATUS = "Etat %s non valide.";
@@ -3175,6 +3177,7 @@ $TLS_API_INVALID_USERID = "ID utilisateur %s inconnu.";
 $TLS_API_INVALID_ROLEID = "ID de rôle %s inconnu.";
 
 $TLS_API_TCASEID_NOT_INTEGER = "L’ID de fiche de test doit être un entier.";
+$TLS_API_TCASEID_NOT_INTEGER = "L’ID de version de fiche de test doit être un entier.";
 $TLS_API_TESTCASENAME_NOT_STRING = "Le nom de la fiche de test doit être une chaine de caractères.";
 $TLS_API_NO_BUILD_FOR_TPLANID = "Aucune version du produit existante pour l’ID de campagne de test fourni. " .
                                 "Une version du produit doit être créée pour pouvoir enregistrer des résultats.";
@@ -3741,6 +3744,8 @@ $TLS_issue_tplan = "Campagne : %s";
 $TLS_issue_build = " Version du produit : %s";
 $TLS_issue_platform = " Platforme : %s";
 $TLS_issue_exec_result = " Résultat d’exécution : %s";
+$TLS_tc_name = "Test : %s";
+$TLS_tc_external_id = "Test ID : %s";
 $TLS_issue_generated_description = " ID d’exécution : %s \n Testeur : %s \n Campagne : %s \n";
 
 $TLS_issue_subject_projectname = "Projet";

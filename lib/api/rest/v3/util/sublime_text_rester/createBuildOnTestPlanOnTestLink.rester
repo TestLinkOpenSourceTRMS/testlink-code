@@ -1,0 +1,9 @@
+POST https://testlink.your-organization.com/testlink/tl/lib/api/rest/v2/builds
+Authorization: Basic YjgzNTk0OTJjYTIzM2ZkMWNlNTVkNjM2M2NkMDI2Y2Y6dQ==
+
+{
+ "testplan":72331,
+ "name": "6.3.next",
+ "active": 1,
+ "is_public": 1
+}

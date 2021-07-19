@@ -53,7 +53,7 @@ if( !is_null($args->doEditUser) ) {
         }
         logAuditEvent(TLS("audit_users_self_signup",$args->login),"CREATE",$user->dbID,"users");
         
-        $url2go = "login.php?viewer={$gui->viewer}&note=first";
+        $url2go = "login.php?note=first";
         redirect(TL_BASE_HREF . $url2go);
         exit();
       } else {

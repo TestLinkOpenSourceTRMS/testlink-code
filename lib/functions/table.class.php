@@ -6,12 +6,11 @@
  * @filesource  table.class.php
  * @package TestLink
  * @author Erik Eloff
- * @copyright 2009,2012 TestLink community 
+ * @copyright 2009,2021 TestLink community 
  *
  * @link http://www.teamst.org
  * @since 1.9
  *
- * @internal revisions
  **/
 
 

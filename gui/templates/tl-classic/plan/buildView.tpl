@@ -36,6 +36,80 @@ Purpose: smarty template - Show existing builds
 var del_action=fRoot+'{$deleteAction}';
 </script>
 
+{if $tlCfg->gui->buildView->pagination->enabled}
+  {$menuLen = $tlCfg->gui->buildView->pagination->length}
+  {include file="DataTables.inc.tpl"}
+
+<script>
+$(document).ready(function() {
+    var pimpedTable = $('#item_view').DataTable( {
+        orderCellsTop: true,
+        fixedHeader: true,
+        lengthMenu: [{$menuLen}],
+        stateSave: true, 
+
+        // https://datatables.net/reference/option/dom
+        "dom": 'lrtip'
+    } );
+
+    var state = pimpedTable.state.loaded();
+
+    // Setup - add a text input to each footer cell
+    // Clone & append the whole header row
+    // clone(false) -> is the solution to avoid sort action when clicking 
+    $('#item_view thead tr').clone(false).prop("id","column_filters").appendTo( '#item_view thead' );
+    $('#item_view thead tr:eq(1) th').each( function (idx) {
+        if (typeof  $(this).data('draw-filter') != 'undefined') {
+          var title = '';
+          var dst = $(this).data('draw-filter');
+          switch (dst) {
+            case 'regexp':
+              title += "regexp";
+            break;
+
+            default:
+            break;
+          }
+
+          var html = '<input type="text" data-search-type="%dst%" placeholder="Filter %title%" %value% style="color: #000000;" />';
+          var value=''; 
+          // --------------------------------------------------------------------------------
+          // Restore state
+          if (state) {
+            var colSearchSavedValue = state.columns[idx].search.search;
+            if (colSearchSavedValue) {
+              value=' value="' + colSearchSavedValue + '" ';
+            }
+          }
+          // -------------------------------------------------------------------------------- 
+          $(this).html(html.replace('%dst%',dst).replace('%title%',title).replace('%value%',value));
+
+              
+          $( 'input', this ).on( 'keyup change', function () {
+              var use_regexp = false;
+              var use_smartsearch = true;
+              if ($(this).data('search-type') == "regexp") {
+                use_regexp = true;
+                use_smartsearch = false;
+              }
+
+              if ( pimpedTable.column(idx).search() !== this.value ) {
+                  pimpedTable.column(idx)
+                             .search( this.value, use_regexp, use_smartsearch )
+                             .draw();
+              }
+          } );        
+        } else {
+          $(this).html( '' );
+        }
+    } );
+ 
+} );
+</script>
+{/if}
+
+
+
 {include file="bootstrap.inc.tpl"}
 </head>
 
@@ -65,30 +139,47 @@ var del_action=fRoot+'{$deleteAction}';
 
 
     {* table id MUST BE item_view to use show/hide API info *}
-  	<table id="item_view" class="table table-bordered sortable">
+  	<table id="item_view" class="table table-bordered no-sortable">
       <thead class="thead-dark">
     		<tr>
-    			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_title}</th>
-    			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
-    			<th class="{$noSortableColumnClass}" style="width:90px;">{$labels.release_date}</th>
-    			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
-    			<th class="{$noSortableColumnClass}">{$labels.th_open}</th>
-    			<th class="{$noSortableColumnClass}">{$labels.th_delete}</th>
+    			<th data-draw-filter="smartsearch">{$tlImages.toggle_api_info}{$labels.th_title}</th>
+    			<th data-draw-filter="smartsearch">{$labels.th_description}</th>
+    			<th data-draw-filter="smartsearch"  style="width:90px;">{$labels.release_date}</th>
+
+          {* Custom Fields *}
+          {if $gui->cfieldsColumns != null}
+             {foreach item=cflbl from=$gui->cfieldsColumns}
+              <th data-draw-filter="regexp" title="{$cflbl}">{$cflbl}</th>
+             {/foreach}
+          {/if}
+
+    			<th {#NOT_SORTABLE#}>{$labels.th_active}</th>
+    			<th {#NOT_SORTABLE#}>{$labels.th_th_open}</th>
+    			<th {#NOT_SORTABLE#}>{$labels.th_delete}</th>
     		</tr>
       </thead>
       <tbody>
   		{foreach item=build from=$gui->buildSet}
         	<tr>
-  				<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
+  				<td>
   				    <a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}
   					         <img style="border:none" alt="{$labels.alt_edit_build}" title="{$labels.alt_edit_build}"
   					              src="{$tlImages.edit}"/>
   					     {/if}    
   					  </a>   
+              <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
   				</td>
   				<td>{if $gui->editorType == 'none'}{$build.notes|nl2br}{else}{$build.notes}{/if}</td>
   				<td>{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
+
+          {* Custom fields *}
+          {if $gui->cfieldsColumns != null}
+             {foreach item=cflbl from=$gui->cfieldsColumns}
+               <td data-sort="{$build[$cflbl]['data-order']}">{$build[$cflbl]['value']|escape}</td>
+             {/foreach}
+          {/if}
+
 
           <td class="clickable_icon">
             {if $build.active==1} 

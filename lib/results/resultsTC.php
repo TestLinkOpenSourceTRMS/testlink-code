@@ -195,15 +195,12 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null) {
     $matrix->setGroupByColumnName($group_name);
     $matrix->sortDirection = 'DESC';
 
-    if($guiObj->options->testPriorityEnabled) 
-    {
+    if($guiObj->options->testPriorityEnabled) {
       // Developer Note:
       // To understand 'filter' => 'Priority' => see exttable.class.php => buildColumns()
       $matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer', 'filter' => 'Priority'));
       $matrix->setSortByColumnName($lbl['priority']);
-    } 
-    else 
-    {
+    } else {
       $matrix->setSortByColumnName($lbl['title_test_case_title']);
     }
     
@@ -212,9 +209,7 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null) {
     $matrix->toolbarExpandCollapseGroupsButton = true;
     $matrix->toolbarShowAllColumnsButton = true;
 
-  } 
-  else 
-  {
+  } else {
     $matrix = new tlHTMLTable($columns, $guiObj->matrix, 'tl_table_results_tc');
   }
   unset($columns);

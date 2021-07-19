@@ -624,6 +624,9 @@ $tlCfg->gui->planView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All
 $tlCfg->gui->planView->itemQtyForTopButton = 10;
 
 $tlCfg->gui->buildView = new stdClass();
+$tlCfg->gui->buildView->pagination = new stdClass();
+$tlCfg->gui->buildView->pagination->enabled = true;
+$tlCfg->gui->buildView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
 $tlCfg->gui->buildView->itemQtyForTopButton = 10;
 
 
@@ -1852,7 +1855,7 @@ $tlCfg->tplanDesign->hideTestCaseWithStatusIn = array($tlCfg->testCaseStatus['ob
 /** Maximum uploadfile size to importing stuff in TL */
 // Also check your PHP settings (default is usually 2MBs)
 // unit BYTES is required by MAX_FILE_SIZE HTML option
-$tlCfg->import_file_max_size_bytes = '409600';
+$tlCfg->import_file_max_size_bytes = '800000';
 
 /** Maximum line size of the imported file */
 $tlCfg->import_max_row = '10000'; // in chars
@@ -2033,7 +2036,7 @@ if( !defined('TL_JQUERY') )
 
 if( !defined('TL_DATATABLES_DIR') )
 {
-  define('TL_DATATABLES_DIR','DataTables-1.10.4' );
+  define('TL_DATATABLES_DIR','DataTables-1.10.24' );
 }
 
 /** root of testlink directory location seen through the web server */

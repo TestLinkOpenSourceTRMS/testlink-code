@@ -384,8 +384,48 @@ function authorizePostProcessing($argsObj,$op) {
       echo json_encode(array('success' => true));
     } else {
       // If destination param is set redirect to given page ...
-      if (!empty($argsObj->destination) && preg_match("/linkto.php/", $argsObj->destination)) {
-        redirect($argsObj->destination);
+      if ( !empty($argsObj->destination) ) {
+
+        // 1) remove host.port from TL_BASE_HREF -> base_folder
+        // https://hsgdshdjs:80/bsbsbb
+        // http://fjljfld:8080/Hhhhs
+        // http://hjhsjdhshdk/
+        $baseURL = str_replace('://',':',TL_BASE_HREF);	
+        $basePieces = explode(':',TL_BASE_HREF);
+        $howManyPieces = count($basePieces); 
+        switch ($howManyPieces) {
+        	case 2:
+          case 3:
+        	break;
+        	default:
+            echo 'Security Check Failure';
+        	  die();
+        	break;  
+        }
+
+        // http:  hjhsjdhshdk/  
+        // http:  hjhsjdhshdk/base_folder
+        // https: hsgdshdjs: >> 80/bsbsbb
+        // http:  fjljfld:   >> 8080/Hhhhs
+        $dummy = explode('/',$basePieces[$howManyPieces-1]);
+        $baseFolder = '/';
+        $compo = trim($dummy[1]);
+        if ($compo != '') {
+          $baseFolder .= $compo . '/';
+        }
+
+        // 2) check base_folder/linkto.php
+        $where = strpos($argsObj->destination, $baseFolder . 'linkto.php');
+        $checkOK = ($where !== false) && ($where == 0);
+        if ($checkOK == false) {
+          echo 'Security Check Failure';
+          die();
+        }
+
+        // 3) validate content after linkto.php?
+        $dummy = explode($baseFolder . 'linkto.php?');
+        $afterLinkTo = $baseFolder . 'linkto.php?' . cleanInput($dummy[1]);
+        redirect($afterLinkTo);
       } else {
         // ... or show main page
         $_SESSION['viewer'] = $argsObj->viewer;
@@ -428,4 +468,19 @@ function processAjaxCheck(&$dbHandler) {
                         'login_label' => lang_get('btn_login'),
                           'timeout_info' => lang_get('timeout_info')));
 
+}
+
+
+// from https://css-tricks.com/snippets/php/sanitize-database-inputs/
+function cleanInput($input) {
+ 
+  $search = array(
+    '@<script[^>]*?>.*?</script>@si',   // Strip out javascript
+    '@<[\/\!]*?[^<>]*?>@si',            // Strip out HTML tags
+    '@<style[^>]*?>.*?</style>@siU',    // Strip style tags properly
+    '@<![\s\S]*?--[ \t\n\r]*>@'         // Strip multi-line comments
+  );
+ 
+    $output = preg_replace($search, '', $input);
+    return $output;
 }

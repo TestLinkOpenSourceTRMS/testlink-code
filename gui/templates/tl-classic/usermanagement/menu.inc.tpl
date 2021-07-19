@@ -2,9 +2,6 @@
 Testlink Open Source Project - http://testlink.sourceforge.net/
 @filesource menu.inc.tpl
 include to generate menu when managing users and roles
-
-@internal revisions
-@since 1.9.15
 *}
 
 {* Action managed via menu *}
@@ -16,7 +13,9 @@ include to generate menu when managing users and roles
 
 
 {lang_get var="menuLbl"
-          s="menu_new_user,menu_view_users,menu_edit_user,menu_define_roles,menu_edit_role,menu_view_roles,menu_assign_testproject_roles,menu_assign_testplan_roles"}
+          s="menu_new_user,menu_view_users,menu_edit_user,menu_define_roles,
+             menu_edit_role,menu_view_roles,
+             menu_assign_testproject_roles,menu_assign_testplan_roles"}
 
 {foreach from=$act key=ak item=mx }
   {$act[$ak]['class'] = ''}
@@ -26,7 +25,7 @@ include to generate menu when managing users and roles
 {/foreach}
 
 {if $gui->grants->user_mgmt == "no"}
-  {$act[$ak]['class'] = ''}
+  {$act['view_users']['class'] = ''}
 {/if}
 
 <div class="container">

@@ -7,12 +7,16 @@ Purpose: smarty template
 @since 1.9.17
 *}
 
-<link rel="stylesheet" type="text/css" href="{$basehref}third_party/{$smarty.const.TL_DATATABLES_DIR}/media/css/jquery.dataTables.TestLink.css">
-<script type="text/javascript" language="javascript" src="{$basehref}third_party/{$smarty.const.TL_DATATABLES_DIR}/media/js/jquery.js"></script>
-<script type="text/javascript" language="javascript" src="{$basehref}third_party/{$smarty.const.TL_DATATABLES_DIR}/media/js/jquery.dataTables.js"></script>
 
-<script type="text/javascript" language="javascript" class="init">
-$(document).ready(function() {
-  $('#{$DataTablesOID}').DataTable({ "lengthMenu": [ {$DataTableslengthMenu} ],stateSave: true});
-} );
-</script>
+<link rel="stylesheet" type="text/css" href="{$basehref}third_party/{$smarty.const.TL_DATATABLES_DIR}/datatables.min.css"/> 
+<script type="text/javascript" src="{$basehref}third_party/{$smarty.const.TL_DATATABLES_DIR}/datatables.min.js"></script>
+
+
+{if $DataTablesOID != ''}
+  {* To avoid issues due to do initialization multiple times *}
+  <script type="text/javascript" language="javascript" class="init">
+  $(document).ready(function() {
+    $('#{$DataTablesOID}').DataTable({ "lengthMenu": [ {$DataTableslengthMenu} ],stateSave: true});
+  } );
+  </script>
+{/if}  

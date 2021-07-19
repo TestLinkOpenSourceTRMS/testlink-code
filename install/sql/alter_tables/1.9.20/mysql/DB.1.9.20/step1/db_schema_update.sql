@@ -67,7 +67,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   end_exec_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   creation_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY /*prefix*/udx1_details (testplan_id,platform_id,creation_ts)
+  UNIQUE KEY udx1 (testplan_id,platform_id,creation_ts)
 ) DEFAULT CHARSET=utf8;
 
 

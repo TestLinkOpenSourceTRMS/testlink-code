@@ -387,14 +387,13 @@ class jirarestInterface extends issueTrackerInterface
           }  
         }
 
-
-        if (property_exists($opt, 'reporter')) {
-
-          // After Atlassian GDRP Changes
-          // $issue['fields']['reporter'] = 
-          //  array('name' => (string)$opt->reporter);
-          $issue['fields']['reporter'] = 
-            array('id' => (string)$opt->reporter);
+	if (property_exists($opt, 'reporter')) {
+          $accountid = $this->APIClient->getAccountId($opt->reporter_email);
+          if($accountid) {
+            $issue['fields']['reporter'] = array('accountId' => (string)$accountid);
+          } else {
+            $issue['fields']['reporter'] = array('name' => (string)$opt->reporter);
+          }
         }
 
         if (property_exists($opt, 'issueType')) {

@@ -67,7 +67,45 @@ function oauth_get_token($authCfg, $code)
     var_dump($user->getNickname());
     echo '</pre>';
     die();
-    */
+  }
+  curl_close($curl);
+  $tokenInfo = json_decode($result_curl);
+
+  // If token is received start session
+  if (isset($tokenInfo->access_token)) {
+    $oauthParams['access_token'] = $tokenInfo->access_token;
+    $curlContentType = array('Authorization: token ' . $tokenInfo->access_token, 'Content-Type: application/xml','Accept: application/json');
+
+    $queryString = http_build_query($tokenInfo);
+    $targetURL = array();
+    $targetURL['user'] = $authCfg['oauth_profile'] . '?' . $queryString;
+    $targetURL['email'] = $authCfg['oauth_profile'] . '/emails?'. $queryString;
+
+    // Get User
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $targetURL['user']);
+    curl_setopt($curl, CURLOPT_USERAGENT, $curlAgent);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $curlContentType);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $result_curl = curl_exec($curl);
+    $userInfo = json_decode($result_curl, true);
+    curl_close($curl);
+
+    if (!isset($userInfo['login'])) {
+      $result->status['msg'] = 'User ID is empty';
+      $result->status['status'] = tl::ERROR;
+    }
+
+    // Get email
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $targetURL['email'] );
+    curl_setopt($curl, CURLOPT_USERAGENT, $curlAgent);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $curlContentType);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $result_curl = curl_exec($curl);
+    $emailInfo = json_decode($result_curl, true);
+    curl_close($curl);
+
 
     $firstLast = $user->getName();
     $result->options = new stdClass();

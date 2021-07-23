@@ -8,7 +8,7 @@
  * @filesource  doAuthorize.php
  * @package     TestLink
  * @author      Chad Rosen, Martin Havlat,Francisco Mancardi
- * @copyright   2003-2018, TestLink community 
+ * @copyright   2003-2021, TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -432,20 +432,17 @@ function doSessionSetUp(&$dbHandler,&$userObj) {
 
   $ckObj = new stdClass();
   $ckObj->name = config_get('auth_cookie');
-  $ckObj->value = $user->getSecurityCookie();
+  $ckObj->value = $userObj->getSecurityCookie();
   $ckObj->expire = $expireOnBrowserClose = false;
   tlSetCookie($ckObj);
 
 
   // Block two sessions within one browser
-  if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
-  {
+  if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser'])) {
     $ret['msg'] = lang_get('login_msg_session_exists1') . 
                      ' <a style="color:white;" href="logout.php">' . 
                      lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2'); 
-  }
-  else
-  { 
+  } else { 
     // Setting user's session information
     $_SESSION['currentUser'] = $userObj;
     $_SESSION['lastActivity'] = time();

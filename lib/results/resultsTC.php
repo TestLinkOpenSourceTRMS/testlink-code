@@ -49,12 +49,10 @@ setUpBuilds($args,$gui);
 $buildSet = array('buildSet' => $args->builds->idSet);
 
 if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || 
-    ($args->doAction == 'result' 
-     && count($args->builds->idSet) <= $gui->matrixCfg->buildQtyLimit) )
-{
+    ($args->doAction == 'result' && 
+     count($args->builds->idSet) <= $gui->matrixCfg->buildQtyLimit) ) {
 
   $tpl = $templateCfg->default_template;
-  //$buildSet = array('buildSet' => $args->builds->idSet);
 
   $opt = array('getExecutionNotes' => true);
   if($args->format == FORMAT_XLS) {

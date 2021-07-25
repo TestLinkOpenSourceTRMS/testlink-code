@@ -6,14 +6,10 @@
  * support for XML
  * 
  * @package   TestLink
- * @copyright   2004-2013, TestLink community 
+ * @copyright   2004-2021, TestLink community 
  * @filesource  xml.inc.php
- * @link    http://www.teamst.org/index.php
+ * @link    http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.9
- * 20131013 - franciscom - added simplexml_load_file_wrapper()
- *                         After user contribution regarding XML External Entity (XXE) Processing Attacks
  */
 
 
@@ -26,6 +22,8 @@
  *  </platform>
  * </platforms>
  *
+ * User contribution regarding XML External Entity (XXE) Processing Attacks
+ *
  */
 function simplexml_load_file_wrapper($filename)
 {
@@ -33,6 +31,15 @@ function simplexml_load_file_wrapper($filename)
   libxml_disable_entity_loader(true);  
   $zebra = file_get_contents($filename);
   $xml = @simplexml_load_string($zebra);
+  if ($xml === false) {
+    libxml_use_internal_errors(true);
+    $xml = simplexml_load_string($zebra);
+    echo lang_get("simplexml_load_file_wrapper_error");
+    foreach (libxml_get_errors() as $error) {
+      echo "<br>", $error->message;
+    }
+    die();
+  }
   return $xml;
 }
 
@@ -135,7 +142,6 @@ function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
     // new dBug($loop_qty);
     for($idx=0; $idx < $loop_qty; $idx++)
     {
-      // echo "DEBUG - " . __FUNCTION__ . " \$idx:$idx<br>";
       foreach($itemStructure['elements'] as $castType => $keyValues)
       {
         foreach($keyValues as $key => $fn2apply)

@@ -863,8 +863,9 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
  */
 function check_dir_permissions(&$errCounter)
 {
-  $dirs_to_check = array('gui' . DIRECTORY_SEPARATOR . 'templates_c' => null, 
-                         'logs' => 'log_path','upload_area' => 'repositoryPath');
+  $dirs_to_check = array('templates_c' => array('temp_dir', false), 
+                         'logs' => array('log_path', true),
+                         'upload_area' => array('repositoryPath', true));
 
   $final_msg = '';
   $msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
@@ -890,8 +891,15 @@ function check_dir_permissions(&$errCounter)
       $needsLock = '';
       $the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
     } else {
-      $needsLock = '[S] ';
-      $the_d = config_get($how);  
+      // we expect an array with
+      //   0- the configuration variable containing the path
+      //   1- whether the path should be secured
+      if( $show[1] ) {
+        $needsLock = '[S] ';
+      } else {
+        $needsLock = '';
+      }
+      $the_d = config_get($how[0]);
     }
     
     $final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists <b>{$needsLock}</b<</td>";

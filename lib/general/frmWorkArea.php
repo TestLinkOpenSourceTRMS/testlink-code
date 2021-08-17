@@ -190,7 +190,7 @@ function validateBuildAvailability(&$db,&$tplanMgr,$context,$attrFilter)
   
   if (!$tplanMgr->getNumberOfBuilds($tpID, $attrFilter['active'], $attrFilter['open']))
   {            
-    $msx = null;
+    $msx = [];
     if($attrFilter['active'])
     {
       $msx[] = lang_get('active');

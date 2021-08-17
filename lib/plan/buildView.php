@@ -54,7 +54,10 @@ function initEnv(&$dbHandler)
   $gui->user_feedback = null;
 
   // To create the CF columns we need to get the linked CF
-  $availableCF = (array)$build_mgr->get_linked_cfields_at_design(current($gui->buildSet),$gui->tproject_id);
+  $availableCF = [];
+  if (!is_null($gui->buildSet)) {
+    $availableCF = $build_mgr->get_linked_cfields_at_design(current($gui->buildSet),$gui->tproject_id);
+  }
   $hasCF = count($availableCF);
   $gui->cfieldsColumns = null; 
   $gui->cfieldsType = null;

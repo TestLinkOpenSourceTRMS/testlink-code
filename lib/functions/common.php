@@ -2115,9 +2115,12 @@ function pageAccessCheck(&$db, &$user, $context)
   
   $checkAnd = true;
   foreach ($context->rightsAnd as $ri) {
-    $checkAnd &= $user->hasRight($db,$ri,
-                          $context->tproject_id,
-                          $tplan_id,true);
+    // $user->hasRight() needs refactoring to return ALWAYS boolean
+    //                   right now it seems will return 
+    //                   false or null -> for FALSE
+    //                   'yes' -> for TRUE !!! 
+    $boolCheck = ($user->hasRight($db,$ri,$context->tproject_id,$tplan_id,true) == 'yes');
+    $checkAnd &= $boolCheck
   }
  
   $checkOr = true;

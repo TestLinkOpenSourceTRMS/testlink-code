@@ -2120,7 +2120,7 @@ function pageAccessCheck(&$db, &$user, $context)
     //                   false or null -> for FALSE
     //                   'yes' -> for TRUE !!! 
     $boolCheck = ($user->hasRight($db,$ri,$context->tproject_id,$tplan_id,true) == 'yes');
-    $checkAnd &= $boolCheck
+    $checkAnd &= $boolCheck;
   }
  
   $checkOr = true;

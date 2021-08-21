@@ -1811,6 +1811,40 @@ class testcase extends tlObjectWithAttachments {
              " WHERE tcversion_id IN ({$tcversion_list})";
     } else {
 
+
+      // Long explanation
+      // executions table has following fields
+      // tcversion_id
+      // tcversion_number
+      // 
+      // 1) why?	
+      // 2) how are used?
+      //
+      // Detailed original analisys is not available anymore, but:
+      // probably the right thing to do is to use here the field
+      // testplan_tcversions.id, because we can have ONLY ONE tcversion
+      // linked to a testplan.
+      // What to do when a new tcversion is created and LINKED to a testplan ?
+      // How to get information about all executions in every tcversion ?
+      // 
+      // The method used is explained with this example:
+      // 1. create testcase TC1
+      // 2. tcversion with number 1 will be created (internal ID 77755)
+      // 3. add to testplan + platform
+      // 4. execute on build X
+      // 5. executions table -> exec_id=9543, tcversion_id=77755, tcversion_number=1
+      // 6. create new version for TC1 -> numer=2 , internal ID 78888
+      // 7. update link for TC1 version in testplan to version 2
+      //    this generates this effect in executions table:
+      //    exec_id=9787, tcversion_id=78888, tcversion_number=1
+      // 8. execute on build X
+      // 9. in executions table -> 
+      //    exec_id=9543, tcversion_id=78888, tcversion_number=1	
+      //    exec_id=9787, tcversion_id=78888, tcversion_number=2
+      // 	
+      // 	
+      // Then after user report on forum.testlink.org on 20210810
+      // this logic need to be changed.	
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_tcsteps']} " .
              " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
              " WHERE tcversion_id = {$version_id})";
@@ -1819,6 +1853,8 @@ class testcase extends tlObjectWithAttachments {
              " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
              " WHERE tcversion_id = {$version_id})";
 
+
+      // -------------------------------------------------------------------------------------
       $sql[]="/* $debugMsg */ 
               DELETE FROM {$this->tables['cfield_execution_values']}
               WHERE tcversion_id = {$version_id}";

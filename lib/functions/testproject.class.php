@@ -2879,7 +2879,13 @@ private function copy_platforms($source_id, $target_id)
     $platform_mgr->setTestProjectID($target_id);
     foreach($platformSet as $platform)
     {
-      $op = $platform_mgr->create($platform['name'],$platform['notes']);
+      $item = new stdClass();
+      $item->name = $platform['name'];
+      $item->notes = (string)$platform['notes'];
+      $item->enable_on_design = intval($platform['enable_on_design']);
+      $item->enable_on_execution = intval($platform['enable_on_execution']);
+
+      $op = $platform_mgr->create($item);
       $old_new[$platform['id']] = $op['id'];
     }
   }

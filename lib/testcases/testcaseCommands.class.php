@@ -1483,7 +1483,7 @@ class testcaseCommands {
   /**
    *
    * @used by tcEdit.php
-   * 
+   * @use tcaseMgr->updateLatestTPlanLinkToTCV()
    */
   function updateTPlanLinkToTCV($argsObj,$request) {
 

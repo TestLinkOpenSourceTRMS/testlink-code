@@ -78,11 +78,13 @@ if($args->doExec == 1 && !is_null($args->tc_versions) && count($args->tc_version
 
 
 // link Update will be done on Context
-// Context = testplan,platform (if any) 
+// Context = testplan 
+//
+// @20210901 -> CRITIC 
+// because we do not allow different versions on different platforms
+// for same test plan -> platform MUST NOT BE USED
 if( $args->linkLatestVersion && $args->level == 'testcase') {
-  $plat = $args->platform_id > 0 ? $args->platform_id : null;
-  $args->version_id = 
-    $tcase_mgr->updateTPlanLinkToLatestTCV($args->TCVToUpdate,$args->tplan_id,$plat);
+  $args->version_id = $tcase_mgr->updateTPlanLinkToLatestTCV($args->TCVToUpdate, $args->tplan_id);
 }
 
 

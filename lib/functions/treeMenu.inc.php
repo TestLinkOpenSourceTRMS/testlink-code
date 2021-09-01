@@ -63,11 +63,28 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 
   $my['filters'] = array_merge($my['filters'], (array)$filters);
 
+  // CRITIC: call with immediate return!!!
   if( $my['options']['viewType'] == 'testSpecTree' ) {
+
+    // Special processing for keywords
+    if ($filters['filter_keywords'] != null && 
+    	count($filters['filter_keywords']) == 1 &&
+        $filters['filter_keywords'][0] == 0
+       ) {
+       // Get all available keywords on test project and apply these set
+       // will be affected by mode ?
+       // TODOD
+       $tproject_mgr = new testproject($db);
+       $usedKeywordsByKeyID = $tproject_mgr->getUsedKeywordsMap($tproject_id);
+       $filters['filter_keywords'] = array_keys($usedKeywordsByKeyID);
+    }
+
     $rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
     return $rr;
   }
 
+
+  // --------------------------------------------------------------------------------- 
   // OK - Go ahead here we have other type of features  
   $treeMenu = new stdClass(); 
   $treeMenu->rootnode = null;
@@ -98,6 +115,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   
   $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . 
                   $glueChar;
+
+ echo '<pre>' . __LINE__; var_dump($my['filters']['filter_keywords']); echo '</pre>'; 
+  die();
+
   $test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
 
   // where the Keyword filter will be applied?
@@ -112,10 +133,15 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $tplan_tcs=null;
   $tc2show = null;
 
+  echo '<pre>'; var_dump($my['filters']['filter_keywords']); echo '</pre>'; 
+  die();
+
   // MORE FILTERS
   if($test_spec) {
     $attr_map['keywords'] = null;  // means no filter
     if(!is_null($my['filters']['filter_keywords'])) {
+
+      // if 	
       $attr_map['keywords'] = 
         $tproject_mgr->getKeywordsLatestTCV($tproject_id,
            $my['filters']['filter_keywords'],
@@ -144,7 +170,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
     // keywords using $attr_map['keywords'];
     $pnFilters = null;
     $keys2init = array('filter_testcase_name',
-                       'filter_execution_type','filter_priority',
+                       'filter_execution_type',
+                       'filter_priority',
                        'filter_tc_id');
     foreach ($keys2init as $keyname) {
       $pnFilters[$keyname] = isset($my['filters'][$keyname]) ? $my['filters'][$keyname] : null;

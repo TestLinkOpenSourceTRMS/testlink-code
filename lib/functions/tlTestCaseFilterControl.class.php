@@ -1475,7 +1475,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       case 'edit_mode':
         $special['domain'] = 
           array(-1 => $this->option_strings['without_keywords'], 
-                0 => $this->option_strings['any']);       
+                 0 => $this->option_strings['any']);       
         $special['filter_mode'] = array('NotLinked' => $l10n['not_linked']);
       break;
 
@@ -1520,8 +1520,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
     
     if ($atLeastOneKW) {
       // set the active value to filter
-      // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
-      if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {
+      // delete keyword filter if:
+      // - "any" (0) is part of the selection AND 
+      // - there are several elements in the array (user selection)
+      // !!Regardless of filter mode!!
+      //
+      if (is_array($this->filters[$key]['selected']) && 
+          count($this->filters[$key]['selected']) > 1 &&  
+          in_array(0, $this->filters[$key]['selected'])) {
         $this->active_filters[$key] = null;
       } else {
         $this->active_filters[$key] = $this->filters[$key]['selected'];

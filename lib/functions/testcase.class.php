@@ -9164,59 +9164,6 @@ class testcase extends tlObjectWithAttachments {
     return $ltcv;
   }
 
-    $sql = "SELECT parent_id AS tc_id 
-            FROM {$this->tables['nodes_hierarchy']} 
-            WHERE id = $fromTCV";
-    $rs = current($this->db->get_recordset($sql));
-            
-    $ltcv = $this->getLatestVersionID($rs['tc_id']);
-
-    if ( property_exists($execContext,'update') == false ) {
-      $newTCV = $this->getLatestVersionID($rs['tc_id']);
-    } else {
-      $newTCV = $execContext->update->tcversionID;      
-    }            
-
-    $safeTP = intval($execContext->target->tplanID);
-    $whereClause = " WHERE testplan_id = {$safeTP}
-                     AND tcversion_id = $fromTCV ";
-
-    if (property_exists($execContext->target,'platformID')) {
-      if( ($plat = intval($execContext->target->platformID)) > 0 ) {
-        $whereClause .= " AND platform_id=$plat "; 
-      }                   
-    }
-
-    $sql = "/* $debugMsg */
-            UPDATE {$this->tables['testplan_tcversions']}
-            SET tcversion_id = " . $newTCV . $whereClause;
-    $this->db->exec_query($sql);
-
-
-    // Execution results
-    $sql = "/* $debugMsg */ 
-            UPDATE {$this->tables['executions']} 
-            SET tcversion_id = " . $newTCV . $whereClause;
-    $this->db->exec_query($sql);
-
-    // Update link in cfields values for executions
-    // ATTENTION: 
-    // platform seems not to be important because
-    // each execution in each platform has a new id.
-    // mmm, maybe this will create some minor issue 
-    // in the future.
-    //
-    $sql = "/* $debugMsg */
-            UPDATE {$this->tables['cfield_execution_values']} 
-            SET tcversion_id = $newTCV 
-            WHERE testplan_id = {$safeTP}
-            AND tcversion_id = $fromTCV ";
-
-    $this->db->exec_query($sql);
-
-    return $newTCV;
-  }
-
 
   /**
   * Insert note and status for steps to DB

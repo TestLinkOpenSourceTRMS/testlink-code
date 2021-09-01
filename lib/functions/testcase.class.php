@@ -1858,8 +1858,6 @@ class testcase extends tlObjectWithAttachments {
       //
       // - get the tcversion_number (VNUM) for the tcversion_id (TARGET_TCVID) 
       $myVersionNum = $this->getVersionNumber($version_id);
-      echo '<pre>version id:' . $version_id . "<br>";var_dump($myVersionNum);echo '</pre>';
-      //die();
 
       $execSQL = " SELECT id FROM {$this->tables['executions']}
                    WHERE tcversion_id = {$version_id}  
@@ -1894,8 +1892,6 @@ class testcase extends tlObjectWithAttachments {
                        WHERE tcversion_id = {$version_id} 
                        AND tcversion_number <> {$myVersionNum}";
       $rs = (array)$this->db->get_recordset($sqlCheckExec);
-      echo '<pre>sql:' . $sqlCheckExec . "<br>";var_dump($myVersionNum);echo '</pre>';
-      
 
       if (count($rs) != 0) {
         // Get latest execution to get the version number and then tcversion_id 
@@ -1912,16 +1908,12 @@ class testcase extends tlObjectWithAttachments {
                     AND tcversion_number <> {$myVersionNum}
                     GROUP BY testplan_id 
                   ) SQLLE ";
-        echo '<pre>';var_dump($sqlLE);echo '</pre>';
 
         $sqlExecForUpd = "/* $debugMsg */
                          SELECT id AS execution_id,testplan_id,tcversion_id,tcversion_number
                          FROM {$this->tables['executions']}
                          WHERE id IN ($sqlLE) ";   
-        //echo '<pre>';var_dump($sqlExecForUpd);echo '</pre>';
-
         $rs = (array)$this->db->get_recordset($sqlExecForUpd);
-        //echo '<pre>';var_dump($rs);echo '</pre>';
 
         //
         $execContext = new stdClass();
@@ -1931,45 +1923,9 @@ class testcase extends tlObjectWithAttachments {
           // - update executions
           $nvrs = $this->get_basic_info($id, array('number' => $elem['tcversion_number']));
           $execContext->update->tcversionID = $nvrs[0]['tcversion_id'];
-
           $execContext->target->tcversionID = $elem['tcversion_id'];
           $execContext->target->tplanID = $elem['testplan_id'];
-
           $this->updateTPlanLinkTCV($execContext);
-   
-          /*
-          echo '<pre>';var_dump($nv);echo '</pre>';
-         
-          $sql = " 
-                   UPDATE {$this->tables['executions']}
-                   SET tcversion_id = {$nv}
-                   WHERE testplan_id = {$elem['testplan_id']}
-                   AND tcversion_id = {$elem['tcversion_id']}
-                 ";
-          echo $sql;       
-          $result = $this->db->exec_query($sql);
-   
-          // update cfield_execution_values
-          $sql = "  
-                   UPDATE {$this->tables['cfield_execution_values']}
-                   SET tcversion_id = {$nv}
-                   WHERE testplan_id = {$elem['testplan_id']}
-                   AND execution_id = {$elem['execution_id']}
-                 ";
-          echo $sql;       
-          $result = $this->db->exec_query($sql);
-
-
-          // - update testplan_tcversions
-          $sql = "  
-                   UPDATE {$this->tables['testplan_tcversions']}
-                   SET tcversion_id = {$nv}
-                   WHERE testplan_id = {$elem['testplan_id']}
-                   AND tcversion_id = {$elem['tcversion_id']}
-                 ";
-          echo $sql;       
-          $result = $this->db->exec_query($sql);
-          */
         }
       } 
       // -------------------------------------------------------------------------------------
@@ -9149,6 +9105,8 @@ class testcase extends tlObjectWithAttachments {
    *
    *            @see _execution_delete()
    *  
+   * @TODO 20210901 - understand differences with updateLatestTPlanLinkToTCV();
+   *
    */
   function updateTPlanLinkToLatestTCV($tcversionID,$tplanID,$platformID=null,$auditContext=null) {
 
@@ -9164,61 +9122,11 @@ class testcase extends tlObjectWithAttachments {
     return $ltcv;
   }
 
-
   /**
-  * Insert note and status for steps to DB
-  * Delete data before insert => this way we will not add duplicates
-  *
-  * IMPORTANT NOTICE:
-  * if status is not a valid one, blank will be written
-  *
-  */
-  public function saveStepsPartialExec($partialExec,$context) {
-
-      if (!is_null($partialExec) && count($partialExec) > 0) {
-
-        $stepsIDSet = array_keys($partialExec['notes']);
-        $this->deleteStepsPartialExec($stepsIDSet,$context);
-          
-        $prop = get_object_vars($context);
-        $safeID = array();
-        foreach($prop as $key => $value) {
-          $safeID[$key] = $this->db->prepare_int($value);  
-        }  
-
-        $rCfg = config_get('results');
-        $statusSet = $rCfg['status_code'];
-        $not_run = $statusSet['not_run'];
-        $statusSet = array_flip($statusSet);
-        
-        $statusToExclude = (array)$rCfg['execStatusToExclude']['step'];
-        $statusToExclude[] = $not_run;
-        $statusToExclude = array_flip($statusToExclude);
-
-        foreach( $partialExec['notes'] as $stepID => $note ) {
-          
-          $s2w = $partialExec['status'][$stepID];
-          if( isset($statusToExclude[$s2w]) || 
-              !isset($statusSet[$s2w]) ) {
-            $s2w = '';
-          }
-
-          $sql = " INSERT INTO {$this->tables['execution_tcsteps_wip']} 
-                   (tcstep_id,testplan_id,platform_id,build_id,tester_id,
-                   notes,status) VALUES 
-                   ({$stepID} ,{$safeID['testplan_id']}, 
-                   {$safeID['platform_id']},{$safeID['build_id']},
-                   {$safeID['tester_id']},'" . 
-                   $this->db->prepare_string(htmlspecialchars($note)) .
-                    "', '" . 
-                   $this->db->prepare_string($s2w) .
-                    "');";
-          $this->db->exec_query($sql);
-        }
-    }
-  }
-  
-  /**
+   * @used by testcaseCommanda.class -> updateTPlanLinkToTCV()
+   *
+   * 
+   * @TODO 20210901 - understand differences with updateTPlanLinkToLatestTCV();
    *
    */
   function updateLatestTPlanLinkToTCV($tcversionID,$tplanID,$auditContext=null) {
@@ -9255,6 +9163,8 @@ class testcase extends tlObjectWithAttachments {
       $linkItems = array_keys($linkSet);
       $inClause = implode(',',$linkItems);
 
+       
+      // @TODO 20210901 Understand if order is OK if we add Foreing Keys
       // Links to testplan
       $sql = "/* $debugMsg */
               UPDATE {$this->tables['testplan_tcversions']}
@@ -9283,6 +9193,136 @@ class testcase extends tlObjectWithAttachments {
       $this->db->exec_query($sql);
     }
   }
+
+
+
+  /**
+   * ATTENTION: work done here need to be fixed when deleting the latest executed tcversion
+   *            @see https://forum.testlink.org/viewtopic.php?f=11&p=21038#p21038
+   *
+   *            @see _execution_delete()
+   * 
+   *  execContext->target->tplanID
+   *                     ->platformID  (can be null => any platform) MAY BE is USELESS 
+   *                     ->tcversionID
+   *
+   *             ->update->tcversionID 
+   *               if update property does not exists -> Latest TC Version
+   *  
+   */
+  function updateTPlanLinkTCV($execContext,$auditContext=null) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+
+    $fromTCV = intval($execContext->target->tcversionID);
+    $sql = "SELECT parent_id AS tc_id 
+            FROM {$this->tables['nodes_hierarchy']} 
+            WHERE id = $fromTCV";
+    $rs = current($this->db->get_recordset($sql));
+
+    if ( property_exists($execContext,'update') == false ) {
+      $newTCV = $this->getLatestVersionID($rs['tc_id']);
+    } else {
+      $newTCV = $execContext->update->tcversionID;      
+    }            
+
+    $safeTP = intval($execContext->target->tplanID);
+    $whereClause = " WHERE testplan_id = {$safeTP}
+                     AND tcversion_id = $fromTCV ";
+
+    if (property_exists($execContext->target,'platformID')) {
+      if( ($plat = intval($execContext->target->platformID)) > 0 ) {
+        $whereClause .= " AND platform_id=$plat "; 
+      }                   
+    }
+
+    $sql = "/* $debugMsg */
+            UPDATE {$this->tables['testplan_tcversions']}
+            SET tcversion_id = " . $newTCV . $whereClause;
+    $this->db->exec_query($sql);
+
+
+    // Execution results
+    $sql = "/* $debugMsg */ 
+            UPDATE {$this->tables['executions']} 
+            SET tcversion_id = " . $newTCV . $whereClause;
+    $this->db->exec_query($sql);
+
+    // Update link in cfields values for executions
+    // ATTENTION: 
+    // platform seems not to be important because
+    // each execution in each platform has a new id.
+    // mmm, maybe this will create some minor issue 
+    // in the future.
+    //
+    $sql = "/* $debugMsg */
+            UPDATE {$this->tables['cfield_execution_values']} 
+            SET tcversion_id = $newTCV 
+            WHERE testplan_id = {$safeTP}
+            AND tcversion_id = $fromTCV ";
+
+    $this->db->exec_query($sql);
+
+    return $newTCV;
+  }
+
+
+
+
+
+
+  /**
+  * Insert note and status for steps to DB
+  * Delete data before insert => this way we will not add duplicates
+  *
+  * IMPORTANT NOTICE:
+  * if status is not a valid one, blank will be written
+  *
+  */
+  public function saveStepsPartialExec($partialExec,$context) 
+  {
+    if (!is_null($partialExec) && count($partialExec) > 0) {
+      $stepsIDSet = array_keys($partialExec['notes']);
+      $this->deleteStepsPartialExec($stepsIDSet,$context);
+        
+      $prop = get_object_vars($context);
+      $safeID = array();
+      foreach($prop as $key => $value) {
+        $safeID[$key] = $this->db->prepare_int($value);  
+      }  
+
+      $rCfg = config_get('results');
+      $statusSet = $rCfg['status_code'];
+      $not_run = $statusSet['not_run'];
+      $statusSet = array_flip($statusSet);
+      
+      $statusToExclude = (array)$rCfg['execStatusToExclude']['step'];
+      $statusToExclude[] = $not_run;
+      $statusToExclude = array_flip($statusToExclude);
+
+      foreach( $partialExec['notes'] as $stepID => $note ) {
+        $s2w = $partialExec['status'][$stepID];
+        if( isset($statusToExclude[$s2w]) || 
+            !isset($statusSet[$s2w]) ) {
+          $s2w = '';
+        }
+
+        $sql = " INSERT INTO {$this->tables['execution_tcsteps_wip']} 
+                 (tcstep_id,testplan_id,platform_id,build_id,tester_id,
+                 notes,status) VALUES 
+                 ({$stepID} ,{$safeID['testplan_id']}, 
+                 {$safeID['platform_id']},{$safeID['build_id']},
+                 {$safeID['tester_id']},'" . 
+                 $this->db->prepare_string(htmlspecialchars($note)) .
+                  "', '" . 
+                 $this->db->prepare_string($s2w) .
+                  "');";
+        $this->db->exec_query($sql);
+      }
+    }
+  }
+  
 
 
   /**

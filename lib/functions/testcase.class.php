@@ -2111,7 +2111,10 @@ class testcase extends tlObjectWithAttachments {
                 array('id' => $newTCObj['id'], 'tcversion_id' => $opCV['id']));
 
               // Need to get all steps
-              $stepsSet = $this->get_steps($tcversion['id'],0,$my['options']);
+              $steps_options = $my['options'];
+              // Add the option renderImageInline to keep Inline Images
+              $steps_options['renderImageInline'] = false;
+              $stepsSet = $this->get_steps($tcversion['id'],0,$steps_options);
 
               $to_tcversion_id = $opCV['id'];
               if( !is_null($stepsSet) ) {
@@ -2131,6 +2134,16 @@ class testcase extends tlObjectWithAttachments {
                   }
                 } else {
                   foreach($stepsSet as $key => $step) {
+                    // update inline references
+                    if($doInline) {
+                      foreach($inlineImg as $elem) {
+                        $step['actions'] = str_replace($elem['needle'],$elem['rep'],
+                                                       $step['actions']);
+                        $step['expected_results'] = str_replace($elem['needle'],$elem['rep'],
+                                                                $step['expected_results']);
+                      }
+                    }
+
                     $this->create_step($to_tcversion_id,
                                        $step['step_number'],
                                        $step['actions'],

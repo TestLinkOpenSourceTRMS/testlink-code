@@ -863,8 +863,10 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
  */
 function check_dir_permissions(&$errCounter)
 {
-  $dirs_to_check = array('gui' . DIRECTORY_SEPARATOR . 'templates_c' => null, 
-                         'logs' => 'log_path','upload_area' => 'repositoryPath');
+
+  $dirs_to_check = ['templates_c' => ['config' => 'temp_dir', 'needsLock' =>''], 
+                    'logs' => ['config' => 'log_path', 'needsLock' => '[S] '] ,
+                    'upload_area' => ['config' => 'repositoryPath', 'needsLock' => '[S] ']];
 
   $final_msg = '';
   $msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
@@ -884,25 +886,17 @@ function check_dir_permissions(&$errCounter)
   }  
   $final_msg .= "</td>";
 
-  foreach ($dirs_to_check as $the_d => $how) {
-    if( is_null($how) ) {
-      // Correct relative path for installer.
-      $needsLock = '';
-      $the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
-    } else {
-      $needsLock = '[S] ';
-      $the_d = config_get($how);  
-    }
+  foreach ($dirs_to_check as $the_d => $settings) {
+
+    $the_d = config_get($settings['config']);  
+    $needsLock = $settings['needsLock'];
     
     $final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists <b>{$needsLock}</b<</td>";
-  
-    if(!file_exists($the_d)) 
-    {
+    if(!file_exists($the_d)) {
         $errCounter += 1;
         $final_msg .= $msg_ko; 
-      } 
-    else 
-    {
+    } 
+    else {
         $final_msg .= $msg_ok;
         $final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory is writable (by user used to run webserver process) </td>";
         if(!is_writable($the_d)) 

@@ -295,8 +295,8 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
   $gui->action_descr = null;
   
   $gui->grants = new stdClass();
-  $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
-  $gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
+  $gui->grants->req_mgmt = $argsObj->user->hasRightOnProj($dbHandler,"mgt_modify_req");
+  $gui->grants->mgt_view_events = $argsObj->user->hasRightOnProj($dbHandler,"mgt_view_events");
   
   $gui->req_version_id = $argsObj->req_version_id;
   $gui->preSelectedType = TL_REQ_TYPE_USE_CASE;

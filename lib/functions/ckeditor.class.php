@@ -36,10 +36,6 @@ class ckeditorInterface {
    *
    */
 	function CreateHtml($config) {
-		//$config = ['height' => 600];
-		//$Html = $this->Editor->editor($this->InstanceName, $this->Value, $config = array());
-		echo __FUNCTION__; 
-		var_dump($config);
 		$Html = $this->Editor->editor($this->InstanceName, $this->Value, $config);
 		return $Html ;
 	}

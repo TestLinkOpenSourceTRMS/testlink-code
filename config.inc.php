@@ -764,17 +764,35 @@ $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 */
 
 $tlCfg->gui->text_editor = array();
-$tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor','toolbar' => 'Testlink',
-                                        'configFile' => 'cfg/tl_ckeditor_config.js',
-                                        'height' => 150);
+$tlCfg->gui->text_editor['all'] = ['type' => 'ckeditor',
+	                               'toolbar' => 'Testlink',
+                                   'configFile' => 'cfg/tl_ckeditor_config.js',
+                                   'height' => 150];
+
 
 // mini toolbar for test case steps edit
-$tlCfg->gui->text_editor['steps_design'] = array('type' => 'ckeditor','toolbar' => 'TestlinkMini',
-                                                 'configFile' => 'cfg/tl_ckeditor_config.js',
-                                                 'height' => 100);
+$tlCfg->gui->text_editor['steps_design'] = ['type' => 'ckeditor',
+	                                        'toolbar' => 'TestlinkMini',
+                                            'configFile' => 'cfg/tl_ckeditor_config.js',
+                                            'height' => 100];
 
-$tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
-$tlCfg->gui->text_editor['edit_execution'] = array( 'type' => 'none', 'cols' => 80, 'rows' => 20);
+// 
+$tlCfg->gui->text_editor['preconditions'] = ['type' => 'ckeditor',
+	                                         'toolbar' => 'Testlink',
+                                             'configFile' => 'cfg/tl_ckeditor_config.js',
+                                             'height' => 150
+                                            ];
+
+$tlCfg->gui->text_editor['summary'] = ['type' => 'ckeditor',
+	                                   'toolbar' => 'Testlink',
+                                       'configFile' => 'cfg/tl_ckeditor_config.js',
+                                       'height' => 600
+                                      ]; 
+
+
+
+$tlCfg->gui->text_editor['execution'] = array('type' => 'none');
+$tlCfg->gui->text_editor['edit_execution'] = array('type' => 'none', 'cols' => 80, 'rows' => 20);
 $tlCfg->gui->text_editor['display_execution_notes'] = array('type' => 'none', 'cols' => 80, 'rows' => 20);
 
 /** User can choose order of menu areas */

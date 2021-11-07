@@ -858,6 +858,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $loader = '';
     $children = "[]";
     $cookie_prefix = '';
+    $root_node = new stdClass();
 
     // by default, disable drag and drop, then later enable if needed
     $drag_and_drop = new stdClass();

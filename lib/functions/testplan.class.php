@@ -7936,8 +7936,10 @@ class testplan extends tlObjectWithAttachments
           JOIN {$this->tables['executions']} E 
           ON  E.id = LEXBTPLANPL.id 
           AND E.testplan_id = LEXBTPLANPL.testplan_id         
-          AND E.platform_id = LEXBTPLANPL.platform_id 
-          WHERE TPTCV.testplan_id = {$safe['tplan_id']} " .
+          AND E.platform_id = LEXBTPLANPL.platform_id " .
+        $my['join']['bugs'] .
+
+        " WHERE TPTCV.testplan_id = {$safe['tplan_id']} " .
         $my['where']['where'];
 
     $xql = is_null($union['not_run']) ? $union['exec'] : $union;
@@ -8064,6 +8066,8 @@ class testplan extends tlObjectWithAttachments
         " JOIN {$this->tables['executions']} E " .
         " ON  E.id = LEXBTPLAN.id " .
         " AND E.testplan_id = LEXBTPLAN.testplan_id " .        
+        $my['join']['bugs'] .
+
         $my['where']['where'];
 
     $xql = is_null($union['not_run']) ? $union['exec'] : $union;

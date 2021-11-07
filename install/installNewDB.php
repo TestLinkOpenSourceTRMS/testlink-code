@@ -8,7 +8,7 @@
  * @filesource  installNewDB.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2008,2019 TestLink community
+ * @copyright   2008,2021 TestLink community
  * @copyright   inspired by Etomite Content Management System
  *              2003, 2004 Alexander Andrew Butter 
  *
@@ -479,9 +479,9 @@ if( $migration_process != '' ) {
 
 // -------------------------------------------------
 // Data Operations
-if ( count($a_sql_data > 0) ) {
+if ( count($a_sql_data) > 0 ) {
   foreach($a_sql_data as $sql_data ) {
-    if ( count($sql_data > 0) ) {
+    if ( count($sql_data) > 0 ) {
       foreach ($sql_data as $sql_file)  {
         $sqlParser->process($sql_file);
       }

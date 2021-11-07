@@ -1,36 +1,36 @@
 <?php
-/*
-@version   v5.20.17  31-Mar-2020
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence. See License.txt.
-  Set tabs to 4 for best viewing.
-
-  Latest version is available at http://adodb.org/
-
-	Original Authors: Martin Jansen <mj#php.net>
-	Richard Tango-Lowy <richtl#arscognita.com>
-*/
+/**
+ * Storage driver for fetching login data from a database using ADOdb-PHP.
+ *
+ * This storage driver can use all databases which are supported by the ADBdb
+ * abstraction layer to fetch login data.
+ * NOTE: The ADOdb directory MUST be in your PHP include_path!
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ * @author Martin Jansen <mj@php.net>
+ * @author Richard Tango-Lowy <richtl@arscognita.com>
+ */
 
 require_once 'Auth/Container.php';
 require_once 'adodb.inc.php';
 require_once 'adodb-pear.inc.php';
 require_once 'adodb-errorpear.inc.php';
 
-/**
- * Storage driver for fetching login data from a database using ADOdb-PHP.
- *
- * This storage driver can use all databases which are supported
- * by the ADBdb DB abstraction layer to fetch login data.
- * See http://adodb.org/ for information on ADOdb.
- * NOTE: The ADOdb directory MUST be in your PHP include_path!
- *
- * @author   Richard Tango-Lowy <richtl@arscognita.com>
- * @package  Auth
- * @version  $Revision: 1.3 $
- */
+
 class Auth_Container_ADOdb extends Auth_Container
 {
 
@@ -58,7 +58,7 @@ class Auth_Container_ADOdb extends Auth_Container
     /**
      * Constructor of the container class
      *
-     * Initate connection to the database via PEAR::ADOdb
+     * Initiate connection to the database via PEAR::ADOdb
      *
      * @param  string Connection data or DB object
      * @return object Returns an error object if something went wrong
@@ -262,7 +262,7 @@ class Auth_Container_ADOdb extends Auth_Container
                     continue;
                 }
                 // Use reference to the auth object if exists
-                // This is because the auth session variable can change so a static call to setAuthData does not make sence
+                // This is because the auth session variable can change so a static call to setAuthData does not make sense
                 if(is_object($this->_auth_obj)){
                     $this->_auth_obj->setAuthData($key, $value);
                 } else {

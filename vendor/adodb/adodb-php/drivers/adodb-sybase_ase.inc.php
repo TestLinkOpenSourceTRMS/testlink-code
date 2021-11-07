@@ -1,17 +1,24 @@
 <?php
-/*
-  @version   v5.20.17  31-Mar-2020
-  @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-  @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
-
-  Set tabs to 4.
-
-  Contributed by Interakt Online. Thx Cristian MARIN cristic#interaktonline.com
-*/
-
+/**
+ * SAP Adaptive Server Enterprise driver (formerly Sybase ASE)
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ * @author Cristian Marin, Interakt Online <cristic@interaktonline.com>
+ */
 
 require_once ADODB_DIR."/drivers/adodb-sybase.inc.php";
 
@@ -21,10 +28,6 @@ class ADODB_sybase_ase extends ADODB_sybase {
 	 var $metaTablesSQL="SELECT sysobjects.name FROM sysobjects, sysusers WHERE sysobjects.type='U' AND sysobjects.uid = sysusers.uid";
 	 var $metaColumnsSQL = "SELECT syscolumns.name AS field_name, systypes.name AS type, systypes.length AS width FROM sysobjects, syscolumns, systypes WHERE sysobjects.name='%s' AND syscolumns.id = sysobjects.id AND systypes.type=syscolumns.type";
 	 var $metaDatabasesSQL ="SELECT a.name FROM master.dbo.sysdatabases a, master.dbo.syslogins b WHERE a.suid = b.suid and a.name like '%' and a.name != 'tempdb' and a.status3 != 256  order by 1";
-
-	function __construct()
-	{
-	}
 
 	// split the Views, Tables and procedures.
 	function MetaTables($ttype=false,$showSchema=false,$mask=false)
@@ -111,10 +114,5 @@ class ADODB_sybase_ase extends ADODB_sybase {
 }
 
 class adorecordset_sybase_ase extends ADORecordset_sybase {
-var $databaseType = "sybase_ase";
-function __construct($id,$mode=false)
-	{
-		parent::__construct($id,$mode);
-	}
-
+	var $databaseType = "sybase_ase";
 }

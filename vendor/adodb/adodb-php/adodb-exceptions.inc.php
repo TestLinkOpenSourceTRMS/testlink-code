@@ -1,20 +1,23 @@
 <?php
-
 /**
- * @version   v5.20.17  31-Mar-2020
- * @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
- * @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
- * Released under both BSD license and Lesser GPL library license.
- * Whenever there is any discrepancy between the two licenses,
- * the BSD license will take precedence.
+ * Error handling using Exceptions.
  *
- * Set tabs to 4 for best viewing.
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
  *
- * Latest version is available at http://adodb.org/
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
  *
- * Exception-handling code using PHP5 exceptions (try-catch-throw).
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
  */
-
 
 if (!defined('ADODB_ERROR_HANDLER_TYPE')) define('ADODB_ERROR_HANDLER_TYPE',E_USER_ERROR);
 define('ADODB_ERROR_HANDLER','adodb_throw');
@@ -60,14 +63,14 @@ var $database = '';
 }
 
 /**
-* Default Error Handler. This will be called with the following params
+* Default Error Handler.
 *
-* @param $dbms		the RDBMS you are connecting to
-* @param $fn		the name of the calling function (in uppercase)
-* @param $errno		the native error number from the database
-* @param $errmsg	the native error msg from the database
-* @param $p1		$fn specific parameter - see below
-* @param $P2		$fn specific parameter - see below
+* @param string $dbms    the RDBMS you are connecting to
+* @param string $fn      the name of the calling function (in uppercase)
+* @param int    $errno   the native error number from the database
+* @param string $errmsg  the native error msg from the database
+* @param mixed  $p1      $fn specific parameter - see below
+* @param mixed  $p2      $fn specific parameter - see below
 */
 
 function adodb_throw($dbms, $fn, $errno, $errmsg, $p1, $p2, $thisConnection)

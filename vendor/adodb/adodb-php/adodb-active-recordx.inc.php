@@ -1,27 +1,27 @@
 <?php
-/*
+/**
+ * Active Record implementation. Superset of Zend Framework's.
+ *
+ * This is "Active Record eXtended" to support JOIN, WORK and LAZY mode
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
 
-@version   v5.20.17  31-Mar-2020
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-  Latest version is available at http://adodb.org/
-
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
-
-  Active Record implementation. Superset of Zend Framework's.
-
-  This is "Active Record eXtended" to support JOIN, WORK and LAZY mode by Chris Ravenscroft  chris#voilaweb.com
-
-  Version 0.9
-
-  See http://www-128.ibm.com/developerworks/java/library/j-cb03076/?ca=dgr-lnxw01ActiveRecord
-  	for info on Ruby on Rails Active Record implementation
-*/
-
-
-	// CFR: Active Records Definitions
+// CFR: Active Records Definitions
 define('ADODB_JOIN_AR', 0x01);
 define('ADODB_WORK_AR', 0x02);
 define('ADODB_LAZY_AR', 0x03);
@@ -66,25 +66,19 @@ function ADODB_SetDatabaseAdapter(&$db)
 {
 	global $_ADODB_ACTIVE_DBS;
 
-		foreach($_ADODB_ACTIVE_DBS as $k => $d) {
-			if (PHP_VERSION >= 5) {
-				if ($d->db === $db) {
-					return $k;
-				}
-			} else {
-				if ($d->db->_connectionID === $db->_connectionID && $db->database == $d->db->database) {
-					return $k;
-				}
-			}
+	foreach($_ADODB_ACTIVE_DBS as $k => $d) {
+		if ($d->db === $db) {
+			return $k;
 		}
+	}
 
-		$obj = new ADODB_Active_DB();
-		$obj->db = $db;
-		$obj->tables = array();
+	$obj = new ADODB_Active_DB();
+	$obj->db = $db;
+	$obj->tables = array();
 
-		$_ADODB_ACTIVE_DBS[] = $obj;
+	$_ADODB_ACTIVE_DBS[] = $obj;
 
-		return sizeof($_ADODB_ACTIVE_DBS)-1;
+	return sizeof($_ADODB_ACTIVE_DBS)-1;
 }
 
 
@@ -551,7 +545,7 @@ class ADODB_Active_Record {
 			$activetab->_created = time();
 			$s = serialize($activetab);
 			if (!function_exists('adodb_write_file')) {
-				include(ADODB_DIR.'/adodb-csvlib.inc.php');
+				include_once(ADODB_DIR.'/adodb-csvlib.inc.php');
 			}
 			adodb_write_file($fname,$s);
 		}
@@ -1298,7 +1292,7 @@ function adodb_GetActiveRecordsClass(&$db, $class, $tableObj,$whereOrderBy,$bind
 
 
 		if (!isset($_ADODB_ACTIVE_DBS)) {
-			include(ADODB_DIR.'/adodb-active-record.inc.php');
+			include_once(ADODB_DIR.'/adodb-active-record.inc.php');
 		}
 		if (!class_exists($class)) {
 			$db->outp_throw("Unknown class $class in GetActiveRecordsClass()",'GetActiveRecordsClass');
@@ -1309,7 +1303,7 @@ function adodb_GetActiveRecordsClass(&$db, $class, $tableObj,$whereOrderBy,$bind
 		// arrRef will be the structure that knows about our objects.
 		// It is an associative array.
 		// We will, however, return arr, preserving regular 0.. order so that
-		// obj[0] can be used by app developpers.
+		// obj[0] can be used by app developers.
 		$arrRef = array();
 		$bTos = array(); // Will store belongTo's indices if any
 		foreach($rows as $row) {

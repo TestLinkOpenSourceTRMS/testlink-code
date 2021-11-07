@@ -65,7 +65,7 @@ Older changelogs:
 - Added better debugging for Smart Transactions.
 - Postgres DBTimeStamp() was wrongly using TO_DATE. Changed to TO_TIMESTAMP.
 - ADODB_FETCH_CASE check pushed to ADONewConnection to allow people to define it after including adodb.inc.php.
-- Added portugese (brazilian) to languages. Thx to "Levi Fukumori".
+- Added portuguese (brazilian) to languages. Thx to "Levi Fukumori".
 - Removed arg3 parameter from Execute/SelectLimit/Cache* functions.
 - Execute() now accepts 2-d array as $inputarray. Also changed docs of fnExecute() to note change in sql query counting with 2-d arrays.
 - Added MONEY to MetaType in PostgreSQL.
@@ -77,7 +77,7 @@ Older changelogs:
 - Fixed CacheFlush() bug - Thx to martin#gmx.de
 - Walt Boring contributed MetaForeignKeys for postgres7.
 - _fetch() called _BlobDecode() wrongly in interbase. Fixed.
-- adodb_time bug fixed with dates after 2038 fixed by Jason Pell. http://phplens.com/lens/lensforum/msgs.php?id=6980
+- adodb_time bug fixed with dates after 2038 fixed by Jason Pell. PHPLens Issue No: 6980
 
 ## 3.71 - 4 Aug 2003
 
@@ -85,7 +85,7 @@ Older changelogs:
 - Russian language file contributed by "Cyrill Malevanov" cyrill#malevanov.spb.ru.
 - Spanish language file contributed by "Horacio Degiorgi" horaciod#codigophp.com.
 - Error handling in oci8 bugfix - if there was an error in Execute(), then when calling ErrorNo() and/or ErrorMsg(), the 1st call would return the error, but the 2nd call would return no error.
-- Error handling in odbc bugfix. ODBC would always return the last error, even if it happened 5 queries ago. Now we reset the errormsg to '' and errorno to 0 everytime before CacheExecute() and Execute().
+- Error handling in odbc bugfix. ODBC would always return the last error, even if it happened 5 queries ago. Now we reset the errormsg to '' and errorno to 0 every time before CacheExecute() and Execute().
 
 ## 3.70 - 29 July 2003
 
@@ -239,4 +239,4 @@ Older changelogs:
 - Fixed adodb-pear.inc.php syntax error.
 - Improved _adodb_getcount() to use SELECT COUNT(*) FROM ($sql) for languages that accept it.
 - Fixed _adodb_getcount() caching error.
-- Added sql to retrive table and column info for odbc_mssql.
+- Added sql to retrieve table and column info for odbc_mssql.

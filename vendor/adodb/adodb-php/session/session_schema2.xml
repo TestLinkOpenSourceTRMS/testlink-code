@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <schema version="0.3">
   <table name="sessions2">
-    <desc>table for ADOdb session-management</desc>
+    <descr>table for ADOdb session-management</descr>
 
     <field name="SESSKEY" type="C" size="64">
       <descr>session key</descr>

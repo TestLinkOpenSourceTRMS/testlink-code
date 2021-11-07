@@ -1,7 +1,7 @@
 ## 4.990/5.05 - 11 Jul 2008
 
-- Added support for multiple recordsets in mysqli Geisel Sierote <geisel#4up.com.br>. See http://phplens.com/lens/lensforum/msgs.php?id=15917
-- Malcolm Cook added new Reload() function to Active Record. See http://phplens.com/lens/lensforum/msgs.php?id=17474
+- Added support for multiple recordsets in mysqli Geisel Sierote <geisel#4up.com.br>. See PHPLens Issue No: 15917
+- Malcolm Cook added new Reload() function to Active Record. See PHPLens Issue No: 17474
 - Thanks Zoltan Monori [monzol#fotoprizma.hu] for bug fixes in iterator, SelectLimit, GetRandRow, etc.
 - Under heavy loads, the performance monitor for oci8 disables Ixora views.
 - Fixed sybase driver SQLDate to use str_replace(). Also for adodb5, changed sybase driver UnixDate and UnixTimeStamp calls to static.
@@ -49,8 +49,8 @@ $db->CacheExecute($sql);
 
 - Active Record: $ADODB_ASSOC_CASE=1 did not work properly. Fixed.
 - Modified Fields() in recordset class to support display null fields in FetchNextObject().
-- In ADOdb5, active record implementation, we now support column names with spaces in them - we autoconvert the spaces to _ using __set(). Thx Daniel Cook. http://phplens.com/lens/lensforum/msgs.php?id=17200
-- Removed $arg3 from mysqli SelectLimit. See http://phplens.com/lens/lensforum/msgs.php?id=16243. Thx Zsolt Szeberenyi.
+- In ADOdb5, active record implementation, we now support column names with spaces in them - we autoconvert the spaces to _ using __set(). Thx Daniel Cook. PHPLens Issue No: 17200
+- Removed $arg3 from mysqli SelectLimit. See PHPLens Issue No: 16243. Thx Zsolt Szeberenyi.
 - Changed oci8 FetchField, which returns the max_length of BLOB/CLOB/NCLOB as 4000 (incorrectly) to -1.
 - CacheExecute would sometimes return an error on Windows if it was unable to lock the cache file. This is harmless and has been changed to a warning that can be ignored. Also adodb_write_file() code revised.
 - ADOdb perf code changed to only log sql if execution time &gt;= 0.05 seconds. New $ADODB_PERF_MIN variable holds min sql timing. Any SQL with timing value below this and is not causing an error is not logged.

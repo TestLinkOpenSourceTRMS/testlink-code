@@ -1,21 +1,29 @@
 <?php
-// Copyright (c) 2004 ars Cognita Inc., all rights reserved
-/* ******************************************************************************
-    Released under both BSD license and Lesser GPL library license.
- 	Whenever there is any discrepancy between the two licenses,
- 	the BSD license will take precedence.
-*******************************************************************************/
 /**
+ * ADOdb XML Schema (v0.2).
+ *
  * xmlschema is a class that allows the user to quickly and easily
  * build a database on any ADOdb-supported platform using a simple
  * XML schema.
  *
- * Last Editor: $Author: jlim $
- * @author Richard Tango-Lowy & Dan Cech
- * @version $Revision: 1.12 $
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
  *
- * @package axmls
- * @tutorial getting_started.pkg
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2004-2005 ars Cognita Inc., all rights reserved
+ * @copyright 2005-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ * @author Richard Tango-Lowy
+ * @author Dan Cech
  */
 
 function _file_get_contents($file)
@@ -1255,12 +1263,6 @@ class adoSchema {
 	var $objectPrefix = '';
 
 	/**
-	* @var long	Original Magic Quotes Runtime value
-	* @access private
-	*/
-	var $mgq;
-
-	/**
 	* @var long	System debug
 	* @access private
 	*/
@@ -1303,15 +1305,9 @@ class adoSchema {
 	* @param object $db ADOdb database connection object.
 	*/
 	function __construct( $db ) {
-		// Initialize the environment
-		$this->mgq = get_magic_quotes_runtime();
-		if ($this->mgq !== false) {
-			ini_set('magic_quotes_runtime', 0);
-		}
-
 		$this->db = $db;
 		$this->debug = $this->db->debug;
-		$this->dict = NewDataDictionary( $this->db );
+		$this->dict = newDataDictionary( $this->db );
 		$this->sqlArray = array();
 		$this->schemaVersion = XMLS_SCHEMA_VERSION;
 		$this->executeInline( XMLS_EXECUTE_INLINE );
@@ -2195,11 +2191,7 @@ class adoSchema {
 	* Call this method to clean up after an adoSchema object that is no longer in use.
 	* @deprecated adoSchema now cleans up automatically.
 	*/
-	function Destroy() {
-		if ($this->mgq !== false) {
-			ini_set('magic_quotes_runtime', $this->mgq );
-		}
-	}
+	function Destroy() {}
 }
 
 /**

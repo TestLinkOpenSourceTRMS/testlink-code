@@ -1,23 +1,25 @@
 <?php
-/*
+/**
+ * Active Record implementation. Superset of Zend Framework's.
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
 
-@version   v5.20.17  31-Mar-2020
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-  Latest version is available at http://adodb.org/
-
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
-
-  Active Record implementation. Superset of Zend Framework's.
-
-  Version 0.92
-
-  See http://www-128.ibm.com/developerworks/java/library/j-cb03076/?ca=dgr-lnxw01ActiveRecord
-  	for info on Ruby on Rails Active Record implementation
-*/
-
+include_once(ADODB_DIR.'/adodb-lib.inc.php');
 
 global $_ADODB_ACTIVE_DBS;
 global $ADODB_ACTIVE_CACHESECS; // set to true to enable caching of metadata such as field info
@@ -46,41 +48,37 @@ class ADODB_Active_Table {
 
 // $db = database connection
 // $index = name of index - can be associative, for an example see
-//    http://phplens.com/lens/lensforum/msgs.php?id=17790
+//    PHPLens Issue No: 17790
 // returns index into $_ADODB_ACTIVE_DBS
 function ADODB_SetDatabaseAdapter(&$db, $index=false)
 {
 	global $_ADODB_ACTIVE_DBS;
 
-		foreach($_ADODB_ACTIVE_DBS as $k => $d) {
-			if (PHP_VERSION >= 5) {
-				if ($d->db === $db) {
-					return $k;
-				}
-			} else {
-				if ($d->db->_connectionID === $db->_connectionID && $db->database == $d->db->database) {
-					return $k;
-				}
-			}
+	foreach($_ADODB_ACTIVE_DBS as $k => $d) {
+		if($d->db === $db) {
+			return $k;
 		}
+	}
 
-		$obj = new ADODB_Active_DB();
-		$obj->db = $db;
-		$obj->tables = array();
+	$obj = new ADODB_Active_DB();
+	$obj->db = $db;
+	$obj->tables = array();
 
-		if ($index == false) {
-			$index = sizeof($_ADODB_ACTIVE_DBS);
-		}
+	if ($index == false) {
+		$index = sizeof($_ADODB_ACTIVE_DBS);
+	}
 
-		$_ADODB_ACTIVE_DBS[$index] = $obj;
+	$_ADODB_ACTIVE_DBS[$index] = $obj;
 
-		return sizeof($_ADODB_ACTIVE_DBS)-1;
+	return sizeof($_ADODB_ACTIVE_DBS)-1;
 }
 
 
 class ADODB_Active_Record {
 	static $_changeNames = true; // dynamically pluralize table names
-	static $_quoteNames = false;
+
+	/** @var bool|string Allows override of global $ADODB_QUOTE_FIELDNAMES */
+	public $_quoteNames;
 
 	static $_foreignSuffix = '_id'; //
 	var $_dbat; // associative index pointing to ADODB_Active_DB eg. $ADODB_Active_DBS[_dbat]
@@ -120,7 +118,12 @@ class ADODB_Active_Record {
 	// php5 constructor
 	function __construct($table = false, $pkeyarr=false, $db=false)
 	{
-	global $_ADODB_ACTIVE_DBS;
+		global $_ADODB_ACTIVE_DBS, $ADODB_QUOTE_FIELDNAMES;
+
+		// Set the local override for field quoting, only if not defined yet
+		if (!isset($this->_quoteNames)) {
+			$this->_quoteNames = $ADODB_QUOTE_FIELDNAMES;
+		}
 
 		if ($db == false && is_object($pkeyarr)) {
 			$db = $pkeyarr;
@@ -499,7 +502,6 @@ class ADODB_Active_Record {
 			break;
 		default:
 			foreach($cols as $name => $fldobj) {
-				$name = ($fldobj->name);
 
 				if ($ADODB_ACTIVE_DEFVALS && isset($fldobj->default_value)) {
 					$this->$name = $fldobj->default_value;
@@ -522,7 +524,7 @@ class ADODB_Active_Record {
 			$activetab->_created = time();
 			$s = serialize($activetab);
 			if (!function_exists('adodb_write_file')) {
-				include(ADODB_DIR.'/adodb-csvlib.inc.php');
+				include_once(ADODB_DIR.'/adodb-csvlib.inc.php');
 			}
 			adodb_write_file($fname,$s);
 		}
@@ -700,9 +702,14 @@ class ADODB_Active_Record {
 			$val = false;
 		}
 
-		if (is_null($val) || $val === false) {
+		if (is_null($val) || $val === false)
+		{
+			$SQL = sprintf("SELECT MAX(%s) FROM %s",
+						   $this->nameQuoter($db,$fieldname),
+						   $this->nameQuoter($db,$this->_table)
+						   );
 			// this might not work reliably in multi-user environment
-			return $db->GetOne("select max(".$fieldname.") from ".$this->_table);
+			return $db->GetOne($SQL);
 		}
 		return $val;
 	}
@@ -749,10 +756,11 @@ class ADODB_Active_Record {
 		foreach($keys as $k) {
 			$f = $table->flds[$k];
 			if ($f) {
-				$parr[] = $k.' = '.$this->doquote($db,$this->$k,$db->MetaType($f->type));
+				$columnName = $this->nameQuoter($db,$k);
+				$parr[] = $columnName.' = '.$this->doquote($db,$this->$k,$db->MetaType($f->type));
 			}
 		}
-		return implode(' and ', $parr);
+		return implode(' AND ', $parr);
 	}
 
 
@@ -774,7 +782,7 @@ class ADODB_Active_Record {
 
 	function Load($where=null,$bindarr=false, $lock = false)
 	{
-	global $ADODB_FETCH_MODE;
+		global $ADODB_FETCH_MODE;
 
 		$db = $this->DB();
 		if (!$db) {
@@ -788,7 +796,9 @@ class ADODB_Active_Record {
 			$savem = $db->SetFetchMode(false);
 		}
 
-		$qry = "select * from ".$this->_table;
+		$qry = sprintf("SELECT * FROM %s",
+					   $this->nameQuoter($db,$this->_table)
+					   );
 
 		if($where) {
 			$qry .= ' WHERE '.$where;
@@ -813,7 +823,7 @@ class ADODB_Active_Record {
 	}
 
 	# useful for multiple record inserts
-	# see http://phplens.com/lens/lensforum/msgs.php?id=17795
+	# see PHPLens Issue No: 17795
 	function Reset()
 	{
 		$this->_where=null;
@@ -862,7 +872,7 @@ class ADODB_Active_Record {
 			$val = $this->$name;
 			if(!is_array($val) || !is_null($val) || !array_key_exists($name, $table->keys)) {
 				$valarr[] = $val;
-				$names[] = $this->_QName($name,$db);
+				$names[] = $this->nameQuoter($db,$name);
 				$valstr[] = $db->Param($cnt);
 				$cnt += 1;
 			}
@@ -871,12 +881,18 @@ class ADODB_Active_Record {
 		if (empty($names)){
 			foreach($table->flds as $name=>$fld) {
 				$valarr[] = null;
-				$names[] = $name;
+				$names[] = $this->nameQuoter($db,$name);
 				$valstr[] = $db->Param($cnt);
 				$cnt += 1;
 			}
 		}
-		$sql = 'INSERT INTO '.$this->_table."(".implode(',',$names).') VALUES ('.implode(',',$valstr).')';
+
+		$tableName = $this->nameQuoter($db,$this->_table);
+		$sql = sprintf('INSERT INTO %s (%s) VALUES (%s)',
+					   $tableName,
+					   implode(',',$names),
+					   implode(',',$valstr)
+					   );
 		$ok = $db->Execute($sql,$valarr);
 
 		if ($ok) {
@@ -907,7 +923,14 @@ class ADODB_Active_Record {
 		$table = $this->TableInfo();
 
 		$where = $this->GenWhere($db,$table);
-		$sql = 'DELETE FROM '.$this->_table.' WHERE '.$where;
+
+		$tableName = $this->nameQuoter($db,$this->_table);
+
+		$sql = sprintf('DELETE FROM %s WHERE %s',
+					   $tableName,
+					   $where
+					   );
+
 		$ok = $db->Execute($sql);
 
 		return $ok ? true : false;
@@ -979,7 +1002,19 @@ class ADODB_Active_Record {
 				break;
 		}
 
-		$ok = $db->Replace($this->_table,$arr,$pkey);
+		$newArr = array();
+		foreach($arr as $k=>$v)
+			$newArr[$this->nameQuoter($db,$k)] = $v;
+		$arr = $newArr;
+
+		$newPkey = array();
+		foreach($pkey as $k=>$v)
+			$newPkey[$k] = $this->nameQuoter($db,$v);
+		$pkey = $newPkey;
+
+		$tableName = $this->nameQuoter($db,$this->_table);
+
+		$ok = $db->Replace($tableName,$arr,$pkey);
 		if ($ok) {
 			$this->_saved = true; // 1= update 2=insert
 			if ($ok == 2) {
@@ -1051,7 +1086,7 @@ class ADODB_Active_Record {
 			}
 
 			$valarr[] = $val;
-			$pairs[] = $this->_QName($name,$db).'='.$db->Param($cnt);
+			$pairs[] = $this->nameQuoter($db,$name).'='.$db->Param($cnt);
 			$cnt += 1;
 		}
 
@@ -1060,7 +1095,13 @@ class ADODB_Active_Record {
 			return -1;
 		}
 
-		$sql = 'UPDATE '.$this->_table." SET ".implode(",",$pairs)." WHERE ".$where;
+		$tableName = $this->nameQuoter($db,$this->_table);
+
+		$sql = sprintf('UPDATE %s SET %s WHERE %s',
+					   $tableName,
+					   implode(',',$pairs),
+					   $where);
+
 		$ok = $db->Execute($sql,$valarr);
 		if ($ok) {
 			$this->_original = $neworig;
@@ -1078,6 +1119,31 @@ class ADODB_Active_Record {
 		return array_keys($table->flds);
 	}
 
+	/**
+	 * Quotes the table, column and field names.
+	 *
+	 * This honours the internal {@see $_quoteNames} property, which overrides
+	 * the global $ADODB_QUOTE_FIELDNAMES directive.
+	 *
+	 * @param ADOConnection $db   The database connection
+	 * @param string        $name The table or column name to quote
+	 *
+	 * @return string The quoted name
+	 */
+	private function nameQuoter($db, $name)
+	{
+		global $ADODB_QUOTE_FIELDNAMES;
+
+		$save = $ADODB_QUOTE_FIELDNAMES;
+		$ADODB_QUOTE_FIELDNAMES = $this->_quoteNames;
+
+		$string = _adodb_quote_fieldname($db, $name);
+
+		$ADODB_QUOTE_FIELDNAMES = $save;
+
+		return $string;
+	}
+
 };
 
 function adodb_GetActiveRecordsClass(&$db, $class, $table,$whereOrderBy,$bindarr, $primkeyArr,
@@ -1087,6 +1153,7 @@ global $_ADODB_ACTIVE_DBS;
 
 
 	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
+
 	$qry = "select * from ".$table;
 
 	if (!empty($whereOrderBy)) {
@@ -1125,7 +1192,7 @@ global $_ADODB_ACTIVE_DBS;
 	// arrRef will be the structure that knows about our objects.
 	// It is an associative array.
 	// We will, however, return arr, preserving regular 0.. order so that
-	// obj[0] can be used by app developpers.
+	// obj[0] can be used by app developers.
 	$arrRef = array();
 	$bTos = array(); // Will store belongTo's indices if any
 	foreach($rows as $row) {

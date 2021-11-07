@@ -1,14 +1,23 @@
 <?php
-/*
-@version   v5.20.17  31-Mar-2020
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
-  Set tabs to 8.
-
-*/
+/**
+ * PDO MySQL driver
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
 
 class ADODB_pdo_mysql extends ADODB_pdo {
 
@@ -21,7 +30,10 @@ class ADODB_pdo_mysql extends ADODB_pdo {
 	var $sysDate = 'CURDATE()';
 	var $sysTimeStamp = 'NOW()';
 	var $hasGenID = true;
-	var $_genIDSQL = "update %s set id=LAST_INSERT_ID(id+1);";
+	var $_genIDSQL = "UPDATE %s SET id=LAST_INSERT_ID(id+1);";
+	var $_genSeqSQL = "CREATE TABLE  if NOT EXISTS %s (id int not null)";
+	var $_genSeqCountSQL = "SELECT count(*) FROM %s";
+	var $_genSeq2SQL = "INSERT INTO %s VALUES (%s)";
 	var $_dropSeqSQL = "drop table %s";
 	var $fmtTimeStamp = "'Y-m-d H:i:s'";
 	var $nameQuote = '`';
@@ -44,6 +56,67 @@ class ADODB_pdo_mysql extends ADODB_pdo {
 		$fraction = $dayFraction * 24 * 3600;
 		return $date . ' + INTERVAL ' .	$fraction . ' SECOND';
 //		return "from_unixtime(unix_timestamp($date)+$fraction)";
+	}
+	
+	/**
+	 * Get a list of indexes on the specified table.
+	 *
+	 * @param string $table The name of the table to get indexes for.
+	 * @param bool $primary (Optional) Whether or not to include the primary key.
+	 * @param bool $owner (Optional) Unused.
+	 *
+	 * @return array|bool An array of the indexes, or false if the query to get the indexes failed.
+	 */
+	function metaIndexes($table, $primary = false, $owner = false)
+	{
+		// save old fetch mode
+		global $ADODB_FETCH_MODE;
+
+		$false = false;
+		$save = $ADODB_FETCH_MODE;
+		$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
+		if ($this->fetchMode !== FALSE) {
+			$savem = $this->setFetchMode(FALSE);
+		}
+
+		// get index details
+		$rs = $this->execute(sprintf('SHOW INDEXES FROM %s',$table));
+
+		// restore fetchmode
+		if (isset($savem)) {
+			$this->setFetchMode($savem);
+		}
+		$ADODB_FETCH_MODE = $save;
+
+		if (!is_object($rs)) {
+			return $false;
+		}
+
+		$indexes = array ();
+
+		// parse index data into array
+		while ($row = $rs->fetchRow()) {
+			if ($primary == FALSE AND $row[2] == 'PRIMARY') {
+				continue;
+			}
+
+			if (!isset($indexes[$row[2]])) {
+				$indexes[$row[2]] = array(
+					'unique' => ($row[1] == 0),
+					'columns' => array()
+				);
+			}
+
+			$indexes[$row[2]]['columns'][$row[3] - 1] = $row[4];
+		}
+
+		// sort columns by order in the index
+		foreach ( array_keys ($indexes) as $index )
+		{
+			ksort ($indexes[$index]['columns']);
+		}
+
+		return $indexes;
 	}
 
 	function Concat()
@@ -204,7 +277,7 @@ class ADODB_pdo_mysql extends ADODB_pdo {
 		$nrows = (int) $nrows;
 		$offset = (int) $offset;		
 		$offsetStr =($offset>=0) ? "$offset," : '';
-		// jason judge, see http://phplens.com/lens/lensforum/msgs.php?id=9220
+		// jason judge, see PHPLens Issue No: 9220
 		if ($nrows < 0) {
 			$nrows = '18446744073709551615';
 		}
@@ -309,5 +382,42 @@ class ADODB_pdo_mysql extends ADODB_pdo {
 			$s = "CONCAT($s)";
 		}
 		return $s;
+	}
+
+	function GenID($seqname='adodbseq',$startID=1)
+	{
+		$getnext = sprintf($this->_genIDSQL,$seqname);
+		$holdtransOK = $this->_transOK; // save the current status
+		$rs = @$this->Execute($getnext);
+		if (!$rs) {
+			if ($holdtransOK) $this->_transOK = true; //if the status was ok before reset
+			$this->Execute(sprintf($this->_genSeqSQL,$seqname));
+			$cnt = $this->GetOne(sprintf($this->_genSeqCountSQL,$seqname));
+			if (!$cnt) $this->Execute(sprintf($this->_genSeq2SQL,$seqname,$startID-1));
+			$rs = $this->Execute($getnext);
+		}
+
+		if ($rs) {
+			$this->genID = $this->_connectionID->lastInsertId($seqname);
+			$rs->Close();
+		} else {
+			$this->genID = 0;
+		}
+
+		return $this->genID;
+	}
+
+
+	function createSequence($seqname='adodbseq',$startID=1)
+	{
+		if (empty($this->_genSeqSQL)) {
+			return false;
+		}
+		$ok = $this->Execute(sprintf($this->_genSeqSQL,$seqname,$startID));
+		if (!$ok) {
+			return false;
+		}
+
+		return $this->Execute(sprintf($this->_genSeq2SQL,$seqname,$startID-1));
 	}
 }

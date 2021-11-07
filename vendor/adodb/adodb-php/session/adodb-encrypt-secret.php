@@ -1,16 +1,23 @@
 <?php
-
-/*
-@version   v5.20.17  31-Mar-2020
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-         Contributed by Ross Smith (adodb@netebb.com).
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
-	  Set tabs to 4 for best viewing.
-
-*/
+/**
+ * ADOdb Session Management
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
 
 @define('HORDE_BASE', dirname(dirname(dirname(__FILE__))) . '/horde');
 
@@ -22,14 +29,6 @@ if (!is_dir(HORDE_BASE)) {
 include_once HORDE_BASE . '/lib/Horde.php';
 include_once HORDE_BASE . '/lib/Secret.php';
 
-/**
-
-NOTE: On Windows 2000 SP4 with PHP 4.3.1, MCrypt 2.4.x, and Apache 1.3.28,
-the session didn't work properly.
-
-This may be resolved with 4.3.3.
-
- */
 class ADODB_Encrypt_Secret {
 	/**
 	 */

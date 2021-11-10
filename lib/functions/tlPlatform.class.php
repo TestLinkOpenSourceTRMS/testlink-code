@@ -558,12 +558,6 @@ class tlPlatform extends tlObjectWithDB
                  'enable_on_execution' => null);
     $gaga->platforms = $this->getAll($opx);
 
-    /*
-    echo '<pre>';
-    var_dump($gaga->platforms);
-    echo '</pre>';
-    */
-    
     $rx = array('canManage' => 'platform_management', 
                 'mgt_view_events' => 'mgt_view_events');
     foreach($rx as $prop => $right) {

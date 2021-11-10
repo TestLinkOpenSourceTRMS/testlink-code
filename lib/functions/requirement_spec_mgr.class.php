@@ -693,8 +693,6 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 					" AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
 			$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
 
-      // var_dump($sql);
-
 			if( !is_null($itemSet) )
 			{
 				$reqSet = array_keys($itemSet);
@@ -2790,10 +2788,7 @@ function get_requirement_child_by_id_req($id){
            " WHERE NH_REQ.parent_id=" . intval($id) .
            " AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} AND RCOV.is_active = 1 {$filters} ";
 
-    //echo $sql;
     $itemSet = $this->db->get_recordset($sql);
-    //var_dump($itemSet);
-
     return $itemSet;
   }
 

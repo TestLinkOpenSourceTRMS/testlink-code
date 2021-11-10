@@ -1960,7 +1960,6 @@ function getMenuVisibility(&$gui)
     $showMenu['search'] = true;
   }
 
-  //var_dump(__FUNCTION__,$gui->tproject_id,$gui->tplan_id); 
   if($gui->tproject_id > 0  && 
      ($gui->grants->cfield_assignment == "yes" ||
       $gui->grants->cfield_management == "yes" || 

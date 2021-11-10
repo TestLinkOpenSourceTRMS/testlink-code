@@ -795,8 +795,6 @@ class testsuite extends tlObjectWithAttachments
       $my['filters']['exclude_node_types']['testcase'] = 'exclude_me';
     }
 
-    // var_dump($my['filters']);
-    //die();
     $subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
     return $subtree;
   }

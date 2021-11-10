@@ -3219,7 +3219,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
             " FROM {$this->tables['tcversions']} TCVX " . 
             " JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
             " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
-            " WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
+            " WHERE NHTCX.parent_id IN (" . implode(',',$tclist) . ")" .
             " GROUP BY NHTCX.parent_id";
   
     // 2018, again where is the active check?

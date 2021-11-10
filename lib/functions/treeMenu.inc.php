@@ -116,9 +116,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . 
                   $glueChar;
 
- echo '<pre>' . __LINE__; var_dump($my['filters']['filter_keywords']); echo '</pre>'; 
-  die();
-
   $test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
 
   // where the Keyword filter will be applied?
@@ -132,9 +129,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $map_node_tccount=array();
   $tplan_tcs=null;
   $tc2show = null;
-
-  echo '<pre>'; var_dump($my['filters']['filter_keywords']); echo '</pre>'; 
-  die();
 
   // MORE FILTERS
   if($test_spec) {

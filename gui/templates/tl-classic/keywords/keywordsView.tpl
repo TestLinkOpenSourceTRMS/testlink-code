@@ -28,11 +28,19 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
 {if $gui->bodyOnLoad != ''}
   <script language="JavaScript">
   var {$gui->dialogName} = new std_dialog();
-  </script>  
+  </script>
 {/if}
 
+{* -------------------------------------------------------------------------- *}
+{if $tlCfg->gui->keywordsView->pagination->enabled}
+  {$menuLen = $tlCfg->gui->keywordsView->pagination->length}
+  {include file="DataTables.inc.tpl"}
 
-{include file="bootstrap.inc.tpl"} 
+  {include file="DataTablesColumnFiltering.inc.tpl"}
+{/if}
+{* ------------------------------------------------------------------------------------------------ *}
+
+{include file="bootstrap.inc.tpl"}
 </head>
 <body onLoad="{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}"
       class="testlink">
@@ -41,13 +49,13 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
 
 <div class="page-content">
   {if $gui->keywords != ''}
-  <table class="table table-bordered sortable">
+  <table id='item_view' class="table table-bordered">
     <thead class="thead-dark">
       <tr>
-        <th width="30%">{$tlImages.sort_hint}{$labels.th_keyword}</th>
-        <th>{$tlImages.sort_hint}{$labels.th_notes}</th>
+        <th data-draw-filter="smartsearch" width="30%">{$labels.th_keyword}</th>
+        <th data-draw-filter="smartsearch">{$labels.th_notes}</th>
         {if $gui->canManage != ""}
-          <th style="min-width:70px">{$tlImages.sort_hint}{$labels.th_delete}</th>
+          <th {#NOT_SORTABLE#} style="min-width:70px">{$labels.th_delete}</th>
         {/if}
       </tr>
     </thead>

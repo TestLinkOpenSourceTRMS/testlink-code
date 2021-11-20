@@ -21,8 +21,8 @@
 </head>
 
 <body>
-  <iframe src="{$gui->titleframe}" name="titlebar" class="navigationBar"></iframe>
-  <iframe src="{$gui->mainframe}" name="mainframe" class="siteContent"></iframe>
+  <iframe src="{$gui->titleframe}" name="titlebar" id="titlebar" class="navigationBar"></iframe>
+  <iframe src="{$gui->mainframe}" name="mainframe" id="mainframe" class="siteContent"></iframe>
 </body>
 
 </html>

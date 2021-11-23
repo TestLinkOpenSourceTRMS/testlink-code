@@ -239,6 +239,18 @@ $tlCfg->gui_title_separator_2 = ' - '; // parent - child
  */
 $tlCfg->testcase_cfg->glue_character = '-';
 
+
+
+$tlCfg->testcase_cfg->import = new stdClass();
+$tlCfg->testcase_cfg->import->wordwrap = new stdClass();
+
+/* 0 => do not apply wordwrap() */
+$tlCfg->testcase_cfg->import->wordwrap->summary = 0;
+$tlCfg->testcase_cfg->import->wordwrap->preconditions = 0;
+$tlCfg->testcase_cfg->import->wordwrap->actions = 0;
+$tlCfg->testcase_cfg->import->wordwrap->expected_results = 0;
+
+
 /**
  * fonts set used to draw charts
  **/

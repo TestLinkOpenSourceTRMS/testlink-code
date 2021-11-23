@@ -268,6 +268,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   for($idx = 0; $idx <$tc_qty ; $idx++) {
     $tc = $tcData[$idx];
     $name = $tc['name'];
+    
     $summary = $tc['summary'];
     $steps = $tc['steps'];
     $internalid = $tc['internalid'];
@@ -311,7 +312,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     // if use has not provided order I think is OK TestLink make any choice.
     $node_order = isset($tc['node_order']) ? intval($tc['node_order']) : ($idx+1);
     $internalid = $tc['internalid'];
+    
     $preconditions = $tc['preconditions'];
+    
     $exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
     $importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;   
 
@@ -840,6 +843,11 @@ function importTestCasesFromSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id
  */
 function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 {
+  static $cfg;
+  if (!$cfg) {
+    $cfg = config_get('testcase_cfg')->import;
+  }	
+
   $tcSet = null;
   if (!$xmlTCs)
   {
@@ -862,16 +870,40 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
   $tcXML['attributes'] = array('string' => array("name" => 'trim'), 
                                'integer' =>array('internalid' => null));
 
+
   for($idx = 0; $idx < $loops2do; $idx++)
   {
     $dummy = getItemsFromSimpleXMLObj(array($xmlTCs[$idx]),$tcXML);
     $tc = $dummy[0]; 
-        
     if ($tc)
     {
+     
+      if ($cfg->wordwrap->summary > 0) {
+        $tc['summary'] = wordwrap($tc['summary'],$cfg->wordwrap->summary);
+      } 
+      if ($cfg->wordwrap->preconditions > 0) {
+        $tc['preconditions'] = wordwrap($tc['preconditions'],$cfg->wordwrap->preconditions);
+      }
+
+
       // Test Case Steps
       $steps = getStepsFromSimpleXMLObj($xmlTCs[$idx]->steps->step);
       $tc['steps'] = $steps;
+
+      if ($cfg->wordwrap->actions > 0 || $cfg->wordwrap->expected_results > 0) {
+	    foreach ($tc['steps'] as $sdx => $elem) {
+	    
+	      if ($cfg->wordwrap->actions > 0) {
+	      	$tc['steps'][$sdx]['actions'] = wordwrap($tc['steps'][$sdx]['actions'],
+	      		                                     $cfg->wordwrap->actions);	      	
+	      }
+
+	      if ($cfg->wordwrap->expected_results > 0) {
+	      	$tc['steps'][$sdx]['expected_results'] = wordwrap($tc['steps'][$sdx]['expected_results'],
+	      		                                     $cfg->wordwrap->expected_results);
+          }
+	    }
+      }
 
       $keywords = getKeywordsFromSimpleXMLObj($xmlTCs[$idx]->keywords->keyword);
       if ($keywords)

@@ -580,11 +580,17 @@ class tlRestApi
     }  
 
     if($status_ok) {
+      $msg = 'Last Step Get testCaseVersionNumber';
       $ret = new stdClass();
       $ret->testProjectID = $testPlan['testproject_id'];
       $ret->testCaseVersionID = key($links);
-      $ret->testCaseVersionNumber = 
-        $links[$ret->testCaseVersionID][$ex->testPlanID][$platform]['version'];
+
+      $status_ok = false;
+      if (isset($links[$ret->testCaseVersionID][$ex->testPlanID][$platform]['version'])) {
+      	$ret->testCaseVersionNumber = 
+        	$links[$ret->testCaseVersionID][$ex->testPlanID][$platform]['version'];
+        $status_ok = true;
+      }
     }
 
     if(!$status_ok) {

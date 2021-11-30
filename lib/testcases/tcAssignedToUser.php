@@ -62,7 +62,7 @@ if( $doIt )
 
   // has logged user right to execute test cases on this test plan?
   $hasExecRight = 
-    $_SESSION['currentUser']->hasRight($db,'testplan_execute',null,$args->tplan_id);
+    $_SESSION['currentUser']->hasRightOnProj($db,'testplan_execute',null,$args->tplan_id);
 
   $tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
   $tplanSet=array_keys($gui->resultSet);

@@ -8955,7 +8955,7 @@ class testcase extends tlObjectWithAttachments {
       $key2check = array('summary','preconditions');
     }
 
-    if( null==$skwSet || !$skwSet[$tcase_id] ) {
+    if( null==$skwSet || !isset($skwSet[$tcase_id]) ) {
       $optSKW = array('getTSuiteKeywords' => true);
       $skwSet[$tcase_id] = $this->getPathLayered($tcase_id,$optSKW);      
     }

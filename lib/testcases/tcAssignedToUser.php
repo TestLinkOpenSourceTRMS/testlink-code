@@ -60,10 +60,6 @@ if( $doIt )
 {   
   $execCfg = config_get('exec_cfg');
 
-  // has logged user right to execute test cases on this test plan?
-  $hasExecRight = 
-    $_SESSION['currentUser']->hasRightOnProj($db,'testplan_execute',null,$args->tplan_id);
-
   $tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
   $tplanSet=array_keys($gui->resultSet);
   $sql="SELECT name,id FROM {$tables['nodes_hierarchy']} " .
@@ -73,17 +69,17 @@ if( $doIt )
 
   $whoiam = $args->show_all_users ? 'tcAssignedToUser': 'tcAssignedToMe';
 
-  foreach ($gui->resultSet as $tplan_id => $tcase_set) 
-  {
+  foreach ($gui->resultSet as $tplan_id => $tcase_set) {
     list($columns,$sortByColumn,$show_platforms) = getColumnsDefinition($db,$tplan_id,$optColumns);
     
     $rows = array();
 
-    foreach ($tcase_set as $tcase_platform) 
-    {
+    // has logged user right to execute test cases on this (test project,test plan)?
+    $hasExecRight = $_SESSION['currentUser']->hasRight($db,'testplan_execute',
+       	                                               $args->tproject_id,$tplan_id,true);
 
-      foreach ($tcase_platform as $tcase) 
-      {
+    foreach ($tcase_set as $tcase_platform) {
+      foreach ($tcase_platform as $tcase) {
       	$current_row = array();
       	$tcase_id = $tcase['testcase_id'];
       	$tcversion_id = $tcase['tcversion_id'];
@@ -105,14 +101,13 @@ if( $doIt )
 
         // create linked icons
         $ekk = $elk = $exec_link = '';
-        $canExec = $hasExecRight == 'yes';
-        if($execCfg->exec_mode->tester == 'assigned_to_me')
-        {
+        $canExec = ($hasExecRight == 'yes');
+        
+        if($execCfg->exec_mode->tester == 'assigned_to_me') {
           $canExec = $canExec && ($tcase['user_id'] == $_SESSION['userID']);
         }  
 
-        if($canExec)
-        {  
+        if($canExec) {  
           $ekk = sprintf($exec['common'],$tplan_id,$tcase['platform_id'],$tplan_id,$tcase['build_id'],
                          $tplan_id,$tcversion_id,$tplan_id);
           

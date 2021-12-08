@@ -138,7 +138,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     $pattern = trim($this->attachmentCfg->allowed_filenames_regexp);
     if( '' != $pattern && !preg_match($pattern,$fName) ){
       $op->statusCode = 'allowed_filenames_regexp';
-      $op->msg = lang_get('FILE_UPLOAD_' . $op->statusCode);
+      $op->msg = str_replace('%filename%',$fName,lang_get('FILE_UPLOAD_' . $op->statusCode));
       return $op; 
     }
     
@@ -152,7 +152,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     $allowed = explode(',',$this->attachmentCfg->allowed_files);
     if (!in_array($fExt, $allowed)) {
       $op->statusCode = 'allowed_files';
-      $op->msg = lang_get('FILE_UPLOAD_' . $op->statusCode);
+      $op->msg = str_replace('%filename%',$fName,lang_get('FILE_UPLOAD_' . $op->statusCode));
       return $op; 
     }
 

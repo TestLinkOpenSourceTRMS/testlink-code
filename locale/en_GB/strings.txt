@@ -4017,10 +4017,10 @@ $TLS_info_resultsTCAbsoluteLatest_report = $TLS_resultsTCAbsoluteLatest;
 
 $TLS_resultsTCAbsoluteLatest_title = "Latest execution in Selected Platform  computed over all builds";
 
-$TLS_FILE_UPLOAD_allowed_filenames_regexp = 'File Name does not pass REGEXP checkings';
+$TLS_FILE_UPLOAD_allowed_filenames_regexp = 'File Name does not pass REGEXP checkings <br> <b> %filename% </b>';
 
 $TLS_FILE_UPLOAD_empty_extension = 'Empty Extension is Forbidden';
-$TLS_FILE_UPLOAD_allowed_files = 'File does not pass allowed file type check';
+$TLS_FILE_UPLOAD_allowed_files = 'File does not pass allowed file type check <br> <b> %filename% </b>';
 
 $TLS_file_upload_ko = 'File Upload Issue';
 $TLS_pleaseOpenTSuite = 'Test Suite Details contain CRITIC information for ' .

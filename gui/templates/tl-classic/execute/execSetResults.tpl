@@ -123,7 +123,12 @@ updateLinkToLatestTCVersion,
 version,
 warning,
 warning_delete_execution,
-warning_nothing_will_be_saved,file_upload_ko,pleaseOpenTSuite'}
+warning_nothing_will_be_saved,
+file_upload_ko,
+file_upload_tclevel_ok,
+file_upload_steplevel_ok,
+file_upload_steplevel_ko,
+pleaseOpenTSuite'}
 
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -361,21 +366,21 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 {if $gui->uploadOp != null }
   <script>
-  var uplMsg = "{$labels.file_upload_ko}<br>";
+  var uplMsg = "";
   var doAlert = false;
-  {if $gui->uploadOp->tcLevel != null 
-      && $gui->uploadOp->tcLevel->statusOK == false}
-    uplMsg += "{$gui->uploadOp->tcLevel->msg}<br>";
-    doAlert = true;
-  {/if}
 
-  {if $gui->uploadOp->stepLevel != null 
-      && $gui->uploadOp->stepLevel->statusOK == false}
-    uplMsg += "{$gui->uploadOp->stepLevel->msg}<br>";
-    if (doAlert == false) {
-      doAlert = true;
-    }
-  {/if}
+  {if $gui->uploadOp->tcLevel != null}
+    uplMsg = "{$labels.file_upload_tclevel_ok}";
+    uplMsg += "{$gui->uploadOp->tcLevel->msg}<br><br>";
+    doAlert = true;
+  {/if} 
+
+  {if $gui->uploadOp->stepLevel != null}
+     uplMsg += "{$labels.file_upload_steplevel_ok}";
+     uplMsg += "{$gui->uploadOp->stepLevel->msg}<br><br>";
+     doAlert = true;
+  {/if} 
+
   if (doAlert) {
     bootbox.alert(uplMsg);
   }

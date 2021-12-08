@@ -4022,7 +4022,17 @@ $TLS_FILE_UPLOAD_allowed_filenames_regexp = 'File Name does not pass REGEXP chec
 $TLS_FILE_UPLOAD_empty_extension = 'Empty Extension is Forbidden';
 $TLS_FILE_UPLOAD_allowed_files = 'File does not pass allowed file type check <br> <b> %filename% </b>';
 
-$TLS_file_upload_ko = 'File Upload Issue';
+$TLS_file_upload_ok = 'File Upload OK <br> <b> %filename%</b>';
+$TLS_file_upload_step_exec_ok ='File Upload OK - Test Case Step: %step% <br> <b> %filename%</b>';
+$TLS_file_upload_step_exec_ko ='File Upload Issue - Test Case Step: %step%';
+
+$TLS_file_upload_ko = '<h4>File Upload Issue</h4>';
+$TLS_file_upload_tclevel_ok = '<h4>File Upload on Test Case Execution</h4>';
+$TLS_file_upload_steplevel_ok = '<h4>File Upload on Step Execution</h4>';
+$TLS_file_upload_steplevel_ko = '<h4>File Upload Issue on Step Execution</h4>';
+
+
+
 $TLS_pleaseOpenTSuite = 'Test Suite Details contain CRITIC information for ' .
                    'execution. <br>Please open the section and ' .
                    'read it carefully.<br>Thanks!';

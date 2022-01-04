@@ -8,7 +8,7 @@ Next TestLink version will 2.x with a new UX based on the Dashio - Bootstrap Adm
 
 ## Contents
  1. [Introduction](#1-introduction)
- 2. [Release notes / Critical Configuration Notes](2-release-notes--critical-configuration-notes)
+ 2. [Release notes / Critical Configuration Notes](#2-release-notes--critical-configuration-notes)
  3. [System Requirements](#3-system-requirements---server)
  4. [Installation & SECURITY](#4-installation--security)
  5. [Upgrade and Migration](#5-upgrade-and-migration)

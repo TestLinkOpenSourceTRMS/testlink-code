@@ -1,7 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
+@uses tctitle.inc.tpl
 *}
 
+{* variable $tco will be available in included templates *}
 {$tco = $inc_tcbody_testcase}
 {include file="testcases/tctitle.inc.tpl"} 
 <!-- ------------------------------------------- -->

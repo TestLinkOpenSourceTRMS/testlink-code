@@ -19,7 +19,7 @@ viewer for test case in test specification
              estimated_execution_duration,status,btn_save,estimated_execution_duration_short,
              requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements,
              code_mgmt,code_link_tl_to_cts,can_not_edit_frozen_tc,testcase_operations,
-			 testcase_version_operations,goto_execute,"}
+			       testcase_version_operations,goto_execute,tc_has_relations"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -433,6 +433,7 @@ viewer for test case in test specification
 
   <div class="workBack">
     {include file="{$tplConfig.inc_tcbody}" 
+             inc_relations = $args_relations
              inc_tcbody_close_table=false
              inc_tcbody_testcase=$args_testcase
              inc_tcbody_show_title=$args_show_title

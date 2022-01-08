@@ -411,6 +411,7 @@ class TLSmarty extends Smarty {
                    'plugins' => $imgLoc . 'connect.png',
                    'public' => $imgLoc . 'door_open.png',
                    'private' => $imgLoc . 'door.png',
+                   'relations' => $imgLoc . 'asterisk_yellow.png',
                    'remove' => $imgLoc . 'delete.png',
                    'reorder' => $imgLoc . 'arrow_switch.png',
                    'report' => $imgLoc . 'report.png',

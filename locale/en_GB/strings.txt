@@ -4088,5 +4088,5 @@ $TLS_mandatory_upload_warning = 'One of more Steps requires that you upload file
 
 $TLS_simplexml_load_file_wrapper_error = "Please provide these text to your TestLink Administrator<br> - XML Load Failed<br>";
 
-$TLS_tc_has_relations = 'Test Case has relations';
+$TLS_tc_has_relations = 'Test Case has relations. Click to jump to section';
 // ----- END -----------------------------------------------------

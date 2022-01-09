@@ -15,9 +15,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         font: bold 11px tahoma,arial,verdana,sans-serif;
         color:      #15428b;">
 
+      {* $tcversion_id inherited  from tcView_viewer.tpl *}
       {if $inc_relations != ''}
         <img class="clickable" src="{$tlImages.relations}"
-             title="{$inc_tcbody_labels.tc_has_relations}">       
+             title="{$inc_tcbody_labels.tc_has_relations}"
+             onclick="document.getElementById('relations_{$tcversion_id}').scrollIntoView();">       
       {/if} 
     
       {$tco.tc_external_id}{$smarty.const.TITLE_SEP}{$tco.name|escape}

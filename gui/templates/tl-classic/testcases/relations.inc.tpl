@@ -60,6 +60,7 @@ var pF_delete_relation = delete_relation;
   <input type="hidden" name="relation_source_tcase_id" id="relation_source_tcase_id"
          value="{$gui->tcase_id}" />
 
+  {* need to check @20220109 - $gui->tcversion_id is 0, is this OK? means latest? *}
   <input type="hidden" name="relation_source_tcversion_id" 
          id="relation_source_tcversion_id" value="{$gui->tcversion_id}" />
              
@@ -74,7 +75,8 @@ var pF_delete_relation = delete_relation;
     <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
   {/if}
 
-  <table class="simple" id="relations">
+  {* $tcversion_id inherited  from tcView_viewer.tpl *}
+  <table class="simple" id="relations_{$tcversion_id}">
     {if $args_edit_enabled}
       {$canWork = $args_is_latest_tcv == 1 || 
                   $tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion == 0}

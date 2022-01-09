@@ -31,7 +31,7 @@ viewer for test case in test specification
 
 {$module='lib/testcases/'}
 {$tcase_id=$args_testcase.testcase_id}
-{$tcversion_id=$args_testcase.id}
+{$tcversion_id=$args_testcase.id}  {* @used-by relations.inc.tpl *}
 {$showMode=$gui->show_mode} 
 
 {$openC = $gsmarty_gui->role_separator_open}

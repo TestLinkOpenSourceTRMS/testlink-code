@@ -234,7 +234,7 @@ $TLS_clear_all_notes = "Wyczyść wszystkie uwagi";
 $TLS_unfreeze = "Odmróź";
 $TLS_unable_to_render_ghost = '*** UNABLE TO RENDER *** ';
 
-$TLS_issue_additional_information = "Dodatkowa informacja";
+$TLS_issue_additional_information = "Informacja dodatkowa";
 $TLS_issue_description = 'Opis';
 $TLS_issue_issue = 'Zagadnienie / Zadanie';
 $TLS_issue_steps_to_reproduce = "Kroki do powtórzenia";
@@ -255,7 +255,7 @@ $TLS_delete = "usuń";
 $TLS_disable = "deaktywuj";
 $TLS_export_import = "Eksportuj / importuj";
 $TLS_executed	= "wykonane";
-$TLS_move	= "Przenieś";
+$TLS_move	= "przenieś";
 $TLS_remove = "usuń";
 $TLS_unassigned = "nieprzypisane";
 
@@ -405,7 +405,7 @@ $TLS_th_requirement_feature = "Wymagania?";
 $TLS_import_file_type = "Importowany typ pliku";
 $TLS_max_file_size_is = "Maks. rozmiar pliku %s";
 $TLS_supported_file_formats = "Rodzaje wspieranych formatów";
-$TLS_no_permissions_for_action = "Nie masz prawa do wykonania tej akcji!" .
+$TLS_no_permissions_for_action = "Nie masz uprawnień do wykonania tej akcji!" .
                                  "Skontaktuj się z administratorem!";
 
 $TLS_name_already_exists = "Nazwa: %s już istnieje";
@@ -552,7 +552,7 @@ $TLS_wrong_keywords_file = "Nieprawidłowy plik słów kluczowych (zły format)"
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "Brak użytkownika o podanym loginie. Spróbuj ponownie";
-$TLS_contact_admin = " Zaloguj się i zmień hasło jak najszybciej. Jeżeli wystąpią dalszę problemy z kontaktuj się z administratorem.";
+$TLS_contact_admin = " Zaloguj się i zmień hasło jak najszybciej. Jeżeli wystąpią dalszę problemy skontaktuj się z administratorem.";
 $TLS_mail_empty_address = "Nie podałeś adresu email w swoim profilu! Skontaktuj się z administratorem z prośbą o zresetowanie hasła!";
 $TLS_mail_passwd_subject = "TestLink - Twoje nowe hasło";
 $TLS_mail_problems = "Błąd w ustawieniach poczty, skontaktuj się z administratorem.";
@@ -582,7 +582,7 @@ $TLS_your_first_login = "Witamy w systemie! Twój aktualny status to: gość.";
 
 // ----- newest_tcversions.php -----
 $TLS_no_linked_tcversions = "nie przypisano wersji przypadków testowych";
-$TLS_testplan_seems_empty = "Plan testów jest pusty - nic do zrobienia";
+$TLS_testplan_seems_empty = "Plan testów jest pusty - nie ma nic do zrobienia";
 
 // resultsGeneral.php
 $TLS_report_tspec_has_no_tsuites = "Nie ma zdefiniowanych zestawów testów w ramach projektu<br />".
@@ -597,7 +597,7 @@ $TLS_report_tcase_platorm_relationship = "Do planu testów zostały dodane platf
 
 // ----- resultsNavigator.php -----
 $TLS_title_nav_results = "Raporty i metryki";
-$TLS_report_tplan_has_no_build = "Plan testów nie ma zdefiniowanego wydania <br />" .
+$TLS_report_tplan_has_no_build = "Plan testów nie ma zdefiniowanego builda <br />" . //proponuję nie tłumaczyć build
                                "więc dane wykonania nie moga być nigdzie zapisane => nie można stworzyć rapotu.";
 $TLS_report_tplan_has_no_tcases = "Plan testów nie ma podpietych przypadków testowych <br />" .
                                 "więc nie ma danych nt. wykonania => nie można stworzyć raportu.";
@@ -706,7 +706,7 @@ $TLS_toggle_create_testcase_amount = "Przełącz między tworzeniem pojednynczeg
                                      "do pełnego pokrycia wymagania";
 
 // gui/templates/containerOrder.tpl
-$TLS_no_nodes_to_reorder = "Przykro mi, nie ma czego zmieniać!";
+$TLS_no_nodes_to_reorder = "Przykro mi, nie ma co zmieniać!";
 $TLS_node = $TLS_name;
 $TLS_th_id = "ID";
 $TLS_th_node_type = "Przypadek testowy / Zestaw testów";
@@ -816,16 +816,16 @@ $TLS_filter_result = "Wynik";
 $TLS_filter_on = "dnia";
 $TLS_filter_tcID = "ID przypadku";
 $TLS_include_unassigned_testcases = "dołącz nieprzydzielone przypadki";
-$TLS_filter_result_all_builds = "wszystkie wydania";
-$TLS_filter_result_any_build = "dowolne wydanie";
-$TLS_filter_result_specific_build = "wybrane wydanie";
-$TLS_filter_result_latest_execution = "najnowsze wykonanie";
-$TLS_filter_result_current_build = "Wydanie wybrane do wykonania";
+$TLS_filter_result_all_builds = "wszystkie buildy"; //wydania - buildy
+$TLS_filter_result_any_build = "dowolny build"; //wydania - buildy
+$TLS_filter_result_specific_build = "wybrany build"; //wydania - buildy
+$TLS_filter_result_latest_execution = "najnowszy wykonanie";
+$TLS_filter_result_current_build = "Build wybrany do wykonania"; //wydania - buildy
 $TLS_filter_somebody = "ktoś";
-$TLS_exec_build = "Wydanie do wykonania";
-$TLS_assign_build = "Wydanie do przydzielenia";
-$TLS_filter_result_all_prev_builds = "wszystkie poprzednie wydania";
-$TLS_filter_result_any_prev_build = "dowolne poprzednie wydanie";
+$TLS_exec_build = "Build do wykonania"; //wydania - buildy
+$TLS_assign_build = "Build do przydzielenia"; //wydania - buildy
+$TLS_filter_result_all_prev_builds = "wszystkie poprzednie buildy"; //wydania - buildy
+$TLS_filter_result_any_prev_build = "dowolne poprzednie buildy"; //wydania - buildy
 $TLS_document_id = "ID dokumentu";
 $TLS_req_type = "Rodzaj wymagania";
 $TLS_req_spec_type = "Rodzaj spec. wym.";
@@ -872,8 +872,8 @@ $TLS_show_only_active = "Pokaż metryki tylko dla aktywnych planów testów";
 // ----- gui/templates/newest_tcversions.tpl -----
 $TLS_linked_version = "Przypięte wersje";
 $TLS_newest_version = "Najnowsze dostępne wersje";
-$TLS_title_newest_tcversions = "Najnowsze wersje przypietych przypadków";
-$TLS_no_newest_version_of_linked_tcversions = "Wszystkie przypiete wersje przypadków są aktualne";
+$TLS_title_newest_tcversions = "Najnowsze wersje przypiętych przypadków";
+$TLS_no_newest_version_of_linked_tcversions = "Wszystkie przypięte wersje przypadków są aktualne";
 
 
 // ----- gui/templates/emailSent.tpl -----
@@ -913,12 +913,12 @@ $TLS_attached_files = "Załączone pliki";
 $TLS_attachment_feature_disabled = "załączanie wyłączone";
 $TLS_button_upload = $TLS_btn_upload;
 $TLS_upload_file_new_file = "Ładowanie nowego pliku";
-$TLS_warning_delete_attachment = "Naprawdę usunąć ten załącznik?";
+$TLS_warning_delete_attachment = "Czy naprawdę usunąć ten załącznik?";
 
 
 
 // gui/templates/resultsNavigator.tpl
-$TLS_note_email_sent_t = "uwaga: email wysłano na adres użytkownika";
+$TLS_note_email_sent_t = "Uwaga: email wysłano na adres użytkownika";
 $TLS_show_inactive_tplans = "Pokaż nieaktywne plany testów";
 $TLS_send_results = "Wyślij rezultaty";
 $TLS_send_to = "Do:";
@@ -1013,11 +1013,11 @@ $TLS_enter_build_notes = "Opis";
 //$TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
 //                 "Description should include: list of delivered packages, approvals, status, etc.";
 $TLS_open = "Otwórz";
-$TLS_title_build_2 = "Zarządzanie wydaniami";
-$TLS_title_build_create = "Utwórz nowe wydanie";
-$TLS_title_build_update = "Uaktualnij wydanie";
-$TLS_title_build_edit = "Edytuj wydanie";
-$TLS_warning_empty_build_name = "Nadaj nazwę dla wydania!";
+$TLS_title_build_2 = "Zarządzanie buildami"; //wydania - buildy
+$TLS_title_build_create = "Utwórz nowy build"; //wydania - buildy
+$TLS_title_build_update = "Uaktualnij build"; //wydania - buildy
+$TLS_title_build_edit = "Edytuj build"; //wydania - buildy
+$TLS_warning_empty_build_name = "Nadaj nazwę dla builda!"; //wydania - buildy
 $TLS_copy_to_all_tplans = "Skopiuj do wszystkich planów testów";
 $TLS_release_date = "Data publikacji";
 $TLS_closure_date = "Data zamknięcia";
@@ -1177,7 +1177,7 @@ $TLS_copy_req_spec = "Kopiuj specyfikację wymagań";
 // gui/templates/inc_show_bug_table.tpl
 $TLS_caption_bugtable = "Powiązane defekty";
 $TLS_delete_bug ="Usuń defekt z bazy TL";
-$TLS_del_bug_warning_msg = "Naprawdę usunąć ten defekt z bazy TL?";
+$TLS_del_bug_warning_msg = "Czy naprawdę usunąć ten defekt z bazy TL?";
 
 
 
@@ -1266,7 +1266,7 @@ $TLS_too_wide_search_criteria = "Zbyt wiele rezultatów. Zawęź kryteria wyszuk
 
 // ----- gui/templates/tcDelete.tpl -----
 $TLS_btn_yes_iw2del = "Tak, usuń przypadek testowy!";
-$TLS_question_del_tc = "Naprawdę usunąć przypadek testowy?";
+$TLS_question_del_tc = "Czy naprawdę usunąć przypadek testowy?";
 $TLS_th_executed = "Wykonany";
 $TLS_th_linked_to_tplan = "Powiazany z planem testów";
 $TLS_th_version = "Wersja";
@@ -1276,7 +1276,7 @@ $TLS_th_version = "Wersja";
 // ----- gui/templates/tcNew.tpl -----
 $TLS_title_new_tc = "Utwórz przypadek testowy";
 $TLS_warning_empty_tc_title = "Wpisz tytuł przypadku testowego";
-$TLS_stay_here_tc = "zaznacz, aby po zapisaniu aktualnego przypadku testowego, od razu utworzyć nowy";
+$TLS_stay_here_tc = "zaznacz, aby po zapisaniu aktualnego przypadku testowego od razu utworzyć nowy";
 
 
 
@@ -1319,7 +1319,7 @@ $TLS_before_steps_results = "Powyżej kroków";
 // ----- gui/templates/usersview.tpl -----
 $TLS_No = "Nie";
 $TLS_Yes = "Tak";
-$TLS_alt_delete_user = "Naprawdę usunąć wybranego użytkownika?";
+$TLS_alt_delete_user = "Czy naprawdę usunąć wybranego użytkownika?";
 $TLS_alt_disable_user = "Wyłącz użytkownika";
 $TLS_alt_edit_user = "Edytuj użytkownika";
 $TLS_order_by_login = "Sortuj po loginie";
@@ -1431,7 +1431,7 @@ $TLS_issue_tracker_integration_problems = "Uwaga: <br>" .
 										  "i może spowodować problemy z wydajnością.<br>" .
 										  "Skontaktuj się z administratorem TestLinka";
 
-$TLS_just_last_execution_for_this_build = "Najnowsze wykonanie dla wydania";
+$TLS_just_last_execution_for_this_build = "Najnowsze wykonanie dla builda";
 $TLS_last_execution = "Najnowsze wykonanie";
 $TLS_no_data_available = "Dane niedostępne";
 $TLS_only_test_cases_assigned_to = "Tylko przydzielone przypadki";
@@ -1455,7 +1455,7 @@ $TLS_test_exec_summary = "Cel testu:";
 $TLS_test_plan_notes = "Notatki planu testów";
 $TLS_th_test_case_id = "ID ";
 $TLS_th_testsuite = $TLS_test_suite;
-$TLS_title_t_r_on_build = "Wyniki testowania dla wydania";
+$TLS_title_t_r_on_build = "Wyniki testowania dla buildu";
 $TLS_title_t_r_owner = " Przypisane do";
 $TLS_title_test_case = $TLS_test_case;
 $TLS_version = "Wersja";
@@ -1519,7 +1519,7 @@ $TLS_execution_order = "Kolejność wykonania";
 $TLS_select_all_to_add = "Zaznacz / odznacz wszystkie (dodawanie)";
 $TLS_select_all_to_remove = "Zaznacz / odznacz wszystkie (usuwanie)";
 $TLS_tester_assignment_on_add="Przypisz do testera";
-$TLS_build_to_assign_on_add = "dla wydania";
+$TLS_build_to_assign_on_add = "dla buildu";
 
 $TLS_has_been_executed = "został wykonany";
 $TLS_inactive_testcase = "nieaktywny";
@@ -1583,7 +1583,7 @@ $TLS_testplan_txt_notes = "Plany testów powinny zawierać dokładnie określone
                           "Zaleca się, aby pole opisu wykorzystać m.in. do umieszczenia powiązań do planu projektu i dokumentacji, " .
                           "listy funkcji, które mają być przetestowane, listy ryzyk projektowych, itp. " .
                           "Możesz stworzyć nowy plan testów z już istniejącego. " .
-                          "Elementy, które są kopiowane to: wydania, przypadki testowe, priorytety, kamienie milowe i role użytkowników." .
+                          "Elementy, które są kopiowane to: buildy, przypadki testowe, priorytety, kamienie milowe i role użytkowników." .
                           "Plany testowe można dezaktywować (edycja i zmiany wyników są niedozwolone). " .
                           "Nieaktywne plany testów są widoczne tylko w Raportach i na tej stronie.";
 $TLS_warning_empty_tp_name = "Nie możesz dodać planu testów bez nazwy!";
@@ -1914,11 +1914,11 @@ $TLS_no_blocked_with_tester = "Nie ma żadnych przypadków testowych (Z PRZYPISA
 
 
 // ----- gui/templates/resultsByTesterPerBuild.tpl -----
-$TLS_caption_results_by_tester_per_build = "Wyniki dla testera per wydanie";
-$TLS_results_by_tester_per_build = "Wyniki dla testera per wydanie";
+$TLS_caption_results_by_tester_per_build = "Wyniki dla testera per build";
+$TLS_results_by_tester_per_build = "Wyniki dla testera per build";
 $TLS_progress = "Postęp planu [%]";
 $TLS_executions_without_assignment = "Nieprzypisane wykonania";
-$TLS_no_testers_per_build = "W tym planie testów nie ma przypisanych testerów w żadnym otwartym wydaniu.";
+$TLS_no_testers_per_build = "W tym planie testów nie ma przypisanych testerów w żadnym otwartym buildzie.";
 
 $TLS_total_time_hhmmss = "Całkowity czas (hh:mm:ss)";
 
@@ -2074,9 +2074,9 @@ $TLS_mail_body = "Treść:";
 $TLS_mail_report = "Raport:";
 $TLS_mail_subject = "Temat:";
 $TLS_mail_to = "Do:";
-$TLS_status_for_build = "Status dla wydania";
+$TLS_status_for_build = "Status dla builda";
 $TLS_tp_status = "Status zestawu testów";
-$TLS_tp_status_for_build = "Status zestawu testów dla wydania";
+$TLS_tp_status_for_build = "Status zestawu testów dla builda";
 
 
 
@@ -2114,8 +2114,8 @@ $TLS_title_plan_urgency = "Pilność wykonania testów dla zestawu";
 $TLS_th_urgency = "Pilność";
 $TLS_label_set_urgency_ts = "Ustaw pilność dla wszystkich zestawów przypadków: ";
 $TLS_btn_set_urgency_tc = "Ustaw pilność dla poszczególnych przypadków";
-$TLS_urgency_description = "Urgency value affects priority of test cases for execution and reporting. " .
-                           "Medium test urgency is default value.";
+$TLS_urgency_description = "Wartość pilności wpływa na priorytet przypadków testowych dla wykonania i raportowania. " .
+                           "Średni poziom pilności jest wartością domyślną.";
 $TLS_feedback_urgency_fail = "Aktualizacja pilności testu nie udała się! Szczegóły w logu.";
 $TLS_feedback_urgency_ok = "Pilność zmodyfikowana.";
 $TLS_testsuite_is_empty = 'Zestaw testów nie ma przypadków testowych. Nie mozna wykonać operacji';
@@ -2128,7 +2128,7 @@ $TLS_doc_opt_guide = 'Wybierz opcje tak aby osiągnąć potrzebną strukturę do
                      'lub konkretny element aby wygenerować dokument dla wybranego zestawu.';
 $TLS_tr_td_show_as = "Pokaż jako";
 $TLS_check_uncheck_all_options = "zaznacz / odznacz wszystko";
-$TLS_test_report_on_build = "Raport testów dla wydania";
+$TLS_test_report_on_build = "Raport testów dla buildu";
 
 
 // ----- gui/templates/tcReorder.tpl -----
@@ -2169,16 +2169,16 @@ $TLS_send_mail_to_tester = "Wyślij powiadomienie do testera";
 
 
 // ----- gui/templates/tc_exec_unassign_all.tpl -----
-$TLS_btn_remove_all_tester_assignments = "Usuń przypisania WSZYSTKICH testerów z wybranego wydania";
+$TLS_btn_remove_all_tester_assignments = "Usuń przypisania WSZYSTKICH testerów z wybranego buildu";
 
 
 
 // ----- gui/templates/tc_exec_unassign_all.php -----
-$TLS_number_of_assignments_per_build = "%d przypadków testowych jest przypisanych do wykonania w wydaniu %s";
-$TLS_unassign_all_tcs_warning_msg = "Jeśli wybierzesz 'Tak', w wydaniu %s zostaną usunięte przypisania WSZYSTKICH testerów.";
+$TLS_number_of_assignments_per_build = "%d przypadków testowych jest przypisanych do wykonania w buildzie %s";
+$TLS_unassign_all_tcs_warning_msg = "Jeśli wybierzesz 'Tak', w buildzie %s zostaną usunięte przypisania WSZYSTKICH testerów.";
 $TLS_unassign_all_tcs_msgbox_title = "Na pewno usunąć przypisania WSZYSTKICH testerów?";
-$TLS_unassigned_all_tcs_msg = "Wszystkie przypisania testerów do testów w wydaniu %s zostały usunięte.";
-$TLS_no_testers_assigned_to_build  = "W wydaniu %s nie ma żadnych przypadków testowych z przypisanymi testerami.";
+$TLS_unassigned_all_tcs_msg = "Wszystkie przypisania testerów do testów w buildzie %s zostały usunięte.";
+$TLS_no_testers_assigned_to_build  = "W buildzie %s nie ma żadnych przypadków testowych z przypisanymi testerami.";
 $TLS_remove_all_tester_assignments_title = "Usuń wszystkie przypisania testerów";
 
 
@@ -2280,30 +2280,30 @@ $TLS_warning_empty_filename = "Podaj nazwę pliku";
 
 
 // ----- gui/templates/buildView.tpl -----
-$TLS_alt_active_build = "Aktywne wydanie";
-$TLS_alt_edit_build = "Edytuj wydanie";
-$TLS_alt_open_build = "Otwórz wydanie";
+$TLS_alt_active_build = "Aktywny build";
+$TLS_alt_edit_build = "Edytuj build";
+$TLS_alt_open_build = "Otwórz build";
 $TLS_btn_build_create = "Utwórz";
-$TLS_no_builds = "Nie zdefiniowano żadnego wydania dla tego planu testów!";
+$TLS_no_builds = "Nie zdefiniowano żadnego buildu dla tego planu testów!";
 $TLS_th_description = "Opis";
 $TLS_th_open = "Otwórz";
-$TLS_title_build_list = "Lista istniejących wydań";
-$TLS_warning_delete_build = "<p>Zamierzasz usunąć wydanie: %s </p>" .
-		"<p><b>Wszystkie</b> powiązane z nim dane (m.in, WYNIKI TESTÓW tego wydania) również zostaną usunięte!</p>" .
+$TLS_title_build_list = "Lista istniejących buildów";
+$TLS_warning_delete_build = "<p>Zamierzasz usunąć build: %s </p>" .
+		"<p><b>Wszystkie</b> powiązane z nim dane (m.in, WYNIKI TESTÓW tego buildu) również zostaną usunięte!</p>" .
 		"<p>Jesteś pewien, że tego chcesz?</p>";
-$TLS_builds_description = "Wydanie jest to obiekt podrzędny planu testów. Każde wydanie jest powiązane z aktywnym planem testów.<br />" . 
-        "Wydania są identyfikowane po tytułach. Nazwa wydania powinna odpowiadać nazwie Release Candidatów umieszczanych w svn, w gałęzi released.<br /><br />" .
-        "Opis wydania musi zawierać:" .
+$TLS_builds_description = "Build jest to obiekt podrzędny planu testów. Każdy build jest powiązany z aktywnym planem testów.<br />" . 
+        "Buildy są identyfikowane po tytułach. Nazwa buildu powinna odpowiadać nazwie Release Candidatów umieszczanych w svn, w gałęzi released.<br /><br />" .
+        "Opis buildu musi zawierać:" .
 		"<br />-> numer rewizji SVN – dla zapewnienia identyfikowalności testów i kodu źródłowego." .
 		"<br />-> link do zagadnienia w Redmine, która grupuje błędy zgłaszane podczas danego cyklu testowego.<br />" .
 	    "powinien też zawierać: </br>->listę dostarczonych paczek, poprawek lub funkcjonalności, statusy, itd.<br />" .
-		"<br /> Wydania mają dwa atrybuty:<br />" .
-		"Aktywny / Nieaktywny &ndash; określa czy wydanie może być używane. " .
-		"Nieaktywnych wydań nie ma dostępnych na stronie wykonywania testów i na stronach raportów.<br />" .
-		"Otwarte / Zamknięte &ndash; Wyniki testów mogą być modyfikowane tylko dla otwarych wydań.";
+		"<br /> Buildy mają dwa atrybuty:<br />" .
+		"Aktywny / Nieaktywny &ndash; określa czy build może być używany. " .
+		"Nieaktywnych buildów nie ma dostępnych na stronie wykonywania testów i na stronach raportów.<br />" .
+		"Otwarte / Zamknięte &ndash; Wyniki testów mogą być modyfikowane tylko dla otwarych buildów.";
 $TLS_build_copy_help = "Jeśli zaznaczysz opcję: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
-		"&nbsp;,nazwa wydania będzie sprawdzona we wszystkich planach testów tego projektu testowego" .
-		"i jeśli taka nazwa nie istnieje, wydanie zostanie utworzone.";
+		"&nbsp;,nazwa buildu będzie sprawdzona we wszystkich planach testów tego projektu testowego" .
+		"i jeśli taka nazwa nie istnieje, build zostanie utworzony.";
 
 
 // ----- gui/templates/planView.tpl -----
@@ -3627,9 +3627,9 @@ $TLS_import_req_new_version_failed = 'Request to create a New version has failed
 $TLS_import_req_update_last_version_failed = 'Request to update LAST version has failed - %s';
 
 $TLS_import_done = 'Importowanie zakończone';
-$TLS_import_syntax_error = 'Import done, but with syntax errors';
-$TLS_import_req_conflicts_other_branch = 'Doc ID conflicts with req in othe branch';
-$TLS_import_req_exists_here = 'Doc ID exists';
+$TLS_import_syntax_error = 'Importowanie zakończone, ale z błędami składni';
+$TLS_import_req_conflicts_other_branch = 'Doc ID konfliktuje z req w innej gałęzi';
+$TLS_import_req_exists_here = 'Doc ID istnieje';
 
 $TLS_invalid_release_date = 'Data wydania nie jest poprawna.';
 $TLS_insert_step = "Wstaw krok";

@@ -1405,7 +1405,7 @@ class testcaseCommands {
                           $guiObj->testcase['version']),
                   "{$pre}ACTIVATE","testcases");
 
-    $this->show($argsObj,$request, array('status_ok' => 1));
+    $this->show($argsObj,$request,['status_ok' => 1],['updateCFOnDB' => false]);
     exit();
   }
 

@@ -17,6 +17,19 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   </div  
 {/if}
 
+{* ------------------------------------------------------------------------------------------ *}
+{$showSummary = 0}
+{if $tco.summary != '' || ($tco.summary == '' && $gui->hideSummary == FALSE)} 
+  {$showSummary = 1}
+{/if}
+
+{$showPreconditions = 0}
+{if $tco.preconditions != '' || ($tco.preconditions == '' && $gui->hidePreconditions == FALSE)}    
+  {$showPreconditions = 1}
+{/if}
+{* ------------------------------------------------------------------------------------------ *}
+
+
 <div class="mainAttrContainer"> 
   <div class="summaryCONTAINER">
     {if $inc_tcbody_cf.before_summary neq ''}
@@ -26,9 +39,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       </div>
       <br>
     {/if}
-    <div class="labelHolder">{$inc_tcbody_labels.summary}</div>
-    <div>{if $inc_tcbody_editor_type == 'none'}{$tco.summary|nl2br}{else}{$tco.summary}{/if}</div>
-
+    {if $showSummary} 
+      <div class="labelHolder">{$inc_tcbody_labels.summary}</div>
+      <div>{if $inc_tcbody_editor_type == 'none'}{$tco.summary|nl2br}{else}{$tco.summary}{/if}</div>
+    {/if}
     {if $inc_tcbody_cf.after_summary neq ''}
       <br>
       <div id="cf_after_summary"
@@ -38,7 +52,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {/if}
   </div>
 
-  <div class="spaceOne" style="margin-top:35px;"></div>
+  {if $showPreconditions && $showSummary}
+    <div class="spaceOne" style="margin-top:35px;"></div>
+  {/if}
 
   <div class="preconditionsCONTAINER">
     {if $inc_tcbody_cf.before_preconditions neq ''}
@@ -48,8 +64,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       </div>
       <br>
     {/if}
-    <div class="labelHolder">{$inc_tcbody_labels.preconditions}</div>
-    <div>{if $inc_tcbody_editor_type == 'none'}{$tco.preconditions|nl2br}{else}{$tco.preconditions}{/if}</div>
+    {if $showPreconditions} 
+      <div class="labelHolder">{$inc_tcbody_labels.preconditions}</div>
+      <div>{if $inc_tcbody_editor_type == 'none'}{$tco.preconditions|nl2br}{else}{$tco.preconditions}{/if}</div>
+    {/if}
     {if $inc_tcbody_cf.after_summary neq ''}
       <br>
       <div id="cf_after_preconditions"
@@ -66,6 +84,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       </div>
     </div>
   {/if}
-
 </div>
-<hr>
+{if $showPreconditions && $showSummary}
+  <hr>
+{/if}

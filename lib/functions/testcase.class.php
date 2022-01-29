@@ -5480,7 +5480,8 @@ class testcase extends tlObjectWithAttachments {
   }
 
 
-    /**
+
+  /**
    * returns just name, tc_external_id, version.
    * this info is normally enough for user feednack.
    *
@@ -5488,14 +5489,21 @@ class testcase extends tlObjectWithAttachments {
    * @param array $accessVersionBy 'number'   => contains test case version number
    *                 'id'     => contains test case version ID
    *
+   * @param array moreFields -> fields from tcversions table
+   *
    * @return array with one element with keys: name,version,tc_external_id
      */
-  function get_basic_info($id,$accessVersionBy)
+  function get_basic_info($id,$accessVersionBy,$moreFields=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $additionalFields = '';
+    if ($moreFields != null) {
+      $additionalFields = "," . implode(",",$moreFields); 
+    }   
+
     $sql = "/* $debugMsg */ " .
            " SELECT NH_TCASE.id, NH_TCASE.name, TCV.version, TCV.tc_external_id, " .
-           " TCV.id AS tcversion_id, TCV.status " .
+           " TCV.id AS tcversion_id, TCV.status $additionalFields" .
            " FROM {$this->tables['nodes_hierarchy']} NH_TCASE " .
            " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TCASE.id" .
            " JOIN {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id ";
@@ -5515,6 +5523,8 @@ class testcase extends tlObjectWithAttachments {
     $result = $this->db->get_recordset($sql);
     return $result;
   }
+
+
 
 
 
@@ -7209,6 +7219,10 @@ class testcase extends tlObjectWithAttachments {
 
   /**
    * render Ghost Test Case
+   *
+   * 
+   * @used by this.get_by_id(), this.get_last_execution()
+   * @used by this.renderGhostSteps()
    */
   function renderGhost(&$item2render) {
     $versionTag = '[version:%s]';
@@ -7218,8 +7232,8 @@ class testcase extends tlObjectWithAttachments {
     // second \'%s\' needed if I want to use Latest as indication, need to understand
     // Javascript instead of javascript, because CKeditor sometimes complains
     $href = '<a href="Javascript:openTCW(\'%s\',\'%s\');">%s:%s' . " $versionTag $hint<p></a>";
-    $tlBeginMark = '[ghost]';
-    $tlEndMark = '[/ghost]';
+    $tlBeginMark = self::GHOSTBEGIN;
+    $tlEndMark = self::GHOSTEND;    
     $tlEndMarkLen = strlen($tlEndMark);
 
 
@@ -7291,10 +7305,8 @@ class testcase extends tlObjectWithAttachments {
                   }
 
                   $fi = $this->get_basic_info($xid,array('number' => $vn));
-                  if(!is_null($fi))
-                  {
-                    if( isset($dx['Step']) )
-                    {
+                  if(!is_null($fi)) {
+                    if( isset($dx['Step']) ) {
                       $isTestCaseGhost = false;
 
                       // ghost for rendering Test Case Step (string display)
@@ -7304,17 +7316,21 @@ class testcase extends tlObjectWithAttachments {
                       // [ghost]"Step":1,"TestCase":"MOK-2","Version":""[/ghost]
                       // [ghost]"Step":1,"TestCase":"MOK-2"[/ghost]
                       //
-                      if(intval($dx['Step']) > 0)
-                      {
+                      if(intval($dx['Step']) > 0) {
                         $deghosted = true;
                         $rightside = trim(substr($xx[$xdx],$cutting_point+$tlEndMarkLen));
                         $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
 
                         $ghost .= $stx[0]['actions'] . $rightside;
                       }
-                    }
-                    else
-                    {
+                    } else if ($dx['Preconditions']) {
+                      $withPrecond = $this->get_basic_info($xid,['number' => $vn],['preconditions']);
+                      $isTestCaseGhost = false;
+                      $deghosted = true;
+                      $rightside = trim(substr($xx[$xdx],$cutting_point+$tlEndMarkLen));
+                      $ghost .= $withPrecond[0]['preconditions'] . $rightside;
+
+                    } else {
                       // ghost for rendering Test Case (create link)
                       $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn,$linkFeedback);
                     }
@@ -8228,6 +8244,9 @@ class testcase extends tlObjectWithAttachments {
   * render CF values
   *
   * <p> </p> added by web rich editor create some layout issues
+  *
+  * @used by this.get_by_id(), this.get_last_execution()
+  *          
   */
   function renderVariables(&$item2render) {
     $tcase_id = $item2render['testcase_id'];

@@ -903,10 +903,19 @@ class testcase extends tlObjectWithAttachments {
   function show(&$smarty,$guiObj,$identity,$grants,$opt=null) {
     static $cfg;
     static $reqMgr;
+    static $hidePreconditions;
+    static $hideSummary;
 
     if(!$cfg) {
       $cfg = config_get('spec_cfg');
       $reqMgr = new requirement_mgr($this->db);
+
+      // Investigate if special keywords are defined in the test project
+      $tproject_id = intval($identity->tproject_id);
+      $hidePreconditions = tlKeyword::doesKeywordExist($this->db,'@#HIDE_PRECONDITIONS_IF_EMPTY',$tproject_id);
+      $hideSummary = tlKeyword::doesKeywordExist($this->db,'@#HIDE_SUMMARY_IF_EMPTY',$tproject_id);
+      $hidePreconditions = ($hidePreconditions['kwID'] != null);
+      $hideSummary = ($hideSummary['kwID'] != null);
     }
 
     $status_ok = ($identity->id > 0);
@@ -929,6 +938,9 @@ class testcase extends tlObjectWithAttachments {
     $getVersionID = $idCard->tcversion_id;
 
     $gui = $this->initShowGui($guiObj,$grants,$idCard);
+
+    $gui->hidePreconditions = $hidePreconditions;
+    $gui->hideSummary = $hideSummary;
 
     // When editing on execution, it's important to understand
     // is current displayed version is LINKED to Test Plan 
@@ -7558,7 +7570,7 @@ class testcase extends tlObjectWithAttachments {
     $relSet['item'] = (null != $dummy) ? current($dummy) : null;
     $relSet['relations'] = array();
 
-    $tproject_mgr = new testproject($this->db);
+    // $tproject_mgr = new testproject($this->db);
 
     $sql = " $debugMsg SELECT id, source_id, destination_id, relation_type, author_id, creation_ts " .
            " FROM {$this->tables['testcase_relations']} " .

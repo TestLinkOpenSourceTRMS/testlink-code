@@ -17,7 +17,7 @@ $@filesource inc_steps.tpl
              clear_all_notes,step_exec_notes,
              execution_type_short_descr,delete_step,
              insert_step,show_ghost_string,
-             doubleclick_to_edit"}
+             doubleclick_to_edit,click_to_copy_ghost_to_clipboard"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -27,3 +27,11 @@ $@filesource inc_steps.tpl
 {else}
   {include file="{$tplConfig['steps_vertical.inc']}"}
 {/if}
+
+
+<script type="text/javascript">
+function copyGhostString(spanID) {
+  var ghostString = document.getElementById(spanID).innerText;
+  navigator.clipboard.writeText(ghostString);
+}
+</script>

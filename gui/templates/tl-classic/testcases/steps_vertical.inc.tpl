@@ -41,8 +41,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td colspan="2" {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;"
-        onclick="launchEditStep({$step_info.id})"{/if}
+    <td title="{$inc_steps_labels.doubleclick_to_edit}"  
+        colspan="2" {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;"
+        ondblclick="launchEditStep({$step_info.id})"{/if}
         style="padding: 0.5em">{if $gui->stepDesignEditorType  == 'none'}{$step_info.actions|nl2br}{else}{$step_info.actions}{/if}</td>
     {if $edit_enabled && $args_frozen_version=="no"}
     <td class="clickable_icon">
@@ -64,8 +65,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <th style="background: transparent; border: none"></th>
     <th colspan="2">{$inc_steps_labels.expected_results}</th>
   </tr>
-  <tr {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;"
-      onclick="launchEditStep({$step_info.id})"{/if}>
+  <tr title="{$inc_steps_labels.doubleclick_to_edit}" 
+     {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;"
+      ondblclick="launchEditStep({$step_info.id})"{/if}>
       <td>&nbsp;</td>
     <td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em">{if $gui->stepDesignEditorType  == 'none'}{$step_info.expected_results|nl2br}{else}{$step_info.expected_results}{/if}</td>
   </tr>

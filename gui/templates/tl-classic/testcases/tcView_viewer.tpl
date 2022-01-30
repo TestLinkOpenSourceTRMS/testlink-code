@@ -19,7 +19,7 @@ viewer for test case in test specification
              estimated_execution_duration,status,btn_save,estimated_execution_duration_short,
              requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements,
              code_mgmt,code_link_tl_to_cts,can_not_edit_frozen_tc,testcase_operations,
-			       testcase_version_operations,goto_execute,tc_has_relations"}
+			       testcase_version_operations,goto_execute,tc_has_relations,click_to_copy_ghost_to_clipboard"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}

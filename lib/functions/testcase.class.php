@@ -46,12 +46,13 @@ class testcase extends tlObjectWithAttachments {
   const NAME_PHOPEN = '[[';
   const NAME_PHCLOSE = ']]';
   const NAME_DIVIDE = '::';
+
   const GHOSTBEGIN = '[ghost]';
   const GHOSTEND = '[/ghost]';
-  const GHOSTMASK = self::GHOSTBEGIN . 
-    '"TestCase":"%s","Version":"%s"' . self::GHOSTEND;
-  const GHOSTSTEPMASK = self::GHOSTBEGIN .
-    '"Step":"%s","TestCase":"%s","Version":"%s"' . self::GHOSTEND;
+  const GHOST_TC_VERSION = '"TestCase":"%s","Version":"%s"';
+  const GHOSTMASK = self::GHOSTBEGIN . self::GHOST_TC_VERSION . self::GHOSTEND;
+  const GHOSTSTEPMASK = self::GHOSTBEGIN .'"Step":"%s",' . self::GHOST_TC_VERSION . self::GHOSTEND;
+  const GHOSTPRECONDITIONSMASK = self::GHOSTBEGIN . '"Preconditions":"x",' . self::GHOST_TC_VERSION . self::GHOSTEND;
 
   /** @var database handler */
   var $db;
@@ -1001,6 +1002,9 @@ class testcase extends tlObjectWithAttachments {
           $gui->tcasePrefix . $tcvSet[0]['tc_external_id'];
         $tcvSet[0]['ghost'] = 
           sprintf(self::GHOSTMASK,$tcvSet[0]['tc_external_id'],$tcvSet[0]['version']);
+
+        $tcvSet[0]['ghost_preconditions'] = 
+          sprintf(self::GHOSTPRECONDITIONSMASK,$tcvSet[0]['tc_external_id'],$tcvSet[0]['version']);
 
         // status quo of execution and links of tc versions
         $gui->status_quo[] = $this->get_versions_status_quo($tc_id);

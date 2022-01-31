@@ -4091,4 +4091,17 @@ $TLS_simplexml_load_file_wrapper_error = "Please provide these text to your Test
 $TLS_tc_has_relations = 'Test Case has relations. Click to jump to section';
 $TLS_doubleclick_to_edit = 'Double-click to edit';
 $TLS_click_to_copy_ghost_to_clipboard = "Click to copy ghost string to clipboard";
+$TLS_do_not_execute = 'Do not execute';
+
+
+// @see const.inc.php
+#$TLS_testCaseStatus_hint_draft = '';
+#$TLS_testCaseStatus_hint_readyForReview = '';
+#$TLS_testCaseStatus_hint_reviewInProgress = '';
+#$TLS_testCaseStatus_hint_rework = '';
+$TLS_testCaseStatus_hint_obsolete = 'Do not execute this test case';
+#$TLS_testCaseStatus_hint_future = '';
+#$TLS_testCaseStatus_hint_final = '';
+
+
 // ----- END -----------------------------------------------------

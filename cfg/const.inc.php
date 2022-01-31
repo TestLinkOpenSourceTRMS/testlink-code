@@ -935,9 +935,26 @@ $tlCfg->results['charts']['dimensions'] =
 // see strings.txt for labels
 // $TLS_testCaseStatus_KEY => $TLS_testCaseStatus_draft
 //  
-$tlCfg->testCaseStatus = array( 'draft' => 1, 'readyForReview' => 2, 
-                                'reviewInProgress' => 3, 'rework' => 4, 
-                                'obsolete' => 5, 'future' => 6, 'final' => 7 );   
+$tlCfg->testCaseStatus = array( 'draft' => 1, 
+                                'readyForReview' => 2, 
+                                'reviewInProgress' => 3, 
+                                'rework' => 4, 
+                                'obsolete' => 5, 
+                                'future' => 6, 
+                                'final' => 7 );   
+
+
+// see strings.txt for labels
+// $TLS_testCaseStatus_hint_KEY => $TLS_testCaseStatus_hint_draft
+//
+$tlCfg->testCaseStatusDisplayHintOnTestDesign = ['draft' => '' /* 'testCaseStatus_hint_draft' */, 
+                                                 'readyForReview' => '', 
+                                                 'reviewInProgress' => '', 
+                                                 'rework' => '', 
+                                                 'obsolete' => 'testCaseStatus_hint_obsolete', 
+                                                 'future' => '', 
+                                                 'final' => '' ];   
+// -----------------------------------------------------------------------------------------
 
 
 /** @uses testcase.class.php */

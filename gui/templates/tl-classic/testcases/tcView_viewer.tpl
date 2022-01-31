@@ -1,6 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource tcView_viewer.tpl
+@used-by tcView.tpl
+
 viewer for test case in test specification
 *}
 {lang_get var="tcView_viewer_labels"
@@ -19,7 +21,8 @@ viewer for test case in test specification
              estimated_execution_duration,status,btn_save,estimated_execution_duration_short,
              requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements,
              code_mgmt,code_link_tl_to_cts,can_not_edit_frozen_tc,testcase_operations,
-			       testcase_version_operations,goto_execute,tc_has_relations,click_to_copy_ghost_to_clipboard"}
+			       testcase_version_operations,goto_execute,tc_has_relations,
+             click_to_copy_ghost_to_clipboard,do_not_execute"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -100,6 +103,16 @@ viewer for test case in test specification
   && $args_status_quo[$args_testcase.id].executed}
   {$has_been_executed=1}  
 {/if}
+
+{foreach from=$gui->TCWKFStatusDisplayHintOnTestDesign key=wkfStatusVerbose item=lblKey}
+  {if $lblKey != '' && $gui->TCWKFStatusVerboseCode[$wkfStatusVerbose] == $args_testcase.status}
+    {lang_get var="TCWKFMsg" s="$lblKey"}
+    <div id="overlay-text">{$gui->domainTCStatus[$args_testcase.status]}<br>{$TCWKFMsg}</div>
+  {/if}
+{/foreach}
+
+
+
 
 {if $args_can_do->edit == "yes"}
     {if $args_status_quo == null 
@@ -393,7 +406,6 @@ viewer for test case in test specification
        </div>
    {/if}
    
-
 <script type="text/javascript">
   /**
    * used instead of window.open().

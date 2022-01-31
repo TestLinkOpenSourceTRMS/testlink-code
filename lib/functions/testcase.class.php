@@ -7143,6 +7143,8 @@ class testcase extends tlObjectWithAttachments {
 
     $dummy = getConfigAndLabels('testCaseStatus','code');
     $goo->domainTCStatus = $dummy['lbl'];
+    $goo->TCWKFStatusVerboseCode = config_get('testCaseStatus');
+    $goo->TCWKFStatusDisplayHintOnTestDesign = config_get('testCaseStatusDisplayHintOnTestDesign');
 
     // editOnExec is part of show_mode Domain
     $goo->can_do = $this->getShowViewerActions($goo->show_mode);

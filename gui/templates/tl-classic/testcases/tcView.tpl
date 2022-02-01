@@ -51,9 +51,11 @@ Purpose: smarty template - view test case in test specification
   top: 30%;
   left: 50%;
   font-size: 50px;
-  color: white;
+  color: gray;
   transform: translate(-50%,-50%);
   -ms-transform: translate(-50%,-50%);
+  background-color: #EBEBEB;
+  opacity: 0.75;
 }
 </style>
 

@@ -138,11 +138,12 @@ function validateForm(the_form)
 
   <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->tc.testsuite_id}" />
   <input type="hidden" name="testcase_id" id="testcase_id" value="{$gui->tc.testcase_id}" />
-  <input type="hidden" name="tcversion_id" value="{$gui->tc.id}" />
-  <input type="hidden" name="version" value="{$gui->tc.version}" />
+  <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tc.id}" />
+  <input type="hidden" name="version" id="version" value="{$gui->tc.version}" />
   <input type="hidden" name="doAction" value="" />
   <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
-  <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+  <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}" />
+  <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
   
   {* when save or cancel is pressed do not show modification warning *}
   <div class="groupBtn">

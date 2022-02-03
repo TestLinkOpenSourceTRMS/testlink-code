@@ -22,11 +22,17 @@ $data = array('success' => true, 'message' => '');
 
 $iParams = array("name" => array(tlInputParameter::STRING_N,0,100),
 	             "testcase_id" => array(tlInputParameter::INT),
-	             "testsuite_id" => array(tlInputParameter::INT));
+	             "testsuite_id" => array(tlInputParameter::INT),
+	             "testprojec_id" => array(tlInputParameter::INT)
+	             );
+
 $args = G_PARAMS($iParams);
 
-if (has_rights($db, 'mgt_view_tc'))
-{
+// get test project id from session this need to be changed
+if ($_SESSION['currentUser']->hasRight($db, 'mgt_view_tc',$args->testproject_id) || 
+    $_SESSION['currentUser']->hasRight($db, 'mgt_modify_tc',$args->testproject_id)
+   ) {
+
 	$tree_manager = new tree($db);
 	$node_types_descr_id=$tree_manager->get_available_node_types();
 	

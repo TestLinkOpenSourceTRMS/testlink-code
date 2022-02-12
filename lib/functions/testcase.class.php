@@ -4147,17 +4147,19 @@ class testcase extends tlObjectWithAttachments {
       $tcase_id = $info['parent_id'];
     }
 
-
     $opt = array('getPrefix' => false);
     if(!isset($optExport['EXTERNALID']) || $optExport['EXTERNALID']) {
       $opt = array('getPrefix' => (isset($optExport['ADDPREFIX']) && $optExport['ADDPREFIX']));
     }
     $tc_data = $this->get_by_id($tcase_id,$tcversion_id,null,$opt);
-    $testCaseVersionID = $tc_data[0]['id'];
+    $testCaseVersionID = intval($tc_data[0]['id']);
 
     if (!$tproject_id) {
       $tproject_id = $this->getTestProjectFromTestCase($tcase_id);
     }
+
+
+    $tc_data[0]['xmlplatforms_on_design'] =  $this->getPlatformsAsXMLString($tcase_id,$testCaseVersionID);
 
     if (isset($optExport['CFIELDS']) && $optExport['CFIELDS']) {
       $cfMap = $this->get_linked_cfields_at_design($tcase_id,$testCaseVersionID,null,null,$tproject_id);
@@ -4317,7 +4319,8 @@ class testcase extends tlObjectWithAttachments {
                 "\t<is_open>||ISOPEN||</is_open>\n" .
                 "\t<active>||ACTIVE||</active>\n" .
                 "||STEPS||\n" .
-                "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||||ATTACHMENTS||{$addElemTpl}</testcase>\n";
+                "||KEYWORDS||||CUSTOMFIELDS||||PLATFORMS_ON_DESIGN||\n" . 
+                "||REQUIREMENTS||||ATTACHMENTS||{$addElemTpl}</testcase>\n";
 
 
       // ||yyy||-> tags,  {{xxx}} -> attribute
@@ -4344,6 +4347,7 @@ class testcase extends tlObjectWithAttachments {
                     "||STEPS||" => "xmlsteps",
                     "||KEYWORDS||" => "xmlkeywords",
                     "||CUSTOMFIELDS||" => "xmlcustomfields",
+                    "||PLATFORMS_ON_DESIGN||" => "xmlplatforms_on_design",
                     "||REQUIREMENTS||" => "xmlrequirements",
                     "||ATTACHMENTS||" => "xmlattachments",
                     "||RELATIONS||" => "xmlrelations");
@@ -9610,7 +9614,8 @@ class testcase extends tlObjectWithAttachments {
 
     switch($my['opt']['output']) {
       case 'full':
-        $sql = "SELECT TCPL.platform_id,PL.name,PL.notes";
+        $sql = "SELECT TCPL.platform_id,PL.name,PL.notes,
+                PL.enable_on_design,PL.enable_on_execution";
       break;
 
       default:
@@ -9626,7 +9631,6 @@ class testcase extends tlObjectWithAttachments {
 
     $sql .= $my['opt']['orderByClause'];
 
-
     switch($my['opt']['output']) {
       case 'full':
         $items = $this->db->fetchRowsIntoMap($sql,'platform_id');
@@ -9639,6 +9643,35 @@ class testcase extends tlObjectWithAttachments {
 
     return $items;
   }
+
+  /**
+   *
+   *
+   */
+  function getPlatformsAsXMLString($id,$version_id)
+  {
+    require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
+
+
+    $sql = "SELECT TCPL.platform_id,PL.name,PL.notes,
+                   PL.enable_on_design,PL.enable_on_execution
+            FROM {$this->tables['testcase_platforms']} TCPL,
+            {$this->tables['platforms']} PL 
+            WHERE platform_id = PL.id ";
+    $sql .= " AND TCPL.testcase_id = " . intval($id) . 
+            " AND TCPL.tcversion_id = " . intval($version_id); 
+
+
+    $adodbXML = new ADODB_XML();  // it's ok because we do not want to write the header
+    $adodbXML->setRootTagName('platforms');
+    $adodbXML->setRowTagName('platform');
+    $xmlString = $adodbXML->ConvertToXMLString($this->db->db, $sql, ('write_header' == 'no'));
+    return $xmlString;
+  }
+
+
+
+
 
   /**
    *

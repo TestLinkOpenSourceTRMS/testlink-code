@@ -613,4 +613,26 @@ class tlPlatform extends tlObjectWithDB
     $this->db->exec_query($sql);
   }
 
+
+
+  function getAsXMLString($tproject_id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $tables = tlObjectWithDB::getDBTables(array('platforms'));
+    $adodbXML = new ADODB_XML("1.0", "UTF-8");
+
+    $sql = "/* $debugMsg */ 
+            SELECT name,notes,enable_on_design,
+            enable_on_execution 
+            FROM {$tables['platforms']} PLAT 
+            WHERE PLAT.testproject_id=" . intval($tproject_id);
+    
+    $adodbXML->setRootTagName('platforms');
+    $adodbXML->setRowTagName('platform');
+    $content = $adodbXML->ConvertToXMLString($db->db, $sql);
+    downloadContentsToFile($content,$filename);
+    exit();
+  }
+
+
 }

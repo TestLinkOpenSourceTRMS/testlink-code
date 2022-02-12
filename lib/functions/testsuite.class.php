@@ -1260,8 +1260,10 @@ class testsuite extends tlObjectWithAttachments
             $tcase_mgr = new testcase($this->db);
           }
           $xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],
-            testcase::LATEST_VERSION,
-            $tproject_id,true,$optExport);
+                                                        testcase::LATEST_VERSION,
+                                                        $tproject_id,
+                                                        true,
+                                                        $optExport);
 
           // 20140816
           // Collect and do cache of all test case relations that exists inside this test suite.

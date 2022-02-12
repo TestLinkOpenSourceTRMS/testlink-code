@@ -40,7 +40,7 @@ class ADODB_XML
 	*	@param		string		Codification to be used	
 	*	@access		public
 	*/
-	function ADODB_XML($version = "", $encoding = "", $tmpDir = null) 
+	function __construct($version = "", $encoding = "", $tmpDir = null) 
 	{
 	  $this->xml = new XMLFile($version, $encoding);
 	  $this->tmpDir = is_null($tmpDir) ? sys_get_temp_dir() : $tmpDir; 

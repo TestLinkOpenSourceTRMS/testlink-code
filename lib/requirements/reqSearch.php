@@ -34,10 +34,10 @@ $gui = $commandMgr->initGuiBean();
 $gui->main_descr = lang_get('caption_search_form_req');
 $gui->warning_msg = '';
 $gui->path_info = null;
-$gui->resultSet = null;
 $gui->tableSet = null;
+$gui->resultSet = [];
 
-$map = null;
+$map = [];
 $args = init_args($date_format_cfg);
 
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
@@ -331,7 +331,7 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
   if ($argsObj->version) {
     $version = $dbHandler->prepare_int($argsObj->version);
     $filter['ver']['version'] = " AND REQV.version = {$version} ";
-    $filter['rev']['version'] = $filter['versions']['by_version'];
+    $filter['rev']['version'] = $filter['ver']['version'];
   }
   
   if ($argsObj->coverage) {
@@ -382,7 +382,7 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
     $tcid = str_replace($guiObj->tcasePrefix, "", $tcid);
 
     $filter['ver']['tcid'] = " AND TCV.tc_external_id = '$tcid' ";
-    $filter['rev']['tcid'] = $filter['ver']['by_tcid'];
+    $filter['rev']['tcid'] = $filter['ver']['tcid'];
       
     $from['ver']['tcid'] =  
 

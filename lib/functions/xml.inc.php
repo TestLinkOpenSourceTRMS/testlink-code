@@ -55,17 +55,16 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
     return;
   }
 
+
   $xmlCode = '';
   reset($items);
-  while($item = each($items))
-  {
-    $item = $item[1];
+  foreach ($items as $item) {
+
     $xmlElemCode = $elemTpl;
     
     // REMEMBER YOU NEED TO USE XMP TO DEBUG
     // echo '$xmlElemCode'; echo "<xmp>$xmlElemCode)</xmp>";
-    foreach($elemInfo as $subject => $replacement)
-    {
+    foreach($elemInfo as $subject => $replacement) {
       $fm = substr($subject,0,2);
       $content = isset($item[$replacement]) ? $item[$replacement] : null;
       

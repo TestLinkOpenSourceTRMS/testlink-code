@@ -1172,64 +1172,68 @@ class testsuite extends tlObjectWithAttachments
       $cfXML = null;
       $attachmentsXML = null;
       $kwXML = null;
-      $tsuiteData = $this->get_by_id($container_id);
-      if( isset($optExport['KEYWORDS']) && $optExport['KEYWORDS']) {
-        $kwMap = $this->getKeywords($container_id);
-        if ($kwMap) {
-          $kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap,true) . "</keywords>";
-        } 
-      }
-      if (isset($optExport['CFIELDS']) && $optExport['CFIELDS']) {
-        $cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
-        if( count($cfMap) > 0 ) {
-          $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
-        } 
-      }
-	    if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS']) {
-	  	  $attachments=null;
-	
-    		// get all attachments
-    		$attInfos = $this->attachmentRepository->getAttachmentInfosFor($container_id,$this->attachmentTableName,'id');
-    	  
-    		// get all attachments content and encode it in base64	  
-    		if ($attInfos) {
-    			foreach ($attInfos as $axInfo) {
-    				$aID = $axInfo["id"];
-    				$content = $this->attachmentRepository->getAttachmentContent($aID, $axInfo);
-    				
-    				if ($content != null) {
-    					$attach[$aID]["id"] = $aID;
-    					$attach[$aID]["name"] = $axInfo["file_name"];
-    					$attach[$aID]["file_type"] = $axInfo["file_type"];
-    					$attach[$aID]["title"] = $axInfo["title"];
-    					$attach[$aID]["date_added"] = $axInfo["date_added"];
-    					$attach[$aID]["content"] = base64_encode($content);
-    				}
-    			}
-    		}
-	  
-    		if( !is_null($attach) && count($attach) > 0 ) {
-    			$attchRootElem = "<attachments>\n{{XMLCODE}}</attachments>\n";
-    			$attchElemTemplate = "\t<attachment>\n" .
-    							   "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
-    							   "\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
-    							   "\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
-    							   "\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
-    							   "\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
-    							   "\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
-    							   "\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
-    							   "\t</attachment>\n";
 
-    			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
-    								"||ATTACHMENT_FILE_TYPE||" => "file_type",
-    								"||ATTACHMENT_FILE_SIZE||" => "file_size", 
-    								"||ATTACHMENT_TITLE||" => "title",
-    								"||ATTACHMENT_DATE_ADDED||" => "date_added", 
-    								"||ATTACHMENT_CONTENT||" => "content");
-    			$attachXML = exportDataToXML($attach,$attchRootElem,$attchElemTemplate,$attchDecode,true);
-    		} 
-      }
+      if ($container_id == $tproject_id) {
+        $$tsuiteData = ['id' => '','name' => '','node_order' => 0, 'details' =>''];
+      } else {
+        $tsuiteData = $this->get_by_id($container_id);
+        if( isset($optExport['KEYWORDS']) && $optExport['KEYWORDS']) {
+          $kwMap = $this->getKeywords($container_id);
+          if ($kwMap) {
+            $kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap,true) . "</keywords>";
+          } 
+        }
+        if (isset($optExport['CFIELDS']) && $optExport['CFIELDS']) {
+          $cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
+          if( count($cfMap) > 0 ) {
+            $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
+          } 
+        }
+        if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS']) {
+          $attachments=null;
+    
+          // get all attachments
+          $attInfos = $this->attachmentRepository->getAttachmentInfosFor($container_id,$this->attachmentTableName,'id');
+          
+          // get all attachments content and encode it in base64	  
+          if ($attInfos) {
+            foreach ($attInfos as $axInfo) {
+              $aID = $axInfo["id"];
+              $content = $this->attachmentRepository->getAttachmentContent($aID, $axInfo);
+              
+              if ($content != null) {
+                $attach[$aID]["id"] = $aID;
+                $attach[$aID]["name"] = $axInfo["file_name"];
+                $attach[$aID]["file_type"] = $axInfo["file_type"];
+                $attach[$aID]["title"] = $axInfo["title"];
+                $attach[$aID]["date_added"] = $axInfo["date_added"];
+                $attach[$aID]["content"] = base64_encode($content);
+              }
+            }
+          }
+      
+          if( !is_null($attach) && count($attach) > 0 ) {
+            $attchRootElem = "<attachments>\n{{XMLCODE}}</attachments>\n";
+            $attchElemTemplate = "\t<attachment>\n" .
+                      "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
+                      "\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
+                      "\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+                      "\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
+                      "\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
+                      "\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
+                      "\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
+                      "\t</attachment>\n";
 
+            $attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
+                      "||ATTACHMENT_FILE_TYPE||" => "file_type",
+                      "||ATTACHMENT_FILE_SIZE||" => "file_size", 
+                      "||ATTACHMENT_TITLE||" => "title",
+                      "||ATTACHMENT_DATE_ADDED||" => "date_added", 
+                      "||ATTACHMENT_CONTENT||" => "content");
+            $attachXML = exportDataToXML($attach,$attchRootElem,$attchElemTemplate,$attchDecode,true);
+          } 
+        }
+      }
       $xmlTC = '<testsuite id="' . $tsuiteData['id'] . '" ' .
                'name="' . htmlspecialchars($tsuiteData['name']). '" >' .
                "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .

@@ -846,23 +846,22 @@ class database {
   function build_sql_create_db($db_name)
   {
     $sql='';
-    
-    switch($this->db->databaseType)
-    {
-      case 'postgres7':
-      case 'postgres8':
-        $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
-        break;
+
+    if (strpos($this->db->databaseType, 'postgres') === 0) {
+      $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' ";
+    } else {
+      switch($this->db->databaseType)
+        {
+        case 'mssql':
+        case 'mssqlnative':
+          $sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) . '] '; 
+          break;
         
-      case 'mssql':
-      case 'mssqlnative':
-        $sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) . '] '; 
-        break;
-        
-      case 'mysql':
-      default:
-        $sql = "CREATE DATABASE `" . $this->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
-      break;
+        case 'mysql':
+        default:
+          $sql = "CREATE DATABASE `" . $this->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
+          break;
+        }
     }
     return ($sql);
   }

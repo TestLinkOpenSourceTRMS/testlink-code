@@ -143,7 +143,8 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
           $tproject->importKeywordsFromSimpleXML($tproject_id,$xmlKeywords[$idx]);
         }
         $kwMap = $tproject->get_keywords_map($tproject_id);
-        $kwMap = is_null($kwMap) ? null : array_flip($kwMap);
+        // change keywords to lowercase to be case insensitive
+        $kwMap = is_null($kwMap) ? null : array_change_key_case(array_flip($kwMap), CASE_LOWER);
       }
 
       if (!$useRecursion &&  ($xml->getName() == 'testcases') ) {
@@ -537,6 +538,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 // -------------------------------------------------------------------------------
 /*
   function: buildKeywordList
+
+  Build the list of DB ID of the keywords used in the XML.
+
   args :
   returns: 
 */
@@ -544,7 +548,8 @@ function buildKeywordList($kwMap,$keywords) {
   $items = array();
   $loop2do = sizeof($keywords);
   for($jdx = 0; $jdx <$loop2do ; $jdx++) {
-    $items[] = $kwMap[trim($keywords[$jdx]['name'])]; 
+    // change Map keys (keyword) to lowercase to be case insensitive
+    $items[] = $kwMap[strtolower(trim($keywords[$jdx]['name']))];
   }
   return $items;
 }

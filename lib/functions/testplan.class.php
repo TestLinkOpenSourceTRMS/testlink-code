@@ -1968,7 +1968,7 @@ class testplan extends tlObjectWithAttachments
 
     $the_sql[]="DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id ".
            "IN ($execIDSetSQL)";
-    
+    $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps_wip']} WHERE testplan_id={$id}";
     $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps']} WHERE execution_id ".
            "IN ($execIDSetSQL) ";           
     $the_sql[]="DELETE FROM {$this->tables['executions']} WHERE testplan_id={$id}";

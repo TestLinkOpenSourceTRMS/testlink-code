@@ -306,10 +306,13 @@ class database {
   function db_is_pgsql() 
   {
     $status_ok = false;
-    switch( $this->dbType ) 
-    {
+    $dbType = $this->dbType;
+    if (strpos($dbType, 'postgres') === 0) {
+      $dbType = 'postgres';
+    }  
+
+    switch( $dbType ) {
       case 'postgres':
-      case 'postgres7':
       case 'pgsql':
         $status_ok = true;
       break;  
@@ -846,11 +849,15 @@ class database {
   function build_sql_create_db($db_name)
   {
     $sql='';
-    
-    switch($this->db->databaseType)
-    {
-      case 'postgres7':
-      case 'postgres8':
+    $dbType = $this->db->databaseType;
+ 
+    // @user contribution
+    if (strpos($dbType, 'postgres') === 0) {
+      $dbType = 'postgres';
+    }  
+
+    switch($dbType) {
+      case 'postgres':
         $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
         break;
         

@@ -1734,6 +1734,8 @@ class testcase extends tlObjectWithAttachments {
                " WHERE id IN ({$step_list})";
       }
     }
+    // -----------------------------------------------------------------------
+
     $sql[]="/* $debugMsg */  
             DELETE FROM {$this->tables['testcase_script_links']} 
             WHERE tcversion_id IN ({$tcversion_list})";
@@ -1808,7 +1810,33 @@ class testcase extends tlObjectWithAttachments {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = array();
 
+    // ------------------------------------------------------------------------------
+    $step_list = ''; 
+    if( !is_null($children['step']) ) {
+        // remove null elements
+        foreach($children['step'] as $key => $value) {
+          if(is_null($value)) {
+            unset($children['step'][$key]);
+          }
+        }
+
+        if( count($children['step']) > 0) {
+          $step_list=trim(implode(',',$children['step']));
+       }
+    }
+    // ------------------------------------------------------------------------------
+  
     if( $version_id == self::ALL_VERSIONS ) {
+      // ------------------------------------------------------------------------------
+      if( $step_list != '' ) {
+        $sql[] = "/* $debugMsg */ 
+                  DELETE FROM {$this->tables['execution_tcsteps_wip']} 
+                  WHERE tcstep_id IN ({$step_list})";
+      }
+      // ------------------------------------------------------------------------------
+
+
+      // ------------------------------------------------------------------------------
       $tcversion_list = implode(',',$children['tcversion']);
 
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_tcsteps']} " .
@@ -1825,8 +1853,12 @@ class testcase extends tlObjectWithAttachments {
 
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']}  " .
              " WHERE tcversion_id IN ({$tcversion_list})";
-    } else {
 
+      foreach ($sql as $the_stm) {
+        $result = $this->db->exec_query($the_stm);
+      }
+      
+    } else {
 
       // Long explanation
       // executions table has following fields
@@ -1875,9 +1907,26 @@ class testcase extends tlObjectWithAttachments {
       // - get the tcversion_number (VNUM) for the tcversion_id (TARGET_TCVID) 
       $myVersionNum = $this->getVersionNumber($version_id);
 
+      // --------------------------------------------------------------------------
+      if( $step_list != '' ) {
+        
+        /*
+        $execTestPLan = " SELECT testplan_id FROM {$this->tables['executions']}
+                          WHERE tcversion_id = {$version_id}  
+                          AND tcversion_number = {$myVersionNum} ";
+        */
+        $sql[] = "/* $debugMsg */ 
+                  DELETE FROM {$this->tables['execution_tcsteps_wip']}
+                  WHERE tcstep_id IN ({$step_list}) ";
+      }
+      // --------------------------------------------------------------------------
+
+
+      // --------------------------------------------------------------------------
       $execSQL = " SELECT id FROM {$this->tables['executions']}
                    WHERE tcversion_id = {$version_id}  
                    AND tcversion_number = {$myVersionNum} ";
+
 
       $sql[] = "/* $debugMsg */ 
                 DELETE FROM {$this->tables['execution_tcsteps']}

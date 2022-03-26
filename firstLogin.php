@@ -5,7 +5,7 @@
  *
  * @filesource  firstLogin.php
  * @package     TestLink
- * @copyright   2004-2019, TestLink community 
+ * @copyright   2004-2022, TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -111,7 +111,6 @@ function init_args()
 function notifyGlobalAdmins(&$dbHandler,&$userObj)
 {
   // Get email addresses for all users that have default role = administrator
- 
   $cfg = config_get('notifications');
   if( !is_null($cfg->userSignUp->to->roles) )
   {
@@ -136,7 +135,8 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
     $tables = tlObject::getDBTables('users');
     $sql = " SELECT id,email FROM {$tables['users']} " .
            " WHERE login IN('" . implode("','", $cfg->userSignUp->to->users) . "')";
-    $userSet = $dbHandler->fetchRowsIntoMap($sql,'id');
+           echo '<br>' . __LINE__; 
+           $userSet = $dbHandler->fetchRowsIntoMap($sql,'id');
     if(!is_null($userSet))
     {
       foreach($userSet as $userID => $elem)
@@ -149,9 +149,8 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
     }  
   }
 
-  if($mail['to'] != '')
-  {
-    $dest = null;  
+  if($mail['to'] != '') {
+    $dest = [];  
     $validator = new Zend_Validate_EmailAddress();
     foreach($mail['to'] as $mm)
     {
@@ -162,16 +161,16 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
       }  
       $dest[] = $ema;
     }  
-    $mail['to'] = implode(',',$dest); // email_api uses ',' as list separator
-    $mail['subject'] = lang_get('new_account');
-    $mail['body'] = lang_get('new_account') . "\n";
-    $mail['body'] .= " user:$userObj->login\n"; 
-    $mail['body'] .= " first name:$userObj->firstName surname:$userObj->lastName\n";
-    $mail['body'] .= " email:{$userObj->emailAddress}\n";
       
     // silence errors
-    if(!is_null($dest))
+    if(count($dest) > 0)
     {
+      $mail['to'] = implode(',',$dest); // email_api uses ',' as list separator
+      $mail['subject'] = lang_get('new_account');
+      $mail['body'] = lang_get('new_account') . "\n";
+      $mail['body'] .= " user:$userObj->login\n"; 
+      $mail['body'] .= " first name:$userObj->firstName surname:$userObj->lastName\n";
+      $mail['body'] .= " email:{$userObj->emailAddress}\n";
       @email_send(config_get('from_email'), $mail['to'], $mail['subject'], $mail['body']);
     }  
   }  

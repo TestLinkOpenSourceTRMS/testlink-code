@@ -5,7 +5,7 @@
  *
  * @package 	  TestLink
  * @author 		  franciscom
- * @copyright 	2005-2019, TestLink community
+ * @copyright 	2005-2022, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reused from the Mantis project) 
  * @filesource  cfield_mgr.class.php
  * @link 		    http://testlink.sourceforge.net
@@ -810,11 +810,10 @@ class cfield_mgr extends tlObject
     if( is_null($hash) && is_null($cf_map) ) {
        return;
     }
+  
+    $cfield=$hash;
     if( is_null($hash_type) ) {
       $cfield=$this->_build_cfield($hash,$cf_map);
-    }
-    else {
-      $cfield=$hash;
     }
 
     if( !is_null($cfield) ) {
@@ -1760,13 +1759,9 @@ function name_is_unique($id,$name)
        return;
     }
 
-    if( is_null($hash_type) )
-    {
+    $cfield=$hash;
+    if( is_null($hash_type) ) {
       $cfield=$this->_build_cfield($hash,$cf_map);
-    }
-    else
-    {
-      $cfield=$hash;
     }
 
     if( !is_null($cfield) )
@@ -1932,11 +1927,12 @@ function name_is_unique($id,$name)
         switch ($verbose_type) {
           case 'multiselection list':
           case 'checkbox':
-            if( count($value) > 1) {
+            $valueIsArray = is_array($value);
+            if( $valueIsArray && count($value) > 1) {
               $value=implode('|',$value);
             }
             else {
-              $value=is_array($value) ? $value[0] : $value;
+              $value = $valueIsArray ? $value[0] : $value;
             }
             $cfield[$field_id]['cf_value']=$value;
           break;

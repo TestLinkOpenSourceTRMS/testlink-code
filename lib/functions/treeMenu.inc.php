@@ -1182,7 +1182,7 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
         $sql .=  " AND ({$cf_sql}) ";
       }
 
-      $rows = $db->fetchColumnsIntoArray($sql,'value');
+      $rows = (array)$db->fetchColumnsIntoArray($sql,'value');
       
       //if there exist as many rows as custom fields to be filtered by
       //the tc does meet the criteria

@@ -14,6 +14,142 @@ Older changelogs:
 
 --------------------------------------------------------------------------------
 
+## [5.22.1] - 2022-03-30
+
+### Removed
+
+- Legacy mysql, mysqlpo and mysqlt drivers
+  [#804](https://github.com/ADOdb/ADOdb/issues/804)
+
+### Fixed
+
+- firebird: undefined offset PHP notice in _fetchField()
+  [#808](https://github.com/ADOdb/ADOdb/issues/808)
+- firebird: PHP deprecation warning in _blobDecode()
+  [#811](https://github.com/ADOdb/ADOdb/issues/811)
+- firebird: PHP notice when executing query with empty array
+  [#812](https://github.com/ADOdb/ADOdb/issues/812)
+- firebird: undefined array key with uppercase columns
+  [#813](https://github.com/ADOdb/ADOdb/issues/813)
+- mysqli: regression on setConnectionParameter()
+  [#803](https://github.com/ADOdb/ADOdb/issues/803)
+- mysqli: regression on bulk binding
+  [#806](https://github.com/ADOdb/ADOdb/issues/806)
+- mysqli: Affected_Rows() not returning correct value
+  [#820](https://github.com/ADOdb/ADOdb/issues/820)
+- oci8: fix PHP 8.1 array deprecation warning
+  [#817](https://github.com/ADOdb/ADOdb/issues/817)
+- memcache: weighted servers not connecting
+  [#807](https://github.com/ADOdb/ADOdb/issues/807)
+- memcache: $memCacheCompress option ignored by memcached
+  [#823](https://github.com/ADOdb/ADOdb/issues/823)
+- memcache: use default port in server controller template
+  [#824](https://github.com/ADOdb/ADOdb/issues/824)
+- xml PHP Notice in dbData::create()
+  [#822](https://github.com/ADOdb/ADOdb/issues/822)
+
+
+## [5.22.0] - 2022-02-08
+
+### Added
+
+- Support for custom MetaTypes, e.g. JSON or GEOMETRY
+  [#602](https://github.com/ADOdb/ADOdb/issues/602)
+  [#626](https://github.com/ADOdb/ADOdb/issues/626)
+  [#649](https://github.com/ADOdb/ADOdb/issues/649)
+- Use of weighted server groups with Memcached
+  [#676](https://github.com/ADOdb/ADOdb/issues/676)
+- mssql: implement offsetDate() method
+  [#698](https://github.com/ADOdb/ADOdb/issues/698)
+- oci8: new ADOConnection::releaseStatement() method
+  [#770](https://github.com/ADOdb/ADOdb/issues/770)
+- sqlite3 performance monitor stub
+  [#661](https://github.com/ADOdb/ADOdb/issues/661)
+- sqlite: support blob handling
+  [#702](https://github.com/ADOdb/ADOdb/issues/702)
+
+### Changed
+
+- firebird: complete overhaul to support latest PHP drivers
+  [#710](https://github.com/ADOdb/ADOdb/issues/710)
+- mssql: Refactor _fetchField() method 
+  [#725](https://github.com/ADOdb/ADOdb/issues/725)
+- mysql: Support bound variable statements
+  [#655](https://github.com/ADOdb/ADOdb/issues/655)
+- pgsql: missing standard datatypes
+  [#782](https://github.com/ADOdb/ADOdb/issues/782)
+- xml: add field comments
+  [#732](https://github.com/ADOdb/ADOdb/issues/732)
+- loadbalancer: support calling a function upon connection
+  [#784](https://github.com/ADOdb/ADOdb/issues/784)
+- Code cleanup: PHPDoc, code style, whitespace, PHPStan errors, etc.
+  [#774](https://github.com/ADOdb/ADOdb/issues/774)
+
+### Deprecated
+
+- Compatibility with PHP < 7.2
+  [#797](https://github.com/ADOdb/ADOdb/issues/797)
+- Database Replication add-on
+  [#780](https://github.com/ADOdb/ADOdb/issues/780)
+
+### Removed
+
+- Compatibility with PHP 5.x
+  [#797](https://github.com/ADOdb/ADOdb/issues/797)
+- Transpose() function and assorted sub-functions
+  [#586](https://github.com/ADOdb/ADOdb/issues/586)
+- "proxy" server and client scripts
+  [#680](https://github.com/ADOdb/ADOdb/issues/680)
+
+### Fixed
+
+- metaIndexes does not return primary key correctly
+  [#656](https://github.com/ADOdb/ADOdb/issues/656)
+- Uniformize ADOrecordSet::__construct() parameters
+  [#772](https://github.com/ADOdb/ADOdb/issues/772)
+- Prevent PHP warning when throwing exception with P1 or P2 parameter as array
+  [#783](https://github.com/ADOdb/ADOdb/issues/783)
+- $dsnType property not defined before use
+  [#789](https://github.com/ADOdb/ADOdb/issues/789)
+- mysql: Update socket and client flags for ssl
+  [#622](https://github.com/ADOdb/ADOdb/issues/622)
+- mysql: Handle tables that are reserved words
+- [#759](https://github.com/ADOdb/ADOdb/issues/759)
+- pgsql: prevent AddColumnSQL() from updating existing values when default is changed
+  [#635](https://github.com/ADOdb/ADOdb/issues/635)
+- pgsql: Refactored _fixblobs() and replaced it with new _prepFields() method
+  [#767](https://github.com/ADOdb/ADOdb/issues/767)
+- pgsql: Incorrect pg_execute() api calls
+  [#768](https://github.com/ADOdb/ADOdb/issues/768)
+- pgsql: blobDelete() could silently fail with multiple connections
+  [#769](https://github.com/ADOdb/ADOdb/issues/769)
+- pdo: ensure bound statements are correctly formatted
+  [#695](https://github.com/ADOdb/ADOdb/issues/695)
+- perf: fix invalid SQL
+  [#753](https://github.com/ADOdb/ADOdb/issues/753)
+- sqlite: driver returns incorrect time when using $sysTimeStamp
+  [#697](https://github.com/ADOdb/ADOdb/issues/697)
+- sqlite: undeclared connection property
+  [#713](https://github.com/ADOdb/ADOdb/issues/713)
+- xml: Undefined array key error
+  [#775](https://github.com/ADOdb/ADOdb/issues/775)
+- memcache: library does not initialize correctly
+  [#788](https://github.com/ADOdb/ADOdb/issues/788)
+
+
+## [5.21.4] and [5.20.21] - 2022-01-22
+
+### Fixed
+
+- Methods return E_DEPRECATED with PHP8.1
+  [#771](https://github.com/ADOdb/ADOdb/issues/771)
+
+### Security
+
+- pgsql: authentication bypass in connect functions (CVE-2021-3850)
+  [#793](https://github.com/ADOdb/ADOdb/issues/793)
+
+
 ## [5.21.3] - 2021-10-31
 
 ### Fixed
@@ -58,6 +194,8 @@ Older changelogs:
   [#715](https://github.com/ADOdb/ADOdb/issues/715)
 - Incorrect handling of $ADODB_QUOTE_FIELDNAMES = true
   [#721](https://github.com/ADOdb/ADOdb/issues/721)
+- array to string conversion in adodb_debug_execute()
+  [#737](https://github.com/ADOdb/ADOdb/issues/737)
 - db2: fix columns always returned in lowercase
   [#719](https://github.com/ADOdb/ADOdb/issues/719)
 - PDO: Bind parameters fail if sent in associative array
@@ -1129,8 +1267,10 @@ Released together with [v4.95](changelog_v4.x.md#495---17-may-2007)
 - Adodb5 version,more error checking code now will use exceptions if available.
 
 
-[Unreleased]: https://github.com/adodb/adodb/compare/v5.21.3...master
+[5.22.1]: https://github.com/adodb/adodb/compare/v5.22.0...v5.22.1
+[5.22.0]: https://github.com/adodb/adodb/compare/v5.21.4...v5.22.0
 
+[5.21.4]: https://github.com/adodb/adodb/compare/v5.21.3...v5.21.4
 [5.21.3]: https://github.com/adodb/adodb/compare/v5.21.2...v5.21.3
 [5.21.2]: https://github.com/adodb/adodb/compare/v5.21.1...v5.21.2
 [5.21.1]: https://github.com/adodb/adodb/compare/v5.21.0...v5.21.1
@@ -1138,6 +1278,7 @@ Released together with [v4.95](changelog_v4.x.md#495---17-may-2007)
 [5.21.0-rc.1]: https://github.com/adodb/adodb/compare/v5.21.0-beta.1...v5.21.0-rc.1
 [5.21.0-beta.1]: https://github.com/adodb/adodb/compare/v5.20.20...v5.21.0-beta.1
 
+[5.20.21]: https://github.com/adodb/adodb/compare/v5.20.20...v5.20.21
 [5.20.20]: https://github.com/adodb/adodb/compare/v5.20.19...v5.20.20
 [5.20.19]: https://github.com/adodb/adodb/compare/v5.20.18...v5.20.19
 [5.20.18]: https://github.com/adodb/adodb/compare/v5.20.17...v5.20.18

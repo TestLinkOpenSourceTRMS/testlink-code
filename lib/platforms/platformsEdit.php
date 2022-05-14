@@ -5,8 +5,11 @@
  *
  * @filesource  platformsEdit.php
  * @package     TestLink
- * @copyright   2009-2020, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2009-2022, TestLink community 
+ * @link        http://www.testlink.org 
+ * @link        http://mantis.testlink.org 
+ * @link        https://github.com/TestLinkOpenSourceTRMS/testlink-code 
+ * 
  *
  * allows users to manage platforms. 
  *
@@ -340,7 +343,9 @@ function init_gui(&$db,&$args,&$platMgr) {
   $gui->name = $args->name;
   $gui->notes = $args->notes;
   $gui->platform_id = $args->platform_id;
-    
+  $gui->enable_on_design = 0;
+  $gui->enable_on_execution = 0;
+
   return $gui;
 }
 

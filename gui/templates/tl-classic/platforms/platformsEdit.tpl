@@ -30,10 +30,10 @@ Purpose: smarty template - Edit a platform
   <div class="workBack">
   
   <div>
-	{if $gui->mgt_view_events eq "yes" && $gui->platformID > 0}
+	{if $gui->mgt_view_events eq "yes" && $gui->platform_id > 0}
 			<img style="margin-left:5px;" class="clickable" 
 			     src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
-			     onclick="showEventHistoryFor('{$gui->platformID}','platforms')" 
+			     onclick="showEventHistoryFor('{$gui->platform_id}','platforms')" 
 			     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 	{/if}
   

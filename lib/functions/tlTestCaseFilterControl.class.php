@@ -2159,18 +2159,22 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     }
 
-    $platformSet = $this->platform_mgr->getAllAsMap($opxy);
+    $platformSet = (array)$this->platform_mgr->getAllAsMap($opxy);
     $this->filters[$key] = array('items' => $platformSet,
                                  'selected' => $selection);
-
+    $this->filters[$key]['size'] = min(count($this->filters[$key]['items']),
+                                       self::ADVANCED_FILTER_ITEM_QUANTITY);
+                             
     // set the active value to filter
-    // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
+    // delete filter if "any" (0) is part of the selection - regardless of filter mode
     if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {
       $this->active_filters[$key] = null;
     } else {
       $this->active_filters[$key] = $this->filters[$key]['selected'];
     }
-          
+
+  
+
 
   } // end of method
 

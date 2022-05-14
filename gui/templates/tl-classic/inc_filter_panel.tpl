@@ -289,8 +289,7 @@
       </tr>
       <tr><td>&nbsp;</td></tr>
     {/if}
-
-    {if $control->filters.filter_platforms}
+    {if $control->filters.filter_platforms.size > 0 }
       <tr>
         <td>{$labels.platforms}</td>
         <td><select class="chosen-select" name="filter_platforms[]"

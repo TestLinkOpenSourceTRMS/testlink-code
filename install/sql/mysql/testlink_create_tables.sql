@@ -213,7 +213,7 @@ CREATE TABLE /*prefix*/testcase_script_links (
   `tcversion_id` int(10) unsigned NOT NULL default '0',
   `project_key` varchar(64) NOT NULL,
   `repository_name` varchar(64) NOT NULL,
-  `code_path` varchar(255) NOT NULL,
+  `code_path` varchar(200) NOT NULL,
   `branch_name` varchar(64) default NULL,
   `commit_id` varchar(40) default NULL,
   PRIMARY KEY  (`tcversion_id`,`project_key`,`repository_name`,`code_path`)

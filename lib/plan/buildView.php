@@ -52,11 +52,11 @@ function initEnv(&$dbHandler) {
 
   // ----------------------------------------------------------------
   // Feature Access Check
-  $env = array()
+  $env = array();
   $env['script'] = basename(__FILE__);
   $env['tproject_id'] = $gui->tproject_id;
   $env['tplan_id'] = $gui->tplan_id;
-  $args->user->checkGUISecurityClearance(dbHandler,$env,
+  $args->user->checkGUISecurityClearance($dbHandler,$env,
                     array('testplan_create_build'),'and');
   // ----------------------------------------------------------------
 

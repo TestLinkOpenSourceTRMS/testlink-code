@@ -58,6 +58,8 @@ function refreshAndClose(tcase_id,callback) {
   {$msgReqLinkingEnabled = $labels.reqLinkingDisabledAfterExec}
 {/if}    
 
+
+
 <body>
 {$sep = $smarty.const.TITLE_SEP}
 {$tcIdentity = "{$gui->tcTitle|escape}  "}
@@ -81,10 +83,9 @@ function refreshAndClose(tcase_id,callback) {
     {/if}
 
     <p><span class="labelHolder">{$labels.req_spec}</span>   
-  	<select name="idSRS" id="idSRS" class="idSRS" onchange="form.submit()">
-        <option></option>
+  	<select name="idSRS" id="idSRS" onchange="form.submit()">
   		{html_options options=$gui->arrReqSpec selected=$gui->selectedReqSpec}
-    </select></p>
+  	</select>
   </form>
 {if $gui->showCloseButton}
   <form name="closeMeTop">
@@ -238,11 +239,5 @@ function refreshAndClose(tcase_id,callback) {
 		</div>
 	</form>
 {/if}
-
-<script type="text/javascript">
-jQuery( document ).ready(function() {
-jQuery(".idSRS").chosen({ width: "70%", search_contains: true });
-});
-</script>   
 </body>
 </html>

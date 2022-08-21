@@ -523,39 +523,5 @@ class Jira
         return $items;
     }
 
-    /**
-     * getAccountId
-     *
-     * @return mixed
-     */
-    public function getAccountId($email)
-    {
-        $cmd = $this->host . 'groupuserpicker?query=' . $email;
-        $this->request->openConnect($cmd, 'GET');
-        $this->request->execute();
-        if ($result = json_decode($this->request->getResponseBody())) {
-            if (!isset($result->users)) {
-                //error_log('cannot find user');
-                return false;
-            }
-            $infos = $result->users->users;
-            $cnt = $result->users->total;
-            if ($infos) {
-                foreach ($infos as $info) {
-                    if ($info->accountId) {
-                        return $info->accountId;
-                    }
-                }
-            }
-            return false;
-        }
-        else
-        {
-            // ATTENTION \Exception in order to use PHP object.
-            $msg = "Error Processing Request - " . __METHOD__ . ' ' .
-                   implode('/', $items->errorMessages);
-            throw new \Exception($msg, 999);
-        }
-        return false;
-    }
+
 }

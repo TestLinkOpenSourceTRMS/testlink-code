@@ -1,0 +1,227 @@
+[<<][62f53d5c9d1e7098928326][DEFAULT][/testlink/lnl.php][22/Aug/11 17:33:16][22/Aug/11 17:33:16][took 0.001403 secs]
+[<<][62f53d5ca4c73334959966][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/11 17:33:16][22/Aug/11 17:33:16][took 0.012955 secs]
+[>>][62f53d5ca8206023082409][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/11 17:33:16]
+[<<][62f53d5ca8206023082409][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/11 17:33:16][22/Aug/11 17:33:16][took 0.001896 secs]
+[>>][62f53d5ca8ca3010144156][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/11 17:33:16]
+	[22/Aug/11 17:33:16][WARNING][<nosession>][GUI]
+		E_NOTICE
+Trying to get property 'rights' of non-object - in D:\wamp64\www\testlink\lib\functions\tlUser.class.php - Line 825
+	[22/Aug/11 17:33:16][WARNING][<nosession>][GUI]
+		E_NOTICE
+Undefined index: platform - in D:\wamp64\www\testlink\lib\functions\print.inc.php - Line 1443
+[<<][62f53d5ca8ca3010144156][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/11 17:33:16][22/Aug/11 17:33:16][took 0.041217 secs]
+[<<][62f53d6de45fa603419106][DEFAULT][/testlink/lib/general/frmWorkArea.php][22/Aug/11 17:33:33][22/Aug/11 17:33:33][took 0.009277 secs]
+[>>][62f53d6de6e7e816359189][DEFAULT][/testlink/lib/general/frmWorkArea.php][22/Aug/11 17:33:33]
+[<<][62f53d6de6e7e816359189][DEFAULT][/testlink/lib/general/frmWorkArea.php][22/Aug/11 17:33:33][22/Aug/11 17:33:33][took 0.00058899999999995 secs]
+[<<][62f53d6df029d475826512][DEFAULT][/testlink/login.php][22/Aug/11 17:33:33][22/Aug/11 17:33:33][took 0.007155 secs]
+[>>][62f53d6df2115258786235][DEFAULT][/testlink/login.php][22/Aug/11 17:33:33]
+[<<][62f53dbcd1e99986132037][DEFAULT][/testlink/lnl.php][22/Aug/11 17:34:52][22/Aug/11 17:34:52][took 0.0014960000000001 secs]
+[<<][62f53dbcd73ca196735509][DEFAULT][/testlink/lib/results/charts.php][22/Aug/11 17:34:52][22/Aug/11 17:34:52][took 0.012256 secs]
+[>>][62f53dbcda6ac175753452][DEFAULT][/testlink/lib/results/charts.php][22/Aug/11 17:34:52]
+[<<][62f53dbcda6ac175753452][DEFAULT][/testlink/lib/results/charts.php][22/Aug/11 17:34:52][22/Aug/11 17:34:52][took 0.022888 secs]
+[<<][62f53dbd0580c732268677][DEFAULT][/testlink/lib/results/keywordBarChart.php][22/Aug/11 17:34:53][22/Aug/11 17:34:53][took 0.01601 secs]
+[>>][62f53dbd09a8a712875747][DEFAULT][/testlink/lib/results/keywordBarChart.php][22/Aug/11 17:34:53]
+	[22/Aug/11 17:34:53][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\third_party\pchart\pChart\pChart.class - Line 3332
+[<<][62f53dbd09a8a712875747][DEFAULT][/testlink/lib/results/keywordBarChart.php][22/Aug/11 17:34:53][22/Aug/11 17:34:53][took 0.025179 secs]
+[<<][62f53dbd0582c668042260][DEFAULT][/testlink/lib/results/overallPieChart.php][22/Aug/11 17:34:53][22/Aug/11 17:34:53][took 0.04806 secs]
+[>>][62f53dbd1176d833510220][DEFAULT][/testlink/lib/results/overallPieChart.php][22/Aug/11 17:34:53]
+	[22/Aug/11 17:34:53][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\lib\functions\tlTestPlanMetrics.class.php - Line 1026
+	[22/Aug/11 17:34:53][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\third_party\pchart\pChart\pData.class - Line 135
+	[22/Aug/11 17:34:53][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\third_party\pchart\pChart\pData.class - Line 135
+[<<][62f53dbd1176d833510220][DEFAULT][/testlink/lib/results/overallPieChart.php][22/Aug/11 17:34:53][22/Aug/11 17:34:53][took 0.384018 secs]
+[<<][62f53dbd16921378831069][DEFAULT][/lib/results/topLevelSuitesBarChart.php][22/Aug/11 17:34:53][22/Aug/11 17:34:53][took 0.368719 secs]
+[>>][62f53dbd70c77438624305][DEFAULT][/lib/results/topLevelSuitesBarChart.php][22/Aug/11 17:34:53]
+	[22/Aug/11 17:34:53][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\third_party\pchart\pChart\pData.class - Line 135
+	[22/Aug/11 17:34:53][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\third_party\pchart\pChart\pData.class - Line 135
+	[22/Aug/11 17:34:53][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\third_party\pchart\pChart\pData.class - Line 135
+	[22/Aug/11 17:34:53][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\third_party\pchart\pChart\pData.class - Line 135
+	[22/Aug/11 17:34:53][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\third_party\pchart\pChart\pData.class - Line 135
+	[22/Aug/11 17:34:54][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\third_party\pchart\pChart\pChart.class - Line 3332
+[<<][62f53dbd70c77438624305][DEFAULT][/lib/results/topLevelSuitesBarChart.php][22/Aug/11 17:34:53][22/Aug/11 17:34:54][took 0.728503 secs]
+[<<][62f53dcc0c200025974283][DEFAULT][/testlink/lib/general/frmWorkArea.php][22/Aug/11 17:35:08][22/Aug/11 17:35:08][took 0.012863 secs]
+[>>][62f53dcc0f7d2959709970][DEFAULT][/testlink/lib/general/frmWorkArea.php][22/Aug/11 17:35:08]
+[<<][62f53dcc0f7d2959709970][DEFAULT][/testlink/lib/general/frmWorkArea.php][22/Aug/11 17:35:08][22/Aug/11 17:35:08][took 0.000789 secs]
+[<<][62f53dcc185d4457759257][DEFAULT][/testlink/login.php][22/Aug/11 17:35:08][22/Aug/11 17:35:08][took 0.008343 secs]
+[>>][62f53dcc1a8be373397011][DEFAULT][/testlink/login.php][22/Aug/11 17:35:08]
+[<<][62f7ac96c0239161251084][DEFAULT][/testlink/lnl.php][22/Aug/13 13:52:22][22/Aug/13 13:52:22][took 0.001511 secs]
+[<<][62f7ac96cc4ab440232227][DEFAULT][/testlink/lib/results/metricsDashboard.php][22/Aug/13 13:52:22][22/Aug/13 13:52:22][took 0.014971 secs]
+[>>][62f7ac96d02a1138801230][DEFAULT][/testlink/lib/results/metricsDashboard.php][22/Aug/13 13:52:22]
+	[22/Aug/13 13:52:22][WARNING][<nosession>][GUI]
+		E_NOTICE
+Undefined property: stdClass::$tplan_id - in D:\wamp64\www\testlink\lib\functions\common.php - Line 1304
+	[22/Aug/13 13:52:22][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\lib\functions\tlTestPlanMetrics.class.php - Line 1026
+[<<][62f7ac96d02a1138801230][DEFAULT][/testlink/lib/results/metricsDashboard.php][22/Aug/13 13:52:22][22/Aug/13 13:52:22][took 0.031731 secs]
+[<<][62f7acba9eefd412749683][DEFAULT][/testlink/lnl.php][22/Aug/13 13:52:58][22/Aug/13 13:52:58][took 0.001787 secs]
+[<<][62f7acbaa1b56188341321][DEFAULT][/testlink/lib/results/metricsDashboard.php][22/Aug/13 13:52:58][22/Aug/13 13:52:58][took 0.0076630000000001 secs]
+[>>][62f7acbaa3c32151444342][DEFAULT][/testlink/lib/results/metricsDashboard.php][22/Aug/13 13:52:58]
+	[22/Aug/13 13:52:58][WARNING][<nosession>][GUI]
+		E_NOTICE
+Undefined property: stdClass::$tplan_id - in D:\wamp64\www\testlink\lib\functions\common.php - Line 1304
+	[22/Aug/13 13:52:58][WARNING][<nosession>][GUI]
+		E_WARNING
+count(): Parameter must be an array or an object that implements Countable - in D:\wamp64\www\testlink\lib\functions\tlTestPlanMetrics.class.php - Line 1026
+[<<][62f7acbaa3c32151444342][DEFAULT][/testlink/lib/results/metricsDashboard.php][22/Aug/13 13:52:58][22/Aug/13 13:52:58][took 0.031099 secs]
+[<<][62f7bb298c997163386492][DEFAULT][/testlink/index.php][22/Aug/13 14:54:33][22/Aug/13 14:54:33][took 0.011295 secs]
+[>>][62f7bb298fa27910526654][DEFAULT][/testlink/index.php][22/Aug/13 14:54:33]
+[<<][62f7bb298fa27910526654][DEFAULT][/testlink/index.php][22/Aug/13 14:54:33][22/Aug/13 14:54:33][took 0.0017050000000001 secs]
+[<<][62f7bb29adc57603541860][DEFAULT][/testlink/login.php][22/Aug/13 14:54:33][22/Aug/13 14:54:33][took 0.016087 secs]
+[>>][62f7bb29b1f54360674615][DEFAULT][/testlink/login.php][22/Aug/13 14:54:33]
+[<<][62f7bb29b1f54360674615][DEFAULT][/testlink/login.php][22/Aug/13 14:54:33][22/Aug/13 14:54:33][took 0.105234 secs]
+[<<][62f7bb2f7841f197861482][DEFAULT][/testlink/login.php][22/Aug/13 14:54:39][22/Aug/13 14:54:39][took 0.010263 secs]
+[>>][62f7bb2f7b01e823722463][DEFAULT][/testlink/login.php][22/Aug/13 14:54:39]
+[<<][62f7bb2f7b01e823722463][DEFAULT][/testlink/login.php][22/Aug/13 14:54:39][22/Aug/13 14:54:39][took 0.094197 secs]
+[>>][62f7bb2f9235a182292765][DEFAULT][/testlink/login.php][22/Aug/13 14:54:39]
+[<<][630163bcbb808472753183][DEFAULT][/testlink/lnl.php][22/Aug/20 22:44:12][22/Aug/20 22:44:12][took 0.0015130000000001 secs]
+[<<][630163bcc9d47839470162][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/20 22:44:12][22/Aug/20 22:44:12][took 0.012835 secs]
+[>>][630163bccd2e0938255893][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/20 22:44:12]
+[<<][630163bccd2e0938255893][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/20 22:44:12][22/Aug/20 22:44:12][took 0.0017389999999999 secs]
+[>>][630163bccdcd1558729958][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/20 22:44:12]
+	[22/Aug/20 22:44:12][WARNING][<nosession>][GUI]
+		E_NOTICE
+Trying to get property 'rights' of non-object - in D:\wamp64\www\testlink\lib\functions\tlUser.class.php - Line 825
+	[22/Aug/20 22:44:12][WARNING][<nosession>][GUI]
+		E_NOTICE
+Undefined index: platform - in D:\wamp64\www\testlink\lib\functions\print.inc.php - Line 1443
+[<<][630163bccdcd1558729958][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/20 22:44:12][22/Aug/20 22:44:12][took 0.095646 secs]
+[<<][630163d7c32ce847719177][DEFAULT][/testlink/index.php][22/Aug/20 22:44:39][22/Aug/20 22:44:39][took 0.010638 secs]
+[>>][630163d7c5f90908445228][DEFAULT][/testlink/index.php][22/Aug/20 22:44:39]
+[<<][630163d7c5f90908445228][DEFAULT][/testlink/index.php][22/Aug/20 22:44:39][22/Aug/20 22:44:39][took 0.0012770000000001 secs]
+[<<][630163d7d5444646658518][DEFAULT][/testlink/login.php][22/Aug/20 22:44:39][22/Aug/20 22:44:39][took 0.007259 secs]
+[>>][630163d7d7342510827330][DEFAULT][/testlink/login.php][22/Aug/20 22:44:39]
+[<<][630163d7d7342510827330][DEFAULT][/testlink/login.php][22/Aug/20 22:44:39][22/Aug/20 22:44:39][took 0.101837 secs]
+[<<][6301641e3bbff849433677][DEFAULT][/testlink/login.php][22/Aug/20 22:45:50][22/Aug/20 22:45:50][took 0.013161 secs]
+[>>][6301641e3f332662341322][DEFAULT][/testlink/login.php][22/Aug/20 22:45:50]
+[<<][6301641e3f332662341322][DEFAULT][/testlink/login.php][22/Aug/20 22:45:50][22/Aug/20 22:45:50][took 0.098658 secs]
+[>>][6301641e57873978225660][DEFAULT][/testlink/login.php][22/Aug/20 22:45:50]
+[<<][63022457bcb09657268631][DEFAULT][/testlink/lnl.php][22/Aug/21 12:25:59][22/Aug/21 12:25:59][took 0.0012260000000001 secs]
+[<<][63022458262ac862992627][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 12:26:00][22/Aug/21 12:26:00][took 0.022027 secs]
+[>>][630224582bd96033386930][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 12:26:00]
+[<<][630224582bd96033386930][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 12:26:00][22/Aug/21 12:26:00][took 0.02278 secs]
+[>>][6302245831c2f452931057][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 12:26:00]
+	[22/Aug/21 12:26:01][WARNING][<nosession>][GUI]
+		E_NOTICE
+Trying to get property 'rights' of non-object - in D:\wamp64\www\testlink\lib\functions\tlUser.class.php - Line 825
+	[22/Aug/21 12:26:01][WARNING][<nosession>][GUI]
+		E_NOTICE
+Undefined index: platform - in D:\wamp64\www\testlink\lib\functions\print.inc.php - Line 1443
+[<<][6302245831c2f452931057][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 12:26:00][22/Aug/21 12:26:01][took 1.285799 secs]
+[<<][63022481dfc3f433416563][DEFAULT][/testlink/lib/execute/bugAdd.php][22/Aug/21 12:26:41][22/Aug/21 12:26:41][took 0.021771 secs]
+[>>][63022481e5678681172087][DEFAULT][/testlink/lib/execute/bugAdd.php][22/Aug/21 12:26:41]
+[<<][63022481e5678681172087][DEFAULT][/testlink/lib/execute/bugAdd.php][22/Aug/21 12:26:41][22/Aug/21 12:26:41][took 0.00052000000000008 secs]
+[<<][63022481eb2cb499373784][DEFAULT][/testlink/login.php][22/Aug/21 12:26:41][22/Aug/21 12:26:41][took 0.009799 secs]
+[>>][63022481edb92929544920][DEFAULT][/testlink/login.php][22/Aug/21 12:26:41]
+[<<][6302254c3ada9652974632][DEFAULT][/testlink/lnl.php][22/Aug/21 12:30:04][22/Aug/21 12:30:04][took 0.001946 secs]
+[<<][630245c9a1dd8111675042][DEFAULT][/testlink/lnl.php][22/Aug/21 14:48:41][22/Aug/21 14:48:41][took 0.003595 secs]
+[<<][630245f628f5f946427984][DEFAULT][/testlink/lnl.php][22/Aug/21 14:49:26][22/Aug/21 14:49:26][took 0.00158 secs]
+[<<][63024cedd2d64246174252][DEFAULT][/testlink/lnl.php][22/Aug/21 15:19:09][22/Aug/21 15:19:09][took 0.001123 secs]
+[<<][63024cedd6631317050316][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:19:09][22/Aug/21 15:19:09][took 0.0090009999999999 secs]
+[>>][63024cedd8c0e944893812][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:19:09]
+[<<][63024cedd8c0e944893812][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:19:09][22/Aug/21 15:19:09][took 0.001629 secs]
+[>>][63024cedd9557267384039][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:19:09]
+	[22/Aug/21 15:19:10][WARNING][<nosession>][GUI]
+		E_NOTICE
+Trying to get property 'rights' of non-object - in D:\wamp64\www\testlink\lib\functions\tlUser.class.php - Line 825
+	[22/Aug/21 15:19:10][WARNING][<nosession>][GUI]
+		E_NOTICE
+Undefined index: platform - in D:\wamp64\www\testlink\lib\functions\print.inc.php - Line 1443
+[<<][63024cedd9557267384039][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:19:09][22/Aug/21 15:19:10][took 1.091018 secs]
+[<<][63024d243ccac060155347][DEFAULT][/testlink/lib/execute/execSetResults.php][22/Aug/21 15:20:04][22/Aug/21 15:20:04][took 0.021962 secs]
+[>>][63024d24428f0654033965][DEFAULT][/testlink/lib/execute/execSetResults.php][22/Aug/21 15:20:04]
+[<<][63024d24428f0654033965][DEFAULT][/testlink/lib/execute/execSetResults.php][22/Aug/21 15:20:04][22/Aug/21 15:20:04][took 0.001442 secs]
+[<<][63024d244ab13935413064][DEFAULT][/testlink/login.php][22/Aug/21 15:20:04][22/Aug/21 15:20:04][took 0.008181 secs]
+[>>][63024d244cd77783144411][DEFAULT][/testlink/login.php][22/Aug/21 15:20:04]
+[<<][6302548fb382a625726410][DEFAULT][/testlink/lnl.php][22/Aug/21 15:51:43][22/Aug/21 15:51:43][took 0.001745 secs]
+[<<][630254b9687fb691097182][DEFAULT][/testlink/lnl.php][22/Aug/21 15:52:25][22/Aug/21 15:52:25][took 0.001337 secs]
+[<<][630254b96c1e3311397537][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:52:25][22/Aug/21 15:52:25][took 0.009052 secs]
+[>>][630254b96e80b770409228][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:52:25]
+[<<][630254b96e80b770409228][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:52:25][22/Aug/21 15:52:25][took 0.013378 secs]
+[>>][630254b971ea3820873661][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:52:25]
+	[22/Aug/21 15:52:26][WARNING][<nosession>][GUI]
+		E_NOTICE
+Trying to get property 'rights' of non-object - in D:\wamp64\www\testlink\lib\functions\tlUser.class.php - Line 825
+	[22/Aug/21 15:52:26][WARNING][<nosession>][GUI]
+		E_NOTICE
+Undefined index: platform - in D:\wamp64\www\testlink\lib\functions\print.inc.php - Line 1443
+[<<][630254b971ea3820873661][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:52:25][22/Aug/21 15:52:26][took 1.03557 secs]
+[<<][630255a705201593240967][DEFAULT][/testlink/index.php][22/Aug/21 15:56:23][22/Aug/21 15:56:23][took 0.030383 secs]
+[>>][630255a70cd61048283390][DEFAULT][/testlink/index.php][22/Aug/21 15:56:23]
+[<<][630255a70cd61048283390][DEFAULT][/testlink/index.php][22/Aug/21 15:56:23][22/Aug/21 15:56:23][took 0.001189 secs]
+[<<][630255a716985352631543][DEFAULT][/testlink/login.php][22/Aug/21 15:56:23][22/Aug/21 15:56:23][took 0.013049 secs]
+[>>][630255a71a09d631054433][DEFAULT][/testlink/login.php][22/Aug/21 15:56:23]
+[<<][630255a71a09d631054433][DEFAULT][/testlink/login.php][22/Aug/21 15:56:23][22/Aug/21 15:56:23][took 0.120231 secs]
+[<<][630255aa1e358457654904][DEFAULT][/testlink/login.php][22/Aug/21 15:56:26][22/Aug/21 15:56:26][took 0.039976 secs]
+[>>][630255aa2853c350232412][DEFAULT][/testlink/login.php][22/Aug/21 15:56:26]
+[<<][630255aa2853c350232412][DEFAULT][/testlink/login.php][22/Aug/21 15:56:26][22/Aug/21 15:56:26][took 0.107218 secs]
+[>>][630255aa42cde534599714][DEFAULT][/testlink/login.php][22/Aug/21 15:56:26]
+[<<][6302560ecb89a962361642][DEFAULT][/testlink/lnl.php][22/Aug/21 15:58:06][22/Aug/21 15:58:06][took 0.001034 secs]
+[<<][6302560ece741732681225][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:58:06][22/Aug/21 15:58:06][took 0.006842 secs]
+[>>][6302560ed0497668451740][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:58:06]
+[<<][6302560ed0497668451740][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:58:06][22/Aug/21 15:58:06][took 0.001687 secs]
+[>>][6302560ed0e4c386285982][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:58:06]
+	[22/Aug/21 15:58:07][WARNING][<nosession>][GUI]
+		E_NOTICE
+Trying to get property 'rights' of non-object - in D:\wamp64\www\testlink\lib\functions\tlUser.class.php - Line 825
+	[22/Aug/21 15:58:07][WARNING][<nosession>][GUI]
+		E_NOTICE
+Undefined index: platform - in D:\wamp64\www\testlink\lib\functions\print.inc.php - Line 1443
+[<<][6302560ed0e4c386285982][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 15:58:06][22/Aug/21 15:58:07][took 1.021001 secs]
+[<<][6302561a0629a486118518][DEFAULT][/testlink/lib/execute/bugAdd.php][22/Aug/21 15:58:18][22/Aug/21 15:58:18][took 0.020449 secs]
+[>>][6302561a0b847012217875][DEFAULT][/testlink/lib/execute/bugAdd.php][22/Aug/21 15:58:18]
+[<<][6302561a0b847012217875][DEFAULT][/testlink/lib/execute/bugAdd.php][22/Aug/21 15:58:18][22/Aug/21 15:58:18][took 0.000961 secs]
+[<<][6302561a1393c949891235][DEFAULT][/testlink/login.php][22/Aug/21 15:58:18][22/Aug/21 15:58:18][took 0.008928 secs]
+[>>][6302561a15efc081799013][DEFAULT][/testlink/login.php][22/Aug/21 15:58:18]
+[<<][6302571d4d27b650186169][DEFAULT][/testlink/lnl.php][22/Aug/21 16:02:37][22/Aug/21 16:02:37][took 0.00239 secs]
+[<<][63025740b0273496207094][DEFAULT][/testlink/lnl.php][22/Aug/21 16:03:12][22/Aug/21 16:03:12][took 0.001645 secs]
+[<<][63025740b3af8910935518][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 16:03:12][22/Aug/21 16:03:12][took 0.01894 secs]
+[>>][63025740b883e142606459][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 16:03:12]
+[<<][63025740b883e142606459][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 16:03:12][22/Aug/21 16:03:12][took 0.0020290000000001 secs]
+[>>][63025740b93e2804109039][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 16:03:12]
+	[22/Aug/21 16:03:13][WARNING][<nosession>][GUI]
+		E_NOTICE
+Trying to get property 'rights' of non-object - in D:\wamp64\www\testlink\lib\functions\tlUser.class.php - Line 825
+	[22/Aug/21 16:03:13][WARNING][<nosession>][GUI]
+		E_NOTICE
+Undefined index: platform - in D:\wamp64\www\testlink\lib\functions\print.inc.php - Line 1443
+[<<][63025740b93e2804109039][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 16:03:12][22/Aug/21 16:03:13][took 1.009688 secs]
+[<<][6302575051f11048944774][DEFAULT][/testlink/lnl.php][22/Aug/21 16:03:28][22/Aug/21 16:03:28][took 0.017658 secs]
+[>>][63025750568d0827270170][DEFAULT][/testlink/lnl.php][22/Aug/21 16:03:28]
+[<<][630257505d148636734416][DEFAULT][/testlink/lnl.php][22/Aug/21 16:03:28][22/Aug/21 16:03:28][took 0.001798 secs]
+[<<][630257506180c704173660][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 16:03:28][22/Aug/21 16:03:28][took 0.027548 secs]
+[>>][6302575068685173793692][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 16:03:28]
+[<<][6302575068685173793692][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 16:03:28][22/Aug/21 16:03:28][took 0.001552 secs]
+[>>][6302575068f67687073853][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 16:03:28]
+	[22/Aug/21 16:03:29][WARNING][<nosession>][GUI]
+		E_NOTICE
+Trying to get property 'rights' of non-object - in D:\wamp64\www\testlink\lib\functions\tlUser.class.php - Line 825
+	[22/Aug/21 16:03:29][WARNING][<nosession>][GUI]
+		E_NOTICE
+Undefined index: platform - in D:\wamp64\www\testlink\lib\functions\print.inc.php - Line 1443
+[<<][6302575068f67687073853][DEFAULT][/testlink/lib/execute/execPrint.php][22/Aug/21 16:03:28][22/Aug/21 16:03:29][took 1.11546 secs]
+[<<][630257c474ea9187202543][DEFAULT][/testlink/lnl.php][22/Aug/21 16:05:24][22/Aug/21 16:05:24][took 0.001462 secs]
+[<<][630257d7e5253026740053][DEFAULT][/testlink/lib/execute/execSetResults.php][22/Aug/21 16:05:43][22/Aug/21 16:05:43][took 0.015527 secs]
+[>>][630257d7e9350118557909][DEFAULT][/testlink/lib/execute/execSetResults.php][22/Aug/21 16:05:43]
+[<<][630257d7e9350118557909][DEFAULT][/testlink/lib/execute/execSetResults.php][22/Aug/21 16:05:43][22/Aug/21 16:05:43][took 0.00062700000000004 secs]
+[<<][630257d7f083f440182874][DEFAULT][/testlink/login.php][22/Aug/21 16:05:43][22/Aug/21 16:05:43][took 0.011549 secs]
+[>>][630257d7f389a933911322][DEFAULT][/testlink/login.php][22/Aug/21 16:05:43]

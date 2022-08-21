@@ -58,7 +58,6 @@ function oauth_get_token($authCfg, $code) {
   // If token is received start session
   if (isset($tokenInfo->access_token)) {
     $oauthParams['access_token'] = $tokenInfo->access_token;
-    $curlContentType = array('Authorization: token ' . $tokenInfo->access_token, 'Content-Type: application/xml','Accept: application/json');
 
     $queryString = http_build_query($tokenInfo);
     $targetURL = array();

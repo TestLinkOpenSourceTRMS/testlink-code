@@ -1,0 +1,7 @@
+Install directory should be removed!
+You should change the default password for the 'admin' account!
+Check following parameters of email feature:
+tl_admin_email
+from_email
+return_path_email
+smtp_host

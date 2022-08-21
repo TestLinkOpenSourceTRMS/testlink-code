@@ -79,9 +79,7 @@ class tlIssueTracker extends tlObject
            22 =>  array('type' => 'gitlab','api' =>'rest',
                         'enabled' => true, 'order' => 23),
            23 =>  array('type' => 'kaiten','api' =>'rest',
-                        'enabled' => true, 'order' => 24),
-           24 =>  array('type' => 'github','api' =>'rest',
-                        'enabled' => true, 'order' => 25),						
+                        'enabled' => true, 'order' => 24)
                      );
     
   var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');

@@ -308,7 +308,7 @@ $tlCfg->smarty_debug = false;
  *  for security reasons (see http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/)
  *  put it out of reach via web or configure access denied.
  */
-$tlCfg->log_path = 'D:\wamp64\www\testlink\logs'; /* unix example */
+$tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
 if (($lp = getenv('TESTLINK_LOG_PATH'))) {
   $tlCfg->log_path = trim($lp);
 }
@@ -321,7 +321,7 @@ if (($lp = getenv('TESTLINK_LOG_PATH'))) {
  *         user will receive a message on screen. (default)
  * 'SILENT': same that FILE, but user will not receive message on screen.
  */
-$tlCfg->config_check_warning_mode = 'SILENT';
+$tlCfg->config_check_warning_mode = 'FILE';
 
 /**
  * ONCE_FOR_SESSION
@@ -943,7 +943,7 @@ $tlCfg->metrics_dashboard->show_test_plan_status = false;
  * Image is expected in directory <testlink_root>/gui/themes/<your_theme>/images/
  * Leave text values empty if you would like to hide parameters.
  */
-$tlCfg->document_generator->company_name = 'QA TEAM - Sebi&Irina';
+$tlCfg->document_generator->company_name = 'TestLink Community [configure $tlCfg->document_generator->company_name]';
 $tlCfg->document_generator->company_copyright = '2012 &copy; TestLink Community';
 $tlCfg->document_generator->confidential_msg = '';
 
@@ -1532,7 +1532,7 @@ $g_repositoryType = TL_REPOSITORY_TYPE_FS;
  * Put it out of reach via web or configure access denied.
  *
  **/
-$g_repositoryPath = 'D:\wamp64\www\testlink\upload_area';  /* unix example */
+$g_repositoryPath = '/var/testlink/upload_area/';  /* unix example */
 if (($upa = getenv('TESTLINK_UPLOAD_AREA'))) {
   $g_repositoryPath = trim($upa);
 }

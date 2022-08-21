@@ -209,7 +209,6 @@ CREATE TABLE /*prefix*/execution_bugs (
 ) DEFAULT CHARSET=utf8;
 
 
-
 CREATE TABLE /*prefix*/testcase_script_links (
   `tcversion_id` int(10) unsigned NOT NULL default '0',
   `project_key` varchar(64) NOT NULL,

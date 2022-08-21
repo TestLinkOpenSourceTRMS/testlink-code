@@ -24,6 +24,8 @@
  *
  **/
 
+putenv("TESTLINK_LOG_PATH=C:/wamp64/www/testlink/logs");
+putenv("TESTLINK_UPLOAD_AREA=C:/wamp64/www/testlink/upload_area");
 // ----------------------------------------------------------------------------
 /* [INITIALIZATION] - DO NOT CHANGE THE SECTION */
 

@@ -13,7 +13,10 @@ Purpose: smarty template
 
 
 {if $DataTablesOID != ''}
-  {* To avoid issues due to do initialization multiple times *}
+  {* 
+    To avoid issues due to do initialization multiple times 
+    See projectView.tpl.
+  *}
   <script type="text/javascript" language="javascript" class="init">
   $(document).ready(function() {
     $('#{$DataTablesOID}').DataTable({ "lengthMenu": [ {$DataTableslengthMenu} ],stateSave: true});

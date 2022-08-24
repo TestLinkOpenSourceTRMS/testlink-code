@@ -1,0 +1,65 @@
+name: CI
+
+on:
+    pull_request:
+    push:
+        branches: [ master ]
+
+jobs:
+    run:
+        runs-on: ubuntu-18.04
+        strategy:
+            fail-fast: false
+            matrix:
+                php:
+                    - '7.3'
+                    - '7.4'
+                    - '8.0'
+                minimum_versions: [false]
+                coverage: ['none']
+                include:
+                    - description: 'Minimum version'
+                      php: '7.3'
+                      minimum_versions: true
+                    - description: 'Log Code Coverage'
+                      php: '7.4'
+                      coverage: 'xdebug'
+
+        name: PHP ${{ matrix.php }} ${{ matrix.description }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - uses: actions/cache@v2
+              with:
+                  path: ~/.composer/cache/files
+                  key: ${{ matrix.php }}
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  coverage: ${{ matrix.coverage }}
+
+            - name: Install dependencies
+              run: composer install
+              if: matrix.minimum_versions == false
+
+            - name: Install dependencies lower
+              run: composer update --no-interaction --prefer-lowest
+              if: matrix.minimum_versions == true
+
+            - name: Run PHPUnit tests
+              run: vendor/bin/phpunit
+              if: matrix.coverage == 'none'
+
+            - name: PHPUnit tests and Log Code coverage
+              run: ./vendor/bin/phpunit --exclude-group proxy --coverage-clover=coverage.xml
+              if: matrix.coverage == 'xdebug'
+
+            - name: Run codecov
+              uses: codecov/codecov-action@v1
+              if: matrix.coverage == 'xdebug'
+              with:
+                  file: './coverage.xml'
+                  fail_ci_if_error: true

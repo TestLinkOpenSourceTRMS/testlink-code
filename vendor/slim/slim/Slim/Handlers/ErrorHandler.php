@@ -33,7 +33,6 @@ use function array_keys;
 use function call_user_func;
 use function count;
 use function current;
-use function error_log;
 use function explode;
 use function implode;
 use function next;
@@ -63,7 +62,7 @@ class ErrorHandler implements ErrorHandlerInterface
     protected $logErrorRenderer = PlainTextErrorRenderer::class;
 
     /**
-     * @var array
+     * @var array<string|callable>
      */
     protected $errorRenderers = [
         'application/json' => JsonErrorRenderer::class,
@@ -123,7 +122,7 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     protected $responseFactory;
 
-    /*
+    /**
      * @var LoggerInterface
      */
     protected $logger;
@@ -213,7 +212,7 @@ class ErrorHandler implements ErrorHandlerInterface
      * as willdurand/negotiation for any other situation.
      *
      * @param ServerRequestInterface $request
-     * @return string
+     * @return string|null
      */
     protected function determineContentType(ServerRequestInterface $request): ?string
     {
@@ -232,10 +231,15 @@ class ErrorHandler implements ErrorHandlerInterface
              * when multiple content types are provided via Accept header.
              */
             if ($current === 'text/plain' && $count > 1) {
-                return next($selectedContentTypes);
+                $next = next($selectedContentTypes);
+                if (is_string($next)) {
+                    return $next;
+                }
             }
 
-            return $current;
+            if (is_string($current)) {
+                return $current;
+            }
         }
 
         if (preg_match('/\+(json|xml)/', $acceptHeader, $matches)) {
@@ -355,7 +359,10 @@ class ErrorHandler implements ErrorHandlerInterface
 
         $renderer = $this->determineRenderer();
         $body = call_user_func($renderer, $this->exception, $this->displayErrorDetails);
-        $response->getBody()->write($body);
+        if ($body !== false) {
+            /** @var string $body */
+            $response->getBody()->write($body);
+        }
 
         return $response;
     }

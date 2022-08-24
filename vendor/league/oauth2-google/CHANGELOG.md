@@ -1,5 +1,24 @@
 OAuth 2.0 Google Provider Changelog
 
+## 4.0.0 - 2022-03-04
+
+### Changed
+
+- Add PHP 8.0 support, require PHP 7.3 or newer
+- Add types where possible
+
+## 3.0.4 - 2021-01-27
+
+### Fixed
+
+- Correct OAuth endpoint, #94 by @Slamdunk
+
+## 3.0.3 - 2020-07-24
+
+### Fixed
+
+- Remove the `approval_prompt` from default parameters, #90
+
 ## 3.0.2 - 2019-11-16
 
 ### Fixed

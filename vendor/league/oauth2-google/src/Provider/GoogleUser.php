@@ -27,7 +27,7 @@ class GoogleUser implements ResourceOwnerInterface
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->response['name'];
     }
@@ -37,7 +37,7 @@ class GoogleUser implements ResourceOwnerInterface
      *
      * @return string|null
      */
-    public function getFirstName()
+    public function getFirstName(): ?string
     {
         return $this->getResponseValue('given_name');
     }
@@ -47,7 +47,7 @@ class GoogleUser implements ResourceOwnerInterface
      *
      * @return string|null
      */
-    public function getLastName()
+    public function getLastName(): ?string
     {
         return $this->getResponseValue('family_name');
     }
@@ -57,7 +57,7 @@ class GoogleUser implements ResourceOwnerInterface
      *
      * @return string|null
      */
-    public function getLocale()
+    public function getLocale(): ?string
     {
         return $this->getResponseValue('locale');
     }
@@ -67,7 +67,7 @@ class GoogleUser implements ResourceOwnerInterface
      *
      * @return string|null
      */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->getResponseValue('email');
     }
@@ -77,7 +77,7 @@ class GoogleUser implements ResourceOwnerInterface
      *
      * @return string|null
      */
-    public function getHostedDomain()
+    public function getHostedDomain(): ?string
     {
         return $this->getResponseValue('hd');
     }
@@ -87,7 +87,7 @@ class GoogleUser implements ResourceOwnerInterface
      *
      * @return string|null
      */
-    public function getAvatar()
+    public function getAvatar(): ?string
     {
         return $this->getResponseValue('picture');
     }
@@ -97,16 +97,13 @@ class GoogleUser implements ResourceOwnerInterface
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->response;
     }
 
     private function getResponseValue($key)
     {
-        if (array_key_exists($key, $this->response)) {
-            return $this->response[$key];
-        }
-        return null;
+        return $this->response[$key] ?? null;
     }
 }

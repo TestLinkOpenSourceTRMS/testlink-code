@@ -10,11 +10,14 @@ declare(strict_types=1);
 
 namespace Slim\Exception;
 
-use Exception;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 use Throwable;
 
-class HttpException extends Exception
+/**
+ * @method int getCode()
+ */
+class HttpException extends RuntimeException
 {
     /**
      * @var ServerRequestInterface

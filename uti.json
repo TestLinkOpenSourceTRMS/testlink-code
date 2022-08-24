@@ -1,0 +1,21 @@
+php8 ./composer.phar require slim/slim
+php8 ./composer.phar require phpmailer/phpmailer
+php8 ./composer.phar require smarty/smarty
+php8 ./composer.phar require adodb/adodb-php
+
+
+slim/psr7
+nyholm/psr7
+nyholm/psr7-server
+guzzlehttp/psr7
+http-interop/http-factory-guzzle
+laminas/laminas-diactoros
+adodb/adodb-php
+phpmailer/phpmailer
+smarty/smarty
+psr/log
+symfony/polyfill-mbstring
+league/oauth2-client
+omines/oauth2-gitlab
+league/oauth2-github
+league/oauth2-google

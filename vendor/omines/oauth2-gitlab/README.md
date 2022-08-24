@@ -6,10 +6,7 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/omines/oauth2-gitlab.svg?style=flat-square)](https://scrutinizer-ci.com/g/omines/oauth2-gitlab)
 [![Total Downloads](https://img.shields.io/packagist/dt/omines/oauth2-gitlab.svg?style=flat-square)](https://packagist.org/packages/omines/oauth2-gitlab)
 
-This package provides GitLab OAuth 2.0 support for the PHP League's [OAuth 2.0 Client](https://github.com/thephpleague/oauth2-client).
-
-GitLab 8.17 or later is required as the V4 API is being used. If compatibility with older versions
-of GitLab is required use version 2 of this library.
+This package provides GitLab OAuth 2.0 support for the PHP League's [OAuth 2.0 Client](https://github.com/thephpleague/oauth2-client). GitLab 8.17 or later is required.
 
 ## Installation
 
@@ -26,7 +23,7 @@ Usage is similar to the basic OAuth client, using `\Omines\OAuth2\Client\Provide
 ### Authorization Code Flow
 
 ```php
-$provider = new Omines\OAuth2\Client\Provider\Gitlab([
+$provider = new \Omines\OAuth2\Client\Provider\Gitlab([
     'clientId'          => '{gitlab-client-id}',
     'clientSecret'      => '{gitlab-client-secret}',
     'redirectUri'       => 'https://example.com/callback-url',
@@ -95,7 +92,8 @@ Install [`m4tthumphrey/php-gitlab-api`](https://packagist.org/packages/m4tthumph
 Gitlab API after authentication. Either connect manually:
 
 ```php
-$client = new \Gitlab\Client('https://my.gitlab.url/api/v4/');
+$client = new \Gitlab\Client();
+$client->setUrl('https://my.gitlab.url/api/v4/');
 $client->authenticate($token->getToken(), \Gitlab\Client::AUTH_OAUTH_TOKEN);
 ```
 Or call the `getApiClient` method on `GitlabResourceOwner` which does the same implicitly.

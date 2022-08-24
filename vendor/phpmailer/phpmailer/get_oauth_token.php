@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHPMailer - PHP email creation and transport class.
  * PHP Version 5.5
@@ -8,7 +9,7 @@
  * @author Jim Jagielski (jimjag) <jimjag@gmail.com>
  * @author Andy Prevost (codeworxtech) <codeworxtech@users.sourceforge.net>
  * @author Brent R. Matzelle (original founder)
- * @copyright 2012 - 2017 Marcus Bointon
+ * @copyright 2012 - 2020 Marcus Bointon
  * @copyright 2010 - 2012 Jim Jagielski
  * @copyright 2004 - 2009 Andy Prevost
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
@@ -16,6 +17,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE.
  */
+
 /**
  * Get an OAuth2 token from an OAuth2 provider.
  * * Install this script on your server so that it's accessible
@@ -36,24 +38,36 @@ namespace PHPMailer\PHPMailer;
  * Plenty to choose from here:
  * @see http://oauth2-client.thephpleague.com/providers/thirdparty/
  */
-// @see https://github.com/thephpleague/oauth2-google
+//@see https://github.com/thephpleague/oauth2-google
 use League\OAuth2\Client\Provider\Google;
-// @see https://packagist.org/packages/hayageek/oauth2-yahoo
+//@see https://packagist.org/packages/hayageek/oauth2-yahoo
 use Hayageek\OAuth2\Client\Provider\Yahoo;
-// @see https://github.com/stevenmaguire/oauth2-microsoft
+//@see https://github.com/stevenmaguire/oauth2-microsoft
 use Stevenmaguire\OAuth2\Client\Provider\Microsoft;
 
-if (!isset($_GET['code']) && !isset($_GET['provider'])) {
-?>
+if (!isset($_GET['code']) && !isset($_POST['provider'])) {
+    ?>
 <html>
-<body>Select Provider:<br/>
-<a href='?provider=Google'>Google</a><br/>
-<a href='?provider=Yahoo'>Yahoo</a><br/>
-<a href='?provider=Microsoft'>Microsoft/Outlook/Hotmail/Live/Office365</a><br/>
+<body>
+<form method="post">
+    <h1>Select Provider</h1>
+    <input type="radio" name="provider" value="Google" id="providerGoogle">
+    <label for="providerGoogle">Google</label><br>
+    <input type="radio" name="provider" value="Yahoo" id="providerYahoo">
+    <label for="providerYahoo">Yahoo</label><br>
+    <input type="radio" name="provider" value="Microsoft" id="providerMicrosoft">
+    <label for="providerMicrosoft">Microsoft</label><br>
+    <h1>Enter id and secret</h1>
+    <p>These details are obtained by setting up an app in your provider's developer console.
+    </p>
+    <p>ClientId: <input type="text" name="clientId"><p>
+    <p>ClientSecret: <input type="text" name="clientSecret"></p>
+    <input type="submit" value="Continue">
+</form>
 </body>
 </html>
-<?php
-exit;
+    <?php
+    exit;
 }
 
 require 'vendor/autoload.php';
@@ -61,21 +75,25 @@ require 'vendor/autoload.php';
 session_start();
 
 $providerName = '';
+$clientId = '';
+$clientSecret = '';
 
-if (array_key_exists('provider', $_GET)) {
-    $providerName = $_GET['provider'];
+if (array_key_exists('provider', $_POST)) {
+    $providerName = $_POST['provider'];
+    $clientId = $_POST['clientId'];
+    $clientSecret = $_POST['clientSecret'];
     $_SESSION['provider'] = $providerName;
+    $_SESSION['clientId'] = $clientId;
+    $_SESSION['clientSecret'] = $clientSecret;
 } elseif (array_key_exists('provider', $_SESSION)) {
     $providerName = $_SESSION['provider'];
-}
-if (!in_array($providerName, ['Google', 'Microsoft', 'Yahoo'])) {
-    exit('Only Google, Microsoft and Yahoo OAuth2 providers are currently supported in this script.');
+    $clientId = $_SESSION['clientId'];
+    $clientSecret = $_SESSION['clientSecret'];
 }
 
-//These details are obtained by setting up an app in the Google developer console,
-//or whichever provider you're using.
-$clientId = 'RANDOMCHARS-----duv1n2.apps.googleusercontent.com';
-$clientSecret = 'RANDOMCHARS-----lGyjPcRtvP';
+//If you don't want to use the built-in form, set your client id and secret here
+//$clientId = 'RANDOMCHARS-----duv1n2.apps.googleusercontent.com';
+//$clientSecret = 'RANDOMCHARS-----lGyjPcRtvP';
 
 //If this automatic URL doesn't work, set it yourself manually to the URL of this script
 $redirectUri = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
@@ -119,26 +137,26 @@ if (null === $provider) {
 }
 
 if (!isset($_GET['code'])) {
-    // If we don't have an authorization code then get one
+    //If we don't have an authorization code then get one
     $authUrl = $provider->getAuthorizationUrl($options);
     $_SESSION['oauth2state'] = $provider->getState();
     header('Location: ' . $authUrl);
     exit;
-// Check given state against previously stored one to mitigate CSRF attack
+    //Check given state against previously stored one to mitigate CSRF attack
 } elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
     unset($_SESSION['oauth2state']);
     unset($_SESSION['provider']);
     exit('Invalid state');
 } else {
     unset($_SESSION['provider']);
-    // Try to get an access token (using the authorization code grant)
+    //Try to get an access token (using the authorization code grant)
     $token = $provider->getAccessToken(
         'authorization_code',
         [
             'code' => $_GET['code']
         ]
     );
-    // Use this to interact with an API on the users behalf
-    // Use this to get a new access token if the old one expires
+    //Use this to interact with an API on the users behalf
+    //Use this to get a new access token if the old one expires
     echo 'Refresh Token: ', $token->getRefreshToken();
 }

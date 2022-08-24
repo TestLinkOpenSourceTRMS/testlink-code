@@ -106,23 +106,38 @@ class AppFactory
     public static function createFromContainer(ContainerInterface $container): App
     {
         $responseFactory = $container->has(ResponseFactoryInterface::class)
-            ? $container->get(ResponseFactoryInterface::class)
+        && (
+            $responseFactoryFromContainer = $container->get(ResponseFactoryInterface::class)
+        ) instanceof ResponseFactoryInterface
+            ? $responseFactoryFromContainer
             : self::determineResponseFactory();
 
         $callableResolver = $container->has(CallableResolverInterface::class)
-            ? $container->get(CallableResolverInterface::class)
+        && (
+            $callableResolverFromContainer = $container->get(CallableResolverInterface::class)
+        ) instanceof CallableResolverInterface
+            ? $callableResolverFromContainer
             : null;
 
         $routeCollector = $container->has(RouteCollectorInterface::class)
-            ? $container->get(RouteCollectorInterface::class)
+        && (
+            $routeCollectorFromContainer = $container->get(RouteCollectorInterface::class)
+        ) instanceof RouteCollectorInterface
+            ? $routeCollectorFromContainer
             : null;
 
         $routeResolver = $container->has(RouteResolverInterface::class)
-            ? $container->get(RouteResolverInterface::class)
+        && (
+            $routeResolverFromContainer = $container->get(RouteResolverInterface::class)
+        ) instanceof RouteResolverInterface
+            ? $routeResolverFromContainer
             : null;
 
         $middlewareDispatcher = $container->has(MiddlewareDispatcherInterface::class)
-            ? $container->get(MiddlewareDispatcherInterface::class)
+        && (
+            $middlewareDispatcherFromContainer = $container->get(MiddlewareDispatcherInterface::class)
+        ) instanceof MiddlewareDispatcherInterface
+            ? $middlewareDispatcherFromContainer
             : null;
 
         return new App(
@@ -155,7 +170,7 @@ class AppFactory
             if ($psr17factory::isResponseFactoryAvailable()) {
                 $responseFactory = $psr17factory::getResponseFactory();
 
-                if ($psr17factory::isStreamFactoryAvailable() || static::$streamFactory) {
+                if (static::$streamFactory || $psr17factory::isStreamFactoryAvailable()) {
                     $streamFactory = static::$streamFactory ?? $psr17factory::getStreamFactory();
                     return static::attemptResponseFactoryDecoration($responseFactory, $streamFactory);
                 }

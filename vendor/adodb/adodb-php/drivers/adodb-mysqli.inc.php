@@ -1112,7 +1112,7 @@ class ADODB_mysqli extends ADOConnection {
 			}
 		}
 
-		if ($inputarr === false) {
+		if ($inputarr === false || $inputarr === []) {
 			return $this->_execute($sql);
 		}
 
@@ -1314,17 +1314,12 @@ class ADODB_mysqli extends ADOConnection {
 					return false;
 			}
 
-			/*
-			* Is the statement a non-select
-			*/
-			if ($stmt->affected_rows > -1)
-			{
+			// Tells affected_rows to be compliant
+			$this->isSelectStatement = $stmt->affected_rows == -1;
+			if (!$this->isSelectStatement) {
 				$this->statementAffectedRows = $stmt->affected_rows;
 				return true;
 			}
-
-			// Tells affected_rows to be compliant
-			$this->isSelectStatement = true;
 
 			// Turn the statement into a result set and return it
 			return $stmt->get_result();

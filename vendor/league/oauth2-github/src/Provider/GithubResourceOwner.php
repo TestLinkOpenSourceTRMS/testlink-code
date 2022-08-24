@@ -1,4 +1,6 @@
-<?php namespace League\OAuth2\Client\Provider;
+<?php
+
+namespace League\OAuth2\Client\Provider;
 
 use League\OAuth2\Client\Tool\ArrayAccessorTrait;
 
@@ -23,7 +25,7 @@ class GithubResourceOwner implements ResourceOwnerInterface
     /**
      * Creates new resource owner.
      *
-     * @param array  $response
+     * @param array $response
      */
     public function __construct(array $response = array())
     {
@@ -33,7 +35,7 @@ class GithubResourceOwner implements ResourceOwnerInterface
     /**
      * Get resource owner id
      *
-     * @return string|null
+     * @return int|null
      */
     public function getId()
     {
@@ -85,7 +87,7 @@ class GithubResourceOwner implements ResourceOwnerInterface
     /**
      * Set resource owner domain
      *
-     * @param  string $domain
+     * @param string $domain
      *
      * @return ResourceOwner
      */

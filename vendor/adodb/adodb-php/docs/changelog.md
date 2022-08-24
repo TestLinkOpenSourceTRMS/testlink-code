@@ -14,6 +14,20 @@ Older changelogs:
 
 --------------------------------------------------------------------------------
 
+## [5.22.2] - 2022-05-08
+
+### Fixed
+
+- mssql: Automatic conversion of false to array is deprecated in PHP 8.1
+  [#829](https://github.com/ADOdb/ADOdb/issues/829)
+- mysql: Affected_Rows() not returning correct value
+  [#820](https://github.com/ADOdb/ADOdb/issues/820)
+- mysql: uncaught ValueError exception calling execute() with an empty array
+  [#832](https://github.com/ADOdb/ADOdb/issues/832)
+- pgsql: Affected_Rows() always returns false on PHP 8.1
+  [#833](https://github.com/ADOdb/ADOdb/issues/833)
+
+
 ## [5.22.1] - 2022-03-30
 
 ### Removed
@@ -31,12 +45,10 @@ Older changelogs:
   [#812](https://github.com/ADOdb/ADOdb/issues/812)
 - firebird: undefined array key with uppercase columns
   [#813](https://github.com/ADOdb/ADOdb/issues/813)
-- mysqli: regression on setConnectionParameter()
+- mysql: regression on setConnectionParameter()
   [#803](https://github.com/ADOdb/ADOdb/issues/803)
-- mysqli: regression on bulk binding
+- mysql: regression on bulk binding
   [#806](https://github.com/ADOdb/ADOdb/issues/806)
-- mysqli: Affected_Rows() not returning correct value
-  [#820](https://github.com/ADOdb/ADOdb/issues/820)
 - oci8: fix PHP 8.1 array deprecation warning
   [#817](https://github.com/ADOdb/ADOdb/issues/817)
 - memcache: weighted servers not connecting
@@ -1267,6 +1279,7 @@ Released together with [v4.95](changelog_v4.x.md#495---17-may-2007)
 - Adodb5 version,more error checking code now will use exceptions if available.
 
 
+[5.22.2]: https://github.com/adodb/adodb/compare/v5.22.1...v5.22.2
 [5.22.1]: https://github.com/adodb/adodb/compare/v5.22.0...v5.22.1
 [5.22.0]: https://github.com/adodb/adodb/compare/v5.21.4...v5.22.0
 

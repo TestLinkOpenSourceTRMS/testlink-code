@@ -187,38 +187,6 @@ class GitlabTest extends TestCase
         $this->assertInstanceOf(\Gitlab\Client::class, $client);
     }
 
-    /* public function testUserEmails()
-    {
-
-        $userId = rand(1000,9999);
-        $name = uniqid();
-        $nickname = uniqid();
-        $email = uniqid();
-
-        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $postResponse->shouldReceive('getBody')->andReturn('access_token=mock_access_token&expires=3600&refresh_token=mock_refresh_token&otherKey={1234}');
-        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'application/x-www-form-urlencoded']);
-
-        $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn('[{"email":"mock_email_1","primary":false,"verified":true},{"email":"mock_email_2","primary":false,"verified":true},{"email":"mock_email_3","primary":true,"verified":true}]');
-        $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
-
-        $client = m::mock('GuzzleHttp\ClientInterface');
-        $client->shouldReceive('send')
-            ->times(2)
-            ->andReturn($postResponse, $userResponse);
-        $this->provider->setHttpClient($client);
-
-        $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
-        $emails = $this->provider->getUserEmails($token);
-
-        $this->assertEquals($userId, $user->getUserId());
-        $this->assertEquals($name, $user->getName());
-        $this->assertEquals($nickname, $user->getNickname());
-        $this->assertEquals($email, $user->getEmail());
-        $this->assertContains($nickname, $user->getUrl());
-    } */
-
     public function testExceptionThrownWhenErrorObjectReceived()
     {
         $status = rand(400, 600);

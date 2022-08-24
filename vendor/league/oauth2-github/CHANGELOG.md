@@ -1,5 +1,18 @@
 # Changelog
+
 All Notable changes to `oauth2-github` will be documented in this file
+
+## 3.0.0 - 2021-05-10
+
+### Fixed
+
+- Fixed documented return type for GithubResourceOwner::getId() (#17)
+
+### Changed
+
+- Change required PHP version to ^7.3 || ^8.0
+- Switched from TravisCI to Github Actions
+- Updated testing for newer PHPUnit, etc
 
 ## 2.0.0 - 2017-01-25
 

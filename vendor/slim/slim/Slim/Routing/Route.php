@@ -71,14 +71,14 @@ class Route implements RouteInterface, RequestHandlerInterface
     /**
      * Route parameters
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $arguments = [];
 
     /**
      * Route arguments parameters
      *
-     * @var array
+     * @var string[]
      */
     protected $savedArguments = [];
 
@@ -312,7 +312,7 @@ class Route implements RouteInterface, RequestHandlerInterface
      */
     public function prepare(array $arguments): RouteInterface
     {
-        $this->arguments = array_replace($this->savedArguments, $arguments) ?? [];
+        $this->arguments = array_replace($this->savedArguments, $arguments);
         return $this;
     }
 
@@ -369,10 +369,13 @@ class Route implements RouteInterface, RequestHandlerInterface
         }
         $strategy = $this->invocationStrategy;
 
+        /** @var string[] $strategyImplements */
+        $strategyImplements = class_implements($strategy);
+
         if (
             is_array($callable)
             && $callable[0] instanceof RequestHandlerInterface
-            && !in_array(RequestHandlerInvocationStrategyInterface::class, class_implements($strategy))
+            && !in_array(RequestHandlerInvocationStrategyInterface::class, $strategyImplements)
         ) {
             $strategy = new RequestHandler();
         }

@@ -12,6 +12,7 @@ namespace Omines\OAuth2\Client\Provider;
 
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Omines\OAuth2\Client\Provider\Exception\GitlabIdentityProviderException;
@@ -48,30 +49,24 @@ class Gitlab extends AbstractProvider
 
     /**
      * Get authorization url to begin OAuth flow.
-     *
-     * @return string
      */
-    public function getBaseAuthorizationUrl()
+    public function getBaseAuthorizationUrl(): string
     {
         return $this->domain . self::PATH_AUTHORIZE;
     }
 
     /**
      * Get access token url to retrieve token.
-     *
-     * @return string
      */
-    public function getBaseAccessTokenUrl(array $params)
+    public function getBaseAccessTokenUrl(array $params): string
     {
         return $this->domain . self::PATH_TOKEN;
     }
 
     /**
      * Get provider url to fetch user details.
-     *
-     * @return string
      */
-    public function getResourceOwnerDetailsUrl(AccessToken $token)
+    public function getResourceOwnerDetailsUrl(AccessToken $token): string
     {
         return $this->domain . self::PATH_API_USER;
     }
@@ -81,10 +76,8 @@ class Gitlab extends AbstractProvider
      * Current scopes are 'api', 'read_user', 'openid'.
      *
      * This returns an array with 'api' scope as default.
-     *
-     * @return array
      */
-    protected function getDefaultScopes()
+    protected function getDefaultScopes(): array
     {
         return [self::DEFAULT_SCOPE];
     }
@@ -92,7 +85,7 @@ class Gitlab extends AbstractProvider
     /**
      * GitLab uses a space to separate scopes.
      */
-    protected function getScopeSeparator()
+    protected function getScopeSeparator(): string
     {
         return self::SCOPE_SEPARATOR;
     }
@@ -100,7 +93,7 @@ class Gitlab extends AbstractProvider
     /**
      * Check a provider response for errors.
      *
-     * @param  mixed $data Parsed response data
+     * @param ResponseInterface $response Parsed response data
      * @throws IdentityProviderException
      */
     protected function checkResponse(ResponseInterface $response, $data)
@@ -114,10 +107,8 @@ class Gitlab extends AbstractProvider
 
     /**
      * Generate a user object from a successful user details request.
-     *
-     * @return \League\OAuth2\Client\Provider\ResourceOwnerInterface
      */
-    protected function createResourceOwner(array $response, AccessToken $token)
+    protected function createResourceOwner(array $response, AccessToken $token): ResourceOwnerInterface
     {
         $user = new GitlabResourceOwner($response, $token);
 

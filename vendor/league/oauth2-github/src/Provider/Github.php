@@ -32,34 +32,34 @@ class Github extends AbstractProvider
      */
     public function getBaseAuthorizationUrl()
     {
-        return $this->domain.'/login/oauth/authorize';
+        return $this->domain . '/login/oauth/authorize';
     }
 
     /**
      * Get access token url to retrieve token
      *
-     * @param  array $params
+     * @param array $params
      *
      * @return string
      */
     public function getBaseAccessTokenUrl(array $params)
     {
-        return $this->domain.'/login/oauth/access_token';
+        return $this->domain . '/login/oauth/access_token';
     }
 
     /**
      * Get provider url to fetch user details
      *
-     * @param  AccessToken $token
+     * @param AccessToken $token
      *
      * @return string
      */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
         if ($this->domain === 'https://github.com') {
-            return $this->apiDomain.'/user';
+            return $this->apiDomain . '/user';
         }
-        return $this->domain.'/api/v3/user';
+        return $this->domain . '/api/v3/user';
     }
 
     /**
@@ -82,7 +82,7 @@ class Github extends AbstractProvider
      * @link   https://developer.github.com/v3/oauth/#common-errors-for-the-access-token-request
      * @throws IdentityProviderException
      * @param  ResponseInterface $response
-     * @param  string $data Parsed response data
+     * @param  array             $data     Parsed response data
      * @return void
      */
     protected function checkResponse(ResponseInterface $response, $data)
@@ -97,9 +97,9 @@ class Github extends AbstractProvider
     /**
      * Generate a user object from a successful user details request.
      *
-     * @param array $response
-     * @param AccessToken $token
-     * @return League\OAuth2\Client\Provider\ResourceOwnerInterface
+     * @param  array       $response
+     * @param  AccessToken $token
+     * @return \League\OAuth2\Client\Provider\ResourceOwnerInterface
      */
     protected function createResourceOwner(array $response, AccessToken $token)
     {

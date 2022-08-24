@@ -1,7 +1,7 @@
 /build
 /log
 /vendor
-.php_cs.cache
+.*.cache
 composer.phar
 composer.lock
 infection.json

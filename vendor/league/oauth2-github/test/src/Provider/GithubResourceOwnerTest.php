@@ -1,22 +1,26 @@
-<?php namespace League\OAuth2\Client\Test\Provider;
+<?php
 
+namespace League\OAuth2\Client\Test\Provider;
+
+use League\OAuth2\Client\Provider\GithubResourceOwner;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-class GithubResourceOwnerTest extends \PHPUnit_Framework_TestCase
+class GithubResourceOwnerTest extends TestCase
 {
-    public function testUrlIsNullWithoutDomainOrNickname()
+    public function testUrlIsNullWithoutDomainOrNickname(): void
     {
-        $user = new \League\OAuth2\Client\Provider\GithubResourceOwner;
+        $user = new GithubResourceOwner();
 
         $url = $user->getUrl();
 
         $this->assertNull($url);
     }
 
-    public function testUrlIsDomainWithoutNickname()
+    public function testUrlIsDomainWithoutNickname(): void
     {
         $domain = uniqid();
-        $user = new \League\OAuth2\Client\Provider\GithubResourceOwner;
+        $user = new GithubResourceOwner();
         $user->setDomain($domain);
 
         $url = $user->getUrl();
@@ -24,10 +28,10 @@ class GithubResourceOwnerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($domain, $url);
     }
 
-    public function testUrlIsNicknameWithoutDomain()
+    public function testUrlIsNicknameWithoutDomain(): void
     {
         $nickname = uniqid();
-        $user = new \League\OAuth2\Client\Provider\GithubResourceOwner(['login' => $nickname]);
+        $user = new GithubResourceOwner(['login' => $nickname]);
 
         $url = $user->getUrl();
 

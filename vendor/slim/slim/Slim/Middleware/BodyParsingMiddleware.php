@@ -31,6 +31,8 @@ use function simplexml_load_string;
 use function strtolower;
 use function trim;
 
+use const LIBXML_VERSION;
+
 class BodyParsingMiddleware implements MiddlewareInterface
 {
     /**
@@ -102,7 +104,7 @@ class BodyParsingMiddleware implements MiddlewareInterface
 
     protected function registerDefaultBodyParsers(): void
     {
-        $this->registerBodyParser('application/json', function ($input) {
+        $this->registerBodyParser('application/json', static function ($input) {
             $result = json_decode($input, true);
 
             if (!is_array($result)) {
@@ -112,17 +114,17 @@ class BodyParsingMiddleware implements MiddlewareInterface
             return $result;
         });
 
-        $this->registerBodyParser('application/x-www-form-urlencoded', function ($input) {
+        $this->registerBodyParser('application/x-www-form-urlencoded', static function ($input) {
             parse_str($input, $data);
             return $data;
         });
 
-        $xmlCallable = function ($input) {
-            $backup = libxml_disable_entity_loader(true);
+        $xmlCallable = static function ($input) {
+            $backup = self::disableXmlEntityLoader(true);
             $backup_errors = libxml_use_internal_errors(true);
             $result = simplexml_load_string($input);
 
-            libxml_disable_entity_loader($backup);
+            self::disableXmlEntityLoader($backup);
             libxml_clear_errors();
             libxml_use_internal_errors($backup_errors);
 
@@ -139,7 +141,7 @@ class BodyParsingMiddleware implements MiddlewareInterface
 
     /**
      * @param ServerRequestInterface $request
-     * @return null|array|object
+     * @return null|array<mixed>|object
      */
     protected function parseBody(ServerRequestInterface $request)
     {
@@ -181,11 +183,24 @@ class BodyParsingMiddleware implements MiddlewareInterface
     {
         $contentType = $request->getHeader('Content-Type')[0] ?? null;
 
-        if (is_string($contentType) && trim($contentType) != '') {
+        if (is_string($contentType) && trim($contentType) !== '') {
             $contentTypeParts = explode(';', $contentType);
             return strtolower(trim($contentTypeParts[0]));
         }
 
         return null;
+    }
+
+    protected static function disableXmlEntityLoader(bool $disable): bool
+    {
+        if (LIBXML_VERSION >= 20900) {
+            // libxml >= 2.9.0 disables entity loading by default, so it is
+            // safe to skip the real call (deprecated in PHP 8).
+            return true;
+        }
+
+        // @codeCoverageIgnoreStart
+        return libxml_disable_entity_loader($disable);
+        // @codeCoverageIgnoreEnd
     }
 }

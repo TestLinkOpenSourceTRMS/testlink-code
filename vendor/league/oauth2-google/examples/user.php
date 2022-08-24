@@ -2,7 +2,7 @@
 
 $provider = require __DIR__ . '/provider.php';
 
-if (isset($_GET['logout']) && $_GET['logout'] = 1) {
+if (isset($_GET['logout']) && 1 == $_GET['logout']) {
     unset($_SESSION['token']);
 }
 

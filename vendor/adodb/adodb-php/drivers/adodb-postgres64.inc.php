@@ -26,7 +26,7 @@ class ADODB_postgres64 extends ADOConnection{
 	var $databaseType = 'postgres64';
 	var $dataProvider = 'postgres';
 	var $hasInsertID = true;
-	/** @var bool|resource */
+	/** @var PgSql\Connection|resource|false */
 	var $_resultid = false;
 	var $concat_operator='||';
 	var $metaDatabasesSQL = "select datname from pg_database where datname not in ('template0','template1') order by 1";
@@ -155,7 +155,7 @@ class ADODB_postgres64 extends ADOConnection{
 	 */
 	protected function _insertID($table = '', $column = '')
 	{
-		if (!is_resource($this->_resultid) || get_resource_type($this->_resultid) !== 'pgsql result') return false;
+		if ($this->_resultid === false) return false;
 		$oid = pg_last_oid($this->_resultid);
 		// to really return the id, we need the table and column-name, else we can only return the oid != id
 		return empty($table) || empty($column) ? $oid : $this->GetOne("SELECT $column FROM $table WHERE oid=".(int)$oid);
@@ -163,7 +163,7 @@ class ADODB_postgres64 extends ADOConnection{
 
 	function _affectedrows()
 	{
-		if (!is_resource($this->_resultid) || get_resource_type($this->_resultid) !== 'pgsql result') return false;
+		if ($this->_resultid === false) return false;
 		return pg_affected_rows($this->_resultid);
 	}
 
@@ -844,7 +844,7 @@ class ADODB_postgres64 extends ADOConnection{
 		}
 		// check if no data returned, then no need to create real recordset
 		if ($rez && pg_num_fields($rez) <= 0) {
-			if (is_resource($this->_resultid) && get_resource_type($this->_resultid) === 'pgsql result') {
+			if ($this->_resultid !== false) {
 				pg_free_result($this->_resultid);
 			}
 			$this->_resultid = $rez;
@@ -1075,9 +1075,7 @@ class ADORecordSet_postgres64 extends ADORecordSet{
 
 	function _close()
 	{
-		if (!is_resource($this->_queryID)
-			|| get_resource_type($this->_queryID) != 'pgsql result'
-		) {
+		if ($this->_queryID === false) {
 			return true;
 		}
 		return pg_free_result($this->_queryID);

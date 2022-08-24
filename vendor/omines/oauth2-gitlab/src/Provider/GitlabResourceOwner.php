@@ -43,10 +43,8 @@ class GitlabResourceOwner implements ResourceOwnerInterface
 
     /**
      * Returns the identifier of the authorized resource owner.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return (int) $this->get('id');
     }
@@ -55,32 +53,28 @@ class GitlabResourceOwner implements ResourceOwnerInterface
      * Returns an authenticated API client.
      *
      * Requires optional Gitlab API client to be installed.
-     *
-     * @return Client
      */
-    public function getApiClient()
+    public function getApiClient(): Client
     {
         if (!class_exists('\\Gitlab\\Client')) {
             throw new \LogicException(__METHOD__ . ' requires package m4tthumphrey/php-gitlab-api to be installed and autoloaded'); // @codeCoverageIgnore
         }
-        $client = \Gitlab\Client::create(rtrim($this->domain, '/') . self::PATH_API);
+        $client = new Client();
+        $client->setUrl(rtrim($this->domain, '/') . self::PATH_API);
+        $client->authenticate($this->token->getToken(), Client::AUTH_OAUTH_TOKEN);
 
-        return $client->authenticate($this->token->getToken(), Client::AUTH_OAUTH_TOKEN);
+        return $client;
     }
 
-    /**
-     * @return string
-     */
-    public function getDomain()
+    public function getDomain(): string
     {
         return $this->domain;
     }
 
     /**
-     * @param  string $domain
      * @return $this
      */
-    public function setDomain($domain)
+    public function setDomain(string $domain): self
     {
         $this->domain = $domain;
 
@@ -89,30 +83,24 @@ class GitlabResourceOwner implements ResourceOwnerInterface
 
     /**
      * The full name of the owner.
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->get('name');
     }
 
     /**
      * Username of the owner.
-     *
-     * @return string
      */
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->get('username');
     }
 
     /**
      * Email address of the owner.
-     *
-     * @return string
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->get('email');
     }
@@ -122,75 +110,61 @@ class GitlabResourceOwner implements ResourceOwnerInterface
      *
      * @return string|null
      */
-    public function getAvatarUrl()
+    public function getAvatarUrl(): string
     {
         return $this->get('avatar_url');
     }
 
     /**
      * URL to the user's profile page.
-     *
-     * @return string
      */
-    public function getProfileUrl()
+    public function getProfileUrl(): string
     {
         return $this->get('web_url');
     }
 
-    /**
-     * @return AccessToken
-     */
-    public function getToken()
+    public function getToken(): AccessToken
     {
         return $this->token;
     }
 
     /**
      * Whether the user is active.
-     *
-     * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return 'active' === $this->get('state');
     }
 
     /**
      * Whether the user is an admin.
-     *
-     * @return bool
      */
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return (bool) $this->get('is_admin', false);
     }
 
     /**
      * Whether the user is external.
-     *
-     * @return bool
      */
-    public function isExternal()
+    public function isExternal(): bool
     {
         return (bool) $this->get('external', true);
     }
 
     /**
      * Return all of the owner details available as an array.
-     *
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->data;
     }
 
     /**
-     * @param  string     $key
      * @param  mixed|null $default
      * @return mixed|null
      */
-    protected function get($key, $default = null)
+    protected function get(string $key, $default = null)
     {
         return isset($this->data[$key]) ? $this->data[$key] : $default;
     }

@@ -24,9 +24,8 @@ class GitlabIdentityProviderException extends IdentityProviderException
      * Creates client exception from response.
      *
      * @param mixed $data Parsed response data
-     * @return IdentityProviderException
      */
-    public static function clientException(ResponseInterface $response, $data)
+    public static function clientException(ResponseInterface $response, $data): IdentityProviderException
     {
         return static::fromResponse(
             $response,
@@ -38,10 +37,9 @@ class GitlabIdentityProviderException extends IdentityProviderException
      * Creates oauth exception from response.
      *
      * @param ResponseInterface $response Response received from upstream
-     * @param string $data                Parsed response data
-     * @return IdentityProviderException
+     * @param array $data Parsed response data
      */
-    public static function oauthException(ResponseInterface $response, $data)
+    public static function oauthException(ResponseInterface $response, $data): IdentityProviderException
     {
         return static::fromResponse(
             $response,
@@ -54,9 +52,8 @@ class GitlabIdentityProviderException extends IdentityProviderException
      *
      * @param ResponseInterface $response Response received from upstream
      * @param string|null $message        Parsed message
-     * @return IdentityProviderException
      */
-    protected static function fromResponse(ResponseInterface $response, $message = null)
+    protected static function fromResponse(ResponseInterface $response, $message = null): IdentityProviderException
     {
         return new static($message, $response->getStatusCode(), (string) $response->getBody());
     }

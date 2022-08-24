@@ -220,13 +220,15 @@ function jsCallDeleteFile(btn, text, o_id) {
       {$loadOnCancelURL=""}
     {/if} 
 
-  <div class="workBack">
-  {include file="attachments.inc.tpl" 
-           attach_attachmentInfos=$gui->attachments[$tcVersionID]  
-           attach_downloadOnly=$bDownloadOnly
-           attach_uploadURL={$gui->fileUploadURL[$tcVersionID]}
-           attach_loadOnCancelURL=$gui->loadOnCancelURL}
-  </div>
+  {if $gui->attachments != ''}
+    <div class="workBack">
+        {include file="attachments.inc.tpl" 
+                attach_attachmentInfos=$gui->attachments[$tcVersionID]  
+                attach_downloadOnly=$bDownloadOnly
+                attach_uploadURL={$gui->fileUploadURL[$tcVersionID]}
+                attach_loadOnCancelURL=$gui->loadOnCancelURL}
+    </div>
+  {/if}
   
   {* Other Versions *}
   {if 'editOnExec' != $gui->show_mode && 

@@ -150,15 +150,23 @@ class tlPlatform extends tlObjectWithDB
    *
    * @return tl::OK on success, otherwise E_DBERROR
    */
-  public function update($id, $name, $notes, $enable_on_design, $enable_on_execution)
+  public function update($id, $name, $notes, $enable_on_design=null, $enable_on_execution=null)
   {
     $safeName = $this->throwIfEmptyName($name);
     $sql = " UPDATE {$this->tables['platforms']} " .
            " SET name = '" . $this->db->prepare_string($name) . "' " .
-           ", notes =  '". $this->db->prepare_string($notes) . "' " .
-           ", enable_on_design =  ". ($enable_on_design > 0 ? 1 : 0) .
-           ", enable_on_execution =  ". ($enable_on_execution > 0 ? 1 : 0) .
-           " WHERE id = {$id}";
+           ", notes =  '". $this->db->prepare_string($notes) . "' ";
+
+    /* Optional */       
+    if (!is_null($enable_on_design)) {
+      $sql .= ", enable_on_design =  " . ( (($enable_on_design > 0) || $enable_on_design) ? 1 : 0 ); 
+    }       
+    if (!is_null($enable_on_execution)) {
+      $sql .= ", enable_on_execution =  " . ( (($enable_on_execution > 0) || $enable_on_execution) ? 1 : 0 );
+    }
+    /* ---------------------------- */
+
+    $sql .= " WHERE id = {$id}";
 
     $result =  $this->db->exec_query($sql);
     return $result ? tl::OK : self::E_DBERROR;

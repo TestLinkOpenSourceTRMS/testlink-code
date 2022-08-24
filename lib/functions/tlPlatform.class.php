@@ -104,7 +104,7 @@ class tlPlatform extends tlObjectWithDB
       break;
 
       default:
-        if (count($idSet) == 1) {
+        if (count((array)$id) == 1) {
           return $this->db->fetchFirstRow($sql);
         }
         $accessKey = 'id';

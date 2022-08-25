@@ -6,7 +6,7 @@
  * @filesource  tlPlatform.class.php
  * @package     TestLink
  * @author      Erik Eloff
- * @copyright   2006-2020, TestLink community
+ * @copyright   2006-2022, TestLink community
  * @link        http://www.testlink.org
  *
  */
@@ -38,7 +38,7 @@ class tlPlatform extends tlObjectWithDB
     parent::__construct($db);
     $this->tproject_id = $tproject_id;
     $this->stdFields = "id, name, notes, testproject_id,
-                        enable_on_design,enable_on_execution";
+                        enable_on_design,enable_on_execution,is_open";
   }
 
   /**
@@ -65,13 +65,21 @@ class tlPlatform extends tlObjectWithDB
     } else {
       $sql = "INSERT INTO {$this->tables['platforms']} 
               (name, testproject_id, notes, 
-               enable_on_design,enable_on_execution) 
+               enable_on_design,enable_on_execution,is_open) 
               VALUES (" .
               "'" . $this->db->prepare_string($safeName) . "'" .
               "," . $this->tproject_id .
               ",'" . $this->db->prepare_string($platform->notes) . "'" .
               "," . ($platform->enable_on_design ? 1 : 0) . 
-              "," . ($platform->enable_on_execution ? 1 : 0) . ")";
+              "," . ($platform->enable_on_execution ? 1 : 0);
+
+      if (property_exists($platform, 'is_open')) {
+        $sql .= "," . ($platform->is_open ? 1 : 0);
+      } else {
+        $sql .= ",1";        
+      }
+      $sql .= ")";
+
       $result = $this->db->exec_query($sql);
 
       if( $result ) {
@@ -150,7 +158,7 @@ class tlPlatform extends tlObjectWithDB
    *
    * @return tl::OK on success, otherwise E_DBERROR
    */
-  public function update($id, $name, $notes, $enable_on_design=null, $enable_on_execution=null)
+  public function update($id, $name, $notes, $enable_on_design=null, $enable_on_execution=null, $is_open=1)
   {
     $safeName = $this->throwIfEmptyName($name);
     $sql = " UPDATE {$this->tables['platforms']} " .
@@ -164,10 +172,12 @@ class tlPlatform extends tlObjectWithDB
     if (!is_null($enable_on_execution)) {
       $sql .= ", enable_on_execution =  " . ( (($enable_on_execution > 0) || $enable_on_execution) ? 1 : 0 );
     }
-    /* ---------------------------- */
+
+    $sql .= ", is_open =  ". ($is_open > 0 ? 1 : 0);
+    /* ---------------------------- */   
 
     $sql .= " WHERE id = {$id}";
-
+    
     $result =  $this->db->exec_query($sql);
     return $result ? tl::OK : self::E_DBERROR;
   }
@@ -268,13 +278,14 @@ class tlPlatform extends tlObjectWithDB
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $default = array('include_linked_count' => false,
                      'enable_on_design' => false,
-                     'enable_on_execution' => true);
+                     'enable_on_execution' => true,
+                     'is_open' => true);
     $options = array_merge($default, (array)$options);
     
     $tproject_filter = " WHERE PLAT.testproject_id = {$this->tproject_id} ";
 
     $filterEnableOn = "";
-    $enaSet = array('enable_on_design','enable_on_execution');
+    $enaSet = array('enable_on_design','enable_on_execution','is_open');
     foreach ($enaSet as $ena) {
       if (null == $options[$ena]) {
         continue;
@@ -330,7 +341,8 @@ class tlPlatform extends tlObjectWithDB
                      'output' => 'columns',
                      'orderBy' => ' ORDER BY name ',
                      'enable_on_design' => true,
-                     'enable_on_execution' => true);
+                     'enable_on_execution' => true,
+                     'is_open' => true);
 
     $options = array_merge($options,(array)$opt);
     $accessKey = $options['accessKey'];
@@ -338,7 +350,7 @@ class tlPlatform extends tlObjectWithDB
     $orderBy = $options['orderBy'];
 
     $filterEnableOn = "";
-    $enaSet = array('enable_on_design','enable_on_execution');
+    $enaSet = array('enable_on_design','enable_on_execution','is_open'); // 20210621
     foreach ($enaSet as $ena) {
       if (null == $options[$ena]) {
         continue;
@@ -401,7 +413,8 @@ class tlPlatform extends tlObjectWithDB
     $sql = "/* $debugMsg */ 
             SELECT P.id, P.name, P.notes,
                    P.enable_on_design,
-                   P.enable_on_execution
+                   P.enable_on_execution,
+                   P.is_open
             FROM {$this->tables['platforms']} P 
             JOIN {$this->tables['testplan_platforms']} TP 
             ON P.id = TP.platform_id 
@@ -456,14 +469,23 @@ class tlPlatform extends tlObjectWithDB
     }
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql =  "/* $debugMsg */ SELECT P.id, P.name " .
+    $sql =  "/* $debugMsg */ SELECT P.id, P.name, P.is_open " .
             " FROM {$this->tables['platforms']} P " .
             " JOIN {$this->tables['testplan_platforms']} TP " .
             " ON P.id = TP.platform_id " .
             " WHERE  TP.testplan_id = {$testplanID} 
               {$filterEnableOn} {$orderBy}";
 
-    return $this->db->fetchColumnsIntoMap($sql, 'id', 'name');
+    $pset = $this->db->fetchRowsIntoMap($sql, 'id');
+    $itemSet = [];
+    foreach($pset as $pid => $elem) {
+      $pname = $elem['name'];
+      if ($elem['is_open'] == 0) {
+        $pname = "**closed for exec** " . $pname;
+      }
+      $itemSet[$pid] = $pname; 
+    }
+    return $itemSet;
   }
 
 
@@ -551,10 +573,15 @@ class tlPlatform extends tlObjectWithDB
   /**
    *
    */
-  function initViewGUI( &$userObj ) {
+  function initViewGUI( &$userObj, &$argsObj ) {
     $gaga = new stdClass();
     
+    // Context needed to avoid use of session 
+    // then you can open multiple TABS!!
     $gaga->tproject_id = $this->tproject_id;
+    $gaga->tplan_id = $argsObj->tplan_id;
+
+  
     
     $cfg = getWebEditorCfg('platform');
     $gaga->editorType = $cfg['type'];
@@ -563,7 +590,8 @@ class tlPlatform extends tlObjectWithDB
 
     $opx = array('include_linked_count' => true,
                  'enable_on_design' => null, 
-                 'enable_on_execution' => null);
+                 'enable_on_execution' => null,
+                 'is_open' => null);
     $gaga->platforms = $this->getAll($opx);
 
     $rx = array('canManage' => 'platform_management', 
@@ -584,7 +612,7 @@ class tlPlatform extends tlObjectWithDB
     $sql = "UPDATE {$this->tables['platforms']} 
             SET enable_on_design = 1
             WHERE id = $id";
-    $this->db->exec_query($sql);
+    $this->db->exec_query($sql);   
   }
 
   /**
@@ -622,8 +650,30 @@ class tlPlatform extends tlObjectWithDB
   }
 
 
+  /**
+   *
+   */
+  function openForExec($id) 
+  {
+    $sql = "UPDATE {$this->tables['platforms']}
+            SET is_open = 1
+            WHERE id = $id";
+    $this->db->exec_query($sql);
+  }
 
-  function getAsXMLString($tproject_id)
+  /**
+   *
+   */
+  function closeForExec($id) 
+  {
+    $sql = "UPDATE {$this->tables['platforms']}
+            SET is_open = 0
+            WHERE id = $id";
+    $this->db->exec_query($sql);
+  }
+
+
+    function getAsXMLString($tproject_id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $tables = tlObjectWithDB::getDBTables(array('platforms'));

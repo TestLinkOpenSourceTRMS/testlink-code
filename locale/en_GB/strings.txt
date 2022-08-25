@@ -4063,6 +4063,8 @@ $TLS_baseline_l1l2 = 'Baselines Level 1 & Level 2 Test Suites';
 $TLS_baselineTimestamp = 'Baseline taken on:';
 $TLS_on_design = 'On Design';
 $TLS_on_exec = 'On Execution';
+$TLS_platform_open_for_exec = 'Open For Execution';
+
 $TLS_note_platform_filter = 'Test Cases are filtered by following platforms';
 $TLS_testers_qty = 'Number of testers';
 

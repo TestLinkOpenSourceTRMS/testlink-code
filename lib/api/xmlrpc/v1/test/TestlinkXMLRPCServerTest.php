@@ -565,7 +565,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 	{	
 		$data = array();
 		$data["devKey"] = TestlinkXMLRPCServerTestData::noRightsDevKey;
-		$data["buildname"] = "Another test build from " . strftime("%c");
+		$data["buildname"] = "Another test build from " . @strftime("%c");
 		$data["testplanid"] = TestlinkXMLRPCServerTestData::testTPID;
 		
 		if(!$this->client->query('tl.createBuild', $data)) {
@@ -584,7 +584,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 	{
 		$data = array();
 		$data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;		
-		$data["buildname"] = "Another test build from " . strftime("%c");
+		$data["buildname"] = "Another test build from " . @strftime("%c");
 		$data["testplanid"] = TestlinkXMLRPCServerTestData::testTPID;
 		
 		if(!$this->client->query('tl.createBuild', $data)) {
@@ -600,9 +600,9 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 	{
 		$data = array();
 		$data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;		
-		$data["buildname"] = "Another notes test build from " . strftime("%c");
+		$data["buildname"] = "Another notes test build from " . @strftime("%c");
 		$data["testplanid"] = TestlinkXMLRPCServerTestData::testTPID;
-		$data["buildnotes"] = "Some notes from the build created at " . strftime("%c");
+		$data["buildnotes"] = "Some notes from the build created at " . @strftime("%c");
 		
 		if(!$this->client->query('tl.createBuild', $data)) {
 			echo "\n" . $this->getName() . " >> something went really wrong - " . $this->client->getErrorCode() .
@@ -616,9 +616,9 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 	{
 		$data = array();
 		$data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;		
-		$data["buildname"] = "Another test build from " . strftime("%c");
+		$data["buildname"] = "Another test build from " . @strftime("%c");
 		$data["testplanid"] = -1;
-		$data["buildnotes"] = "Some notes from the build created at " . strftime("%c");
+		$data["buildnotes"] = "Some notes from the build created at " . @strftime("%c");
 		
 		if(!$this->client->query('tl.createBuild', $data)) {
 			echo "\n" . $this->getName() . " >> something went really wrong - " . $this->client->getErrorCode() .

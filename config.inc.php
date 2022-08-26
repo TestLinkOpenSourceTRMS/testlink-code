@@ -84,6 +84,15 @@ $tlCfg->keywords->headsUpTSuiteOnExec = 'CMD_OPEN_ON_EXEC';
 $tlCfg->accessWithoutLogin = array();
 
 
+$tlCfg->platforms = new stdClass();
+$tlCfg->platforms->allowedOnAssign = [
+  'enable_on_design' => false, 
+  'enable_on_execution' => true,
+  'is_open' => true
+];
+
+
+
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
 if( !defined('DB_TABLE_PREFIX') ) {

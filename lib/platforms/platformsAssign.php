@@ -7,7 +7,7 @@
  * 
  * @package     TestLink
  * @author      eloff
- * @copyright   2005-2020, TestLink community 
+ * @copyright   2005-2022, TestLink community 
  * @filesource  platformsAssign.php
  * @link        http://www.testlink.org
  *
@@ -102,9 +102,16 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_option_panels(&$tplan_mgr, &$platform_mgr, 
                             &$opt_cfg, &$args)
 {
-  $opx = array('enable_on_design' => false, 
-               'enable_on_execution' => true);
-  $opt_cfg->from->map = $platform_mgr->getAllAsMap($opx);
+
+  /*
+  $opx = [
+    'enable_on_design' => false, 
+    'enable_on_execution' => true,
+    'is_open' => true
+  ];
+  */
+  
+  $opt_cfg->from->map = $platform_mgr->getAllAsMap(config_get('platforms')->allowedOnAssign);
 
   $optLTT = null;
   $map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id,

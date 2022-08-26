@@ -158,32 +158,14 @@ class tlPlatform extends tlObjectWithDB
    *
    * @return tl::OK on success, otherwise E_DBERROR
    */
-<<<<<<< HEAD
-  public function update($id, $name, $notes, $enable_on_design=null, $enable_on_execution=null)
-=======
   public function update($id, $name, $notes, $enable_on_design=null, $enable_on_execution=null, $is_open=1)
->>>>>>> testlink_1_9_20_fixedPHP8.1
   {
     $safeName = $this->throwIfEmptyName($name);
     $sql = " UPDATE {$this->tables['platforms']} " .
            " SET name = '" . $this->db->prepare_string($name) . "' " .
            ", notes =  '". $this->db->prepare_string($notes) . "' ";
-<<<<<<< HEAD
 
-    /* Optional */       
-    if (!is_null($enable_on_design)) {
-      $sql .= ", enable_on_design =  " . ( (($enable_on_design > 0) || $enable_on_design) ? 1 : 0 ); 
-    }       
-    if (!is_null($enable_on_execution)) {
-      $sql .= ", enable_on_execution =  " . ( (($enable_on_execution > 0) || $enable_on_execution) ? 1 : 0 );
-    }
-    /* ---------------------------- */
-
-    $sql .= " WHERE id = {$id}";
-=======
->>>>>>> testlink_1_9_20_fixedPHP8.1
-
-    /* Optional */       
+    /* Optional values */       
     if (!is_null($enable_on_design)) {
       $sql .= ", enable_on_design =  " . ( (($enable_on_design > 0) || $enable_on_design) ? 1 : 0 ); 
     }       
@@ -355,12 +337,14 @@ class tlPlatform extends tlObjectWithDB
    */
   public function getAllAsMap($opt=null)
   {
-    $options = array('accessKey' => 'id',
-                     'output' => 'columns',
-                     'orderBy' => ' ORDER BY name ',
-                     'enable_on_design' => true,
-                     'enable_on_execution' => true,
-                     'is_open' => true);
+    $options = [
+      'accessKey' => 'id',
+      'output' => 'columns',
+      'orderBy' => ' ORDER BY name ',
+      'enable_on_design' => true,
+      'enable_on_execution' => true,
+      'is_open' => true
+    ];
 
     $options = array_merge($options,(array)$opt);
     $accessKey = $options['accessKey'];

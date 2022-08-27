@@ -96,15 +96,15 @@ class ADODB_XML
 	  {
 		 $this->xml->roottag->add_subtag($this->rowTagName, array());
 		 $tag = &$this->xml->roottag->curtag;
-		 
-		 for ($i = 0; $i < $rs->_numOfFields ; $i++)
-		 {
-			list($field, $value) = each($rs->fields);		 
+
+		
+		 // 20220514 - each() deprecated PHP 8
+		 foreach ($rs->fields as $field => $value) {
 			$tag->add_subtag($field);
 			// 20080921 - francisco.mancardi@gmail.com
 			// added CDATA to avoid problem with special characters
 			$tag->curtag->cdata = "<![CDATA[{$value}]]>";
-		 }	  
+		 }
 	  
 		 $rs->moveNext();
 	  }

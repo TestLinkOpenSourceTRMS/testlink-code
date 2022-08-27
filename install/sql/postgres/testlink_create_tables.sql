@@ -701,6 +701,7 @@ CREATE TABLE /*prefix*/platforms (
   notes text NOT NULL,
   enable_on_design INT2 NOT NULL DEFAULT '0',
   enable_on_execution INT2 NOT NULL DEFAULT '1',
+  is_open INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX /*prefix*/platforms_uidx1 ON /*prefix*/platforms (testproject_id,name);
@@ -920,12 +921,12 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   "id" BIGSERIAL NOT NULL , 
   "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
   "platform_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/platforms (id) ON DELETE CASCADE,
-  "being_exec_ts" timestamp NOT NULL,
+  "begin_exec_ts" timestamp NOT NULL,
   "end_exec_ts" timestamp NOT NULL,
   "creation_ts" timestamp NOT NULL DEFAULT now(),
   PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX /*prefix*/udx1 ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
+CREATE UNIQUE INDEX /*prefix*/udx1_context ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
 
 
 CREATE TABLE /*prefix*/baseline_l1l2_details (

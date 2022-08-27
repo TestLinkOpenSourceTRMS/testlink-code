@@ -7,7 +7,7 @@
  *
  * @package 	  TestLink
  * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2020, TestLink community 
+ * @copyright   2005-2022, TestLink community 
  * @filesource  platformsImport.php
  * @link 		    http://www.testlink.org
  * @uses 		    config.inc.php
@@ -45,8 +45,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args(&$dbH) {
 	$args = new stdClass();
-	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
-                   "tproject_id" => array(tlInputParameter::INT));
+	$iParams = [
+    "doAction" => [tlInputParameter::STRING_N,0,50],
+    "tproject_id" => [tlInputParameter::INT],
+    "tplan_id" => [tlInputParameter::INT]
+  ];
 		
 	R_PARAMS($iParams,$args);
 	$args->userID = $_SESSION['userID'];
@@ -73,18 +76,24 @@ function init_args(&$dbH) {
 /**
  *
  */
+
 function initializeGui(&$dbH,&$argsObj) {
 
   list($add2args,$guiObj) = initUserEnv($dbH,$argsObj);
 
   $guiObj->activeMenu['projects'] = 'active'; 
-  $guiObj->goback_url = 
-    $_SESSION['basehref'] . 'lib/platforms/platformsView.php?tproject_id=' .
-    $guiObj->tproject_id;
+
+  $guiObj->goback_url = $_SESSION['basehref'] . 
+                        'lib/platforms/platformsView.php?tproject_id=' . $guiObj->tproject_id .
+                        'tplan_id=' . $guiObj->tplan_id;
 
   $guiObj->page_title = lang_get('import_platforms');
-  $guiObj->file_check = array('show_results' => 0, 'status_ok' => 1, 
-    'msg' => 'ok', 'filename' => '');
+  $guiObj->file_check = [
+    'show_results' => 0, 
+    'status_ok' => 1, 
+    'msg' => 'ok', 
+    'filename' => ''
+  ];
 
   $guiObj->importTypes = array('XML' => 'XML');
 
@@ -118,41 +127,63 @@ function doImport(&$dbHandler,$testproject_id)
       // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
       $xml = @simplexml_load_file_wrapper($dest);
     }
-         
 		if ($xml !== FALSE) {
      	$file_check['status_ok'] = 1;
       $file_check['show_results'] = 1;
       $platform_mgr = new tlPlatform($dbHandler,$testproject_id);
 
-      $opx = array('accessKey' => 'name', 'output' => 'rows');
-      $platformsOnSystem = $platform_mgr->getAllAsMap($opx);
-      
+      $platformsOnSystem = $platform_mgr->getAllAsMap(['accessKey' => 'name', 
+                                                       'output' => 'rows',
+                                                       'enable_on_design' => null,
+                                                       'enable_on_execution' => null,
+                                                       'is_open' => null,
+                                                      ]);
+                                                      
       foreach($xml as $platform) {
         if (property_exists($platform, 'name')) {  
          	// Check if platform with this name already exists on test Project
          	// if answer is yes => update fields
-         	$name = trim($platform->name);
-         	if( isset($platformsOnSystem[$name])) {
-         		$import_msg['ok'][] = sprintf(lang_get('platform_updated'),$platform->name);
-            $platform_mgr->update($platformsOnSystem[$name]['id'],$name,$platform->notes);
+         	$name = trim((string)$platform->name);
+         	if(isset($platformsOnSystem[$name])) {
+         		$import_msg['ok'][] = sprintf(lang_get('platform_updated'),$name);
+
+            $platform_mgr->update($platformsOnSystem[$name]['id'],
+                                  $name,
+                                  (string)$platform->notes,
+                                  intval($platform->enable_on_design),
+                                  intval($platform->enable_on_execution),
+                                  intval($platform->is_open)
+                                 );
+
          	} else {
-         		$import_msg['ok'][] = sprintf(lang_get('platform_imported'),$platform->name);
-            $platform_mgr->create($name,$platform->notes);
+         		$import_msg['ok'][] = sprintf(lang_get('platform_imported'),$name);
+            $item = new stdClass();
+            $item->name = $name;
+            $item->notes = (string)$platform->notes;
+            $item->enable_on_design = intval($platform->enable_on_design);
+            $item->enable_on_execution = intval($platform->enable_on_execution);
+            $item->is_open = intval($platform->is_open);
+            $platform_mgr->create($item);
          	}
         } else {
           $import_msg['ko'][] = lang_get('bad_line_skipped');
         }  
       }      
-    } else {
+    }
+    else
+    {
       $file_check['msg'] = lang_get('problems_loading_xml_content');  
     }  
           
-  } else {
+  }
+	else
+	{
 		$msg = getFileUploadErrorMessage($fInfo);
 		$file_check = array('show_results' => 0, 'status_ok' => 0,'msg' => $msg);
 	}
   
-  if( count($import_msg['ko']) == 0 ) {
+  if( count($import_msg['ko']) == 0 )
+  {
     $import_msg['ko'] = null;
   }  
   $file_check['import_msg'] = $import_msg;
@@ -161,5 +192,5 @@ function doImport(&$dbHandler,$testproject_id)
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,"platform_management");
+	return $user->hasRightOnProj($db,"platform_management");
 }

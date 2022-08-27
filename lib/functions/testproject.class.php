@@ -5,7 +5,7 @@
  * 
  * @filesource  testproject.class.php
  * @package     TestLink
- * @copyright   2005-2020, TestLink community 
+ * @copyright   2005-2022, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * 
  **/
@@ -2079,9 +2079,9 @@ function setPublicStatus($id,$status)
         )
         select * from cte_nh 
         where cte_nh.node_type_id IN ($tcNodeTypeID)";
-      $rs = $this->db->get_recordset($sql);
+      $rs = (array)$this->db->get_recordset($sql);
 
-      $itemSet = array();
+      $itemSet = [];
       foreach ($rs as $elem) {
         $itemSet[] = $elem['id'];
       }

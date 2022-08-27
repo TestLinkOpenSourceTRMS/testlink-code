@@ -165,7 +165,7 @@ class tlPlatform extends tlObjectWithDB
            " SET name = '" . $this->db->prepare_string($name) . "' " .
            ", notes =  '". $this->db->prepare_string($notes) . "' ";
 
-    /* Optional values */       
+    /* Optional */       
     if (!is_null($enable_on_design)) {
       $sql .= ", enable_on_design =  " . ( (($enable_on_design > 0) || $enable_on_design) ? 1 : 0 ); 
     }       
@@ -337,14 +337,12 @@ class tlPlatform extends tlObjectWithDB
    */
   public function getAllAsMap($opt=null)
   {
-    $options = [
-      'accessKey' => 'id',
-      'output' => 'columns',
-      'orderBy' => ' ORDER BY name ',
-      'enable_on_design' => true,
-      'enable_on_execution' => true,
-      'is_open' => true
-    ];
+    $options = array('accessKey' => 'id',
+                     'output' => 'columns',
+                     'orderBy' => ' ORDER BY name ',
+                     'enable_on_design' => true,
+                     'enable_on_execution' => true,
+                     'is_open' => true);
 
     $options = array_merge($options,(array)$opt);
     $accessKey = $options['accessKey'];
@@ -352,7 +350,12 @@ class tlPlatform extends tlObjectWithDB
     $orderBy = $options['orderBy'];
 
     $filterEnableOn = "";
-    $enaSet = array('enable_on_design','enable_on_execution','is_open'); // 20210621
+    $enaSet = [
+      'enable_on_design',
+      'enable_on_execution',
+      'is_open'
+    ];
+    
     foreach ($enaSet as $ena) {
       if (null == $options[$ena]) {
         continue;

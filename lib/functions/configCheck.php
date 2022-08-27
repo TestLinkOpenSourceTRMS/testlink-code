@@ -9,7 +9,7 @@
  * @filesource  configCheck.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2022, TestLink community 
  * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
@@ -556,7 +556,7 @@ function checkPhpExtensions(&$errCounter) {
                   'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
 
   $mysqlExt = 'mysql';
-  if( version_compare(phpversion(), "5.5.0", ">=") ) {
+  if( version_compare(phpversion(), "7.4.27", ">=") ) {
     $mysqlExt = 'mysqli';
   } 
   $checks[]=array('extension' => $mysqlExt,

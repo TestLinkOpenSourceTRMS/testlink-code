@@ -7,7 +7,7 @@
  *
  * @package   TestLink
  * @author    Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-20202022, TestLink community 
+ * @copyright   2005-2022, TestLink community 
  * @filesource  platformsExport.php
  * @link    http://www.testlink.org
  * @uses    config.inc.php
@@ -96,7 +96,7 @@ function initializeGui(&$argsObj) {
 */
 function doExport(&$db,$filename,$tproject_id)
 {
-  $debugMsg = 'Files:' . __FILE__ . ' - Function: ' . __FUNCTION__;
+  $debugMsg = 'File:' . __FILE__ . ' - Function: ' . __FUNCTION__;
   $tables = tlObjectWithDB::getDBTables(array('platforms'));
   $adodbXML = new ADODB_XML("1.0", "UTF-8");
 

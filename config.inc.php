@@ -18,7 +18,7 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2018, TestLink community
+ * @copyright   2005-2022, TestLink community
  * @link        http://www.testlink.org
  *
  *
@@ -85,11 +85,23 @@ $tlCfg->keywords->headsUpTSuiteOnExec = 'CMD_OPEN_ON_EXEC';
 $tlCfg->accessWithoutLogin = array();
 
 
+
 // Bootstrap UX
 $tlCfg->layout->cellContent = "col-sm-10";
 $tlCfg->layout->cellLabel = "col-sm-2 col-sm-2 control-label";
 $tlCfg->layout->rowBegin = '<div class="form-group">';
 $tlCfg->layout->rowEnd = '</div> <!-- class="form-group"> -->';
+
+
+
+
+
+$tlCfg->platforms = new stdClass();
+$tlCfg->platforms->allowedOnAssign = [
+  'enable_on_design' => false, 
+  'enable_on_execution' => true,
+  'is_open' => true
+];
 
 
 
@@ -132,11 +144,10 @@ $tlCfg->custom_css = null;
 
 
 /** Include constants and magic numbers (users should not change it)*/
-$cfgPath = TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR;
-require_once($cfgPath . 'const.inc.php');
+require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
 
-// --------------------------------------------------------------
+// ----------------------------------------------------------------------------
 /** @var string used to have (when needed) a possibility to identify different TL instances
     @since 1.9.4 used on mail subject when mail logger is used
  */
@@ -267,6 +278,18 @@ $tlCfg->gui_title_separator_2 = ' - '; // parent - child
  */
 $tlCfg->testcase_cfg->glue_character = '-';
 
+
+
+$tlCfg->testcase_cfg->import = new stdClass();
+$tlCfg->testcase_cfg->import->wordwrap = new stdClass();
+
+/* 0 => do not apply wordwrap() */
+$tlCfg->testcase_cfg->import->wordwrap->summary = 0;
+$tlCfg->testcase_cfg->import->wordwrap->preconditions = 0;
+$tlCfg->testcase_cfg->import->wordwrap->actions = 0;
+$tlCfg->testcase_cfg->import->wordwrap->expected_results = 0;
+
+
 /**
  * fonts set used to draw charts
  **/
@@ -306,7 +329,7 @@ $tlCfg->sessionInactivityTimeout = 9900;
  * If you want sessions to last longer this must be set to a higher value.
  * You may need to set this in your global php.ini if the settings don't take effect.
  */
-//ini_set('session.gc_maxlifetime', 54000);
+//ini_set('session.gc_maxlifetime', 60*90);
 
 $tlCfg->notifications->userSignUp = new stdClass();
 $tlCfg->notifications->userSignUp->enabled = TRUE;  // @see notifyGlobalAdmins()
@@ -491,79 +514,19 @@ $tlCfg->noExpDateUsers = array('admin');
 $tlCfg->OAuthServers = array();
 
 // Google
-// $tlCfg->OAuthServers = array();
-// $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
-// $tlCfg->OAuthServers[1]['oauth_name'] = 'google';
-
-// Get from /gui/themes/default/images
-// $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
-// $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
-// Can be authorization_code (by default), client_credentials or password
-// $tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';  
-// $tlCfg->OAuthServers[1]['oauth_url'] = 'https://accounts.google.com/o/oauth2/auth';
-// $tlCfg->OAuthServers[1]['token_url'] = 'https://accounts.google.com/o/oauth2/token';
-// false => then the only user will be selected automatically (applied for google)
-// $tlCfg->OAuthServers[1]['oauth_force_single'] = false; 
-// the domain you want to whitelist
-// $tlCfg->OAuthServers[1]['oauth_domain'] = 'google.com'; 
-// $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
-// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
+// see cfg/oauth_samples/oauth.google.inc.php
 
 // Github
-// $tlCfg->OAuthServers[2]['oauth_enabled'] = true;
-// $tlCfg->OAuthServers[2]['oauth_name'] = 'github';
-// $tlCfg->OAuthServers[2]['oauth_client_id'] = 'CLIENT_ID';
-// $tlCfg->OAuthServers[2]['oauth_client_secret'] = 'CLIENT_SECRET';
+// see cfg/oauth_samples/oauth.github.inc.php
 
-// Can be authorization_code (by default), client_credentials or password
-// $tlCfg->OAuthServers[2]['oauth_grant_type'] = 'authorization_code';  
-// $tlCfg->OAuthServers[2]['oauth_url'] = 'https://github.com/login/oauth/authorize';
+// Gitlab
+// see cfg/oauth_samples/oauth.gitlab.inc.php
 
-// $tlCfg->OAuthServers[2]['token_url'] = 'https://github.com/login/oauth/access_token';
-// false => then the only user will be selected automatically (applied for google)
-// $tlCfg->OAuthServers[2]['oauth_force_single'] = false; 
-// $tlCfg->OAuthServers[2]['oauth_profile'] = 'https://api.github.com/user';
-// $tlCfg->OAuthServers[2]['oauth_scope'] = 'user:email';
-
-//Microsoft
-//$tlCfg->OAuthServers[1]['oauth_enabled'] = true;
-//$tlCfg->OAuthServers[1]['oauth_name'] = 'microsoft';
-//$tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
-//$tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
-
-// Can be authorization_code (by default), client_credentials or password
-//$tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';
-//$tlCfg->OAuthServers[1]['oauth_url'] = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
-
-//$tlCfg->OAuthServers[1]['token_url'] = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
-//$tlCfg->OAuthServers[1]['oauth_force_single'] = true;
-//$tlCfg->OAuthServers[1]['oauth_profile'] = 'https://graph.microsoft.com/v1.0/me';
-//$tlCfg->OAuthServers[1]['oauth_scope'] = 'User.Read';
-
-//$tlCfg->OAuthServers[1]['redirect_uri'] = 'TESTLINKURL/microsoftoauth.php';
-
+// Microsoft
+// see cfg/oauth_samples/oauth.microsoft.inc.php
 
 // Azure AD 
-// Fill in CLIENT_ID,CLIENT_SECRET,YOURTESTLINKSERVER and TENANTID with your information
-// See this article for registering an application: https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-oauth-code
-// Make sure, you grant admint consent for it: https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/configure-user-consent
-
-// $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
-// $tlCfg->OAuthServers[1]['oauth_name'] = 'azuread'; //do not change this
-
-// $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
-// $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
-// $tlCfg->OAuthServers[1]['redirect_uri'] = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . '/login.php';
-
-// $tlCfg->OAuthServers[1]['oauth_force_single'] = true; 
-
-// $tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';  
-// $tlCfg->OAuthServers[1]['oauth_url'] = 'https://login.microsoftonline.com/TENANTID/oauth2/authorize';
-// $tlCfg->OAuthServers[1]['token_url'] = 'https://login.microsoftonline.com/TENANTID/oauth2/token';
-// the domain you want to whitelist (email domains)
-// $tlCfg->OAuthServers[1]['oauth_domain'] = 'autsoft.hu'; 
-// $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://login.microsoftonline.com/TENANTID/openid/userinfo';
-// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/mail.read https://graph.microsoft.com/user.read openid profile email';
+// see cfg/oauth_samples/oauth.azuread.inc.php
 
 /**
  * Single Sign On authentication
@@ -712,7 +675,17 @@ $tlCfg->gui->planView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All
 $tlCfg->gui->planView->itemQtyForTopButton = 10;
 
 $tlCfg->gui->buildView = new stdClass();
+$tlCfg->gui->buildView->pagination = new stdClass();
+$tlCfg->gui->buildView->pagination->enabled = true;
+$tlCfg->gui->buildView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
 $tlCfg->gui->buildView->itemQtyForTopButton = 10;
+
+$tlCfg->gui->keywordsView = new stdClass();
+$tlCfg->gui->keywordsView->pagination = new stdClass();
+$tlCfg->gui->keywordsView->pagination->enabled = true;
+$tlCfg->gui->keywordsView->pagination->length = '[40, 60, 80, -1], [40, 60, 80, "All"]';
+$tlCfg->gui->keywordsView->itemQtyForTopButton = 10;
+
 
 
 /** 
@@ -849,17 +822,35 @@ $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 */
 
 $tlCfg->gui->text_editor = array();
-$tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor','toolbar' => 'Testlink',
-                                        'configFile' => 'cfg/tl_ckeditor_config.js',
-                                        'height' => 150);
+$tlCfg->gui->text_editor['all'] = ['type' => 'ckeditor',
+	                               'toolbar' => 'Testlink',
+                                   'configFile' => 'cfg/tl_ckeditor_config.js',
+                                   'height' => 150];
+
 
 // mini toolbar for test case steps edit
-$tlCfg->gui->text_editor['steps_design'] = array('type' => 'ckeditor','toolbar' => 'TestlinkMini',
-                                                 'configFile' => 'cfg/tl_ckeditor_config.js',
-                                                 'height' => 100);
+$tlCfg->gui->text_editor['steps_design'] = ['type' => 'ckeditor',
+	                                        'toolbar' => 'TestlinkMini',
+                                            'configFile' => 'cfg/tl_ckeditor_config.js',
+                                            'height' => 100];
 
-$tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
-$tlCfg->gui->text_editor['edit_execution'] = array( 'type' => 'none', 'cols' => 80, 'rows' => 20);
+// 
+$tlCfg->gui->text_editor['preconditions'] = ['type' => 'ckeditor',
+	                                         'toolbar' => 'Testlink',
+                                             'configFile' => 'cfg/tl_ckeditor_config.js',
+                                             'height' => 150
+                                            ];
+
+$tlCfg->gui->text_editor['summary'] = ['type' => 'ckeditor',
+	                                   'toolbar' => 'Testlink',
+                                       'configFile' => 'cfg/tl_ckeditor_config.js',
+                                       'height' => 600
+                                      ]; 
+
+
+
+$tlCfg->gui->text_editor['execution'] = array('type' => 'none');
+$tlCfg->gui->text_editor['edit_execution'] = array('type' => 'none', 'cols' => 80, 'rows' => 20);
 $tlCfg->gui->text_editor['display_execution_notes'] = array('type' => 'none', 'cols' => 80, 'rows' => 20);
 
 /** User can choose order of menu areas */
@@ -972,7 +963,7 @@ $tlCfg->metrics_dashboard->show_test_plan_status = false;
  * Leave text values empty if you would like to hide parameters.
  */
 $tlCfg->document_generator->company_name = 'TestLink Community [configure $tlCfg->document_generator->company_name]';
-$tlCfg->document_generator->company_copyright = '2012 &copy; TestLink Community';
+$tlCfg->document_generator->company_copyright = '2022 &copy; TestLink Community';
 $tlCfg->document_generator->confidential_msg = '';
 
 // Logo for generated documents
@@ -1175,14 +1166,10 @@ $tlCfg->exec_cfg->steps_exec_status_default = 'empty';
 //   latest user choice.
 //   This is the [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->expand_collapse = new stdClass();
-$tlCfg->exec_cfg->expand_collapse
-                ->testplan_notes = 'LAST_USER_CHOICE';
-$tlCfg->exec_cfg->expand_collapse
-                ->platform_description = 'LAST_USER_CHOICE';
-$tlCfg->exec_cfg->expand_collapse
-                ->build_description = 'LAST_USER_CHOICE';
-$tlCfg->exec_cfg->expand_collapse
-                ->testsuite_details = 'LAST_USER_CHOICE';
+$tlCfg->exec_cfg->expand_collapse->testplan_notes = LAST_USER_CHOICE;
+$tlCfg->exec_cfg->expand_collapse->platform_description = LAST_USER_CHOICE;
+$tlCfg->exec_cfg->expand_collapse->build_description = LAST_USER_CHOICE;
+$tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 
 
 
@@ -1379,6 +1366,17 @@ $tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion = TRUE;
 //$tlCfg->testcase_cfg->frozenNotExecutedTCVDelTCVRel = FALSE;
 //$tlCfg->testcase_cfg->frozenNotExecutedTCVAddREQVLink = FALSE;
 //$tlCfg->testcase_cfg->frozenNotExecutedTCVDelREQVLink = FALSE;
+
+
+// Change order using CSS flexbox model
+// @used-by tcEdit.tpl
+$tlCfg->testcase_cfg->viewerFieldsOrder = new stdClass();
+$tlCfg->testcase_cfg->viewerFieldsOrder->summary = 3;
+$tlCfg->testcase_cfg->viewerFieldsOrder->spaceOne = 2;
+$tlCfg->testcase_cfg->viewerFieldsOrder->preconditions = 1;
+
+
+
 
 
 // Effects on Req Version to TCVersion LINK 
@@ -1938,7 +1936,7 @@ $tlCfg->tplanDesign->hideTestCaseWithStatusIn = array($tlCfg->testCaseStatus['ob
 /** Maximum uploadfile size to importing stuff in TL */
 // Also check your PHP settings (default is usually 2MBs)
 // unit BYTES is required by MAX_FILE_SIZE HTML option
-$tlCfg->import_file_max_size_bytes = '409600';
+$tlCfg->import_file_max_size_bytes = '800000';
 
 /** Maximum line size of the imported file */
 $tlCfg->import_max_row = '10000'; // in chars
@@ -2088,7 +2086,7 @@ $tlCfg->images = array();
 
 
 
-// -------------------------------------------------------------
+// ----------------------------------------------------------------------------
 /* [PROXY] */
 /* Used only */ 
 /* mantissoapInterface.class.php */
@@ -2103,24 +2101,23 @@ $tlCfg->proxy->password = null;
 /** Plugins feature */
 define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR);
 
-// ----- End of Config ----------------------------------------
-
-// ------------------------------------------------------------
+// ----- End of Config ------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // DO NOT DO CHANGES BELOW
-// ------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 
 /** Functions for check request status */
 require_once('configCheck.php');
 
-/**
- * @see also cfg/const.inc.php
- */
-if (!defined('TL_JQUERY')) {
-  define('TL_JQUERY','third_party/jquery/jquery-3.4.1.min.js');
+
+if( !defined('TL_JQUERY') )
+{
+  define('TL_JQUERY','jquery-2.2.4.min.js' );
 }
 
-if (!defined('TL_DATATABLES_DIR')) {
-  define('TL_DATATABLES_DIR','DataTables-1.10.4' );
+if( !defined('TL_DATATABLES_DIR') )
+{
+  define('TL_DATATABLES_DIR','DataTables-1.10.24' );
 }
 
 /** root of testlink directory location seen through the web server */
@@ -2129,8 +2126,9 @@ if (!defined('TL_DATATABLES_DIR')) {
 define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https)));
 
 clearstatcache();
-if ( file_exists( $cfgPath . 'custom_config.inc.php' ) ) {
-  require_once( $cfgPath . 'custom_config.inc.php' );
+if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
+{
+  require_once( TL_ABS_PATH . 'custom_config.inc.php' );
 }
 
 

@@ -303,10 +303,10 @@ function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj) {
   $now = time();
 
   if(is_null($argsObj->selected_start_date)) {
-    $guiObj->selected_start_date = strftime($dateFormat, $now - ($cfg->start_date_offset));
+    $guiObj->selected_start_date = @strftime($dateFormat, $now - ($cfg->start_date_offset));
     $guiObj->selected_start_time = $cfg->start_time;
     
-    $guiObj->selected_end_date = strftime($dateFormat, $now);
+    $guiObj->selected_end_date = @strftime($dateFormat, $now);
     $guiObj->selected_end_time = null;
   } else {
     $guiObj->selected_start_date = $argsObj->selected_start_date[0];

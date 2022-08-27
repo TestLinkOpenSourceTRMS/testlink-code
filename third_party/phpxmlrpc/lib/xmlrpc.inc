@@ -3123,7 +3123,7 @@ xmlrpc_encode_entitites($this->errstr, $GLOBALS['xmlrpc_internalencoding'], $cha
 	{
 		if(!$utc)
 		{
-			$t=strftime("%Y%m%dT%H:%M:%S", $timet);
+			$t=@strftime("%Y%m%dT%H:%M:%S", $timet);
 		}
 		else
 		{
@@ -3131,11 +3131,11 @@ xmlrpc_encode_entitites($this->errstr, $GLOBALS['xmlrpc_internalencoding'], $cha
 			{
 				// gmstrftime doesn't exist in some versions
 				// of PHP
-				$t=gmstrftime("%Y%m%dT%H:%M:%S", $timet);
+				$t=@gmstrftime("%Y%m%dT%H:%M:%S", $timet);
 			}
 			else
 			{
-				$t=strftime("%Y%m%dT%H:%M:%S", $timet-date('Z'));
+				$t=@strftime("%Y%m%dT%H:%M:%S", $timet-date('Z'));
 			}
 		}
 		return $t;

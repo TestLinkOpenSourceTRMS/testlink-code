@@ -1418,14 +1418,14 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
   if ($doIt && isset($errors[$errno]) )
   {
     // suppress some kind of errors
-    // strftime(),strtotime(),date()
+    // @strftime(),strtotime(),date()
     // work in block just to make copy and paste easier
     // Block 1 - errstr
     // Block 2 - errfile
     // 
     if( ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false) ||
         ($errno == E_NOTICE && strpos($errstr,"ob_end_clean()") !== false) ||
-        ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) ||
+        ($errno == E_STRICT && strpos($errstr,"@strftime()") !== false) ||
         ($errno == E_STRICT && strpos($errstr,"mktime()") !== false) ||
         ($errno == E_STRICT && strpos($errstr,"date()") !== false) ||
         ($errno == E_STRICT && strpos($errstr,"strtotime()") !== false) ||

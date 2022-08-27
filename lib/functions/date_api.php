@@ -138,7 +138,7 @@ function create_date_selection_set($p_name, $p_format, $p_date=0, $options=null)
     $time = mktime(0, 0, 0, $m, $d, $y);
   }
   
-  $formatted_date = $time != 0 ? strftime($date_format, $time) : '';
+  $formatted_date = $time != 0 ? @strftime($date_format, $time) : '';
   
   $str_out .= '<input type="text" name="' . $p_name.'_input" size="10" id="' . $p_name.'_input" ' .
               'value="' . $formatted_date . 

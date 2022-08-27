@@ -75,11 +75,11 @@ function initializeGui(&$dbHandler,$args)
 
 	$reports_cfg = config_get('reportsCfg');
 
-	$startDate = strftime($date_format, time() - ($reports_cfg->start_date_offset));
+	$startDate = @strftime($date_format, time() - ($reports_cfg->start_date_offset));
     $gui->selected_start_date = $startDate;
 	$gui->selected_start_time = $reports_cfg->start_time;
 
-	$gui->selected_end_date = strftime($date_format, time());
+	$gui->selected_end_date = @strftime($date_format, time());
 	$gui->selected_end_time = null;
 	return $gui;
 }

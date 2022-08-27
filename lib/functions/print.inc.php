@@ -720,7 +720,7 @@ function renderFirstPage($doc_info)
   
     
   $output .= '<div class="summary">' . '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ".
-             strftime($date_format_cfg, time()) . "</p></div>\n";
+             @strftime($date_format_cfg, time()) . "</p></div>\n";
     
   // Print legal notes
   if ($docCfg->company_copyright != '')

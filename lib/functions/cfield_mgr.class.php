@@ -738,7 +738,7 @@ class cfield_mgr extends tlObject
       // Important
       // We can do this mix (get date format configuration from standard variable 
       // and time format from an specific custom field config) because string used 
-      // for date_format on strftime() has no problem
+      // for date_format on @strftime() has no problem
       // on date() calls (that are used in create_date_selection_set() ).
       $format = config_get('date_format') . " " . $cfg->custom_fields->time_format;
       $str_out .=create_date_selection_set($input_name,$format,$cfValue,$dateOpt);

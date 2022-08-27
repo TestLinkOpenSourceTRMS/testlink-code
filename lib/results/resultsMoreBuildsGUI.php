@@ -121,9 +121,9 @@ function initializeGui(&$dbHandler,$args)
     $reports_cfg = config_get('reportsCfg');
 	$ldf = config_get('locales_date_format');
 	$date_format = $ldf[((isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB')];		
-    $gui->selected_start_date = strftime($date_format, time() - ($reports_cfg->start_date_offset));
+    $gui->selected_start_date = @strftime($date_format, time() - ($reports_cfg->start_date_offset));
     $gui->selected_start_time = $reports_cfg->start_time;
-    $gui->selected_end_date = strftime($date_format, time());
+    $gui->selected_end_date = @strftime($date_format, time());
     $gui->selected_end_time = null;
 
     return $gui;

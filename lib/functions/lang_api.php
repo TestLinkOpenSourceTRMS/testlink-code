@@ -383,7 +383,7 @@ function localize_dateOrTimeStamp($params,$smarty,$what,$value)
     $value = strtotime($value);
   }
   
-  $retVal = strftime($format, $value);
+  $retVal = @strftime($format, $value);
   if(isset($params['var'])) {
     $smarty->assign($params['var'],$retVal);
   }
@@ -406,7 +406,7 @@ function localizeTimeStamp($value,$format)
     $value = strtotime($value);
   }
   
-  return strftime($format, $value);
+  return @strftime($format, $value);
 }
 
 /**

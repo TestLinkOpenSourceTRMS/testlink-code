@@ -282,7 +282,7 @@ $tlCfg->locales = array('cs_CZ' => 'Czech','de_DE' => 'German','en_GB' => 'Engli
                         'ru_RU' => 'Russian','zh_CN' => 'Chinese Simplified');
 
 /** 
- * Format of date - see strftime() in PHP manual
+ * Format of date - see @strftime() in PHP manual
  * NOTE: setting according local is done in testlinkInitPage() using setDateTimeFormats()
  */
 /** @var array Localized format of date */
@@ -824,7 +824,7 @@ define('VALID_REQ', 'v');
 // $tlCfg->gui->custom_fields->possible_values_cfg = null;
 
 // Format string follows date() spec - see PHP Manual
-// We can not use $g_timestamp_format, because format strings for date() and strftime() 
+// We can not use $g_timestamp_format, because format strings for date() and @strftime() 
 // uses same LETTER with different meanings (Bad Luck!)
 $tlCfg->gui = new stdClass();
 $tlCfg->gui->custom_fields = new stdClass();

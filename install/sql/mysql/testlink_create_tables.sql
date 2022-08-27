@@ -831,7 +831,7 @@ CREATE TABLE /*prefix*/testcase_aliens (
   tcversion_id int(10) NOT NULL,
   alien_id varchar(64) NOT NULL default '0',
   PRIMARY KEY (id),
-  UNIQUE KEY /*prefix*/idx01_testcase_aliens (testcase_id,tcversion_id,alien_id),
+  UNIQUE KEY /*prefix*/idx01_testcase_aliens (testproject_id,testcase_id,tcversion_id,alien_id),
   KEY /*prefix*/idx02_testcase_aliens (tcversion_id)
 ) DEFAULT CHARSET=utf8;
 

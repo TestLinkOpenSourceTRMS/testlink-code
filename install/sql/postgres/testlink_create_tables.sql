@@ -915,6 +915,20 @@ CREATE TABLE /*prefix*/testcase_platforms(
 CREATE UNIQUE INDEX /*prefix*/idx01_testcase_platforms ON /*prefix*/testcase_platforms ("testcase_id","tcversion_id","platform_id");
 CREATE INDEX /*prefix*/idx02_testcase_platforms ON /*prefix*/testcase_platforms ("tcversion_id");
 
+--
+-- 
+--
+CREATE TABLE /*prefix*/testcase_aliens (
+  "id" BIGSERIAL NOT NULL , 
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  "testcase_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id),
+  "alien_id" VARCHAR(64) NOT NULL DEFAULT '0',
+  PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/idx01_testcase_aliens ON /*prefix*/testcase_aliens ("testproject_id","testcase_id","tcversion_id","alien_id");
+CREATE INDEX /*prefix*/idx02_testcase_aliens ON /*prefix*/testcase_aliens ("tcversion_id");
+
 
 
 CREATE TABLE /*prefix*/baseline_l1l2_context (

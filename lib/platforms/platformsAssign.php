@@ -27,7 +27,14 @@ $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
 $platform_mgr = new tlPlatform($db, $args->tproject_id);
 
-if ($args->tplan_id > 0) {
+$gui = new stdClass();
+$gui->platform_assignment_subtitle = null;
+$gui->tplan_id = $args->tplan_id;
+$gui->can_do = isset($args->tplan_id);
+$gui->mainTitle = lang_get('add_remove_platforms');
+$gui->warning = '';
+
+if (isset($args->tplan_id) && $args->tplan_id >0) {
   // do following check to give warning to user
   // if test plan has test case versions with platform_id=0
   // this means that right now there are not platforms linked to test plan.
@@ -36,10 +43,11 @@ if ($args->tplan_id > 0) {
   // and it's execution results he/she will not be able to execute
   //
   $qtyByPlatform = $tplan_mgr->countLinkedTCVersionsByPlatform($args->tplan_id);
+
+
   $qtyLinked2Unknown = isset($qtyByPlatform[0]['qty']) ? $qtyByPlatform[0]['qty'] : 0;
-  if( ($fix_needed = ($qtyLinked2Unknown > 0)) )
-  {
-    
+ 
+  if( ($fix_needed = ($qtyLinked2Unknown > 0)) ) {
     $gui->warning = lang_get('unknown_platform');
   }
   $opt_cfg->global_lbl = '';
@@ -49,14 +57,12 @@ if ($args->tplan_id > 0) {
   $gui->platform_count_js = init_option_panels($tplan_mgr, $platform_mgr, $opt_cfg, $args);
 
   $tplanData = $tplan_mgr->get_by_id($args->tplan_id);
-  if (isset($tplanData))
-  {
+  if (isset($tplanData)) {
     $gui->mainTitle = sprintf($gui->mainTitle,$tplanData['name']);
   }
 
     
-  if($args->doAction == 'doAssignPlatforms')
-  {
+  if ($args->doAction == 'doAssignPlatforms') {
     $platform_mgr->linkToTestplan($args->platformsToAdd,$args->tplan_id);
     $platform_mgr->unlinkFromTestplan($args->platformsToRemove,$args->tplan_id);
     if( $fix_needed && count($args->platformsToAdd) == 1)
@@ -86,26 +92,32 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * This map is used to show warning dialog only when trying to unlink 
  * platforms with assigned TCs
  */
-function init_option_panels(&$tplan_mgr, &$platform_mgr, &$opt_cfg, &$args)
+function init_option_panels(&$tplan_mgr, &$platform_mgr, 
+                            &$opt_cfg, &$args)
 {
-  $opx = array('enable_on_design' => false, 'enable_on_execution' => true);
-  $opt_cfg->from->map = $platform_mgr->getAllAsMap($opx);
+
+  $opt_cfg->from->map = $platform_mgr->getAllAsMap(config_get('platforms')->allowedOnAssign);
 
   $optLTT = null;
-  $map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id,$optLTT);
+  $map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id,
+                                                 $optLTT);
   $platform_count_js = "platform_count_map = new Array();\n";
   if (!is_null($map)) {     
-    foreach ($map as $platform_id => &$platform_name) 
-    {
-      $count = $tplan_mgr->count_testcases($args->tplan_id,$platform_id);
-      $platform_name .= sprintf(lang_get('platform_linked_count'), $count);
-      $platform_count_js .= "platform_count_map['$platform_name'] = $count;\n";
-      
-      // Removal of duplicates is NOT handles automatically since we just
-      // modified their names.
-      unset($opt_cfg->from->map[$platform_id]);
+    foreach ($map as $plat_id => &$plat_name) {
+      $count = $tplan_mgr->count_testcases($args->tplan_id,
+                                           $plat_id);
+      $plat_name .= sprintf(lang_get('platform_linked_count'), 
+                            $count);
+      $platform_count_js .= 
+        "platform_count_map['$plat_name'] = $count;\n";
+
+      // Removal of duplicates is NOT handled 
+      // automatically since we just have modified 
+      // their names adding a usage counter.
+      unset($opt_cfg->from->map[$plat_id]);
     }
   }
+
   $opt_cfg->to->map = $map;
   return $platform_count_js;
 }
@@ -150,5 +162,5 @@ function init_args(&$opt_cfg)
 
 function checkRights(&$db,&$user)
 {
-  return $user->hasRight($db,'testplan_add_remove_platforms');
+  return $user->hasRightOnProj($db,'testplan_add_remove_platforms');
 }

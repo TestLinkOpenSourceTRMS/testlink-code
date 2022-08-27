@@ -15,7 +15,8 @@
  
 
 /* [GLOBAL SETTINGS] */
-define('TL_SMARTY_VERSION',3);  // @since 1.9.8
+
+define('TL_SMARTY_VERSION',4);  // @since 1.9.8
 define('TL_JQUERY','third_party/jquery/jquery-3.4.1.min.js');  
 
 
@@ -41,12 +42,14 @@ if (!defined('TL_ABS_PATH')) {
 $ds = DIRECTORY_SEPARATOR;
 $ps = PATH_SEPARATOR;
 
+$p2functions = TL_ABS_PATH . 'lib' . $ds . 'functions' . $ds;
+$p2lib = TL_ABS_PATH . 'lib' . $ds;
 ini_set('include_path', ini_get('include_path') . $ps . '.' . 
-  $ps . TL_ABS_PATH . 'lib' . $ds . 'functions' . $ds  . 
-  $ps . TL_ABS_PATH . 'lib' . $ds . 'project' . $ds  . 
-  $ps . TL_ABS_PATH . 'lib' . $ds . 'issuetrackerintegration' . $ds . 
-  $ps . TL_ABS_PATH . 'lib' . $ds . 'codetrackerintegration' . $ds . 
-  $ps . TL_ABS_PATH . 'lib' . $ds . 'reqmgrsystemintegration' . $ds);
+  $ps . $p2functions  . 
+  $ps . $p2functions . 'oauth_providers' . $ds .   
+  $ps . $p2lib . 'issuetrackerintegration' . $ds . 
+  $ps . $p2lib . 'codetrackerintegration' . $ds . 
+  $ps . $p2lib . 'reqmgrsystemintegration' . $ds);
 
 ini_set('include_path',ini_get('include_path') . 
         $ps . TL_ABS_PATH . 'third_party' . $ds . 
@@ -63,7 +66,7 @@ if ( file_exists($tf) ) {
 }
 
 
-// -----------------------------------------------------------------
+// --------------------------------------------------------------------------------
 /* [GENERAL MAGIC NUMBERS] */
 
 /** PHPMAILER */
@@ -84,9 +87,15 @@ define('OK',    1 );
 define('ERROR',    0 );
 
 /** More Descriptive constant names */
-define('HIGH', 3);
-define('MEDIUM', 2);
-define('LOW',1);
+define('HIGH',    3 );
+define('MEDIUM',   2 );
+define('LOW',     1 );
+
+/** user for notes - see BUGID 0002469: $tlCfg->exec_cfg->expand_collapse 
+  very important do not change values, logic depends on values*/
+define('LAST_USER_CHOICE',2);
+define('COLLAPSE', 0);
+define('EXPAND',1 );
 
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS', 0);
@@ -282,7 +291,7 @@ $tlCfg->locales = array('cs_CZ' => 'Czech','de_DE' => 'German','en_GB' => 'Engli
                         'ru_RU' => 'Russian','zh_CN' => 'Chinese Simplified');
 
 /** 
- * Format of date - see @strftime() in PHP manual
+ * Format of date - see strftime() in PHP manual
  * NOTE: setting according local is done in testlinkInitPage() using setDateTimeFormats()
  */
 /** @var array Localized format of date */
@@ -824,7 +833,7 @@ define('VALID_REQ', 'v');
 // $tlCfg->gui->custom_fields->possible_values_cfg = null;
 
 // Format string follows date() spec - see PHP Manual
-// We can not use $g_timestamp_format, because format strings for date() and @strftime() 
+// We can not use $g_timestamp_format, because format strings for date() and strftime() 
 // uses same LETTER with different meanings (Bad Luck!)
 $tlCfg->gui = new stdClass();
 $tlCfg->gui->custom_fields = new stdClass();
@@ -929,9 +938,26 @@ $tlCfg->results['charts']['dimensions'] =
 // see strings.txt for labels
 // $TLS_testCaseStatus_KEY => $TLS_testCaseStatus_draft
 //  
-$tlCfg->testCaseStatus = array( 'draft' => 1, 'readyForReview' => 2, 
-                                'reviewInProgress' => 3, 'rework' => 4, 
-                                'obsolete' => 5, 'future' => 6, 'final' => 7 );   
+$tlCfg->testCaseStatus = array( 'draft' => 1, 
+                                'readyForReview' => 2, 
+                                'reviewInProgress' => 3, 
+                                'rework' => 4, 
+                                'obsolete' => 5, 
+                                'future' => 6, 
+                                'final' => 7 );   
+
+
+// see strings.txt for labels
+// $TLS_testCaseStatus_hint_KEY => $TLS_testCaseStatus_hint_draft
+//
+$tlCfg->testCaseStatusDisplayHintOnTestDesign = ['draft' => '' /* 'testCaseStatus_hint_draft' */, 
+                                                 'readyForReview' => '', 
+                                                 'reviewInProgress' => '', 
+                                                 'rework' => '', 
+                                                 'obsolete' => 'testCaseStatus_hint_obsolete', 
+                                                 'future' => '', 
+                                                 'final' => '' ];   
+// -----------------------------------------------------------------------------------------
 
 
 /** @uses testcase.class.php */

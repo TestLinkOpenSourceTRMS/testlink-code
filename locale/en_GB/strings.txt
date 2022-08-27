@@ -4038,6 +4038,7 @@ $TLS_on_design = 'On Design';
 $TLS_on_exec = 'On Execution';
 $TLS_note_platform_filter = 'Test Cases are filtered by following platforms';
 $TLS_testers_qty = 'Number of testers';
+$TLS_platform_open_for_exec = 'Open For Execution';
 
 $TLS_search = "Search";
 $TLS_advanced_search = "Advanced search";

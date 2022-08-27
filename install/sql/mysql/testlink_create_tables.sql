@@ -209,11 +209,12 @@ CREATE TABLE /*prefix*/execution_bugs (
 ) DEFAULT CHARSET=utf8;
 
 
+
 CREATE TABLE /*prefix*/testcase_script_links (
   `tcversion_id` int(10) unsigned NOT NULL default '0',
   `project_key` varchar(64) NOT NULL,
   `repository_name` varchar(64) NOT NULL,
-  `code_path` varchar(255) NOT NULL,
+  `code_path` varchar(200) NOT NULL,
   `branch_name` varchar(64) default NULL,
   `commit_id` varchar(40) default NULL,
   PRIMARY KEY  (`tcversion_id`,`project_key`,`repository_name`,`code_path`)
@@ -802,11 +803,11 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   testplan_id int(10) unsigned NOT NULL DEFAULT '0',
   platform_id int(10) unsigned NOT NULL DEFAULT '0',
-  begin_exec_ts timestamp NOT NULL,
-  end_exec_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  being_exec_ts timestamp NOT NULL,
+  end_exec_ts timestamp NOT NULL,
   creation_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY udx1_context (testplan_id,platform_id,creation_ts)
+  UNIQUE KEY udx1 (testplan_id,platform_id,creation_ts)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -819,7 +820,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   qty int(10) unsigned NOT NULL DEFAULT '0',
   total_tc int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY udx1_details (context_id,top_tsuite_id,child_tsuite_id,status)
+  UNIQUE KEY udx1 (context_id,top_tsuite_id,child_tsuite_id,status)
 ) DEFAULT CHARSET=utf8;
 
 

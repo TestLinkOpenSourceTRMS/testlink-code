@@ -10,7 +10,7 @@
  * @since 1.9.20-fixed
  *
 **/
-require_once(TL_ABS_PATH . "/third_party/github-php-api/lib/github-rest-api.php");
+require_once(TL_ABS_PATH . "third_party\github-rest-api\lib\github-rest-api.php");
 class githubrestInterface extends issueTrackerInterface
 {
   private $APIClient;

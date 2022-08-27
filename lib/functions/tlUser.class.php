@@ -5,7 +5,7 @@
  * 
  * @filesource  tlUser.class.php
  * @package     TestLink
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2022, TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -1520,6 +1520,17 @@ class tlUser extends tlDBObject {
     return $this->hasRight($db,$roleQuestion,
                            $cx['tproject_id'],$cx['tplan_id'],
                            $cx['checkPublicPrivateAttr']);
+  }
+
+  /**
+   *
+   */
+  function hasRightOnProj(&$db,$roleQuestion) {
+    $tproj = null;
+    if (isset($_SESSION['testprojectID'])) {
+      $tproj = intval($_SESSION['testprojectID']);
+    }
+    return $this->hasRight($db,$roleQuestion,$tproj);
   }
 
 }

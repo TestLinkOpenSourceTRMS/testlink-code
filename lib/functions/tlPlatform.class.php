@@ -350,7 +350,12 @@ class tlPlatform extends tlObjectWithDB
     $orderBy = $options['orderBy'];
 
     $filterEnableOn = "";
-    $enaSet = array('enable_on_design','enable_on_execution','is_open'); // 20210621
+    $enaSet = [
+      'enable_on_design',
+      'enable_on_execution',
+      'is_open'
+    ];
+    
     foreach ($enaSet as $ena) {
       if (null == $options[$ena]) {
         continue;

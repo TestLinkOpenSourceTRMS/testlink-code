@@ -1,0 +1,171 @@
+Info from https://repo.packagist.org: #StandWithUkraine
+Using version ^5.22 for adodb/adodb-php
+./composer.json has been updated
+Running composer update adodb/adodb-php
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 1 install, 0 updates, 0 removals
+  - Locking adodb/adodb-php (v5.22.2)
+Writing lock file
+Installing dependencies from lock file (including require-dev)
+Package operations: 1 install, 0 updates, 0 removals
+  - Installing adodb/adodb-php (v5.22.2): Extracting archive
+Generating autoload files
+No security vulnerability advisories foundUsing version ^4.2 for smarty/smarty
+./composer.json has been updated
+Running composer update smarty/smarty
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 1 install, 0 updates, 0 removals
+  - Locking smarty/smarty (v4.2.0)
+Writing lock file
+Installing dependencies from lock file (including require-dev)
+Package operations: 1 install, 0 updates, 0 removals
+  - Installing smarty/smarty (v4.2.0): Extracting archive
+Generating autoload files
+No security vulnerability advisories found
+Using version ^6.6 for phpmailer/phpmailer
+./composer.json has been updated
+Running composer update phpmailer/phpmailer
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 1 install, 0 updates, 0 removals
+  - Locking phpmailer/phpmailer (v6.6.4)
+Writing lock file
+Installing dependencies from lock file (including require-dev)
+Package operations: 1 install, 0 updates, 0 removals
+  - Installing phpmailer/phpmailer (v6.6.4): Extracting archive
+5 package suggestions were added by new dependencies, use `composer suggest` to see details.
+Generating autoload files
+1 package you are using is looking for funding.
+Use the `composer fund` command to find out more!
+No security vulnerability advisories found
+Using version ^4.10 for slim/slim
+./composer.json has been updated
+Running composer update slim/slim
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 8 installs, 0 updates, 0 removals
+  - Locking nikic/fast-route (v1.3.0)
+  - Locking psr/container (2.0.2)
+  - Locking psr/http-factory (1.0.1)
+  - Locking psr/http-message (1.0.1)
+  - Locking psr/http-server-handler (1.0.1)
+  - Locking psr/http-server-middleware (1.0.1)
+  - Locking psr/log (3.0.0)
+  - Locking slim/slim (4.10.0)
+Writing lock file
+Installing dependencies from lock file (including require-dev)
+Package operations: 8 installs, 0 updates, 0 removals
+  - Installing psr/log (3.0.0): Extracting archive
+  - Installing psr/http-message (1.0.1): Extracting archive
+  - Installing psr/http-server-handler (1.0.1): Extracting archive
+  - Installing psr/http-server-middleware (1.0.1): Extracting archive
+  - Installing psr/http-factory (1.0.1): Extracting archive
+  - Installing psr/container (2.0.2): Extracting archive
+  - Installing nikic/fast-route (v1.3.0): Extracting archive
+  - Installing slim/slim (4.10.0): Extracting archive
+2 package suggestions were added by new dependencies, use `composer suggest` to see details.
+Generating autoload files
+2 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+No security vulnerability advisories found
+Using version ^2.6 for league/oauth2-client
+./composer.json has been updated
+Running composer update league/oauth2-client
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 8 installs, 0 updates, 0 removals
+  - Locking guzzlehttp/guzzle (7.4.5)
+  - Locking guzzlehttp/promises (1.5.1)
+  - Locking guzzlehttp/psr7 (2.4.0)
+  - Locking league/oauth2-client (2.6.1)
+  - Locking paragonie/random_compat (v9.99.100)
+  - Locking psr/http-client (1.0.1)
+  - Locking ralouphie/getallheaders (3.0.3)
+  - Locking symfony/deprecation-contracts (v3.1.1)
+Writing lock file
+Installing dependencies from lock file (including require-dev)
+Package operations: 8 installs, 0 updates, 0 removals
+  - Installing guzzlehttp/promises (1.5.1): Extracting archive
+  - Installing ralouphie/getallheaders (3.0.3): Extracting archive
+  - Installing guzzlehttp/psr7 (2.4.0): Extracting archive
+  - Installing paragonie/random_compat (v9.99.100): Extracting archive
+  - Installing symfony/deprecation-contracts (v3.1.1): Extracting archive
+  - Installing psr/http-client (1.0.1): Extracting archive
+  - Installing guzzlehttp/guzzle (7.4.5): Extracting archive
+  - Installing league/oauth2-client (2.6.1): Extracting archive
+3 package suggestions were added by new dependencies, use `composer suggest` to see details.
+Generating autoload files
+6 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+No security vulnerability advisories found
+Using version ^3.0 for league/oauth2-github
+./composer.json has been updated
+Running composer update league/oauth2-github
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 1 install, 0 updates, 0 removals
+  - Locking league/oauth2-github (3.0.0)
+Writing lock file
+Installing dependencies from lock file (including require-dev)
+Package operations: 1 install, 0 updates, 0 removals
+  - Installing league/oauth2-github (3.0.0): Extracting archive
+Generating autoload files
+6 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+No security vulnerability advisories found
+Using version ^4.0 for league/oauth2-google
+./composer.json has been updated
+Running composer update league/oauth2-google
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 1 install, 0 updates, 0 removals
+  - Locking league/oauth2-google (4.0.0)
+Writing lock file
+Installing dependencies from lock file (including require-dev)
+Package operations: 1 install, 0 updates, 0 removals
+  - Installing league/oauth2-google (4.0.0): Extracting archive
+Generating autoload files
+6 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+No security vulnerability advisories found
+Using version ^3.4 for omines/oauth2-gitlab
+./composer.json has been updated
+Running composer update omines/oauth2-gitlab
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 1 install, 0 updates, 0 removals
+  - Locking omines/oauth2-gitlab (3.4.0)
+Writing lock file
+Installing dependencies from lock file (including require-dev)
+Package operations: 1 install, 0 updates, 0 removals
+  - Installing omines/oauth2-gitlab (3.4.0): Extracting archive
+1 package suggestions were added by new dependencies, use `composer suggest` to see details.
+Generating autoload files
+6 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+No security vulnerability advisories found
+
+======================================================================
+guzzlehttp/guzzle suggests:
+ - ext-intl: Required for Internationalized Domain Name (IDN) support
+
+guzzlehttp/psr7 suggests:
+ - laminas/laminas-httphandlerrunner: Emit PSR-7 responses
+
+omines/oauth2-gitlab suggests:
+ - m4tthumphrey/php-gitlab-api: For further API usage using the acquired OAuth2 token
+
+paragonie/random_compat suggests:
+ - ext-libsodium: Provides a modern crypto API that can be used to generate random bytes.
+
+phpmailer/phpmailer suggests:
+ - hayageek/oauth2-yahoo: Needed for Yahoo XOAUTH2 authentication
+ - stevenmaguire/oauth2-microsoft: Needed for Microsoft XOAUTH2 authentication
+ - symfony/polyfill-mbstring: To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)
+
+slim/slim suggests:
+ - php-di/php-di: PHP-DI is the recommended container library to be used with Slim
+ - slim/psr7: Slim PSR-7 implementation. See https://www.slimframework.com/docs/v4/start/installation.html for more information.
+

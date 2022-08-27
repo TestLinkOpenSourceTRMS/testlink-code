@@ -1,0 +1,12 @@
+#/c/opt/Bitnami/wampstack-8.1.9-0/php/php ./composer.phar require adodb/adodb-php --no-ansi &>> composer-require-log
+/c/opt/Bitnami/wampstack-8.1.9-0/php/php ./composer.phar require smarty/smarty --no-ansi &>> composer-require-log
+/c/opt/Bitnami/wampstack-8.1.9-0/php/php ./composer.phar require phpmailer/phpmailer --no-ansi &>> composer-require-log
+/c/opt/Bitnami/wampstack-8.1.9-0/php/php ./composer.phar require slim/slim --no-ansi &>> composer-require-log
+/c/opt/Bitnami/wampstack-8.1.9-0/php/php ./composer.phar require league/oauth2-client --no-ansi &>> composer-require-log
+/c/opt/Bitnami/wampstack-8.1.9-0/php/php ./composer.phar require league/oauth2-github --no-ansi &>> composer-require-log
+/c/opt/Bitnami/wampstack-8.1.9-0/php/php ./composer.phar require league/oauth2-google --no-ansi &>> composer-require-log
+/c/opt/Bitnami/wampstack-8.1.9-0/php/php ./composer.phar require omines/oauth2-gitlab --no-ansi &>> composer-require-log
+
+/c/opt/Bitnami/wampstack-8.1.9-0/php/php ./composer.phar suggest --all --no-ansi &>> composer-require-log
+
+

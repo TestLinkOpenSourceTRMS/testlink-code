@@ -1,0 +1,51 @@
+{
+    "name": "omines/oauth2-gitlab",
+    "description": "GitLab OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Niels Keurentjes",
+            "email": "niels.keurentjes@omines.com",
+            "homepage": "https://www.omines.nl/"
+        }
+    ],
+    "keywords": [
+        "oauth",
+        "oauth2",
+        "client",
+        "authorization",
+        "authorisation",
+        "gitlab"
+    ],
+    "require": {
+        "php": ">=7.2",
+        "league/oauth2-client": "^2.4.1"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.0",
+        "guzzlehttp/psr7": "^1.6",
+        "http-interop/http-factory-guzzle": "^1.0",
+        "mockery/mockery": "^1.0",
+        "m4tthumphrey/php-gitlab-api": "^10.0|^11.0",
+        "php-http/guzzle7-adapter": "^0.1",
+        "phpunit/phpunit": "^8.0|^9.0"
+    },
+    "suggest": {
+        "m4tthumphrey/php-gitlab-api": "For further API usage using the acquired OAuth2 token"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omines\\OAuth2\\Client\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Omines\\OAuth2\\Client\\Test\\": "test/src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.x-dev"
+        }
+    }
+}

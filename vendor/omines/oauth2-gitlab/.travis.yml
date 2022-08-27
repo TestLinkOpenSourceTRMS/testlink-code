@@ -1,0 +1,30 @@
+language: php
+
+matrix:
+  include:
+    - php: 7.2
+    - php: 7.3
+    - php: 7.4
+    - php: 8.0
+    - php: 7.2
+      env: COMPOSER_FLAGS="--prefer-lowest"
+  allow_failures:
+    - php: nightly
+
+env:
+  global:
+    - XDEBUG_MODE=coverage
+
+before_script:
+  - travis_retry composer self-update --no-progress
+  - travis_retry composer update --no-interaction --no-progress $COMPOSER_FLAGS
+  - travis_retry phpenv rehash
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "8.0" ]]; then bin/install-infection; fi;
+
+script:
+  - ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "8.0" ]]; then ./infection.phar --min-msi=60 --threads=4; fi;
+
+after_script:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover

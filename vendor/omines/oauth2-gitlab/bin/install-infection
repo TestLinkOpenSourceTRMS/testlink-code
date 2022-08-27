@@ -1,0 +1,8 @@
+#!/bin/sh
+cd $(dirname $0)/..
+
+wget https://github.com/infection/infection/releases/download/0.21.0/infection.phar
+wget https://github.com/infection/infection/releases/download/0.21.0/infection.phar.asc
+gpg --keyserver hkps.pool.sks-keyservers.net --recv-keys 493B4AA0
+gpg --with-fingerprint --verify infection.phar.asc infection.phar
+chmod +x infection.phar

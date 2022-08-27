@@ -1,0 +1,25 @@
+name: Code style
+
+on:
+    pull_request:
+    push:
+        branches: [ master ]
+
+jobs:
+    php-cs-fixer:
+        name: PHP-CodeSniffer
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+
+            - name: Install dependencies
+              run: composer install
+
+            - name: Run script
+              run: composer run check

@@ -1,0 +1,9 @@
+/build
+/log
+/vendor
+.*.cache
+composer.phar
+composer.lock
+infection.json
+infection.phar*
+phpunit.xml

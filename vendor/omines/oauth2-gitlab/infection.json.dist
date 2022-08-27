@@ -1,0 +1,12 @@
+{
+    "timeout": 10,
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "logs": {
+        "text": "log/infection.txt",
+        "perMutator": "log/mutators.md"
+    }
+}

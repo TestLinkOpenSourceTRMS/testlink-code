@@ -19,6 +19,7 @@ ALTER TABLE /*prefix*/users ALTER COLUMN password TYPE VARCHAR(255);
 ALTER TABLE /*prefix*/testplan_platforms ADD COLUMN active INT2 NOT NULL DEFAULT '1';
 ALTER TABLE /*prefix*/platforms ADD COLUMN enable_on_design INT2 NOT NULL DEFAULT '0';
 ALTER TABLE /*prefix*/platforms ADD COLUMN enable_on_execution INT2 NOT NULL DEFAULT '1';
+ALTER TABLE /*prefix*/platforms ADD COLUMN is_open INT2 NOT NULL DEFAULT '1';
 
 --
 -- Table structure for table "testcase_platforms"
@@ -37,12 +38,12 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   "id" BIGSERIAL NOT NULL , 
   "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
   "platform_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/platforms (id) ON DELETE CASCADE,
-  "being_exec_ts" timestamp NOT NULL,
+  "begin_exec_ts" timestamp NOT NULL,
   "end_exec_ts" timestamp NOT NULL,
   "creation_ts" timestamp NOT NULL DEFAULT now(),
   PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX /*prefix*/udx1 ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
+CREATE UNIQUE INDEX /*prefix*/udx1_context ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
 
 
 CREATE TABLE /*prefix*/baseline_l1l2_details (
@@ -55,7 +56,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   "total_tc" INT NOT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ) ;
-CREATE UNIQUE INDEX /*prefix*/udx1 
+CREATE UNIQUE INDEX /*prefix*/udx1_details 
 ON /*prefix*/baseline_l1l2_details ("context_id","top_tsuite_id","child_tsuite_id","status");
 
 

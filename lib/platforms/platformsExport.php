@@ -96,7 +96,7 @@ function initializeGui(&$argsObj) {
 */
 function doExport(&$db,$filename,$tproject_id)
 {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $debugMsg = 'File:' . __FILE__ . ' - Function: ' . __FUNCTION__;
   $tables = tlObjectWithDB::getDBTables(array('platforms'));
   $adodbXML = new ADODB_XML("1.0", "UTF-8");
 

@@ -14,12 +14,13 @@ Purpose: smarty template - View all platforms
 {include file="inc_del_onclick.tpl"}
 {include file="bootstrap.inc.tpl"}
 
+
 {lang_get var='labels'
           s='th_notes,th_platform,th_delete,btn_import,btn_export,
              menu_manage_platforms,alt_delete_platform,warning_delete_platform,
              warning_cannot_delete_platform,delete,
              menu_assign_kw_to_tc,btn_create,
-             on_design,on_exec'}
+             on_design,on_exec,active_click_to_change,inactive_click_to_change,platform_open_for_exec'}
 
 {lang_get s='warning_delete_platform' var="warning_msg" }
 {lang_get s='warning_cannot_delete_platform' var="warning_msg_cannot_del" }
@@ -75,6 +76,7 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
     	  <th>{$tlImages.sort_hint}{$labels.th_notes}</th>
           <th>{$labels.on_design}</th>
           <th>{$labels.on_exec}</th>
+          <th>{$labels.platform_open_for_exec}</th>
     	  {if $gui->canManage != ""}
     		  <th  data-orderable="false" width="10%">{$labels.th_delete}</th>
     	  {/if}
@@ -87,7 +89,7 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
         <td data-qa-column="name">
           <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$oplat.id}</span>
         	{if $gui->canManage != ""}
-        	  <a href="{$managerURL}&doAction=edit&id={$oplat.id}">
+        	  <a href="{$managerURL}&doAction=edit&id={$oplat.id}&tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}">
         	{/if}
         	{$oplat.name|escape}
         	{if $gui->canManage != ""}
@@ -130,6 +132,25 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
                                  src="{$tlImages.off}"/>
             {/if}
         </td>
+        <td class="clickable_icon">
+            {if $oplat.is_open==1} 
+              <input type="image" style="border:none"
+                                   id="closeForExec_{$oplat.id}"
+                                   title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
+                                   onClick = "doAction.value='closeForExec';platform_id.value={$oplat.id};"
+                                   src="{$tlImages.on}"/>
+            {else}
+              <input type="image" style="border:none" 
+                                 id="openForExec_{$oplat.id}"
+                                 title="{$labels.inactive_click_to_change}" alt="{$labels.inactive_click_to_change}" 
+                                 onClick = "doAction.value='openForExec';platform_id.value={$oplat.id};"
+                                 src="{$tlImages.off}"/>
+            {/if}
+        </td>
+
+
+
+
     	  {if $gui->canManage != ""}
     				<td class="clickable_icon">
             	{if $oplat.linked_count eq 0}

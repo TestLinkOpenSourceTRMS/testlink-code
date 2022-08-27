@@ -84,6 +84,19 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   UNIQUE KEY /*prefix*/udx1_details (context_id,top_tsuite_id,child_tsuite_id,status)
 ) DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE /*prefix*/testcase_aliens (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  testproject_id int(10) unsigned NOT NULL default '0',
+  testcase_id int(10) unsigned NOT NULL DEFAULT '0',
+  tcversion_id int(10) NOT NULL,
+  alien_id varchar(64) NOT NULL default '0',
+  PRIMARY KEY (id),
+  UNIQUE KEY /*prefix*/idx01_testcase_aliens (testcase_id,tcversion_id,alien_id),
+  KEY /*prefix*/idx02_testcase_aliens (tcversion_id)
+) DEFAULT CHARSET=utf8;
+
+
 #
 CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan 
 AS SELECT tcversion_id, testplan_id, MAX(id) AS id 

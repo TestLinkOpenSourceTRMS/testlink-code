@@ -52,9 +52,8 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note') {
       case 'link':
         $gui->msg = $l18n["error_wrong_BugID_format"];
         if ($its->checkBugIDSyntax($args->bug_id)) {
-          $bugID = $its->normalizeBugID($args->bug_id);
-          if ($its->checkBugIDExistence($bugID)) {     
-            if (write_execution_bug($db,$args->exec_id, $bugID,$args->tcstep_id)) {
+          if ($its->checkBugIDExistence($args->bug_id)) {     
+            if (write_execution_bug($db,$args->exec_id, $args->bug_id,$args->tcstep_id)) {
               $gui->msg = lang_get("bug_added");
               logAuditEvent(TLS("audit_executionbug_added",$args->bug_id),"CREATE",$args->exec_id,"executions");
 
@@ -81,7 +80,7 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note') {
                     $opt->reporter_email = $opt->reporter;
                   }
 
-                  $its->addNote($bugID,$gui->bug_notes,$opt);
+                  $its->addNote($args->bug_id,$gui->bug_notes,$opt);
                 }
               }  
             }
@@ -239,7 +238,6 @@ function initEnv(&$dbHandler)
   $args->bug_id = trim($args->bug_id);
   switch ($args->user_action) {
     case 'create':
-    case 'link':
       if( $args->bug_id == '' && $args->exec_id > 0) {
         $map = get_execution($dbHandler,$args->exec_id);
         $args->bug_notes = $map[0]['notes'];    
@@ -248,6 +246,7 @@ function initEnv(&$dbHandler)
     
     case 'doCreate':
     case 'add_note':
+    case 'link':
     default:
     break;
   }
@@ -338,6 +337,6 @@ function getDirectLinkToExec(&$dbHandler,$execID)
  * @return boolean return true if the page can be viewed, false if not
  */
 function checkRights(&$db,&$user) {
-	$hasRights = $user->hasRightOnProj($db,"testplan_execute");
+	$hasRights = $user->hasRight($db,"testplan_execute");
 	return $hasRights;
 }

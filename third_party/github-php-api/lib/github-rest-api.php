@@ -1,27 +1,24 @@
 <?php
 /**
- * gitlab PHP API
+ * github PHP API
  *
  * Bare bones implementation, just to cover TestLink needs
  *
- * @author   jlguardi <jlguardi@gmail.com>
- * @created  20170630
- * @link     https://docs.gitlab.com/ee/api/
+ * @author   sebiboga <sebastian.boga@outlook.com>
+ * @created  20220820
+ * @link     https://docs.github.com/en/rest/issues
  *
  * @internal revisions
- * @since 1.9.16
+ * @since 1.9.20
  */
 
-/**
- *
- */
-class gitlab
+class github
 {
   /**
    * Url to site, https://[yoursite].xxxx.com
    * @var string 
    */
-  public $url = '';
+  public $url = 'https://github.com/';
   
   /**
    * @var string 
@@ -32,8 +29,11 @@ class gitlab
    * Project identifier
    * @var string
    */
-  public $projectId = null;
-  
+ // public $projectOwner = null;
+   public $projectOwner = null;
+   
+ // public $projectRepo = null;
+   public $projectRepo = null;
   /**
    * Curl interface with specific settings
    * @var string 
@@ -43,9 +43,9 @@ class gitlab
   public $proxy = null;
   
   /**
-   * Just supports api version 4 by now
+   * Repos
    */
-  public $api = '/api/v4/';
+  public $api = '';
 
   /**
    * Constructor
@@ -53,10 +53,11 @@ class gitlab
    *
    * @return void
    */
-  public function __construct($url, $apiKey, $projectId, $cfg=null) 
+  public function __construct($url, $apiKey, $projectOwner, $projectRepo , $cfg=null) 
   {
+	  
     // if the values are not empty, we'll assign them to our matching properties
-    $args = array('apiKey','url', 'projectId');
+    $args = array('apiKey','url', 'projectOwner', 'projectRepo');
     foreach ($args as $arg) 
     {
       if (!empty($$arg)) 
@@ -85,14 +86,6 @@ class gitlab
       }  
     }  
     
-    //if( is_null($this->$projectId))
-    //{
-    //  throw new Exception("Missing projectId", 1);
-    //}
-    //if( is_null($this->$url) || is_null($this->apiKey))
-    //{
-    //  throw new Exception("Missing url or key", 1);
-    //}
     
     $this->initCurl();
   }
@@ -104,7 +97,7 @@ class gitlab
    */
   public function initCurl($cfg=null) 
   {
-    $agent = "TestLink 1.9.16";
+    $agent = "TestLink 1.9.20";
     try
     {
       $this->curl = curl_init();
@@ -162,18 +155,18 @@ class gitlab
   function getIssueURL($issueID)
   {
     $issue = $this->getIssue($issueID);
-    return is_object($issue) ? $issue->web_url : null;
+  //  return is_object($issue) ? $issue->web_url : null;
+  
+     return is_object($issue) ? $issue->html_url : null;
   }
 
-  /**
-   * 
-   *
-   */
+ 
+ 
   function getIssue($issueID)
   {
     try
-    {
-      $item = $this->_get("/projects/".$this->projectId."/issues/$issueID");    
+    { 
+      $item = $this->_get("/repos/".$this->projectOwner."/".$this->projectRepo."/issues/$issueID");    
       $ret = is_object($item) ? $item : null;
       return $ret;
     }
@@ -183,29 +176,39 @@ class gitlab
     }
   } 
 
-  /**
-   * 
-   *
-   */
+  
   function getIssues($filters=null)
-  {
-    $items = $this->_get("/projects/".$this->projectId."/issues/");
+  {  
+  
+    $items = $this->_get($this->projectOwner."/".$this->projectRepo."/issues");
+	
+	
     return $items;
   } 
 
-  // with the help of http://tspycher.com/2011/03/using-the-redmine-api-with-php/
-  // public function addIssue($summary, $description)
+
   public function addIssue($title, $text)
   {
-    $url = "/projects/".$this->projectId."/issues?title=".urlencode($title)."&description=".urlencode($text);
-    $op = $this->_request_json('POST',$url);
+    $url ="/repos/". $this->projectOwner."/".$this->projectRepo."/issues";
+	$temp = new StdClass();
+	$temp-> title = $title;
+	$temp-> body = $text;
+	$temp-> labels = ["TestLink","bug"];
+	$payload = json_encode($temp);
+	
+    $op = $this->_request_json('POST',$url,$payload);
     return $op;
   }
 
   public function addNote($issueID, $noteText)
   {
-    $url = "/projects/".$this->projectId."/issues/".$issueID."/notes?body=".urlencode($noteText);
-    $op = $this->_request_json('POST',$url);
+    $url ="/repos/". $this->projectOwner."/".$this->projectRepo."/issues/".$issueID."/comments";
+	$temp = new StdClass();
+	$temp-> body = $noteText;
+	$payload = json_encode($temp);
+	
+	
+    $op = $this->_request_json('POST',$url,$payload);
     return $op;
   }
   /**
@@ -213,23 +216,18 @@ class gitlab
    */
   public function getProjects() 
   {                        
-    $items = $this->_get("/projects");
+    $items = $this->_get($this->projectOwner."/repos");
     return $items;
   }                                                   
 
-  /**
-   * @param mixed $id: identifier => string
-   *                   id => int
-   */
-  public function getProjectByIdentity($id) 
-  {                        
-    $item = $this->_get("/projects/{$id}");
-    return $item;
-  }                                                   
 
-  /**
-   *
-   */
+
+  public function getUser() 
+  {                        
+    $items = $this->_get("/user/repos");
+    return $items;
+  }  
+
   public function getIssueStatuses() 
   {                        
     throw new exception(__METHOD__ . " Not implemented");
@@ -249,7 +247,7 @@ class gitlab
    * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
    **/
   protected function _get($url) 
-  {
+  { 
     return $this->_request_json('GET', $url);
   }
 
@@ -262,7 +260,7 @@ class gitlab
   **/
   protected function _request_json($method, $url, $body = NULL, $ignore_status = 0,
                                   $reporter=null) 
-  {
+  { 
     $r = $this->_request($method, $url, $body, $ignore_status,$reporter);
     $response = $r['response'];
     $content = $r['content'];
@@ -276,7 +274,7 @@ class gitlab
   * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
   **/
   protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0,$reporter = null) 
-  {
+  { 
     // this can happens because if I save object on _SESSION PHP is not able to
     // save resources.
     if( !is_resource($this->curl) )
@@ -284,19 +282,22 @@ class gitlab
       $this->initCurl();
     }  
     $url = $this->url . $this->api . $cmd;
-
+	
+ 
     curl_setopt($this->curl, CURLOPT_URL, $url);
 
     if(!isset($this->apiKey) || trim($this->apiKey) == '') 
     {
       throw new exception(__METHOD__ . " Can not work without gitlab apiKey");
     } 
-
+ 
     curl_setopt($this->curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
     curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
   
     $header = array();
-    $header[] = "PRIVATE-TOKEN: {$this->apiKey}";
+	$header[] = "Accept: application/vnd.github+json";
+	$header[] = "Content-type: application/json";
+    $header[] = "Authorization: token {$this->apiKey}";
 
     curl_setopt($this->curl, CURLOPT_HEADER, 0); 
     curl_setopt($this->curl, CURLOPT_HTTPHEADER, $header); 
@@ -304,6 +305,8 @@ class gitlab
     switch ($method) 
     {
       case 'GET':
+	    $header = array();
+		
         curl_setopt($this->curl, CURLOPT_HTTPGET, TRUE);
       break;
     
@@ -343,8 +346,8 @@ class gitlab
       break;
     }
     
-    $content = curl_exec($this->curl);
-    $response = curl_getinfo($this->curl);
+   $content = curl_exec($this->curl);
+   $response = curl_getinfo($this->curl);
     $curlError =  curl_error($this->curl);
     $httpCode = (int)$response['http_code'];
     if ($httpCode != 200 && $httpCode != 201 && $httpCode != $ignoreStatusCode) 

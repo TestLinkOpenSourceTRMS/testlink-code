@@ -2,15 +2,14 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * @filesource  githubrestInterface.class.php
- * @author delcroip <delcroip@gmail:com> 
- * file derived from GITlab integration done by jlguardi <jlguardi@gmail.com> 
+ * @filesource	githubrestInterface.class.php
+ * @author sebiboga <sebastian.boga@outlook.com>
  *
  * @internal revisions
- * @since 1.9.20-fixed
+ * @since 1.9.20
  *
 **/
-require_once(TL_ABS_PATH . "third_party\github-rest-api\lib\github-rest-api.php");
+require_once(TL_ABS_PATH . "/third_party/github-php-api/lib/github-rest-api.php");
 class githubrestInterface extends issueTrackerInterface
 {
   private $APIClient;
@@ -33,18 +32,15 @@ class githubrestInterface extends issueTrackerInterface
     $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 
     $this->defaultResolvedStatus = array();
-    $this->defaultResolvedStatus[] = array('code' => 'open', 'verbose' => 'open');
-    $this->defaultResolvedStatus[] = array('code' => 'closed', 'verbose' => 'closed');
+    $this->defaultResolvedStatus[] = array('code' => 3, 'verbose' => 'resolved');
+    $this->defaultResolvedStatus[] = array('code' => 5, 'verbose' => 'closed');
     
     if( !$this->setCfg($config) )
     {
       return false;
     }  
 
-    // http://www.github.org/issues/6843
-    // "Target version" is the new display name for this property, 
-    // but it's still named fixed_version internally and thus in the API.
-    // $issueXmlObj->addChild('fixed_version_id', (string)2);
+ 
     $this->translate['targetversion'] = 'fixed_version_id';
 
     $this->completeCfg();
@@ -58,13 +54,13 @@ class githubrestInterface extends issueTrackerInterface
    * check for configuration attributes than can be provided on
    * user configuration, but that can be considered standard.
    * If they are MISSING we will use 'these carved on the stone values' 
-   * in order to simplify configuration.
+   * in order	to simplify configuration.
    * 
    *
    **/
   function completeCfg()
   {
-    $base = trim($this->cfg->url,"/") . '/'; // be sure no double // at end
+    $base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
     if( property_exists($this->cfg,'attributes') )
     {
       $attr = get_object_vars($this->cfg->attributes);
@@ -90,8 +86,7 @@ class githubrestInterface extends issueTrackerInterface
     
     // All attributes that I do not consider mandatory 
     // are managed through the issueAdditionalAttributes
-    //
-    // On Redmine 1 seems to be standard for Issues/Bugs
+
     $this->issueDefaults = array('trackerid' => 1); 
     foreach($this->issueDefaults as $prop => $default)
     {
@@ -101,24 +96,19 @@ class githubrestInterface extends issueTrackerInterface
       } 
     }   
     
-  }
-  /**
-   * useful for testing 
-   *
-   *
-   **/
-  function getAPIClient()
-  {
-    return $this->APIClient;
+    if( property_exists($this->cfg,'custom_fields') )
+    {
+      $cf = $this->cfg->custom_fields;
+      $this->cfg->custom_fields = (string)$cf->asXML();
+    }   
   }
 
-  /**
-   * checks id for validity
-   *
-   * @param string issueID
-   *
-   * @return bool returns true if the bugid has the right format, false else
-   **/
+	function getAPIClient()
+	{
+		return $this->APIClient;
+	}
+
+
   function checkBugIDSyntax($issueID)
   {
     return $this->checkBugIDSyntaxNumeric($issueID);
@@ -136,23 +126,27 @@ class githubrestInterface extends issueTrackerInterface
 
     try
     {
-      // CRITIC NOTICE for developers
-      // $this->cfg is a simpleXML Object, then seems very conservative and safe
-      // to cast properties BEFORE using it.
-      $url = (string)trim($this->cfg->url);
-      $user = (string)trim($this->cfg->user);
-      $apiKey = (string)trim($this->cfg->apikey);
-      $repo = (string)trim($this->cfg->repo); //TODO: check integer value
-      $owner = (string)trim($this->cfg->owner); //TODO: check integer value
+  	  // CRITIC NOTICE for developers
+  	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
+  	  // to cast properties BEFORE using it.
+      $redUrl = (string)trim($this->cfg->uribase);
+      $redAK = (string)trim($this->cfg->apikey);
+      $projectOwner = (string)trim($this->cfg->projectowner); //TODO: check integer value
+	  $projectRepo = (string)trim($this->cfg->projectrepo); //TODO: check integer value
       $pxy = new stdClass();
       $pxy->proxy = config_get('proxy');
-      $this->APIClient = new github($url, $user, $apiKey, $owner, $repo, $pxy);
+	 
+      $this->APIClient = new github($redUrl,$redAK,$projectOwner,$projectRepo, $pxy);
 
-      // to undestand if connection is OK, I will ask for projects.
-      // I've tried to ask for users but get always ERROR from github (not able to understand why).
+      // here we test if we can connect to GitHUB using configuration data provided
+	  // curl -i -H "Authorization: token  <PAT>"    https://api.github.com/user/repos
+
+	  
+   
       try
-      {
-        $items = $this->APIClient->getRepo();
+      { 
+	    //you need to have at least one repo for validation of TestLink <-> gitHUB integration
+        $items = $this->APIClient->getUser();
         $this->connected = count($items) > 0 ? true : false;
         unset($items);
       }
@@ -161,22 +155,22 @@ class githubrestInterface extends issueTrackerInterface
         $processCatch = true;
       }
     }
-    catch(Exception $e)
-    {
-      $processCatch = true;
-    }
-    
-    if($processCatch)
-    {
-      $logDetails = '';
-      foreach(array('url', 'user', 'apikey', 'owner', 'repo') as $v)
-      {
-        $logDetails .= "$v={$this->cfg->$v} / "; 
-      }
-      $logDetails = trim($logDetails,'/ ');
-      $this->connected = false;
+  	catch(Exception $e)
+  	{
+  	  $processCatch = true;
+  	}
+  	
+  	if($processCatch)
+  	{
+  		$logDetails = '';
+  		foreach(array('uribase','apikey') as $v)
+  		{
+  			$logDetails .= "$v={$this->cfg->$v} / "; 
+  		}
+  		$logDetails = trim($logDetails,'/ ');
+  		$this->connected = false;
       tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
-    }
+  	}
   }
 
   /**
@@ -219,76 +213,45 @@ class githubrestInterface extends issueTrackerInterface
       {
         $issue = new stdClass();
         $issue->IDHTMLString = "<b>{$issueID} : </b>";
-        $issue->id = $jsonObj->number;
-        $issue->url = $jsonObj->html_url;
         $issue->statusCode = (string)$jsonObj->state;
         $issue->statusVerbose = (string)$jsonObj->state;
         $issue->statusHTMLString = "[$issue->statusVerbose] ";
-        $issue->summaryHTMLString = (string)$jsonObj->title.":</br>".(string)$jsonObj->body; 
-        $issue->summary =  (string)$jsonObj->title.":\n".(string)$jsonObj->body;
-        $Notes = $this->APIClient->getNotes((int)$issueID);
-        if(is_array($Notes) && count($Notes)>0){
-          foreach($Notes as $key => $note){
-            $issue->summaryHTMLString .= "</br>[Note $key]:$note->body";
-            $issue->summary .= "\n[Note $key]: $note->body";
-          }
-        }
-        $issue->isResolved = $this->state == 'closed'; 
+        $issue->summary = $issue->summaryHTMLString = (string)$jsonObj->title;
+        $issue->githubProject = array('name' => (string)$jsonObj->repository_url);
+                                       
+        $issue->isResolved = isset($this->state); 
       }
     }
     catch(Exception $e)
     {
       tLog(__METHOD__ . '/' . $e->getMessage(),'ERROR');
       $issue = null;
-    } 
-    return $issue;    
-  }
+    }	
+    return $issue;		
+	}
 
 
-  /**
-   * Returns status for issueID
-   *
-   * @param string issueID
-   *
-   * @return 
-   **/
-  function getIssueStatusCode($issueID)
-  {
-    $issue = $this->getIssue($issueID);
-    return !is_null($issue) ? $issue->statusCode : false;
-  }
 
-  /**
-   * Returns status in a readable form (HTML context) for the bug with the given id
-   *
-   * @param string issueID
-   * 
-   * @return string 
-   *
-   **/
-  function getIssueStatusVerbose($issueID)
-  {
+	function getIssueStatusCode($issueID)
+	{
+		$issue = $this->getIssue($issueID);
+		return !is_null($issue) ? $issue->statusCode : false;
+	}
+
+
+	function getIssueStatusVerbose($issueID)
+	{
     return $this->getIssueStatusCode($issueID);
-  }
+	}
 
-  /**
-   *
-   * @param string issueID
-   * 
-   * @return string 
-   *
-   **/
-  function getIssueSummaryHTMLString($issueID)
-  {
+
+	function getIssueSummaryHTMLString($issueID)
+	{
     $issue = $this->getIssue($issueID);
     return $issue->summaryHTMLString;
-  }
+	}
 
-  /**
-   * @param string issueID
-   *
-   * @return bool true if issue exists on BTS
-   **/
+
   function checkBugIDExistence($issueID)
   {
     if(($status_ok = $this->checkBugIDSyntax($issueID)))
@@ -308,12 +271,12 @@ class githubrestInterface extends issueTrackerInterface
         throw new Exception("Error creating issue", 1);
       }
       $ret = array('status_ok' => true, 'id' => (string)$op->number, 
-                   'msg' => sprintf(lang_get('github_bug_created'),
-                    $summary, $this->APIClient->repo));
+                   'msg' => sprintf(lang_get('gitlab_bug_created'),
+                    $summary, $this->APIClient->projectrepo));
      }
      catch (Exception $e)
      {
-       $msg = "Create github Ticket FAILURE => " . $e->getMessage();
+       $msg = "Create GITHUB Ticket FAILURE => " . $e->getMessage();
        tLog($msg, 'WARNING');
        $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
      }
@@ -331,7 +294,7 @@ class githubrestInterface extends issueTrackerInterface
       throw new Exception("Error setting note", 1);
     }
     $ret = array('status_ok' => true, 'id' => (string)$op->id, 
-                   'msg' => sprintf(lang_get('github_bug_comment'),$op->body, $this->APIClient->repo));
+                   'msg' => sprintf(lang_get('gitlab_bug_comment'),$op->body, $this->APIClient->projectrepo));
     return $ret;
   }
 
@@ -340,18 +303,16 @@ class githubrestInterface extends issueTrackerInterface
 
   /**
    *
-   * 
-   *    
+   * @author sebastian.boga@outlook.com>
    **/
   public static function getCfgTemplate()
   {
-    $tpl = "<!-- Template " . __CLASS__ . " -->\n" .
+    $tpl = "<!-- Template  -->\n" .
            "<issuetracker>\n" .
-           "<user>github user</user>\n" .
-           "<apikey>github TOKEN</apikey>\n" .
-           "<url>https://api.github.com</url>\n" .
-           "<owner>GitHub Org or User</owner>\n" .
-           "<repo>github REPOSITORY</repo>\n" .
+           "<apikey>GITHUB PERSONAL TOKEN</apikey>\n" .
+           "<uribase>https://api.github.com</uribase>\n" .
+           "<projectowner>GITHUB USER</projectowner>\n" .
+		   "<projectrepo>REPO</projectrepo>\n" .
            "</issuetracker>\n";
     return $tpl;
   }

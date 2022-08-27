@@ -41,10 +41,13 @@ function init_args() {
 	return $args;
 }
 
+
+
 /**
  * 
  *
  */
 function checkRights(&$db,&$user) {
-	return ($user->hasRight($db,'platform_management') || $user->hasRight($db,'platform_view'));
+	return ($user->hasRightOnProj($db,'platform_management') || 
+          $user->hasRightOnProj($db,'platform_view'));
 }

@@ -102,7 +102,6 @@ class jiradbInterface extends issueTrackerInterface
     // ATTENTION:
     // Field names on Jira tables seems to be sometimes on CAPITALS
     // TICKET 6028: Integration with Jira 6.1 broken. - Due to JIRA schema changes
-    \Kint::dump($this->dbConnection);
     if(intval($this->cfg->majorVersionNumber) >= 6)
     {  
       $dummy = explode("-",$issueID);

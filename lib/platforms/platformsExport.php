@@ -7,7 +7,7 @@
  *
  * @package   TestLink
  * @author    Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2020, TestLink community 
+ * @copyright   2005-2022, TestLink community 
  * @filesource  platformsExport.php
  * @link    http://www.testlink.org
  * @uses    config.inc.php
@@ -101,8 +101,7 @@ function doExport(&$db,$filename,$tproject_id)
   $adodbXML = new ADODB_XML("1.0", "UTF-8");
 
   $sql = "/* $debugMsg */ 
-          SELECT name,notes,enable_on_design,
-          enable_on_execution 
+          SELECT name,notes,enable_on_design,enable_on_execution,is_open 
           FROM {$tables['platforms']} PLAT 
           WHERE PLAT.testproject_id=" . intval($tproject_id);
   

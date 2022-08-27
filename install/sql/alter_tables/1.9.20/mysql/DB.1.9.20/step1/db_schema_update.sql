@@ -24,6 +24,7 @@ ALTER TABLE /*prefix*/users MODIFY password VARCHAR(255) NOT NULL default '';
 ALTER TABLE /*prefix*/testplan_platforms ADD COLUMN active tinyint(1) NOT NULL default '1';
 ALTER TABLE /*prefix*/platforms ADD COLUMN  enable_on_design tinyint(1) NOT NULL default '0';
 ALTER TABLE /*prefix*/platforms ADD COLUMN  enable_on_execution tinyint(1) NOT NULL default '1';
+ALTER TABLE /*prefix*/platforms ADD COLUMN  is_open tinyint(1) NOT NULL default '1';
 
 --
 ALTER TABLE /*prefix*/nodes_hierarchy ADD INDEX /*prefix*/nodes_hierarchy_node_type_id (node_type_id);
@@ -63,11 +64,11 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   testplan_id int(10) unsigned NOT NULL DEFAULT '0',
   platform_id int(10) unsigned NOT NULL DEFAULT '0',
-  being_exec_ts timestamp NOT NULL,
-  end_exec_ts timestamp NOT NULL,
+  begin_exec_ts timestamp NOT NULL,
+  end_exec_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   creation_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY udx1 (testplan_id,platform_id,creation_ts)
+  UNIQUE KEY /*prefix*/udx1_details (testplan_id,platform_id,creation_ts)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -80,7 +81,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   qty int(10) unsigned NOT NULL DEFAULT '0',
   total_tc int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY udx1 (context_id,top_tsuite_id,child_tsuite_id,status)
+  UNIQUE KEY /*prefix*/udx1_details (context_id,top_tsuite_id,child_tsuite_id,status)
 ) DEFAULT CHARSET=utf8;
 
 #

@@ -1,10 +1,4 @@
-# IMPORTANT NOTICE
-1.9.20 will be the last version of the 1.9.x family.  
-Next TestLink version will 2.x with a new UX based on the Dashio - Bootstrap Admin Template (https://templatemag.com/dashio-bootstrap-admin-template/)
-
-
-
-# TestLink 1.9.20 Raijin - Read me
+# TestLink 2.0.0  - Read me
 
 ## Contents
  1. [Introduction](#1-introduction)
@@ -71,7 +65,11 @@ has been done and what still needs to be done.
 
 ## 2. Release notes / CRITICAL Configuration Notes
 
-This release contains bugfixes and enhancement for 1.9.19
+This release iS a MAJOR Release contains bugfixes and enhancement for 1.9.20
+The UX based on the Dashio - Bootstrap Admin Template 
+(https://templatemag.com/dashio-bootstrap-admin-template/)
+This template uses bootstrap v3.3.7
+
 See CHANGELOG file for detailed list of issues fixed.
 
 Give a look also to:

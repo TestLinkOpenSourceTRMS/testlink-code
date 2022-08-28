@@ -7,38 +7,41 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
+{* Here head tag will be opened *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
+  {include file="inc_del_onclick.tpl"}
 
-{lang_get var='labels'
-          s='th_notes,th_keyword,th_delete,btn_import,btn_export,
-             menu_assign_kw_to_tc,btn_create_keyword,
-             menu_manage_keywords,alt_delete_keyword,tcvqty_with_kw'}
+  {lang_get var='labels'
+            s='th_notes,th_keyword,th_delete,btn_import,btn_export,
+              menu_assign_kw_to_tc,btn_create_keyword,
+              menu_manage_keywords,alt_delete_keyword,tcvqty_with_kw'}
 
-{lang_get s='warning_delete_keyword' var="warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
+  {lang_get s='warning_delete_keyword' var="warning_msg" }
+  {lang_get s='delete' var="del_msgbox_title" }
 
-<script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
-                 '?tproject_id={$gui->tproject_id}&doAction=do_delete'+
-                 '&openByOther={$gui->openByOther}&id=';
-</script>
+  <script type="text/javascript">
+  /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+  var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
+                  '?tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}' + 
+                  '&doAction=do_delete'+
+                  '&openByOther={$gui->openByOther}&id=';
+  </script>
 
-{if $gui->bodyOnLoad != ''}
-  <script language="JavaScript">
-  var {$gui->dialogName} = new std_dialog();
-  </script>  
-{/if}
+  {if $gui->bodyOnLoad != ''}
+    <script language="JavaScript">
+    var {$gui->dialogName} = new std_dialog();
+    </script>
+  {/if}
 
 
-{include file="bootstrap.inc.tpl"} 
-{$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
-                                   DataTableslengthMenu=$ll}
+  {include file="bootstrap.inc.tpl"} 
+  {$ll = #pagination_length#}
+  {* Do not initialize in DataTables -> DataTablesSelector="" *}
+  {include file="DataTables.inc.tpl" DataTablesSelector="" DataTableslengthMenu=$ll}
+  {include file="DataTablesColumnFiltering.inc.tpl"}
 </head>
-<body onLoad="{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}"
-      class="testlink">
+
+<body onLoad="{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}" class="testlink">
 {include file="aside.tpl"}
 <div id="main-content">
 <h1 class="{#TITLE_CLASS#}">{$labels.menu_manage_keywords}</h1>
@@ -48,8 +51,8 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
   <table class="{#item_view_table#}" id="item_view">
     <thead class="{#item_view_thead#}">
       <tr>
-        <th width="30%">{$labels.th_keyword}</th>
-        <th>{$labels.th_notes}</th>
+        <th data-draw-filter="smartsearch" width="30%">{$labels.th_keyword}</th>
+        <th data-draw-filter="smartsearch">{$labels.th_notes}</th>
         {if $gui->canManage != ""}
           <th data-orderable="false" style="min-width:70px">{$labels.th_delete}</th>
         {/if}
@@ -62,7 +65,7 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
     <tr>
       <td>
         {if $gui->canManage != ""}
-          <a href="{$gui->editUrl}&doAction=edit&id={$gui->keywords[kwx]->dbID}&openByOther={$gui->openByOther}">
+          <a href="{$gui->editUrl}&tplan_id={$gui->tplan_id}&doAction=edit&id={$gui->keywords[kwx]->dbID}&openByOther={$gui->openByOther}">
         {/if}
         {$gui->keywords[kwx]->name|escape}
 
@@ -129,14 +132,14 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
       <input class="{#BUTTON_CLASS#}" type="button" 
              name="do_import" id="do_import" 
              value="{$labels.btn_import}" 
-             onclick="location='{$basehref}/lib/keywords/keywordsImport.php?tproject_id={$gui->tproject_id}'" />
+             onclick="location='{$basehref}/lib/keywords/keywordsImport.php?tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}'" />
     {/if}
   
       {if $gui->keywords != ''}
       <input class="{#BUTTON_CLASS#}" type="button" 
         name="do_export" id="do_import" 
         value="{$labels.btn_export}" 
-        onclick="location='{$basehref}/lib/keywords/keywordsExport.php?doAction=export&tproject_id={$gui->tproject_id}'" />
+        onclick="location='{$basehref}/lib/keywords/keywordsExport.php?doAction=export&tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}'" />
       {/if}
       </form>
   </div>

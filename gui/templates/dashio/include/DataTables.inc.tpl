@@ -36,12 +36,20 @@ Purpose: smarty template
 <script type="text/javascript" 
   src="{$basehref}third_party/DataTables.mjhasbach/dataTables.conditionalPaging.js"></script>
 
-<script type="text/javascript" language="javascript" class="init">
-$(document).ready(function() {
-  $('{$DataTablesSelector}').DataTable(
-    { "lengthMenu": [ {$DataTableslengthMenu} ],
-      "stateSave": true, 
-      "conditionalPaging": true
-    });
-} );
-</script>
+
+{if $DataTablesSelector != ''}
+  {* 
+    To avoid issues due to do initialization multiple times 
+    See projectView.tpl.
+  *}
+
+  <script type="text/javascript" language="javascript" class="init">
+  $(document).ready(function() {
+    $('{$DataTablesSelector}').DataTable(
+      { "lengthMenu": [ {$DataTableslengthMenu} ],
+        "stateSave": true, 
+        "conditionalPaging": true
+      });
+  } );
+  </script>
+{/if}  

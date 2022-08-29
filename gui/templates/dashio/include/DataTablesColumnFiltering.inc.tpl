@@ -1,6 +1,7 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource DataTablesColumnFiltering.inc.tpl
+@parameters DataTablesSelector,DataTableslengthMenu
 
 @see https://datatables.net/extensions/fixedheader/examples/options/columnFiltering.html
 
@@ -13,10 +14,10 @@ $(document).ready(function() {
 
     // 20210530 
     // stateSave: true produces weird behaivour when using filter on individual columns
-    var pimpedTable = $('#item_view').DataTable( {
+    var pimpedTable = $('{$DataTablesSelector}').DataTable( {
         orderCellsTop: true,
         fixedHeader: true,
-        lengthMenu: [{$menuLen}],
+        lengthMenu: [{$DataTableslengthMenu}],
         stateSave: true,
 
         // https://datatables.net/reference/option/dom
@@ -28,8 +29,8 @@ $(document).ready(function() {
     // Setup - add a text input to each footer cell
     // Clone & append the whole header row
     // clone(false) -> is the solution to avoid sort action when clicking
-    $('#item_view thead tr').clone(false).prop("id","column_filters").appendTo( '#item_view thead' );
-    $('#item_view thead tr:eq(1) th').each( function (idx) {
+    $('{$DataTablesSelector} thead tr').clone(false).prop("id","column_filters").appendTo( '{$DataTablesSelector} thead' );
+    $('{$DataTablesSelector} thead tr:eq(1) th').each( function (idx) {
         if (typeof  $(this).data('draw-filter') != 'undefined') {
           var title = '';
           var dst = $(this).data('draw-filter');

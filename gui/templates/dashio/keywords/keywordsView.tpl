@@ -38,7 +38,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   {$ll = #pagination_length#}
   {* Do not initialize in DataTables -> DataTablesSelector="" *}
   {include file="DataTables.inc.tpl" DataTablesSelector="" DataTableslengthMenu=$ll}
-  {include file="DataTablesColumnFiltering.inc.tpl"}
+  {include file="DataTablesColumnFiltering.inc.tpl" DataTablesSelector="#item_view" DataTableslengthMenu=$ll}
 </head>
 
 <body onLoad="{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}" class="testlink">

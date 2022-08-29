@@ -9,6 +9,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
 <script>
 $(document).ready(function() {
+
+
+    // 20210530 
+    // stateSave: true produces weird behaivour when using filter on individual columns
     var pimpedTable = $('#item_view').DataTable( {
         orderCellsTop: true,
         fixedHeader: true,
@@ -50,6 +54,9 @@ $(document).ready(function() {
           }
           // -------------------------------------------------------------------------------- 
           $(this).html(html.replace('%dst%',dst).replace('%title%',title).replace('%value%',value));
+
+          // Remove class from cloned <th>, to remove sort icons!!
+          $(this).removeClass(['sorting','sorting_desc','sorting_asc']);
 
           $( 'input', this ).on( 'keyup change', function () {
               var use_regexp = false;

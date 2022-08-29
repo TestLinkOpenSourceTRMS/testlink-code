@@ -33,10 +33,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     </script>
   {/if}
 
-
   {include file="bootstrap.inc.tpl"} 
-  {$ll = #pagination_length#}
+
   {* Do not initialize in DataTables -> DataTablesSelector="" *}
+  {$ll = $tlCfg->gui->{$cfg_section}->pagination->length}
   {include file="DataTables.inc.tpl" DataTablesSelector="" DataTableslengthMenu=$ll}
   {include file="DataTablesColumnFiltering.inc.tpl" DataTablesSelector="#item_view" DataTableslengthMenu=$ll}
 </head>

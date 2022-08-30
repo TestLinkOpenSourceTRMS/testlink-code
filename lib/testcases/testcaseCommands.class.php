@@ -168,8 +168,10 @@ class testcaseCommands {
       die("Error Processing Request:" . __METHOD__);
     }
 
-    $greenCard = array('tcase_id' => $argsObj->tcase_id, 
-                       'tcversion_id' => $argsObj->tcversion_id);
+    $greenCard = [
+      'tcase_id' => $argsObj->tcase_id, 
+      'tcversion_id' => $argsObj->tcversion_id
+    ];
     
     if( $my['opt']['accessByStepID'] ) {  
       foreach($greenCard as $ky) {
@@ -181,10 +183,12 @@ class testcaseCommands {
       }
     }
 
-    $gopt = array('output' => 'full_without_steps',
-                  'renderGhost' => true,
-                  'renderImageInline' => true,
-                  'renderVariables' => true); 
+    $gopt = [
+      'output' => 'full_without_steps',
+      'renderGhost' => true,
+      'renderImageInline' => true,
+      'renderVariables' => true
+    ]; 
 
     $tcaseInfo = $this->tcaseMgr->get_by_id($greenCard['tcase_id'],$greenCard['tcversion_id'],null,$gopt);
 

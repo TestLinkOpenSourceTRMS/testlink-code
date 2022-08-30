@@ -6,7 +6,7 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2020, TestLink community
+ * @copyright   2005-2022, TestLink community
  * @link        http://www.testlink.org/
  *
  */
@@ -5390,8 +5390,7 @@ class testcase extends tlObjectWithAttachments {
       $tproject_id = intval($context->tproject_id);
     }
 
-    list($external_id,$prefix,$glue,$tc_number) = 
-      $this->getExternalID($id,$tproject_id);
+    list($external_id,$prefix,$glue,$tc_number) = $this->getExternalID($id,$tproject_id);
 
     $dl = $base_href . 'linkto.php?tprojectPrefix=' 
                      . urlencode($prefix) 
@@ -5408,22 +5407,25 @@ class testcase extends tlObjectWithAttachments {
   {
     static $root;
     static $tcase_prefix;
-
-    if( is_null($prefix) )
-    {
-      if( is_null($root) ||  ($root != $tproject_id) )
-      {
+    
+    // we need to block the caller
+    /*if ($id == 0) {
+      echo '<pre>';debug_print_backtrace(); echo '</pre>';
+      die();
+      return [];
+    }*/
+  
+    $tcase_prefix = $prefix;
+    if( is_null($prefix) ) {
+      if( is_null($root) ||  ($root != $tproject_id) ) {
         list($tcase_prefix,$root) = $this->getPrefix($id,$tproject_id);
       }
     }
-    else
-    {
-      $tcase_prefix = $prefix;
-    }
-    $info = $this->get_last_version_info($id, array('output' => 'minimun'));
+
+    $info = $this->get_last_version_info($id, ['output' => 'minimun']);
     $external = $info['tc_external_id'];
     $identity = $tcase_prefix . $this->cfg->testcase->glue_character . $external;
-    return array($identity,$tcase_prefix,$this->cfg->testcase->glue_character,$external);
+    return [$identity,$tcase_prefix,$this->cfg->testcase->glue_character,$external];
   }
 
 

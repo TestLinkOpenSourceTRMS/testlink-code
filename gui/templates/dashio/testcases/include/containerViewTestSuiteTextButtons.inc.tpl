@@ -106,7 +106,7 @@
           <button style="border:0;" name="create_tc" id="create_tc"
              onclick="doAction.value='create'">
             <i class="fas fa-plus-circle" 
-               title="{$labels.labels.btn_new_tc}"></i>
+               title="{$labels.btn_new_tc}"></i>
           </button>
         </form>
 
@@ -136,7 +136,7 @@
             id="delete_testcases"
             onclick="doAction.value='delete_testcases'">
             <i class="fas fa-times-circle" 
-               title="{$labels.delete_testcases}"></i>
+               title="{$labels.btn_delete_testcases}"></i>
           </button>
 
           <button style="border:0;" name="reorder_testcases" 

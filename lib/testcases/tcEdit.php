@@ -8,7 +8,7 @@
  * @filesource  tcEdit.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2022, TestLink community 
  * @link        http://www.testlink.org/
  *
  *
@@ -329,22 +329,31 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
                'platform_id');
 
   foreach ($k2z as $zz) {
-    $args->$zz = isset($_REQUEST[$zz]) 
-                       ? intval($_REQUEST[$zz]) : 0;
+    $args->$zz = isset($_REQUEST[$zz]) ? intval($_REQUEST[$zz]) : 0;
   }
+
+  $args->basehref = $_SESSION['basehref'];
 
   // Compatibility
   $args->container_id = $args->containerID;
 
-  $e2n = array('step_set','tcaseSteps');
+  $e2n = [
+    'step_set',
+    'tcaseSteps'
+  ];
   foreach ($e2n as $kiki) {
     $args->$kiki = isset($_REQUEST[$kiki]) 
                    ? $_REQUEST[$kiki] : null;
   }  
 
   // Normally Rich Web Editors
-  $ek = array('summary','preconditions',
-              'steps','expected_results');
+  $ek = [
+    'summary',
+    'preconditions',
+    'steps',
+    'expected_results'
+  ];
+  
   foreach ($ek as $kiki) {
     $args->$kiki = isset($_REQUEST[$kiki]) 
                      ? $_REQUEST[$kiki] : null;
@@ -365,38 +374,29 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) 
                         ? intval($_REQUEST['tcversion_id']) : 0;
 
-  if( $args->tcversion_id == 0 
-      && $args->tcase_id > 0 ) {
+  if( $args->tcversion_id == 0 && $args->tcase_id > 0 ) {
     // get latest active version
     $nu = key($tcaseMgr->get_last_active_version($args->tcase_id));
   }
 
-  $args->name = isset($_REQUEST['testcase_name']) 
-                ? $_REQUEST['testcase_name'] : null;
-
-  $args->exec_type = isset($_REQUEST['exec_type']) 
-                     ? $_REQUEST['exec_type'] 
-                     : $cfgObj->exec_type['manual'];
-
-  $args->importance = isset($_REQUEST['importance']) 
-                      ? $_REQUEST['importance'] 
-                      : $cfgObj->importance_default;
-  
-  $args->status = isset($_REQUEST['status']) 
-                  ? $_REQUEST['status'] : 1; // sorry for the magic
+  $args->name = isset($_REQUEST['testcase_name']) ? $_REQUEST['testcase_name'] : null;
+  $args->exec_type = isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : $cfgObj->exec_type['manual'];
+  $args->importance = isset($_REQUEST['importance']) ? $_REQUEST['importance'] : $cfgObj->importance_default;
+  $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : '';  
+  $args->status = isset($_REQUEST['status']) ? $_REQUEST['status'] : 1; // sorry for the magic
 
   $dk = 'estimated_execution_duration';
   $args->$dk = trim(isset($_REQUEST[$dk]) ? $_REQUEST[$dk] : '');
   $args->estimatedExecDuration = $args->$dk;
 
-  $args->doAction = isset($_REQUEST['doAction']) 
-                    ? $_REQUEST['doAction'] : '';
 
-  $key2loop = array('edit_tc' => 'edit', 
-                    'delete_tc' => 'delete',
-                    'do_delete' => 'doDelete',
-                    'create_tc' => 'create',
-                    'do_create' => 'doCreate');
+  $key2loop = [
+    'edit_tc' => 'edit', 
+    'delete_tc' => 'delete',
+    'do_delete' => 'doDelete',
+    'create_tc' => 'create',
+    'do_create' => 'doCreate'
+  ];
   foreach($key2loop as $key => $action) {
     if( isset($_REQUEST[$key]) ) {
       $args->doAction = $action;
@@ -416,17 +416,14 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
     $args->$key = isset($_REQUEST[$key]) ? 1 : 0;
   }
 
-  $args->do_activate_this = 
-    isset($_REQUEST['activate_this_tcversion']) ? 1 : 0;
-  $args->do_deactivate_this = 
-    isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
+  $args->do_activate_this = isset($_REQUEST['activate_this_tcversion']) ? 1 : 0;
+  $args->do_deactivate_this = isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
   $args->activeAttr = 0;
   if( $args->do_activate_this ) {
     $args->activeAttr = 1;
   }
 
-  $args->target_position = isset($_REQUEST['target_position']) 
-                           ? $_REQUEST['target_position'] : 'bottom';
+  $args->target_position = isset($_REQUEST['target_position']) ? $_REQUEST['target_position'] : 'bottom';
     
   $key2loop = array("keyword_assignments","requirement_assignments");
   foreach($key2loop as $key) {

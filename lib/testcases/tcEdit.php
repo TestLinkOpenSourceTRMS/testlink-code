@@ -646,7 +646,10 @@ function getGrants(&$dbHandler) {
  *
  */
 function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
-  $guiObj = new stdClass();
+  
+  
+  list($add2args,$guiObj) = initUserEnv($dbHandler,$argsObj);
+
   $guiObj->uploadOp = null;
   $guiObj->tplan_id = $argsObj->tplan_id;
   $guiObj->tproject_id = $argsObj->tproject_id;
@@ -664,7 +667,12 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
   $guiObj->btn_reorder_testcases = lang_get('btn_reorder_testcases_externalid');
   $guiObj->import_limit = TL_REPOSITORY_MAXFILESIZE;
   $guiObj->msg = '';
+  $guiObj->domainTCStatus = $argsObj->tcStatusCfg['code_label'];
+  $guiObj->fileUploadURL = $_SESSION['basehref'] . $tcaseMgr->getFileUploadRelativeURL($argsObj);
+  $guiObj->codeTrackerEnabled = $tprojMgr->isCodeTrackerEnabled($guiObj->tproject_id);
 
+
+  // TODO remove???
   $guiObj->loadOnCancelURL = 
     $_SESSION['basehref'] . 
     "/lib/testcases/archiveData.php?edit=testcase&id=" . 
@@ -672,8 +680,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
     "&tproject_id=" . $argsObj->tproject_id .
     "&show_mode={$argsObj->show_mode}";
   
-  $guiObj->fileUploadURL = $_SESSION['basehref'] . 
-    $tcaseMgr->getFileUploadRelativeURL($argsObj);
+
 
   if($argsObj->containerID > 0) {
     $pnode_info = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->containerID);
@@ -687,7 +694,6 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
     $guiObj->direct_link = $tcaseMgr->buildDirectWebLink($argsObj);
   }
   
-  $guiObj->domainTCStatus = $argsObj->tcStatusCfg['code_label'];
   
   $grant2check = [
     'mgt_modify_tc',
@@ -704,8 +710,6 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
     $guiObj->$right = $guiObj->grants->$right = $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id);
   }
 
-  $guiObj->codeTrackerEnabled = 
-    $tprojMgr->isCodeTrackerEnabled($guiObj->tproject_id);
 
   return $guiObj;
 }

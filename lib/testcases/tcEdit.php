@@ -682,15 +682,23 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
     $guiObj->parent_info['description'] = lang_get($node_descr[$pnode_info['node_type_id']]);
   }
   
-  $guiObj->direct_link = $tcaseMgr->buildDirectWebLink($argsObj);
+  $guiObj->direct_link = '';
+  if (property_exists($argsObj,'id') && $argsObj->id > 0) {
+    $guiObj->direct_link = $tcaseMgr->buildDirectWebLink($argsObj);
+  }
+  
   $guiObj->domainTCStatus = $argsObj->tcStatusCfg['code_label'];
   
-  $grant2check = array('mgt_modify_tc','mgt_view_req',
-                       'testplan_planning',
-                       'mgt_modify_product','keyword_assignment',
-                       'req_tcase_link_management',
-                       'testproject_edit_executed_testcases',
-                       'testproject_delete_executed_testcases');
+  $grant2check = [
+    'mgt_modify_tc',
+    'mgt_view_req',
+    'testplan_planning',
+    'mgt_modify_product',
+    'keyword_assignment',
+    'req_tcase_link_management',
+    'testproject_edit_executed_testcases',
+    'testproject_delete_executed_testcases'
+  ];
   $guiObj->grants = new stdClass();
   foreach($grant2check as $right) {
     $guiObj->$right = $guiObj->grants->$right = $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id);

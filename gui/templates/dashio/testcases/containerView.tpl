@@ -189,7 +189,7 @@ function jsCallDeleteFile(btn, text, o_id)
 {elseif $gui->level == 'testsuite'}
 
   {if $gui->modify_tc_rights == 'yes' || $gui->sqlResult neq ''}
-     {include file="containerViewTestSuiteTextButtons.inc.tpl"} 
+     {include file="containerViewTestSuiteTextButtons.inc.tpl" labels=$labels} 
   {/if}
   
   {* ----- show Test Suite data ----------------------------- *}

@@ -438,6 +438,19 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
     
   $args->opt_requirements = null;
   $args->tprojOpt = $tprojMgr->getOptions($args->tproject_id);
+
+  /*
+  object(stdClass)#263 (4) {
+  ["requirementsEnabled"]=>
+  int(1)
+  ["testPriorityEnabled"]=>
+  int(1)
+  ["automationEnabled"]=>
+  int(1)
+  ["inventoryEnabled"]=>
+  int(0)
+  }
+  */
   $args->opt_requirements = $args->tprojOpt->requirementsEnabled;
   $args->requirementsEnabled = $args->tprojOpt->requirementsEnabled;
 
@@ -489,8 +502,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   $args->destination_tcase_id = $args->dummy['id'];
 
 
-  $args->keyword_id = isset($_GET['keyword_id']) 
-                      ? intval($_GET['keyword_id']) : 0;
+  $args->keyword_id = isset($_GET['keyword_id']) ? intval($_GET['keyword_id']) : 0;
 
   $l2c = array('tckw_','tcplat_','tcalien_');
   foreach ($l2c as $lk) {

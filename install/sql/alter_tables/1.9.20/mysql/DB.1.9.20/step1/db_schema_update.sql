@@ -91,11 +91,11 @@ CREATE TABLE /*prefix*/testcase_aliens (
   testcase_id int(10) unsigned NOT NULL DEFAULT '0',
   tcversion_id int(10) NOT NULL,
   alien_id varchar(64) NOT NULL default '0',
+  relation_type int(10) NOT NULL DEFAULT '1',
   PRIMARY KEY (id),
   UNIQUE KEY /*prefix*/idx01_testcase_aliens (testproject_id,testcase_id,tcversion_id,alien_id),
   KEY /*prefix*/idx02_testcase_aliens (tcversion_id)
 ) DEFAULT CHARSET=utf8;
-
 
 #
 CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan 

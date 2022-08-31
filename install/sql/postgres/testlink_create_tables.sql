@@ -924,6 +924,7 @@ CREATE TABLE /*prefix*/testcase_aliens (
   "testcase_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id),
   "alien_id" VARCHAR(64) NOT NULL DEFAULT '0',
+  "relation_type" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX /*prefix*/idx01_testcase_aliens ON /*prefix*/testcase_aliens ("testproject_id","testcase_id","tcversion_id","alien_id");

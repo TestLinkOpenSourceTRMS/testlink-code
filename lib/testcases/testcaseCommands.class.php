@@ -8,7 +8,7 @@
  * @filesource  testcaseCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2022, TestLink community 
  * @link        http://www.testlink.org/
  *
  **/
@@ -320,8 +320,8 @@ class testcaseCommands {
       }
       else {
         // we will not return to caller
-        $argsObj->tcase_id = $tcase['id'];
-        $argsObj->tcversion_id = $tcase['tcversion_id'];
+        $argsObj->tcase_id = intval($tcase['id']);
+        $argsObj->tcversion_id = intval($tcase['tcversion_id']);
         
         // BAD Choice Custom fields are written to db on $this->show()
         $this->show($argsObj,$request, array('status_ok' => 1));
@@ -1178,8 +1178,10 @@ class testcaseCommands {
   function show(&$argsObj,$request,$userFeedback,$opt=null) {
     $smartyObj = new TLSmarty();
 
-    $options = array('updateCFOnDB' => true, 
-                     'updateTPlanLinkToTCV' => false);
+    $options = [
+      'updateCFOnDB' => true, 
+      'updateTPlanLinkToTCV' => false
+    ];
     $options = array_merge($options,(array)$opt);
 
     $updateCFOnDB = $options['updateCFOnDB'];
@@ -1196,10 +1198,11 @@ class testcaseCommands {
     $guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
     $guiObj->user_feedback = '';
     
-    $guiObj->direct_link = 
-      $this->tcaseMgr->buildDirectWebLink($_SESSION['basehref'],
-                                          $argsObj->tcase_id,
-                                          $argsObj->testproject_id);
+    $webLinkContext = new stdClass();
+    $webLinkContext->basehref = $_SESSION['basehref'];
+    $webLinkContext->id = $argsObj->tcase_id;
+    $webLinkContext->tproject_id =  $argsObj->testproject_id;
+    $guiObj->direct_link = $this->tcaseMgr->buildDirectWebLink($webLinkContext);
 
     if($userFeedback['status_ok']) {
       if( $options['updateTPlanLinkToTCV'] ) {
@@ -1471,9 +1474,10 @@ class testcaseCommands {
         $argsObj->itsCfg = $it_mgr->getLinkedTo($this->tproject_id);
         $its = $it_mgr->getInterfaceObject($this->tproject_id);
         if( method_exists($its,'addNote') ) {
-          $dl = sprintf(lang_get('dlToTCSpecPVCode'), $tcExternalID)  .
-          ' ' . lang_get('dlToTCSpecPV') . ' ' 
-                . $this->tcaseMgr->buildDirectWebLink($argsObj);
+          $dl = sprintf(lang_get('dlToTCSpecPVCode'), 
+                        $tcExternalID)  . ' ' . 
+                          lang_get('dlToTCSpecPV') . ' ' . 
+                          $this->tcaseMgr->buildDirectWebLink($argsObj);
 
           // Get keyword for human beins
           $tbl = tlObject::getDBTables(array('keywords'));

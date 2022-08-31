@@ -1911,8 +1911,7 @@ class testcase extends tlObjectWithAttachments {
   function getPrefix($id, $tproject_id=null)
   {
     $root = $tproject_id;
-    if( is_null($root) )
-    {
+    if( is_null($root) ) {
       $path2root=$this->tree_manager->get_path($id);
       $root=$path2root[0]['parent_id'];
     }
@@ -5383,7 +5382,6 @@ class testcase extends tlObjectWithAttachments {
    */
   function buildDirectWebLink($context)
   {
-    $base_href = $context->basehref;
     $id = intval($context->id);
     $tproject_id = null;
     if (property_exists($context, 'tproject_id')) {
@@ -5391,11 +5389,8 @@ class testcase extends tlObjectWithAttachments {
     }
 
     list($external_id,$prefix,$glue,$tc_number) = $this->getExternalID($id,$tproject_id);
-
-    $dl = $base_href . 'linkto.php?tprojectPrefix=' 
-                     . urlencode($prefix) 
-                     . '&item=testcase&id=' 
-                     . urlencode($external_id);
+    $dl = $context->basehref . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
+          '&item=testcase&id=' . urlencode($external_id);
     return $dl;
   }
 

@@ -30,29 +30,34 @@ class tlIssueTracker extends tlObject
   // array index is used AS CODE that will be written to DB
   // if you need to add a new item start on 200, to avoid crash with standard ID
   //  
-  var $systems = array( 1 =>  array('type' => 'bugzilla', 'api' => 'xmlrpc', 'enabled' => true, 'order' => -1),
-                        2 =>  array('type' => 'bugzilla', 'api' => 'db', 'enabled' => true, 'order' => -1),
-                        3 =>  array('type' => 'mantis', 'api' =>'soap', 'enabled' => true, 'order' => -1),
-                        4 =>  array('type' => 'mantis', 'api' =>'db', 'enabled' => true, 'order' => -1),
-                        5 =>  array('type' => 'jira', 'api' =>'soap', 'enabled' => true, 'order' => -1),
-                        6 =>  array('type' => 'jira', 'api' =>'db', 'enabled' => true, 'order' => -1),
-                        7 =>  array('type' => 'jira', 'api' =>'rest', 'enabled' => true, 'order' => -1),
-                        8 =>  array('type' => 'fogbugz','api' =>'rest','enabled' => true, 'order' => -1),
-                        9 =>  array('type' => 'fogbugz','api' =>'db','enabled' => true, 'order' => -1),
-                       10 =>  array('type' => 'gforge','api' =>'soap','enabled' => false, 'order' => -1),
-                       11 =>  array('type' => 'gforge','api' =>'db','enabled' => false, 'order' => -1),
-                       12 =>  array('type' => 'eventum','api' =>'db', 'enabled' => false, 'order' => -1),
-                       13 =>  array('type' => 'polarion', 'api' =>'soap', 'enabled' => false, 'order' => -1),
-                       14 =>  array('type' => 'youtrack','api' =>'rest','enabled' => true, 'order' => -1),
-                       15 =>  array('type' => 'redmine','api' =>'rest','enabled' => true, 'order' => -1),
-                       16 =>  array('type' => 'redmine','api' =>'db','enabled' => false, 'order' => -1),
-                       17 =>  array('type' => 'seapine','api' =>'soap','enabled' => false, 'order' => -1),
-                       18 =>  array('type' => 'seapine','api' =>'db','enabled' => false, 'order' => -1),
-                       19 =>  array('type' => 'trac','api' =>'xmlrpc','enabled' => true, 'order' => -1),
-                       20 =>  array('type' => 'trackplus','api' =>'soap','enabled' => false, 'order' => -1),
-                       21 =>  array('type' => 'trackplus','api' =>'db','enabled' => false, 'order' => -1),
-                       22 =>  array('type' => 'gitlab','api' =>'rest','enabled' => true, 'order' => -1)
-                     );
+  var $systems = [
+    1  =>  ['type' => 'bugzilla', 'api' => 'xmlrpc', 'enabled' => true, 'order' => 1],
+    2  =>  ['type' => 'bugzilla', 'api' => 'db', 'enabled' => true, 'order' => 2],
+    3  =>  ['type' => 'mantis', 'api' =>'soap', 'enabled' => true, 'order' => 3],
+    4  =>  ['type' => 'mantis', 'api' =>'db', 'enabled' => true, 'order' => 4],
+    5  =>  ['type' => 'jira', 'api' =>'soap', 'enabled' => true, 'order' => -1],
+    6  =>  ['type' => 'jira', 'api' =>'db', 'enabled' => true, 'order' => -1],
+    7  =>  ['type' => 'jira', 'api' =>'rest', 'enabled' => true, 'order' => -1],
+    8  =>  ['type' => 'fogbugz','api' =>'rest','enabled' => true, 'order' => -1],
+    9  =>  ['type' => 'fogbugz','api' =>'db','enabled' => true, 'order' => -1],
+    10 =>  ['type' => 'gforge','api' =>'soap','enabled' => false, 'order' => -1],
+    11 =>  ['type' => 'gforge','api' =>'db','enabled' => false, 'order' => -1],
+    12 =>  ['type' => 'eventum','api' =>'db', 'enabled' => false, 'order' => -1],
+    13 =>  ['type' => 'polarion', 'api' =>'soap', 'enabled' => false, 'order' => -1],
+    14 =>  ['type' => 'youtrack','api' =>'rest','enabled' => true, 'order' => -1],
+    15 =>  ['type' => 'redmine','api' =>'rest','enabled' => true, 'order' => -1],
+    16 =>  ['type' => 'redmine','api' =>'db','enabled' => false, 'order' => -1],
+    17 =>  ['type' => 'seapine','api' =>'soap','enabled' => false, 'order' => -1],
+    18 =>  ['type' => 'seapine','api' =>'db','enabled' => false, 'order' => -1],
+    19 =>  ['type' => 'trac','api' =>'xmlrpc','enabled' => true, 'order' => -1],
+    20 =>  ['type' => 'trackplus','api' =>'soap','enabled' => false, 'order' => -1],
+    21 =>  ['type' => 'trackplus','api' =>'db','enabled' => false, 'order' => -1],
+    22 =>  ['type' => 'gitlab','api' =>'rest','enabled' => true, 'order' => -1],
+    23 =>  ['type' => 'kaiten','api' =>'rest','enabled' => true, 'order' => 24],
+    24 =>  ['type' => 'mantis', 'api' =>'rest', 'enabled' => true, 'order' => 5],
+    25 =>  ['type' => 'github','api' =>'rest','enabled' => false, 'order' => 25],
+    26 =>  ['type' => 'trello','api' =>'rest', 'enabled' => true, 'order' => 26]                      
+  ];
   
     
   var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');
@@ -99,17 +104,15 @@ class tlIssueTracker extends tlObject
       break;
     }   
     
-    $ret = array();
-    foreach($this->systems as $code => $elem)
-    {
+    $ret = [];
+    foreach($this->systems as $code => $elem) {
       $idx = 0;
-      if($tval== null || $elem['enabled'] == $tval)
-      {
+      if($tval== null || $elem['enabled'] == $tval) {
         $ret[$code] = $elem;
       }
     }
-      return $ret;
-    }
+    return $ret;
+  }
 
   /**
    * @return hash

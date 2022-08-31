@@ -187,7 +187,10 @@ class testcase extends tlObjectWithAttachments {
 
     // needed for IVU 2019 implementation
     if( null != $guiObj ) {
-      $p2l = array('show_mode','tplan_id');
+      $p2l = [
+        'show_mode',
+        'tplan_id'
+      ];
       foreach($p2l as $pr) {
         if( property_exists($guiObj, $pr) ) {
           $url .= "&$pr=" . $guiObj->$pr;
@@ -207,7 +210,12 @@ class testcase extends tlObjectWithAttachments {
 
     // needed for IVU 2019 implementation
     if( null != $guiObj ) {
-      $p2l = array('show_mode','tplan_id');
+      $p2l = [
+        'show_mode',
+        'tplan_id',
+        'tproject_id'
+      ];
+
       foreach($p2l as $pr) {
         if( property_exists($guiObj, $pr) ) {
           $url .= "&$pr=" . $guiObj->$pr;
@@ -228,7 +236,11 @@ class testcase extends tlObjectWithAttachments {
 
     // needed for IVU 2019 implementation
     if( null != $guiObj ) {
-      $p2l = array('show_mode','tplan_id');
+      $p2l = [
+        'show_mode',
+        'tplan_id',
+        'tproject_id'
+      ];
       foreach($p2l as $pr) {
         if( property_exists($guiObj, $pr) ) {
           $url .= "&$pr=" . $guiObj->$pr;
@@ -9643,7 +9655,11 @@ class testcase extends tlObjectWithAttachments {
     $url = "lib/testcases/tcEdit.php?doAction=removePlatform";
 
     if( null != $guiObj ) {
-      $p2l = array('show_mode','tplan_id');
+      $p2l = [
+        'show_mode',
+        'tplan_id',
+        'tproject_id'
+      ];
       foreach($p2l as $pr) {
         if( property_exists($guiObj, $pr) ) {
           $url .= "&$pr=" . $guiObj->$pr;
@@ -9910,7 +9926,12 @@ class testcase extends tlObjectWithAttachments {
     $url = "lib/testcases/tcEdit.php?doAction=removeAlien";
 
     if( null != $guiObj ) {
-      $p2l = array('show_mode','tplan_id');
+      $p2l = [
+        'show_mode',
+        'tplan_id',
+        'tproject_id'
+      ];
+
       foreach($p2l as $pr) {
         if( property_exists($guiObj, $pr) ) {
           $url .= "&$pr=" . $guiObj->$pr;

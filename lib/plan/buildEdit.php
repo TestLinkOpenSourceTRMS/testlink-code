@@ -179,15 +179,15 @@ function init_args($date_format,&$tplanMgr,&$buildMgr) {
   $args->user = $_SESSION['currentUser'];
   $args->userID = intval($_SESSION['userID']);
 
-  // ----------------------------------------------------------------
+  // -----------------------------------------------------------------------------------
   // Feature Access Check
-  $env = array()
-  $env['script'] = basename(__FILE__);
-  $env['tproject_id'] = $args->tproject_id;
-  $env['tplan_id'] = $args->tplan_id;
-  $args->user->checkGUISecurityClearance(dbHandler,$env,
-                    array('testplan_create_build'),'and');
-  // ----------------------------------------------------------------
+  $env = [
+    'script' => basename(__FILE__),
+    'tproject_id' => $args->tproject_id,
+    'tplan_id' => $args->tplan_id
+  ];
+  $args->user->checkGUISecurityClearance($dbHandler,$env,['testplan_create_build'],'and');
+  // -------------------------------------------------------------------------------------
 
   return $args;
 }

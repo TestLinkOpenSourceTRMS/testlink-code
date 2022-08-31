@@ -49,16 +49,15 @@ function initEnv(&$dbHandler) {
   $cfg = getWebEditorCfg('build');
   $gui->editorType = $cfg['type'];
   
-
-  // ----------------------------------------------------------------
+  // -----------------------------------------------------------------------------------
   // Feature Access Check
-  $env = array()
-  $env['script'] = basename(__FILE__);
-  $env['tproject_id'] = $gui->tproject_id;
-  $env['tplan_id'] = $gui->tplan_id;
-  $args->user->checkGUISecurityClearance(dbHandler,$env,
-                    array('testplan_create_build'),'and');
-  // ----------------------------------------------------------------
+  $env = [
+    'script' => basename(__FILE__),
+    'tproject_id' => $args->tproject_id,
+    'tplan_id' => $args->tplan_id
+  ];
+  $args->user->checkGUISecurityClearance($dbHandler,$env,['testplan_create_build'],'and');
+  // -------------------------------------------------------------------------------------  
 
   return $gui;  
 }

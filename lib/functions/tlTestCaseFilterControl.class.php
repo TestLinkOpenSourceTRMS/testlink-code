@@ -6,7 +6,7 @@
  * @filesource tlTestCaseFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2020, TestLink community
+ * @copyright  2006-2022, TestLink community
  * @link       http://testlink.sourceforge.net/
  * 
  *
@@ -538,7 +538,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     foreach ($this->all_settings as $name => $info) {
       $init_method = "init_$name";
-      //echo '<br>'; echo $init_method; echo '<br>';
       if (in_array($name, $this->mode_setting_mapping[$this->mode]) && 
         method_exists($this, $init_method)) 
       {
@@ -1053,20 +1052,19 @@ class tlTestCaseFilterControl extends tlFilterControl {
         } 
         else 
         {
-		  if ($mode == 'mode_test_suite')
-		  {
-				  $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-                    	"root_node={$this->args->testproject_id}&show_tcases=0" .
-                    	"&" . http_build_query(array('tsuiteHelp' => lang_get('display_tsuite_contents')));
+          if ($mode == 'mode_test_suite') {
+              $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+                          "root_node={$this->args->testproject_id}&show_tcases=0" .
+                          "&" . http_build_query(array('tsuiteHelp' => lang_get('display_tsuite_contents')));
 
-				  $root_node = new stdClass();
-				  $root_node->href = "javascript:EP({$this->args->testproject_id})";
-				  $root_node->id = $this->args->testproject_id;
-				  $root_node->name = $this->args->testproject_name;
-				  $root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . '">';
-				          $root_node->wrapClose = '</span>';
-				  $root_node->testlink_node_type = 'testproject';
-		  }
+              $root_node = new stdClass();
+              $root_node->href = "javascript:EP({$this->args->testproject_id})";
+              $root_node->id = $this->args->testproject_id;
+              $root_node->name = $this->args->testproject_name;
+              $root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . '">';
+              $root_node->wrapClose = '</span>';
+              $root_node->testlink_node_type = 'testproject';
+          }
         }
       break;
       
@@ -2070,15 +2068,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
   */
   protected function init_setting_testsgroupby() {
   	$key = 'setting_testsgroupby';
-  	
-  	// now load info from session
-  	$mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 0;
-  	$this->args->testsgroupedby_mode = $mode;
+  	$this->settings[$key]['items']['mode_test_suite'] = lang_get('mode_test_suite');
+  	$this->settings[$key]['items']['mode_req_coverage'] = lang_get('mode_req_coverage');
+
+    $mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 'mode_test_suite';
+
+    $this->args->testsgroupedby_mode = $mode;
   	$this->args->{$key} = $mode;
   	$this->settings[$key]['selected'] = $mode;
   	
-  	$this->settings[$key]['items']['mode_test_suite'] = lang_get('mode_test_suite');
-  	$this->settings[$key]['items']['mode_req_coverage'] = lang_get('mode_req_coverage');
   } // end of method
 
  /**

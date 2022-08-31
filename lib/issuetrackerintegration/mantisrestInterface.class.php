@@ -36,14 +36,23 @@ class mantisrestInterface extends issueTrackerInterface {
     $this->name = $name;
 	  $this->interfaceViaDB = false;
 	  $this->methodOpt['buildViewBugLink'] = [
-      'addSummary' => true,'colorByStatus' => false,
-      'addReporter' => true, 'addHandler' => true ];
+      'addSummary' => true,
+      'addReporter' => true, 
+      'addHandler' => true,
+      'colorByStatus' => false
+    ];
 
-    $this->defaultResolvedStatus = array();
-    $this->defaultResolvedStatus[] = 
-       array('code' => 80, 'verbose' => 'resolved');
-    $this->defaultResolvedStatus[] = 
-       array('code' => 90, 'verbose' => 'closed');
+
+    $this->defaultResolvedStatus = [
+      [
+        'code' => 80, 
+       'verbose' => 'resolved'
+      ],
+      [
+        'code' => 90, 
+        'verbose' => 'closed'
+      ]
+    ];
    
     $this->canSetReporter = true;
     if( !$this->setCfg($config) ) {
@@ -75,6 +84,14 @@ class mantisrestInterface extends issueTrackerInterface {
         $this->options[$name] = (string)$elem;     
       }
     } 
+
+    if( !property_exists($this->cfg,'userinteraction') ) {
+      $this->cfg->userinteraction = 0;
+    }
+
+    if( !property_exists($this->cfg,'createissueviaapi') ) {
+      $this->cfg->createissueviaapi = 0;
+    }
   }
 
 	/**
@@ -195,16 +212,29 @@ class mantisrestInterface extends issueTrackerInterface {
         $issue->statusCode = intval($item->status->id);
         $issue->statusVerbose = (string)$item->status->label;
         $issue->statusHTMLString = "[{$issue->statusVerbose}]";
-        $issue->reportedBy = (string)$item->reporter->real_name;
-        $issue->handledBy = (string)$item->handler->real_name;
         $issue->summary = $issue->summaryHTMLString = (string)$item->summary;
 
-        $cond = array('version' => 'name',
-                      'fixed_in_version' => 'name',
-                      'target_version' => 'name');
-        $trans = array('version' => 'version',
-                       'fixed_in_version' => 'fixedInVersion',
-                       'target_version' => 'targetVersion');  
+        // Actors - Begin
+        $issue->reportedBy = (string)$item->reporter->real_name;
+        
+        // Attention: when issue has not handler yet, property does not exist
+        $issue->handledBy = '';
+        if (property_exists($item,'handler')) {
+          $issue->handledBy = (string)$item->handler->real_name;
+        }
+        // Actors - End
+
+
+        $cond = [
+          'version' => 'name',
+          'fixed_in_version' => 'name',
+          'target_version' => 'name'
+        ];
+        $trans = [
+          'version' => 'version',
+          'fixed_in_version' => 'fixedInVersion',
+          'target_version' => 'targetVersion'
+        ];  
 
         foreach ($cond as $prop => $wtg) {
           $ip = $trans[$prop];
@@ -281,6 +311,7 @@ class mantisrestInterface extends issueTrackerInterface {
   /**
    *
    */
+  /* NOT IMPLEMENTED YET 20211130
   public function addIssue($summary,$moreInfo,$opt=null) {
     $more = $moreInfo;
     try {
@@ -304,10 +335,13 @@ class mantisrestInterface extends issueTrackerInterface {
     }
     return $ret;
   }
+  */
     
   /**
    *
    */
+  
+  /* NOT IMPLEMENTED YET 20211130
   public function addNote($issueID,$noteText,$opt=null) {
     $op = $this->APIClient->addNote($issueID, $noteText);
     if(is_null($op)){
@@ -318,7 +352,7 @@ class mantisrestInterface extends issueTrackerInterface {
                        $op->body, $this->APIClient->projectId)];
     return $ret;
   }
-
+  */
 
 
   /**
@@ -336,10 +370,16 @@ class mantisrestInterface extends issueTrackerInterface {
       }
       $ret = ['status_ok' => true, 'id' => (string)$op->id, 
               'msg' => 'ok'];
+      $msg = "Create Mantis Link Via REST OK => TICKET:" . $issueID . ' >> link: ' . json_encode($link);
+      tLog($msg, 'WARNING');
     }
     catch (Exception $e) {
        $msg = "Create Mantis Link Via REST FAILURE => " . $e->getMessage();
        tLog($msg, 'WARNING');
+
+       $msg = "Create Mantis Link Via REST FAILURE => TICKET -> " . $issueID . ' >> link: ' . json_encode($link);
+       tLog($msg, 'WARNING');
+
        $ret = ['status_ok' => false, 'id' => -1, 'msg' => $msg];
     }
     return $ret;
@@ -366,6 +406,36 @@ class mantisrestInterface extends issueTrackerInterface {
     }
     return $ret;
   }
+
+  /**
+   *
+   * link->testCaseID
+   * link->testCaseName
+   * link->relation (verbose)
+   * link->testPlanName": "TPLAN_A",
+   * link->buildName": "BUILD 1",
+   * link->platformName": "",
+   * link->tester": "Mauro",
+   * link->execStatus": "Passed",
+   * link->timeStamp": "20200101-23:00"
+   *
+   */
+  public function addExecLink($issueID,$link) {
+    try {
+      $op = $this->APIClient->addExecLink($issueID,$link);
+      /* if(is_null($op)){
+        throw new Exception("Error creating exec link", 1);
+      }*/
+      $ret = ['status_ok' => true, 'msg' => 'ok'];
+    }
+    catch (Exception $e) {
+       $msg = "Create Mantis Exec Link Via REST FAILURE => " . $e->getMessage();
+       tLog($msg, 'WARNING');
+       $ret = ['status_ok' => false, 'id' => -1, 'msg' => $msg];
+    }
+    return $ret;
+  }
+
 
   /**
    *

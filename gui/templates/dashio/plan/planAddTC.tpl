@@ -338,13 +338,13 @@ generate a list of TC for adding to Test Plan
             			  <td>
             			    {$show_remove_check=0}
             			    {$executed=0}
-         				      {if $tcase.executed[0] == 'yes'}
+         				      {if !is_null($tcase.executed) && $tcase.executed[0] == 'yes'}
             			    	{$executed=1}
             			    {/if}
             			    
             			  	{if $linked_version_id}
             			  		{$show_remove_check=1}
-         				        {if $tcase.executed[0] == 'yes'}
+         				        {if !is_null($tcase.executed) && $tcase.executed[0] == 'yes'}
          				          {$show_remove_check=$gui->can_remove_executed_testcases}
             			  	  {/if}      
                    		{/if} 
@@ -359,14 +359,14 @@ generate a list of TC for adding to Test Plan
             		    		&nbsp;
             	   			{/if}
             	   
-                   			{if $tcase.executed[0] eq 'yes'}&nbsp;&nbsp;&nbsp;
+                   			{if !is_null($tcase.executed) && $tcase.executed[0] eq 'yes'}&nbsp;&nbsp;&nbsp;
    				                  <img src="{$tlImages.executed}" title="{$gui->warning_msg->executed}" />
                       		{/if}
                       		{if $is_active eq 0}&nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}{/if}
             			  </td>
             			  
             			  <td align="center" title="{$labels.info_added_on_date}">
-            			  	{if $tcase.linked_ts[0] != ''}{localize_date d=$tcase.linked_ts[0]}{else}&nbsp;{/if}  
+            			  	{if !is_null($tcase.linked_ts) && $tcase.linked_ts[0] != ''}{localize_date d=$tcase.linked_ts[0]}{else}&nbsp;{/if}  
             			  </td>
                   {/if}
                   {* ---------------------------------------------------------------------------------------------------------- *}      
@@ -413,7 +413,7 @@ generate a list of TC for adding to Test Plan
             			    {$show_remove_check=0}
             			  	{if $linked_version_id}
             			  		{$show_remove_check=1}
-         				        {if isset($tcase.executed[$platform.id]) && $tcase.executed[$platform.id] eq 'yes'}
+         				        {if !is_null($tcase.executed) && isset($tcase.executed[$platform.id]) && $tcase.executed[$platform.id] eq 'yes'}
          				          	{$show_remove_check=$gui->can_remove_executed_testcases}
             			  	  	{/if}      
                    			{/if} 
@@ -423,7 +423,7 @@ generate a list of TC for adding to Test Plan
   				   			{else}
             		    		&nbsp;&nbsp;
             	   			{/if}
-                        	{if isset($tcase.executed[$platform.id]) && $tcase.executed[$platform.id] eq 'yes'}&nbsp;&nbsp;&nbsp;
+                        	{if !is_null($tcase.executed) && isset($tcase.executed[$platform.id]) && $tcase.executed[$platform.id] eq 'yes'}&nbsp;&nbsp;&nbsp;
    				                  <img src="{$tlImages.executed}" title="{$gui->warning_msg->executed}" />
                         	{/if}
 

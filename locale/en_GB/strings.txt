@@ -4092,4 +4092,10 @@ $TLS_show_hide_config_example = 'Show/hide configuration template';
 
 $TLS_issuetracker_not_used_linked = 'Issue Tracker not in use';
 $TLS_codetracker_not_used_linked = 'Code Tracker not in use';
+
+$TLS_img_title_remove_alien = 'Remove Alien Reference Link';
+$TLS_createAlien = 'Create Alien Reference Link';
+$TLS_img_title_remove_platform = 'Remove Platform Link';
+$TLS_remove_plat_msgbox_title = 'Remove Platform Link';
+$TLS_remove_plat_msgbox_msg = 'Are You sure?';
 // ----- END -----------------------------------------------------

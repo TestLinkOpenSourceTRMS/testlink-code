@@ -492,7 +492,7 @@ class tlPlatform extends tlObjectWithDB
             " WHERE  TP.testplan_id = {$testplanID} 
               {$filterEnableOn} {$orderBy}";
 
-    $pset = $this->db->fetchRowsIntoMap($sql, 'id');
+    $pset = (array)$this->db->fetchRowsIntoMap($sql, 'id');
     $itemSet = [];
     foreach($pset as $pid => $elem) {
       $pname = $elem['name'];

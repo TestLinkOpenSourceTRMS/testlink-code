@@ -196,12 +196,6 @@ class mantisrestInterface extends issueTrackerInterface {
         $item = $jsonObj->issues;
         $item = $item[0];
 
-      /*
-      echo '<pre>';
-      var_dump($item);
-      echo '</pre>';
-      die();
-      */
         $issue = new stdClass();
         $issue->IDHTMLString = "<b>{$issueID} : </b>";
         $issue->statusCode = intval($item->status->id);

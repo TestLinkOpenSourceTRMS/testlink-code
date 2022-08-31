@@ -6,7 +6,7 @@
  * @filesource  specview.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2004-2020, TestLink community 
+ * @copyright   2004-2022, TestLink community 
  * @link        http://www.testlink.org
  *
  *
@@ -685,16 +685,22 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   $key2loop = null;
   $useAllowed = false;
   
-  $nullCheckFilter = array('tcase_id' => false, 
-                           'importance' => false,
-                           'tcase_name' => false, 
-                           'cfields' => false, 'status' => false);
+  $nullCheckFilter = [
+    'tcase_id' => false, 
+    'importance' => false,
+    'tcase_name' => false, 
+    'cfields' => false, 
+    'status' => false
+  ];
 
   $zeroNullCheckFilter = array('execution_type' => false);
-  $useFilter = array('keyword_id' => false, 'platform_id' => false) 
-               + $nullCheckFilter + $zeroNullCheckFilter;
+  $useFilter = [
+    'keyword_id' => false, 
+    'platform_id' => false
+    ] + $nullCheckFilter + $zeroNullCheckFilter;
 
   $applyFilters = false;
+  $filters = (array)$filters;
 
   foreach($nullCheckFilter as $key => $value) {
     $useFilter[$key] = !is_null($filters[$key]);
@@ -702,16 +708,17 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   }
 
   // more specif analisys
-  if( ($useFilter['status']=($filters['status'][0] > 0)) ) {
+  // -------------------------------------------------------------------------------
+  if( ($useFilter['status'] = isset($filters['status']) && ($filters['status'][0] > 0)) ) {
     $applyFilters = true;
     $filtersByValue['status'] = array_flip((array)$filters['status']);
   }
   
-  if( ($useFilter['importance']=($filters['importance'][0] > 0)) ) {
+  if( ($useFilter['importance'] = isset($filters['importance']) && ($filters['importance'][0] > 0)) ) {
     $applyFilters = true;
     $filtersByValue['importance'] = array_flip((array)$filters['importance']);
   }  
-
+  // -------------------------------------------------------------------------------
 
   foreach($zeroNullCheckFilter as $key => $value) {
     // need to check for > 0, because for some items 0 has same meaning that null -> no filter
@@ -744,7 +751,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   }  
 
   $tcpl_map = null;
-  if(($useFilter['platforms']=$filters['platform_id'][0] > 0)) {
+  if( $useFilter['platforms'] = isset($filters['platform_id']) && ($filters['platform_id'][0] > 0) ) {
     $applyFilters = true;
     switch ($specViewType) {
       case 'testplan':
@@ -1102,8 +1109,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 
   foreach ($test_spec as $current)
   {
-    if(is_null($current))
-    {
+    if(is_null($current)) {
       continue;
     }
     // In some situations during processing of testcase, a change of parent can
@@ -1161,38 +1167,35 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
       //    |__ TCZ1
       //
       //               
-      if( $tcase_memory['parent_id'] != $current['parent_id'] )
-      {
-        if( !is_null($tcase_memory) )
-        {
-          $pidx = $hash_id_pos[$tcase_memory['parent_id']];
-          $xdx=$out[$pidx]['testsuite']['id'];
-          $tsuite_tcqty[$xdx]=$out[$pidx]['testcase_qty'];
-        }
+      if (is_null($tcase_memory)) {
         $tcase_memory=$current;
-      }  
-    }
-    else
-    {
+      }
+      else {
+        if( $tcase_memory['parent_id'] != $current['parent_id'] ) {
+          if( !is_null($tcase_memory) ) {
+            $pidx = $hash_id_pos[$tcase_memory['parent_id']];
+            $xdx=$out[$pidx]['testsuite']['id'];
+            $tsuite_tcqty[$xdx]=$out[$pidx]['testcase_qty'];
+          }
+          $tcase_memory=$current;
+        }    
+      }
+
+
+    } else {
       // This node is a Test Suite
       $the_level = 0;
-      if($parent_idx >= 0)
-      { 
+      if($parent_idx >= 0) { 
         $xdx=$out[$parent_idx]['testsuite']['id'];
         $tsuite_tcqty[$xdx]=$out[$parent_idx]['testcase_qty'];
       }
       
-      if($pivot_tsuite['parent_id'] != $current['parent_id'])
-      {
-        if ($pivot_tsuite['id'] == $current['parent_id'])
-        {
+      if($pivot_tsuite['parent_id'] != $current['parent_id']) {
+        if ($pivot_tsuite['id'] == $current['parent_id']) {
           $the_level++;
           $level[$current['parent_id']] = $the_level;
-        }
-        else 
-        {
-          if( isset($level[$current['parent_id']]) )
-          {
+        } else {
+          if( isset($level[$current['parent_id']]) ) {
             $the_level = $level[$current['parent_id']];
           }  
         } 

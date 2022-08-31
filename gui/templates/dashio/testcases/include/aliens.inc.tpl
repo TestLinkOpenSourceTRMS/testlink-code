@@ -15,50 +15,48 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {if $args_edit_enabled}
 
-  {lang_get s='remove_alien_msgbox_msg'
-            var='remove_alien_msgbox_msg'}
-  {lang_get s='remove_alien_msgbox_title'
-            var='remove_alien_msgbox_title'}
+  {lang_get s='remove_alien_msgbox_msg'   var='remove_alien_msgbox_msg'}
+  {lang_get s='remove_alien_msgbox_title' var='remove_alien_msgbox_title'}
 
   <script type="text/javascript">
-  var alert_box_title = "{$alien_labels.warning|escape:'javascript'}";
-  var remove_alien_msgbox_msg = '{$remove_alien_msgbox_msg|escape:'javascript'}';
-  var remove_alien_msgbox_title = '{$remove_alien_msgbox_title|escape:'javascript'}';
+    var alert_box_title = "{$alien_labels.warning|escape:'javascript'}";
+    var remove_alien_msgbox_msg = '{$remove_alien_msgbox_msg|escape:'javascript'}';
+    var remove_alien_msgbox_title = '{$remove_alien_msgbox_title|escape:'javascript'}';
   </script>
 
   <script type="text/javascript">
-  /**
-   * 
-   *
-   */
-  function alien_remove_confirmation(item_id, tcalien_link_id, alien, title, msg, pFunction) 
-  {
-    var my_msg = msg.replace('%i',alien);
-    var safe_title = escapeHTML(title);
-    Ext.Msg.confirm(safe_title, my_msg,
-                    function(btn, text) { 
-                      pFunction(btn,text,item_id, tcalien_link_id);
-                    });
-  }
-
-
-  /**
-   * 
-   *
-   */
-  function remove_alien(btn, text, item_id, tcalien_link_id) 
-  {
-    var my_url = "{$gui->delTCVAlienURL}";
-    var dummy = my_url.replace('%1',item_id);
-    var my_action = dummy.replace('%2',tcalien_link_id);
-
-
-    if( btn == 'yes' ) {
-      window.location=my_action;
+    /**
+    * 
+    *
+    */
+    function alien_remove_confirmation(item_id, tcalien_link_id, alien, title, msg, pFunction) 
+    {
+      var my_msg = msg.replace('%i',alien);
+      var safe_title = escapeHTML(title);
+      Ext.Msg.confirm(safe_title, my_msg,
+                      function(btn, text) { 
+                        pFunction(btn,text,item_id, tcalien_link_id);
+                      });
     }
-  }
 
-  var pF_remove_alien = remove_alien;
+
+    /**
+    * 
+    *
+    */
+    function remove_alien(btn, text, item_id, tcalien_link_id) 
+    {
+      var my_url = "{$gui->delTCVAlienURL}";
+      var dummy = my_url.replace('%1',item_id);
+      var my_action = dummy.replace('%2',tcalien_link_id);
+
+
+      if( btn == 'yes' ) {
+        window.location=my_action;
+      }
+    }
+
+    var pF_remove_alien = remove_alien;
   </script>
 {/if}
 

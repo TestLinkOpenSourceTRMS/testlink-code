@@ -30,6 +30,7 @@
 /** @global array Global configuration class */
 $tlCfg = new stdClass();
 $tlCfg->api = new stdClass();
+$tlCfg->aliens = new stdClass();
 $tlCfg->cookie = new stdClass();
 $tlCfg->document_generator = new stdClass();
 
@@ -1225,6 +1226,22 @@ $tlCfg->exec_cfg->issues->tcstep_level->subject = '$$issue_on_step %%STEPNUMBER%
 // ----------------------------------------------------------------------
 /* [Test Specification] */
 
+// Aliens ---------------------------------------------------------------
+$tlCfg->aliens->moreColumns = [
+  'reportedBy',
+  'version',
+  'fixedInVersion',
+  'statusVerbose',
+  'handledBy'
+];
+
+// text -> filter input will be text
+// select -> filter input will be HTML select TO BE IMPLEMENTED??      
+$tlCfg->aliens->filter_mode = 'select';
+// ----------------------------------------------------------------------
+
+
+
 // TRUE will be displayed when displayed a test case
 $tlCfg->spec_cfg->show_tplan_usage = TRUE;
 
@@ -1313,13 +1330,16 @@ $tlCfg->testcase_cfg->relations->type_description = array(TL_REL_TYPE_PARENT_CHI
 
 
 
+// 
 $tlCfg->testcase_cfg->aliens = new stdClass();
 $tlCfg->testcase_cfg->aliens->relationsType = new stdClass();
-$tlCfg->testcase_cfg->aliens->relationsType->labels = array(
+$tlCfg->testcase_cfg->aliens->relationsType->labels = [
   TL_ALIEN_REL_TYPE_FIX => 'testing_a_fix',
   TL_ALIEN_REL_TYPE_REGRESSION => 'testing_a_regression',
   TL_ALIEN_REL_TYPE_REQUIREMENT => 'testing_a_requirement'
-);
+];
+
+
 
 // @since 1.9.18
 // TRUE => After a test case version has been executed 

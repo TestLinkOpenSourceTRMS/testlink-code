@@ -205,8 +205,9 @@ class database {
       echo "<pre>            issue to development TEAM. </pre>";
       echo "<pre> ============================================================================== </pre>";
       
-        echo "<pre>HHHH"; debug_print_backtrace(); echo "</pre>";
-        die();
+      echo "<pre>"; var_dump(debug_print_backtrace()); echo "</pre>";
+      die();
+      
       if(defined('DBUG_ON') && DBUG_ON == 1)
       { 
         echo "<pre>"; debug_print_backtrace(); echo "</pre>";

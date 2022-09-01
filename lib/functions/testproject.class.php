@@ -1380,6 +1380,21 @@ function setPublicStatus($id,$status)
     return $status;
   }
 
+
+  /***
+   * 
+   */
+  function getKeywordsAsMapByName($tproject_id) {
+    $keywordMap = null;
+    $keywords = $this->getKeywords($tproject_id);
+    if ($keywords) {
+      foreach($keywords as $kw) {
+        $keywordMap[$kw->name] = $kw->notes;
+      }
+    }
+    return $keywordMap;
+  }
+
   /**
    * Returns all testproject keywords
    *

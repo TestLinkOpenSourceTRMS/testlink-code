@@ -972,10 +972,15 @@ class testcase extends tlObjectWithAttachments {
 
       $gui->linked_versions = null;
 
-      $gopt = array('renderGhost' => true, 'withGhostString' => true,
-                    'renderImageInline' => true, 'renderVariables' => true,
-                    'renderSpecialKW' => true,
-                    'caller' => 'show()');
+      $gopt = [
+        'renderGhost' => true,
+        'withGhostString' => true,
+        'renderImageInline' => true,
+        'renderVariables' => true,
+        'renderSpecialKW' => true,
+        'caller' => 'show()',
+        'tproject_id' => $idCard->tproject_id
+      ];
 
       $cfx = 0;
       $gui->otherVersionsAliens = null;
@@ -2495,16 +2500,24 @@ class testcase extends tlObjectWithAttachments {
 
   */
   function get_by_id($id,$version_id = self::ALL_VERSIONS, $filters = null, $options=null) {
-    $my['filters'] = array('active_status' => 'ALL', 'open_status' => 'ALL', 'version_number' => 1);
+    $my['filters'] = [
+      'active_status' => 'ALL', 
+      'open_status' => 'ALL', 
+      'version_number' => 1
+    ];
     $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-    $my['options'] = array('output' => 'full', 'access_key' => 'tcversion_id', 
-                           'getPrefix' => false,
-                           'order_by' => null, 'renderGhost' => false, 
-                           'withGhostString' => false,
-                           'renderImageInline' => false, 
-                           'renderVariables' => false,
-                           'renderSpecialKW' => false);
+    $my['options'] = [
+      'output' => 'full', 
+      'access_key' => 'tcversion_id', 
+      'getPrefix' => false,
+      'order_by' => null, 
+      'withGhostString' => false,
+      'renderGhost' => false, 
+      'renderImageInline' => false, 
+      'renderVariables' => false,
+      'renderSpecialKW' => false
+    ];
 
     $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -2609,7 +2622,7 @@ class testcase extends tlObjectWithAttachments {
       break;
     }
 
-    $render = array();
+    $render = [];
     $render['ghost'] = false;
     $render['ghostSteps'] = false;
     $render['imageInline'] = $my['options']['renderImageInline'];
@@ -2660,7 +2673,7 @@ class testcase extends tlObjectWithAttachments {
     if( $canProcess && $render['variables'] ) {
       $key2loop = array_keys($recordset);
       foreach( $key2loop as $accessKey) {
-        $this->renderVariables($recordset[$accessKey]);
+        $this->renderVariables($recordset[$accessKey],$my['options']['tproject_id']);
       }
       reset($recordset);
     }
@@ -3439,8 +3452,11 @@ class testcase extends tlObjectWithAttachments {
 
       // Audit Context
       $tcPath = $this->getPathName( $id );
-      $kwOpt = array('cols' => 'id,keyword', 
-                     'accessKey' => 'id', 'kwSet' => $kw_ids);
+      $kwOpt = [
+        'cols' => 'id,keyword', 
+        'accessKey' => 'id', 
+        'kwSet' => $kw_ids
+      ];
       $keywordSet = tlKeyword::getSimpleSet($this->db,$kwOpt);
 
       foreach($keywordSet as $elem ) {
@@ -3486,13 +3502,17 @@ class testcase extends tlObjectWithAttachments {
    */
   function copyKeywordsTo($source,$dest,$kwMappings,$auditContext=null,$opt=null) {
 
-    $adt = array('on' => self::AUDIT_ON);
+    $adt = [
+      'on' => self::AUDIT_ON
+    ];
     if( isset($dest['version']) ) {
       $adt['version'] = $dest['version'];
     }
     $adt = array_merge($adt,(array)$auditContext);
 
-    $what = array('delete' => true);
+    $what = [
+      'delete' => true
+    ];
     $what = array_merge($what,(array)$opt);
 
     // Not sure that this delete is needed (@20180610)
@@ -3824,7 +3844,10 @@ class testcase extends tlObjectWithAttachments {
     $resultsCfg = config_get('results');
     $status_not_run = $resultsCfg['status_code']['not_run'];
 
-    $filterKeys = array('build_id','platform_id');
+    $filterKeys = [
+      'build_id',
+      'platform_id'
+    ];
     foreach($filterKeys as $key) {
       $filterBy[$key] = '';
       if( !is_null($$key) ) {
@@ -3851,8 +3874,13 @@ class testcase extends tlObjectWithAttachments {
     //               1 -> get last execution on EACH BUILD.
     //                    GROUP BY must be done BY tcversion_id,build_id
     //
-    $localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0, 'getSteps' => 1,
-                        'getStepsExecInfo' => 0, 'output' => 'std');
+    $localOptions=[
+      'getNoExecutions' => 0,
+      'groupByBuild' => 0,
+      'getSteps' => 1,
+      'getStepsExecInfo' => 0, 
+      'output' => 'std'
+    ];
     if(!is_null($options) && is_array($options)) {
       $localOptions=array_merge($localOptions,$options);
     }
@@ -4026,10 +4054,15 @@ class testcase extends tlObjectWithAttachments {
     // ghost Test Case processing in summary & preconditions
     if( !is_array($id) ) {
       if(!is_null($recordset)) {
+    
+        // get test project from test plan
+        $tplanInfo  = $this->tree_manager->get_node_hierarchy_info($tplan_id);
+        $tproj_id = intval($tplanInfo['parent_id']);
+
         $key2loop = array_keys($recordset);
         foreach( $key2loop as $accessKey) {
           $this->renderGhost($recordset[$accessKey]);
-          $this->renderVariables($recordset[$accessKey]);
+          $this->renderVariables($recordset[$accessKey],$tproj_id);
           $this->renderSpecialTSuiteKeywords($recordset[$accessKey]);
           $this->renderImageAttachments($id,$recordset[$accessKey]);
 
@@ -8202,20 +8235,24 @@ class testcase extends tlObjectWithAttachments {
   }
 
  /**
-  * render CF values
+  * render CF values and Keywords
   *
   * <p> </p> added by web rich editor create some layout issues
   */
-  function renderVariables(&$item2render) {
+  function renderVariables(&$item2render,$tproj_id) {
     $tcase_id = $item2render['testcase_id'];
     $tcversion_id = $item2render['id'];
     $cfSet = $this->get_linked_cfields_at_design($tcase_id,$tcversion_id);
+    $kwSet = $this->getTestProjectKeywords($tproj_id);
 
-    if( is_null($cfSet) ) {
+    if( is_null($cfSet) && is_null($kwSet)) {
       return;
     }
 
-    $key2check = array('summary','preconditions');
+    $key2check = [
+      'summary',
+      'preconditions'
+    ];
     $tlBeginTag = '[tlVar]';
     $tlEndTag = '[/tlVar]';
     $tlEndTagLen = strlen($tlEndTag);
@@ -8251,15 +8288,32 @@ class testcase extends tlObjectWithAttachments {
             // is user had not messed things.
             $yy = explode($tlEndTag,$xx[$xdx]);
             if( ($elc = count($yy)) > 0) {
-              $cfname = trim($yy[0]);
+              $variableName = trim($yy[0]);
               try {
+                // -----------------------------------------------------------
+                // Step #1 Look in Custom Fields
+                // -----------------------------------------------------------
                 // look for the custom field
-                foreach ($cfSet as $cfID => $cfDef) {
-                  if( $cfDef['name'] === $cfname ) {
-                    $ghost .=
-                    $this->cfield_mgr->string_custom_field_value($cfDef,$tcversion_id);
+                if (!is_null($cfSet)) {
+                  foreach ($cfSet as $cfID => $cfDef) {
+                    if( $cfDef['name'] === $variableName ) {
+                      $ghost .= $this->cfield_mgr->string_custom_field_value($cfDef,$tcversion_id);
+                    }
+                  }  
+                }
+                // -----------------------------------------------------------
+
+                // -----------------------------------------------------------
+                // Step #2 Look in Keywords
+                // -----------------------------------------------------------
+                if (!is_null($kwSet)) {
+                  foreach ($kwSet as $kw => $kwNotes) {
+                    if( $kw === $variableName ) {
+                      $ghost .= $kwNotes;
+                    }
                   }
                 }
+                // -----------------------------------------------------------
 
                 // reconstruct the contect with the other pieces
                 $lim = $elc-1;
@@ -10138,6 +10192,11 @@ class testcase extends tlObjectWithAttachments {
     return $labels;
   }
 
-
+  /**
+   * 
+   */
+  function getTestProjectKeywords($tproj_id) {
+    return $this->tproject_mgr->getKeywordsAsMapByName($tproj_id);
+  } 
 
 }  // Class end

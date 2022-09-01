@@ -1161,7 +1161,7 @@ class testcaseCommands {
     $guiObj = $this->initGuiBean($argsObj);
     $identity = $this->buildIdentity($argsObj);
 
-    $guiObj->uploadOp = $argsObj->uploadOp;
+    $guiObj->uploadOp = property_exists($argsObj,'uploadOp') ? $argsObj->uploadOp : '';
 
     $guiObj->viewerArgs=array();
     $guiObj->refreshTree = ($argsObj->refreshTree 

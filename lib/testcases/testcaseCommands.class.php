@@ -157,10 +157,13 @@ class testcaseCommands {
       }
     }
 
-    $gopt = array('output' => 'full_without_steps',
-                  'renderGhost' => true,
-                  'renderImageInline' => true,
-                  'renderVariables' => true); 
+    $gopt = [
+      'output' => 'full_without_steps',
+      'renderGhost' => true,
+      'renderImageInline' => true,
+      'renderVariables' => true,
+      'tproject_id' => intval($argsObj->testproject_id)
+    ]; 
 
     $tcaseInfo = $this->tcaseMgr->get_by_id(
       $greenCard['tcase_id'],$greenCard['tcversion_id'],null,$gopt);
@@ -344,12 +347,14 @@ class testcaseCommands {
 
     keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
 
-    $gopt = array('renderImageInline' => false, 'renderImageInline' => false, 
-                  'caller' => __METHOD__);
+    $gopt = [
+      'renderImageInline' => false, 
+      'renderImageInline' => false, 
+      'caller' => __METHOD__
+    ];
     
     $tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,null,$gopt);
-    foreach($oWebEditorKeys as $key)
-    {
+    foreach($oWebEditorKeys as $key) {
       $guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
       $argsObj->$key = $guiObj->$key;
     }

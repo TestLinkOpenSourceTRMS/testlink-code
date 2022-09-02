@@ -1099,10 +1099,12 @@ class testcase extends tlObjectWithAttachments {
           // we need to do this when in display mode
           switch ($cfpKey) {
             case 'hide_because_is_used_as_variable':
-              continue;
+            break;  
+
+            default:
+              $gui->cf_current_version[$cfx][$cfpKey] = $this->htmlTableOfCFValues($tc_id,$cfCtx,$cfpFilter);
             break;  
           } 
-          $gui->cf_current_version[$cfx][$cfpKey] = $this->htmlTableOfCFValues($tc_id,$cfCtx,$cfpFilter);
         }
 
         // Other versions (if exists)
@@ -1127,11 +1129,12 @@ class testcase extends tlObjectWithAttachments {
             foreach($cfPlaces as $locKey => $locFilter) {
               switch ($cfpKey) {
                 case 'hide_because_is_used_as_variable':
-                  continue;
                 break;  
+
+                default:
+                  $gui->cf_other_versions[$cfx][$qdx][$locKey] = $this->htmlTableOfCFValues($tc_id,$cfCtx,$locFilter);
+                  break;  
               } 
-              $gui->cf_other_versions[$cfx][$qdx][$locKey] =
-                  $this->htmlTableOfCFValues($tc_id,$cfCtx,$locFilter);
             }
           }
         }

@@ -8368,19 +8368,9 @@ class testcase extends tlObjectWithAttachments {
     $tlEndTag = '[/tlVar]';
     $tlEndTagLen = strlen($tlEndTag);
 
-    // I've discovered that working with Web Rich Editor generates
-    // some additional not wanted entities, that disturb a lot
-    // when trying to use json_decode().
-    // Hope this set is enough.
-    // $replaceSet = array($tlEndTag, '</p>', '<p>','&nbsp;');
-    // $replaceSetWebRichEditor = array('</p>', '<p>','&nbsp;');
-
-
     $rse = &$item2render;
     foreach($key2check as $item_key) {
       $start = strpos($rse[$item_key],$tlBeginTag);
-      $ghost = $rse[$item_key];
-
       // There is at least one request to replace ?
       if($start !== FALSE) {
         // This way remove may be the <p> that webrich editor adds
@@ -8389,17 +8379,19 @@ class testcase extends tlObjectWithAttachments {
 
         // How many requests to replace ?
         $xx2do = count($xx);
-        $ghost = '';
         for($xdx=0; $xdx < $xx2do; $xdx++) {
 
           // Hope was not a false request.
           if( ($es=strpos($xx[$xdx],$tlEndTag)) !== FALSE) {
+
             // Separate command string from other text
             // Theorically can be just ONE, but it depends
             // is user had not messed things.
             $yy = explode($tlEndTag,$xx[$xdx]);
             if( ($elc = count($yy)) > 0) {
+              $markAsIS = $tlBeginTag . $yy[0] . $tlEndTag;
               $variableName = trim($yy[0]);
+
               try {
                 // -----------------------------------------------------------
                 // Step #1 Look in Custom Fields
@@ -8408,7 +8400,8 @@ class testcase extends tlObjectWithAttachments {
                 if (!is_null($cfSet)) {
                   foreach ($cfSet as $cfID => $cfDef) {
                     if( $cfDef['name'] === $variableName ) {
-                      $ghost .= $this->cfield_mgr->string_custom_field_value($cfDef,$tcversion_id);
+                      $duckTape = $this->cfield_mgr->string_custom_field_value($cfDef,$tcversion_id);
+                      $rse[$item_key] = str_replace($tlBeginTag . $variableName . $tlEndTag,$duckTape,$rse[$item_key]);
                     }
                   }  
                 }
@@ -8420,30 +8413,17 @@ class testcase extends tlObjectWithAttachments {
                 if (!is_null($kwSet)) {
                   foreach ($kwSet as $kw => $kwNotes) {
                     if( $kw === $variableName ) {
-                      $ghost .= $kwNotes;
+                      $rse[$item_key] = str_replace($tlBeginTag . $variableName . $tlEndTag,$kwNotes,$rse[$item_key]);
                     }
                   }
                 }
                 // -----------------------------------------------------------
-
-                // reconstruct the contect with the other pieces
-                $lim = $elc-1;
-                for($cpx=1; $cpx <= $lim; $cpx++) {
-                  $ghost .= $yy[$cpx];
-                }
               } catch (Exception $e) {
-                $ghost .= $rse[$item_key];
+                // Do nothing 
               }
             }
-          } else {
-            $ghost .= $xx[$xdx];
-          }
+          } 
         }
-      }
-
-      // reconstruct field contents
-      if($ghost != '') {
-        $rse[$item_key] = $ghost;
       }
     }
   }

@@ -4075,6 +4075,7 @@ $TLS_before_preconditions = "Before Preconditions";
 $TLS_after_title = "After Title";
 $TLS_after_summary = "After summary";
 $TLS_after_preconditions = "After Preconditions";
+$TLS_hide_because_is_used_as_variable = 'Hide (will be used as variable/snippet)';
 
 $TLS_enabled = 'Enabled';
 $TLS_disabled = 'Disabled';
@@ -4095,6 +4096,8 @@ $TLS_doubleclick_to_edit = 'Double-click to edit';
 $TLS_click_to_copy_ghost_to_clipboard = "Click to copy ghost string to clipboard";
 $TLS_do_not_execute = 'Do not execute';
 
+
+$TLS_audit_cfield_location_changed = 'Audit - Custom Field Location Changed';
 
 // @see const.inc.php
 #$TLS_testCaseStatus_hint_draft = '';

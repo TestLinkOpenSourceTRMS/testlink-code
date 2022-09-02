@@ -356,13 +356,28 @@ class testcaseCommands {
      
     $cf_smarty = null;
     $cfPlaces = $this->tcaseMgr->buildCFLocationMap();
+
+    // To skip in an elegant way??
+    $hideCode = $cfPlaces['hide_because_is_used_as_variable']['location'];
+    unset($cfPlaces['hide_because_is_used_as_variable']);
+
     foreach($cfPlaces as $locationKey => $locationFilter) { 
+      switch($locationKey) {
+        case 'standard_location':
+          $std = $locationFilter['location'];
+          $locationFilter['location'] = [
+            $std, 
+            $hideCode
+          ];
+        break;  
+      }
+
       $cf_smarty[$locationKey] = 
         $this->tcaseMgr->html_table_of_custom_field_inputs(
-          $argsObj->tcase_id,null,'design','',
-          $argsObj->tcversion_id,null,null,$locationFilter);
+                            $argsObj->tcase_id,null,'design','',
+                            $argsObj->tcversion_id,null,null,$locationFilter);
     }  
-    
+
     $templateCfg = templateConfiguration('tcEdit');
     $guiObj->cf = $cf_smarty;
     $guiObj->tc=$tc_data[0];

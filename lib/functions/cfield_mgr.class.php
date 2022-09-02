@@ -132,14 +132,18 @@ class cfield_mgr extends tlObject
      * IMPORTANT: if you add a new key, this values are used as access keys in several properties of this object.
      *            then if you add one here, remember to update other properties.
      */
-    var $locations = array('testcase' => 
-                       array( 1 => 'standard_location', 
-                              2 => 'before_steps_results',
-                              3 => 'before_summary',
-                              4 => 'before_preconditions',
-                              5 => 'after_title',
-                              6 => 'after_summary',
-                              7 => 'after_preconditions') );
+    var $locations = [
+      'testcase' => [
+        1 => 'standard_location', 
+        2 => 'before_steps_results',
+        3 => 'before_summary',
+        4 => 'before_preconditions',
+        5 => 'after_title',
+        6 => 'after_summary',
+        7 => 'after_preconditions',
+        8 => 'hide_because_is_used_as_variable'  /* use when you will use the custom field as a variable [tlVar][/tlvar] */
+      ] 
+    ];
 
     // changes in configuration
     //
@@ -502,6 +506,10 @@ class cfield_mgr extends tlObject
           AND CFDV.node_id IN ($inClause) "; 
     }
 
+    $locFilter = [];
+    $replaceLocation = false;
+    $targetLocationCode = 0;
+
     if (!is_null($filters)) {
       if (isset($filters['show_on_execution']) && 
           !is_null($filters['show_on_execution']) ) {
@@ -523,24 +531,34 @@ class cfield_mgr extends tlObject
       {
         $additional_filter .= " AND CF.id = {$filters['cfield_id']} ";
       }
-        
+      
       $filterKey='location';
       if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) ) {
-        $additional_filter .= " AND CFTP.$filterKey={$filters[$filterKey]} ";
+        $locFilter = (array)$filters[$filterKey];
+        $additional_filter .= " AND CFTP.$filterKey IN(" . implode(",",$locFilter ) . ") ";
+        
+        if ( $replaceLocation = (count($locFilter) > 1) ) {
+          $locMap = $this->buildLocationMap('testcase');
+          $targetLocationCode = " {$locMap['standard_location']['location']} AS location ";
+        }
       }
     }
+    $sql = "/* $debugMsg */ SELECT CF.*,CFTP.display_order,CFTP.location,CFTP.required ";
+    if ($replaceLocation) {
+      $sql = str_replace('CFTP.location', $targetLocationCode,$sql);
+    }
 
-    $sql="/* $debugMsg */ SELECT CF.*,CFTP.display_order,CFTP.location,CFTP.required " .
-         $additional_values .
-         " FROM {$this->object_table} CF " .
-         " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
-         $additional_join .
-         " WHERE CFTP.testproject_id=" . intval($tproject_id) .
-         " AND   CFTP.active=1 AND CF.show_on_design=1     " .
-         " AND   CF.enable_on_design={$enabled} " .
-         $additional_filter .
-         " ORDER BY display_order,CF.id ";
+    $sql .= $additional_values .
+            " FROM {$this->object_table} CF " .
+            " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
+            $additional_join .
+            " WHERE CFTP.testproject_id=" . intval($tproject_id) .
+            " AND   CFTP.active=1 AND CF.show_on_design=1     " .
+            " AND   CF.enable_on_design={$enabled} " .
+            $additional_filter .
+            " ORDER BY display_order,CF.id ";
 
+  
     if ( $targetIsArray ) {
       // # 0008792: Tl 1.9.20 (dev) >> Requirement overview >> Custom field content displayed in wrong column
       // 

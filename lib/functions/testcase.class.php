@@ -1039,8 +1039,6 @@ class testcase extends tlObjectWithAttachments {
         $gui->fileUploadURL[$currentVersionID] = 
           $_SESSION['basehref'] . $this->getFileUploadRelativeURL($io);
 
-
-
         $gui->tc_current_version[] = array($tc_current);
 
         //  
@@ -1091,12 +1089,20 @@ class testcase extends tlObjectWithAttachments {
           $gui->relationSet[] = $this->getTCVersionRelations($xm);
         }
 
-        $cfCtx = array('scope' => 'design',
-                       'tproject_id' => $gui->tproject_id,
-                       'link_id' => $tc_current['id']);
+        $cfCtx = [
+          'scope' => 'design',
+          'tproject_id' => $gui->tproject_id,
+          'link_id' => $tc_current['id']
+        ];
+
         foreach($cfPlaces as $cfpKey => $cfpFilter) {
-          $gui->cf_current_version[$cfx][$cfpKey] =
-            $this->htmlTableOfCFValues($tc_id,$cfCtx,$cfpFilter);
+          // we need to do this when in display mode
+          switch ($cfpKey) {
+            case 'hide_because_is_used_as_variable':
+              continue;
+            break;  
+          } 
+          $gui->cf_current_version[$cfx][$cfpKey] = $this->htmlTableOfCFValues($tc_id,$cfCtx,$cfpFilter);
         }
 
         // Other versions (if exists)
@@ -1119,6 +1125,11 @@ class testcase extends tlObjectWithAttachments {
 
             $cfCtx['link_id'] = $gui->testcase_other_versions[$target_idx][$qdx]['id'];
             foreach($cfPlaces as $locKey => $locFilter) {
+              switch ($cfpKey) {
+                case 'hide_because_is_used_as_variable':
+                  continue;
+                break;  
+              } 
               $gui->cf_other_versions[$cfx][$qdx][$locKey] =
                   $this->htmlTableOfCFValues($tc_id,$cfCtx,$locFilter);
             }

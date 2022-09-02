@@ -2800,7 +2800,11 @@ class testcase extends tlObjectWithAttachments {
     if( $canProcess && $render['variables'] ) {
       $key2loop = array_keys($recordset);
       foreach( $key2loop as $accessKey) {
-        $this->renderVariables($recordset[$accessKey],$my['options']['tproject_id']);
+        try {
+          $this->renderVariables($recordset[$accessKey],$my['options']['tproject_id']);
+        } catch (Exception $e) {
+          echo '<pre>';debug_print_backtrace();  echo '</pre>'; die();
+        }
       }
       reset($recordset);
     }

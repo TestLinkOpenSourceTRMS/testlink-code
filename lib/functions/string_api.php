@@ -256,28 +256,22 @@ function string_sanitize_url( $p_url ) {
 // ----- Tag Processing -------------------------------------------------------
 
 /**
+ * Updated from Mantis 2.25.5 
  * Search email addresses and URLs for a few common protocols in the given
- * string, and replace occurences with href anchors.
- * @param string $p_string
+ * string, and replace occurrences with href anchors.
+ * @param string $p_string String to be processed.
  * @return string
  */
 function string_insert_hrefs( $p_string ) {
 	static $s_url_regex = null;
 	static $s_email_regex = null;
-	static $s_anchor_regex = '/(<a[^>]*>.*?<\/a>)/is';
 
 	if( !config_get( 'html_make_links' ) ) {
 		return $p_string;
 	}
 
-	$t_change_quotes = false;
-	if( ini_get_bool( 'magic_quotes_sybase' ) && function_exists( 'ini_set' ) ) {
-		$t_change_quotes = true;
-		ini_set( 'magic_quotes_sybase', false );
-	}
-
 	# Initialize static variables
-	if ( is_null( $s_url_regex ) ) {
+	if( is_null( $s_url_regex ) ) {
 		# URL protocol. The regex accepts a small subset from the list of valid
 		# IANA permanent and provisional schemes defined in
 		# http://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
@@ -293,7 +287,7 @@ function string_insert_hrefs( $p_string ) {
 		$t_url_chars_in_brackets = "(?:${t_url_hex}|[${t_url_valid_chars}\(\)])";
 		$t_url_chars_in_parens   = "(?:${t_url_hex}|[${t_url_valid_chars}\[\]])";
 
-		$t_url_part1 = "${t_url_chars}";
+		$t_url_part1 = $t_url_chars;
 		$t_url_part2 = "(?:\(${t_url_chars_in_parens}*\)|\[${t_url_chars_in_brackets}*\]|${t_url_chars2})";
 
 		$s_url_regex = "/(${t_url_protocol}(${t_url_part1}*?${t_url_part2}+))/su";
@@ -302,31 +296,59 @@ function string_insert_hrefs( $p_string ) {
 		$s_email_regex = substr_replace( email_regex_simple(), '(?:mailto:)?', 1, 0 );
 	}
 
-	# Find any URL in a string and replace it by a clickable link
-	$t_function = create_function( '$p_match', '
-		$t_url_href = \'href="\' . rtrim( $p_match[1], \'.\' ) . \'"\';
-		return "<a ${t_url_href}>${p_match[1]}</a> [<a ${t_url_href} target=\"_blank\">^</a>]";
-	' );
-	$p_string = preg_replace_callback( $s_url_regex, $t_function, $p_string );
-	if( $t_change_quotes ) {
-		ini_set( 'magic_quotes_sybase', true );
-	}
+	# Find any URL in a string and replace it with a clickable link
+	$p_string = preg_replace_callback(
+		$s_url_regex,
+		function ( $p_match ) {
+			$t_url_href = 'href="' . rtrim( $p_match[1], '.' ) . '"';
+			if( config_get( 'html_make_links' ) == LINKS_NEW_WINDOW ) {
+				$t_url_target = ' target="_blank"';
+			} else {
+				$t_url_target = '';
+			}
+			return "<a ${t_url_href}${t_url_target}>${p_match[1]}</a>";
+		},
+		$p_string
+	);
 
 	# Find any email addresses in the string and replace them with a clickable
 	# mailto: link, making sure that we skip processing of any existing anchor
 	# tags, to avoid parts of URLs such as https://user@example.com/ or
 	# http://user:password@example.com/ to be not treated as an email.
-	$t_pieces = preg_split( $s_anchor_regex, $p_string, null, PREG_SPLIT_DELIM_CAPTURE );
-	$p_string = '';
-	foreach( $t_pieces as $piece ) {
-		if( preg_match( $s_anchor_regex, $piece ) ) {
-			$p_string .= $piece;
+	$p_string = string_process_exclude_anchors(
+		$p_string,
+		function( $p_string ) use ( $s_email_regex ) {
+			return preg_replace( $s_email_regex, '<a href="mailto:\0">\0</a>', $p_string );
+		}
+	);
+
+	return $p_string;
+}
+
+/**
+ * Updated from Mantis 2.25.5 
+ * Processes a string, ignoring anchor tags.
+ * Applies the specified callback function to the text between anchor tags;
+ * the anchors themselves will be left as-is.
+ * @param string   $p_string   String to process
+ * @param callable $p_callback Function to apply
+ * @return string
+ */
+function string_process_exclude_anchors( $p_string, $p_callback ) {
+	static $s_anchor_regex = '/(<a[^>]*>.*?<\/a>)/is';
+
+	$t_pieces = preg_split( $s_anchor_regex, $p_string, -1, PREG_SPLIT_DELIM_CAPTURE );
+
+	$t_string = '';
+	foreach( $t_pieces as $t_piece ) {
+		if( preg_match( $s_anchor_regex, $t_piece ) ) {
+			$t_string .= $t_piece;
 		} else {
-			$p_string .= preg_replace( $s_email_regex, '<a href="mailto:\0">\0</a>', $piece );
+			$t_string .= $p_callback( $t_piece );
 		}
 	}
 
-	return $p_string;
+	return $t_string;
 }
 
 

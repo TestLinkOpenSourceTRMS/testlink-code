@@ -143,17 +143,15 @@ viewer for test case in test specification
     {if $allOpOnTCV}
       <fieldset class="groupBtn">
     	  <b>{$tcView_viewer_labels.testcase_operations}</b>
-        <form style="display: inline;" id="topControls" name="topControls"
-          method="post" action="{$basehref}lib/testcases/tcEdit.php">
-      		<input type="hidden" name="testcase_id"
-                 value="{$args_testcase.testcase_id}" />
-      		<input type="hidden" name="tcversion_id" 
-                 value="{$args_testcase.id}" />
-      		<input type="hidden" name="has_been_executed" 
-                 value="{$has_been_executed}" />
+        <form style="display: inline;" id="topControls" name="topControls" method="post" action="{$basehref}lib/testcases/tcEdit.php">
+      		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+      		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+          <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+          <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+
+      		<input type="hidden" name="has_been_executed"  value="{$has_been_executed}" />
       		<input type="hidden" name="doAction" value="" />
       		<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
-          <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
 
       		{* New TC sibling *}
       		{if $args_new_sibling == "yes" }
@@ -216,17 +214,13 @@ viewer for test case in test specification
     {* START TCV SECTION *}
     <fieldset class="groupBtn">
     	<b>{$tcView_viewer_labels.testcase_version_operations}</b>
-      <form style="display: inline;" id="versionControls" 
-        name="versionControls" method="post" 
-        action="{$basehref}lib/testcases/tcEdit.php">
-      	<input type="hidden" name="testcase_id" 
-               id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
+      <form style="display: inline;" id="versionControls" name="versionControls" method="post" action="{$basehref}lib/testcases/tcEdit.php">
+      	<input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
       	<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-
+        <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
         <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
 
-      	<input type="hidden" name="has_been_executed"
-          value="{$has_been_executed}" />
+      	<input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
       	<input type="hidden" name="doAction" value="" />
       	<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 

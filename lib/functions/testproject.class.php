@@ -332,6 +332,11 @@ public function get_by_name($name, $addClause = null, $opt=null)
  */
 public function get_by_id($id, $opt=null)
 {
+  if( null == $id ) {
+    echo '<pre>'; debug_print_backtrace(); echo '</pre>';
+    throw new Exception(__METHOD__ . ' EXCEPTION: test project ID, is mandatory');  
+  }
+
   $condition = "testprojects.id=". intval($id);
   $result = $this->getTestProject($condition,$opt);
   return $result[0];
@@ -3502,8 +3507,8 @@ function isCodeTrackerEnabled($id) {
          "SELECT code_tracker_enabled FROM {$this->object_table} " .
          "WHERE id =" . intval($id);   
        
-  $ret = $this->db->get_recordset($sql);
-  return $ret[0]['code_tracker_enabled'];
+  $ret = (array)$this->db->get_recordset($sql);
+  return (count($ret) > 0) ? $ret[0]['code_tracker_enabled'] : 0;
 }
 
 

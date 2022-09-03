@@ -376,8 +376,12 @@ class cfield_mgr extends tlObject
   function getLinkedCfieldsAtDesign($context,$filters=null,$access_key='id') {
 
     // $context
-    $ctx = array('tproject_id' => null, 'enabled' => true, 'node_type' => null, 
-                 'node_id' => null);
+    $ctx = [
+      'tproject_id' => null, 
+      'enabled' => true, 
+      'node_type' => null, 
+      'node_id' => null
+    ];
     $ctx = array_merge($ctx,$context);
     if( null == $ctx['tproject_id'] ) {
       throw new Exception(__METHOD__ . ' EXCEPTION: test project ID, is mandatory');  
@@ -386,8 +390,11 @@ class cfield_mgr extends tlObject
     extract($ctx);
 
     return $this->get_linked_cfields_at_design($tproject_id,
-                    $enabled,$filters,
-                    $node_type,$node_id,$access_key);
+                                               $enabled,
+                                               $filters,
+                                               $node_type,
+                                               $node_id,
+                                               $access_key);
 
   }
 

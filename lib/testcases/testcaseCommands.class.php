@@ -1225,8 +1225,7 @@ class testcaseCommands {
     $guiObj->uploadOp = property_exists($argsObj,'uploadOp') ? $argsObj->uploadOp : '';
 
     $guiObj->viewerArgs=array();
-    $guiObj->refreshTree = ($argsObj->refreshTree 
-      && $userFeedback['status_ok']) ? 1 : 0;
+    $guiObj->refreshTree = ($argsObj->refreshTree && $userFeedback['status_ok']) ? 1 : 0;
     $guiObj->has_been_executed = $argsObj->has_been_executed;
     $guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
     $guiObj->user_feedback = '';
@@ -1243,20 +1242,18 @@ class testcaseCommands {
         $guiObj->show_mode = 'editOnExec'; 
 
         // @20190127 the only useful thing there may be is the Rabbit
-        $guiObj->additionalURLPar = 
-          "&updateTCVToThis=" . $identity->version_id .
-          "&followTheWhiteRabbit=1";  
+        $guiObj->additionalURLPar = "&updateTCVToThis=" . $identity->version_id . "&followTheWhiteRabbit=1";  
         $guiObj->closeMyWindow = 1;  
-
       }
 
       $guiObj->user_feedback = '';
       if($updateCFOnDB) {  
-        $cfCtx = array('tproject_id' => $identity->tproject_id, 'enabled' => 1,
-                       'node_type' => 'testcase');
+        $cfCtx = [
+          'tproject_id' => $argsObj->testproject_id, 
+          'enabled' => 1,
+          'node_type' => 'testcase'
+        ];
         $cf_map = $this->tcaseMgr->cfield_mgr->getLinkedCfieldsAtDesign($cfCtx);
-
-        
         $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$identity->version_id,$cf_map);
       }
       

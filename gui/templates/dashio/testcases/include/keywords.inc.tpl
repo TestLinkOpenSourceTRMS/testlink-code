@@ -51,14 +51,30 @@ var pF_remove_keyword = remove_keyword;
 
 </script>
 
-<form method="post" id="kwf" name="kwf" action="{$basehref}lib/testcases/tcEdit.php">
+<form method="post" id="kwf" name="kwf" 
+  action="{$basehref}lib/testcases/tcEdit.php">
   <input type="hidden" id="kwf_doAction" name="doAction" value="removeKeyword" />
-  <input type="hidden" name="tcase_id" id="tcase_id" value="{$args_tcase_id}" />
-  <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$args_tcversion_id}" />
+  <input type="hidden" name="tcase_id" value="{$args_tcase_id}" />
+  <input type="hidden" name="tcversion_id" value="{$args_tcversion_id}" />
+  {if property_exists($gui,'tproject_id') } 
+    <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+  {/if}
 
-  {$kwView = $gsmarty_href_keywordsView|replace:'%s%':$gui->tproject_id}
+  {if property_exists($gui,'tplan_id') } 
+    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+  {/if}
+  {if property_exists($gui,'show_mode') } 
+    <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
+  {/if}
 
-  <table cellpadding="0" cellspacing="0" style="font-size:100%;">
+
+  {$kwView = "lib/keywords/keywordsView.php?tproject_id=%s%&openByKWInc=1"|replace:'%s%':$gui->tproject_id}
+
+  {$kwAdd = "lib/keywords/keywordsEdit.php?doAction=create&tproject_id=%s%&directAccess=1"|replace:'%s%':$gui->tproject_id}
+
+  {$kwAL = "lib/keywords/keywordsEdit.php?doAction=cfl&tproject_id=%s%&directAccess=1&tcversion_id=$args_tcversion_id"|replace:'%s%':$gui->tproject_id}
+
+  <table cellpadding="0" cellspacing="0" style="font-size:100%;" width="30%">
     <tr>
       <td width="35%" style="vertical-align:top;">
     <a href="javascript:open_popup('{$kwView}')">{$tcView_viewer_labels.keywords}</a> &nbsp; 

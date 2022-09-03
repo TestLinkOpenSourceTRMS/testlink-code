@@ -432,8 +432,6 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   
   
   $args->show_mode = (isset($_REQUEST['show_mode']) && $_REQUEST['show_mode'] != '') ? $_REQUEST['show_mode'] : null;
-
-        
   $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? intval($_SESSION['setting_refresh_tree_on_action']) : 0;
     
   $args->opt_requirements = null;

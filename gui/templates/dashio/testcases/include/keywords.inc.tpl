@@ -4,7 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
 
 {lang_get var='kw_labels' 
-          s='btn_add,img_title_remove_keyword,warning,select_keywords'}
+          s='btn_add,img_title_remove_keyword,warning,select_keywords,
+             createKW,btn_create_and_link'}
 
 
 {lang_get s='remove_kw_msgbox_msg' var='remove_kw_msgbox_msg'}
@@ -35,8 +36,12 @@ function keyword_remove_confirmation(item_id, tckw_link_id, keyword, title, msg,
  *
  */
 function remove_keyword(btn, text, item_id, tckw_link_id) {
-  var my_action = fRoot + 'lib/testcases/tcEdit.php?doAction=removeKeyword&tcase_id='
-                     + item_id + '&tckw_link_id=' + tckw_link_id;
+
+  var my_url = "{$gui->delTCVKeywordURL}";
+  var dummy = my_url.replace('%1',item_id);
+  var my_action = dummy.replace('%2',tckw_link_id);
+
+
   if( btn == 'yes' ) {
     window.location=my_action;
   }
@@ -55,12 +60,25 @@ var pF_remove_keyword = remove_keyword;
 
   <table cellpadding="0" cellspacing="0" style="font-size:100%;">
     <tr>
-      <td width="35%" style="vertical-align:top;"><a href={$kwView}>{$tcView_viewer_labels.keywords}</a>: &nbsp;
+      <td width="35%" style="vertical-align:top;">
+    <a href="javascript:open_popup('{$kwView}')">{$tcView_viewer_labels.keywords}</a> &nbsp; 
+
+      <a href="javascript:open_popup('{$kwAdd}')">
+      <img src="{$tlImages.add}" title="{$kw_labels.createKW}"  style="border:none" /></a>&nbsp; 
+
+      <a href="javascript:open_popup('{$kwAL}')">
+      <img src="{$tlImages.keyword_add}" title="{$kw_labels.btn_create_and_link}"  style="border:none" /></a>&nbsp; 
+
       </td>
+
+
+      {$removeEnabled = $args_edit_enabled && $gui->assign_keywords &&
+                        $args_frozen_version == "no"}
+
       <td style="vertical-align:top;">
           {foreach item=tckw_link_item from=$args_keywords_map}
                 {$tckw_link_item.keyword|escape}
-            {if $args_edit_enabled && $gui->assign_keywords && $args_frozen_version == "no"}
+            {if $removeEnabled}
             <a href="javascript:keyword_remove_confirmation({$gui->tcase_id},
                      {$tckw_link_item.tckw_link},
                      '{$tckw_link_item.keyword|escape:'javascript'}', 
@@ -75,7 +93,8 @@ var pF_remove_keyword = remove_keyword;
       </td>      
     </tr>
     <tr>
-      {if $args_edit_enabled && null != $gui->currentVersionFreeKeywords} 
+      {$addEnabled = $args_edit_enabled}
+      {if $addEnabled && null != $gui->currentVersionFreeKeywords} 
       <td>
        &nbsp;  
       <td>

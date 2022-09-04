@@ -42,17 +42,15 @@ CRITICAL
 var del_action=fRoot+'{$deleteAction}';
 </script>
 
+{include file="bootstrap.inc.tpl"}
+
 {if $gui->tprojects != ''}
-  {$ll = #pagination_length#}
-  {if $tlCfg->gui->projectView->pagination->enabled}
-    {$ll = $tlCfg->gui->projectView->pagination->length}
-  {/if}
-  {include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
-                                     DataTableslengthMenu=$ll}
+  {$ll = $tlCfg->gui->{$cfg_section}->pagination->length}
+  {* Do not initialize in DataTables -> DataTablesSelector="" *}
+  {include file="DataTables.inc.tpl" DataTablesSelector="" DataTableslengthMenu=$ll}
+  {include file="DataTablesColumnFiltering.inc.tpl" DataTablesSelector="#item_view" DataTableslengthMenu=$ll}
 {/if}
 
-
-{include file="bootstrap.inc.tpl"}
 </head>
 
 <body {$body_onload} style="background-color: #eaeaea">
@@ -64,9 +62,7 @@ var del_action=fRoot+'{$deleteAction}';
     <div class="groupBtn">
       {if $gui->canManage}
       <form id="createItem" id="createItem" method="post" action="{$createAction}" style="display:inline;">
-        <input class="{#BUTTON_CLASS#}" type="submit" 
-               id="create" name="create"
-               value="{$labels.btn_create}" />
+        <input class="{#BUTTON_CLASS#}" type="submit"  id="create" name="create" value="{$labels.btn_create}" />
       </form>
       {/if}
     </div>
@@ -89,14 +85,14 @@ var del_action=fRoot+'{$deleteAction}';
           <table id="item_view" class="{#item_view_table#}">
             <thead class="{#item_view_thead#}">
               <tr>
-                <th>{$tlImages.toggle_api_info}{$labels.th_name}</th>
+                <th {#SMART_SEARCH#}>{$tlImages.toggle_api_info}{$labels.th_name}</th>
                 <th {#NOT_SORTABLE#}>{$labels.th_notes}</th>
-                <th>{$labels.tcase_id_prefix}</th>
-                <th>{$labels.th_issuetracker}</th>
-                <th>{$labels.th_codetracker}</th>
+                <th {#SMART_SEARCH#}>{$labels.tcase_id_prefix}</th>
+                <th >{$labels.th_issuetracker}</th>
+                <th >{$labels.th_codetracker}</th>
                 <th class="icon_cell" {#NOT_SORTABLE#}>{$labels.th_requirement_feature}</th>
-                <th class="icon_cell">{$labels.th_active}</th>
-                <th class="icon_cell">{$labels.public}</th>
+                <th class="icon_cell" {#NOT_SORTABLE#}>{$labels.th_active}</th>
+                <th class="icon_cell" {#NOT_SORTABLE#}>{$labels.public}</th>
                 {if $gui->canManage == "yes"}
                   <th class="icon_cell" {#NOT_SORTABLE#}></th>
                 {/if}

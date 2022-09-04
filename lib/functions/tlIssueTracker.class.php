@@ -6,7 +6,7 @@
  * @filesource  tlIssueTracker.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2012,2013 TestLink community
+ * @copyright   2012,2022 TestLink community
  * @link        http://testlink.sourceforge.net/
  *
  * @internal revisions
@@ -649,15 +649,12 @@ class tlIssueTracker extends tlObject
     $name = $issueT['issuetracker_name'];
     $goodForSession = ($issueT['api'] != 'db');
 
-    if($goodForSession && isset($_SESSION['its'][$name]))
-    {
+    if($goodForSession && isset($_SESSION['its'][$name])) {
       return $_SESSION['its'][$name]; 
     }  
 
-    try
-    {
-      if( !is_null($issueT)  )
-      {
+    try {
+      if( !is_null($issueT)  ) {
         $itd = $this->getByID($issueT['issuetracker_id']);
         $iname = $itd['implementation'];
 
@@ -671,14 +668,11 @@ class tlIssueTracker extends tlObject
           return $ixx;
         }  
       }
-      else
-      {
+      else {
         $_SESSION['its'][$name] = null;
       }
       return $_SESSION['its'][$name];
-    }
-    catch (Exception $e)
-    {
+    } catch (Exception $e) {
       echo('Probably there is some PHP Config issue regarding extension<b>');
       echo($e->getMessage().'<pre>'.$e->getTraceAsString().'</pre>');   
     }

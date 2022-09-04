@@ -459,14 +459,24 @@ class testcase extends tlObjectWithAttachments {
     $name = trim($name);
     $originalNameLen = tlStringLen($name);
 
-    $getOptions = array();
-    $ret = array('id' => -1,'external_id' => 0, 'status_ok' => 1,'msg' => 'ok',
-                 'new_name' => '', 'version_number' => 1, 'has_duplicate' => false,
-                 'external_id_already_exists' => false, 'update_name' => false);
+    $getOptions = [];
+    $ret = [
+      'id' => -1,'
+      external_id' => 0, 
+      'status_ok' => 1,
+      'msg' => 'ok',
+      'new_name' => '', 
+      'version_number' => 1, 
+      'has_duplicate' => false,
+      'external_id_already_exists' => false, 
+      'update_name' => false
+    ];
 
-    $my['options'] = array('check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
-                           'action_on_duplicate_name' => 'generate_new',
-                           'external_id' => null, 'importLogic' => null);
+    $my['options'] = [
+      'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
+      'action_on_duplicate_name' => 'generate_new',
+      'external_id' => null, 'importLogic' => null
+    ];
 
     $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -1247,11 +1257,11 @@ class testcase extends tlObjectWithAttachments {
             WHERE testproject_id = {$idCard->tproject_id}";
 
     $rs = $this->db->get_recordset($sql);
-    
     $gui->addAndLinkIsEnabled = 0;
     if ($gui->hasIssueTracker = (null != $rs)) {
       $system = new tlIssueTracker($this->db);
-      $repo = $system->getInterfaceObject($this->tproject_id);
+      // 20220904 - $repo = $system->getInterfaceObject($this->tproject_id);
+      $repo = $system->getInterfaceObject($idCard->tproject_id);
       $gui->addAndLinkIsEnabled = method_exists($repo,'addLink');
 
       if ($gui->currentVersionAliens != null) {
@@ -1260,8 +1270,7 @@ class testcase extends tlObjectWithAttachments {
       
       if ($gui->otherVersionsAliens != null) {
         foreach ($gui->otherVersionsAliens as $zzx => $elem) {
-          $this->buildAlienBlob($gui->otherVersionsAliens[$zzx],
-                                $repo);
+          $this->buildAlienBlob($gui->otherVersionsAliens[$zzx],$repo);
         }
       }
     }
@@ -2355,6 +2364,7 @@ class testcase extends tlObjectWithAttachments {
     if( $this->tproject_id > 0 ) {
 
       $po = $this->tproject_mgr->getOptions($this->tproject_id);
+
       if($po->requirementsEnabled) {
         $freezeLinkOnNewTCVersion = $reqTCLinksCfg->freezeLinkOnNewTCVersion;
         $freezeLinkedRequirements = $freezeLinkOnNewTCVersion && 

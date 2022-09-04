@@ -54,7 +54,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         <th {#SMART_SEARCH#} width="30%">{$labels.th_keyword}</th>
         <th {#SMART_SEARCH#}>{$labels.th_notes}</th>
         {if $gui->canManage != ""}
-          <th {#NOT_SORTABLE#} style="min-width:70px">{$labels.th_delete}</th>
+          <th {#NOT_SORTABLE#} class="icon_cell">{$labels.th_delete}</th>
         {/if}
       </tr>
     </thead>

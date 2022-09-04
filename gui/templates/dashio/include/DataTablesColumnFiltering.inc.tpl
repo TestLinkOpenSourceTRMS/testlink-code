@@ -31,6 +31,10 @@ $(document).ready(function() {
     // clone(false) -> is the solution to avoid sort action when clicking
     $('{$DataTablesSelector} thead tr').clone(false).prop("id","column_filters").appendTo( '{$DataTablesSelector} thead' );
     $('{$DataTablesSelector} thead tr:eq(1) th').each( function (idx) {
+
+        // Remove class from cloned <th>, to remove sort icons!!
+         $(this).removeClass(['sorting','sorting_desc','sorting_asc']);
+
         if (typeof  $(this).data('draw-filter') != 'undefined') {
           var title = '';
           var dst = $(this).data('draw-filter');
@@ -55,9 +59,6 @@ $(document).ready(function() {
           }
           // -------------------------------------------------------------------------------- 
           $(this).html(html.replace('%dst%',dst).replace('%title%',title).replace('%value%',value));
-
-          // Remove class from cloned <th>, to remove sort icons!!
-          $(this).removeClass(['sorting','sorting_desc','sorting_asc']);
 
           $( 'input', this ).on( 'keyup change', function () {
               var use_regexp = false;

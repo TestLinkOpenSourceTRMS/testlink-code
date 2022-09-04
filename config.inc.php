@@ -687,6 +687,11 @@ $tlCfg->gui->keywordsView->pagination->enabled = true;
 $tlCfg->gui->keywordsView->pagination->length = '[40, 60, 80, -1], [40, 60, 80, "All"]';
 $tlCfg->gui->keywordsView->itemQtyForTopButton = 10;
 
+$tlCfg->gui->platformsView = new stdClass();
+$tlCfg->gui->platformsView->pagination = new stdClass();
+$tlCfg->gui->platformsView->pagination->enabled = true;
+$tlCfg->gui->platformsView->pagination->length = '[40, 60, 80, -1], [40, 60, 80, "All"]';
+$tlCfg->gui->platformsView->itemQtyForTopButton = 10;
 
 
 /** 

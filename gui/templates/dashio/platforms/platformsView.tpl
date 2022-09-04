@@ -47,9 +47,13 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
 //-->
 </script>
 
-{$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
-                                   DataTableslengthMenu=$ll}
+{if $gui->platforms != null}
+  {$ll = $tlCfg->gui->{$cfg_section}->pagination->length}
+  {* Do not initialize in DataTables -> DataTablesSelector="" *}
+  {include file="DataTables.inc.tpl" DataTablesSelector="" DataTableslengthMenu=$ll}
+  {include file="DataTablesColumnFiltering.inc.tpl" DataTablesSelector="#item_view" DataTableslengthMenu=$ll}
+{/if}
+
 </head>
 <body class="testlink" {$body_onload}>
 {include file="aside.tpl"}  
@@ -59,26 +63,25 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
 {include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 <div class="workBack">
 {if $gui->platforms != null}
-  <form method="post" id="platformsView" 
-    name="platformsView" action="{$managerAction}">
+  <form method="post" id="platformsView" name="platformsView" action="{$managerAction}">
     
     <!-- this will be setted by the onclick -->
     <input type="hidden" name="doAction" id="doAction" value="">
-
     <input type="hidden" name="platform_id" id="platform_id" value="">
     <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
+    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
 
     
     <table class="{#item_view_table#}" id="item_view">
       <thead class="{#item_view_thead#}">
     	<tr>
-    	  <th width="30%">{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_platform}</th>
-    	  <th>{$tlImages.sort_hint}{$labels.th_notes}</th>
-          <th>{$labels.on_design}</th>
-          <th>{$labels.on_exec}</th>
-          <th>{$labels.platform_open_for_exec}</th>
+    	  <th {#SMART_SEARCH#} width="30%">{$tlImages.toggle_api_info}{$labels.th_platform}</th>
+    	  <th {#SMART_SEARCH#}>{$labels.th_notes}</th>
+          <th {#NOT_SORTABLE#}>{$labels.on_design}</th>
+          <th {#NOT_SORTABLE#}>{$labels.on_exec}</th>
+          <th {#NOT_SORTABLE#}>{$labels.platform_open_for_exec}</th>
     	  {if $gui->canManage != ""}
-    		  <th  data-orderable="false" width="10%">{$labels.th_delete}</th>
+    		  <th class="icon_cell" {#NOT_SORTABLE#}></th>
     	  {/if}
     	</tr>
 	  </thead>

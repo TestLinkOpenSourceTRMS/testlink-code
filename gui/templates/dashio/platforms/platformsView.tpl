@@ -90,11 +90,11 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
       {$oplat=$gui->platforms[platform]}
       <tr data-qa-item-name="{$oplat.name|escape}">
         <td data-qa-column="name">
+        	{$oplat.name|escape}
           <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$oplat.id}</span>
         	{if $gui->canManage != ""}
         	  <a href="{$managerURL}&doAction=edit&id={$oplat.id}&tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}">
         	{/if}
-        	{$oplat.name|escape}
         	{if $gui->canManage != ""}
         	  </a>
         	{/if}
@@ -104,68 +104,44 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
         <td class="clickable_icon" data-qa-column="enable_on_design"
             data-qa-enable_on_design="{$oplat.enable_on_design}">
             {if $oplat.enable_on_design==1} 
-              <input type="image" style="border:none"
-                                   id="disableDesign_{$oplat.id}"
-                                   name="disableDesign"
-                                   title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
-                                   onClick = "platform_id.value={$oplat.id};doAction.value='disableDesign';"
-                                   src="{$tlImages.on}"/>
+              <i class="fas fa-toggle-on" title="{$labels.active_click_to_change}"
+                 onclick="doAction.value='disableDesign';platform_id.value={$oplat.id};$('#platformsView').submit();"></i>                            
             {else}
-              <input type="image" style="border:none"
-                                 id="enableDesign_{$oplat.id}"
-                                 name="enableDesign"
-                                 title="{$labels.inactive_click_to_change}" alt="{$labels.inactive_click_to_change}" 
-                                 onClick = "doAction.value='enableDesign';platform_id.value={$oplat.id};"
-                                 src="{$tlImages.off}"/>
+              <i class="fas fa-toggle-off" title="{$labels.active_click_to_change}"
+                 onclick="doAction.value='enableDesign';platform_id.value={$oplat.id};$('#platformsView').submit();"></i>                            
             {/if}
         </td>
-        <td class="clickable_icon" data-qa-column="enable_on_execution"
-            data-qa-enable_on_execution="{$oplat.enable_on_execution}">
+        <td class="clickable_icon" data-qa-column="enable_on_execution" data-qa-enable_on_execution="{$oplat.enable_on_execution}">
             {if $oplat.enable_on_execution==1} 
-              <input type="image" style="border:none"
-                                   id="disableExec_{$oplat.id}"
-                                   title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
-                                   onClick = "doAction.value='disableExec';platform_id.value={$oplat.id};"
-                                   src="{$tlImages.on}"/>
+              <i class="fas fa-toggle-on" title="{$labels.active_click_to_change}"
+                 onclick="doAction.value='disableExec';platform_id.value={$oplat.id};$('#platformsView').submit();"></i>                            
             {else}
-              <input type="image" style="border:none" 
-                                 id="enableExec_{$oplat.id}"
-                                 title="{$labels.inactive_click_to_change}" alt="{$labels.inactive_click_to_change}" 
-                                 onClick = "doAction.value='enableExec';platform_id.value={$oplat.id};"
-                                 src="{$tlImages.off}"/>
+              <i class="fas fa-toggle-off" title="{$labels.active_click_to_change}"
+                 onclick="doAction.value='enableExec';platform_id.value={$oplat.id};$('#platformsView').submit();"></i>                            
             {/if}
         </td>
+
+
         <td class="clickable_icon">
             {if $oplat.is_open==1} 
-              <input type="image" style="border:none"
-                                   id="closeForExec_{$oplat.id}"
-                                   title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
-                                   onClick = "doAction.value='closeForExec';platform_id.value={$oplat.id};"
-                                   src="{$tlImages.on}"/>
+              <i class="fas fa-toggle-on" title="{$labels.active_click_to_change}"
+                 onclick="doAction.value='closeForExec';platform_id.value={$oplat.id};$('#platformsView').submit();"></i>                            
             {else}
-              <input type="image" style="border:none" 
-                                 id="openForExec_{$oplat.id}"
-                                 title="{$labels.inactive_click_to_change}" alt="{$labels.inactive_click_to_change}" 
-                                 onClick = "doAction.value='openForExec';platform_id.value={$oplat.id};"
-                                 src="{$tlImages.off}"/>
+              <i class="fas fa-toggle-off" title="{$labels.inactive_click_to_change}"   
+                 onclick="doAction.value='openForExec';platform_id.value={$oplat.id};$('#platformsView').submit();"></i>       
             {/if}
         </td>
-
-
-
 
     	  {if $gui->canManage != ""}
     				<td class="clickable_icon">
             	{if $oplat.linked_count eq 0}
-            		<img style="border:none;cursor: pointer;"	alt="{$labels.alt_delete_platform}"
-            						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete}"
-            						onclick="delete_confirmation({$oplat.id},
-            							      '{$oplat.name|escape:'javascript'|escape}', '{$del_msgbox_title|escape:'javascript'}','{$warning_msg|escape:'javascript'}');" />
+                <i class="fas fa-minus-circle" title="{$labels.alt_delete_platform}" 
+                  onclick="delete_confirmation({$oplat.id},'{$oplat.name|escape:'javascript'|escape}', 
+                                               '{$del_msgbox_title|escape:'javascript'}','{$warning_msg|escape:'javascript'}');" /></i>
     					{else}
-        				<img style="border:none;cursor: pointer;"
-                   	alt="{$labels.alt_delete_platform}"
-        						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete_disabled}"
-        						onclick="alert_message_html('{$del_msgbox_title|escape:'javascript'}','{$warning_msg_cannot_del|replace:'%s':$oplat.name|escape:'javascript'}');" />
+        		   <i class="fas fa-heart" title="{$labels.alt_delete_platform}" 
+        					onclick="alert_message_html('{$del_msgbox_title|escape:'javascript'}',
+                                              '{$warning_msg_cannot_del|replace:'%s':$oplat.name|escape:'javascript'}');" /></i>
     					{/if}
     				</td>
     		{/if}

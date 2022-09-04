@@ -54,7 +54,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         <th {#SMART_SEARCH#} width="30%">{$labels.th_keyword}</th>
         <th {#SMART_SEARCH#}>{$labels.th_notes}</th>
         {if $gui->canManage != ""}
-          <th {#NOT_SORTABLE#} class="icon_cell">{$labels.th_delete}</th>
+          <th {#NOT_SORTABLE#} class="icon_cell"></th>
         {/if}
       </tr>
     </thead>
@@ -92,12 +92,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
             {/if}
 
             {if $yesDel == 1}
-            <img style="border:none;cursor: pointer;"
-                alt="{$labels.alt_delete_keyword}" title="{$labels.alt_delete_keyword}"   
-                src="{$tlImages.delete}"           
-               onclick="delete_confirmation({$gui->keywords[kwx]->dbID},
-                      '{$gui->keywords[kwx]->name|escape:'javascript'|escape}',
-                      '{$del_msgbox_title}','{$warning_msg}');" />
+                <i class="fas fa-minus-circle" title="{$labels.alt_delete_keyword}" 
+                   onclick="delete_confirmation({$gui->keywords[kwx]->dbID},
+                                              '{$gui->keywords[kwx]->name|escape:'javascript'|escape}',
+                                              '{$del_msgbox_title}','{$warning_msg}');" ></i>
             {/if}          
         </td>
       {/if}

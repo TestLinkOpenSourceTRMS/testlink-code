@@ -1638,7 +1638,7 @@ class testplan extends tlObjectWithAttachments
     20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
     20101114 - franciscom - BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
   */
-  private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping)
+  private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 

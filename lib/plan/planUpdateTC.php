@@ -154,15 +154,14 @@ function init_args(&$tplanMgr)
   // ----------------------------------------------------------------
   // Feature Access Check
   // This feature is affected only for right at Test Project Level
-  $env = array()
-  $env['script'] = basename(__FILE__);
-  $env['tproject_id'] = $args->tproject_id;
-  $env['tplan_id'] = $args->tplan_id;
-  $args->user->checkGUISecurityClearance($dbHandler,$env,
-                    array('testplan_planning'),'and');
+  $env = [
+		'script'] => basename(__FILE__),
+    'tproject_id' => $args->tproject_id,
+    'tplan_id' => $args->tplan_id
+	];
+  $args->user->checkGUISecurityClearance($dbHandler,$env,['testplan_planning'],'and');
   // ----------------------------------------------------------------
 
-	
   return $args;
 }
 

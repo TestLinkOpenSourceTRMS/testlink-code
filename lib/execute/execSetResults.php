@@ -485,9 +485,7 @@ if($args->reload_caller) {
     }
   }
 
-  $gui->headsUpTSuite = 
-     smarty_assign_tsuite_info($smarty,$tree_mgr,$tcase_id,$args->tproject_id,$cfg);
-  var_dump($gui->headsUpTSuite);  
+  $gui->headsUpTSuite = smarty_assign_tsuite_info($smarty,$tree_mgr,$tcase_id,$args->tproject_id,$cfg);
   if ($args->doSave || $args->saveStepsPartialExec) {
     $gui->headsUpTSuite = false;
   }
@@ -1610,9 +1608,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
                                    "({$argsObj->itsCfg['issuetracker_name']})"; 
 
       $gui->createIssueURL = $issueTracker->getEnterBugURL();
-      $gui->tlCanCreateIssue = method_exists($issueTracker,'addIssue') && 
-                               $issueTracker->canCreateViaAPI();
-
+      $gui->tlCanCreateIssue = method_exists($issueTracker,'addIssue') && $issueTracker->canCreateViaAPI();
       $gui->tlCanAddIssueNote = method_exists($issueTracker,'addNote');
     } else {
       $gui->user_feedback = lang_get('issue_tracker_integration_problems');
@@ -1620,33 +1616,38 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   }
   
   // get matadata
-
   $gui->issueTrackerMetaData = null;
-  $gui->issueTrackerMetaData = !is_null($issueTracker) ? 
-    getIssueTrackerMetaData($issueTracker) : null;
+  $gui->issueTrackerMetaData = !is_null($issueTracker) ? getIssueTrackerMetaData($issueTracker) : null;
 
   if ($gui->issueTrackerCfg->editIssueAttr == 1) {
-    $k2c = array('issueType','issuePriority','artifactVersion',
-                 'artifactComponent');
+    $k2c = [
+      'issueType',
+      'issuePriority',
+      'artifactVersion',
+      'artifactComponent'
+    ];
     foreach ($k2c as $kj) {
       $gui->$kj = $argsObj->$kj;  
-
       // To manage issue at step level
       $kx = $kj . 'ForStep';
       $gui->$kx = $argsObj->$kx;  
     }  
   } else {
     if( null != $gui->issueTrackerMetaData ) {
-      $singleVal = array('issuetype' => 'issueType',
-                         'issuepriority' => 'issuePriority');
+      $singleVal = [
+        'issuetype' => 'issueType',
+        'issuepriority' => 'issuePriority'
+      ];
       foreach ($singleVal as $kj => $attr) {
         $gui->$attr = $itsCfg->$kj;  
         $forStep = $attr . 'ForStep';
         $gui->$forStep = $gui->$attr; 
       }  
 
-      $multiVal = array('version' => 'artifactVersion',
-                        'component' => 'artifactComponent');
+      $multiVal = [
+        'version' => 'artifactVersion',
+        'component' => 'artifactComponent'
+      ];
       foreach ($multiVal as $kj => $attr) {
         $gui->$attr = (array)$itsCfg->$kj;  
         $forStep = $attr . 'ForStep';
@@ -2045,8 +2046,6 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
   $idCard = null;
   $itemSet = null;
 
-  // echo '<br><pre>';var_dump('$identity',$identity);echo '</pre></br>';
-
   if( !is_null($identity) ) {
     $idCard = $identity;  
   }
@@ -2068,9 +2067,11 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
 
   if( !is_null($idCard) ) {
     // CRITIC see for key names - testcases.class.php -> getExecutionSet() 
-    $execContext = array('testplan_id' => $argsObj->tplan_id,
-                         'platform_id' => $argsObj->platform_id,
-                         'build_id' => $argsObj->build_id);    
+    $execContext = [
+      'testplan_id' => $argsObj->tplan_id,
+      'platform_id' => $argsObj->platform_id,
+      'build_id' => $argsObj->build_id
+    ];    
 
     $ltcv = null;
     if($historyOn) {
@@ -2083,10 +2084,6 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     if(!$historyOn || is_null($ltcv)) {
       $opt = null;
       $f = "getLatestExecSingleContext";
-
-      //echo '<h2>' . $f . __LINE__ . '</h2><br>';
-      //echo '<pre>CONTEXT';var_dump($execContext);echo '</pre>';
-
       $ltcv = $tcaseMgr->getLatestExecSingleContext($idCard,$execContext,$opt);
     }
   } else {
@@ -2115,11 +2112,13 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     // I will add logic to nullify filter_status on init_args()
     // 
     
-    $options = array('only_executed' => true, 
-                     'output' => $historyOn ? 'mapOfArray' : 'mapOfMap',
-                     'include_unassigned' => $argsObj->include_unassigned,
-                     'group_by_build' => 'add_build',
-                     'last_execution' => !$historyOn);
+    $options = [
+      'only_executed' => true, 
+      'output' => $historyOn ? 'mapOfArray' : 'mapOfMap',
+      'include_unassigned' => $argsObj->include_unassigned,
+      'group_by_build' => 'add_build',
+      'last_execution' => !$historyOn
+    ];
     
     if(is_null($argsObj->filter_status) || in_array($cfgObj->tc_status['not_run'],(array)$argsObj->filter_status)) {
         $options['only_executed'] = false;
@@ -2137,7 +2136,11 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     // $args->platform_id: needed to get execution status info
     // $args->build_id: needed to get execution status info
     //
-    $basic_filters = array('tcase_id' => $argsObj->tc_id, 'platform_id' => $argsObj->platform_id,'build_id' => $argsObj->build_id);
+    $basic_filters = [
+      'tcase_id' => $argsObj->tc_id, 
+      'platform_id' => $argsObj->platform_id,
+      'build_id' => $argsObj->build_id
+    ];
     
     // This filters are useful when bulk execution is enabled, 
     // and user do click on a test suite on execution tree.
@@ -2147,13 +2150,15 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     //
     
     // $setOfTestSuites = (array)$argsObj->tsuite_id; 
-    $bulk_filters = array('keyword_id' => $argsObj->keyword_id,
-                          'assigned_to' => $argsObj->filter_assigned_to, 
-                          'exec_status' => $argsObj->filter_status,
-                          'tsuites_id' => $argsObj->tsuite_id,
-                          'assigned_on_build' => $argsObj->build_id,
-                          'exec_type' => $argsObj->execution_type,
-                          'urgencyImportance' => $argsObj->priority);
+    $bulk_filters = [
+      'keyword_id' => $argsObj->keyword_id,
+      'assigned_to' => $argsObj->filter_assigned_to, 
+      'exec_status' => $argsObj->filter_status,
+      'tsuites_id' => $argsObj->tsuite_id,
+      'assigned_on_build' => $argsObj->build_id,
+      'exec_type' => $argsObj->execution_type,
+      'urgencyImportance' => $argsObj->priority
+    ];
 
     // CRITIC / IMPORTANT 
     // With BULK Operation enabled, we prefer to display Test cases tha are ONLY DIRECT CHILDREN
@@ -2233,7 +2238,7 @@ function initWebEditors(&$guiObj,$cfgObj,$baseHREF) {
       unset($of);    
   } else {
       $guiObj->exec_notes_editors = createExecNotesWebEditor($guiObj->map_last_exec,$baseHREF,$cfgObj->editorCfg,
-        $cfgObj->exec_cfg,$guiObj->lexNotes);
+                                                             $cfgObj->exec_cfg,$guiObj->lexNotes);
   }
 }
 
@@ -2248,30 +2253,30 @@ function getSettingsAndFilters(&$argsObj) {
 
   $mode = 'execution_mode';
   $form_token = $argsObj->form_token;
-
-  //echo 'FT:' . $form_token;
-
   $cache = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
-
-  //var_dump($cache);
   $key = 'testcases_to_show';
   $argsObj->$key = isset($cache[$key]) ? $cache[$key] : null;
 
   // just for better readability
-  $filters = 
-    array('filter_status' => 'filter_result_result',
-          'filter_assigned_to' => 'filter_assigned_user',
-          'execution_type' => 'filter_execution_type', 
-          'priority' => 'filter_priority',
-          'filter_cfields' => 'filter_custom_fields');
-  $settings = array('tplan_id' => 'setting_testplan',
-                    'build_id' => 'setting_build', 
-                    'platform_id' => 'setting_platform');
+  $filters = [
+    'filter_status' => 'filter_result_result',
+    'filter_assigned_to' => 'filter_assigned_user',
+    'execution_type' => 'filter_execution_type', 
+    'priority' => 'filter_priority',
+    'filter_cfields' => 'filter_custom_fields'
+  ];
+  $settings = [
+    'tplan_id' => 'setting_testplan',
+    'build_id' => 'setting_build', 
+    'platform_id' => 'setting_platform'
+  ];
 
   $key2null = array_merge($filters,$settings);
-  $isNumeric = array('tplan_id' => 0,
-                     'build_id' => 0, 
-                     'platform_id' => -1);
+  $isNumeric = [
+    'tplan_id' => 0,
+    'build_id' => 0, 
+    'platform_id' => -1
+  ];
 
   foreach ($key2null as $prop => $cacheKey) {
     $argsObj->$prop = isset($cache[$cacheKey]) ? $cache[$cacheKey] : null;
@@ -2303,14 +2308,12 @@ function getSettingsAndFilters(&$argsObj) {
     $argsObj->keywordsFilterType = $cache['filter_keywords_filter_type'];
   }
 
-  // 20190119
   $argsObj->refreshTree = isset($cache['setting_refresh_tree_on_action']) ? 
                                 $cache['setting_refresh_tree_on_action'] : $argsObj->refreshTree;
                                   
   // Checkbox
   $tgk = 'filter_assigned_user_include_unassigned';
-  $argsObj->include_unassigned = 
-    isset($cache[$tgk]) && ($cache[$tgk] != 0 ? 1 : 0);
+  $argsObj->include_unassigned = isset($cache[$tgk]) && ($cache[$tgk] != 0 ? 1 : 0);
 }
 
 

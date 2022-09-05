@@ -36,9 +36,13 @@ var del_action=fRoot+'{$deleteAction}';
 </script>
 
 {include file="bootstrap.inc.tpl"}
-{$ll = #pagination_length#}
-{include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
-                                   DataTableslengthMenu=$ll}
+{if $gui->buildSet != ''}
+  {$ll = $tlCfg->gui->{$cfg_section}->pagination->length}
+  {* Do not initialize in DataTables -> DataTablesSelector="" *}
+  {include file="DataTables.inc.tpl" DataTablesSelector="" DataTableslengthMenu=$ll}
+  {include file="DataTablesColumnFiltering.inc.tpl" DataTablesSelector="#item_view" DataTableslengthMenu=$ll}
+{/if}
+
 </head>
 
 <body {$body_onload}>
@@ -70,29 +74,26 @@ var del_action=fRoot+'{$deleteAction}';
     <input type="hidden" name="do_action" id="do_action" value="">
     <input type="hidden" name="build_id" id="build_id" value="">
     <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
+    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
 
 
     {* table id MUST BE item_view to use show/hide API info *}
     <table class="{#item_view_table#}" id="item_view">
       <thead class="{#item_view_thead#}">
     		<tr>
-    			<th>{$tlImages.toggle_api_info}{$labels.th_title}</th>
+    			<th {#SMART_SEARCH#}>{$tlImages.toggle_api_info}{$labels.th_title}</th>
     			<th {#NOT_SORTABLE#}>{$labels.th_description}</th>
     			<th {#NOT_SORTABLE#} style="width:90px;">{$labels.release_date}</th>
-    			<th {#NOT_SORTABLE#}>{$labels.th_active}</th>
-    			<th {#NOT_SORTABLE#}>{$labels.th_open}</th>
-    			<th {#NOT_SORTABLE#}>{$labels.th_delete}</th>
+    			<th class="icon_cell" {#NOT_SORTABLE#}>{$labels.th_active}</th>
+    			<th class="icon_cell" {#NOT_SORTABLE#}>{$labels.th_open}</th>
+    			<th class="icon_cell" {#NOT_SORTABLE#}></th>
     		</tr>
       </thead>
       <tbody>
   		{foreach item=build from=$gui->buildSet}
         	<tr>
-  				<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
-  				    <a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
-  					     {if $gsmarty_gui->show_icon_edit}
-  					         <img style="border:none" alt="{$labels.alt_edit_build}" title="{$labels.alt_edit_build}"
-  					              src="{$tlImages.edit}"/>
-  					     {/if}    
+  				<td><a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
+                 <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
   					  </a>   
   				</td>
   				<td>{if $gui->editorType == 'none'}{$build.notes|nl2br}{else}{$build.notes}{/if}</td>
@@ -100,38 +101,28 @@ var del_action=fRoot+'{$deleteAction}';
 
           <td class="clickable_icon">
             {if $build.active==1} 
-                <input type="image" style="border:none" id="set_build_active"
-                       title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
-                       onClick = "do_action.value='setInactive';build_id.value={$build.id};"
-                       src="{$tlImages.on}"/>
+                <i class="fas fa-toggle-on" title="{$labels.active_click_to_change}"
+                     onclick="do_action.value='setInactive';build_id.value={$build.id};;$('#buildView').submit();"></i>       
               {else}
-                <input type="image" style="border:none" id="set_build_inactive"
-                     title="{$labels.inactive_click_to_change}" alt="{$labels.inactive_click_to_change}" 
-                     onClick = "do_action.value='setActive';build_id.value={$build.id};"
-                     src="{$tlImages.off}"/>
+                <i class="fas fa-toggle-off" title="{$labels.inactive_click_to_change}"   
+                     onclick="do_action.value='setActive';build_id.value={$build.id};$('#buildView').submit();"></i>       
               {/if}
           </td>
 
           <td class="clickable_icon">
             {if $build.is_open==1} 
-                <input type="image" style="border:none" id="close_build"
-                       title="{$labels.click_to_set_closed}" alt="{$labels.click_to_set_closed}" 
-                       onClick = "do_action.value='close';build_id.value={$build.id};"
-                       src="{$tlImages.lock_open}"/>
-              {else}
-                <input type="image" style="border:none" id="open_build"
-                     title="{$labels.click_to_set_open}" alt="{$labels.click_to_set_open}" 
-                     onClick = "do_action.value='open';build_id.value={$build.id};"
-                     src="{$tlImages.lock}"/>
-              {/if}
+                <i class="fas fa-lock-open" title="{$labels.click_to_set_closed}"
+                     onclick="do_action.value='close';build_id.value={$build.id};;$('#buildView').submit();"></i>       
+            {else}
+                <i class="fas fa-lock" title="{$labels.click_to_set_open}"
+                     onclick="do_action.value='open';build_id.value={$build.id};;$('#buildView').submit();"></i>       
+            {/if}
           </td>
 
   				<td class="clickable_icon">
-				       <img style="border:none;cursor: pointer;"  title="{$labels.alt_delete_build}" 
-  				            alt="{$labels.alt_delete_build}" 
- 					            onclick="delete_confirmation({$build.id},'{$build.name|escape:'javascript'|escape}',
- 					                                         '{$del_msgbox_title}','{$warning_msg}');"
-  				            src="{$tlImages.delete}"/>
+                <i class="fas fa-minus-circle" title="{$labels.alt_delete_build}" 
+                   onclick="delete_confirmation({$build.id},'{$build.name|escape:'javascript'|escape}',
+                                                '{$del_msgbox_title}','{$warning_msg}');"></i>
   				</td>
   			</tr>
   		{/foreach}

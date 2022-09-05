@@ -9,7 +9,7 @@
  *
  * @filesource  execNavigator.php
  * @package     TestLink
- * @copyright   2007-2019, TestLink community
+ * @copyright   2007-2022, TestLink community
  * @link        http://www.testlink.org
  *
  *
@@ -54,9 +54,11 @@ function initializeGui(&$dbH,&$control) {
   
   list($add2args,$gui) = initUserEnv($dbH,$control->args);
 
+  /*
   echo __LINE__;
   var_dump($control->args->loadExecDashboard);
   var_dump($_SESSION['loadExecDashboard'][$control->form_token]);
+  */
   
   // This logic is managed from execSetResults.php
   $gui->loadExecDashboard = true;

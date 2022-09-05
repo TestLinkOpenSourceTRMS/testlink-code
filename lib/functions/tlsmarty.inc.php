@@ -222,8 +222,7 @@ class TLSmarty extends Smarty {
       }
     });
  
-    $stdTPLCfg['showScriptsTable.inc'] = 
-      'include/showScriptsTable.inc.tpl';
+    $stdTPLCfg['showScriptsTable.inc'] = 'include/showScriptsTable.inc.tpl';
 
 
     // -----------------------------------------------------------------------------

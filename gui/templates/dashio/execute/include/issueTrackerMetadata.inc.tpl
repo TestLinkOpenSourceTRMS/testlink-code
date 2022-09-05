@@ -1,7 +1,7 @@
 {*
 @filesource: issueTrackerMetadata.inc.tpl
 @used-by: bugAdd.tpl
-          inc_exec_img_controls.tpl
+          exec_img_controls.inc.tpl
           issue_inputs_on_step.inc.tpl
 
 IMPORTANT:
@@ -11,7 +11,7 @@ bugAdd.tpl:
 the attribute is setted while drawing, because
 inputs are rendered or not, but without any user interaction.
 
-inc_exec_img_controls.tpl:
+exec_img_controls.inc.tpl:
 these inputs are created with display:none.
 We need to manage the 'required' attribute via Javascript only 
 when thesse input will be done visible because user 
@@ -20,7 +20,7 @@ has clicked on 'Create Issue' checkbox
 *}
      {* CRITIC NOTICE: chosenClass is CRITIC 
         for the javascript logic 
-        present in inc_exec_img_controls.tpl *}
+        present in exec_img_controls.inc.tpl *}
      {lang_get var='lbl_required_warning' s="required"}   
      {$itMetaData = $gui->issueTrackerMetaData}
      {$disabled=''}

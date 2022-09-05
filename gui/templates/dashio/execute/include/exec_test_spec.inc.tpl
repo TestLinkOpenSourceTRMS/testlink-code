@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@file: inc_exec_test_spec.tpl
+@file: exec_test_spec.inc.tpl
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -89,7 +89,7 @@ Author : franciscom
     {if $args_relations != '' && !is_null($args_relations)}
       <tr>
         <td colspan="{$tableColspan}">
-        {include file="execute/exec_tc_relations.inc.tpl"  
+        {include file="execute/include/exec_tc_relations.inc.tpl"  
                  argsColSpan=$tableColspan argsRelSet=$args_relations}  
         </td>
       </tr>

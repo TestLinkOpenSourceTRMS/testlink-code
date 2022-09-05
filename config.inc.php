@@ -2088,7 +2088,6 @@ if the name exist.
 $g_prefix_name_for_copy = @strftime("%Y%m%d-%H:%M:%S", time());
 
 
-
 /** 
  * Configurable templates this can help if you want to use a non standard template.
  * i.e. you want to develop a new one without loosing the original template.
@@ -2097,8 +2096,9 @@ $g_prefix_name_for_copy = @strftime("%Y%m%d-%H:%M:%S", time());
  *        ON SAME FOLDER where original template is. 
  * See example below        
  */
-$g_tpl = array('inc_exec_controls' => 'inc_exec_img_controls.tpl');
-//$g_tpl = array('inc_exec_controls' => 'inc_exec_controls.tpl');
+$g_tpl = [
+  'inc_exec_controls' => 'exec_img_controls.inc.tpl'];
+//$g_tpl = ['inc_exec_controls' => 'exec_controls.inc.tpl');
 $g_tpl['login'] = 'login/login-model-marcobiedermann.tpl'; 
 
 // Example 
@@ -2107,7 +2107,7 @@ $g_tpl['login'] = 'login/login-model-marcobiedermann.tpl';
 //                 'tcEdit' => 'tcEdit_ultraCool.tpl');
 
 /** Add o replace images */
-$tlCfg->images = array();
+$tlCfg->images = [];
 
 
 

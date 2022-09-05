@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource inc_exec_controls.tpl
+@filesource exec_controls.inc.tpl
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 *}	
@@ -169,9 +169,7 @@ Author : franciscom
       {if '' != $itMetaData && null != $itMetaData}
         <tr>
         <td colspan="2">
-        {include file="./issueTrackerMetadata.inc.tpl"
-                 useOnSteps=0
-        }  
+        {include file="./issueTrackerMetadata.inc.tpl" useOnSteps=0}  
         </td>
         </tr>
       {/if}

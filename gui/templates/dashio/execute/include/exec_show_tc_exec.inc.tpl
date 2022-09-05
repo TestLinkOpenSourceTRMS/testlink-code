@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@filesource	inc_exec_show_tc_exec.tpl
+@filesource	exec_show_tc_exec.inc.tpl
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
@@ -494,7 +494,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
   {* ------------------------------------------------------------------ *}
   <div>
-    {include file="execute/inc_exec_test_spec.tpl"
+    {include file="execute/include/exec_test_spec.inc.tpl"
              args_tc_exec=$tc_exec
              args_labels=$labels
              args_enable_custom_field=$enable_custom_fields
@@ -509,7 +509,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              args_cfg=$cfg}
 
     {if $tc_exec.can_be_executed}
-      {include file="execute/{$tplConfig.inc_exec_controls}"
+      {include file="execute/include/{$tplConfig.inc_exec_controls}"
                args_save_type='single'
                args_input_enable_mgmt=$input_enabled_disabled
                args_tcversion_id=$tcversion_id

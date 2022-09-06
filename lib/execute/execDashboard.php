@@ -42,8 +42,7 @@ function init_args(&$dbHandler,$cfgObj) {
   $tplan_mgr = new testplan($dbHandler);
   list($args,$env) = initContext();
 
-  $argsObj->form_token = isset($_REQUEST['form_token']) ? 
-                         $_REQUEST['form_token'] : 0;
+  $args->form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
  
   // Settings we put on session to create some sort of persistent scope, 
   // because we have had issues when passing this info using 

@@ -41,9 +41,7 @@ resultsImport.tpl
   {if $tlCfg->exec_cfg->copyLatestExecIssues->enabled}
     <tr>
      <td>{$labels.bug_copy_from_latest_exec}</td> 
-     <td><input type="checkbox" 
-                name="copyIssues" id="copyIssues" 
-                {if $gui->copyIssues} checked {/if}>
+     <td><input type="checkbox" name="copyIssues" id="copyIssues" {if $gui->copyIssues} checked {/if}>
     </tr>                              
   {/if}
     
@@ -54,10 +52,9 @@ resultsImport.tpl
     <input type="hidden" name="buildID" value="{$gui->buildID}" />
     <input type="hidden" name="platformID" value="{$gui->platformID}" /> 
     <input type="hidden" name="tplanID" value="{$gui->tplanID}" /> 
+    <input type="hidden" name="tprojectID" value="{$gui->tprojectID}" /> 
 
-    <input class="{#BUTTON_CLASS#}" type="submit" 
-           name="UploadFile" id="UploadFile"
-           value="{$labels.btn_upload_file}" />
+    <input class="{#BUTTON_CLASS#}" type="submit" name="UploadFile" id="UploadFile" value="{$labels.btn_upload_file}" />
 
   </div>
 </form>

@@ -8,7 +8,7 @@
  * @filesource  resultsImport.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2010,2019 TestLink community 
+ * @copyright   2010,2022 TestLink community 
  *
  *
  **/
@@ -594,13 +594,20 @@ function init_args(&$dbHandler) {
   $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
   $args->copyIssues = isset($_REQUEST['copyIssues']) ? 1 : 0;
 
-
   // Need to use REQUEST because sometimes data arrives on GET and other on POST (has hidden fields)
   $args->buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : null;
   $args->platformID = isset($_REQUEST['platformID']) ? intval($_REQUEST['platformID']) : null;
 
-
+  // ------------------------------------------------------------------------------------------------
   $args->tplanID = $args->tplan_id;
+  if ($args->tplanID == 0) {
+    $args->tplanID = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : 0;
+  }
+  if ($args->tproject_id == 0) {
+    $args->tproject_id = isset($_REQUEST['tprojectID']) ? intval($_REQUEST['tprojectID']) : 0;
+  }
+  // ------------------------------------------------------------------------------------------------
+
   if ($args->tproject_id == 0 && $args->tplan_id >0) {
     $tplan = new testplan($dbHandler);
     $nn = $tplan->get_by_id($args->tplan_id);
@@ -610,10 +617,8 @@ function init_args(&$dbHandler) {
 
   $tproject_mgr = new testproject($dbHandler);
   $dummy = $tproject_mgr->get_by_id($args->tprojectID);
-  $args->testprojectName = 
-    testproject::getName($dbHandler,$args->tproject_id);
+  $args->testprojectName = testproject::getName($dbHandler,$args->tprojectID);
     
-
 
   $args->doUpload=isset($_REQUEST['UploadFile']) ? 1 : 0;
   $args->userID=intval($_SESSION['userID']);
@@ -725,16 +730,23 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$
  */
 function initializeGui(&$argsObj) {
   $guiObj = new stdClass();
-  $guiObj->import_title = lang_get('title_results_import_to');
   $guiObj->buildID = $argsObj->buildID;
   $guiObj->platformID = $argsObj->platformID;
   $guiObj->tplanID = $argsObj->tplanID;
+  $guiObj->tprojectID = $argsObj->tprojectID;
+  $guiObj->testprojectName = $argsObj->testprojectName;
 
-  $guiObj->file_check = array('status_ok' => 1, 'msg' => 'ok');
-  $guiObj->importTypes = array("XML" => "XML");
+
+  $guiObj->file_check = [
+    'status_ok' => 1, 
+    'msg' => 'ok'
+  ];
+  $guiObj->importTypes = [
+    "XML" => "XML"
+  ];
+  $guiObj->import_title = lang_get('title_results_import_to');
   $guiObj->importLimit = config_get('import_file_max_size_bytes');
   $guiObj->doImport = ($argsObj->importType != "");
-  $guiObj->testprojectName = $argsObj->testprojectName;
   $guiObj->copyIssues = $argsObj->copyIssues;
   return $guiObj;  
 }

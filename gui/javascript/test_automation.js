@@ -1,11 +1,8 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: test_automation.js,v 1.8 2010/09/26 07:56:43 franciscom Exp $ 
+// test_automation.js 
 //
-// Code contributed by:
-//
-// 20100821 - franciscom - openImportResult() interface changes to solve BUGID 3470 reopened 
 
 /*
   function: openImportResult
@@ -21,9 +18,10 @@
 */
 function openImportResult(windows_title,tproject_id,tplan_id,build_id,platform_id) 
 {
-  var wargs = "tprojectID=" + tproject_id + "&tplanID=" + tplan_id + "&buildID=" + build_id + "&platformID=" + platform_id;
+  var wargs = "tprojectID=" + tproject_id + "&tplanID=" + tplan_id + 
+	            "&buildID=" + build_id + "&platformID=" + platform_id;
   var wref = window.open(fRoot+"lib/results/resultsImport.php?"+wargs,
-	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
+	                       windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
   wref.focus();
 }
 

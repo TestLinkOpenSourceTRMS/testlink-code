@@ -5,7 +5,7 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2020, TestLink community 
+ * @copyright   2005-2022, TestLink community 
  * @filesource  tc_exec_assignment.php
  * @link        http://www.testlink.org
  *
@@ -20,11 +20,12 @@ require_once('Zend/Validate/EmailAddress.php');
 
 testlinkInitPage($db);
 
-$objMgr = array();
-$objMgr['tree'] = new tree($db);
-$objMgr['tplan'] = new testplan($db);
-$objMgr['tcase'] = new testcase($db);
-$objMgr['assign'] = new assignment_mgr($db);
+$objMgr = [
+  'tree' =>  new tree($db),
+  'tplan' =>  new testplan($db),
+  'tcase' =>  new testcase($db),
+  'assign' =>  new assignment_mgr($db)
+];
 
 $tree_mgr = &$objMgr['tree']; 
 $tplan_mgr = &$objMgr['tplan'];
@@ -323,24 +324,21 @@ function init_args(&$dbH,&$tplanMgr)
   $fk = 'filter_aliens';
   if (isset($session_data[$fk])) {
     $args->alien_id = $session_data[$fk];
-    if (is_array($args->alien_id) 
-        && count($args->alien_id) == 1) {
+    if (is_array($args->alien_id) && count($args->alien_id) == 1) {
       $args->alien_id = $args->alien_id[0];
     }
   }
 
-  // ----------------------------------------------------------------
+  // ----------------------------------------------------------------------------------
   // Feature Access Check
   // This feature is affected only for right at Test Project Level
-  $env = array()
-  $env['script'] = basename(__FILE__);
-  $env['tproject_id'] = $args->tproject_id;
-  $env['tplan_id'] = $args->tplan_id;
-  $args->user->checkGUISecurityClearance($dbH,$env,
-                    array('exec_assign_testcases'),'and');
-  // ----------------------------------------------------------------
-
-
+  $env = [
+    'script' => basename(__FILE__),
+    'tproject_id' => $args->tproject_id,
+    'tplan_id' =>  $args->tplan_id
+  ];
+  $args->user->checkGUISecurityClearance($dbH,$env,['exec_assign_testcases'],'and');
+  // ----------------------------------------------------------------------------------
 
   return $args;
 }

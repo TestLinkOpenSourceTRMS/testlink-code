@@ -647,8 +647,9 @@ class tlIssueTracker extends tlObject
   {
     $issueT = $this->getLinkedTo($tprojectID);
     $name = $issueT['issuetracker_name'];
-    $goodForSession = ($issueT['api'] != 'db');
 
+    // since PHP8 curl handle is an Object, then can not be serialized
+    $goodForSession = false;
     if($goodForSession && isset($_SESSION['its'][$name])) {
       return $_SESSION['its'][$name]; 
     }  

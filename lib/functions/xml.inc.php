@@ -46,14 +46,19 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 
   $xmlCode = '';
   reset($items);
+  //echo '<xmp>';var_dump($items);echo '</xmp>'; die();
   foreach ($items as $item) {  
-    $item = $item[1];
+
     $xmlElemCode = $elemTpl;
     
     // REMEMBER YOU NEED TO USE XMP TO DEBUG
     // echo '$xmlElemCode'; echo "<xmp>$xmlElemCode)</xmp>";
     foreach($elemInfo as $subject => $replacement) {
       $fm = substr($subject,0,2);
+      /*echo $replacement . '<br>';
+      echo $fm . '<br>';
+      echo $item[$replacement] . '<br>';
+      */
       $content = isset($item[$replacement]) ? $item[$replacement] : null;
       switch($fm) {
         case '||':
@@ -66,10 +71,12 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
       }
       
       $howMany = 0;
+      // echo '<xmp>'; echo $content . '</xmp>';
       $xmlElemCode = str_replace($subject,$content,$xmlElemCode,$howMany);
     }
     $xmlCode .= $xmlElemCode;
   }
+  //die();
   reset($items);
   
   $result = null;

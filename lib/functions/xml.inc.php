@@ -10,10 +10,6 @@
  * @filesource  xml.inc.php
  * @link    http://www.teamst.org/index.php
  *
- * @internal revisions
- * @since 1.9.9
- * 20131013 - franciscom - added simplexml_load_file_wrapper()
- *                         After user contribution regarding XML External Entity (XXE) Processing Attacks
  */
 
 
@@ -50,20 +46,16 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 
   $xmlCode = '';
   reset($items);
-  while($item = each($items))
-  {
+  foreach ($items as $item) {  
     $item = $item[1];
     $xmlElemCode = $elemTpl;
     
     // REMEMBER YOU NEED TO USE XMP TO DEBUG
     // echo '$xmlElemCode'; echo "<xmp>$xmlElemCode)</xmp>";
-    foreach($elemInfo as $subject => $replacement)
-    {
+    foreach($elemInfo as $subject => $replacement) {
       $fm = substr($subject,0,2);
       $content = isset($item[$replacement]) ? $item[$replacement] : null;
-      
-      switch($fm)
-      {
+      switch($fm) {
         case '||':
         break;
 
@@ -76,25 +68,19 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
       $howMany = 0;
       $xmlElemCode = str_replace($subject,$content,$xmlElemCode,$howMany);
     }
-  
-
     $xmlCode .= $xmlElemCode;
   }
   reset($items);
   
   $result = null;
-  if (!$bNoXMLHeader)
-  {
+  if (!$bNoXMLHeader) {
     $result .= TL_XMLEXPORT_HEADER."\n";
   }
   
-  if($rootTpl != '' && !is_null($rootTpl))
-  {  
+  if($rootTpl != '' && !is_null($rootTpl)) {  
     $result .= str_replace("{{XMLCODE}}",$xmlCode,$rootTpl);
     return $result;
-  } 
-  else
-  {
+  } else {
     return $xmlCode;
   } 
 }

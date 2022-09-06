@@ -567,11 +567,15 @@ function init_args(&$dbHandler,$cfgObj) {
   }  
 
 
-  $key2loop = array('level' => '','status' => null, 
-                    'statusSingle' => null, 
-                    'do_bulk_save' => 0,'save_results' => 0,
-                    'save_and_next' => 0, 
-                    'save_and_exit' => 0);
+  $key2loop = [
+    'level' => '',
+    'status' => null, 
+    'statusSingle' => null, 
+    'do_bulk_save' => 0,
+    'save_results' => 0,
+    'save_and_next' => 0, 
+    'save_and_exit' => 0
+  ];
   foreach($key2loop as $key => $value) {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
@@ -590,9 +594,13 @@ function init_args(&$dbHandler,$cfgObj) {
   $args->user = $_SESSION['currentUser'];
   $args->user_id = intval($args->user->dbID);
   
-  $b2s = array('assignTask','createIssue',
-               'copyIssues','copyAttFromLEXEC');
-    foreach ($b2s as $prop) {
+  $b2s = [
+    'assignTask',
+    'createIssue',
+    'copyIssues',
+    'copyAttFromLEXEC'
+  ];
+  foreach ($b2s as $prop) {
     $args->$prop = isset($_REQUEST[$prop]) ? 1: 0;
   }
 
@@ -711,6 +719,8 @@ function init_args(&$dbHandler,$cfgObj) {
   $args->reqEnabled = intval($info['option_reqs']);
 
   unset($tproject_mgr);  
+
+  // Issue Tracker --------------------------------------------------------------------------
   $bug_summary['minLengh'] = 1; 
   $bug_summary['maxLengh'] = 1; 
 
@@ -727,6 +737,8 @@ function init_args(&$dbHandler,$cfgObj) {
 
   initArgsIssueOnTestCase($args,$bug_summary);  
   initArgsIssueOnSteps($args,$bug_summary);
+  // ---------------------------------------------------------------------------------------
+
 
   // get code tracker config and object to manage TestLink - CTS integration
   $args->ctsCfg = null;
@@ -2420,9 +2432,15 @@ function genIssueSummary(&$tcaseMgr,$signature,$context) {
 
   // Work on values
   $ecx = &$context;
-  $searchFor = array('%%TCNAME%%', '%%PROJECTNAME%%', 
-                     '%%PLANNAME%%','%%BUILDNAME%%','%%PLATFNAME%%',
-                     '%%TCPATHNAME%%','%%EXECTSISO%%');
+  $searchFor = [
+    '%%TCNAME%%', 
+    '%%PROJECTNAME%%', 
+    '%%PLANNAME%%',
+    '%%BUILDNAME%%',
+    '%%PLATFNAME%%',
+    '%%TCPATHNAME%%',
+    '%%EXECTSISO%%'
+  ];
 
   $replaceWith = array($signature->tcname,$ecx['tproject_name'],
                        $ecx['tplan_name'],$ecx['build_name'],

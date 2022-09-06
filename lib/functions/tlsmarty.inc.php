@@ -85,16 +85,14 @@ class TLSmarty extends Smarty {
   private $tlIMGTags;
   var $tlTemplateCfg;
 	var $dashioHome;
+	var $fontawesomeHome;
 
   function __construct() {
     global $tlCfg;
     global $g_tpl;
     
-    $basehref = isset($_SESSION['basehref']) 
-                ? $_SESSION['basehref'] : TL_BASE_HREF;
-
-    $my_locale = isset($_SESSION['locale']) 
-                 ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+    $basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
+    $my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
 
     parent::__construct();
     
@@ -120,8 +118,11 @@ class TLSmarty extends Smarty {
     //
     $this->dashioHome = 'gui/templates/dashio/dashio-template/';
     $this->assign('dashioHome', $this->dashioHome);
-
     $this->assign('dashioHomeURL', $basehref . $this->dashioHome);
+
+    //$this->assign('fontawesomeHomeURL', $basehref . $this->dashioHome . 'lib/fontawesome-4.7.0');
+    $this->assign('fontawesomeHomeURL', $basehref . $this->dashioHome . 'lib/fontawesome-free-6.2.0-web');
+
 
     // ----------------------------------------------------------    
     $testproject_coloring = $tlCfg->gui->testproject_coloring;

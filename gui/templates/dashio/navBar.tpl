@@ -18,8 +18,7 @@ title bar + menu
 {include file="inc_head.tpl" openHead="yes"}
 
   <link href="{$dashioHome}lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  
-  <link href="{$dashioHome}lib/font-awesome/css/all.css" rel="stylesheet" />
+  <link href="{$fontawesomeHomeURL}/css/all.css" rel="stylesheet" />
 
 
 

@@ -18,7 +18,7 @@
   <!-- Bootstrap core CSS -->
   <link href="{$dashioHome}lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <!--external css-->
-  <link href="{$dashioHome}lib/font-awesome/css/all.css" rel="stylesheet" />
+  <link href="{$fontawesomeHomeURL}/css/all.css" rel="stylesheet" />
 
   <!-- Custom styles for this template -->
   <link href="{$dashioHome}css/style.css" rel="stylesheet">

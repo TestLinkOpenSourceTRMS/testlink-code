@@ -15,8 +15,7 @@
         rel="apple-touch-icon">
 
   <link href="{$dashioHome}lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-  <link href="{$dashioHome}lib/font-awesome/css/all.css" rel="stylesheet" />
+  <link href="{$fontawesomeHomeURL}/css/all.css" rel="stylesheet" />
 
 
   <link rel="stylesheet" type="text/css" href="{$dashioHome}css/zabuto_calendar.css">

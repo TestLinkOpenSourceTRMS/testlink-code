@@ -53,12 +53,6 @@ $smarty->display($tpl);
 function initializeGui(&$dbH,&$control) {
   
   list($add2args,$gui) = initUserEnv($dbH,$control->args);
-
-  /*
-  echo __LINE__;
-  var_dump($control->args->loadExecDashboard);
-  var_dump($_SESSION['loadExecDashboard'][$control->form_token]);
-  */
   
   // This logic is managed from execSetResults.php
   $gui->loadExecDashboard = true;
@@ -68,8 +62,6 @@ function initializeGui(&$dbH,&$control) {
     $gui->loadExecDashboard = false;  
     unset($_SESSION['loadExecDashboard'][$control->form_token]);      
   }  
-
-  var_dump($gui->loadExecDashboard);
 
   $gui->menuUrl = 'lib/execute/execSetResults.php';
   $gui->args = $control->get_argument_string();
@@ -97,7 +89,10 @@ function initializeGui(&$dbH,&$control) {
   $grants = checkAccessToExec($dbH,$control);
 
   // feature to enable/disable
-  $gui->features = array('export' => false,'import' => false);
+  $gui->features = [
+    'export' => false,
+    'import' => false
+  ];
   $gui->execAccess = false;
   if($grants['testplan_execute']) {
     $gui->features['export'] = true;
@@ -128,8 +123,7 @@ function checkAccessToExec(&$dbH,&$ct) {
   $rs = $dbH->get_recordset($sql);
   if(is_null($rs))
   {
-    throw new Exception("Can not find Test Project For Test Plan - ABORT", 1);
-    
+    throw new Exception("Can not find Test Project For Test Plan - ABORT", 1);  
   }  
   $rs = current($rs);
   $tproject_id = $rs['testproject_id'];

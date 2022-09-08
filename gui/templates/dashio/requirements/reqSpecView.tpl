@@ -14,48 +14,54 @@ Purpose: view a requirement specification
               commit_title,please_add_revision_log,actions,file_upload_ko"}
 
 {$bn=$smarty.template|basename}
-{$buttons_template=$smarty.template|replace:"$bn":"inc_btn_$bn"}
+{$buttons_template=$smarty.template|replace:".tpl":"Buttons.inc.tpl"}
 
+{* -------------------------------------------------------------------------------------------------- *}
 {$reqSpecID=$gui->req_spec_id}
 {$req_module='lib/requirements/'}
-{$url_args="reqEdit.php?doAction=create&req_spec_id="}
-{$req_edit_url="$basehref$req_module$url_args$reqSpecID"}
 
-{$url_args="reqImport.php?req_spec_id="}
-{$req_import_url="$basehref$req_module$url_args$reqSpecID"}
+{$context="&tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}"}
 
-{$url_args="reqExport.php?req_spec_id="}
-{$req_export_url="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqEdit.php?doAction=create&req_spec_id={$gui->req_spec_id}"}
+{$req_edit_url="$basehref$req_module$url_args$context"}
 
-{$url_args="reqImport.php?scope=branch&req_spec_id="}
-{$req_spec_import_url="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqImport.php?req_spec_id={$gui->req_spec_id}"}
+{$req_import_url="$basehref$req_module$url_args$context"}
 
-{$url_args="reqExport.php?scope=branch&req_spec_id="}
-{$req_spec_export_url="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqExport.php?req_spec_id={$gui->req_spec_id}"}
+{$req_export_url="$basehref$req_module$url_args$context"}
 
-{$url_args="reqEdit.php?doAction=reorder&amp;req_spec_id="}
-{$req_reorder_url="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqImport.php?scope=branch&req_spec_id={$gui->req_spec_id}"}
+{$req_spec_import_url="$basehref$req_module$url_args$context"}
 
-{$url_args="reqEdit.php?doAction=createTestCases&amp;req_spec_id="}
-{$req_create_tc_url="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqExport.php?scope=branch&req_spec_id={$gui->req_spec_id}"}
+{$req_spec_export_url="$basehref$req_module$url_args$context"}
 
-{$url_args="reqSpecEdit.php?doAction=createChild&amp;parentID="}
-{$req_spec_new_url="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqEdit.php?doAction=reorder&req_spec_id={$gui->req_spec_id}"}
+{$req_reorder_url="$basehref$req_module$url_args$context"}
 
-{$url_args="reqSpecEdit.php?doAction=copyRequirements&amp;req_spec_id="}
-{$req_spec_copy_req_url="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqEdit.php?doAction=createTestCases&req_spec_id={$gui->req_spec_id}"}
+{$req_create_tc_url="$basehref$req_module$url_args$context"}
 
-{$url_args="reqSpecEdit.php?doAction=copy&amp;req_spec_id="}
-{$req_spec_copy_url="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqSpecEdit.php?doAction=createChild&parentID={$gui->req_spec_id}"}
+{$req_spec_new_url="$basehref$req_module$url_args$context"}
 
-{$url_args="reqCreateFromIssueMantisXML.php?scope=branch&req_spec_id="}
-{$req_create_from_issue_xml_url="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqSpecEdit.php?doAction=copyRequirements&req_spec_id={$gui->req_spec_id}"}
+{$req_spec_copy_req_url="$basehref$req_module$url_args$context"}
 
-{$url_args="reqSpecEdit.php?doAction=bulkReqMon&req_spec_id="}
-{$req_spec_bulk_req_mon_url="$basehref$req_module$url_args$reqSpecID"}
+{$url_args="reqSpecEdit.php?doAction=copy&req_spec_id={$gui->req_spec_id}"}
+{$req_spec_copy_url="$basehref$req_module$url_args$context"}
+
+{$url_args="reqCreateFromIssueMantisXML.php?scope=branch&req_spec_id={$gui->req_spec_id}"}
+{$req_create_from_issue_xml_url="$basehref$req_module$url_args$context"}
+
+{$url_args="reqSpecEdit.php?doAction=bulkReqMon&req_spec_id={$gui->req_spec_id}"}
+{$req_spec_bulk_req_mon_url="$basehref$req_module$url_args$context"}
 
 
-{* used on inc_btn_reqSpecView.tpl *}
+{* -------------------------------------------------------------------------------------------------- *}
+
+{* used on reqSpecViewButtons.inc.tpl *}
 {lang_get s='warning_delete_req_spec' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
 {lang_get s='warning_freeze_spec' var="freeze_warning_msg" }
@@ -63,7 +69,7 @@ Purpose: view a requirement specification
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
-{include file="requirements/reqSpecViewJS.inc.tpl"}
+{include file="requirements/include/reqSpecViewJS.inc.tpl"}
 
 {include file="bootstrap.inc.tpl"}
 <script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
@@ -100,7 +106,7 @@ Purpose: view a requirement specification
 {if $gui->req_spec.id}
 <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('control_panel');"
      title="{$labels.actions}" />
-{include file="requirements/$buttons_template" args_reqspec_id=$reqSpecID}
+{include file="requirements/include/$buttons_template" args_reqspec_id=$reqSpecID}
 
 <table class="simple">
   <tr>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-@fielsource inc_btn_reqSpecView.tpl
+@fielsource reqSpecViewButtons.inc.tpl
 *}
 {lang_get var='labels'
           s='btn_req_create,btn_new_req_spec,btn_export_req_spec,btn_create_from_issue_xml,
@@ -12,7 +12,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<!--- inc_btn_reqSpecView.tpl -->
+<!--- reqSpecViewButtons.inc.tpl -->
 <div class="groupBtn" id="control_panel" style="display:{$tlCfg->gui->op_area_display->req_spec_container};">
   <form style="display: inline;" 
     id="req_spec" name="req_spec" action="{$req_module}reqSpecEdit.php" method="post">
@@ -20,10 +20,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <h2>{$labels.req_spec_operations}</h2>
     <input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
     <input type="hidden" name="req_spec_revision_id" value="{$gui->req_spec_revision_id}" />
+    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+    <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+    
     <input type="hidden" name="doAction" value="" />
     <input type="hidden" name="log_message" id="log_message" value="" />
-    <input type="hidden" name="reqMgrSystemEnabled" id="reqMgrSystemEnabled" 
-           value="{$gui->reqMgrSystemEnabled}" />
+    <input type="hidden" name="reqMgrSystemEnabled" id="reqMgrSystemEnabled" value="{$gui->reqMgrSystemEnabled}" />
     
       
   {if $gui->grants->req_mgmt == "yes"}

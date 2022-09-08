@@ -28,7 +28,6 @@ var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title|escape
 var warning_empty_doc_id = "{$labels.warning_empty_doc_id|escape:'javascript'}";
 var warning_countreq_numeric = "{$labels.warning_countreq_numeric|escape:'javascript'}";
 
-// TICKET 4661
 var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
 var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
 var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
@@ -122,15 +121,27 @@ function validateForm(f)
 
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
+{$reqSpecDocId=''}
+{$reqSpecTitle=''}
+{$reqSpecType=''}
+{$reqSpecTotalReq = 0}
+{if $gui->req_spec != null} 
+  {$reqSpecDocId = $gui->req_spec.doc_id}
+  {$reqSpecTitle = $gui->req_spec.title}
+	{$reqSpecType = $gui->req_spec.type}
+	{$reqSpecTotalReq = $gui->req_spec.total_req}
+{/if}
+
 <div class="workBack">
 	<form name="reqSpecEdit" id="reqSpecEdit" method="post" 
 		  action="{$basehref}lib/requirements/reqSpecEdit.php"
 		  onSubmit="javascript:return validateForm(this);">
 		  
-      <input type="hidden" name="tproject_id" 
-             value="{$gui->tproject_id}" />
-	    <input type="hidden" name="parentID" value="{$gui->parentID}" />
-	    <input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
+    <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+	  
+		<input type="hidden" name="parentID" value="{$gui->parentID}" />
+	  <input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 		<input type="hidden" name="req_spec_revision_id" value="{$gui->req_spec_revision_id}" />
 
 	<div class="groupBtn">
@@ -139,6 +150,7 @@ function validateForm(f)
            name="createSRS" id="createSRS"
            value="{$gui->submit_button_label}"
 	       onclick="show_modified_warning = false; doAction.value='{$gui->operation}';" />
+
 		<input class="{#BUTTON_CLASS#}" type="button" 
            name="go_back" id="go_back"
            value="{$labels.cancel}" 
@@ -159,7 +171,7 @@ function validateForm(f)
   	</div>
 	  <div><input type="text" name="doc_id" id="doc_id"
   		        size="{#REQSPEC_DOCID_SIZE#}" maxlength="{#REQSPEC_DOCID_MAXLEN#}"
-  		        value="{$gui->req_spec.doc_id|escape}" required />
+  		        value="{$reqSpecDocId|escape}" required />
   				{include file="error_icon.tpl" field="doc_id"}
   	</div>
 	
@@ -174,7 +186,7 @@ function validateForm(f)
 		    <input type="text" id="title" name="title"
 		           size="{#REQ_SPEC_TITLE_SIZE#}"
 				   maxlength="{#REQ_SPEC_TITLE_MAXLEN#}"
-		           value="{$gui->req_spec.title|escape}" required />
+		           value="{$reqSpecTitle|escape}" required />
 		  	{include file="error_icon.tpl" field="req_spec_title"}
 	   	</div>
 	   	<br />
@@ -190,7 +202,7 @@ function validateForm(f)
 	   	<br />
 	   	<div class="labelHolder"><label for="countReq">{$labels.req_total}</label>
 			<input type="text" id="countReq" name="countReq" size="{#REQ_COUNTER_SIZE#}" 
-			      maxlength="{#REQ_COUNTER_MAXLEN#}" value="{$gui->req_spec.total_req}" />
+			      maxlength="{#REQ_COUNTER_MAXLEN#}" value="{$reqSpecTotalReq}" />
 		</div>
 		{/if}
 		
@@ -198,7 +210,7 @@ function validateForm(f)
 		
   	<div class="labelHolder"> <label for="reqSpecType">{$labels.type}</label>
      	<select name="reqSpecType">
-  			{html_options options=$gui->reqSpecTypeDomain selected=$gui->req_spec.type}
+  			{html_options options=$gui->reqSpecTypeDomain selected=$reqSpecType}
   		</select>
   	</div>
 
@@ -216,6 +228,7 @@ function validateForm(f)
              name="createSRS" id="createSRS"
              value="{$gui->submit_button_label}"
 		       onclick="show_modified_warning = false; doAction.value='{$gui->operation}';" />
+		
 			<input class="{#BUTTON_CLASS#}" type="button" 
              name="go_back" id="go_back"
              value="{$labels.cancel}" 
@@ -243,7 +256,7 @@ function validateForm(f)
 </div>
 
 <script type="text/javascript" defer="1">
-   	document.forms[0].doc_id.focus()
+document.forms[0].doc_id.focus()
 </script>
 
 {if isset($gui->refreshTree) && $gui->refreshTree}

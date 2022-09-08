@@ -73,9 +73,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   </form>
 
   {if $gui->revCount > 1}
-    <form method="post" 
-      action="lib/requirements/reqSpecCompareRevisions.php" name="req_spec_version_compare">
+    <form method="post" action="lib/requirements/reqSpecCompareRevisions.php" name="req_spec_version_compare">
       <input type="hidden" name="req_spec_id" value="{$args_reqspec_id}" />
+      <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+      <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+
       <input class="{#BUTTON_CLASS#}" type="submit"
              name="compare_versions" 
              id="compare_versions"
@@ -103,10 +105,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                name="create_req" id="create_req"
                value="{$labels.btn_req_create}"
                onclick="location='{$req_edit_url}'" />  
+    
         <input class="{#BUTTON_CLASS#}" type="button" 
                name="importReq" id="importReq"
                value="{$labels.btn_import_reqs}"
                onclick="location='{$req_import_url}'" />
+    
         <input class="{#BUTTON_CLASS#}" type="button" 
                name="exportReq" id="exportReq" 
                value="{$labels.btn_export_reqs}"

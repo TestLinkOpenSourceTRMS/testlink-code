@@ -32,21 +32,24 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args($dbH)
 {
-  $iParams = 
-    array("req_spec_id" => array(tlInputParameter::INT_N),
-          "refreshTree" => array(tlInputParameter::INT_N),
-          "tproject_id" => array(tlInputParameter::INT_N),
-          "uploadOPStatusCode" => array(tlInputParameter::STRING_N,0,30));
+  $iParams = [
+    "tproject_id" => array(tlInputParameter::INT_N),
+    "tplan_id" => array(tlInputParameter::INT_N),
+    "req_spec_id" => array(tlInputParameter::INT_N),
+    "refreshTree" => array(tlInputParameter::INT_N),
+    "uploadOPStatusCode" => array(tlInputParameter::STRING_N,0,30)
+  ];
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
   $args->refreshTree = intval($args->refreshTree);
   
   if (0==$args->tproject_id) {
-    throw new Exception("Bad Test Project ID", 1);
+    throw new Exception("Test Project ID can not be 0", 1);
   }
   $args->tproject_name = testproject::getName($dbH,$args->tproject_id);
   
+
   return $args;
 }
 
@@ -62,6 +65,11 @@ function initialize_gui(&$dbHandler,&$argsObj)
                             
   
   $gui = $commandMgr->initGuiBean();
+
+  $gui->tproject_id = $argsObj->tproject_id;
+  $gui->tproject_name = $argsObj->tproject_name;
+  $gui->tplan_id = $argsObj->tplan_id;
+
   $gui->refreshTree = $argsObj->refreshTree;
   $gui->req_spec_cfg = config_get('req_spec_cfg');
   $gui->req_cfg = config_get('req_cfg');
@@ -80,8 +88,6 @@ function initialize_gui(&$dbHandler,&$argsObj)
   $gui->name = $gui->req_spec['title'];
   
   
-  $gui->tproject_id = $argsObj->tproject_id;
-  $gui->tproject_name = $argsObj->tproject_name;
   $gui->main_descr = lang_get('req_spec_short') . config_get('gui_title_separator_1') . 
                      "[{$gui->req_spec['doc_id']}] :: " .$gui->req_spec['title'];
 

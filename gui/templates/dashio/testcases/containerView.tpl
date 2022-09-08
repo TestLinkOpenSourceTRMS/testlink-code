@@ -114,78 +114,7 @@ function jsCallDeleteFile(btn, text, o_id)
 {$drawReorderButton=false}
 
 {if $gui->level == 'testproject'}
-
-  {if $gui->modify_tc_rights == 'yes'}
-    {$bDownloadOnly=false}
-  <i class="fa fa-cog" aria-hidden="true"
-     onclick="javascript:toogleShowHide('tproject_control_panel');"
-     title="{$labels.actions}">
-  </i>
-  <div id="tproject_control_panel" style="display:{$tlCfg->gui->op_area_display->test_spec_container};">
-    <fieldset class="groupBtn">
-    <b>{$labels.testsuite_operations}</b>
-    <form method="post" action="{$basehref}lib/testcases/containerEdit.php">
-
-      {if property_exists($gui,'calledByMethod')} 
-        <input type="hidden" name="calledByMethod" id="calledByMethod" 
-               value="{$gui->calledByMethod}" />
-      {/if}
-
-      <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
-
-      <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
-      <input type="hidden" name="doAction" id="doAction" value="" />
-      <input type="hidden" name="containerID" 
-             value="{$gui->container_data.id}" />
-      <input type="hidden" name="containerType" id="containerType" 
-             value="{$gui->level}" />
-
-      <input type="image" src="{$tlImages.add}" name="new_testsuite" id="new_testsuite" 
-             onclick="doAction.value='new_testsuite'" title="{$labels.btn_new_testsuite}">
-      
-      <input type="image" src="{$tlImages.order_alpha}" name="reorder_testproject_testsuites_alpha" 
-             id="reorder_testproject_testsuites_alpha" 
-             onclick="doAction.value='reorder_testproject_testsuites_alpha'" title="{$labels.btn_reorder_testsuites_alpha}">
-
-      <img src="{$tlImages.import}" onclick="location='{$importToTProjectAction}'" title="{$labels.btn_import_testsuite}" />
-
-      {if $gui->canDoExport}
-        <img src="{$tlImages.export}" onclick="location='{$tsuiteExportAction}'" title="{$labels.btn_export_all_testsuites}" />
-      {/if}
-
-      <img src="{$tlImages.report}" onclick="window.open('{$testSpecFullDocAction}')" 
-           title="{$labels.btn_gen_test_spec_new_window}" />
-
-      <img src="{$tlImages.report_word}" onclick="window.open('{$testSpecFullWordDocAction}')" 
-           title="{$labels.btn_gen_test_spec_word}" />
-
-    </form>
-    </fieldset>
-  </div>
-  {/if}
-
-  <table class="simple" >
-    <tr>
-      <th>{$labels.th_product_name}</th>
-    </tr>
-    <tr>
-      <td>
-      {if $gui->mgt_modify_product == 'yes'}
-        <a href="lib/project/projectView.php"  target="mainframe"
-                title="{$labels.edit_testproject_basic_data}">{$gui->container_data.name|escape}</a>
-      {else}
-         {$gui->container_data.name|escape}
-      {/if}
-      </td>
-    </tr>
-    <tr>
-      <th>{$labels.th_notes}</th>
-    </tr>
-    <tr>
-      <td>{if $gui->testProjectEditorType == 'none'}{$gui->container_data.notes|nl2br}{else}{$gui->container_data.notes}{/if}</td>
-    </tr>
-  </table>
-
+  {include file="testprojectView.inc.tpl"}
 {elseif $gui->level == 'testsuite'}
 
   {if $gui->modify_tc_rights == 'yes' || $gui->sqlResult neq ''}

@@ -25,19 +25,15 @@
           <input type="hidden" name="containerType" value="{$gui->containerType}" />
 
           {if $tprojIDOK}
-            <input type="hidden" name="tproject_id" id="tproject_id" 
-                  value="{$gui->tproject_id}" />
+            <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
           {/if}
 
           {if $calledByOK}
-            <input type="hidden" name="calledByMethod" id="calledByMethod" 
-                  value="{$gui->calledByMethod}" />
+            <input type="hidden" name="calledByMethod" id="calledByMethod" value="{$gui->calledByMethod}" />
           {/if}
 
-          <button style="border:0;" name="new_testsuite" id="new_testsuite"
-             onclick="doAction.value='new_testsuite'">
-            <i class="fas fa-plus-circle" 
-               title="{$labels.btn_new_testsuite}"></i>
+          <button style="border:0;" name="new_testsuite" id="new_testsuite" onclick="doAction.value='new_testsuite'">
+            <i class="fas fa-plus-circle" title="{$labels.btn_new_testsuite}"></i>
           </button>
                
           <button style="border:0;" name="edit_testsuite" id="edit_testsuite"

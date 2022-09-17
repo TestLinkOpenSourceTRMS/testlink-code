@@ -99,10 +99,8 @@
           <input type="hidden" name="doAction" id="doAction" value="" />
           <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
 
-          <button style="border:0;" name="create_tc" id="create_tc"
-             onclick="doAction.value='create'">
-            <i class="fas fa-plus-circle" 
-               title="{$labels.btn_new_tc}"></i>
+          <button style="border:0;" name="create_tc" id="create_tc" onclick="doAction.value='create'">
+            <i class="fas fa-plus-circle" title="{$labels.btn_new_tc}"></i>
           </button>
         </form>
 
@@ -149,18 +147,13 @@
           <input type="hidden" name="doAction" id="doAction" value="" />
 
           <i class="fas fa-file-import" style="padding:1px 6px;"
-            id="importItem"
-            onclick="location='{$importTestCasesAction}'"
-            title="{$labels.btn_import_tc}"></i>
+             id="importItem" onclick="location='{$importTestCasesAction}'" title="{$labels.btn_import_tc}"></i>
 
-          <i class="fas fa-file-export" style="padding:1px 6px;"
-            id="exportItem"
-            onclick="location='{$exportTestCasesAction}'"
-            title="{$labels.btn_export_tc}"></i>
+          <i class="fas fa-file-export" style="padding:1px 6px;" id="exportItem"
+             onclick="location='{$exportTestCasesAction}'" title="{$labels.btn_export_tc}"></i>
           
-          <i class="fas fa-magic"
-            onclick="location='{$createTCFromIssueMantisXMLAction}'" 
-               title="{$labels.btn_create_from_issue_xml}"></i>
+          <i class="fas fa-magic" onclick="location='{$createTCFromIssueMantisXMLAction}'" 
+             title="{$labels.btn_create_from_issue_xml}"></i>
         </form>
       </fieldset>
   </div>  

@@ -87,21 +87,18 @@ viewer for test case in test specification
 {lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
 
 {$has_been_executed=0}
-{if $args_status_quo != null 
-  || $args_status_quo[$args_testcase.id].executed}
+{if $args_status_quo != null || $args_status_quo[$args_testcase.id].executed}
   {$has_been_executed=1}  
 {/if}
 
 {if $args_can_do->edit == "yes"}
-    {if $args_status_quo == null 
-        || $args_status_quo[$args_testcase.id].executed == null}
+    {if $args_status_quo == null || $args_status_quo[$args_testcase.id].executed == null}
         {$edit_enabled=1}
         {$delete_enabled=1}
         {$warning_edit_msg=""}
         {$warning_delete_msg=""}
     {else} 
-      {if isset($args_tcase_cfg) 
-        && $args_tcase_cfg->can_edit_executed == 1}
+      {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
         {$edit_enabled=1} 
         {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
       {/if} 
@@ -134,9 +131,9 @@ viewer for test case in test specification
          id="tcView_viewer_tcase_control_panel_{$tcversion_id}">
 
     {$allOpOnTCV = false}
-    {if 'editOnExec' != $gui->show_mode 
-        && isset($args_tcase_operations_enabled) 
-        && $args_tcase_operations_enabled == "yes"}
+    {if 'editOnExec' != $gui->show_mode && 
+        isset($args_tcase_operations_enabled) && 
+        $args_tcase_operations_enabled == "yes"}
       {$allOpOnTCV = true}
     {/if} 
 
@@ -226,34 +223,35 @@ viewer for test case in test specification
 
       	{* Edit TC *}
       	{if $edit_enabled && $args_frozen_version=="no"}
-      		 <input class="{#BUTTON_CLASS#}" type="submit" name="edit_tc" 
-      				onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}" />
+          <button style="border:0;" name="edit_tc" 
+            onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}">
+            <i class="fas fa-pencil-alt" 
+               title="{$tcView_viewer_labels.btn_edit}"></i>
+          </button>
       	{/if}
 
-        {if ( isset($args_tcversion_operation_only_edit_button) 
-          && $args_tcversion_operation_only_edit_button == "no") 
-          || ($args_can_do->delete_frozen_tcversion == "yes")
-          }
+        {if ( isset($args_tcversion_operation_only_edit_button) && 
+              $args_tcversion_operation_only_edit_button == "no") || 
+              ($args_can_do->delete_frozen_tcversion == "yes") }
 
           {* new TC version *}
-          {if $args_can_do->create_new_version == "yes" 
-             && $args_read_only != "yes"}
+          {if $args_can_do->create_new_version == "yes" && $args_read_only != "yes"}
              {if $gui->new_version_source == 'this'}
-               <input class="{#BUTTON_CLASS#}" type="submit" 
-                 name="do_create_new_version"
-                 id="do_create_new_version" 
-                 title="{$tcView_viewer_labels.hint_new_version}" 
-                 value="{$tcView_viewer_labels.btn_new_version}" />
+                <button style="border:0;" name="do_create_new_version" id="do_create_new_version"
+                  onclick="doAction.value='do_create_new_version'" value="{$tcView_viewer_labels.btn_new_version}">
+                  <i class="fas fa-plus-circle" title="{$tcView_viewer_labels.btn_new_version}"></i>
+                </button>
              {/if}
              {if $gui->new_version_source == 'latest'}
-               <input class="{#BUTTON_CLASS#}" type="submit" 
-                 name="do_create_new_version_from_latest" 
-                 title="{$tcView_viewer_labels.btn_new_version_from_latest}" 
-                 value="{$tcView_viewer_labels.btn_new_version_from_latest}" />      
+                <button style="border:0;" name="do_create_new_version_from_latest" id="do_create_new_version_from_latest"
+                  onclick="doAction.value='do_create_new_version_from_latest'" value="{$tcView_viewer_labels.btn_new_version_from_latest}">
+                  <i class="fas fa-plus-circle" title="{$tcView_viewer_labels.btn_new_version_from_latest}"></i>
+                </button>
              {/if}
           {/if}
 
         	{* freeze/unfreeze TC version *}
+          {* <i class="fa-solid fa-ice-cream"></i> *}
         	{if 'editOnExec' != $gui->show_mode && $args_read_only != "yes" 
               && $args_can_do->freeze=='yes'}
         		  {if $args_frozen_version=="yes"}
@@ -268,6 +266,13 @@ viewer for test case in test specification
 
         		 <input class="{#BUTTON_CLASS#}" type="submit" name="{$freeze_btn}" 
         				onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}" value="{lang_get s=$freeze_value}" />
+
+            <button type="submit" style="border:0;" 
+                    onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}">
+              <i class="fa-solid fa-ice-cream" style="padding:1px 6px;" title="{lang_get s=$freeze_value}"></i>
+            </button>
+
+
         	{/if}
 
         	{* delete TC version *}
@@ -288,66 +293,61 @@ viewer for test case in test specification
         {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
         	<span>
         	  <form style="display: inline;" id="addToTestPlans" name="addToTestPlans" method="post" action="">
-        		<input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
-        		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-        		<input class="{#BUTTON_CLASS#}" type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
-        		   value="{$tcView_viewer_labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
+              <input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
+              <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+              <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+              <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+
+              <button style="border:0;" name="addTc2Tplan_{$args_testcase.id}" id="addTc2Tplan_{$args_testcase.id}"
+                onclick="addTc2Tplan_{$args_testcase.id}" value="{$tcView_viewer_labels.btn_add_to_testplans}">
+                <i class="fa-solid fa-cube" title="{$tcView_viewer_labels.btn_add_to_testplans}"></i>
+              </button>
         	  </form>
         	</span>
         {/if}
         {* Export TC version *}
       	<span>
       	  <form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
-      		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-      		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-      		<input class="{#BUTTON_CLASS#}" type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
+            <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+            <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+            <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+            <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+
+            <button style="border:0;">
+              <i class="fas fa-file-export" style="padding:1px 6px;" name="export_tc" title="{$tcView_viewer_labels.btn_export}"></i>
+            </button>
+
       	  </form>
+
+          <form style="display: inline;" id="tcprint" name="tcprint" method="post" action="" >
+            {* button type="button" -> to avoid automatic SUBMIT *}
+            <button type="button" style="border:0;" onclick="javascript:openPrintPreview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,'{$printTestCaseAction}');">
+              <i class="fa fa-eye" style="padding:1px 6px;" name="tcPrinterFriendly" title="{$tcView_viewer_labels.btn_print_view}"></i>
+            </button>
+          </form>
+
+          {if 1 == $gui->candidateToUpd && '' != $gui->tplan_id && 
+             'editOnExec' == $gui->show_mode && 'yes' == $args_can_do->updTplanTCV } 
+            <form style="display: inline;" id="updTPlan" name="updTPlan" method="post" action="{$basehref}lib/testcases/tcEdit.php">
+                <input type="hidden" name="testcase_id" id="updTPlan_testcase_id" value="{$args_testcase.testcase_id}" />
+                <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+                <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+                <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+
+                <input type="hidden" id="updTPlan_show_mode" name="show_mode" value="{$gui->show_mode}" />
+                
+                <input type="hidden" name="doAction" value="updateTPlanLinkToTCV">
+                <input class="{#BUTTON_CLASS#}" type="submit" id="updTPlan" name="updTPlan" 
+                  style="background:#B22222;color:white;"
+                  value="{$tcView_viewer_labels.updateLinkToThisTCVersion}">
+            </form>
+          {/if}
       	</span>
       {/if}
     </fieldset>
     {* End TCV SECTION *}
 
 {/if} {* $args_can_do->edit -> user can edit *}
-
-{* Print TC version *}
-<fieldset class="groupBtn">
-<span>
-  <form style="display: inline;" id="tcprint" 
-        name="tcprint" method="post" action="" >
-    <input class="{#BUTTON_CLASS#}" type="button"
-           name="tcPrinterFriendly" id="tcPrinterFriendly"
-           value="{$tcView_viewer_labels.btn_print_view}" 
-           onclick="javascript:openPrintPreview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,
-           '{$printTestCaseAction}');"/>
-  </form>
-</span>
-
-{if 1 == $gui->candidateToUpd 
-    && '' != $gui->tplan_id 
-    && 'editOnExec' == $gui->show_mode 
-    && 'yes' == $args_can_do->updTplanTCV } 
-  <span>
-    <form style="display: inline;" 
-          id="updTPlan" name="updTPlan" 
-          method="post"
-          action="{$basehref}lib/testcases/tcEdit.php">
-        <input type="hidden" name="testcase_id" id="updTPlan_testcase_id" value="{$args_testcase.testcase_id}" />
-        <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-        <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
-        <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
-
-        <input type="hidden" id="updTPlan_show_mode" name="show_mode" 
-          value="{$gui->show_mode}" />
-        
-        <input type="hidden" name="doAction" value="updateTPlanLinkToTCV">
-        <input class="{#BUTTON_CLASS#}" 
-               type="submit" id="updTPlan" name="updTPlan" 
-           style="background:#B22222;color:white;"
-           value="{$tcView_viewer_labels.updateLinkToThisTCVersion}">
-    </form>
-  </span>
-{/if}
-</fieldset>
 
 {* End of TC version Section *}
 </div>
@@ -409,8 +409,7 @@ viewer for test case in test specification
   <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
   <input type="hidden" id="stepsControls_step_id" name="step_id" value="0" />
   <input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
-  <input type="hidden" id="stepsControls_tplan_id" name="tplan_id" 
-         value="{$gui->tplan_id}" />
+  <input type="hidden" id="stepsControls_tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
 
     {include file="{$tplConfig['tcbody.inc']}" 
              inc_tcbody_close_table=false

@@ -13,9 +13,7 @@ Purpose: smarty template - view test case in test specification
 {* Configure Actions *}
 {$showMode=$gui->show_mode}
 {$tplanID=intval($gui->tplan_id)}
-{$deleteStepAction = 
-  "lib/testcases/tcEdit.php?show_mode=$showMode&doAction=doDeleteStep"}
-
+{$deleteStepAction = "lib/testcases/tcEdit.php?show_mode=$showMode&doAction=doDeleteStep"}
 {$deleteStepAction = "$deleteStepAction&tplan_id=$tplanID&step_id="}
 
 {include file="inc_head.tpl" openHead='yes'}
@@ -25,7 +23,6 @@ Purpose: smarty template - view test case in test specification
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action = fRoot+'{$deleteStepAction}';
-
 
 function jsCallDeleteFile(btn, text, o_id) { 
   var my_action='';
@@ -105,15 +102,19 @@ function jsCallDeleteFile(btn, text, o_id) {
   {/if}
 
   
-  {$tlImages.toggle_direct_link} &nbsp;
+  {$tlIMGTags.toggle_direct_link} &nbsp;
+
   {if $gui->display_testcase_path}
     {foreach from=$gui->path_info[$tcID] item=path_part}
         {$path_part|escape} /
     {/foreach}
   {/if}
 
-    <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel_{$tcVersionID}','inline');"
-         title="{$labels.actions}" />
+  <i class="fa fa-cog" aria-hidden="true"
+     onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel_{$tcVersionID}','inline');"
+     title="{$labels.actions}">
+  </i>
+  
 
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 

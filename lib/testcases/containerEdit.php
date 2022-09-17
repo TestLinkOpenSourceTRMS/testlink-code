@@ -7,7 +7,7 @@
  *
  * @filesource  containerEdit.php
  * @package     TestLink
- * @copyright   2005-2020, TestLink community
+ * @copyright   2005-2022, TestLink community
  * @link        http://www.testlink.org
  *
  */
@@ -39,11 +39,13 @@ $gui_cfg = config_get('gui');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
 
-
 list($a_tpl, $a_actions) = initTPLActions();
-
-$a_init_opt_transfer = array('edit_testsuite' => 1,'new_testsuite'  => 1,
-                             'add_testsuite'  => 1,'update_testsuite' => 1);
+$a_init_opt_transfer = [
+  'edit_testsuite' => 1,
+  'new_testsuite'  => 1,
+  'add_testsuite'  => 1,
+  'update_testsuite' => 1
+];
 
 $the_tpl = null;
 $action = null;
@@ -169,18 +171,17 @@ if( $doIt ) {
 
     case 'edit_testsuite':
     case 'new_testsuite':
-      keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
+      list($add2args,$gui) = initUserEnv($db,$args);
 
-      $smarty->assign('opt_cfg', $opt_cfg);
-
-      $gui = new stdClass();
-      $gui->tproject_id = $args->tproject_id;
       $gui->containerType = $level;
       $gui->refreshTree = $args->refreshTree;
+      $gui->containerID = $args->containerID;
       $gui->hasKeywords = (count($opt_cfg->from->map) > 0) || (count($opt_cfg->to->map) > 0);
 
       cancelActionURL($gui,$args);
 
+      keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
+      $smarty->assign('opt_cfg', $opt_cfg);
       $smarty->assign('level', $level);
       $smarty->assign('gui', $gui);
       $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,
@@ -240,23 +241,25 @@ if( $doIt ) {
       $op['status'] = 0;
       if ($name_ok) {
         $op = addTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
-        $messages = array( 'result_msg' => $op['messages']['msg'],
-                           'user_feedback' => $op['messages']['user_feedback']);
+        $messages = [
+          'result_msg' => $op['messages']['msg'],
+          'user_feedback' => $op['messages']['user_feedback']
+        ];
       }
            
       // $userInput is used to maintain data filled by user if there is
       // a problem with test suite name.
       $userInput = $op['status'] ? null : $_REQUEST;
+
+      list($add2args,$gui) = initUserEnv($db,$args);
+      $gui->containerType = $level;
+      $gui->refreshTree = $args->refreshTree;
+      $gui->containerID = $args->containerID;
+      cancelActionURL($gui,$args);
+      
       $assignedKeywords = $op['status'] ? "" : $args->assigned_keyword_list;
       keywords_opt_transf_cfg($opt_cfg, $assignedKeywords);
       $smarty->assign('opt_cfg', $opt_cfg);
-
-      $gui = new stdClass();
-      $gui->tproject_id = $args->tproject_id;
-      $gui->containerType = $level;
-      $gui->refreshTree = $args->refreshTree;
-      cancelActionURL($gui,$args);
-      
       $smarty->assign('level', $level);
       $smarty->assign('gui', $gui);
 
@@ -357,6 +360,7 @@ if( $doIt ) {
 
 if($the_tpl) {
   $smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
+  $smarty->assign('gui',$gui);
   $smarty->display($template_dir . $the_tpl);
 }
 
@@ -466,18 +470,28 @@ function init_args(&$dbHandler,&$tprojectMgr,&$tsuiteMgr)
   $args->assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 
 
-  $k2null = array('kw_link_id','item_id','containerID',
-                  'testsuiteID','parent_tsuite_id','objectID');
+  $k2null = [
+    'kw_link_id',
+    'item_id',
+    'containerID',
+    'testsuiteID',
+    'parent_tsuite_id',
+    'objectID'
+  ];
   foreach ($k2null as $prop) {
-    $args->$prop = isset($_REQUEST[$prop]) ? 
-                   intval($_REQUEST[$prop]) : null;    
+    $args->$prop = isset($_REQUEST[$prop]) ? intval($_REQUEST[$prop]) : null;    
   }
 
   if (null == $args->containerID) {
     $args->containerID = $args->objectID;
   }
 
-  $k2c = array('objectType','containerType','testsuiteName','free_keywords');
+  $k2c = [
+    'objectType',
+    'containerType',
+    'testsuiteName',
+    'free_keywords'
+  ];
   foreach ($k2c as $prop) {
     $args->$prop = isset($_REQUEST[$prop]) ? $_REQUEST[$prop] : null; 
   }
@@ -728,10 +742,10 @@ returns: -
 
 */
 function  moveTestSuiteViewer(&$smartyObj,&$tprojectMgr,$argsObj) {
-    $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tproject_id,
-                    array($argsObj->testsuiteID => 'exclude'));
+    $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tproject_id,[$argsObj->testsuiteID => 'exclude']);
+
     // Added the Test Project as the FIRST Container where is possible to copy
-    $testsuites = array($argsObj->tproject_id => $argsObj->tprojectName) + $testsuites;
+    $testsuites = [$argsObj->tproject_id => $argsObj->tprojectName] + $testsuites;
 
     // original container (need to comment this better)
     $smartyObj->assign('old_containerID', $argsObj->tproject_id);
@@ -817,7 +831,7 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj) {
 
   $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
      
-  $options = array();
+  $options = [];
   $options['check_duplicate_name'] = config_get('check_names_for_duplicates');
   $options['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
   $options['copyKeywords'] = $argsObj->copyKeywords;
@@ -825,8 +839,7 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj) {
 
 
   // copy_to($source,$destination,...)
-  $op = $tsuiteMgr->copy_to($argsObj->objectID, 
-          $argsObj->containerID, $argsObj->userID,$options);
+  $op = $tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
 
   if( $op['status_ok'] ) {
     $tsuiteMgr->tree_manager->change_child_order($argsObj->containerID,$op['id'],

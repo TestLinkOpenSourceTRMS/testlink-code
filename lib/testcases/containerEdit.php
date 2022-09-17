@@ -756,23 +756,19 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
 {
     $level = null;
     $oid = is_null($argsObj->testsuiteID) ? $argsObj->containerID : $argsObj->testsuiteID;
-    $children = $treeMgr->get_children($oid, 
-                                       array("testplan" => "exclude_me","requirement_spec"  => "exclude_me"));
-    $object_info = $treeMgr->get_node_hierarchy_info($oid);
-    $object_name = $object_info['name'];
-
-
-    if (!sizeof($children))
-    {  
+    $children = $treeMgr->get_children($oid, ["testplan" => "exclude_me",
+                                              "requirement_spec"  => "exclude_me"]);
+    if (!sizeof($children)) {  
       $children = null;
     }
+    $object_info = $treeMgr->get_node_hierarchy_info($oid);
+    $object_name = $object_info['name'];
 
     $smartyObj->assign('arraySelect', $children);
     $smartyObj->assign('objectID', $oid);
     $smartyObj->assign('object_name', $object_name);
 
-    if($oid == $argsObj->tproject_id)
-    {
+    if($oid == $argsObj->tproject_id) {
       $level = 'testproject';
       $smartyObj->assign('level', $level);
       $smartyObj->assign('page_title',lang_get('container_title_' . $level));
@@ -847,10 +843,13 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj) {
   $guiObj->refreshTree = $op['status_ok'] && $argsObj->refreshTree;
   $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
   $guiObj->id = $argsObj->objectID;
+  $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->treeFormToken = $guiObj->form_token = $argsObj->treeFormToken;
   
-  $guiObj->direct_link = $tsuiteMgr->buildDirectWebLink($_SESSION['basehref'],
-                           $guiObj->id,$argsObj->tproject_id);
+  
+  $guiObj->direct_link = $tsuiteMgr->buildDirectWebLink((object)['basehref' => $_SESSION['basehref'],
+                                                                 'id' => $guiObj->id,
+                                                                 'tproject_id' => $guiObj->tproject_id]);
 
   $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,'ok');
 
@@ -1358,9 +1357,9 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl=null) {
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $objMgr->getFileUploadRelativeURL($id);
 
   if( $objMgr->my_node_type == $objMgr->node_types_descr_id['testsuite'] ) {
-    $guiObj->direct_link = 
-      $objMgr->buildDirectWebLink($_SESSION['basehref'],
-                                  $guiObj->id,$argsObj->tproject_id);
+    $guiObj->direct_link = $objMgr->buildDirectWebLink((object)['basehref' => $_SESSION['basehref'],
+                                                                'id' => $guiObj->id,
+                                                                'tproject_id' => $guiObj->tproject_id]);
   }  
   return $guiObj;
 }

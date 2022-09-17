@@ -1100,12 +1100,11 @@ class testsuite extends tlObjectWithAttachments
   function addKeyword($id,$kw_id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $status = 1;
-    $kw = $this->getKeywords($id,$kw_id);
-    if( ($doLink = !sizeof($kw)) )
-    {
+    $kw = (array)$this->getKeywords($id,$kw_id);
+    if( ($doLink = !sizeof($kw)) ) {
       $sql = "/* $debugMsg */ INSERT INTO {$this->tables['object_keywords']} " .
              " (fk_id,fk_table,keyword_id) VALUES ($id,'nodes_hierarchy',$kw_id)";
-          $status = $this->db->exec_query($sql) ? 1 : 0;
+      $status = $this->db->exec_query($sql) ? 1 : 0;
     } 
     return $status;
   }

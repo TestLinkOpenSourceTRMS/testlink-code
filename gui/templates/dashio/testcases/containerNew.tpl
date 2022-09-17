@@ -11,7 +11,7 @@ Purpose: smarty template - create containers
 
 {$inc = "testcases/include"}
 {$action="lib/testcases/containerEdit.php?containerID="}
-{$action="$basehref$action$containerID"}
+{$action="$basehref$action{$gui->containerID}"}
 
 {lang_get var="labels"
           s="warning_empty_testsuite_name,title_create,tc_keywords,
@@ -35,21 +35,17 @@ Purpose: smarty template - create containers
                                refresh=$gui->refreshTree}
 
 
-<form method="post" action="{$action}"
-      name="container_new" id="container_new"
+<form method="post" action="{$action}" name="container_new" id="container_new"
       onSubmit="javascript:return validateForm(this);">
 
   <div style="font-weight: bold;">
     <div>
-      <input type="hidden" name="containerType" id="containerType"
-             value="{$gui->containerType}"/>
-      {if $gui->containerType == "testproject"}
-        <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->containerID}"/>
-      {/if}
+      <input type="hidden" name="containerType" id="containerType" value="{$gui->containerType}"/>
+      <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}"/>
+      <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}"/>
 
       {if $gui->containerType == "testsuite"}
-        <input type="hidden" 
-               name="parent_tsuite_id" id="parent_tsuite_id" value="{$gui->containerID}"/>
+        <input type="hidden" name="parent_tsuite_id" id="parent_tsuite_id" value="{$gui->containerID}"/>
       {/if}
 
       <input type="hidden" name="add_testsuite" id="add_testsuite" />

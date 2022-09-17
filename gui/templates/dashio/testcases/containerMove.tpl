@@ -34,6 +34,10 @@ jQuery(".chosen-select").chosen({ width: "50%", search_contains: true });
 	{$labels.sorry_further} {$parent} {$labels.defined_exclam}
 {else}
 	<form method="post" action="{$basehref}lib/testcases/containerEdit.php?objectID={$objectID|escape}&containerType={$level}">
+		<input type="hidden" name="old_containerID" value="{$old_containerID}" />
+		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+		<input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+
 		<p>
 		{$labels.cont_move_first} {$level_translated} {$labels.cont_move_second} {$parent|escape}.<br />
 		{$labels.cont_copy_first} {$level_translated} {$labels.cont_copy_second} {$parent|escape}.
@@ -62,14 +66,8 @@ jQuery(".chosen-select").chosen({ width: "50%", search_contains: true });
 		</p>
 
 		<div>
-			<input class="{#BUTTON_CLASS#}" type="submit" 
-			       name="do_move" id="do_move" 
-			       value="{$labels.btn_move}" />
-			<input class="{#BUTTON_CLASS#}" type="submit" 
-			       name="do_copy" id="do_copy" 
-			       value="{$labels.btn_cp}" />
-			<input type="hidden" name="old_containerID"
-			       value="{$old_containerID}" />
+			<input class="{#BUTTON_CLASS#}" type="submit" name="do_move" id="do_move" value="{$labels.btn_move}" />
+			<input class="{#BUTTON_CLASS#}" type="submit" name="do_copy" id="do_copy" value="{$labels.btn_cp}" />
 		</div>
 
 	</form>

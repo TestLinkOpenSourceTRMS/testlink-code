@@ -105,7 +105,7 @@ function validateForm(f)
            onclick="javascript: show_modified_warning = false; history.back();"/>
   </div>
    
-  {include file="testcases/inc_testsuite_viewer_rw.tpl"}
+  {include file="./include/tsuiteViewerRW.inc.tpl"}
 
    {* Custom fields *}
    {if $cf neq ""}

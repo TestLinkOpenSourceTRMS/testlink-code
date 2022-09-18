@@ -7,7 +7,7 @@
  *
  * @filesource  tcCreateFromIssueFromMantisXML.php
  * @package     TestLink
- * @copyright   2007-2013, TestLink community 
+ * @copyright   2007-2022, TestLink community 
  * @link        http://www.teamst.org/index.php
  * 
  *
@@ -50,7 +50,7 @@ require_once('xml.inc.php');
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $pcheck_fn=null;
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($db,$args);
 
 if ($args->do_upload)

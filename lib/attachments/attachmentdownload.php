@@ -25,15 +25,9 @@ if ($args->id) {
   $docRepo = tlAttachmentRepository::create($db);
   $docInfo = $docRepo->getAttachmentInfo($args->id);
 
-  file_put_contents("/var/testlink/log.log", 
-                    __LINE__ . ' ' 
-                    . $args->id . PHP_EOL,FILE_APPEND);
+  //file_put_contents("/var/testlink/log.log", __LINE__ . ' ' . $args->id . PHP_EOL,FILE_APPEND);
+  //file_put_contents("/var/testlink/log.log", __LINE__ . ' ' . json_encode($docInfo). PHP_EOL,FILE_APPEND);
  
-  file_put_contents("/var/testlink/log.log", 
-                    __LINE__ . ' ' 
-                    . json_encode($docInfo). PHP_EOL,FILE_APPEND);
- 
-
 
   if ($docInfo) {
     switch ($args->opmode)  {
@@ -92,14 +86,10 @@ if ($args->id) {
 
         $tbl = tlObject::getDBTables('testplans','tesuites','builds');
 
-         file_put_contents("/var/testlink/log.log", 
-                    __LINE__ . ' ' 
-                    . $fk_table. PHP_EOL,FILE_APPEND);
-
-         file_put_contents("/var/testlink/log.log", 
-                    __LINE__ . ' ' 
-                    . $attContext . PHP_EOL,FILE_APPEND);
-        switch ($attContext) {
+        // file_put_contents("/var/testlink/log.log", __LINE__ . ' ' . $fk_table. PHP_EOL,FILE_APPEND);
+        // file_put_contents("/var/testlink/log.log", __LINE__ . ' ' . $attContext . PHP_EOL,FILE_APPEND);
+        
+         switch ($attContext) {
           case 'executions':
             $sql = "SELECT E.testplan_id, TPL.testproject_id
                     FROM executions E 
@@ -154,8 +144,7 @@ if ($args->id) {
           }
         }
 
-        file_put_contents("/var/testlink/log.log", 
-                          json_encode($user->dbID),FILE_APPEND);
+        //file_put_contents("/var/testlink/log.log", json_encode($user->dbID),FILE_APPEND);
 
       break;
     }
@@ -279,20 +268,42 @@ function getContextForTestPlan(&$dbH,&$tbl,$id)
 function getContextForNodesHierarchy(&$dbH,&$tbl,$id) 
 {
   $tree = new tree($dbH);
-  $ni = $tree->get_node_hierarchy_info($attParent);
+  $ni = $tree->get_node_hierarchy_info($id);
   $nt = array_flip($tree->get_available_node_types());
   $nv = $nt[$ni['node_type_id']]; 
 
-  $ck = array('testplan_execute','exec_ro_access',
-              'exec_testcases_assigned_to_me');
+  // echo $nv; die();
 
+  $ck = [
+    'testplan_execute',
+    'exec_ro_access',
+    'exec_testcases_assigned_to_me'
+  ];
+
+  
   switch ($nv) {
+    case 'testproject':
+      $ctx = [
+        'tproject_id' => $id,
+        'tplan_id' => null,
+        'checkPublicPrivateAttr' => true
+      ];
+      $ck = [
+        'mgt_view_tc',
+        'mgt_modify_tc'
+      ];
+    break;
+
     case 'testsuite':
-      $ctx = array('tproject_id' => 
-                     $tree->getTreeRoot($attParent),
-                   'tplan_id' => null,
-                   'checkPublicPrivateAttr' => true);
-      $ck = array('mgt_view_tc','mgt_modify_tc');
+      $ctx = [
+        'tproject_id' => $tree->getTreeRoot($id),
+        'tplan_id' => null,
+        'checkPublicPrivateAttr' => true
+      ];
+      $ck = [
+        'mgt_view_tc',
+        'mgt_modify_tc'
+      ];
     break;
 
     case 'build':
@@ -303,16 +314,20 @@ function getContextForNodesHierarchy(&$dbH,&$tbl,$id)
               WHERE B.id = $id"; 
       $rs = $dbH->get_recordset($sql);
       $rs = $rs[0];
-      $ctx = array('tproject_id' => $rs[0]['testproject_id'],
-                   'tplan_id' => $rs[0]['testplan_id'],
-                   'checkPublicPrivateAttr' => true);
-      $ck = array('testplan_execute','exec_ro_access',
-                  'exec_testcases_assigned_to_me');
+      $ctx = [
+        'tproject_id' => $rs[0]['testproject_id'],
+        'tplan_id' => $rs[0]['testplan_id'],
+        'checkPublicPrivateAttr' => true
+      ];
+      $ck = [
+        'testplan_execute',
+        'exec_ro_access',
+        'exec_testcases_assigned_to_me'
+      ];
     break;
 
     case 'testplan':
-      list($ctx,$ck) = 
-        getContextForTestPlan($db,$tbl,$id);
+      list($ctx,$ck) = getContextForTestPlan($db,$tbl,$id);
     break;
   } 
 

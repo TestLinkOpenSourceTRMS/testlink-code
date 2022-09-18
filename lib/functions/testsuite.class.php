@@ -1190,7 +1190,8 @@ class testsuite extends tlObjectWithAttachments
     		$attInfos = $this->attachmentRepository->getAttachmentInfosFor($container_id,$this->attachmentTableName,'id');
     	  
     		// get all attachments content and encode it in base64	  
-    		if ($attInfos) {
+    		$attach = [];
+        if ($attInfos) {
     			foreach ($attInfos as $axInfo) {
     				$aID = $axInfo["id"];
     				$content = $this->attachmentRepository->getAttachmentContent($aID, $axInfo);

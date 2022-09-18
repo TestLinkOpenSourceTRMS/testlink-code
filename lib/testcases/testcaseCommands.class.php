@@ -1435,7 +1435,9 @@ class testcaseCommands {
     $guiObj->template = 
       "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
       "tcversion_id={$guiObj->tcversion_id}&" .
-      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+      "edit=testcase&id={$guiObj->tcase_id}&" . 
+      "show_mode={$guiObj->show_mode}" .
+      "&tproject_id={$guiObj->tproject_id}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
       $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";

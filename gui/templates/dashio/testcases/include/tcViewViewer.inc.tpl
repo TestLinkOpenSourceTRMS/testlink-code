@@ -251,26 +251,23 @@ viewer for test case in test specification
           {/if}
 
         	{* freeze/unfreeze TC version *}
-          {* <i class="fa-solid fa-ice-cream"></i> *}
-        	{if 'editOnExec' != $gui->show_mode && $args_read_only != "yes" 
-              && $args_can_do->freeze=='yes'}
+        	{if 'editOnExec' != $gui->show_mode && $args_read_only != "yes" && $args_can_do->freeze=='yes'}
         		  {if $args_frozen_version=="yes"}
         			  {$freeze_btn="unfreeze"}
         			  {$freeze_value="unfreeze_this_tcversion"}
         			  {$version_title_class="unfreeze_version"}
+                {$icon="fa-solid fa-ice-cream"}
         		  {else}
         			  {$freeze_btn="freeze"}
         			  {$freeze_value="freeze_this_tcversion"}
         			  {$version_title_class="freeze_version"}
+                {$icon="fa-solid fa-ice-cream"}
         		  {/if}
 
-        		 <input class="{#BUTTON_CLASS#}" type="submit" name="{$freeze_btn}" 
-        				onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}" value="{lang_get s=$freeze_value}" />
-
-            <button type="submit" style="border:0;" 
-                    onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}">
-              <i class="fa-solid fa-ice-cream" style="padding:1px 6px;" title="{lang_get s=$freeze_value}"></i>
-            </button>
+             <button type="submit" style="border:0;" 
+                onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}">
+               <i class="{$icon}" style="padding:1px 6px;" title="{lang_get s=$freeze_value}"></i>
+             </button>
 
 
         	{/if}

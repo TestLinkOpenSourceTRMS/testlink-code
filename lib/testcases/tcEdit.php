@@ -316,17 +316,18 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   $args->testproject_id = $args->tproject_id;
 
   $r_name = $otName . "_newRight";
-  $args->assigned_keywords_list = isset($_REQUEST[$r_name]) 
-                                  ? $_REQUEST[$r_name] : "";
+  $args->assigned_keywords_list = isset($_REQUEST[$r_name]) ? $_REQUEST[$r_name] : "";
 
-  $k2z = array('containerID',
-               'file_id',
-               'new_container',
-               'old_container',
-               'has_been_executed',
-               'step_number',
-               'step_id',
-               'platform_id');
+  $k2z = [
+    'containerID',
+    'file_id',
+    'new_container',
+    'old_container',
+    'has_been_executed',
+    'step_number',
+    'step_id',
+    'platform_id'
+  ];
 
   foreach ($k2z as $zz) {
     $args->$zz = isset($_REQUEST[$zz]) ? intval($_REQUEST[$zz]) : 0;
@@ -342,8 +343,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
     'tcaseSteps'
   ];
   foreach ($e2n as $kiki) {
-    $args->$kiki = isset($_REQUEST[$kiki]) 
-                   ? $_REQUEST[$kiki] : null;
+    $args->$kiki = isset($_REQUEST[$kiki]) ? $_REQUEST[$kiki] : null;
   }  
 
   // Normally Rich Web Editors
@@ -355,24 +355,19 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   ];
   
   foreach ($ek as $kiki) {
-    $args->$kiki = isset($_REQUEST[$kiki]) 
-                     ? $_REQUEST[$kiki] : null;
+    $args->$kiki = isset($_REQUEST[$kiki]) ? $_REQUEST[$kiki] : null;
   }  
 
   
-  $args->tcase_id = isset($_REQUEST['testcase_id']) 
-                          ? intval($_REQUEST['testcase_id']) : 0;
+  $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
   if($args->tcase_id == 0) {
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : 0;
   }  
   if($args->tcase_id == 0) {
-    $args->tcase_id = 
-      intval(isset($_REQUEST['relation_source_tcase_id']) ? 
-                   $_REQUEST['relation_source_tcase_id'] : 0);
+    $args->tcase_id = intval(isset($_REQUEST['relation_source_tcase_id']) ? $_REQUEST['relation_source_tcase_id'] : 0);
   }
   
-  $args->tcversion_id = isset($_REQUEST['tcversion_id']) 
-                        ? intval($_REQUEST['tcversion_id']) : 0;
+  $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
 
   if( $args->tcversion_id == 0 && $args->tcase_id > 0 ) {
     // get latest active version
@@ -747,25 +742,39 @@ function renderGui(&$argsObj,$guiObj,$opObj,$tplCfg,$cfgObj,$editorKeys)
   //              
   // used to set value of: $guiObj->operation
   //
-  $actionOperation = 
-    array('create' => 'doCreate', 'doCreate' => 'doCreate',
-          'edit' => 'doUpdate','delete' => 'doDelete', 
-          'createStep' => 'doCreateStep', 
-          'doCreateStep' => 'doCreateStep',
-          'doCopyStep' => 'doUpdateStep',
-          'editStep' => 'doUpdateStep', 
-          'doUpdateStep' => 'doUpdateStep', 
-          'doInsertStep' => 'doUpdateStep',
-          'doUpdateStepAndInsert' => 'doUpdateStep');
+  $actionOperation = [
+    'create' => 'doCreate', 
+    'doCreate' => 'doCreate',
+    'edit' => 'doUpdate',
+    'delete' => 'doDelete', 
+    'createStep' => 'doCreateStep', 
+    'doCreateStep' => 'doCreateStep',
+    'doCopyStep' => 'doUpdateStep',
+    'editStep' => 'doUpdateStep', 
+    'doUpdateStep' => 'doUpdateStep', 
+    'doInsertStep' => 'doUpdateStep',
+    'doUpdateStepAndInsert' => 'doUpdateStep'
+  ];
 
-  $nak = array('doDelete','doDeleteStep','doReorderSteps',
-               'doResequenceSteps',
-               'setImportance','setStatus','setExecutionType', 
-               'setEstimatedExecDuration','doAddRelation',
-               'doDeleteRelation','freeze','unfreeze',
-               'removeKeyword','addKeyword',
-               'removePlatform','addPlatform',
-               'removeAlien','addAlien');
+  $nak = [
+    'doDelete',
+    'doDeleteStep',
+    'doReorderSteps',
+    'doResequenceSteps',
+    'setImportance',
+    'setStatus','setExecutionType', 
+    'setEstimatedExecDuration',
+    'doAddRelation',
+    'doDeleteRelation',
+    'freeze',
+    'unfreeze',
+    'removeKeyword',
+    'addKeyword',
+    'removePlatform',
+    'addPlatform',
+    'removeAlien',
+    'addAlien'
+  ];
 
   foreach($nak as $ak) {
     $actionOperation[$ak] = '';

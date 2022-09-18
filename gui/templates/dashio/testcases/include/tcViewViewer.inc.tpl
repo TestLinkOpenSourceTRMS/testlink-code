@@ -48,9 +48,9 @@ viewer for test case in test specification
 {$tcExportAction="lib/testcases/tcExport.php?tproject_id=$tproject_id&goback_url=$goBackActionURLencoded&show_mode=$showMode"}
 {$exportTestCaseAction="$basehref$tcExportAction"}
 
-{$printTestCaseAction="lib/testcases/tcPrint.php?show_mode=$showMode"}
+{$printTestCaseAction="lib/testcases/tcPrint.php?show_mode=$showMode&tproject_id=$tproject_id&tplan_id=$tplan_id"}
 
-{$execFeatureAction="lib/general/frmWorkArea.php?feature=executeTest"}
+{$execFeatureAction="lib/general/frmWorkArea.php?feature=executeTest&tproject_id=$tproject_id&tplan_id=$tplan_id"}
 
 {$bulkOpAction="lib/testcases/tcBulkOp.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
 {$bulkOpAction="$basehref$bulkOpAction"}

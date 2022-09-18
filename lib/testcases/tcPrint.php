@@ -6,7 +6,7 @@
  * @internal  filename: tcPrint.php 
  * @package   TestLink
  * @author    Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright 2005-2019, TestLink community 
+ * @copyright 2005-2022, TestLink community 
  * @link      http://www.testlink.org
  *
  */
@@ -19,19 +19,31 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);
-$args = init_args();
+$args = init_args($db);
 $node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
 $node['tcversion_id'] = $args->tcversion_id;
 $gui = initializeGui($args,$node);
 
 
 // Struture defined in printDocument.php  
-$printingOptions = array('toc' => 0,'body' => 1,'summary' => 1, 
-  'header' => 0,'headerNumbering' => 0,
-  'passfail' => 0, 'author' => 1, 'notes' => 0, 'requirement' => 1, 
-  'keyword' => 1, 'cfields' => 1, 'displayVersion' => 1, 
+$printingOptions = [
+  'toc' => 0,
+  'body' => 1,
+  'summary' => 1, 
+  'header' => 0,
+  'headerNumbering' => 0,
+  'passfail' => 0, 
+  'author' => 1, 
+  'notes' => 0, 
+  'requirement' => 1, 
+  'keyword' => 1, 
+  'cfields' => 1, 
+  'displayVersion' => 1, 
   'displayDates' => 1, 
-  'docType' => SINGLE_TESTCASE, 'importance' => 1,'platform' => 1);
+  'docType' => SINGLE_TESTCASE, 
+  'importance' => 1,
+  'platform' => 1
+];
 
 $level = 0;
 $tplanID = 0;
@@ -58,7 +70,7 @@ echo $text2print;
   returns: 
 
 */
-function init_args()
+function init_args($dbH)
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 

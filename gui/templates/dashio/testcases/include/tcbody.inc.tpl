@@ -8,22 +8,15 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	  	<th class="bold" colspan="{$inc_tcbody_tableColspan}" style="text-align:left;">
 		{$tco.tc_external_id}{$smarty.const.TITLE_SEP}{$tco.name|escape}
 		{$smarty.const.TITLE_SEP_TYPE2}{$inc_tcbody_labels.version|escape}{$tco.version}
-		<img class="clickable" src="{$tlImages.ghost_item}"
-             title="{$inc_tcbody_labels.show_ghost_string}"
-             onclick="showHideByClass('tr','ghostTC');">
+	
+		<i class="fa-xl fa-solid fa-ghost" title="{$inc_tcbody_labels.copy_ghost_string}" onclick="copyInputTextToClipboard('ghostTCString');"></i>				 
+	  <input type="text" id="ghostTCString" style="display:none;" value='{$tco.ghost}'>
 
 		<img class="clickable" src="{$tlImages.activity}"
              title="{$inc_tcbody_labels.display_author_updater}"
              onclick="showHideByClass('tr','time_stamp_creation');">
 
 	  	</td>
-	  </tr>
-
-	  <tr class="ghostTC" style="display:none;">
-	  	<td colspan="{$inc_tcbody_tableColspan}">{$tco.ghost}</td>	
-	  </tr>
-	  <tr class="ghostTC" style="display:none;">
-	  	<td colspan="{$inc_tcbody_tableColspan}">&nbsp;</td>	
 	  </tr>
 
 	{if $inc_tcbody_author_userinfo != ''}  

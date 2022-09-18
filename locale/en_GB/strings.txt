@@ -114,6 +114,8 @@ $TLS_filter_mode_and = 'Attention: Filter fields works in AND mode';
 $TLS_goto_execute = 'Goto execute test cases';
 $TLS_ghost = 'ghost';
 $TLS_show_ghost_string = 'Show ghost string';
+$TLS_copy_ghost_string = 'Copy ghost string to clipboard';
+
 $TLS_goto_testspec = 'Open test case specification';
 $TLS_help = "Help";
 $TLS_hint_list_of_bugs = 'BUGX,BUGY,BUGZ';

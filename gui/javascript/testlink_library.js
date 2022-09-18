@@ -1998,3 +1998,18 @@ alert(page);
   // second parameter(window name) with spaces caused bug on IE
   window.open(fRoot+feature_url,"Keywords",windowCfg);
 }
+
+/**
+ * 
+ * @param {*} id 
+ */
+function copyInputTextToClipboard(id) {
+  var copyText = document.getElementById(id);
+
+  // Select the text field
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // For mobile devices
+
+  // Copy the text inside the text field
+  navigator.clipboard.writeText(copyText.value);
+ }

@@ -61,23 +61,16 @@ Purpose: smarty template - manage import of test cases and test suites
 	</table>
 	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB|escape} {$labels.max_size_cvs_file2}</p>
 	<div class="groupBtn">
-		<input type="hidden" name="useRecursion"
-           value="{$gui->useRecursion|escape}" />
-		<input type="hidden" name="bIntoProject" 
-           value="{$gui->bIntoProject|escape}" />
-		<input type="hidden" name="containerID" 
-           value="{$gui->containerID}" />
-
-    <input type="hidden" name="tproject_id" 
-           value="{$gui->tproject_id}" />
+		<input type="hidden" name="useRecursion" value="{$gui->useRecursion|escape}" />
+		<input type="hidden" name="bIntoProject" value="{$gui->bIntoProject|escape}" />
+		<input type="hidden" name="containerID" value="{$gui->containerID}" />
+    <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 
     {* to save context *}       
-    <input type="hidden" name="tplan_id" 
-           value="{$gui->tplan_id}" />
+    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
 
     {* restrict file size *}           
-		<input type="hidden" name="MAX_FILE_SIZE"
-           value="{$gui->importLimitBytes|escape}" /> 
+		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes|escape}" /> 
 
 		<input class="{#BUTTON_CLASS#}" type="submit" 
            name="UploadFile" id="UploadFile"
@@ -85,7 +78,7 @@ Purpose: smarty template - manage import of test cases and test suites
       <input class="{#BUTTON_CLASS#}" type="button" 
              name="cancel" id="cancel" 
              value="{$labels.btn_cancel}"
-             {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
+             {if property_exists($gui,'goback_url') && $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
              {elseif $gui->cancelActionJS != ''} onclick="javascript:{$gui->cancelActionJS};"
              {else}  onclick="javascript:history.back();" {/if} />
 	</div>

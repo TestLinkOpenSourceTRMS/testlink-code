@@ -7,7 +7,7 @@
  *
  * @filesource  tcImport.php
  * @package     TestLink
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2022, TestLink community 
  * @link        http://testlink.sourceforge.net/ 
  * 
  */
@@ -90,16 +90,18 @@ if($args->useRecursion) {
   $obj_mgr->setTestProject($args->tproject_id);
 }
 
-$gui->actionOptions = 
-array('skip' => lang_get('skip_testcase_import'),
-      'update_last_version' => lang_get('update_last_testcase_version'),
-      'generate_new' => lang_get('generate_new_testcase'),
-      'create_new_version' => lang_get('create_new_testcase_version'));
+$gui->actionOptions = [
+  'skip' => lang_get('skip_testcase_import'),
+  'update_last_version' => lang_get('update_last_testcase_version'),
+  'generate_new' => lang_get('generate_new_testcase'),
+  'create_new_version' => lang_get('create_new_testcase_version')
+];
 
-$gui->hitOptions = array('name' => lang_get('same_name'),
-                         'internalID' => lang_get('same_internalID'),
-                         'externalID' => lang_get('same_externalID'));
-
+$gui->hitOptions = [
+  'name' => lang_get('same_name'),
+  'internalID' => lang_get('same_internalID'),
+  'externalID' => lang_get('same_externalID')
+];
 
 $gui->importTypes = $obj_mgr->get_import_file_types();
 $gui->action_on_duplicated_name=$args->action_on_duplicated_name;
@@ -607,12 +609,19 @@ function init_args(&$dbH)
   $key='hit_criteria';
   $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'name';
        
-  $k2n = array('importType','location');
+  $k2n = [
+    'importType',
+    'location'
+  ];
   foreach ($k2n as $prop) {
     $args->$prop = isset($_REQUEST[$prop]) ? $_REQUEST[$prop] : null;
   }      
 
-  $k2z = array('useRecursion','bIntoProject','containerID');
+  $k2z = [
+    'useRecursion',
+    'bIntoProject',
+    'containerID'
+  ];
   foreach ($k2z as $prop) {
     $args->$prop = isset($_REQUEST[$prop]) ? intval($_REQUEST[$prop]) : 0;
   }      
@@ -620,9 +629,10 @@ function init_args(&$dbH)
   $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
     
   $args->userID = $_SESSION['userID'];
-   if ($args->containerID == 0) {
+  if ($args->containerID == 0) {
     throw new Exception("Can Not Import Without a Container", 1);
-  }  
+  }
+  
   return $args;
 }
 
@@ -1175,21 +1185,21 @@ function initializeGui(&$dbHandler,&$argsObj)
     $node_info = $tree_mgr->get_node_hierarchy_info($argsObj->containerID);
     unset($tree_mgr);    
     $guiObj->container_name = $node_info['name'];
+    $guiObj->container_description = lang_get('testsuite');
     if ($argsObj->containerID == $argsObj->tproject_id) {
       $guiObj->container_description = lang_get('testproject');
-    }  
+    }   
+
+    $guiObj->pageTitle = $guiObj->container_description . ' : ' . $guiObj->container_name;
   }
 
 
-  $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 
-    "lib/testcases/archiveData.php?";
+  $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?";
 
   if (intval($argsObj->containerID) > 0) {
-    $guiObj->cancelActionJS .= 'edit=testsuite&id=' . 
-      intval($argsObj->containerID);
+    $guiObj->cancelActionJS .= 'edit=testsuite&id=' . intval($argsObj->containerID);
   } else {
-    $guiObj->cancelActionJS .= 'edit=testcase&id=' . 
-      intval($argsObj->tcase_id);
+    $guiObj->cancelActionJS .= 'edit=testcase&id=' . intval($argsObj->tcase_id);
   }
 
   if( property_exists($argsObj, 'tplan_id') ) {

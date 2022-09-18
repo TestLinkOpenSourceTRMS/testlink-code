@@ -8,7 +8,7 @@
  * @filesource  print.inc.php
  *
  * @package   TestLink
- * @copyright 2007-2020, TestLink community 
+ * @copyright 2007-2022, TestLink community 
  * @uses      printDocument.php
  *
  */ 
@@ -1440,7 +1440,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $kwSet = null;
 
   // collect platforms for TC VERSION
-  if ($options['platform']) {
+  if (isset($options['platform']) && $options['platform']) {
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['platforms'].':</span></td>';
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
@@ -1652,7 +1652,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   static $title_separator;
   static $cfieldFormatting;
   static $getOpt;
-  static $reporDir;
+  static $repoDir;
 
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];

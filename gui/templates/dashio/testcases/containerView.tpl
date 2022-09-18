@@ -46,10 +46,10 @@ View test specification containers
 {$exportTestCasesAction="$basehref$tcExportAction"}
 
 {$testSpecFullDocAction="lib/results/printDocument.php?type=testspec&level=testproject&allOptionsOn=1&format=0&id=$container_id&form_token=$ft"}
-{$testSpecFullDocAction="$basehref$testSpecFullDocAction"}
+{$testSpecFullDocAction="$basehref$testSpecFullDocAction&tproject_id=$tproject_id&tplan_id=$tplan_id"}
 
 {$testSpecFullWordDocAction="lib/results/printDocument.php?type=testspec&level=testproject&allOptionsOn=1&format=4&id=$container_id"}
-{$testSpecFullWordDocAction="$basehref$testSpecFullWordDocAction"}
+{$testSpecFullWordDocAction="$basehref$testSpecFullWordDocAction&tproject_id=$tproject_id&tplan_id=$tplan_id"}
 
 {$testSuiteDocAction="lib/results/printDocument.php?type=testspec&level=testsuite&allOptionsOn=1&format=0&id=$container_id&form_token=$ft"}
 {$testSuiteDocAction="$basehref$testSuiteDocAction&tproject_id=$tproject_id&tplan_id=$tplan_id"}
@@ -58,7 +58,7 @@ View test specification containers
 {$testSuiteWordDocAction="$basehref$testSuiteWordDocAction&tproject_id=$tproject_id&tplan_id=$tplan_id"}
 
 
-{$tsuiteExportAction="$basehref$tcExportAction&amp;useRecursion=1&amp;form_token=$ft"}
+{$tsuiteExportAction="$basehref$tcExportAction&useRecursion=1&form_token=$ft"}
 
 {$tcMantisXMLAction="lib/testcases/tcCreateFromIssueMantisXML.php?containerID=$container_id"}
 {$createTCFromIssueMantisXMLAction="$basehref$tcMantisXMLAction&tproject_id=$tproject_id&tplan_id=$tplan_id"}

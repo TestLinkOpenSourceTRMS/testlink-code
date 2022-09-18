@@ -11,7 +11,8 @@ Purpose:
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels'
-          s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,btn_save,execution_type,
+          s='testproject,testsuite,th_test_case,th_id,title_move_cp,title_move_cp_testcases,
+             sorry_further,btn_save,execution_type,
              check_uncheck_all_checkboxes,warning,execution_history,design,copy_requirement_assignments,
              choose_target,copy_keywords,btn_move,btn_cp,summary,btn_copy_ghost_zone,status,importance'}
 
@@ -58,7 +59,7 @@ function check_action_precondition(container_id,action,msg) {
 
 <body>
 {lang_get s=$level var=level_translated}
-<h1 class="title">{$level_translated}{$smarty.const.TITLE_SEP}{$object_name|escape} </h1>
+<h1 class="title">{$labels.testproject} : {$gui->tprojectName|escape} <br> {$labels.testsuite} : {$gui->tsuiteName|escape}</h1>
 
 <div class="workBack">
 {if !$gui->testCasesTableView}    
@@ -71,11 +72,8 @@ function check_action_precondition(container_id,action,msg) {
 	<form id="move_copy_testcases" name="move_copy_testcases" method="post"
 	      action="{$basehref}lib/testcases/containerEdit.php?objectID={$objectID}">
 
-    <input type="hidden" name="form_token" id="form_token" 
-           value="{$gui->form_token}" />
-
-    <input type="hidden" name="containerType" id="containerType" 
-           value="testsuite" />
+    <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
+    <input type="hidden" name="containerType" id="containerType" value="testsuite" />
 
     {if !$gui->testCasesTableView}    
       {if $user_feedback != ''}

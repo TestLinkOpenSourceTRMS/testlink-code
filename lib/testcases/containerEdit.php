@@ -282,7 +282,7 @@ if( $doIt ) {
       $op = copyTestCases($smarty,$template_dir,$tsuite_mgr,$tcase_mgr,$args);
 
       $refreshTree = $op['refreshTree'];
-      moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,$op['userfeedback']);
+      $gui = moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,$op['userfeedback']);
     break;
 
 
@@ -503,31 +503,28 @@ function init_args(&$dbHandler,&$tprojectMgr,&$tsuiteMgr)
   // check against whitelist
   if( null != $args->containerType ) {
     $whiteList = array('testproject' => 'OK','testsuite' => 'OK');
-    if(!is_null($args->containerType) && 
-       !isset($whiteList[$args->containerType])) {
+    if(!is_null($args->containerType) && !isset($whiteList[$args->containerType])) {
       $args->containerType = null;  
     }      
   }
 
   // When Deleting Test suite - container ID is not set
   if( is_null($args->containerID) ) {
-    $args->containerType = 
-      is_null($args->containerType) ? 'testproject' : 
-      $args->containerType;
+    $args->containerType = is_null($args->containerType) ? 'testproject' : $args->containerType;
   }
 
   if( null == $args->containerType ) {
     throw new Exception("Error No Container Type", 1);    
   }
 
+  $args->tsuite_name = null;
   switch( $args->containerType ) {
     case 'testproject':
       $args->tproject_id = $args->containerID;
     break;
 
     case 'testsuite':
-      $nodeID = !is_null($args->testsuiteID) ? $args->testsuiteID : 
-                $args->containerID;
+      $nodeID = !is_null($args->testsuiteID) ? $args->testsuiteID : $args->containerID;
       $args->tproject_id = $tsuiteMgr->getTestProjectFromTestSuite($nodeID,null);
 
       $hipo = $tsuiteMgr->tree_manager->get_node_hierarchy_info($nodeID);
@@ -926,23 +923,29 @@ prepares smarty variables to display move testcases viewer
 
 args:
 
-returns: -
+returns: 
 
 */
 function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
                              $argsObj,$feedback='',$cf=null)
 {
-  $tables = $tprojectMgr->getDBTables(array('nodes_hierarchy','node_types','tcversions'));
+  $gui = new stdClass();
+  $gui->treeFormToken = $gui->form_token = $argsObj->treeFormToken; 
+
+
+  $tables = $tprojectMgr->getDBTables(['nodes_hierarchy','node_types','tcversions']);
   $testcase_cfg = config_get('testcase_cfg');
   $glue = $testcase_cfg->glue_character;
 
   $containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
-  $containerName = $argsObj->tsuite_name;
-  if( is_null($containerName) ) {
-    $dummy = $treeMgr->get_node_hierarchy_info($argsObj->objectID);
-    $containerName = $dummy['name'];
-  }
+  $dummy = $treeMgr->get_node_hierarchy_info($containerID);
+  $gui->tsuiteName = $dummy['name'];
 
+  $dummy = $treeMgr->get_node_hierarchy_info($argsObj->tproject_id);
+  $gui->tprojectName = $dummy['name'];
+  
+
+ 
   // I'have discovered that exclude selected testsuite branch is not good
   // when you want to move lots of testcases from one testsuite to it's children
   // testsuites. (in this situation tree drag & drop is not ergonomic).
@@ -991,8 +994,7 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
     $user_feedback = lang_get('no_testcases_available_or_tsuite');
   }
 
-  $gui = new stdClass();
-  $gui->treeFormToken = $gui->form_token = $argsObj->treeFormToken; 
+
 
   $dummy = getConfigAndLabels('testCaseStatus','code');
   $gui->domainTCStatus = array(-1 => '') + $dummy['lbl'];
@@ -1022,7 +1024,7 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
   $smartyObj->assign('old_containerID', $argsObj->tproject_id); 
   $smartyObj->assign('containers', $testsuites);
   $smartyObj->assign('objectID', $containerID);
-  $smartyObj->assign('object_name', $containerName);
+  // $smartyObj->assign('object_name', $containerName);
   $smartyObj->assign('top_checked','checked=checked');
   $smartyObj->assign('bottom_checked','');
 
@@ -1448,16 +1450,26 @@ function initTPLActions() {
   ];
 
   $actions = [
-    'edit_testsuite' => 0,'new_testsuite' => 0,
+    'edit_testsuite' => 0,
+    'new_testsuite' => 0,
     'delete_testsuite' => 0,
-    'do_move' => 0,'do_copy' => 0,'reorder_testsuites' => 1,
-    'do_testsuite_reorder' => 0,'add_testsuite' => 1,
-    'move_testsuite_viewer' => 0,'update_testsuite' => 1,
-    'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
-    'testcases_table_view' => 0,'do_copy_tcase_set' => 0, 
-    'do_copy_tcase_set_ghost' => 0, 'del_testsuites_bulk' => 0,
-    'delete_testcases' => 0,'do_delete_testcases' => 0, 
-    'reorder_testcases' => 0,'reorder_testsuites_alpha' => 0, 
+    'do_move' => 0,
+    'do_copy' => 0,
+    'reorder_testsuites' => 1,
+    'do_testsuite_reorder' => 0,
+    'add_testsuite' => 1,
+    'move_testsuite_viewer' => 0,
+    'update_testsuite' => 1,
+    'move_testcases_viewer' => 0,
+    'do_move_tcase_set' => 0,
+    'testcases_table_view' => 0,
+    'do_copy_tcase_set' => 0, 
+    'do_copy_tcase_set_ghost' => 0, 
+    'del_testsuites_bulk' => 0,
+    'delete_testcases' => 0,
+    'do_delete_testcases' => 0, 
+    'reorder_testcases' => 0,
+    'reorder_testsuites_alpha' => 0, 
     'reorder_testproject_testsuites_alpha' => 0,
     'doBulkSet' => 0
   ];

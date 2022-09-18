@@ -195,22 +195,25 @@ if( $doIt ) {
     break;
 
     case 'move_testsuite_viewer':
-      moveTestSuiteViewer($smarty,$tproject_mgr,$args);
+      $gui = moveTestSuiteViewer($smarty,$tproject_mgr,$args);
     break;
 
     case 'move_testcases_viewer':
-      moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args);
+      $gui = moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args);
     break;
 
     case 'testcases_table_view':
       $cf = null;
       $cf_map = $tcase_mgr->get_linked_cfields_at_design(0,null,null,null,$args->tproject_id);    
       if(!is_null($cf_map)) {
-        $cfOpt = array('addCheck' => true, 'forceOptional' => true);
+        $cfOpt = [
+          'addCheck' => true, 
+          'forceOptional' => true
+        ];
         $cf = $tcase_mgr->cfield_mgr->html_table_inputs($cf_map,'',null,$cfOpt);
       }
 
-      moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,null,$cf);
+      $gui = moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,null,$cf);
     break;
 
 
@@ -328,8 +331,7 @@ if( $doIt ) {
         $cfOpt = array('addCheck' => true, 'forceOptional' => true);
         $cf = $tcase_mgr->cfield_mgr->html_table_inputs($cf_map,'',null,$cfOpt);
       }
-
-      moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,null,$cf);
+      $gui = moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,null,$cf);
     break;
 
     case 'addKeyword':
@@ -359,8 +361,10 @@ if( $doIt ) {
 
 
 if($the_tpl) {
-  $smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
+  $gui->tprojOpt = $args->tprojOpt;
   $smarty->assign('gui',$gui);
+  $smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
+
   $smarty->display($template_dir . $the_tpl);
 }
 
@@ -548,9 +552,9 @@ function init_args(&$dbHandler,&$tprojectMgr,&$tsuiteMgr)
   }
 
 
-  $info = $tprojectMgr->get_by_id($args->tproject_id,
-                                  array('output' => 'name'));
+  $info = $tprojectMgr->get_by_id($args->tproject_id,['output' => 'name']);
   $args->tprojectName = $info['name'];
+  $args->tprojOpt = $tprojectMgr->getOptions($args->tproject_id);
 
   $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
   $args->file_id = isset($_REQUEST['file_id']) ? intval($_REQUEST['file_id']) : 0;
@@ -1021,6 +1025,8 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
   $smartyObj->assign('object_name', $containerName);
   $smartyObj->assign('top_checked','checked=checked');
   $smartyObj->assign('bottom_checked','');
+
+  return $gui;
 }
 
 
@@ -1249,6 +1255,8 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
     $guiObj->refreshTree = $argsObj->refreshTree;
 
     $smartyObj->assign('gui', $guiObj);
+
+    return $guiObj;
 }
 
 
@@ -1384,9 +1392,13 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl=null) {
 function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
 {
   if( count($tcaseSet) > 0 ) {
-    $k2s = array('tc_status' => 'setStatus',
-                 'importance' => 'setImportance',
-                 'execution_type' => 'setExecutionType');
+    
+    $k2s = [
+      'tc_status' => 'setStatus',
+       'importance' => 'setImportance',
+       'execution_type' => 'setExecutionType'
+    ];
+    
     foreach($tcaseSet as $tcversion_id => $tcase_id) {
       foreach($k2s as $attr => $m2c) {
         if($argsObj->$attr >0) {
@@ -1423,30 +1435,34 @@ function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
  */
 function initTPLActions() {
 
-  $tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
-                'delete_testsuite' => 'containerDelete.tpl',
-                'move_testcases_viewer' => 'containerMoveTC.tpl',
-                'testcases_table_view' => 'containerMoveTC.tpl',
-                'do_copy_tcase_set' => 'containerMoveTC.tpl',
-                'do_copy_tcase_set_ghost' => 'containerMoveTC.tpl',
-                'delete_testcases' =>  'containerDeleteTC.tpl',
-                'do_delete_testcases' =>  'containerDeleteTC.tpl',
-                'doBulkSet' => 'containerMoveTC.tpl');
+  $tpl = [
+    'move_testsuite_viewer' => 'containerMove.tpl',
+    'delete_testsuite' => 'containerDelete.tpl',
+    'move_testcases_viewer' => 'containerMoveTC.tpl',
+    'testcases_table_view' => 'containerMoveTC.tpl',
+    'do_copy_tcase_set' => 'containerMoveTC.tpl',
+    'do_copy_tcase_set_ghost' => 'containerMoveTC.tpl',
+    'delete_testcases' =>  'containerDeleteTC.tpl',
+    'do_delete_testcases' =>  'containerDeleteTC.tpl',
+    'doBulkSet' => 'containerMoveTC.tpl'
+  ];
 
-  $actions = array('edit_testsuite' => 0,'new_testsuite' => 0,
-                   'delete_testsuite' => 0,
-                   'do_move' => 0,'do_copy' => 0,'reorder_testsuites' => 1,
-                   'do_testsuite_reorder' => 0,'add_testsuite' => 1,
-                   'move_testsuite_viewer' => 0,'update_testsuite' => 1,
-                   'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
-                   'testcases_table_view' => 0,'do_copy_tcase_set' => 0, 
-                   'do_copy_tcase_set_ghost' => 0, 'del_testsuites_bulk' => 0,
-                   'delete_testcases' => 0,'do_delete_testcases' => 0, 
-                   'reorder_testcases' => 0,'reorder_testsuites_alpha' => 0, 
-                   'reorder_testproject_testsuites_alpha' => 0,
-                   'doBulkSet' => 0);
+  $actions = [
+    'edit_testsuite' => 0,'new_testsuite' => 0,
+    'delete_testsuite' => 0,
+    'do_move' => 0,'do_copy' => 0,'reorder_testsuites' => 1,
+    'do_testsuite_reorder' => 0,'add_testsuite' => 1,
+    'move_testsuite_viewer' => 0,'update_testsuite' => 1,
+    'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
+    'testcases_table_view' => 0,'do_copy_tcase_set' => 0, 
+    'do_copy_tcase_set_ghost' => 0, 'del_testsuites_bulk' => 0,
+    'delete_testcases' => 0,'do_delete_testcases' => 0, 
+    'reorder_testcases' => 0,'reorder_testsuites_alpha' => 0, 
+    'reorder_testproject_testsuites_alpha' => 0,
+    'doBulkSet' => 0
+  ];
 
-  return array($tpl,$actions);
+  return [$tpl,$actions];
 }
 
 /**

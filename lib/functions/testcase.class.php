@@ -6,7 +6,7 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2020, TestLink community
+ * @copyright   2005-2022, TestLink community
  * @link        http://www.testlink.org/
  *
  */
@@ -10392,7 +10392,11 @@ class testcase extends tlObjectWithAttachments {
   function buildAlienBlob(&$ufoCrew,&$repo)
   {
     static $oCache = array();
-
+    
+    if ($ufoCrew == null) {
+      return;
+    }
+    
     $akey = 'alien_id';
     $ohnooo = "(" . lang_get('reference_not_found') . ")";
     foreach ($ufoCrew as $ik => $el) {

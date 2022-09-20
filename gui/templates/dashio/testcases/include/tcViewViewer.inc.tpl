@@ -153,27 +153,27 @@ viewer for test case in test specification
       		{* New TC sibling *}
       		{if $args_new_sibling == "yes" }
       			<input type="hidden" name="containerID" value="{$args_testcase.testsuite_id}" />
-      			<input class="{#BUTTON_CLASS#}" 
-              type="submit" name="new_tc" id="new_tc"
-              title="{$tcView_viewer_labels.hint_new_sibling}"
-      				onclick="doAction.value='create';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_new_sibling}" />
+            <button type="submit" style="border:0;" name="new_tc" id="new_tc"
+               onclick="doAction.value='create';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_new_sibling}">
+               <i class="fas fa-plus-circle" title="{$tcView_viewer_labels.hint_new_sibling}"></i>
+            </button>
       		{/if}
 
       		{* Move Copy *}
-      		{if $args_can_do->copy == "yes" 
-              && $args_can_move_copy == "yes"}
+      		{if $args_can_do->copy == "yes" && $args_can_move_copy == "yes"}
       			<input class="{#BUTTON_CLASS#}" type="submit" 
                    name="move_copy_tc" id="move_copy_tc"
                    value="{$tcView_viewer_labels.btn_mv_cp}" />
       		{/if}
       	  
       		{* Delete TC *}
-      		{if $delete_enabled 
-              && $args_can_do->delete_testcase == "yes" 
-              && $args_can_delete_testcase == "yes"}
+      		{if $delete_enabled && $args_can_do->delete_testcase == "yes" && $args_can_delete_testcase == "yes"}
       		   <input class="{#BUTTON_CLASS#}" type="submit" 
                     name="delete_tc" id="delete_tc"
                     value="{$tcView_viewer_labels.btn_delete}" />
+
+
+
       		{/if}
         </form> <!-- id="topControls" -->
       
@@ -273,11 +273,21 @@ viewer for test case in test specification
         	{/if}
 
         	{* delete TC version *}
-        	{if ( $args_frozen_version=="no" 
-              || $args_can_do->delete_frozen_tcversion == "yes") 
-              && $args_can_do->delete_version == "yes" 
-              && $args_can_delete_version == "yes"}
-        	   <input class="{#BUTTON_CLASS#}" type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
+          {*
+          {$args_frozen_version}<br>
+          {$args_can_do->delete_frozen_tcversion}<br>
+          {$args_can_do->delete_version}<br>
+          {$args_can_delete_version}<br>
+          *}
+          
+        	{if ( $args_frozen_version=="no" || $args_can_do->delete_frozen_tcversion == "yes") && 
+               $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
+
+            <button type="submit" style="border:0;" name="delete_tc_version" id="delete_tc_version" 
+                    value="{$tcView_viewer_labels.btn_del_this_version}" >
+              <i class="fas fa-times-circle" title="{$tcView_viewer_labels.btn_del_this_version}"></i>
+            </button>
+
         	{/if}
         {/if}
       </form>

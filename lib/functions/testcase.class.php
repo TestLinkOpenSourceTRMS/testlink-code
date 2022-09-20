@@ -126,6 +126,9 @@ class testcase extends tlObjectWithAttachments {
    *
    */
   function setTestProject($tproject_id) {
+    if ($tproject_id == 0) {
+      throw new Exception("test project id can not be 0");
+    }
     $this->tproject_id = intval($tproject_id);
   }
 

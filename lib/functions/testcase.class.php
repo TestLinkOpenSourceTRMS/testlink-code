@@ -19,7 +19,7 @@ require_once( dirname(__FILE__) . '/users.inc.php' );
 require_once( dirname(__FILE__) . '/event_api.php');
 
 /** list of supported format for Test case import/export */
-$g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import'));
+$g_tcFormatStrings = ["XML" => lang_get('the_format_tc_xml_import')];
 
 /**
  * class for Test case CRUD
@@ -69,14 +69,15 @@ class testcase extends tlObjectWithAttachments {
 
   var $cfield_mgr;
 
-  var $import_file_types = array("XML" => "XML");
-  var $export_file_types = array("XML" => "XML");
-  var $execution_types = array();
+  var $import_file_types = ["XML" => "XML"];
+  var $export_file_types = ["XML" => "XML"];
+  var $execution_types = [];
   var $cfg;
   var $debugMsg;
   var $layout;
   var $XMLCfg;
   var $tproject_id;
+
 
   /**
    * testcase class constructor
@@ -136,18 +137,39 @@ class testcase extends tlObjectWithAttachments {
    *
    */
   static function getExecutionTypes() {
-    $stdSet = array(self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
-                    self::EXECUTION_TYPE_AUTO => lang_get('automated'));
+    $stdSet = [
+      self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
+      self::EXECUTION_TYPE_AUTO => lang_get('automated')
+    ];
 
-    if( !is_null($customSet = config_get('custom_execution_types')) )
-    {
-      foreach($customSet as $code => $lbl)
-      {
+    if( !is_null($customSet = config_get('custom_execution_types')) ) {
+      foreach($customSet as $code => $lbl) {
         $stdSet[$code] = lang_get($lbl);
       }
     }
     return $stdSet;
   }
+
+  /**
+   *
+   */
+  static function getStandardGrantsNames() {
+    return [
+    'mgt_modify_tc',
+    'mgt_view_req',
+    'testplan_planning',
+    'mgt_modify_product',
+    'mgt_modify_req',
+    'testcase_freeze',
+    'keyword_assignment',
+    'req_tcase_link_management',
+    'testproject_edit_executed_testcases',
+    'testproject_delete_executed_testcases',
+    'testproject_add_remove_keywords_executed_tcversions',
+    'delete_frozen_tcversion'
+    ];
+  }  
+
 
 
   /**
@@ -926,7 +948,7 @@ class testcase extends tlObjectWithAttachments {
    *
    *
    */
-  function show(&$smarty,$guiObj,$identity,$grants,$opt=null) {
+  function show(&$smarty,$guiObj,$identity,$grantSet,$opt=null) {
     static $cfg;
     static $reqMgr;
     static $hidePreconditions;
@@ -946,12 +968,14 @@ class testcase extends tlObjectWithAttachments {
       $hideSummary = (isset($hideSummary['kwID']) && $hideSummary['kwID'] != null);
     }
 
+  
+
     $status_ok = ($identity->id > 0);
     if( !$status_ok ) {
       throw new Exception(__METHOD__ . ' EXCEPTION: Test Case ID is invalid ( <= 0)' );
     }
     
-    $my = array('opt' => array('getAttachments' => false));
+    $my = ['opt' => array('getAttachments' => false)];
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     $id = $identity->id;
@@ -964,6 +988,16 @@ class testcase extends tlObjectWithAttachments {
     $idCard->tcversion_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
 
     $getVersionID = $idCard->tcversion_id;
+
+    $grants = $grantSet;
+    if (is_null($grantSet)) {
+      $grants = new stdClass();
+      $grant2check = $this->getStandardGrantsNames();
+      foreach($grant2check as $right) {
+        $grants->$right = $_SESSION['currentUser']->hasRight($this->db,$right,$this->tproject_id);
+        $guiObj->$right = $grants->$right;
+      }  
+    }
 
     $gui = $this->initShowGui($guiObj,$grants,$idCard);
 
@@ -7267,7 +7301,7 @@ class testcase extends tlObjectWithAttachments {
     // Yes keywords right will be used also for aliens
     $goo->assign_aliens = $goo->assign_keywords;
 
-	$goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;
+	  $goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;
 
     $goo->parentTestSuiteName = '';
     $goo->tprojectName = '';
@@ -7384,11 +7418,7 @@ class testcase extends tlObjectWithAttachments {
 
     $platformMgr = new tlPlatform($this->db,$goo->tproject_id);
 
-    /* 
-    $opx = array('enable_on_design' => true,
-                 'enable_on_execution' => false);
-    */
-    $opx = array('enable_on_design' => true);
+    $opx = ['enable_on_design' => true];
     $goo->platforms = $platformMgr->getAllAsMap($opx);
 
     $goo->tcasePrefix = $this->tproject_mgr->getTestCasePrefix($goo->tproject_id) . $this->cfg->testcase->glue_character;

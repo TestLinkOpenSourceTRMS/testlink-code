@@ -54,8 +54,10 @@ switch($args->doAction) {
   case "create":  
   case "edit":  
   case "doCreate":  
-    $testCaseEditorKeys = array('summary' => 'summary',
-                                'preconditions' => 'preconditions');
+    $testCaseEditorKeys = [
+      'summary' => 'summary',
+      'preconditions' => 'preconditions'
+    ];
   break;
     
 
@@ -72,9 +74,10 @@ switch($args->doAction) {
   case "doInsertStep":
   case "doResequenceSteps":
   case "doStepOperationExit":
-    $testCaseEditorKeys = 
-       array('steps' => 'steps', 
-             'expected_results' => 'expected_results');
+    $testCaseEditorKeys = [
+      'steps' => 'steps', 
+      'expected_results' => 'expected_results'
+    ];
   break;
 
 }
@@ -89,8 +92,7 @@ switch($args->doAction) {
   case "create":  
   case "edit":  
   case "doCreate":  
-    $op = $commandMgr->$pfn($args,$opt_cfg,
-             array_keys($testCaseEditorKeys),$_REQUEST);
+    $op = $commandMgr->$pfn($args,$opt_cfg,array_keys($testCaseEditorKeys),$_REQUEST);
     $doRender = true;
   break;
     
@@ -179,8 +181,7 @@ if($args->delete_tc_version) {
 
   $tcinfo = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
 
-  $gui->main_descr = lang_get('title_del_tc') . 
-                TITLE_SEP_TYPE3 . lang_get('version') . " " . $tcinfo[0]['version'];
+  $gui->main_descr = lang_get('title_del_tc') . TITLE_SEP_TYPE3 . lang_get('version') . " " . $tcinfo[0]['version'];
   $gui->testcase_name = $tcinfo[0]['name'];
   $gui->testcase_id = $args->tcase_id;
   $gui->tcversion_id = $args->tcversion_id;
@@ -308,6 +309,7 @@ else if($args->do_activate_this || $args->do_deactivate_this) {
 function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr) 
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
+
   list($args,$env) = initContext();
   $args->user_id = $args->userID;
   $tcaseMgr->setTestProject($args->tproject_id);
@@ -366,9 +368,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
   if($args->tcase_id == 0) {
     $args->tcase_id = intval(isset($_REQUEST['relation_source_tcase_id']) ? $_REQUEST['relation_source_tcase_id'] : 0);
   }
+  $args->id = $args->tcase_id;
   
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
-
   if( $args->tcversion_id == 0 && $args->tcase_id > 0 ) {
     // get latest active version
     $nu = key($tcaseMgr->get_last_active_version($args->tcase_id));
@@ -399,14 +401,16 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
     }
   }
 
-  $key2loop = array('move_copy_tc',
-                    'delete_tc_version',
-                    'do_move',
-                    'do_copy',
-                    'do_copy_ghost_zone',
-                    'do_delete_tc_version',
-                    'do_create_new_version',
-                    'do_create_new_version_from_latest');
+  $key2loop = [
+    'move_copy_tc',
+    'delete_tc_version',
+    'do_move',
+    'do_copy',
+    'do_copy_ghost_zone',
+    'do_delete_tc_version',
+    'do_create_new_version',
+    'do_create_new_version_from_latest'
+  ];
   foreach($key2loop as $key) {
     $args->$key = isset($_REQUEST[$key]) ? 1 : 0;
   }
@@ -678,12 +682,9 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
 
 
   // TODO remove???
-  $guiObj->loadOnCancelURL = 
-    $_SESSION['basehref'] . 
-    "/lib/testcases/archiveData.php?edit=testcase&id=" . 
-    $argsObj->tcase_id .
-    "&tproject_id=" . $argsObj->tproject_id .
-    "&show_mode={$argsObj->show_mode}";
+  $guiObj->loadOnCancelURL = $_SESSION['basehref'] . "/lib/testcases/archiveData.php?edit=testcase&id=" . 
+                             $argsObj->tcase_id . "&tproject_id=" . $argsObj->tproject_id .
+                             "&show_mode={$argsObj->show_mode}";
   
 
 
@@ -700,21 +701,11 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
   }
   
   
-  $grant2check = [
-    'mgt_modify_tc',
-    'mgt_view_req',
-    'testplan_planning',
-    'mgt_modify_product',
-    'keyword_assignment',
-    'req_tcase_link_management',
-    'testproject_edit_executed_testcases',
-    'testproject_delete_executed_testcases'
-  ];
+  $grant2check = testcase::getStandardGrantsNames();
   $guiObj->grants = new stdClass();
   foreach($grant2check as $right) {
     $guiObj->$right = $guiObj->grants->$right = $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id);
   }
-
 
   return $guiObj;
 }
@@ -936,12 +927,8 @@ function createNewVersion(&$tplEng,&$argsObj,&$guiObj,&$tcaseMgr,$sourceTCVID) {
   $guiObj->path_info = null;
   
   // used to implement go back ??
-  $guiObj->loadOnCancelURL = 
-    $_SESSION['basehref'] . 
-    '/lib/testcases/archiveData.php?edit=testcase&id=' . 
-    $argsObj->tcase_id .
-    "&tproject_id=" . $argsObj->tproject_id .
-    "&show_mode={$argsObj->show_mode}";
+  $guiObj->loadOnCancelURL = $_SESSION['basehref'] . '/lib/testcases/archiveData.php?edit=testcase&id=' . 
+                             $argsObj->tcase_id . "&tproject_id=" . $argsObj->tproject_id . "&show_mode={$argsObj->show_mode}";
 
 
   $tcaseMgr->show($tplEng,$guiObj,$identity,$guiObj->grants,

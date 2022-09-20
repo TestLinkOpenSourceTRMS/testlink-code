@@ -25,10 +25,11 @@ testlinkInitPage($db);
 $smarty = new TLSmarty();
 $smarty->tlTemplateCfg = $tplCfg = templateConfiguration();
 
-$cfg = array('testcase' => config_get('testcase_cfg'),
-             'testcase_reorder_by' => 
-               config_get('testcase_reorder_by'),
-             'spec' => config_get('spec_cfg'));
+$cfg = [
+  'testcase' => config_get('testcase_cfg'),
+  'testcase_reorder_by' => config_get('testcase_reorder_by'),
+  'spec' => config_get('spec_cfg')
+];
 
 list($args,$gui,$grants) = initializeEnv($db);
 
@@ -43,8 +44,7 @@ switch($args->feature) {
     $gui->user = $args->user;
     if($args->feature == 'testproject') {
       $gui->id = $args->id = $args->tproject_id;
-      $item_mgr->show($smarty,$gui,
-                      $tplCfg->template_dir,$args->id);
+      $item_mgr->show($smarty,$gui, $tplCfg->template_dir,$args->id);
     } else {
       $gui->direct_link = $item_mgr->buildDirectWebLink($args);
       $gui->attachments = getAttachmentInfosFrom($item_mgr,$args->id);
@@ -224,15 +224,7 @@ function initializeEnv(&$dbHandler)
   $args = init_args($dbHandler);
   list($add2args,$gui) = initUserEnv($dbHandler,$args);
 
-  $grant2check = 
-    array('mgt_modify_tc','mgt_view_req','testplan_planning',
-          'mgt_modify_product','mgt_modify_req','testcase_freeze',
-          'keyword_assignment','req_tcase_link_management',
-          'testproject_edit_executed_testcases',
-          'testproject_delete_executed_testcases',
-          'testproject_add_remove_keywords_executed_tcversions',
-          'delete_frozen_tcversion');
-
+  $grant2check = testcase::getStandardGrantsNames();
   $grants = new stdClass();
   foreach($grant2check as $right) {
     $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$args->tproject_id);
@@ -268,7 +260,7 @@ function initializeEnv(&$dbHandler)
   $gui->viewerArgs = $args->viewerArgs;
 
 
-  return array($args,$gui,$grants);
+  return [$args,$gui,$grants];
 }
 
 

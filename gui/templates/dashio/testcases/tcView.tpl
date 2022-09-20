@@ -180,8 +180,7 @@ function jsCallDeleteFile(btn, text, o_id) {
             attach_loadOnCancelURL=$gui->loadOnCancelURL}
     
     {* Other Versions *}
-    {if 'editOnExec' != $gui->show_mode && 
-        $gui->testcase_other_versions[idx] neq null}
+    {if 'editOnExec' != $gui->show_mode && $gui->testcase_other_versions[idx] neq null}
           {$vid=$gui->tc_current_version[idx][0].id}
           {$div_id="vers_$vid"}
           {$memstatus_id="mem_$div_id"}
@@ -195,8 +194,7 @@ function jsCallDeleteFile(btn, text, o_id) {
                 
           <div id="vers_{$vid}" class="workBack">
 
-          {foreach from=$gui->testcase_other_versions[idx] 
-                  item=my_testcase key=tdx}
+          {foreach from=$gui->testcase_other_versions[idx] item=my_testcase key=tdx}
     
             {$tcversion_id=$my_testcase.id}
             
@@ -204,6 +202,13 @@ function jsCallDeleteFile(btn, text, o_id) {
             {if $gui->status_quo[idx][$tcversion_id].executed != '' }
               {$thisVersionIsExecuted = true}
             {/if}
+
+            {$cfOtherVersion = null}
+            {if $gui->cf_other_versions != null}
+              {$cfOtherVersion = $gui->cf_other_versions[idx][$tdx]}
+            {/if}
+
+
 
             {$version_num=$my_testcase.version}
             {$title=$labels.version}
@@ -273,7 +278,7 @@ function jsCallDeleteFile(btn, text, o_id) {
                   args_frozen_version=$tcv_frozen_version
 
                   args_users=$gui->users
-                  args_cf=$gui->cf_other_versions[idx][$tdx]
+                  args_cf = $cfOtherVersion
                   args_linked_versions=null
                   args_has_testplans=$gui->has_testplans}
 

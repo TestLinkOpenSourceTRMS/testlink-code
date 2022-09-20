@@ -465,7 +465,7 @@ viewer for test case in test specification
 
 {include file="{$tplConfig['attributesLinearForViewer.inc']}"} 
 
-{if $args_cf.standard_location neq ''}
+{if $args_cf != null && $args_cf.standard_location neq ''}
   <div {$addInfoDivStyle}>
         <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>
   </div>

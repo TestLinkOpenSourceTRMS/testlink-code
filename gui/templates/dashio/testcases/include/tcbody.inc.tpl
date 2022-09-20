@@ -50,12 +50,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 		<td colspan="{$inc_tcbody_tableColspan}">{if $inc_tcbody_editor_type == 'none'}{$tco.preconditions|nl2br}{else}{$tco.preconditions}{/if}<p></td>
 	</tr>
 
-	{if $inc_tcbody_cf.before_steps_results neq ''}
-	<tr>
-	  <td colspan="{$inc_tcbody_tableColspan}">
-        {$inc_tcbody_cf.before_steps_results}
-      </td>
-	</tr>
+	{if $inc_tcbody_cf != null && $inc_tcbody_cf.before_steps_results neq ''}
+		<tr>
+			<td colspan="{$inc_tcbody_tableColspan}">
+					{$inc_tcbody_cf.before_steps_results}
+			</td>
+		</tr>
 	{/if}
 {if $inc_tcbody_close_table}
 </table>

@@ -4172,5 +4172,5 @@ $TLS_testCaseStatus_hint_obsolete = 'Do not execute this test case';
 #$TLS_testCaseStatus_hint_future = '';
 #$TLS_testCaseStatus_hint_final = '';
 
-
+$TLS_testsuite_deleted = 'Test Suite has been deleted';
 // ----- END -----------------------------------------------------

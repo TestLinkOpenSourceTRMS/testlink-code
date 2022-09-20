@@ -58,11 +58,12 @@ delete test case in test specification
 		{$local_button=$labels.btn_yes_iw2del}
 	  {/if}
 	  <p>{$local_question}</p>
-		  <form method="post" 
-				action="{$basehref}lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
+		  <form method="post" action="{$basehref}lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
+			<input type="hidden" name="tproject_id" value="{$gui->tproject_id}">
+			<input type="hidden" name="tplan_id" value="{$gui->tplan_id}">
+
 			<input type="submit" id="do_delete" name="do_delete" value="{$local_button}" />
-			<input type="button" name="cancel_delete"
-								 onclick="javascript:{$gui->cancelActionJS};" value="{$labels.btn_no}" />
+			<input type="button" name="cancel_delete" onclick="javascript:{$gui->cancelActionJS};" value="{$labels.btn_no}" />
 		  </form>	  
     {/if}
  

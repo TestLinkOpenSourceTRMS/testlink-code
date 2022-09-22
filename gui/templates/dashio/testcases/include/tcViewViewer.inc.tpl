@@ -161,48 +161,51 @@ viewer for test case in test specification
 
       		{* Move Copy *}
       		{if $args_can_do->copy == "yes" && $args_can_move_copy == "yes"}
-      			<input class="{#BUTTON_CLASS#}" type="submit" 
-                   name="move_copy_tc" id="move_copy_tc"
-                   value="{$tcView_viewer_labels.btn_mv_cp}" />
+            <button style="border:0;" type="submit" name="move_copy_tc" id="move_copy_tc">
+              <i class="fas fa-copy" title="{$tcView_viewer_labels.btn_mv_cp}"></i>
+            </button>
       		{/if}
       	  
       		{* Delete TC *}
       		{if $delete_enabled && $args_can_do->delete_testcase == "yes" && $args_can_delete_testcase == "yes"}
-      		   <input class="{#BUTTON_CLASS#}" type="submit" 
-                    name="delete_tc" id="delete_tc"
-                    value="{$tcView_viewer_labels.btn_delete}" />
-
-
-
+            <button style="border:0;" type="submit" name="delete_tc" id="delete_tc" value="{$tcView_viewer_labels.btn_delete}">
+              <i class="fas fa-times-circle" title="{$tcView_viewer_labels.btn_delete}"></i>
+            </button>
       		{/if}
         </form> <!-- id="topControls" -->
       
       	{* bulk action *}
       	{if $edit_enabled && $args_bulk_action=="yes"}
-      	  <form style="display: inline;" id="tcbulkact" name="tcbulkact" 
-      			method="post" action="{$bulkOpAction}" >
-      		<input type="hidden" name="tcase_id" id="tcase_id" value="{$args_testcase.testcase_id}" />
-      		<input class="{#BUTTON_CLASS#}" type="submit" name="bulk_op" value="{$tcView_viewer_labels.btn_bulk}" />
+      	  <form style="display: inline;" id="tcbulkact" name="tcbulkact" method="post" action="{$bulkOpAction}" >
+            <input type="hidden" name="tcase_id" id="tcase_id" value="{$args_testcase.testcase_id}" />
+            <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+            <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+    
+            <button style="border:0;" type="submit" name="bulk_op" value="{$tcView_viewer_labels.btn_bulk}">
+              <i class="fa-solid fa-envelopes-bulk" title="{$tcView_viewer_labels.btn_bulk}"></i>
+            </button>
       	  </form>
       	{/if}
       	
       	{* compare versions *}
       	<span>
       	  {if $args_testcase.version > 1}
-        		<form style="display: inline;" id="version_compare" 
-                  name="version_compare" method="post" 
-                  action="{$basehref}lib/testcases/tcCompareVersions.php">
+        		<form style="display: inline;" id="version_compare" name="version_compare" method="post" action="{$basehref}lib/testcases/tcCompareVersions.php">
         		  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-        		  <input class="{#BUTTON_CLASS#}" type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
+              <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+              <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+
+              <button style="border:0;" type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}">
+                <i class="fa-solid fa-code-compare" title="{$tcView_viewer_labels.btn_compare_versions}"></i>
+              </button>
         		</form>
       	  {/if}
       	</span>
 
         {* execution history *}
       	<span>
-            <input class="{#BUTTON_CLASS#}" type="button" 
-                   onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id},1);"
-                 value="{$tcView_viewer_labels.btn_show_exec_history}" />
+           <i class="fa-solid fa-list-check" title="{$tcView_viewer_labels.btn_show_exec_history}" 
+              onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id},1);"></i>
         </span>
       </fieldset>
     {/if}

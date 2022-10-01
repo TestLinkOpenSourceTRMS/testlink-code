@@ -54,29 +54,33 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
     	<form method="post" action="lib/keywords/keywordsAssign.php?id={$gui->id}&edit={$gui->level}">
         <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}"> 
 
-       <input type="hidden" name="caller" id="caller"
-              value="MYSELF"> 
-       <input type="hidden" name="tproject_id" id="tproject_id"
-              value="{$gui->tproject_id}"> 
-       <input type="hidden" name="tplan_id" id="tplan_id"
-              value="{$gui->tplan_id}"> 
+        <input type="hidden" name="caller" id="caller" value="MYSELF"> 
+        <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}"> 
+        <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}"> 
 
-      {if $gui->level == 'testsuite'}
-        {$labels.assignToFilteredTestCases}
-        <input type="checkbox" name="useFilteredSet" id="useFilteredSet" value="1" 
-               {if $gui->useFilteredSet} checked {/if} />
-      {/if}
+        {$drawButton = 0}
+        {if $gui->level == 'testsuite'}
+          {$labels.assignToFilteredTestCases}
+          <input type="checkbox" name="useFilteredSet" id="useFilteredSet" value="1" 
+                {if $gui->useFilteredSet} checked {/if} />
+          {$drawButton = 1}
+        {else}
+         {if $gui->hasBeenExecuted == 0 || $gui->canAddRemoveKWFromExecuted == 1}
+            {$drawButton = 1} 
+          {/if}
+        {/if}
 
-      {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
-	    <br />
-      {if $gui->hasBeenExecuted == 0 || 
-          $gui->canAddRemoveKWFromExecuted == 1}
-    	<input class="{#BUTTON_CLASS#}" type="submit" 
-             name="assign{$gui->level}" id="assign{$gui->level}"
-             value="{$labels.btn_save}" />
-      {else}
-        {$labels.tcversion_executed_keyword_assignment_blocked}
-      {/if}
+        {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
+        <br />
+
+        {if $drawButton}
+          <input class="{#BUTTON_CLASS#}" type="submit" 
+                name="assign{$gui->level}" id="assign{$gui->level}"
+                value="{$labels.btn_save}" />
+        {else}
+          {$labels.tcversion_executed_keyword_assignment_blocked}
+        {/if}
+
     	</form>
     </div>
   {else}

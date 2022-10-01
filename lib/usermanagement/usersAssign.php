@@ -1,6 +1,8 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ *                                https://github.com/TestLinkOpenSourceTRMS/testlink-code
+ *
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Allows assigning users roles to testplans or testprojects
@@ -10,14 +12,11 @@
  * then to change Test Project user need to use main Test Project Combo
  * 
  * @package 	  TestLink
- * @copyright   2005-2019, TestLink community
+ * @copyright   2005-2022, TestLink community
  * @filesource  usersAssign.php
  * @link 		    http://www.testlink.org
  *
- *
  */
-
-
 require_once('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
@@ -144,17 +143,21 @@ function init_args(&$dbH)
 {
   list($args,$env) = initContext();
 
-	$iParams = array(
-			"featureType" => array(tlInputParameter::STRING_N,0,100),
-			"featureID" => array(tlInputParameter::INT_N),
-			"userRole" => array(tlInputParameter::ARRAY_INT),
-			"do_update" => array(tlInputParameter::STRING_N,0,100),
-	);
+	$iParams = [
+    "tproject_id" => [tlInputParameter::INT_N],
+    "tplan_id" => [tlInputParameter::INT_N],
+		"featureID" => [tlInputParameter::INT_N],
+    "featureType" => array(tlInputParameter::STRING_N,0,100),
+		"userRole" => array(tlInputParameter::ARRAY_INT),
+		"do_update" => array(tlInputParameter::STRING_N,0,100),
+  ];
 
 	$pParams = R_PARAMS($iParams);
     
-	$args->featureType = $pParams["featureType"];
+  $args->tproject_id = $pParams["tproject_id"];
+  $args->tplan_id = $pParams["tplan_id"];
   $args->featureID = $pParams["featureID"];
+	$args->featureType = $pParams["featureType"];
   $args->map_userid_roleid = $pParams["userRole"];
   $args->doUpdate = ($pParams["do_update"] != "") ? 1 : 0;
    
@@ -561,21 +564,24 @@ function initializeGui(&$dbHandler,$argsObj)
 {
   $gui = new stdClass();
   
+  $gui->tproject_id = $argsObj->tproject_id;
+  $gui->tplan_id = $argsObj->tplan_id;
+  $gui->tproject_name = $argsObj->testprojectName;
+  $gui->featureType = $argsObj->featureType;
+
   $gui->highlight = initialize_tabsmenu();
+  $gui->optRights = tlRole::getAll($dbHandler,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+
   $gui->user_feedback = '';
   $gui->no_features = '';
   $gui->roles_updated = '';
-  $gui->tproject_name = $argsObj->testprojectName;
-  $gui->featureType = $argsObj->featureType;
-  $gui->optRights = tlRole::getAll($dbHandler,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
   $gui->features = null;
   $gui->featureID = null;
   $gui->role_colour = null;
   $gui->tprojectAccessTypeImg = '';
 
   $guiCfg = config_get('gui');
-  if($guiCfg->usersAssignGlobalRoleColoring == ENABLED) 
-  {
+  if($guiCfg->usersAssignGlobalRoleColoring == ENABLED) {
   	$gui->role_colour = tlRole::getRoleColourCfg($dbHandler);
   }
   return $gui;

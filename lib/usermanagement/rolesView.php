@@ -1,11 +1,11 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ *                                https://github.com/TestLinkOpenSourceTRMS/testlink-code
+ * 
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  rolesView.php
- * @internal revisions
- * @since 1.9.15
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -16,17 +16,12 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 init_global_rights_maps();
 $args = init_args();
-
 $gui = initializeGui($db,$args);
-
-
-
 
 $doDelete = false;
 $role = null;
 
-switch ($args->doAction)
-{
+switch ($args->doAction) {
   case 'delete':
     $role = tlRole::getByID($db,$args->roleid,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
     if ($role)
@@ -75,13 +70,17 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-  $iParams = array("roleid" => array(tlInputParameter::INT_N),
-                   "csrfid" => array(tlInputParameter::STRING_N,0,30),
-                   "csrftoken" => array(tlInputParameter::STRING_N,0,128),
-                   "doAction" => array(tlInputParameter::STRING_N,0,15));
+  $iParams = [
+    "tproject_id" => [tlInputParameter::INT_N],
+    "tplan_id" => [tlInputParameter::INT_N],
+    "roleid" => [tlInputParameter::INT_N],
+    "csrfid" => [tlInputParameter::STRING_N,0,30],
+    "csrftoken" => [tlInputParameter::STRING_N,0,128],
+    "doAction" => [tlInputParameter::STRING_N,0,15]
+  ];
 
   $args = new stdClass();
-  $pParams = R_PARAMS($iParams,$args);
+  R_PARAMS($iParams,$args);
   $args->currentUser = $_SESSION['currentUser'];
   
   return $args;
@@ -90,9 +89,11 @@ function init_args()
 /**
  *
  */
-function initializeGui(&$db,&$args)
-{
+function initializeGui(&$db,&$args) {
   $gui = new stdClass();
+  $gui->tproject_id = $args->tproject_id;
+  $gui->tplan_id = $args->tplan_id;
+
   $gui->highlight = initialize_tabsmenu();
   $gui->highlight->view_roles = 1;
   $gui->grants = getGrantsForUserMgmt($db,$args->currentUser);

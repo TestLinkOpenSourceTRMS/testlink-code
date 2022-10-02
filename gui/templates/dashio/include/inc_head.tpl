@@ -58,6 +58,16 @@ editorType: used to understand if code for tinymce need to be loaded
 
 	<script type="text/javascript" src="{$basehref}third_party/chosen/chosen.jquery.js"></script>
  
+  {$tproject_id = 0}
+	{$tplan_id = 0}
+	{if property_exists($gui,'tproject_id')}
+	  {$tproject_id = $gui->tproject_id}
+	{/if}
+
+	{if property_exists($gui,'tplan_id')}
+	  {$tplan_id = $gui->tplan_id}
+	{/if}
+
 	<script type="text/javascript" language="javascript">
 	//<!--
   /* inc_head.tpl */
@@ -66,6 +76,8 @@ editorType: used to understand if code for tinymce need to be loaded
 	var args  = '{$args}';
 	var additionalArgs  = '{$additionalArgs}';
 	var printPreferences = '{$printPreferences}';
+	var tproject_id = '{$tproject_id}';
+	var tplan_id = '{$tplan_id}';
 	
 	// To solve problem diplaying help
 	var SP_html_help_file  = '{$SP_html_help_file}';

@@ -21,6 +21,8 @@
 	var args  = '{$args}';
 	var additionalArgs  = '{$additionalArgs}';
 	var printPreferences = '{$printPreferences}';
+	//var tproject_id = {$gui->tproject_id};
+	//var tplan_id = {$gui->tplan_id};
 	//-->
 	</script> 
 {if $openHead == "no"} {* 'no' is default defined in config *}

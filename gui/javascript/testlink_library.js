@@ -943,6 +943,8 @@ function open_help_window(help_page,locale)
 /*
   function: openTCaseWindow
 
+  globals: setted in inc_head.tpl
+
   args: tcase_id: test case id
         tcversion_id: test case version id
         show_mode: string used on testcase.show() to manage refresh 
@@ -958,9 +960,11 @@ function open_help_window(help_page,locale)
 */
 function openTCaseWindow(tcase_id,tcversion_id,show_mode) {
   var feature_url = "lib/testcases/archiveData.php";
-  feature_url +="?allow_edit=0&show_mode="+show_mode+
-                "&edit=testcase&id="+tcase_id+
-                "&tcversion_id="+tcversion_id+args;;
+  feature_url +="?allow_edit=0&show_mode=" + show_mode +
+                "&edit=testcase&id=" + parseInt(tcase_id) +
+                "&tcversion_id=" + parseInt(tcversion_id) + args +
+                "&tproject_id=" + parseInt(tproject_id) +
+                "&tplan_id=" + parseInt(tplan_id);
 
   var width = getCookie("TCEditPopupWidth");
   var height = getCookie("TCEditPopupHeight");

@@ -304,6 +304,7 @@ if( $doIt ) {
       $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args);
       $gui->refreshTree = true;
       $tsuite_mgr->show($smarty,$gui,$template_dir,$args->testsuiteID,null,null);
+      exit();
     break;
 
 
@@ -312,6 +313,7 @@ if( $doIt ) {
       $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args);
       $gui->refreshTree = true;
       $tsuite_mgr->show($smarty,$gui,$template_dir,$args->testsuiteID,null,null);
+      exit();
     break;
 
     case 'reorder_testproject_testsuites_alpha':
@@ -319,6 +321,7 @@ if( $doIt ) {
       $gui = initializeGui($tproject_mgr,$args->tproject_id,$args);
       $gui->refreshTree = true;
       $tproject_mgr->show($smarty,$gui,$template_dir,$args->tproject_id,null,null);
+      exit();
     break;
 
     case 'doBulkSet':
@@ -755,6 +758,8 @@ function  moveTestSuiteViewer(&$smartyObj,&$tprojectMgr,$argsObj) {
     $smartyObj->assign('object_name', $argsObj->tsuite_name);
     $smartyObj->assign('top_checked','checked=checked');
     $smartyObj->assign('bottom_checked','');
+
+    return initializeGui($tprojectMgr,$argsObj->tproject_id,$argsObj);
 }
 
 
@@ -891,6 +896,7 @@ function moveTestSuite(&$smartyObj,$template_dir,&$tprojectMgr,$argsObj)
     $guiObj->refreshTree = $argsObj->refreshTree;
 
     $tprojectMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->tproject_id,null,'ok');
+    exit();
 }
 
 

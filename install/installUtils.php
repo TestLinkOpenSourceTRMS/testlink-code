@@ -548,6 +548,7 @@ function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd) {
  */
 function _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd) {
 
+  $op = new stdClass();
   $op->status_ok = true;
   $op->msg = 'ok - new user';     
 

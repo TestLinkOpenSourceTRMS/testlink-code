@@ -479,7 +479,7 @@ if( $migration_process != '' ) {
 
 // -------------------------------------------------
 // Data Operations
-if ( count($a_sql_data > 0) ) {
+if ( count($a_sql_data) > 0 ) {
   foreach($a_sql_data as $sql_data ) {
     if ( count($sql_data > 0) ) {
       foreach ($sql_data as $sql_file)  {

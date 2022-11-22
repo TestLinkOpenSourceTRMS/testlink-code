@@ -56,20 +56,18 @@ switch($args->doAction)
   break;
 }
 
-$gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
-                                         $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
-                                         $filters->endTime,$filters->users);
+$gui->events = (array) $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
+                                                 $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
+                                                 $filters->endTime,$filters->users);
 
-if (count($gui->events) > 0) 
-{
+if (count($gui->events) > 0)  {
   $table = buildExtTable($gui, $show_icon, $charset);
   if (!is_null($table)) 
   {
     $gui->tableSet[] = $table;
   }
 } 
-else 
-{
+else {
   $gui->warning_msg = lang_get("no_events");
 }
 

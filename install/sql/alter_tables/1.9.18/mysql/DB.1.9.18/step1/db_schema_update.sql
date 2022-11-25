@@ -52,10 +52,10 @@ AS SELECT
    `LRQVN`.`req_id` AS `req_id`,
    `LRQVN`.`version` AS `version`,
    `REQV`.`id` AS `req_version_id`
-FROM `latest_req_version` `LRQVN` 
-join `nodes_hierarchy` `NHRQV` 
+FROM /*prefix*/latest_req_version `LRQVN` 
+join /*prefix*/nodes_hierarchy `NHRQV` 
 on `NHRQV`.`parent_id` = `LRQVN`.`req_id`
-join `req_versions` `REQV` 
+join /*prefix*/req_versions `REQV` 
 on `REQV`.`id` = `NHRQV`.`id` and 
 `REQV`.`version` = `LRQVN`.`version`;
 

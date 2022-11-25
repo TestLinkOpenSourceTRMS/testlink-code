@@ -260,7 +260,7 @@ class tlRole extends tlDBObject
   public function getDisplayName()
   {
     $displayName = $this->name;
-    if ($displayName{0} == "<")
+    if ($displayName[0] == "<")
     {
       $roleName = str_replace(" ","_",substr($displayName,1,-1));
       $displayName = "<".lang_get($roleName).">";

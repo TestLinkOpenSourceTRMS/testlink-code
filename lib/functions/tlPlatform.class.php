@@ -613,6 +613,7 @@ class tlPlatform extends tlObjectWithDB
     $rx = array('canManage' => 'platform_management', 
                 'mgt_view_events' => 'mgt_view_events');
     foreach($rx as $prop => $right) {
+      // 'yes' or null
       $gaga->$prop = $userObj->hasRight($this->db->db,$right,
                                         $this->tproject_id);
     }

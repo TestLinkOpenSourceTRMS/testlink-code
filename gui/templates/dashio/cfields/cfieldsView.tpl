@@ -46,7 +46,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         <th width="5%">{$labels.name}</th>
         <th>{$labels.label}</th>
         <th>{$labels.type}</th>
-        <th>{$labels.context}</th>
+        <th>{$labels.enabled_on_context}</th>
         <th width="5%">{$labels.display_on_exec}</th>
         <th>{$labels.available_on}</th>
       </tr>

@@ -1063,25 +1063,23 @@ class cfield_mgr extends tlObject
   */
 	function link_to_testproject($tproject_id,$cfield_ids)
 	{
-		if(is_null($cfield_ids))
-		{
+		if(is_null($cfield_ids)) {
 			return;
     }
 
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safeID = intval($tproject_id);
     $tproject_info = $this->tree_manager->get_node_hierarchy_info($safeID);
-		foreach($cfield_ids as $field_id)
-		{
+    var_dump($tproject_info); die(__FUNCTION__);
+    
+		foreach($cfield_ids as $field_id) {
 			$sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_testprojects']} " .
 			   	   " (testproject_id,field_id) " .
 			   	   " VALUES({$safeID},{$field_id})";
 
-			if ($this->db->exec_query($sql))
-			{
+			if ($this->db->exec_query($sql)) {
 				$cf = $this->get_by_id($field_id);
-				if ($cf)
-				{
+				if ($cf) {
 					logAuditEvent(TLS("audit_cfield_assigned",$cf[$field_id]['name'],$tproject_info['name']),
 								            "ASSIGN",$tproject_id,"testprojects");
 		    }					            

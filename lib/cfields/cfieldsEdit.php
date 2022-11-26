@@ -212,14 +212,22 @@ function request2cf($hash)
 function init_args()
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
+
+  var_dump($_REQUEST);
+  die(__FILE__ . ' - ' . __LINE__);
+
   $args = new stdClass();
   $context = new stdClass();
   $env = '';
-  $k2args = array('do_action' => null,
-                  'cf_name' => null,
-                  'cfield_id' => 0);
-  $k2ctx = array('tproject_id' => 0,
-                 'tplan_id' => 0);
+  $k2args = [
+    'do_action' => null,
+    'cf_name' => null,
+    'cfield_id' => 0
+  ];
+  $k2ctx = [
+    'tproject_id' => 0,
+    'tplan_id' => 0
+  ];
   $k2args = array_merge($k2args,$k2ctx);  
 
   foreach ($k2args as $prop => $defa) {
@@ -237,7 +245,7 @@ function init_args()
     }
   }
 
-  return array($args,$context,$env);
+  return [$args,$context,$env];
 }
 
 /*
@@ -296,6 +304,9 @@ function doCreate(&$hash_request,&$cfieldMgr,&$argsObj)
   
   // Check if name exists
   $dupcf = $cfieldMgr->get_by_name($op->cf['name']);
+  echo ($argsObj->tproject_id);
+  die(__FUNCTION__);
+
   if(is_null($dupcf)) {
   	$ret = $cfieldMgr->create($op->cf);
    	if(!$ret['status_ok']) {

@@ -77,6 +77,8 @@ This is done to simplify logic.
               <form class="form-horizontal style-form" name="cfields_edit" 
                 method="post" action="{$edit_url}" onSubmit="javascript:return validateForm(this);">
                  <input type="hidden" id="hidden_id" name="cfield_id" value="{$gui->cfield.id}" />
+                 <input type="hidden" id="tproject_id" name="tproject_id" value="{$gui->tproject_id}" />
+                 <input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
 
                 <div class="form-group">
                   <label for="name" class="{$cellLabel}">{$labels.name}</label>
@@ -151,6 +153,31 @@ This is done to simplify logic.
                            value="{$gui->cfield.possible_values}" />
                   </div> <!-- cellContent -->  
                 </div> <!-- class="form-group" -->
+
+                <div class="form-group" id="container_cf_enable_on">
+                  <label for="type" class="{$cellLabel}">{$labels.enable_on}</label>
+                  <div class="{$cellContent}">
+                    <select name="cf_enable_on" id="cf_enable_on"
+                            onchange="initShowOnExec('cf_enable_on',js_show_on_cfg);">
+                      {foreach item=area_cfg key=area_name from=$gui->cfieldCfg->cf_enable_on}
+                        {$access_key="enable_on_$area_name"}
+                        <option value={$area_name} id="option_{$area_name}" 
+                          {if $area_cfg.value == 0} style="display:none;" {/if} 
+                          {if $gui->cfield.$access_key} selected="selected"	{/if}>{$area_cfg.label}</option>
+                      {/foreach}
+                    </select>
+                  </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
+
+                <div class="form-group" id="container_cf_show_on_execution" {$gui->cfieldCfg->cf_show_on.execution.style}>
+                  <label for="type" class="{$cellLabel}">{$labels.show_on_exec}</label>
+                  <div class="{$cellContent}">
+                    <select id="cf_show_on_execution" name="cf_show_on_execution">
+                      {html_options options=$gsmarty_option_yes_no selected=$gui->cfield.show_on_execution}
+                    </select>
+                  </div> <!-- cellContent -->  
+                </div> <!-- class="form-group" -->
+
 
                 <div class="{$buttonGroupLayout}">
                   <input type="hidden" name="do_action" id="do_action" value="" />

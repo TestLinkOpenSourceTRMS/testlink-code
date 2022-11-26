@@ -146,13 +146,15 @@ function request2cf($hash)
   // *_on_design keys, that right now will not present only for
   // req spec and requirements.
   //
-	$missing_keys = array('show_on_design' => 0,
-                          'enable_on_design' => 0,
-                          'show_on_execution' => 0,
-                          'enable_on_execution' => 0,
-                          'show_on_testplan_design' => 0,
-                          'enable_on_testplan_design' => 0,
-                          'possible_values' => ' ' );
+	$missing_keys = [
+    'show_on_design' => 0,
+    'enable_on_design' => 0,
+    'show_on_execution' => 0,
+    'enable_on_execution' => 0,
+    'show_on_testplan_design' => 0,
+    'enable_on_testplan_design' => 0,
+    'possible_values' => ' '
+  ];
 
 	$cf_prefix = 'cf_';
 	$len_cfp = tlStringLen($cf_prefix);
@@ -179,7 +181,11 @@ function request2cf($hash)
   // IMPORTANT/CRITIC: 
   // this KEY MUST BE ALIGNED WITH name on User Inteface
   // then if is changed on UI must be changed HERE
-  $setter=array('design' => 0, 'execution' => 0, 'testplan_design' => 0);    
+  $setter = [
+    'design' => 0, 
+    'execution' => 0, 
+    'testplan_design' => 0
+  ];    
   switch($cf['enable_on']) {
     case 'design':
     case 'execution':
@@ -213,9 +219,6 @@ function init_args()
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  var_dump($_REQUEST);
-  die(__FILE__ . ' - ' . __LINE__);
-
   $args = new stdClass();
   $context = new stdClass();
   $env = '';
@@ -244,7 +247,6 @@ function init_args()
       $env .= "$prop=" . $context->$prop;
     }
   }
-
   return [$args,$context,$env];
 }
 
@@ -297,16 +299,17 @@ function doCreate(&$hash_request,&$cfieldMgr,&$argsObj)
   $op->user_feedback='';
 	$op->cf = request2cf($hash_request);
 
-	$keys2trim=array('name','label','possible_values');
+	$keys2trim = [
+    'name',
+    'label',
+    'possible_values'
+  ];
 	foreach($keys2trim as $key) {
 	  $op->cf[$key]=trim($op->cf[$key]);
 	}
   
   // Check if name exists
   $dupcf = $cfieldMgr->get_by_name($op->cf['name']);
-  echo ($argsObj->tproject_id);
-  die(__FUNCTION__);
-
   if(is_null($dupcf)) {
   	$ret = $cfieldMgr->create($op->cf);
    	if(!$ret['status_ok']) {
@@ -476,6 +479,7 @@ function initScript(&$dbH)
 
   $cfMix = getCFCfg($args,$cfMgr);
   $gui = $cfMgr->initViewGUI($context,$env);
+
   $gui->cfieldCfg = $cfMix->cfieldCfg;
   $gui->cfield = $cfMix->emptyCF;
   $gui->activeMenu['system'] = 'active';

@@ -1070,8 +1070,12 @@ class cfield_mgr extends tlObject
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safeID = intval($tproject_id);
     $tproject_info = $this->tree_manager->get_node_hierarchy_info($safeID);
-    var_dump($tproject_info); die(__FUNCTION__);
     
+    if ($tproject_info == null) {
+      throw new Exception(__METHOD__ . ' EXCEPTION: test project info is null, no good tproject_id is mandatory');  
+    }
+
+
 		foreach($cfield_ids as $field_id) {
 			$sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_testprojects']} " .
 			   	   " (testproject_id,field_id) " .

@@ -5,15 +5,19 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {$tplBN=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$tplBN}
 
+
+{$tproject_id=$gui->tproject_id}
+{$tplan_id=$gui->tplan_id}
+{$cfCreateAction="lib/cfields/cfieldsEdit.php?do_action=create&tproject_id=$tproject_id&&tplan_id=$tplan_id"}
+
+{* ------------------------------------------------------------------------------- *}
 {$cfViewAction="lib/cfields/cfieldsView.php"}
-
-{$cfCreateAction="lib/cfields/cfieldsEdit.php?do_action=create"}
-
-{$cfImportAction="lib/cfields/cfieldsImport.php?goback_url="}
+{$cfImportAction="lib/cfields/cfieldsImport.php?tproject_id=$tproject_id&&tplan_id=$tplan_id&goback_url="}
 {$importCfieldsAction="$basehref$cfImportAction$basehref$cfViewAction"}
 
-{$cfExportAction="lib/cfields/cfieldsExport.php?goback_url="}
+{$cfExportAction="lib/cfields/cfieldsExport.php?tproject_id=$tproject_id&&tplan_id=$tplan_id&goback_url="}
 {$exportCfieldsAction="$basehref$cfExportAction$basehref$cfViewAction"}
+{* ------------------------------------------------------------------------------- *}
 
 
 {lang_get var="labels"

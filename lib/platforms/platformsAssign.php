@@ -27,13 +27,6 @@ $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
 $platform_mgr = new tlPlatform($db, $args->tproject_id);
 
-$gui = new stdClass();
-$gui->platform_assignment_subtitle = null;
-$gui->tplan_id = $args->tplan_id;
-$gui->can_do = isset($args->tplan_id);
-$gui->mainTitle = lang_get('add_remove_platforms');
-$gui->warning = '';
-
 if (isset($args->tplan_id) && $args->tplan_id >0) {
   // do following check to give warning to user
   // if test plan has test case versions with platform_id=0
@@ -157,6 +150,22 @@ function init_args(&$opt_cfg)
   }
 
   return $args;
+}
+
+
+/**
+ * 
+ */
+function initializeGui(&$dbH,$argsObj) 
+{
+  $gui = new stdClass();
+  $gui->platform_assignment_subtitle = null;
+  $gui->tplan_id = $argsObj->tplan_id;
+  $gui->can_do = isset($argsObj->tplan_id);
+  $gui->mainTitle = lang_get('add_remove_platforms');
+  $gui->warning = '';
+
+  return $gui;
 }
 
 

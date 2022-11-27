@@ -14,18 +14,19 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
 $opt_cfg = opt_transf_empty_cfg();
 $opt_cfg->js_ot_name = 'ot';
 $args = init_args($opt_cfg);
-$gui = initializeGui($db,$args); 
-
-$smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
 $platform_mgr = new tlPlatform($db, $args->tproject_id);
+checkPageAccess($db,$args);  // Will exit if check failed
+$gui = initializeGui($db,$args,$platform_mgr); 
+
+$smarty = new TLSmarty();
 
 if (isset($args->tplan_id) && $args->tplan_id >0) {
   // do following check to give warning to user
@@ -124,26 +125,30 @@ function init_args(&$opt_cfg)
   $added = $opt_cfg->js_ot_name . "_addedRight";
   $removed = $opt_cfg->js_ot_name . "_removedRight";
 
-  $iParams = array( "tplan_id" => array(tlInputParameter::INT_N),
-                    "edit" => array(tlInputParameter::STRING_N,0,100),
-                    "doAction" => array(tlInputParameter::STRING_N,0,20),
-                    $added => array(tlInputParameter::STRING_N),
-                    $removed => array(tlInputParameter::STRING_N));
+  $iParams = [
+    "tproject_id" => [tlInputParameter::INT_N],
+    "tplan_id" => [tlInputParameter::INT_N],
+    "edit" => [tlInputParameter::STRING_N,0,100],
+    "doAction" => [tlInputParameter::STRING_N,0,20],
+    $added => [tlInputParameter::STRING_N],
+    $removed => [tlInputParameter::STRING_N]
+  ];
 
   $pParams = R_PARAMS($iParams);
 
   $args = new stdClass();
+  $args->tproject_id = $pParams["tproject_id"];
   $args->tplan_id = $pParams["tplan_id"];
-  $args->platformsToAdd = null;
-  $args->platformsToRemove = null;
   $args->edit = $pParams["edit"];
   $args->doAction = $pParams["doAction"];
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->currentUser = $_SESSION['currentUser'];
   
+  $args->platformsToAdd = null;
   if ($pParams[$added] != "") {
      $args->platformsToAdd = explode(",", $pParams[$added]);
   }
   
+  $args->platformsToRemove = null;
   if( $pParams[$removed] != "" ) 
   {
     $args->platformsToRemove = explode(",", $pParams[$removed]);
@@ -156,20 +161,28 @@ function init_args(&$opt_cfg)
 /**
  * 
  */
-function initializeGui(&$dbH,$argsObj) 
+function initializeGui(&$dbH,&$argsObj,&$platformMgr) 
 {
-  $gui = new stdClass();
+  $gui = $platformMgr->initViewGui($argsObj->currentUser,$argsObj);
+  $gui->activeMenu['projects'] = 'inactive'; // done in initViewGui
+  $gui->activeMenu['plans'] = 'active';
+
   $gui->platform_assignment_subtitle = null;
+  $gui->warning = '';
   $gui->tplan_id = $argsObj->tplan_id;
+  $gui->tproject_id = $argsObj->tproject_id;
   $gui->can_do = isset($argsObj->tplan_id);
   $gui->mainTitle = lang_get('add_remove_platforms');
-  $gui->warning = '';
 
   return $gui;
 }
 
-
-function checkRights(&$db,&$user)
-{
-  return $user->hasRightOnProj($db,'testplan_add_remove_platforms');
+/**
+ *
+ */
+function checkPageAccess(&$db,&$argsObj) {
+  $env['script'] = basename(__FILE__);
+  $env['tproject_id'] = isset($argsObj->tproject_id) ? $argsObj->tproject_id : 0;
+  $env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
+  $argsObj->currentUser->checkGUISecurityClearance($db,$env,array('testplan_add_remove_platforms'),'and');
 }

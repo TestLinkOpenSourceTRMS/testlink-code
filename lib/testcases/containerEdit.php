@@ -176,7 +176,7 @@ if( $doIt ) {
       $gui->containerType = $level;
       $gui->refreshTree = $args->refreshTree;
       $gui->containerID = $args->containerID;
-      $gui->hasKeywords = (count($opt_cfg->from->map) > 0) || (count($opt_cfg->to->map) > 0);
+      $gui->hasKeywords = (count((array)$opt_cfg->from->map) > 0) || (count((array)$opt_cfg->to->map) > 0);
 
       cancelActionURL($gui,$args);
 

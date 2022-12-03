@@ -64,18 +64,21 @@ $aa_tfp = array(
   'newest_tcversions' => 'lib/plan/newest_tcversions.php',
   'showMetrics' => 'lib/results/resultsNavigator.php',
 
-  'editTc' => array($tcFeature . 'edit_tc',
-                    $libTC . 'archiveData.php?edit=testproject&id='),
-  'planAddTC' => array($planAddTCNav . '?loadRightPaneAddTC=0',
-                       'lib/results/printDocOptions.php?activity=addTC'),
-  'reqSpecMgmt' => array($libReq . '/reqSpecListTree.php',
-                         'lib/project/project_req_spec_mgmt.php?id='),
-  'executeTest' => 
-     array($libExec . 'execNavigator.php?setting_testplan=', 
-           $libExec . 'execDashboard.php?tproject_id='),
+  'editTc' => [$tcFeature . 'edit_tc',
+               $libTC . 'archiveData.php?edit=testproject&id='
+              ],
+  'planAddTC' => [$planAddTCNav . '?loadRightPaneAddTC=0',
+                  'lib/results/printDocOptions.php?activity=addTC'
+                 ],
+  'reqSpecMgmt' => [$libReq . '/reqSpecListTree.php',
+                    'lib/project/project_req_spec_mgmt.php?id='
+                   ],
+  'executeTest' => [$libExec . 'execNavigator.php?setting_testplan=', 
+                    $libExec . 'execDashboard.php?tproject_id='
+                   ],
 );
 
-$full_screen = array('newest_tcversions' => 1);
+$full_screen = ['newest_tcversions' => 1];
 
 //cleanup session var
 $_SESSION['currentSrsId'] = null;
@@ -184,12 +187,8 @@ if (intval($args->tproject_id) > 0 || intval($args->tplan_id) > 0) {
 }
 
 if(isset($full_screen[$showFeature])) {
-  redirect($leftPane);
+  redirect($_SESSION['basehref'] . $leftPane);
 } else {
-
-  //var_dump($leftPane);die();
-  //var_dump($rightPane);
-
   $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
   $smarty->assign('treeframe', $leftPane);
   $smarty->assign('workframe', $rightPane);

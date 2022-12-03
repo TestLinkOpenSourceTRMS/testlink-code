@@ -1,9 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newest_tcversions.tpl,v 1.12 2010/01/21 22:06:18 franciscom Exp $
-Purpose: smarty template - 
-rev:
-    20080126 - franciscom - external tcase id
+newest_tcversions.tpl
 *}
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -21,6 +18,9 @@ rev:
 </h1>
 
 <form method="post" id="newest_tcversions.tpl">
+  <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+  <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
+
   <table>
   <tr>
    <td>{$labels.testproject}{$smarty.const.TITLE_SEP}</td>

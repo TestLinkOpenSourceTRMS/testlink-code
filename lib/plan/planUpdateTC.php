@@ -155,7 +155,7 @@ function init_args(&$tplanMgr)
   // Feature Access Check
   // This feature is affected only for right at Test Project Level
   $env = [
-		'script'] => basename(__FILE__),
+		'script' => basename(__FILE__),
     'tproject_id' => $args->tproject_id,
     'tplan_id' => $args->tplan_id
 	];

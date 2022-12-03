@@ -7,7 +7,7 @@
  * @filesource  planUrgency.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2003-2019, TestLink community 
+ * @copyright   2003-2022, TestLink community 
  * @link        http://www.testlink.org
  * 
  **/
@@ -106,18 +106,16 @@ function init_args(&$dbH,&$tplanMgr)
     $args->urgency_tc = $_REQUEST['urgency'];
   }
 
-
   $args->user = $_SESSION['currentUser'];
-  // ----------------------------------------------------------------
+  // ---------------------------------------------------------------------------------
   // Feature Access Check
-  $env = array()
-  $env['script'] = basename(__FILE__);
-  $env['tproject_id'] = $args->tproject_id;
-  $env['tplan_id'] = $args->tplan_id;
-  $args->user->checkGUISecurityClearance($dbH,$env,
-                    array('testplan_planning'),'and');
-  // ----------------------------------------------------------------
-
+  $env = [
+    'script' => basename(__FILE__),
+    'tproject_id' => $args->tproject_id,
+    'tplan_id' => $args->tplan_id
+  ]
+  $args->user->checkGUISecurityClearance($dbH,$env,['testplan_planning'],'and');
+  // ---------------------------------------------------------------------------------
       
   return $args;
 }

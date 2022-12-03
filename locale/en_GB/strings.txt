@@ -4173,4 +4173,7 @@ $TLS_testCaseStatus_hint_obsolete = 'Do not execute this test case';
 #$TLS_testCaseStatus_hint_final = '';
 
 $TLS_testsuite_deleted = 'Test Suite has been deleted';
+
+$TLS_btn_save_and_assign_to_tcv = 'Save and Assign Platforms to Test Cases';
+$TLS_btn_enable_disable_selected = 'Enable/Disable Selected Platforms';
 // ----- END -----------------------------------------------------

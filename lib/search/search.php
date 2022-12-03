@@ -10,9 +10,9 @@
  * @filesource  search.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2022, TestLink community 
  * @link        http://www.testlink.org/
- *
+ * @used-by     Advanced Search Feature
  *
  **/
 require_once("../../config.inc.php");
@@ -32,6 +32,7 @@ $cmdMgr->initEnv();
 
 $args = $cmdMgr->getArgs();
 $gui = $cmdMgr->getGui();
+
 $cmdMgr->initSchema();
 $treeMgr = new tree($db);
 $cfieldMgr = new cfield_mgr($db);
@@ -96,27 +97,27 @@ if( ($args->tproject_id > 0) && $args->doAction == 'doSearch')
 }
         
 
-$mapTC = null;
-$mapTS = null;
-$mapRS = null;
-$mapRQ = null;
+$mapTC = [];
+$mapTS = [];
+$mapRS = [];
+$mapRQ = [];
 
 // Search on Test Suites
 if( $canUseTarget && ($args->ts_summary || $args->ts_title) )
 {
-  $mapTS = $cmdMgr->searchTestSuites($targetSet,$canUseTarget);
+  $mapTS = (array)$cmdMgr->searchTestSuites($targetSet,$canUseTarget);
 }
 
 // Requirment SPECification
 if( $canUseTarget && ($args->rs_scope || $args->rs_title) )
 {
-  $mapRS = $cmdMgr->searchReqSpec($targetSet,$canUseTarget);
+  $mapRS = (array)$cmdMgr->searchReqSpec($targetSet,$canUseTarget);
 } 
 
 // REQuirements
 if( $args->rq_scope || $args->rq_title || $args->rq_doc_id || ($req_cf_id > 0) )
 {
-  $mapRQ = $cmdMgr->searchReq($targetSet,$canUseTarget,$req_cf_id);  
+  $mapRQ = (array)$cmdMgr->searchReq($targetSet,$canUseTarget,$req_cf_id);  
 } 
 
   
@@ -124,7 +125,7 @@ $hasTestCases = (!is_null($tcaseSet) && count($tcaseSet) > 0);
 if( $hasTestCases )
 {
   $emptyTestProject = false;
-  $mapTC = $cmdMgr->searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id);
+  $mapTC = (array)$cmdMgr->searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id);
 }  
 
 // Render Results
@@ -225,22 +226,26 @@ function buildTCExtTable($gui, $charset, $edit_icon, $history_icon)
     
     $titleSeparator = config_get('gui_title_separator_1');
     
-    foreach($gui->resultSet as $result) 
+    $tproject_id = $gui->tproject_id;
+    foreach($gui->resultSet as $item) 
     {
-      $rowData = array();
-      $rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
+      $tcase_id = $item['testcase_id'];
+      $rowData = [];
+      $rowData[] = htmlentities($gui->path_info[$tcase_id], ENT_QUOTES, $charset);
       
       // build test case link
-      $history_link = "<a href=\"javascript:openExecHistoryWindow({$result['testcase_id']});\">" .
+      $history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
                       "<img title=\"". lang_get('execution_history') . "\" src=\"{$history_icon}\" /></a> ";
-      $edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
+      
+      $edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id},undefined,{$tproject_id});\">" .
                    "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
-      $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . 
-                   " [v" . $result['version'] . "]" . $titleSeparator .
-                   htmlentities($result['name'], ENT_QUOTES, $charset);
+
+      $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . 
+                   $item['tc_external_id'] . " [v" . $item['version'] . "]" . $titleSeparator .
+                   htmlentities($item['name'], ENT_QUOTES, $charset);
 
       $rowData[] = $history_link . $edit_link . $tcaseName;
-      $rowData[] = ($designType == 'none' ? nl2br($result['summary']) : $result['summary']);
+      $rowData[] = ($designType == 'none' ? nl2br($item['summary']) : $item['summary']);
 
       $matrixData[] = $rowData;
     }

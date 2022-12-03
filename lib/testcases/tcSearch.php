@@ -10,7 +10,7 @@
  * @filesource  tcSearch.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2022, TestLink community 
  * @link        http://www.testlink.org/
  *
  **/
@@ -304,31 +304,37 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)  {
   $designType = $designCfg['type'];
   
   if(null != $gui->resultSet && count($gui->resultSet) > 0)  {
-    $labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
-    $columns = array();
+    $labels = [
+      'test_suite' => lang_get('test_suite'), 
+      'test_case' => lang_get('test_case')
+    ];
     
-    $columns[] = array('title_key' => 'test_suite');
-    $columns[] = array('title_key' => 'test_case', 'type' => 'text');
-
-    $columns[] = array('title_key' => 'summary');
+    $columns = [];    
+    $columns[] = ['title_key' => 'test_suite'];
+    $columns[] = ['title_key' => 'test_case', 'type' => 'text'];
+    $columns[] = ['title_key' => 'summary'];
   
     // Extract the relevant data and build a matrix
-    $matrixData = array();
-    
-    $titleSeperator = config_get('gui_title_separator_1');
-    
+    $matrixData = [];
+    $titleSep = config_get('gui_title_separator_1');
+    $tproject_id = $gui->tproject_id;
+
     foreach($gui->resultSet as $result) 
     {
-      $rowData = array();
+      $rowData = [];
       $rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
       
+      $tcase_id = $result['testcase_id'];
+
       // build test case link
-      $history_link = "<a href=\"javascript:openExecHistoryWindow({$result['testcase_id']});\">" .
+      $history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
                       "<img title=\"". lang_get('execution_history') . "\" src=\"{$history_icon}\" /></a> ";
-      $edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
+
+      $edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id},undefined,$tproject_id);\">" .
                    "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
+      
       $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . 
-                   " [v" . $result['version'] . "]" . $titleSeperator .
+                   " [v" . $result['version'] . "]" . $titleSep .
                    htmlentities($result['name'], ENT_QUOTES, $charset);
 
       $rowData[] = $history_link . $edit_link . $tcaseName;

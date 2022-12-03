@@ -31,7 +31,7 @@ searchResults.tpl
   <div class="workBack">
   {if $gui->warning_msg == ''}
     {foreach from=$gui->tableSet key=idx item=matrix}
-      {$tableIDe="table_$idx"}
+      {$tableID="table_$idx"}
       {$matrix->renderBodySection($tableID)}
     {/foreach}
     <br />

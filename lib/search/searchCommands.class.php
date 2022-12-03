@@ -772,9 +772,10 @@ class searchCommands
                    " WHERE TS.id IN (" . implode(',', $tsuiteSet) . ")";
       
       $sql = $sqlFields . $filterTS['by_keyword_id'] . $otherFilters;
+      //DEBUGecho 'DEBUG===' . $sql;
+
       $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
 
-      //DEBUGecho 'DEBUG===' . $sql;
     }
 
     return $mapTS;
@@ -981,15 +982,13 @@ class searchCommands
 
 
     $mapTC = NULL;
-    if($doFilter)
-    {
-      $mixedFilter = $this->getFilters();
-      if ($filter)
-      {
+    if($doFilter) {
+      if ($filter) {
         $sqlPart2 .= implode("",$filter);
       }
       
-      if ($mixedFilter['dates4tc'])
+      $mixedFilter = $this->getFilters();
+      if ($mixedFilter != null && $mixedFilter['dates4tc'] != null)
       {
         $sqlPart2 .= implode("",$mixedFilter['dates4tc']);
       }

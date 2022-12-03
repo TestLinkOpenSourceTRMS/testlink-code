@@ -7579,7 +7579,7 @@ class testcase extends tlObjectWithAttachments {
 
                         $ghost .= $stx[0]['actions'] . $rightside;
                       }
-                    } else if ($dx['Preconditions']) {
+                    } else if (isset($dx['Preconditions'])) {
                       $withPrecond = $this->get_basic_info($xid,['number' => $vn],['preconditions']);
                       $isTestCaseGhost = false;
                       $deghosted = true;

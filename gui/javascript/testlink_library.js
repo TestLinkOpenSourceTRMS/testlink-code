@@ -864,12 +864,20 @@ function openAssignmentOverviewWindow(user_id, build_id, tplan_id) {
 
 /**
  * Open testcase description in a popup window.
- * @author Andreas Simon
- * @param tc_id
+ *
+ * 
  */
-function openTCEditWindow(tcase_id,tcversion_id)  {
-  var url = "lib/testcases/archiveData.php?edit=testcase&id=" + 
-            tcase_id + "&tcversion_id=" + tcversion_id;
+function openTCEditWindow(tcase_id,tcversion_id,tproject_id)  {
+  var url = "lib/testcases/archiveData.php?edit=testcase&id=" + tcase_id;
+
+  if (tcversion_id !== undefined) {
+    url += "&tcversion_id=" + tcversion_id;
+  }
+
+  if (tproject_id !== undefined) {
+    url += "&tproject_id=" + tproject_id;
+  }
+          
   var width = getCookie("TCEditPopupWidth");
   var height = getCookie("TCEditPopupHeight");
   
@@ -882,7 +890,7 @@ function openTCEditWindow(tcase_id,tcversion_id)  {
   {
     var height = "600";
   }
-  
+  //DEBUG alert(url)
   var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
   window.open(fRoot+url, '_blank', windowCfg);
 }

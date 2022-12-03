@@ -210,6 +210,7 @@ function init_args(&$dbHandler) {
     unset($ct_mgr);
   }
 
+  //echo '<pre>'; var_dump($args); echo '</pre>'; die();
   return $args;
 }
 

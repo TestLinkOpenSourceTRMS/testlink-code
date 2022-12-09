@@ -175,10 +175,14 @@ function init_args(&$dbHandler) {
     break;
      
     case 'testcase':
-      $args->viewerArgs = array('action' => '', 'msg_result' => '', 
+      $args->viewerArgs = [
+        'action' => '', 
+        'msg_result' => '', 
         'user_feedback' => '',
-        'disable_edit' => 0, 'refreshTree' => 0,
-        'add_relation_feedback_msg' => $args->add_relation_feedback_msg);
+        'disable_edit' => 0, 
+        'refreshTree' => 0,
+        'add_relation_feedback_msg' => $args->add_relation_feedback_msg
+      ];
             
       $args->id = is_null($args->id) ? 0 : $args->id;
       $args->tcase_id = $args->id;
@@ -210,7 +214,7 @@ function init_args(&$dbHandler) {
     unset($ct_mgr);
   }
 
-  //echo '<pre>'; var_dump($args); echo '</pre>'; die();
+  //echo '<pre>'; var_dump($args); echo '</pre>'; //die();
   return $args;
 }
 

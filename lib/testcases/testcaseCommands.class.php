@@ -60,7 +60,14 @@ class testcaseCommands {
 
   /**
    * 
+   * context 
+   *   'tcase_id',
+   *   'tcversion_id',
+   *   'tplan_id',
+   *   'tproject_id'
    *
+   *  is initialized here!!
+   * 
    */
   function initGuiBean(&$argsObj) 
   {
@@ -98,8 +105,13 @@ class testcaseCommands {
     $obj->tableColspan = 
       $dummy->tableToDisplayTestCaseSteps->colspan;
 
-    $tck = array('tcase_id','tcversion_id',
-                 'tplan_id','tproject_id');
+    // Context!!!  
+    $tck = [
+      'tcase_id',
+      'tcversion_id',
+      'tplan_id',
+      'tproject_id'
+    ];
     foreach ($tck as $pkey) {
       $obj->$pkey = property_exists($argsObj,$pkey) ? $argsObj->$pkey : -1;
     }
@@ -132,9 +144,7 @@ class testcaseCommands {
     // need to check where is used
     $obj->loadOnCancelURL = 
       "archiveData.php?edit=testcase&show_mode={$obj->show_mode}&id=%s&version_id=%s";
-
-    $obj->tcaseMgrURL = 
-      "archiveData.php?edit=testcase&id=%s&caller=%s";
+    $obj->tcaseMgrURL = "archiveData.php?edit=testcase&id=%s&caller=%s";
 
     if( property_exists($obj, 'tplan_id') ) {
       $obj->loadOnCancelURL .= "&tplan_id={$obj->tplan_id}";
@@ -867,19 +877,17 @@ class testcaseCommands {
     $guiObj->main_descr = lang_get('test_case');
     $guiObj->viewerArgs = array();
     $guiObj->refreshTree = 0;
+    $guiObj->user_feedback = '';
+
     $step_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->step_id);
 
     $tcversion_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($step_node['parent_id']);
     $argsObj->tcversion_id = $step_node['parent_id'];
     $argsObj->tcase_id = $tcversion_node['parent_id'];
-    
-    $guiObj->template = 
-      "archiveData.php?version_id={$argsObj->tcversion_id}" .
-      "&edit=testcase&id={$argsObj->tcase_id}" .
-      "&show_mode={$guiObj->show_mode}" .
-      "&tproject_id={$argsObj->tproject_id}";
+    $argsObj->show_mode = $guiObj->show_mode;
 
-    $guiObj->user_feedback = '';
+    $guiObj->template = $this->buildTemplateURLForEdit($argsObj);
+
     $op = $this->tcaseMgr->delete_step_by_id($argsObj->step_id);
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
@@ -1036,7 +1044,7 @@ class testcaseCommands {
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
 
-    if ($argsObj->stepSeq != '') {
+    if (property_exists($argsObj,'stepSeq') && $argsObj->stepSeq != '') {
       $xx = explode('&', $argsObj->stepSeq);
       $point = 1;
       foreach($xx as $step_id) {
@@ -1053,19 +1061,10 @@ class testcaseCommands {
     }
 
     $this->tcaseMgr->set_step_number($renumbered);
-
-    $guiObj->template = 
-      "archiveData.php?version_id={$guiObj->tcversion_id}&" .
-      "tcversion_id={$guiObj->tcversion_id}&" .
-      "edit=testcase&id={$guiObj->tcase_id}&" .
-      "show_mode={$guiObj->show_mode}";
-
-    if( property_exists($guiObj, 'tplan_id') ) {
-      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
-    }
-
-    $guiObj->user_feedback = '';
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+
+    $guiObj->template = $this->buildTemplateURLForEdit($guiObj);
+
     return $guiObj;
   }
 
@@ -1088,16 +1087,8 @@ class testcaseCommands {
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = 
-      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-      "tcversion_id={$guiObj->tcversion_id}&".
-      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = $this->buildTemplateURLForEdit($guiObj);
 
-    if( property_exists($guiObj, 'tplan_id') ) {
-      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
-    }
-
-    $guiObj->user_feedback = '';
     return $guiObj;
   }
 
@@ -1119,16 +1110,8 @@ class testcaseCommands {
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = 
-      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-      "tcversion_id={$guiObj->tcversion_id}&" .
-      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = $this->buildTemplateURLForEdit($guiObj);
 
-    if( property_exists($guiObj, 'tplan_id') ) {
-      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
-    }
-
-    $guiObj->user_feedback = '';
     return $guiObj;
   }
 
@@ -1153,21 +1136,8 @@ class testcaseCommands {
 
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
-    // 
-
-    
-
     // set up for rendering
-    $guiObj->template = 
-      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-      "tcversion_id={$guiObj->tcversion_id}&" .
-      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
-
-    if( property_exists($guiObj, 'tplan_id') ) {
-      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
-    }
-
-    $guiObj->user_feedback = '';
+    $guiObj->template = $this->buildTemplateURLForEdit($guiObj);
     return $guiObj;
   }
 
@@ -1182,6 +1152,7 @@ class testcaseCommands {
     $guiObj->user_feedback = '';
     $guiObj->step_exec_type = $argsObj->exec_type;
     $guiObj->tcversion_id = $argsObj->tcversion_id;
+    $guiObj->tproject_id = 
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
 
@@ -1189,16 +1160,8 @@ class testcaseCommands {
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = 
-      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-      "tcversion_id={$guiObj->tcversion_id}&" .
-      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = $this->buildTemplateURLForEdit($guiObj);
 
-    if( property_exists($guiObj, 'tplan_id') ) {
-      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
-    }
-
-    $guiObj->user_feedback = '';
     return $guiObj;
   }
 
@@ -1320,14 +1283,9 @@ class testcaseCommands {
     } 
 
     // set up for rendering
-    // It's OK put fixed 0 on version_id other functions on the chain to do the display know how to manage this
-    $guiObj->template = "archiveData.php?version_id=0&" .
-      "tcversion_id={$guiObj->tcversion_id}&" . 
-      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
-
-    if( property_exists($guiObj, 'tplan_id') ) {
-      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
-    }
+    // It's OK put fixed 0 on version_id other functions on the chain 
+    // to do the display know how to manage this
+    $guiObj->template = $this->buildTemplateURLForEdit($guiObj);
 
     if($guiObj->user_feedback != '') {
       $guiObj->template .= "&add_relation_feedback_msg=" . urlencode($guiObj->user_feedback);
@@ -1350,13 +1308,7 @@ class testcaseCommands {
     } 
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?edit=testcase&" .
-      "id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" . 
-      "&caller=delRel";
-
-    if( property_exists($guiObj, 'tplan_id') ) {
-      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
-    }
+    $guiObj->template = $this->buildTemplateURLForEdit($guiObj) . "&caller=delRel";
 
     return $guiObj;
   }
@@ -1432,18 +1384,7 @@ class testcaseCommands {
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = 
-      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-      "tcversion_id={$guiObj->tcversion_id}&" .
-      "edit=testcase&id={$guiObj->tcase_id}&" . 
-      "show_mode={$guiObj->show_mode}" .
-      "&tproject_id={$guiObj->tproject_id}";
-
-    if( property_exists($guiObj, 'tplan_id') ) {
-      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
-    }
-
-    $guiObj->user_feedback = '';
+    $guiObj->template = $this->buildTemplateURLForEdit($guiObj);
     return $guiObj;
   }
 
@@ -1690,5 +1631,26 @@ class testcaseCommands {
     }
     return $guiObj;
   }
+
+ /**
+  *  
+  */ 
+ function buildTemplateURLForEdit($context) {
+  $tplURL = 
+    "archiveData.php?" . 
+    "edit=testcase&" .
+    "show_mode={$context->show_mode}&" .
+    "id={$context->tcase_id}&" . 
+    "version_id={$context->tcversion_id}&" . 
+    "tcversion_id={$context->tcversion_id}&" .
+    "tproject_id={$context->tproject_id}";
+
+    if( property_exists($context, 'tplan_id') ) {
+      $tplURL .= "&tplan_id={$context->tplan_id}";
+    }
+  return $tplURL;
+ }
+
+
 
 } // end class  

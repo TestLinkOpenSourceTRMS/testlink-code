@@ -111,6 +111,9 @@ var tc_editor = "{$gui->editorType}";
   <input type="hidden" name="step_id" value="{$gui->step_id}" />
   <input type="hidden" name="step_number" value="{$gui->step_number}" />
   <input type="hidden" name="goback_url" value="{$goBackAction}" />
+  <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+  <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+
 
 
     {include file="testcases/include/tcbody.inc.tpl" 

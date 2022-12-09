@@ -113,7 +113,7 @@ var tc_editor = "{$gui->editorType}";
   <input type="hidden" name="goback_url" value="{$goBackAction}" />
 
 
-    {include file="testcases/inc_tcbody.tpl" 
+    {include file="testcases/include/tcbody.inc.tpl" 
              inc_tcbody_close_table=true
              inc_tcbody_testcase=$gui->testcase
              inc_tcbody_show_title="yes"

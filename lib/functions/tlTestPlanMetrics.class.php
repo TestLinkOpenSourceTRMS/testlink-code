@@ -2061,7 +2061,7 @@ class tlTestPlanMetrics extends testplan
     // Additional Execution fields
     $moreExecFields = "";
     if ($my['opt']['getExecutionNotes']) {
-      $moreExecFields .= "E.notes AS execution_notes,";
+      $moreExecFields .= "COALESCE(E.notes,'') AS execution_notes,";
     }  
     
     if ($my['opt']['getTester']) {

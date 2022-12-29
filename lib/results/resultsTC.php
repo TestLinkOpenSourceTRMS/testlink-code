@@ -245,10 +245,10 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $guiObj->map_status_css = null;
   $guiObj->title = lang_get('title_test_report_all_builds');
   $guiObj->printDate = '';
-  $guiObj->matrix = array();
+  $guiObj->matrix = [];
 
-  $guiObj->platforms = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
-  $guiObj->show_platforms = !is_null($guiObj->platforms);
+  $guiObj->platforms = (array)$tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
+  $guiObj->show_platforms = (count($guiObj->platforms) > 0);
 
   $guiObj->img = new stdClass();
   $guiObj->img->exec = $imgSet['exec_icon'];
@@ -550,8 +550,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
           $rows[$cols['link']] = "{$external_id}:{$rf[$top]['name']}";
         }
 
-        if ($gui->show_platforms)
-        {
+        if ($gui->show_platforms) {
           $rows[$cols['platform']] = $gui->platforms[$platformID];
         }
 

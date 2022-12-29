@@ -125,10 +125,11 @@
  *  
  */
 
-function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name, &$linked_items,
+function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items,
                        $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 {
 
+  $spec_view_type = is_null($specViewType) ? 'testproject' : $specViewType;
   $out = array(); 
   $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 
@@ -286,9 +287,11 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 /**
 *
 */
-function gen_coverage_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name, &$linked_items,
+function gen_coverage_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items,
 $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 {
+  $spec_view_type = is_null($specViewType) ? 'testproject' : $specViewType;
+
 	$out = array();
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 
@@ -1477,9 +1480,11 @@ function getFilteredSpecViewFlat(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
 /**
  *
  */
-function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $name, &$linked_items,
+function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items,
                          $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 {
+
+  $spec_view_type = is_null($specViewType) ? 'testproject' : $specViewType;
 
   $out = array(); 
   $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);

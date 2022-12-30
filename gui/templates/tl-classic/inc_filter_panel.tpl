@@ -18,7 +18,7 @@
      build,filter_tcID,filter_on,filter_result,status,
      btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,
      filter_owner,TestPlan,test_plan,caption_nav_filters,
-     platform, include_unassigned_testcases, filter_active_inactive,
+     include_unassigned_testcases, filter_active_inactive,
      btn_remove_all_tester_assignments, execution_type, 
      do_auto_update, testsuite, btn_reset_filters,hint_list_of_bugs,
      btn_bulk_update_to_latest_version, priority, tc_title,
@@ -95,7 +95,7 @@
         </tr>
       {/if}
 
-      {if $control->settings.setting_platform}
+      {if $control->settings.setting_platform.items != null}
         {$platformID=$control->settings.setting_platform.selected}
         <tr>
           <td>{$labels.platform}</td>
@@ -289,7 +289,7 @@
       </tr>
       <tr><td>&nbsp;</td></tr>
     {/if}
-    {if $control->filters.filter_platforms.size > 0 }
+    {if $control->filters.filter_platforms != null }
       <tr>
         <td>{$labels.platforms}</td>
         <td><select class="chosen-select" name="filter_platforms[]"

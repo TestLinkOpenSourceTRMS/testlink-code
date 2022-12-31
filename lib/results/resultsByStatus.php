@@ -507,14 +507,23 @@ function buildMailCfg(&$guiObj)
  * return tlExtTable
  *
  */
-function buildMatrix($dataSet, &$args, $options = array(), $platforms,$customFieldColumns=null)
+function buildMatrix($dataSet, &$args, $options = [], $platforms = null,$customFieldColumns=null)
 {
-  $default_options = array('bugInterfaceOn' => false,'show_platforms' => false,
-                           'status_not_run' => false,'format' => FORMAT_HTML);
+  $default_options = [
+    'bugInterfaceOn' => false,
+    'show_platforms' => false,
+    'status_not_run' => false,
+    'format' => FORMAT_HTML
+  ];
+  
   $options = array_merge($default_options, $options);
 
-  $l18n = init_labels(array('assigned_to' => null,'platform' => null, 'th_date' => null,
-                            'th_build' => null));
+  $l18n = init_labels([
+    'assigned_to' => null,
+    'platform' => null, 
+    'th_date' => null,
+    'th_build' => null
+  ]);
 
 
 

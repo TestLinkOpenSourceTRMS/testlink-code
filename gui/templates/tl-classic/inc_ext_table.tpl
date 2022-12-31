@@ -87,14 +87,10 @@ function oneZeroImageRenderer(val) {
 /**
  *
  */
-function columnWrap(val) {
+function columnWrap(textToDisplay) {
   var divOpen = '<div style="white-space:normal !important;' + 
                 '-moz-user-select: text; -webkit-user-select: text;">'
-  var valToDisplay = val;
-  if (typeof valToDisplay == "object") {
-    valToDisplay = valToDisplay.text 
-  }
-  return (divOpen + valToDisplay +'</div>');
+  return (divOpen + textToDisplay +'</div>');
 }
 
 // Functions for MultiSort

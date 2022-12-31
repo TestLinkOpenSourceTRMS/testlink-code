@@ -83,7 +83,7 @@
 
       <table class="smallGrey" style="width:98%;overflow: visible;">
 
-      {if $control->settings.setting_testplan}
+      {if $control->settings.setting_testplan.items != null}
         <tr>
           <td>{$labels.test_plan}</td>
           <td>
@@ -98,7 +98,7 @@
       {if $control->settings.setting_platform.items != null}
         {$platformID=$control->settings.setting_platform.selected}
         <tr>
-          <td>{$labels.platform}</td>
+          <td>{$labels.platform} YYYY </td>
           <td>
             <select name="setting_platform" class="chosen-select" onchange="this.form.submit()">
             {html_options options=$control->settings.setting_platform.items
@@ -108,7 +108,7 @@
         </tr>
       {/if}
 
-      {if $control->settings.setting_build}
+      {if $control->settings.setting_build.items != null}
         <tr>
           <td>{$control->settings.setting_build.label}</td>
           <td>
@@ -120,7 +120,7 @@
         </tr>
       {/if}
 
-      {if $control->settings.setting_testsgroupby}
+      {if $control->settings.setting_testsgroupby.items != null}
         <tr>
           <td>{$labels.test_grouped_by}</td>
           <td>

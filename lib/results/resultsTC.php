@@ -61,15 +61,12 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) ||
                  'getExecutionTimestamp' => true, 'getExecutionDuration' => true);
   }    
   $execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id,$buildSet,$opt);
-  //echo '<pre>';var_dump($execStatus);echo '</pre>';die();
 
   $metrics = $execStatus['metrics'];
   $latestExecution = $execStatus['latestExec']; 
 
   // Every Test suite a row on matrix to display will be created
   // One matrix will be created for every platform that has testcases
-
-  // echo '<pre>';var_dump($gui->show_platforms);echo '</pre>'; die();
   $args->cols = initCols($gui->show_platforms);
   if( !is_null($execStatus['metrics']) ) {
     buildDataSet($db,$args,$gui,$execStatus,$labels);
@@ -217,10 +214,24 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null) {
   $fo = !is_null($forceFormat) ? $forceFormat : $argsObj->format; 
   if ($fo == FORMAT_HTML) 
   {
-    $matrix = new tlExtTable($columns, $guiObj->matrix, 'tl_table_results_tc');
+
+    // 20221231 - having a differente name for the table it's critic
+    //            because it seems that column ID, of the column used for sorting are
+    //            saves in a cookie that is not rested.
+    //            This has created an issue when using the Test Results matrix
+    //            in a Test Plan with platforms, and then request for a Test Plan
+    //            without platforms, because the EXTJS code was trying to access
+    //            sort info from a column named id_platform that does not exist
+    //            obvioulsy in the data to be displayed
+    //            That's why I've added the $group_name to the name
+    //            I was able to fix this using the ext-all-debug-w-comments.js
+    // 
+    $matrix = new tlExtTable($columns, $guiObj->matrix, 'tlTestResultMatrix' . $group_name);
+    
     
     //if platforms feature is enabled group by platform otherwise group by test suite
     $matrix->setGroupByColumnName($group_name);
+
     $matrix->sortDirection = 'DESC';
 
     if($guiObj->options->testPriorityEnabled) {
@@ -237,14 +248,9 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null) {
     $matrix->toolbarExpandCollapseGroupsButton = true;
     $matrix->toolbarShowAllColumnsButton = true;
 
-    // 
-    $matrix->addCustomBehaviour('text', ['render' => 'columnWrap']);
-
-
   } else {
     $matrix = new tlHTMLTable($columns, $guiObj->matrix, 'tl_table_results_tc');
   }
-  unset($columns);
   
   return $matrix;
 }
@@ -395,9 +401,12 @@ function createSpreadsheet($gui,$args,$media) {
   // Latest Execution result (Hmm need to explain better)
   // Latest Execution notes
   // 
-  $dataHeader = array($lbl['title_test_suite_name'],$lbl['title_test_case_title']);
+  $dataHeader = [
+    $lbl['title_test_suite_name'],
+    $lbl['title_test_case_title']
+  ];
 
-  if( $showPlatforms = !is_null($gui->platforms) )
+  if( $showPlatforms = count($gui->platforms) > 0 )
   {
     $dataHeader[] = $lbl['platform'];
   }
@@ -730,13 +739,25 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
  *
  */
 function initLblSpreadsheet() {
-  $lbl = init_labels(array('title_test_suite_name' => null,
-                           'platform' => null,'priority' => null,
-                           'build' => null, 'title_test_case_title' => null,'test_exec_by' => null,
-                           'notes' => null, 'date_time_run' => null, 'execution_duration' => null,
-                           'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
-                           'result_on_last_build' => null,'last_execution' => null,'assigned_to' => null,'latest_exec_notes' => null,
-                           'test_exec_notes_latest_created_build' => null));
+  $lbl = init_labels([
+    'title_test_suite_name' => null,
+    'platform' => null,
+    'priority' => null,
+    'build' => null, 
+    'title_test_case_title' => null,
+    'test_exec_by' => null,
+    'notes' => null, 
+    'date_time_run' => null, 
+    'execution_duration' => null,
+    'testproject' => null,
+    'generated_by_TestLink_on' => null,
+    'testplan' => null,
+    'result_on_last_build' => null,
+    'last_execution' => null,
+    'assigned_to' => null,
+    'latest_exec_notes' => null,
+    'test_exec_notes_latest_created_build' => null]
+  );
   return $lbl;
 } 
 

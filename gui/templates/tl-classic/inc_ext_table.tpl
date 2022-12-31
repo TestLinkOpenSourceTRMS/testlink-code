@@ -84,9 +84,17 @@ function oneZeroImageRenderer(val) {
   }
 }
 
-
+/**
+ *
+ */
 function columnWrap(val) {
-  return '<div style="white-space:normal !important; -moz-user-select: text; -webkit-user-select: text;">'+ val +'</div>';
+  var divOpen = '<div style="white-space:normal !important;' + 
+                '-moz-user-select: text; -webkit-user-select: text;">'
+  var valToDisplay = val;
+  if (typeof valToDisplay == "object") {
+    valToDisplay = valToDisplay.text 
+  }
+  return (divOpen + valToDisplay +'</div>');
 }
 
 // Functions for MultiSort

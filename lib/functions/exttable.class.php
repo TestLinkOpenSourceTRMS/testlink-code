@@ -159,11 +159,6 @@ class tlExtTable extends tlTable
                                'filter' => 'Status'
                               ]);
 
-    /*                          
-    $this->addCustomBehaviour('execNotes', 
-                              ['render' => 'execNotesRenderer']);
-    */
-    
     $this->addCustomBehaviour('notes', 
                               ['render' => 'columnWrap']);
     

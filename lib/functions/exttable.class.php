@@ -24,12 +24,20 @@ require_once('table.class.php');
  */
 class tlExtTable extends tlTable
 {
+  // Just for documentation
+  protected $customTypes = [
+    "issueSummary",
+    "notes",
+    "status",
+    "textArea"
+  ];
+
   /**
-   * Array of custom behaviour indexed by column type.
+   * Custom behaviour indexed by column type.
    * Behaviour means custom rendering and/or sorting available.
    * @see addCustomBehaviour($type,$behaviour)
    */
-  protected $customBehaviour = array();
+  protected $customBehaviour = [];
   
   /**
    * if true toolbar offers multisort feature.
@@ -137,6 +145,7 @@ class tlExtTable extends tlTable
   /**
    * Creates a helper object to render a table to a EXT-JS GridPanel.
    * For use of column['type'] see $this->customTypes
+   * 
    * @param string $tableID tableID is used to create a store for
    *                        table settings. tableID should be unique for
    *                        each table occurence in each project.
@@ -147,10 +156,25 @@ class tlExtTable extends tlTable
   public function __construct($columns, $data, $tableID)
   {
     parent::__construct($columns, $data, $tableID);
-    $this->addCustomBehaviour('status', array('render' => 'statusRenderer',
-                                              'sort' => 'statusCompare',
-                                              'filter' => 'Status'
-                                             ));
+    $this->addCustomBehaviour('status', 
+                              ['render' => 'statusRenderer',
+                               'sort' => 'statusCompare',
+                               'filter' => 'Status'
+                              ]);
+
+    /*                          
+    $this->addCustomBehaviour('execNotes', 
+                              ['render' => 'execNotesRenderer']);
+    */
+    
+    $this->addCustomBehaviour('notes', 
+                              ['render' => 'columnWrap']);
+    
+    $this->addCustomBehaviour('textArea', 
+                              ['render' => 'columnWrap']);
+                          
+    $this->addCustomBehaviour('issueSummary', 
+                              ['render' => 'columnWrap']);
 
     $this->showExportButton = config_get('enableTableExportButton');
   }
@@ -336,6 +360,9 @@ class tlExtTable extends tlTable
     }
     $s = trim($s,",\n");
     $s .= '];';
+    
+    // echo $s; die();
+
     return $s;
 
   }

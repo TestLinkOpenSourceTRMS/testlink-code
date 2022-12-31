@@ -2277,13 +2277,23 @@ function getSettingsAndFilters(&$argsObj) {
   $argsObj->testcases_to_show = isset($sf['testcases_to_show']) ? $sf['testcases_to_show'] : null;
 
   // just for better readability
-  $filters = array('filter_status' => 'filter_result_result','filter_assigned_to' => 'filter_assigned_user',
-                   'execution_type' => 'filter_execution_type', 'priority' => 'filter_priority',
-                   'filter_cfields' => 'filter_custom_fields');
-  $settings = array('build_id' => 'setting_build', 'platform_id' => 'setting_platform');
+  $filters = [
+    'filter_status' => 'filter_result_result',
+    'filter_assigned_to' => 'filter_assigned_user',
+    'execution_type' => 'filter_execution_type', 
+    'priority' => 'filter_priority',
+    'filter_cfields' => 
+    'filter_custom_fields'];
+  $settings = [
+    'build_id' => 'setting_build', 
+    'platform_id' => 'setting_platform'
+  ];
 
   $key2null = array_merge($filters,$settings);
-  $isNumeric = array('build_id' => 0, 'platform_id' => -1);
+  $isNumeric = [
+    'build_id' => 0, 
+    'platform_id' => -1
+  ];
 
   foreach($key2null as $key => $sfKey)
   {
@@ -2319,6 +2329,9 @@ function getSettingsAndFilters(&$argsObj) {
   }
 
   // 20190119
+  if (!property_exists($argsObj,'refreshTree')) {
+    $argsObj->refreshTree = true;
+  }
   $argsObj->refreshTree = isset($sf['setting_refresh_tree_on_action']) ? 
                                 $sf['setting_refresh_tree_on_action'] : $argsObj->refreshTree;
                                   

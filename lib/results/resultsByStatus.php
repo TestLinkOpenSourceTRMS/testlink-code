@@ -8,8 +8,9 @@
  *
  * @filesource  resultsByStatus.php
  * @package     TestLink
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2022, TestLink community 
  * @link        http://www.testlink.org
+ * @link        https://github.com/TestLinkOpenSourceTRMS/testlink-code 
  *
  * 
  */
@@ -286,10 +287,12 @@ switch ($args->format) {
   break;  
 
   default:
-    $tableOpt = array('status_not_run' => ($args->type == $statusCode['not_run']),
-                      'bugInterfaceOn' => $gui->bugInterfaceOn,
-                      'format' => $args->format,
-                      'show_platforms' => $gui->show_platforms);
+    $tableOpt = [
+      'status_not_run' => ($args->type == $statusCode['not_run']),
+      'bugInterfaceOn' => $gui->bugInterfaceOn,
+      'format' => $args->format,
+      'show_platforms' => $gui->show_platforms
+    ];
 
     $gui->tableSet[] = buildMatrix($gui->dataSet, $args, $tableOpt ,
                                    $gui->platformSet,$cfSet);
@@ -442,19 +445,15 @@ function initializeGui(&$dbh,&$argsObj,&$tplanMgr)
     exit();
   }
 
+  $guiObj->buildSet = (array)$tplanMgr->get_builds_for_html_options($argsObj->tplan_id);
  
   // needed to decode
-  $getOpt = array('outputFormat' => 'map');
-  $guiObj->platformSet = $tplanMgr->getPlatforms($argsObj->tplan_id,$getOpt);
-  if( !($guiObj->show_platforms = !is_null($guiObj->platformSet)) )
-  {
-    $guiObj->platformSet = array('');
-  }
+  $getOpt = ['outputFormat' => 'map'];
+  $guiObj->platformSet = (array)$tplanMgr->getPlatforms($argsObj->tplan_id,$getOpt);  
+  $guiObj->show_platforms = count($guiObj->platformSet);
+  // 
 
-  $guiObj->buildSet = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id);
-
-
-  $guiObj->its = null;
+  $guiObj->its = null;  // Issue Tracker System
   $info = $tprojectMgr->get_by_id($argsObj->tproject_id);
   $guiObj->bugInterfaceOn = $info['issue_tracker_enabled'];
   if($info['issue_tracker_enabled'])
@@ -519,39 +518,75 @@ function buildMatrix($dataSet, &$args, $options = array(), $platforms,$customFie
 
 
 
-  $columns = array();
-  $columns[] = array('title_key' => 'title_test_suite_name', 'width' => 80, 'type' => 'text');
-  $columns[] = array('title_key' => 'title_test_case_title', 'width' => 80, 'type' => 'text');
-  $columns[] = array('title_key' => 'version', 'width' => 30);
-  if ($options['show_platforms'])
-  {
-    $columns[] = array('title_key' => 'platform', 'width' => 60, 'filter' => 'list', 'filterOptions' => $platforms);
+  $columns = [];
+  $columns[] = [
+    'title_key' => 'title_test_suite_name', 
+    'width' => 80  
+  ];
+  $columns[] = [
+    'title_key' => 'title_test_case_title', 
+    'width' => 80
+  ];
+  $columns[] = [
+    'title_key' => 'version', 
+    'width' => 30
+  ];
+  
+  if ($options['show_platforms']) {
+    $columns[] = [
+      'title_key' => 'platform', 
+      'width' => 60, 
+      'filter' => 'list', 
+      'filterOptions' => $platforms
+    ];
   }
-  if( $options['status_not_run'] )
-  {
-    $columns[] = array('title_key' => 'th_build', 'width' => 35);
-    $columns[] = array('title_key' => 'assigned_to', 'width' => 60);
-    $columns[] = array('title_key' => 'summary', 'width' => 150, 'type' => 'text');
-  }
-  else
-  {
-    $columns[] = array('title_key' => 'th_build', 'width' => 35);
-    $columns[] = array('title_key' => 'th_run_by', 'width' => 60);
-    $columns[] = array('title_key' => 'th_date', 'width' => 60);
-    $columns[] = array('title_key' => 'title_execution_notes', 'width' => 150, 'type' => 'text');
 
-    // 20130325
-    if(!is_null($customFieldColumns))
-    {
-      foreach($customFieldColumns as $id => $def)
-      {
-        $columns[] = array('title' => $def['label'], 'width' => 60);
+  $columns[] = [
+    'title_key' => 'th_build', 
+    'width' => 35
+  ];
+  if( $options['status_not_run'] ) {
+    $columns[] = [
+      'title_key' => 'assigned_to', 
+      'width' => 60
+    ];
+    $columns[] = [
+      'title_key' => 'summary', 
+      'width' => 150, 
+      'type' => 'textArea' // This will attach a custom behaivour
+                           // defined in exttable.class.php
+    ];
+  } else {
+    $columns[] = [
+      'title_key' => 'th_run_by', 
+      'width' => 60
+    ];
+    $columns[] = [
+      'title_key' => 'th_date', 
+      'width' => 60
+    ];
+    $columns[] = [
+      'title_key' => 'title_execution_notes', 
+      'width' => 150, 
+      'type' => 'notes'  // This will attach a custom behaivour
+                         // defined in exttable.class.php
+    ];
+
+    if(!is_null($customFieldColumns)) {
+      foreach($customFieldColumns as $id => $def) {
+        $columns[] = [
+          'title' => $def['label'], 
+          'width' => 60
+        ];
       }  
     }  
 
     if ($options['bugInterfaceOn'])
     {
-      $columns[] = array('title_key' => 'th_bugs_id_summary', 'type' => 'text');
+      $columns[] = [
+        'title_key' => 'th_bugs_id_summary', 
+        'type' => 'issueSummary'
+      ];
     }
   }
 
@@ -580,9 +615,7 @@ function buildMatrix($dataSet, &$args, $options = array(), $platforms,$customFie
     $matrix->setSortByColumnName($sort_name);
     $matrix->setGroupByColumnName($l18n['th_build']);
 
-    $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
-    
-    //define table toolbar
+    // define table toolbar
     $matrix->showToolbar = true;
     $matrix->toolbarExpandCollapseGroupsButton = true;
     $matrix->toolbarShowAllColumnsButton = true;

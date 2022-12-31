@@ -10,9 +10,6 @@
  * @link        http://www.teamst.org
  * @since       1.9
  *
- * @internal revisions
- * @since 1.9.7
- * 20130320 - franciscom - TICKET 5577: Requirements based Report is empty (buildColumns())
  * 
  **/
 
@@ -243,8 +240,8 @@ class tlExtTable extends tlTable
 
       // new dBug($column);
       // Because sometimes a column can be made HIDDEN but used to generate a group
-      // (this happens in the requirements based report), if we remove ths column
-      // only checking for 'hidden' attribute, we will generate an issue
+      // (this happens in the requirements based report), 
+      // if we remove this column only checking for 'hidden' attribute, we will generate an issue
       //
       $isGroupable = isset($column['groupable']) ? $column['groupable'] : false;
 	    if( (isset($column['hidden']) && $column['hidden']) && !$isGroupable )
@@ -306,7 +303,11 @@ class tlExtTable extends tlTable
       if( isset($column['type']) && isset($this->customBehaviour[$column['type']]))
       {
         $customBehaviour = $this->customBehaviour[$column['type']];
-        $filterSet = array('Status','Priority','Importance');
+        $filterSet = [
+          'Status',
+          'Priority',
+          'Importance'
+        ];
         foreach($filterSet as $target)
         {
           if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == $target)
@@ -361,7 +362,7 @@ class tlExtTable extends tlTable
     $s = trim($s,",\n");
     $s .= '];';
     
-    // echo $s; die();
+    //echo $s; die();
 
     return $s;
 

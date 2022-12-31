@@ -1356,7 +1356,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->settings[$key]['selected'] = key($this->settings[$key]['items']);
     }  
 
-    echo '<pre>'; var_dump($this->settings[$key]); echo '</pre>';
     $_SESSION[$session_key] = $this->settings[$key]['selected'];
   } // end of method
 
@@ -2091,7 +2090,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $cfx = $this->configuration->exec_cfg->tcases_counters_mode_domain;
     $logic = $this->configuration->exec_cfg->tcases_counters_mode;
     $wow = 'without_platforms';
-    if( $this->settings['setting_platform'].items != null ) {
+    if( $this->settings['setting_platform']["items"] != null ) {
       $wow = 'with_platforms';
     }
     $defaultAlgo = $logic[$wow];

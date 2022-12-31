@@ -28,9 +28,19 @@ var checkedImg = "{$tlImages.checked}";
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
 
+
+/*
+*/
+function execNotesRenderer(item)
+{
+  item.cssClass = item.cssClass || "";
+  return "<span class=\""+item.cssClass+"\">" + item.text + "</span>";
+}
+
+
 /*
  statusRenderer() 
- translate this code to a localized string and applies formatting
+ translate this code to a localized string and applies formatting ???
 */
 function statusRenderer(item)
 {

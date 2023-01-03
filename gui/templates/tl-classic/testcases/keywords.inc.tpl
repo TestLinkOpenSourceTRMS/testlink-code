@@ -74,62 +74,60 @@ var pF_remove_keyword = remove_keyword;
 
   {$kwAL = "lib/keywords/keywordsEdit.php?doAction=cfl&tproject_id=%s%&directAccess=1&tcversion_id=$args_tcversion_id"|replace:'%s%':$gui->tproject_id}
 
+  {$removeEnabled = $args_edit_enabled && $gui->assign_keywords &&
+                    $args_frozen_version == "no"}
+
   <table cellpadding="0" cellspacing="0" style="font-size:100%;" width="30%">
     <tr>
-      <td width="35%" style="vertical-align:top;">
-    <a href="javascript:open_popup('{$kwView}')">{$tcView_viewer_labels.keywords}</a> &nbsp; 
+      <td width="45%" style="vertical-align:top;">
+        <a href="javascript:open_popup('{$kwView}')">{$tcView_viewer_labels.keywords}</a> &nbsp; 
 
-      <a href="javascript:open_popup('{$kwAdd}')">
-      <img src="{$tlImages.add}" title="{$kw_labels.createKW}"  style="border:none" /></a>&nbsp; 
+        <a href="javascript:open_popup('{$kwAdd}')">
+        <img src="{$tlImages.add}" title="{$kw_labels.createKW}"  style="border:none" /></a>&nbsp; 
 
-      <a href="javascript:open_popup('{$kwAL}')">
-      <img src="{$tlImages.keyword_add}" title="{$kw_labels.btn_create_and_link}"  style="border:none" /></a>&nbsp; 
-
+        <a href="javascript:open_popup('{$kwAL}')">
+        <img src="{$tlImages.keyword_add}" title="{$kw_labels.btn_create_and_link}"  style="border:none" /></a>&nbsp; 
       </td>
 
-
-      {$removeEnabled = $args_edit_enabled && $gui->assign_keywords &&
-                        $args_frozen_version == "no"}
-
-      <td style="vertical-align:top;">
-          {foreach item=tckw_link_item from=$args_keywords_map}
-                {$tckw_link_item.keyword|escape}
-            {if $removeEnabled}
-            <a href="javascript:keyword_remove_confirmation({$gui->tcase_id},
-                     {$tckw_link_item.tckw_link},
-                     '{$tckw_link_item.keyword|escape:'javascript'}', 
-                     remove_kw_msgbox_title, remove_kw_msgbox_msg, 
-                     pF_remove_keyword);">
-           <img src="{$tlImages.delete}" title="{$kw_labels.img_title_remove_keyword}"  style="border:none" /></a>
-           {/if}
-            <br />
-                {foreachelse}
-                  {$tcView_viewer_labels.none}
-            {/foreach}
-      </td>      
     </tr>
+
+    {foreach item=tckw_link_item from=$args_keywords_map}
+      <tr>
+        <td style="vertical-align:top;">
+              {if $removeEnabled}
+                <a href="javascript:keyword_remove_confirmation({$gui->tcase_id},
+                        {$tckw_link_item.tckw_link},
+                        '{$tckw_link_item.keyword|escape:'javascript'}', 
+                        remove_kw_msgbox_title, remove_kw_msgbox_msg, 
+                        pF_remove_keyword);">
+              <img src="{$tlImages.delete}" title="{$kw_labels.img_title_remove_keyword}"  style="border:none" /></a>
+            {/if}
+              {$tckw_link_item.keyword|escape}
+        </td>      
+      </tr>
+    {/foreach}
+
+    <tr><td>&nbsp;</td></tr>
     <tr>
       {$addEnabled = $args_edit_enabled}
       {if $addEnabled && null != $gui->currentVersionFreeKeywords} 
-      <td>
-       &nbsp;  
-      <td>
-        <select id="free_keywords" name="free_keywords[]"
-          data-placeholder="{$kw_labels.select_keywords}"
-          class="chosen-add-keywords" multiple="multiple">
-          {html_options options = $gui->currentVersionFreeKeywords}
-        </select>
-        <input type="submit" value="{$kw_labels.btn_add}"
-          onclick="doAction.value='addKeyword'">
-      </td>  
+        <td>
+          <select id="free_keywords" name="free_keywords[]"
+            data-placeholder="{$kw_labels.select_keywords}"
+            class="chosen-add-keywords" multiple="multiple">
+            {html_options options = $gui->currentVersionFreeKeywords}
+          </select>
+          <input type="submit" value="{$kw_labels.btn_add}"
+            onclick="doAction.value='addKeyword'">
+        </td>  
 
-      <script>
-      jQuery( document ).ready(
-        function() { 
-          jQuery(".chosen-add-keywords").chosen({ width: "75%", allow_single_deselect: true }); 
-        }
-      );
-      </script>  
+        <script>
+        jQuery( document ).ready(
+          function() { 
+            jQuery(".chosen-add-keywords").chosen({ width: "75%", allow_single_deselect: true }); 
+          }
+        );
+        </script>  
       {/if}
     </tr>
   </table>  

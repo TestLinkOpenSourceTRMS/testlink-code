@@ -77,7 +77,7 @@ var pF_remove_keyword = remove_keyword;
   {$removeEnabled = $args_edit_enabled && $gui->assign_keywords &&
                     $args_frozen_version == "no"}
 
-  <table cellpadding="0" cellspacing="0" style="font-size:100%;" width="30%">
+  <table cellpadding="0" cellspacing="0" style="font-size:100%;" width="45%">
     <tr>
       <td width="45%" style="vertical-align:top;">
         <a href="javascript:open_popup('{$kwView}')">{$tcView_viewer_labels.keywords}</a> &nbsp; 

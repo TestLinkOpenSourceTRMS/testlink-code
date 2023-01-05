@@ -18,7 +18,7 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2020, TestLink community
+ * @copyright   2005-2023, TestLink community
  * @link        http://www.testlink.org
  *
  *
@@ -67,6 +67,12 @@ $tlCfg->reqTCLinks = new stdClass();
 
 
 $tlCfg->keywords = new stdClass();
+
+$tlCfg->keywords->annotations = [
+  "@TestCaseSpecDisplay:"
+];
+
+
 $tlCfg->keywords->onDeleteCheckFrozenTCVersions = TRUE;
 $tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
 

@@ -78,6 +78,8 @@ class testcase extends tlObjectWithAttachments {
   var $XMLCfg;
   var $tproject_id;
 
+  var $keywordAnnotations = [];
+
   /**
    * testcase class constructor
    *
@@ -113,6 +115,8 @@ class testcase extends tlObjectWithAttachments {
     $this->XMLCfg = new stdClass();
     $this->XMLCfg->att = $this->getAttXMLCfg();
     $this->XMLCfg->req = $this->getReqXMLCfg();
+
+    $this->keywordAnnotations = config_get("keywords")->annotations;
 
     // ATTENTION:
     // second argument is used to set $this->attachmentTableName,property that this calls
@@ -1056,6 +1060,7 @@ class testcase extends tlObjectWithAttachments {
         $gui->currentVersionKeywords = 
           $this->getKeywords($tc_id,$currentVersionID);
 
+          
         $gui->currentVersionPlatforms = 
           $this->getPlatforms($tc_id,$currentVersionID);
 
@@ -1211,6 +1216,20 @@ class testcase extends tlObjectWithAttachments {
     $this->initShowGuiActions($gui);
     $tplCfg = templateConfiguration('tcView');
 
+
+    $gui->additionalMessages = [];
+    if ($gui->currentVersionKeywords != null && count($gui->currentVersionKeywords) > 0) {
+      // look for annotations in notes
+      foreach($gui->currentVersionKeywords as $kwEntity) {
+        foreach($this->keywordAnnotations as $kwAnnot) {
+          if (strpos($kwEntity['notes'],$kwAnnot) !== false) {
+            $gui->additionalMessages[] =
+              json_decode(str_replace($kwAnnot,'',explode("/@",$kwEntity['notes'])[0]));
+           break;
+          }
+        }
+      }
+    }
     $smarty->assign('gui',$gui);
     $smarty->display($tplCfg->template_dir . $tplCfg->default_template);
   }

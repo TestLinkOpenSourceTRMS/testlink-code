@@ -1691,6 +1691,7 @@ $TLS_warning_editing_executed_tc = "Warning! This Test Case version has been exe
 $TLS_warning_unsaved = "You will lose any unsaved changes!";
 $TLS_warning_estimated_execution_duration_format = "Estimated execution duration accepts only numeric or float values";
 
+$TLS_info_testautomation_done = "IMPORTANT INFO: there is a test script to execute this test automatically";
 
 
 // ----- gui/templates/planOwner.tpl -----

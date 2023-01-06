@@ -33,7 +33,7 @@ function check_action_precondition(container_id,action)
 {$ll = '[25, 50, 75, -1], [25, 50, 75, "All"]'}
 {include file="DataTables.inc.tpl" 
          DataTablesOID="item_view" 
-         DataTableslengthMenu=$ll}
+         DataTablesLengthMenu=$ll}
 
 </head>
 <body>

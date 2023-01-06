@@ -1,7 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource DataTables.inc.tpl
-Purpose: smarty template
+@parameters DataTablesLengthMenu
+
 
 
  each piece of path provides indication of:
@@ -97,7 +98,7 @@ Sorting icons now are UTF-8 character based rather than using external images an
   <script type="text/javascript" language="javascript" class="init">
   $(document).ready(function() {
     $('{$DataTablesSelector}').DataTable(
-      { "lengthMenu": [ {$DataTableslengthMenu} ],
+      { "lengthMenu": [ {$DataTablesLengthMenu} ],
         "stateSave": true, 
         "conditionalPaging": true
       });

@@ -25,7 +25,7 @@ var del_action=fRoot+'lib/codetrackers/codeTrackerEdit.php?doAction=doDelete&id=
 {if $gui->items != ''}
   {$ll = #pagination_length#}
   {include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
-                                     DataTableslengthMenu=$ll}
+                                     DataTablesLengthMenu=$ll}
 {/if}
 
 </head>

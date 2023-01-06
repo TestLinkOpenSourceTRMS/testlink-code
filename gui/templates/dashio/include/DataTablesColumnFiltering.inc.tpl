@@ -1,7 +1,7 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource DataTablesColumnFiltering.inc.tpl
-@parameters DataTablesSelector,DataTableslengthMenu
+@parameters DataTablesSelector,DataTablesLengthMenu
 
 @see https://datatables.net/extensions/fixedheader/examples/options/columnFiltering.html
 
@@ -17,7 +17,7 @@ $(document).ready(function() {
     var pimpedTable = $('{$DataTablesSelector}').DataTable( {
         orderCellsTop: true,
         fixedHeader: true,
-        lengthMenu: [{$DataTableslengthMenu}],
+        lengthMenu: [{$DataTablesLengthMenu}],
         stateSave: true,
 
         // https://datatables.net/reference/option/dom

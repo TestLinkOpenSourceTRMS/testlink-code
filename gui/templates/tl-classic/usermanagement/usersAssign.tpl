@@ -69,10 +69,20 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 }
 </script>
 
-{$ll = $tlCfg->gui->usersAssign->pagination->length}
-{include file="DataTables.inc.tpl" 
-         DataTablesOID="item_view" 
-         DataTableslengthMenu=$ll}
+{* ------------------------------------------------------------------------------------------------ *}
+{* 
+   IMPORTANT DEVELOPMENT NOTICE 
+   Because we are using also DataTablesColumnFiltering
+   We MUST NOT Initialize the Data Table on DataTables.inc.tpl.
+   We got this effect with DataTablesOID=""
+*}
+{include file="DataTables.inc.tpl" DataTablesOID=""}
+{include file="DataTablesColumnFiltering.inc.tpl"
+         DataTablesLengthMenu=$tlCfg->gui->usersAssign->pagination->length
+}
+{* ------------------------------------------------------------------------------------------------ *}
+
+{include file="bootstrap.inc.tpl"}
 
 </head>
 <body>
@@ -158,74 +168,78 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
     </div>
 
     <div id="usersRoleTable">
-	    <table class="common table table-bordered sortable" width="100%" id="item_view">
-    	<tr>
-    		<th>{$tlImages.sort_hint}{$labels.User}</th>
-    		{assign var="featureVerbose" value=$gui->featureType}
-    		<th>{$tlImages.sort_hint}{lang_get s="th_roles_$featureVerbose"} ({$my_feature_name|escape})</th>
-    	</tr>
-    	{foreach from=$gui->users item=user}
-    	    {$globalRoleName=$user->globalRole->name}
-    			{$uID=$user->dbID}
+	    <table class="table table-bordered no-sortable" width="100%" id="item_view">
+        <thead class="thead-dark">
+          <tr>
+            <th data-draw-filter="smartsearch">{$labels.User}</th>
+            {$featureVerbose=$gui->featureType}
+            <th data-draw-filter="smartsearch">{lang_get s="th_roles_$featureVerbose"} ({$my_feature_name|escape})</th>
+          </tr>
+        </thead>
+      <tbody>  
+        {foreach from=$gui->users item=user}
+            {$globalRoleName=$user->globalRole->name}
+            {$uID=$user->dbID}
 
 
-          {* get role name to add to inherited in order to give better information to user *}
-          {$effective_role_id=$gui->userFeatureRoles[$uID].effective_role_id}
-          {if $gui->userFeatureRoles[$uID].is_inherited == 1}
-            {$ikx=$effective_role_id}
-          {else}
-            {$ikx=$gui->userFeatureRoles[$uID].uplayer_role_id}
-          {/if}
-          {$inherited_role_name=$gui->optRights[$ikx]->name}
+            {* get role name to add to inherited in order to give better information to user *}
+            {$effective_role_id=$gui->userFeatureRoles[$uID].effective_role_id}
+            {if $gui->userFeatureRoles[$uID].is_inherited == 1}
+              {$ikx=$effective_role_id}
+            {else}
+              {$ikx=$gui->userFeatureRoles[$uID].uplayer_role_id}
+            {/if}
+            {$inherited_role_name=$gui->optRights[$ikx]->name}
 
-          {$user_row_class=''}
-          {if $effective_role_id == $smarty.const.TL_ROLES_NO_RIGHTS}
-            {$user_row_class='class="not_authorized_user"'}
-          {/if}
+            {$user_row_class=''}
+            {if $effective_role_id == $smarty.const.TL_ROLES_NO_RIGHTS}
+              {$user_row_class='class="not_authorized_user"'}
+            {/if}
 
-    	<tr {$user_row_class} bgcolor="{cycle values="#eeeeee,#d0d0d0"}">
-    		<td {if $gui->role_colour != '' && $gui->role_colour[$globalRoleName] != ''}  		
-    		      style="background-color: {$gui->role_colour[$globalRoleName]};" {/if}>
-    		    {$user->login|escape} ({$user->firstName|escape} {$user->lastName|escape}) </td>
-    		<td>
-          <select name="userRole[{$uID}]" id="userRole_{$uID}"
+        <tr {$user_row_class} bgcolor="{cycle values="#eeeeee,#d0d0d0"}">
+          <td {if $gui->role_colour != '' && $gui->role_colour[$globalRoleName] != ''}  		
+                style="background-color: {$gui->role_colour[$globalRoleName]};" {/if}>
+              {$user->login|escape} ({$user->firstName|escape} {$user->lastName|escape}) </td>
+          <td>
+            <select name="userRole[{$uID}]" id="userRole_{$uID}"
+              {if $user->globalRole->dbID == $smarty.const.TL_ROLES_ADMIN}
+              disabled="disabled"
+              {/if}
+            >
+            {foreach key=role_id item=role from=$gui->optRights}
+              
+              {$applySelected = ''}
+              {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 
+                    $gui->userFeatureRoles[$uID].is_inherited==0) || 
+                    ($role_id == $smarty.const.TL_ROLES_INHERITED && 
+                      $gui->userFeatureRoles[$uID].is_inherited==1)}
+                  {$applySelected = ' selected="selected" '} 
+              {/if}
+
+              /* For system consistency we need to remove admin role from selection */
+              {$removeRole = 0}
+              {if $role_id == $smarty.const.TL_ROLES_ADMIN && $applySelected == '' }
+                  {$removeRole = 1}
+              {/if}             
+    
+              {if !$removeRole }
+                <option value="{$role_id}" {$applySelected}>
+                    {$role->getDisplayName()|escape}
+                    {if $role_id == $smarty.const.TL_ROLES_INHERITED}
+                      {$inherited_role_name|escape} 
+                    {/if}
+                </option>
+              {/if}
+
+            {/foreach}
+        </select>
             {if $user->globalRole->dbID == $smarty.const.TL_ROLES_ADMIN}
-             disabled="disabled"
+              {$gui->hintImg} 
             {/if}
-          >
-		      {foreach key=role_id item=role from=$gui->optRights}
-            
-            {$applySelected = ''}
-            {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 
-                   $gui->userFeatureRoles[$uID].is_inherited==0) || 
-                   ($role_id == $smarty.const.TL_ROLES_INHERITED && 
-                    $gui->userFeatureRoles[$uID].is_inherited==1)}
-                {$applySelected = ' selected="selected" '} 
-            {/if}
-
-            /* For system consistency we need to remove admin role from selection */
-            {$removeRole = 0}
-            {if $role_id == $smarty.const.TL_ROLES_ADMIN && $applySelected == '' }
-                {$removeRole = 1}
-            {/if}             
-  
-            {if !$removeRole }
-              <option value="{$role_id}" {$applySelected}>
-                  {$role->getDisplayName()|escape}
-                  {if $role_id == $smarty.const.TL_ROLES_INHERITED}
-                    {$inherited_role_name|escape} 
-                  {/if}
-  		        </option>
-            {/if}
-
-		      {/foreach}
-			</select>
-          {if $user->globalRole->dbID == $smarty.const.TL_ROLES_ADMIN}
-            {$gui->hintImg} 
-          {/if}
-			</td>
-    	</tr>
-    	{/foreach}
+        </td>
+        </tr>
+        {/foreach}
+        </tbody>
     	</table>
    </div> 	
    	

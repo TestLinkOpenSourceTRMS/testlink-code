@@ -85,7 +85,7 @@ function initEnv(&$dbHandler)
     }
   }
   $localeDateFormat = config_get('locales_date_format');
-  $localeDateFormat = $localeDateFormat[$args->user->locale];
+  $localeDateFormat = $localeDateFormat[$_SESSION['currentUser']->locale];
 
   foreach($gui->buildSet as $elemBuild) {
     // ---------------------------------------------------------------------------------------------  

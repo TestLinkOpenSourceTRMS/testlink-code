@@ -1,0 +1,31 @@
+/*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+@filesource protection.css
+
+manage a blocking/protection overlay
+
+links
+https://www.w3schools.com/howto/howto_css_overlay.asp
+https://stackoverflow.com/questions/44543682/disable-page-background-on-button-submit-click
+*/
+
+#overlay {
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 999;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+#text-for-overlay{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 50px;
+  color: white;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+}

@@ -7,7 +7,7 @@
  * Legacy code (party covered by classes now)
  *
  * @package     TestLink
- * @copyright   2005-2020, TestLink community 
+ * @copyright   2005-2023, TestLink community 
  * @filesource  exec.inc.php
  * @link        http://www.testlink.org/
  *
@@ -1034,14 +1034,19 @@ function addAttachmentsToExec($execID,&$docRepo) {
   $tableRef = DB_TABLE_PREFIX . 'executions';
   $repOpt = array('allow_empty_title' => TRUE);
 
-  // 0 is magic!!, 0 is used in the smarty template
-  // May be we have enabled MULTIPLE on file upload
-
-  $honeyPot = array('name' => null,'size' => null,
-                    'tmp_name' => null, 'type' => null,
-                    'error' => null);
+  $honeyPot = [
+    'name' => null,
+    'size' => null,
+    'tmp_name' => null, 
+    'type' => null,
+    'error' => null,
+    'full_path' => null
+  ];
+ 
   foreach($honeyPot as $bee => $nuu) {
-   $honeyPot[$bee] = (array)$_FILES['uploadedFile'][$bee][0];
+    // 0 is magic!!, 0 is used in the smarty template
+    // May be we have enabled MULTIPLE on file upload
+    $honeyPot[$bee] = (array)$_FILES['uploadedFile'][$bee][0];
   }
 
   $curly = count($honeyPot);
@@ -1049,22 +1054,18 @@ function addAttachmentsToExec($execID,&$docRepo) {
   $op->msg = '';
 
   $opeOKMsg = lang_get('file_upload_ok');
-
+  $fInfo = [];
   for($moe=0; $moe < $curly; $moe++) {
-    $fSize = isset($honeyPot['size'][$moe]) ? 
-             $honeyPot['size'][$moe] : 0;
+    $fSize = isset($honeyPot['size'][$moe]) ? $honeyPot['size'][$moe] : 0;
+    $fTmpName = isset($honeyPot['tmp_name'][$moe]) ? $honeyPot['tmp_name'][$moe] : '';
 
-    $fTmpName = isset($honeyPot['tmp_name'][$moe]) ? 
-                $honeyPot['tmp_name'][$moe] : '';
-
-    if ($fSize && $fTmpName != "") {
+    if ($fSize >0  && $fTmpName != "") {
       $fk2loop = array_keys($_FILES['uploadedFile']);
       foreach($fk2loop as $tk) {
         $fInfo[$tk] = $honeyPot[$tk][$moe];
       }  
 
-      $uploadOp = $docRepo->insertAttachment($execID,$tableRef,'',
-                                             $fInfo,$repOpt);
+      $uploadOp = $docRepo->insertAttachment($execID,$tableRef,'',$fInfo,$repOpt);
 
       /*
       object(stdClass)#627 (3) {

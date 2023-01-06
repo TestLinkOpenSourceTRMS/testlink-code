@@ -3,8 +3,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource DataTables.inc.tpl
 Purpose: smarty template
 
-@internal revisions
-@since 1.9.17
+
+Template Parameters
+  DataTablesOID:
+  DataTablesLengthMenu:
+
+Global Coupling
+  NONE
 *}
 
 
@@ -18,7 +23,7 @@ Purpose: smarty template
   *}
   <script type="text/javascript" language="javascript" class="init">
   $(document).ready(function() {
-    $('#{$DataTablesOID}').DataTable({ "lengthMenu": [ {$DataTableslengthMenu} ],stateSave: true});
+    $('#{$DataTablesOID}').DataTable({ "lengthMenu": [ {$DataTablesLengthMenu} ],stateSave: true});
   } );
   </script>
 {/if}  

@@ -5,15 +5,23 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @see https://datatables.net/extensions/fixedheader/examples/options/columnFiltering.html
 
 
-@since 1.9.20
+Template Parameters
+  DataTablesLengthMenu:
+
+Global Coupling
+  the table id MUST BE item_view
+
 *}
 <script>
+
 $(document).ready(function() {
     var pimpedTable = $('#item_view').DataTable( {
         orderCellsTop: true,
         fixedHeader: true,
-        lengthMenu: [{$menuLen}],
-        stateSave: true,
+        lengthMenu: [{$DataTablesLengthMenu}],
+
+        // 20210530 stateSave: true produces weird behaivour when using filter on individual columns
+        // stateSave: true,
 
         // https://datatables.net/reference/option/dom
         "dom": 'lrtip'

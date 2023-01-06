@@ -95,7 +95,7 @@ var del_action=fRoot+'{$deleteAction}';
           {/if}
 
     			<th {#NOT_SORTABLE#}>{$labels.th_active}</th>
-    			<th {#NOT_SORTABLE#}>{$labels.th_th_open}</th>
+    			<th {#NOT_SORTABLE#}>{$labels.th_open}</th>
     			<th {#NOT_SORTABLE#}>{$labels.th_delete}</th>
     		</tr>
       </thead>

@@ -118,6 +118,15 @@ Ext.onReady(function(){
 });
 //-->
 </script>
+
+
+{*
+Pace will automatically monitor your ajax requests, event loop lag, 
+document ready state, and elements on your page to decide the progress. 
+On ajax navigation it will begin again!
+*}
+<script src="{$basehref}third_party/pace-1.2.4/pace.js"></script>
+<link href="{$basehref}third_party/pace-1.2.4/themes/blue/pace-theme-loading-bar.css" rel="stylesheet" />
 </head>
 <body class="fixedheader">
 <form name="addTcForm" id="addTcForm" method="post" 

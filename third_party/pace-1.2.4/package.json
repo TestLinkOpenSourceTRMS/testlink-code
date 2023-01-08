@@ -1,0 +1,28 @@
+{
+  "name": "pace-js",
+  "version": "1.2.4",
+  "description": "Automatically add a progress bar to your site.",
+  "main": "pace.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeByZach/pace.git"
+  },
+  "keywords": [
+    "pace",
+    "pace-js",
+    "pace.js",
+    "progress-bar",
+    "loading-bar",
+    "loading-indicator",
+    "loading-animation"
+  ],
+  "author": "CodeByZach <codebyzach@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CodeByZach/pace/issues"
+  },
+  "homepage": "https://github.com/CodeByZach/pace#readme"
+}

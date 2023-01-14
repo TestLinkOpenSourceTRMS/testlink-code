@@ -70,7 +70,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 
 {if $tlCfg->gui->usersAssign->pagination->enabled}
   {$ll = $tlCfg->gui->usersAssign->pagination->length}
-  {include file="DataTables.inc.tpl" DataTablesSelector="#item_view" DataTableslengthMenu=$ll}
+  {include file="DataTables.inc.tpl" DataTablesSelector="#item_view" DataTablesLengthMenu=$ll}
 {/if}
 
 </head>

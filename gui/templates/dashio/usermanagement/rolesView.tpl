@@ -32,7 +32,7 @@ Purpose: smarty template - View defined roles
 
 {$ll = #pagination_length#}
 {include file="DataTables.inc.tpl" DataTablesSelector="#item_view"
-                                   DataTableslengthMenu=$ll}
+                                   DataTablesLengthMenu=$ll}
 </head>
 
 <body {$body_onload}>

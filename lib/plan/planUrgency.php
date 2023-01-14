@@ -7,7 +7,7 @@
  * @filesource  planUrgency.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2003-2022, TestLink community 
+ * @copyright   2003-2023, TestLink community 
  * @link        http://www.testlink.org
  * 
  **/
@@ -113,7 +113,7 @@ function init_args(&$dbH,&$tplanMgr)
     'script' => basename(__FILE__),
     'tproject_id' => $args->tproject_id,
     'tplan_id' => $args->tplan_id
-  ]
+  ];
   $args->user->checkGUISecurityClearance($dbH,$env,['testplan_planning'],'and');
   // ---------------------------------------------------------------------------------
       

@@ -3191,18 +3191,16 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
     return $qnum;
   }
 
-    // create list with test cases nodes
-  $tclist = null;
+  // create list with test cases nodes
+  $tclist = [];
   $ks = array_keys($rs);
   foreach($ks as $ikey) {
     if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] ) {
       $tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
     }
   }    
-  if( !is_null($tclist) ) {
+  if( count($tclist) > 0 ) {
     $filterOnTC = false;
-
-    // 2018, where is the active check?
 
     // Can be replace with a view?
     $glvn = " /* Get LATEST ACTIVE tcversion NUMBER */ " .  
@@ -3210,7 +3208,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
             " FROM {$this->tables['tcversions']} TCVX " . 
             " JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
             " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
-            " WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
+            " WHERE NHTCX.parent_id IN (" . implode(',',$tclist) . ")" .
             " GROUP BY NHTCX.parent_id";
   
     // 2018, again where is the active check?

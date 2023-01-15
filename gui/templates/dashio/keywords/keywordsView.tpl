@@ -35,10 +35,17 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
   {include file="bootstrap.inc.tpl"} 
 
-  {* Do not initialize in DataTables -> DataTablesSelector="" *}
-  {$ll = $tlCfg->gui->{$cfg_section}->pagination->length}
-  {include file="DataTables.inc.tpl" DataTablesSelector="" DataTablesLengthMenu=$ll}
-  {include file="DataTablesColumnFiltering.inc.tpl" DataTablesSelector="#item_view" DataTablesLengthMenu=$ll}
+  {* Data Tables Config Area - BEGIN*}
+  {$gridHTMLID="item_view"}
+  {* Do not initialize in DataTables.inc.tpl -> DataTablesSelector="" *}
+  {include file="DataTables.inc.tpl" DataTablesSelector=""}
+  {include 
+    file="DataTablesColumnFiltering.inc.tpl" 
+    DataTablesSelector="#{$gridHTMLID}" 
+    DataTablesLengthMenu=$tlCfg->gui->{$cfg_section}->pagination->length
+  }
+  {* Data Tables Config Area - End*}
+ 
 </head>
 
 <body onLoad="{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}" class="testlink">
@@ -48,7 +55,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 <div class="workBack">
   {if $gui->keywords != ''}
-  <table class="{#item_view_table#}" id="item_view">
+  <table class="{#item_view_table#}" id="{$gridHTMLID}">
     <thead class="{#item_view_thead#}">
       <tr>
         <th {#SMART_SEARCH#} width="30%">{$labels.th_keyword}</th>

@@ -41,7 +41,7 @@ var del_action=fRoot+'{$deleteAction}';
   {$ll = $tlCfg->gui->{$cfg_section}->pagination->length}
   {* Do not initialize in DataTables -> DataTablesSelector="" *}
   {include file="DataTables.inc.tpl" DataTablesSelector="" DataTableslengthMenu=$ll}
-  {include file="DataTablesColumnFiltering.inc.tpl" DataTablesSelector="#item_view" DataTableslengthMenu=$ll}
+  {include file="DataTablesColumnFiltering.inc.tpl" DataTablesSelector="#item_view" DataTablesLengthMenu=$ll}
 {/if}
 
 </head>
@@ -79,6 +79,11 @@ var del_action=fRoot+'{$deleteAction}';
 
 
     {* table id MUST BE item_view to use show/hide API info *}
+    {* 
+      IMPORTANT NOTICE: Because description is a text with formatting
+                        filterings does not functio very well.
+                        Then the choice is NO SMART SEARCH
+    *}
     <table class="{#item_view_table#}" id="item_view">
       <thead class="{#item_view_thead#}">
     		<tr>

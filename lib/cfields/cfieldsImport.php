@@ -7,9 +7,8 @@
  *
  * @package 	  TestLink
  * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2019, TestLink community 
+ * @copyright 	2005-2023, TestLink community 
  * @filesource  cfieldsImport.php
- * @link 		    http://www.teamst.org/index.php
  * @uses 		    config.inc.php
  *
  */
@@ -26,7 +25,7 @@ list($args,$gui,$cfield_mgr) = initEnv($db);
  
 switch( $args->doAction ) {
   case 'doImport':
-    $gui->file_check = doImport($db);
+    $gui->file_check = doImport($db,$cfield_mgr);
   break;  
     
   default:
@@ -51,18 +50,21 @@ function init_args()
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
-	$iParams = 
-    array("doAction" => array(tlInputParameter::STRING_N,0,50),
-          "tproject_id" => array(tlInputParameter::INT_N),
-          "tplan_id" => array(tlInputParameter::INT_N),                   
-	 				"export_filename" => array(tlInputParameter::STRING_N,0,100),
-	 				"goback_url" => array(tlInputParameter::STRING_N,0,2048));
+	$iParams = [
+    "doAction" => array(tlInputParameter::STRING_N,0,50),
+    "tproject_id" => array(tlInputParameter::INT_N),
+    "tplan_id" => array(tlInputParameter::INT_N),                   
+	 	"export_filename" => array(tlInputParameter::STRING_N,0,100),
+	 	"goback_url" => array(tlInputParameter::STRING_N,0,2048)
+  ];
 
 	R_PARAMS($iParams,$args);
 
   $context = new stdClass();
-  $k2ctx = array('tproject_id' => 0,
-                 'tplan_id' => 0);
+  $k2ctx = [
+    'tproject_id' => 0,
+    'tplan_id' => 0
+  ];
   $env = '';
   foreach ($k2ctx as $prop => $defa) {
     $context->$prop = $args->$prop;
@@ -84,9 +86,17 @@ function init_args()
 function doImport(&$dbHandler,&$cfield_mgr)
 {
 
-  $import_msg=array('ok' => array(), 'ko' => array());
-  $file_check=array('show_results' => 0, 'status_ok' => 0, 'msg' => '', 
-                    'filename' => '', 'import_msg' => $import_msg);
+  $import_msg = [
+    'ok' => [], 
+    'ko' => []
+  ];
+  $file_check = [
+    'show_results' => 0,
+    'status_ok' => 0, 
+    'msg' => '',
+    'filename' => '', 
+    'import_msg' => $import_msg
+  ];
   
   $key='targetFilename';
 	$dest = TL_TEMP_PATH . session_id(). "-import_cfields.tmp";

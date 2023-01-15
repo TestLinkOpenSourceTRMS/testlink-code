@@ -1,7 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource DataTables.inc.tpl
-@parameters DataTablesLengthMenu
+@param DataTablesSelector
+@param DataTablesLengthMenu
 
 
 

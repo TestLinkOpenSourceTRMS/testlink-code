@@ -47,8 +47,8 @@ var del_action=fRoot+'{$deleteAction}';
 {if $gui->tprojects != ''}
   {$ll = $tlCfg->gui->{$cfg_section}->pagination->length}
   {* Do not initialize in DataTables -> DataTablesSelector="" *}
-  {include file="DataTables.inc.tpl" DataTablesSelector="" DataTableslengthMenu=$ll}
-  {include file="DataTablesColumnFiltering.inc.tpl" DataTablesSelector="#item_view" DataTableslengthMenu=$ll}
+  {include file="DataTables.inc.tpl" DataTablesSelector="" DataTablesLengthMenu=$ll}
+  {include file="DataTablesColumnFiltering.inc.tpl" DataTablesSelector="#item_view" DataTablesLengthMenu=$ll}
 {/if}
 
 </head>

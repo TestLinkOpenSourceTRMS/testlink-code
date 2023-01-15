@@ -1,7 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource DataTablesColumnFiltering.inc.tpl
-@parameters DataTablesSelector,DataTablesLengthMenu
+@param DataTablesSelector
+@param DataTablesLengthMenu
 
 @see https://datatables.net/extensions/fixedheader/examples/options/columnFiltering.html
 

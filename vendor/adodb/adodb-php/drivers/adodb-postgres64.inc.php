@@ -22,19 +22,11 @@
 // security - hide paths
 if (!defined('ADODB_DIR')) die();
 
-function adodb_addslashes($s)
-{
-	$len = strlen($s);
-	if ($len == 0) return "''";
-	if (strncmp($s,"'",1) === 0 && substr($s,$len-1) == "'") return $s; // already quoted
-
-	return "'".addslashes($s)."'";
-}
-
 class ADODB_postgres64 extends ADOConnection{
 	var $databaseType = 'postgres64';
 	var $dataProvider = 'postgres';
 	var $hasInsertID = true;
+	/** @var bool|resource */
 	var $_resultid = false;
 	var $concat_operator='||';
 	var $metaDatabasesSQL = "select datname from pg_database where datname not in ('template0','template1') order by 1";
@@ -177,7 +169,7 @@ class ADODB_postgres64 extends ADOConnection{
 
 
 	/**
-	 * @return true/false
+	 * @return bool
 	 */
 	function BeginTrans()
 	{
@@ -387,7 +379,7 @@ class ADODB_postgres64 extends ADOConnection{
 	function BlobDelete( $blob )
 	{
 		pg_query($this->_connectionID, 'begin');
-		$result = @pg_lo_unlink($blob);
+		$result = @pg_lo_unlink($this->_connectionID, $blob);
 		pg_query($this->_connectionID, 'commit');
 		return( $result );
 	}
@@ -682,35 +674,57 @@ class ADODB_postgres64 extends ADOConnection{
 		return $indexes;
 	}
 
-	// returns true or false
-	//
-	// examples:
-	// 	$db->Connect("host=host1 user=user1 password=secret port=4341");
-	// 	$db->Connect('host1','user1','secret');
-	function _connect($str,$user='',$pwd='',$db='',$ctype=0)
+	/**
+	 * Connect to a database.
+	 *
+	 * Examples:
+	 *   $db->Connect("host=host1 user=user1 password=secret port=4341");
+	 *   $db->Connect('host1:4341', 'user1', 'secret');
+	 *
+	 * @param string $str  pg_connect() Connection string or Hostname[:port]
+	 * @param string $user (Optional) The username to connect as.
+	 * @param string $pwd  (Optional) The password to connect with.
+	 * @param string $db   (Optional) The name of the database to start in when connected.
+	 * @param int $ctype   Connection type
+	 * @return bool|null   True if connected successfully, false if connection failed, or
+	 *                     null if the PostgreSQL extension is not loaded.
+	 */
+	function _connect($str, $user='', $pwd='', $db='', $ctype=0)
 	{
-		if (!function_exists('pg_connect')) return null;
+		if (!function_exists('pg_connect')) {
+			return null;
+		}
 
 		$this->_errorMsg = false;
 
+		// If $user, $pwd and $db are all null, then $str is a pg_connect()
+		// connection string. Otherwise we expect it to be a hostname,
+		// with optional port separated by ':'
 		if ($user || $pwd || $db) {
-			$user = adodb_addslashes($user);
-			$pwd = adodb_addslashes($pwd);
-			if (strlen($db) == 0) $db = 'template1';
-			$db = adodb_addslashes($db);
-			if ($str)  {
-				$host = explode(":", $str);
-				if ($host[0]) $str = "host=".adodb_addslashes($host[0]);
-				else $str = '';
-				if (isset($host[1])) $str .= " port=$host[1]";
-				else if (!empty($this->port)) $str .= " port=".$this->port;
+			// Hostname & port
+			if ($str) {
+				$host = explode(':', $str);
+				if ($host[0]) {
+					$conn['host'] = $host[0];
+				}
+				if (isset($host[1])) {
+					$conn['port'] = (int)$host[1];
+				} elseif (!empty($this->port)) {
+					$conn['port'] = $this->port;
+				}
 			}
-			if ($user) $str .= " user=".$user;
-			if ($pwd)  $str .= " password=".$pwd;
-			if ($db)   $str .= " dbname=".$db;
-		}
+			$conn['user'] = $user;
+			$conn['password'] = $pwd;
+			// @TODO not sure why we default to 'template1', pg_connect() uses the username when dbname is empty
+			$conn['dbname'] = $db ?: 'template1';
 
-		//if ($user) $linea = "user=$user host=$linea password=$pwd dbname=$db port=5432";
+			// Generate connection string
+			$str = '';
+			foreach ($conn as $param => $value) {
+				// Escaping single quotes and backslashes per pg_connect() documentation
+				$str .= $param . "='" . addcslashes($value, "'\\") . "' ";
+			}
+		}
 
 		if ($ctype === 1) { // persistent
 			$this->_connectionID = pg_pconnect($str);
@@ -795,8 +809,7 @@ class ADODB_postgres64 extends ADOConnection{
 			if ($execp) $exsql = "EXECUTE $plan ($execp)";
 			else $exsql = "EXECUTE $plan";
 
-
-			$rez = @pg_execute($this->_connectionID,$exsql);
+			$rez = @pg_query($this->_connectionID, $exsql);
 			if (!$rez) {
 			# Perhaps plan does not exist? Prepare/compile plan.
 				$params = '';
@@ -820,14 +833,14 @@ class ADODB_postgres64 extends ADOConnection{
 				}
 				$s = "PREPARE $plan ($params) AS ".substr($sql,0,strlen($sql)-2);
 				//adodb_pr($s);
-				$rez = pg_execute($this->_connectionID,$s);
+				$rez = pg_query($this->_connectionID, $s);
 				//echo $this->ErrorMsg();
 			}
 			if ($rez)
-				$rez = pg_execute($this->_connectionID,$exsql);
+				$rez = pg_query($this->_connectionID, $exsql);
 		} else {
 			//adodb_backtrace();
-			$rez = pg_query($this->_connectionID,$sql);
+			$rez = pg_query($this->_connectionID, $sql);
 		}
 		// check if no data returned, then no need to create real recordset
 		if ($rez && pg_num_fields($rez) <= 0) {
@@ -1007,8 +1020,20 @@ class ADORecordSet_postgres64 extends ADORecordSet{
 		return pg_unescape_bytea($blob);
 	}
 
-	function _fixblobs()
+	/**
+	 * Fetches and prepares the RecordSet's fields.
+	 *
+	 * Fixes the blobs if there are any.
+	 */
+	protected function _prepFields()
 	{
+		$this->fields = @pg_fetch_array($this->_queryID,$this->_currentRow,$this->fetchMode);
+
+		// Check prerequisites and bail early if we do not have what we need.
+		if (!isset($this->_blobArr) || $this->fields === false) {
+			return;
+		}
+
 		if ($this->fetchMode == PGSQL_NUM || $this->fetchMode == PGSQL_BOTH) {
 			foreach($this->_blobArr as $k => $v) {
 				$this->fields[$k] = ADORecordSet_postgres64::_decode($this->fields[$k]);
@@ -1027,9 +1052,8 @@ class ADORecordSet_postgres64 extends ADORecordSet{
 		if (!$this->EOF) {
 			$this->_currentRow++;
 			if ($this->_numOfRows < 0 || $this->_numOfRows > $this->_currentRow) {
-				$this->fields = @pg_fetch_array($this->_queryID,$this->_currentRow,$this->fetchMode);
-				if (is_array($this->fields) && $this->fields) {
-					if (isset($this->_blobArr)) $this->_fixblobs();
+				$this->_prepfields();
+				if ($this->fields !== false) {
 					return true;
 				}
 			}
@@ -1041,15 +1065,12 @@ class ADORecordSet_postgres64 extends ADORecordSet{
 
 	function _fetch()
 	{
-
-		if ($this->_currentRow >= $this->_numOfRows && $this->_numOfRows >= 0)
+		if ($this->_currentRow >= $this->_numOfRows && $this->_numOfRows >= 0) {
 			return false;
+		}
 
-		$this->fields = @pg_fetch_array($this->_queryID,$this->_currentRow,$this->fetchMode);
-
-		if ($this->fields && isset($this->_blobArr)) $this->_fixblobs();
-
-		return (is_array($this->fields));
+		$this->_prepfields();
+		return $this->fields !== false;
 	}
 
 	function _close()
@@ -1069,7 +1090,13 @@ class ADORecordSet_postgres64 extends ADORecordSet{
 			$t = $fieldobj->type;
 			$len = $fieldobj->max_length;
 		}
-		switch (strtoupper($t)) {
+
+		$t = strtoupper($t);
+
+		if (array_key_exists($t,$this->connection->customActualTypes))
+			return  $this->connection->customActualTypes[$t];
+
+		switch ($t) {
 				case 'MONEY': // stupid, postgres expects money to be a string
 				case 'INTERVAL':
 				case 'CHAR':
@@ -1081,6 +1108,7 @@ class ADORecordSet_postgres64 extends ADORecordSet{
 				case 'CIDR':
 				case 'INET':
 				case 'MACADDR':
+				case 'UUID':
 					if ($len <= $this->blobSize) return 'C';
 
 				case 'TEXT':
@@ -1120,6 +1148,12 @@ class ADORecordSet_postgres64 extends ADORecordSet{
 				case 'OID':
 				case 'SERIAL':
 					return 'R';
+
+				case 'NUMERIC':
+				case 'DECIMAL':
+				case 'FLOAT4':
+				case 'FLOAT8':
+					return 'N';
 
 				default:
 					return ADODB_DEFAULT_METATYPE;

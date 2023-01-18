@@ -13,7 +13,7 @@ Purpose: smarty template - Edit a platform
 
 {lang_get var="labels"
           s="warning,warning_empty_platform,show_event_history,
-             th_platform,th_notes,btn_cancel,on_design,on_exec"}
+             th_platform,th_notes,btn_cancel,on_design,on_exec,platform_open_for_exec"}
 
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
@@ -30,10 +30,10 @@ Purpose: smarty template - Edit a platform
   <div class="workBack">
   
   <div>
-	{if $gui->mgt_view_events eq "yes" && $gui->platformID > 0}
+	{if $gui->mgt_view_events eq "yes" && $gui->platform_id > 0}
 			<img style="margin-left:5px;" class="clickable" 
 			     src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
-			     onclick="showEventHistoryFor('{$gui->platformID}','platforms')" 
+			     onclick="showEventHistoryFor('{$gui->platform_id}','platforms')" 
 			     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 	{/if}
   
@@ -67,6 +67,14 @@ Purpose: smarty template - Edit a platform
                 {if $gui->enable_on_execution eq 1} checked {/if} />
           </td>
       </tr>
+
+      <tr><th style="background:none;">{$labels.platform_open_for_exec}</th>
+          <td><input type="checkbox" value="1" 
+                name="is_open" id="is_open"  
+                {if $gui->is_open eq 1} checked {/if} />
+          </td>
+      </tr>
+
   	</table>
   	<div class="groupBtn">	
 	  	<input type="hidden" id="doAction" name="doAction" value="" />

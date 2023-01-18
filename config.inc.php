@@ -18,7 +18,7 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2020, TestLink community
+ * @copyright   2005-2023, TestLink community
  * @link        http://www.testlink.org
  *
  *
@@ -67,6 +67,12 @@ $tlCfg->reqTCLinks = new stdClass();
 
 
 $tlCfg->keywords = new stdClass();
+
+$tlCfg->keywords->annotations = [
+  "@TestCaseSpecDisplay:"
+];
+
+
 $tlCfg->keywords->onDeleteCheckFrozenTCVersions = TRUE;
 $tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
 
@@ -82,6 +88,15 @@ $tlCfg->keywords->byTestProject = array();
 $tlCfg->keywords->headsUpTSuiteOnExec = 'CMD_OPEN_ON_EXEC';
 
 $tlCfg->accessWithoutLogin = array();
+
+
+$tlCfg->platforms = new stdClass();
+$tlCfg->platforms->allowedOnAssign = [
+  'enable_on_design' => false, 
+  'enable_on_execution' => true,
+  'is_open' => true
+];
+
 
 
 /** @uses database access definition (generated automatically by TL installer) */ 
@@ -2010,8 +2025,7 @@ Used when creating a Test Suite using copy
 and you have choose  $g_action_on_duplicate_name = 'generate_new'
 if the name exist.
 */
-$g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
-
+$g_prefix_name_for_copy = date("Y-m-d-H:i:s", time());
 
 
 /** 

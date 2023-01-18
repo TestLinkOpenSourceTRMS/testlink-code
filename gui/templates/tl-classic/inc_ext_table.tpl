@@ -28,9 +28,19 @@ var checkedImg = "{$tlImages.checked}";
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
 
+
+/*
+*/
+function execNotesRenderer(item)
+{
+  item.cssClass = item.cssClass || "";
+  return "<span class=\""+item.cssClass+"\">" + item.text + "</span>";
+}
+
+
 /*
  statusRenderer() 
- translate this code to a localized string and applies formatting
+ translate this code to a localized string and applies formatting ???
 */
 function statusRenderer(item)
 {
@@ -74,9 +84,13 @@ function oneZeroImageRenderer(val) {
   }
 }
 
-
-function columnWrap(val) {
-  return '<div style="white-space:normal !important; -moz-user-select: text; -webkit-user-select: text;">'+ val +'</div>';
+/**
+ *
+ */
+function columnWrap(textToDisplay) {
+  var divOpen = '<div style="white-space:normal !important;' + 
+                '-moz-user-select: text; -webkit-user-select: text;">'
+  return (divOpen + textToDisplay +'</div>');
 }
 
 // Functions for MultiSort

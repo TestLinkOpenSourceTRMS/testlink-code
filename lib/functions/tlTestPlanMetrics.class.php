@@ -2061,7 +2061,7 @@ class tlTestPlanMetrics extends testplan
     // Additional Execution fields
     $moreExecFields = "";
     if ($my['opt']['getExecutionNotes']) {
-      $moreExecFields .= "E.notes AS execution_notes,";
+      $moreExecFields .= "COALESCE(E.notes,'') AS execution_notes,";
     }  
     
     if ($my['opt']['getTester']) {
@@ -2406,7 +2406,7 @@ class tlTestPlanMetrics extends testplan
         " AND E.id IS NULL " .
         " AND B.id IN ({$builds->inClause}) "; 
 
-        $dx = $this->db->get_recordset($sql); 
+        $dx = (array)$this->db->get_recordset($sql); 
 
         $l2do = count($dx);
         $loop2do = count($dummy);

@@ -1,0 +1,22 @@
+# EditorConfig file for ADOdb
+# https://editorconfig.org/
+
+root = true
+
+# Default file settings
+[*]
+indent_style = tab
+indent_size = 4
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+charset = utf-8
+
+# Python build scripts
+[*.py]
+indent_style = space
+
+# Markdown files
+[*.md]
+indent_style = space
+trim_trailing_whitespace = false

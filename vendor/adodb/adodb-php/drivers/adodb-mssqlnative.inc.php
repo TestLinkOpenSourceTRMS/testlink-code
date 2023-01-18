@@ -719,7 +719,7 @@ class ADODB_mssqlnative extends ADOConnection {
 		return $indexes;
 	}
 
-	function MetaForeignKeys($table, $owner=false, $upper=false)
+	public function metaForeignKeys($table, $owner = '', $upper = false, $associative = false)
 	{
 		global $ADODB_FETCH_MODE;
 
@@ -1007,6 +1007,37 @@ class ADODB_mssqlnative extends ADOConnection {
 		}
 
 		return $metaProcedures;
+	}
+
+	/**
+	* An SQL Statement that adds a specific number of
+	* days or part to local datetime
+	*
+	* @param float $dayFraction
+	* @param string $date
+	*
+	* @return string
+	*/
+	public function offsetDate($dayFraction, $date = false)
+	{
+		if (!$date)
+			/*
+			* Use GETDATE() via systTimestamp;
+			*/
+			$date = $this->sysTimeStamp;
+
+		/*
+		* seconds, number of seconds, date base
+		*/
+		$dateFormat = "DATEADD(s, %s, %s)";
+
+		/*
+		* Adjust the offset back to seconds
+		*/
+		$fraction = $dayFraction * 24 * 3600;
+
+		return sprintf($dateFormat,$fraction,$date);
+
 	}
 
 }

@@ -41,7 +41,13 @@ var del_action=fRoot+'{$deleteAction}';
 
 {if $tlCfg->gui->projectView->pagination->enabled}
   {$menuLen = $tlCfg->gui->projectView->pagination->length}
-  {include file="DataTables.inc.tpl"}
+  {* 20220824 
+    We need to provide 
+       DataTablesOID and she must be empty To avoid issues due to do initialization multiple times
+       We want to do an special initialization here instead of using
+       the standard one provided inside DataTables.inc.tpl
+  *}
+  {include file="DataTables.inc.tpl" DataTablesOID=""}
 
   <script>
   $(document).ready(function() {

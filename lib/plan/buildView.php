@@ -56,7 +56,7 @@ function initEnv(&$dbHandler)
   // To create the CF columns we need to get the linked CF
   $availableCF = [];
   if (!is_null($gui->buildSet)) {
-    $availableCF = $build_mgr->get_linked_cfields_at_design(current($gui->buildSet),$gui->tproject_id);
+    $availableCF = (array)$build_mgr->get_linked_cfields_at_design(current($gui->buildSet),$gui->tproject_id);
   }
   $hasCF = count($availableCF);
   $gui->cfieldsColumns = null; 
@@ -85,7 +85,7 @@ function initEnv(&$dbHandler)
     }
   }
   $localeDateFormat = config_get('locales_date_format');
-  $localeDateFormat = $localeDateFormat[$args->user->locale];
+  $localeDateFormat = $localeDateFormat[$_SESSION['currentUser']->locale];
 
   foreach($gui->buildSet as $elemBuild) {
     // ---------------------------------------------------------------------------------------------  

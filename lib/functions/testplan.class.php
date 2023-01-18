@@ -1618,11 +1618,8 @@ class testplan extends tlObjectWithAttachments
   
     Note: test urgency is set to default in the new Test plan (not copied)
     
-    @internal revisions
-    20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
-    20101114 - franciscom - BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
   */
-  private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping)
+  private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -1968,7 +1965,7 @@ class testplan extends tlObjectWithAttachments
 
     $the_sql[]="DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id ".
            "IN ($execIDSetSQL)";
-    
+    $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps_wip']} WHERE testplan_id={$id}";
     $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps']} WHERE execution_id ".
            "IN ($execIDSetSQL) ";           
     $the_sql[]="DELETE FROM {$this->tables['executions']} WHERE testplan_id={$id}";

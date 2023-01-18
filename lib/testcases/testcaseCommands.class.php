@@ -9,7 +9,7 @@
  * @filesource  testcaseCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2022, TestLink community 
  * @link        http://www.testlink.org/
  *
  **/
@@ -157,10 +157,13 @@ class testcaseCommands {
       }
     }
 
-    $gopt = array('output' => 'full_without_steps',
-                  'renderGhost' => true,
-                  'renderImageInline' => true,
-                  'renderVariables' => true); 
+    $gopt = [
+      'output' => 'full_without_steps',
+      'renderGhost' => true,
+      'renderImageInline' => true,
+      'renderVariables' => true,
+      'tproject_id' => intval($argsObj->testproject_id)
+    ]; 
 
     $tcaseInfo = $this->tcaseMgr->get_by_id(
       $greenCard['tcase_id'],$greenCard['tcversion_id'],null,$gopt);
@@ -344,25 +347,42 @@ class testcaseCommands {
 
     keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
 
-    $gopt = array('renderImageInline' => false, 'renderImageInline' => false, 
-                  'caller' => __METHOD__);
+    $gopt = [
+      'renderImageInline' => false, 
+      'renderImageInline' => false, 
+      'caller' => __METHOD__
+    ];
     
     $tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,null,$gopt);
-    foreach($oWebEditorKeys as $key)
-    {
+    foreach($oWebEditorKeys as $key) {
       $guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
       $argsObj->$key = $guiObj->$key;
     }
      
     $cf_smarty = null;
     $cfPlaces = $this->tcaseMgr->buildCFLocationMap();
+
+    // To skip in an elegant way??
+    $hideCode = $cfPlaces['hide_because_is_used_as_variable']['location'];
+    unset($cfPlaces['hide_because_is_used_as_variable']);
+
     foreach($cfPlaces as $locationKey => $locationFilter) { 
+      switch($locationKey) {
+        case 'standard_location':
+          $std = $locationFilter['location'];
+          $locationFilter['location'] = [
+            $std, 
+            $hideCode
+          ];
+        break;  
+      }
+
       $cf_smarty[$locationKey] = 
         $this->tcaseMgr->html_table_of_custom_field_inputs(
-          $argsObj->tcase_id,null,'design','',
-          $argsObj->tcversion_id,null,null,$locationFilter);
+                            $argsObj->tcase_id,null,'design','',
+                            $argsObj->tcversion_id,null,null,$locationFilter);
     }  
-    
+
     $templateCfg = templateConfiguration('tcEdit');
     $guiObj->cf = $cf_smarty;
     $guiObj->tc=$tc_data[0];
@@ -1161,7 +1181,7 @@ class testcaseCommands {
     $guiObj = $this->initGuiBean($argsObj);
     $identity = $this->buildIdentity($argsObj);
 
-    $guiObj->uploadOp = $argsObj->uploadOp;
+    $guiObj->uploadOp = property_exists($argsObj,'uploadOp') ? $argsObj->uploadOp : '';
 
     $guiObj->viewerArgs=array();
     $guiObj->refreshTree = ($argsObj->refreshTree 
@@ -1421,9 +1441,10 @@ class testcaseCommands {
     $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
 
     $tcExternalID = $guiObj->testcase['tc_external_id'];
-    if( null != $argsObj->free_keywords || 1==1) {
-      $this->tcaseMgr->addKeywords($guiObj->tcase_id,$guiObj->tcversion_id,
-        $argsObj->free_keywords);
+    if( null != $argsObj->free_keywords && count($argsObj->free_keywords) > 0) {
+      $this->tcaseMgr->addKeywords($guiObj->tcase_id,
+                                   $guiObj->tcversion_id,
+                                   $argsObj->free_keywords);
 
       $info = $this->tprojectMgr->get_by_id($this->tproject_id);
       $cfx = config_get('keywords')->byTestProject;

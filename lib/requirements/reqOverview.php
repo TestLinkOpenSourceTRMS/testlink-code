@@ -225,7 +225,7 @@ if(count($gui->reqIDs) > 0)  {
             $verbose_type = $req_mgr->cfield_mgr->custom_field_types[$cf['type']];
             $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
             if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 ) {
-              $value = strftime( $cfg->$verbose_type . " ({$labels['week_short']} %W)" , $value);  #fix typo: missing 's' in labels
+              $value = @strftime( $cfg->$verbose_type . " ({$labels['week_short']} %W)" , $value);  #fix typo: missing 's' in labels
             }
             $result[] = $value;
           }

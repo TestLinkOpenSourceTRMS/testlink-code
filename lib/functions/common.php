@@ -13,7 +13,7 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2019 TestLink community 
+ * @Copyright   2005,2022 TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -837,6 +837,9 @@ function getFileUploadErrorMessage($fInfo,$tlInfo=null)
 
   if (null == $msg && null != $tlInfo && $tlInfo->statusOK == false) {
     $msg = lang_get('FILE_UPLOAD_' . $tlInfo->statusCode);
+    if( property_exists($tlInfo,'msg') ) {
+      $msg = $tlInfo->msg;
+    }
   }
   return $msg;
 }

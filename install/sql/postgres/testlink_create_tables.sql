@@ -701,6 +701,7 @@ CREATE TABLE /*prefix*/platforms (
   notes text NOT NULL,
   enable_on_design INT2 NOT NULL DEFAULT '0',
   enable_on_execution INT2 NOT NULL DEFAULT '1',
+  is_open INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX /*prefix*/platforms_uidx1 ON /*prefix*/platforms (testproject_id,name);

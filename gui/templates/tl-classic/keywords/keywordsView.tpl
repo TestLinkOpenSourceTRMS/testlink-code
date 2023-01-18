@@ -31,13 +31,17 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
   </script>
 {/if}
 
-{* -------------------------------------------------------------------------- *}
-{if $tlCfg->gui->keywordsView->pagination->enabled}
-  {$menuLen = $tlCfg->gui->keywordsView->pagination->length}
-  {include file="DataTables.inc.tpl"}
-
-  {include file="DataTablesColumnFiltering.inc.tpl"}
-{/if}
+{* ------------------------------------------------------------------------------------------------ *}
+{* 
+   IMPORTANT DEVELOPMENT NOTICE 
+   Because we are using also DataTablesColumnFiltering
+   We MUST NOT Initialize the Data Table on DataTables.inc.tpl.
+   We got this effect with DataTablesOID=""
+*}
+{include file="DataTables.inc.tpl" DataTablesOID=""}
+{include file="DataTablesColumnFiltering.inc.tpl"
+         DataTablesLengthMenu=$tlCfg->gui->keywordsView->pagination->length
+}
 {* ------------------------------------------------------------------------------------------------ *}
 
 {include file="bootstrap.inc.tpl"}

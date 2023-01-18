@@ -7568,14 +7568,14 @@ class testcase extends tlObjectWithAttachments {
   public function getRelations($id) {
     $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
 
-    $safeID = intval($id);
-
     $relSet = array();
     $relSet['num_relations'] = 0;
 
     $dummy = $this->get_by_id($id,self::LATEST_VERSION,null,
                               array('output' => 'essential','getPrefix' => true,
                                     'caller' => __FUNCTION__));
+    // Get the TC version ID
+    $versionID = intval($dummy[0]['id']);
 
     $relSet['item'] = (null != $dummy) ? current($dummy) : null;
     $relSet['relations'] = array();
@@ -7584,7 +7584,7 @@ class testcase extends tlObjectWithAttachments {
 
     $sql = " $debugMsg SELECT id, source_id, destination_id, relation_type, author_id, creation_ts " .
            " FROM {$this->tables['testcase_relations']} " .
-           " WHERE source_id=$safeID OR destination_id=$safeID " .
+           " WHERE source_id=$versionID OR destination_id=$versionID " .
            " ORDER BY id ASC ";
 
     $relSet['relations']= $this->db->get_recordset($sql);
@@ -7602,13 +7602,13 @@ class testcase extends tlObjectWithAttachments {
 
             $type_localized = 'destination_localized';
             $other_key = 'source_id';
-            if ($id == $rel['source_id'])
+            if ($versionID == $rel['source_id'])
             {
               $type_localized = 'source_localized';
               $other_key = 'destination_id';
             }
             $relSet['relations'][$key]['type_localized'] = $relSet['relations'][$key][$type_localized];
-            $otherItem = $this->get_by_id($rel[$other_key],self::LATEST_VERSION,null,
+            $otherItem = $this->get_by_id(null,$rel[$other_key],null,
                                           array('output' => 'full_without_users','getPrefix' => true));
 
 
@@ -7993,24 +7993,29 @@ class testcase extends tlObjectWithAttachments {
       // - child_of
       // - depends_on
       // where item is DESTINATION and NOT SOURCE
-      if( $relation['source_id'] == $item['testcase_id'])
+      if( $relation['source_id'] == $item['id'])
       {
         $ele['source_ext_id'] = $item['fullExternalID'];
+        $ele['source_version'] = $item['version'];
         $ele['destination_ext_id'] = $relation['related_tcase']['fullExternalID'];
+        $ele['destination_version'] = $relation['related_tcase']['version'];
       }
       else
       {
         // SWAP
         $ele['source_ext_id'] = $relation['related_tcase']['fullExternalID'];
+        $ele['source_version'] = $relation['related_tcase']['version'];
         $ele['destination_ext_id'] = $item['fullExternalID'];
+        $ele['destination_version'] = $item['version'];
       }
       $ele['relation_type'] = $relation['relation_type'];
 
-      $info = array("||SOURCE||" => "source_ext_id","||DESTINATION||" => "destination_ext_id",
+      $info = array("||SOURCE||" => "source_ext_id", "||SOURCE_VERSION||" => "source_version",
+                    "||DESTINATION||" => "destination_ext_id", "||DESTINATION_VERSION||" => "destination_version",
                     "||TYPE||" => "relation_type");
 
-      $elemTpl = "\t" .   "<relation>" . "\n\t\t" . "<source>||SOURCE||</source>" ;
-      $elemTpl .= "\n\t\t" . "<destination>||DESTINATION||</destination>";
+      $elemTpl = "\t" .   "<relation>" . "\n\t\t" . "<source version=\"||SOURCE_VERSION||\">||SOURCE||</source>" ;
+      $elemTpl .= "\n\t\t" . "<destination version=\"||DESTINATION_VERSION||\">||DESTINATION||</destination>";
       $elemTpl .=  "\n\t\t" . "<type>||TYPE||</type>" . "\n\t" . "</relation>" . "\n";
 
       $work[] = $ele;

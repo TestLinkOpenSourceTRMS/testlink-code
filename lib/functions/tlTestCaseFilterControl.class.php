@@ -557,11 +557,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
         ($this->args->feature != 'tc_exec_assignment' && $this->args->feature != 'test_urgency') ) {
       $this->settings['setting_build'] = [
         "items" => null,
-        "selected" -1
+        "selected" => -1
       ];
       $this->settings['setting_platform'] = [
         "items" => null,
-        "selected" -1
+        "selected" => -1
       ];
     }
   

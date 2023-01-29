@@ -41,10 +41,17 @@ var del_action=fRoot+'{$deleteAction}';
    We MUST NOT Initialize the Data Table on DataTables.inc.tpl.
    We got this effect with DataTablesOID=""
 *}
-{include file="DataTables.inc.tpl" DataTablesOID=""}
-{include file="DataTablesColumnFiltering.inc.tpl"
-         DataTablesLengthMenu=$tlCfg->gui->planView->pagination->length
-}
+
+  {* Data Tables Config Area - BEGIN*}
+  {$gridHTMLID="item_view"}
+  {* Do not initialize in DataTables.inc.tpl -> DataTablesSelector="" *}
+  {include file="DataTables.inc.tpl" DataTablesSelector=""}
+  {include 
+    file="DataTablesColumnFiltering.inc.tpl" 
+    DataTablesSelector="#{$gridHTMLID}" 
+    DataTablesLengthMenu=$tlCfg->gui->{$cfg_section}->pagination->length
+  }
+  {* Data Tables Config Area - End*}
 {* ------------------------------------------------------------------------------------------------ *}
 
 
@@ -89,7 +96,7 @@ var del_action=fRoot+'{$deleteAction}';
   class="{$noSortableColumnClass}"  -> sortable.js
   *}
 
-  <table id='item_view' class="table table-bordered">
+  <table id="{$gridHTMLID}" class="table table-bordered">
     <thead class="thead-dark">
     <tr>
       <th data-draw-filter="smartsearch">{$tlImages.toggle_api_info}{$labels.testplan_th_name}</th>       

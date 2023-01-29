@@ -44,10 +44,16 @@ var del_action=fRoot+'{$deleteAction}';
    We MUST NOT Initialize the Data Table on DataTables.inc.tpl.
    We got this effect with DataTablesOID=""
 *}
-{include file="DataTables.inc.tpl" DataTablesOID=""}
-{include file="DataTablesColumnFiltering.inc.tpl"
-         DataTablesLengthMenu=$tlCfg->gui->buildView->pagination->length
-}
+  {* Data Tables Config Area - BEGIN*}
+  {$gridHTMLID="item_view"}
+  {* Do not initialize in DataTables.inc.tpl -> DataTablesSelector="" *}
+  {include file="DataTables.inc.tpl" DataTablesSelector=""}
+  {include 
+    file="DataTablesColumnFiltering.inc.tpl" 
+    DataTablesSelector="#{$gridHTMLID}" 
+    DataTablesLengthMenu=$tlCfg->gui->{$cfg_section}->pagination->length
+  }
+  {* Data Tables Config Area - End*}
 {* ------------------------------------------------------------------------------------------------ *}
 
 
@@ -80,7 +86,7 @@ var del_action=fRoot+'{$deleteAction}';
 
 
     {* table id MUST BE item_view to use show/hide API info *}
-  	<table id="item_view" class="table table-bordered no-sortable">
+  	<table id="{$gridHTMLID}" class="table table-bordered no-sortable">
       <thead class="thead-dark">
     		<tr>
     			<th data-draw-filter="smartsearch">{$tlImages.toggle_api_info}{$labels.th_title}</th>

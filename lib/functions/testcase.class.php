@@ -6806,10 +6806,10 @@ class testcase extends tlObjectWithAttachments {
     $my['opt'] = array_merge($my['opt'],(array)$options);
     $safeContext = $execContext;
     $safeIdentity = $identity;
-    foreach($safeContext as &$ele)
-    {
+    foreach($safeContext as &$ele) {
       $ele = intval($ele);
     }
+
     foreach($safeIdentity as &$ele)
     {
       $ele = intval($ele);
@@ -6817,6 +6817,9 @@ class testcase extends tlObjectWithAttachments {
 
     // dammed names!!!
     $safeContext['tplan_id'] = isset($safeContext['tplan_id']) ? $safeContext['tplan_id'] : $safeContext['testplan_id'];
+    if ($safeContext['platform_id'] < 0) {
+      $safeContext['platform_id'] = 0;
+    }
 
 
     // we have to manage following situations
@@ -6834,6 +6837,7 @@ class testcase extends tlObjectWithAttachments {
       $addWhereLEX = " AND H2O.parent_id = " . $safeIdentity['id'];
       $addWhere = " AND NHTC.id = " . $safeIdentity['id'];
     }
+
 
     $sqlLEX = ' SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id,' .
               ' MAX(EE.id) AS id ' .

@@ -582,6 +582,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 <script>
 jQuery( document ).ready(function() {
   clipboard = new Clipboard('.clip');
+
+  /* Chosen Config */
+  jQuery(".chosen-select").chosen({ width: "200%" , allow_single_deselect: true, search_contains: true});
+ jQuery('select[data-cfield="list"]').chosen({ width: "200%" , allow_single_deselect: true, search_contains: true});
 });
 </script>
 <script language="JavaScript" src="gui/javascript/execSetResults.js" type="text/javascript"></script>

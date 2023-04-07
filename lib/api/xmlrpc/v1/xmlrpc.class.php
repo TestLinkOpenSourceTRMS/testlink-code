@@ -292,10 +292,12 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $this->args = $args;
 
         if(isset( $this->args[self::$testProjectNameParamName] ) && ! isset( $this->args[self::$testProjectIDParamName] )) {
-            $tprojMgr = new testproject( $this->dbObj );
             $name = trim( $this->args[self::$testProjectNameParamName] );
-            $info = current( $this->tprojectMgr->get_by_name( $name ) );
-            $this->args[self::$testProjectIDParamName] = $info['id'];
+            $projects = $this->tprojectMgr->get_by_name( $name );
+            if (! is_null( $projects )) {
+                $info = current( $projects );
+                $this->args[self::$testProjectIDParamName] = $info['id'];
+            }
         }
     }
 

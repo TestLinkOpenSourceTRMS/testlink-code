@@ -10,7 +10,7 @@
  * @filesource  tcSearch.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2022, TestLink community 
+ * @copyright   2007-2023, TestLink community 
  * @link        http://www.testlink.org/
  *
  **/
@@ -68,17 +68,31 @@ if ($args->tproject_id && $args->doAction == 'doSearch') {
   else {
     $tproject_mgr->get_all_testcases_id($args->tproject_id,$a_tcid);
 
-    if(!is_null($a_tcid)) {
+    if(!is_null($a_tcid) && is_array($a_tcid) && count($a_tcid) > 0) {
+
+      // this can generate a long, long string in the IN CLAUSE
       $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$a_tcid) . ") ";
     }  
     else {
       // Force Nothing extracted, because test project 
       // has no test case defined 
       $emptyTestProject = true;
-      $filter['by_tc_id'] = " AND 1 = 0 ";
+      $filter['by_tc_id'] = " AND 1 = 0 /* Test Project Has NO Test Cases!! */";
     }  
   }
 
+  // Time to say good bye
+  if ($emptyTestProject) {
+    $gui->warning_msg = lang_get('empty_testproject');
+    $gui->drawSearchGui = 0;
+    $smarty->assign('gui',$gui);
+    $smarty->display($templateCfg->template_dir . $tpl);
+    exit();
+  }
+
+
+
+  // Go Ahead
   if($args->version) {
     $filter['by_version'] = " AND TCV.version = {$args->version} ";
   }
@@ -263,8 +277,7 @@ if($gui->doSearch)
   $gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
 }  
 
-if($gui->row_qty > 0)
-{ 
+if($gui->row_qty > 0) { 
   if ($map)
   {
     $tcase_mgr = new testcase($db);   
@@ -273,13 +286,7 @@ if($gui->row_qty > 0)
     $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
     $gui->resultSet = $map;
   }
-}
-else if ($emptyTestProject) 
-{
-  $gui->warning_msg = lang_get('empty_testproject');
-}
-else
-{
+} else{
   $gui->warning_msg = lang_get('no_records_found');
 }
 
@@ -290,7 +297,7 @@ if (!is_null($table))
   $gui->tableSet[] = $table;
 }
 
-
+$gui->drawSearchGui = 1;
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 

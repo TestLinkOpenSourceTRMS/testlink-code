@@ -24,7 +24,7 @@ $args = initArgs($db);
 $log = "/tmp/trace.log";
 if ($args->projectView) {
   file_put_contents($log, "\n in file: " . __FILE__,FILE_APPEND);
-  require_once('projectView.php');
+  require_once('project/projectView.php');
 } else {
   main($db,$args);
 }

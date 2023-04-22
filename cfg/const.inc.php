@@ -45,7 +45,8 @@ $ps = PATH_SEPARATOR;
 $p2functions = TL_ABS_PATH . 'lib' . $ds . 'functions' . $ds;
 $p2lib = TL_ABS_PATH . 'lib' . $ds;
 ini_set('include_path', ini_get('include_path') . $ps . '.' . 
-  $ps . $p2functions  . 
+  $ps . $p2functions  .
+  $ps . $p2lib . 
   $ps . $p2functions . 'oauth_providers' . $ds .   
   $ps . $p2lib . 'issuetrackerintegration' . $ds . 
   $ps . $p2lib . 'codetrackerintegration' . $ds . 

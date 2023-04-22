@@ -20,13 +20,13 @@ require_once("common.php");
 require_once("projectCommon.php");
 
 
-$log = "/tmp/trace.log";
-file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ ,FILE_APPEND);
+//$log = "/tmp/trace.log";
+//file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ ,FILE_APPEND);
 testlinkInitPage($db,false,false,"checkRights");
-file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ ,FILE_APPEND);
+//file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ ,FILE_APPEND);
 
 $tplCfg = templateConfiguration();
-file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__  . json_encode($tplCfg),FILE_APPEND);
+// file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__  . json_encode($tplCfg),FILE_APPEND);
 
 
 $tpl2launch = $tplCfg->default_template;
@@ -34,15 +34,16 @@ $tplDir = $tplCfg->template_dir;
 if ( $tpl2launch !==  'projectView.tpl') {
   $tpl2launch = 'projectView.tpl';
   $tplDir = 'project/';
-  file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ ,FILE_APPEND);
+  // file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ ,FILE_APPEND);
 } 
 
 $args = init_args();
 list($gui,$smarty) = initializeGui($db,$args);
 
-
+/*
 file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ .'$gui->tprojects > ' . json_encode($gui->tprojects),FILE_APPEND);
 file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ .'$gui->itemQty > ' . $gui->itemQty,FILE_APPEND);
+*/
 
 // we can arrive here because the user has deleted the latest test project in the system
 // in this situation we need to force the project edit feature
@@ -52,7 +53,7 @@ if ($gui->itemQty == 0)  {
   initGuiForCreate($db,$args,$gui);
 } 
 
-file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ . ' I will launch > ' . $tplDir . $tpl2launch,FILE_APPEND);
+// file_put_contents($log, "\n in file/line: " . __FILE__ . '/' . __LINE__ . ' I will launch > ' . $tplDir . $tpl2launch,FILE_APPEND);
 $smarty->assign('gui',$gui);
 
 $smarty->display($tplDir . $tpl2launch);
@@ -127,7 +128,7 @@ function initializeGui(&$dbHandler,&$argsObj) {
                'add_issuetracker' => true,
                'add_codetracker' => true, 
                'add_reqmgrsystem' => true);
-  $guiObj->tprojects = $tproject_mgr->get_accessible_for_user($argsObj->userID,$opt,$filters);
+  $guiObj->tprojects = (array)$tproject_mgr->get_accessible_for_user($argsObj->userID,$opt,$filters);
   $guiObj->pageTitle = lang_get('title_testproject_management');
   
   $cfg = getWebEditorCfg('testproject');
@@ -136,11 +137,6 @@ function initializeGui(&$dbHandler,&$argsObj) {
   $guiObj->itemQty = count($guiObj->tprojects);
   if($guiObj->itemQty > 0) {
     initIntegrations($guiObj->tprojects,$guiObj->itemQty,$tplEngine);
-
-    //echo '<pre>';
-    //var_dump($guiObj->tprojects);
-    //echo '</pre>';
-
   }  
 
   $guiObj->actions = $tproject_mgr->getViewActions($argsObj);

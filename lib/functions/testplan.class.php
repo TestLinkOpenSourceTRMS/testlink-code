@@ -9,7 +9,7 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2023, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  **/
@@ -7406,8 +7406,7 @@ class testplan extends tlObjectWithAttachments
   function setActive($id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = "/* $debugMsg */ " . "UPDATE {$this->tables['testplans']} SET active=1 WHERE id=" . intval($id);
-    $this->db->exec_query($sql); 
+    $this->setActiveField($id,1); 
   }
 
   /**
@@ -7416,7 +7415,24 @@ class testplan extends tlObjectWithAttachments
   function setInactive($id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = "/* $debugMsg */ " . "UPDATE {$this->tables['testplans']} SET active=0 WHERE id=" . intval($id); 
+    $this->setActiveField($id,0); 
+  }
+
+
+  /**
+   * helper
+   */
+  function setActiveField($id,$zeroOrOne)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    // https://laracasts.com/discuss/channels/laravel/convert-string-array-to-array-of-ints
+    $idSet = array_map('intval',(array)$id);
+    $value = $zeroOrOne > 0 ? 1 : 0;
+    $sql = "/* $debugMsg */ 
+            UPDATE {$this->tables['testplans']} 
+            SET active=$value 
+            WHERE id IN (" . implode(',',$idSet) . ") ";
     $this->db->exec_query($sql); 
   }
 

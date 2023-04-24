@@ -6,7 +6,7 @@
  * Manages test plans
  *
  * @package   TestLink
- * @copyright 2007-2020, TestLink community 
+ * @copyright 2007-2023, TestLink community 
  * @version   planEdit.php
  * @link      http://www.testlink.org/
  *
@@ -174,12 +174,20 @@ switch ($args->do_action) {
   break;
 
   case 'setActive':
-    $tplan_mgr->setActive($args->itemID);
-  break;
-
   case 'setInactive':
-    $tplan_mgr->setInactive($args->itemID);
+    $dynMethod = $args->do_action;
+    $tplan_mgr->$dynMethod($args->itemID);
   break;
+  
+  case 'setActiveBulk':
+  case 'setInactiveBulk':
+    if (count($args->tplan2use) > 0) {
+      $dynMethod = str_replace('Bulk','',$args->do_action);
+      $tplan_mgr->$dynMethod($args->tplan2use);
+    }
+  break;
+  
+
 
 }
 
@@ -198,6 +206,8 @@ switch ($args->do_action) {
   case "list":
   case 'setActive':
   case 'setInactive':
+  case 'setActiveBulk':
+  case 'setInactiveBulk':
     $do_display = true;
     $template = is_null($template) ? 'planView.tpl' : $template;
 
@@ -356,6 +366,7 @@ function init_args(&$dbH,&$tplanMgr)
                    "fileTitle" => array(tlInputParameter::STRING_N,0,100));
   R_PARAMS($iParams,$args);
 
+
   // For certain actions this is the plan we are working on
   switch($args->do_action) {
     case "do_delete":
@@ -372,6 +383,8 @@ function init_args(&$dbH,&$tplanMgr)
     case "do_create":
     case 'fileUpload':
     case 'deleteFile':
+    case 'setActiveBulk':
+    case 'setInactiveBulk':
       $checkItemID = false;    
     break;
   }
@@ -388,6 +401,11 @@ function init_args(&$dbH,&$tplanMgr)
 
   $args->user_id = intval($_SESSION['userID']);
   $args->user = $_SESSION['currentUser'];
+
+  $args->tplan2use = [];
+  if (isset($_REQUEST["tplan2use"])) {
+    $args->tplan2use = array_keys($_REQUEST["tplan2use"]);
+  }
 
   // ----------------------------------------------------------------
   // Feature Access Check

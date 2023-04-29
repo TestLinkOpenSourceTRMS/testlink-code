@@ -9,7 +9,7 @@
  * @filesource  testcaseCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2023, TestLink community 
  * @link        http://www.testlink.org/
  *
  **/
@@ -1431,9 +1431,8 @@ class testcaseCommands {
     $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
 
     $tcExternalID = $guiObj->testcase['tc_external_id'];
-    if( null != $argsObj->free_keywords || 1==1) {
-      $this->tcaseMgr->addKeywords($guiObj->tcase_id,$guiObj->tcversion_id,
-        $argsObj->free_keywords);
+    if( (null != $argsObj->free_keywords) && count($argsObj->free_keywords) > 0) {
+      $this->tcaseMgr->addKeywords($guiObj->tcase_id,$guiObj->tcversion_id,$argsObj->free_keywords);
 
       $info = $this->tprojectMgr->get_by_id($this->tproject_id);
       $cfx = config_get('keywords')->byTestProject;

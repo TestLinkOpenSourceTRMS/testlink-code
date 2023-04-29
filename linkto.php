@@ -86,10 +86,12 @@ if (!isset($_GET['load'])) {
         $gui->navbar_height = config_get('navbar_height');
         
         if( $args->tproject_id > 0) {
-          $gui->titleframe .= '&testproject=' . $args->tproject_id;
+          $gui->titleframe .= '&testproject=' . $args->tproject_id . 
+                              '&tproject_id=' . $args->tproject_id;
         } 
         $gui->title = lang_get('main_page_title');
         $gui->mainframe = 'linkto.php?' . buildLink($args);
+
         $smarty->assign('gui', $gui);
         $smarty->display('main.tpl');
       }  

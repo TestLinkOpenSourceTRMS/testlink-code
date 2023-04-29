@@ -12,9 +12,13 @@ Purpose: smarty template - view test case in test specification
 
 {* Configure Actions *}
 {$showMode=$gui->show_mode}
+
+{* Context is CRITIC *}
 {$tplanID=intval($gui->tplan_id)}
+{$tprojID=intval($gui->tproject_id)}
+
 {$deleteStepAction = "lib/testcases/tcEdit.php?show_mode=$showMode&doAction=doDeleteStep"}
-{$deleteStepAction = "$deleteStepAction&tplan_id=$tplanID&step_id="}
+{$deleteStepAction = "$deleteStepAction&tplan_id=$tplanID&tproject_id=$tprojID\&step_id="}
 
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>

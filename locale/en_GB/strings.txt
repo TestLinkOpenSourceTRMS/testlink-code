@@ -1629,8 +1629,8 @@ $TLS_start_date = 'Start Date';
 
 // ----- gui/templates/projectEdit.tpl -----
 $TLS_caption_edit_tproject = 'Edit %s';
-$TLS_caption_new_tproject = 'Create a new project';
-$TLS_create_from_existent_tproject = 'Create from existing Test Project?';
+$TLS_caption_new_tproject = 'Create a project';
+$TLS_create_from_existent_tproject = 'Create from existing one?';
 $TLS_testproject_color = 'Background color';
 $TLS_testproject_enable_automation = 'Test Automation (API keys)';
 $TLS_testproject_enable_inventory = 'Inventory';
@@ -4180,4 +4180,8 @@ $TLS_btn_enable_disable_selected = 'Enable/Disable Selected Platforms';
 $TLS_activate_testplans = "Activate";
 $TLS_inactivate_testplans = "Inactivate";
 $TLS_no_testplan_checked = "Please select at least one Test Plan.";
+
+$TLS_testproject_prefix_hint = '16 characters are allowed, but we advice to use no more than 5';
+
+
 // ----- END -----------------------------------------------------------------------

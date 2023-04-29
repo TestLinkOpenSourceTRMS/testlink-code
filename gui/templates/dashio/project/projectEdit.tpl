@@ -24,7 +24,7 @@
   testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,api_key,
   warning_empty_tproject_name,testproject_issue_tracker_integration,issue_tracker,
   testproject_code_tracker_integration,code_tracker,testproject_reqmgr_integration,reqmgrsystem,
-  no_rms_defined,no_issuetracker_defined,no_codetracker_defined'}
+  no_rms_defined,no_issuetracker_defined,no_codetracker_defined,testproject_prefix_hint'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -106,7 +106,7 @@ function manageTracker(selectOID,targetOID)
 
 <div class="workBack">
   {if $gui->found == "yes"}
-    <div style="width:80%; margin: auto;">
+    <div style="width:90%; margin: auto;">
     <form name="edit_testproject" id="edit_testproject"
           method="post" action="{$managerURL}"
           onSubmit="javascript:return validateForm(this);">
@@ -115,11 +115,10 @@ function manageTracker(selectOID,targetOID)
     <table id="item_view" style="width:100%;outline-style: solid; outline-width: 2px;">
 
       {if $gui->itemID eq 0}
-
         {* Can we use other test project as SOURCE for copy? *}
         {if $gui->testprojects != ''}
           <tr>
-            <td>{$labels.create_from_existent_tproject}</td>
+            <td {$tdStyle}>{$labels.create_from_existent_tproject}</td>
             <td>
               <select id="copy_from_tproject_id" name="copy_from_tproject_id">
               <option value="0">{$labels.opt_no}</option>
@@ -139,8 +138,11 @@ function manageTracker(selectOID,targetOID)
       </tr>
       <tr>
         <td {$tdStyle}>{$labels.testproject_prefix} *</td>
-        <td><input type="text" id="tcasePrefix" name="tcasePrefix" size="{#TESTCASE_PREFIX_SIZE#}"
-                   value="{$gui->tcasePrefix|escape}" maxlength="{#TESTCASE_PREFIX_MAXLEN#}" required />
+        <td><input type="text" id="tcasePrefix" name="tcasePrefix" 
+                   size="{#TESTCASE_PREFIX_SIZE#}"
+                   value="{$gui->tcasePrefix|escape}" 
+                   maxlength="{#TESTCASE_PREFIX_MAXLEN#}" required />
+            <i class="fa fa-info-circle" aria-hidden="true" title="{$labels.testproject_prefix_hint}"></i>       
         </td>
       </tr>
       <tr>

@@ -101,14 +101,11 @@ function create_date_selection_set($p_name, $p_format, $p_date=0, $options=null)
   
   $str_out='';
   $t_chars = preg_split('//', $p_format, -1, PREG_SPLIT_NO_EMPTY) ;
-  if ( $p_date != 0 ) 
-  {
+
+  $t_date = [-1, -1, -1, -1, -1, -1];
+  if ( intval($p_date) != 0 ) {
     $t_date = preg_split('/-| |:/', date('Y-m-d H:i:s', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
   } 
-  else 
-  {
-    $t_date = array(-1, -1, -1, -1, -1, -1);
-  }
 
   $t_disable = '' ;
   $t_blank_line_date = '' ;

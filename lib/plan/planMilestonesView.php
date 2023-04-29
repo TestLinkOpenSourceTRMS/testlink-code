@@ -6,7 +6,7 @@
  *
  * @package 	 TestLink
  * @author     Francisco Mancardi
- * @copyright  2003-2020, TestLink community 
+ * @copyright  2003-2023, TestLink community 
  * @filesoruce planMilestonesView.php
  * @link 		   http://www.testlink.org
  * 
@@ -47,10 +47,11 @@ function init_args(&$dbH) {
   $args->user = $_SESSION['currentUser'];
   // ----------------------------------------------------------------
   // Feature Access Check
-  $env = array()
-  $env['script'] = basename(__FILE__);
-  $env['tproject_id'] = $args->tproject_id;
-  $env['tplan_id'] = $args->tplan_id;
+  $env = [
+    'script' => basename(__FILE__),
+    'tproject_id' => $args->tproject_id,
+    'tplan_id' => $args->tplan_id
+  ];
   $args->user->checkGUISecurityClearance($dbHandler,$env,
                     array('testplan_planning'),'and');
   // ----------------------------------------------------------------

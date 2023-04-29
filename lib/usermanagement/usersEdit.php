@@ -6,7 +6,7 @@
  * Allows editing a user
  *
  * @package     TestLink
- * @copyright   2005-2017, TestLink community
+ * @copyright   2005-2023, TestLink community
  * @filesource  usersEdit.php
  * @link        http://www.testlink.org
  *
@@ -25,10 +25,14 @@ $lbl = initLabels();
 
 $highlight = initialize_tabsmenu();
 
-$actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                         'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                         'resetPassword' => 'doUpdate',
-                         'genAPIKey' => 'doUpdate');
+$actionOperation = [
+  'create' => 'doCreate', 
+  'edit' => 'doUpdate',
+  'doCreate' => 'doCreate', 
+  'doUpdate' => 'doUpdate',
+  'resetPassword' => 'doUpdate',
+  'genAPIKey' => 'doUpdate'
+];
 
 switch($args->doAction)
 {
@@ -117,11 +121,9 @@ function init_args()
   // convert expiration date to ISO format to write to db
   $dk = 'expiration_date';
   $args->$dk = null;
-  if (isset($_REQUEST[$dk]) && $_REQUEST[$dk] != '') 
-  {
+  if (isset($_REQUEST[$dk]) && $_REQUEST[$dk] != '') {
     $da = split_localized_date($_REQUEST[$dk], $date_format);
-    if ($da != null) 
-    {
+    if ($da != null) {
       // set date in iso format
       $args->$dk = $da['year'] . "-" . $da['month'] . "-" . $da['day'];
     }
@@ -159,8 +161,7 @@ function doCreate(&$dbHandler,&$argsObj)
   {
     initializeUserProperties($op->user,$argsObj);
     $op->status = $op->user->writeToDB($dbHandler);
-    if($op->status >= tl::OK)
-    {
+    if($op->status >= tl::OK) {
       tlUser::setExpirationDate($dbHandler,$op->user->dbID,$argsObj->expiration_date);
 
       $statusOk = true;
@@ -192,8 +193,7 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
   {
     initializeUserProperties($op->user,$argsObj);
     $op->status = $op->user->writeToDB($dbHandler);
-    if ($op->status >= tl::OK)
-    {
+    if ($op->status >= tl::OK) {
       tlUser::setExpirationDate($dbHandler,$op->user->dbID,$argsObj->expiration_date);
 
       logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
@@ -396,34 +396,31 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 function initializeGui(&$dbHandler,&$argsObj)
 {
   $userObj = &$argsObj->user;
-
   $guiObj = new stdClass(); 
-
   $guiObj->user = null;
-  switch($argsObj->doAction)
-  {
+
+  switch($argsObj->doAction) {
     case 'edit': 
       // Because we can arrive with login, we need to check if we can get
       // id from login
-      if(strlen(trim($argsObj->login)) > 0)
-      {
+      if(strlen(trim($argsObj->login)) > 0) {
         $argsObj->user_id = tlUser::doesUserExist($dbHandler,$argsObj->login);
       }
 
-      if( is_null($argsObj->user_id) || intval($argsObj->user_id) <= 0)
-      {
+      if( is_null($argsObj->user_id) || intval($argsObj->user_id) <= 0) {
         // need to manage some sort of error message
         $guiObj->op = new stdClass();
         $guiObj->op->status = tl::ERROR;
-        $guiObj->op->user_feedback = 
-          sprintf(lang_get('login_does_not_exist'),$argsObj->login);
-      }  
-      else
-      {  
+        $guiObj->op->user_feedback = sprintf(lang_get('login_does_not_exist'),$argsObj->login);
+      }  else {  
         $guiObj->user = new tlUser(intval($argsObj->user_id));
         $guiObj->user->readFromDB($dbHandler);
       }  
       $guiObj->main_title = lang_get("action_{$argsObj->doAction}_user");
+    break;
+
+    case "doUpdate":
+      $guiObj->user = new tlUser($argsObj->user_id);
     break;
 
     case "resetPassword":
@@ -442,8 +439,7 @@ function initializeGui(&$dbHandler,&$argsObj)
                              "(" . $guiObj->authCfg['domain'][$guiObj->authCfg['method']]['description'] . ")" => '');
 
   $dummy = array_keys($guiObj->authCfg['domain']);
-  foreach($dummy as $xc)
-  {
+  foreach($dummy as $xc) {
     // description => html option value
     $guiObj->auth_method_opt[$xc] = $xc;  
   }  
@@ -454,18 +450,20 @@ function initializeGui(&$dbHandler,&$argsObj)
 
   $guiObj->grants = getGrantsForUserMgmt($dbHandler,$userObj);
 
-  $guiObj->grants->mgt_view_events = 
-    $userObj->hasRight($dbHandler,"mgt_view_events");
+  $guiObj->grants->mgt_view_events = $userObj->hasRight($dbHandler,"mgt_view_events");
 
-  $guiObj->expiration_date = $argsObj->expiration_date;
+  // needs to be localized, because $argsObj->expiration_date is ISO
+
+  $dateFormatPHP = str_replace(['%','/','.'],['','-','-'],config_get('date_format'));
+  $ts = date($dateFormatPHP, strtotime($guiObj->user->expiration_date));
+  $guiObj->user->expiration_date = $ts;
 
   $noExpirationUsers = array_flip(config_get('noExpDateUsers'));
   $guiObj->expDateEnabled = true;
-  if( !is_null($guiObj->user) )
-  {
+  if( !is_null($guiObj->user) ) {
     $guiObj->expDateEnabled = !isset($noExpirationUsers[$guiObj->user->login]);
   } 
-
+  
   return $guiObj;  
 }
 

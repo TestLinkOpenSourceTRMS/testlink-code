@@ -34,8 +34,8 @@
  * 
  * @package     TestLink
  * @author      asimon
- * @copyright   2007-2017, TestLink community
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2023, TestLink community
+ * @link        http://www.testlink.org/index.php
  *
  */
 
@@ -57,9 +57,17 @@ testlinkInitPage($db, true);
 
 $smarty = new TLSmarty();
 
+$args = init_args();
+$args->tproject_id = 0;
+if( $args->status_ok ) {
+  $user = $_SESSION['currentUser'];
+  if($args->tprojectPrefix != '') {
+    $hasRight = checkTestProject($db,$user,$args);
+  }   
+}  
+
 // display outer or inner frame?
-if (!isset($_GET['load'])) 
-{
+if (!isset($_GET['load'])) {
   // display outer frame, pass parameters to next script call for inner frame
   // Direct link to testcase where TC ID prefix contains an '&' (the ampersand symbol), does not link
   // 
@@ -68,22 +76,16 @@ if (!isset($_GET['load']))
   // to use urlencode() on data we have got.
   //
 
-  $args = init_args();
-  $args->tproject_id = 0;
-  if( $args->status_ok )
-  {
+  if( $args->status_ok ) {
     $user = $_SESSION['currentUser'];
-    if($args->tprojectPrefix != '')
-    {
+    if($args->tprojectPrefix != '') {
       $hasRight = checkTestProject($db,$user,$args);
-      if( $hasRight )
-      {
+      if( $hasRight ) {
         $gui = new stdClass();
         $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
         $gui->navbar_height = config_get('navbar_height');
         
-        if( $args->tproject_id > 0)
-        {
+        if( $args->tproject_id > 0) {
           $gui->titleframe .= '&testproject=' . $args->tproject_id;
         } 
         $gui->title = lang_get('main_page_title');
@@ -93,32 +95,37 @@ if (!isset($_GET['load']))
       }  
     }   
   }  
-} 
-else 
-{
+} else {
   // 
   // inner frame, parameters passed
   // figure out what to display 
   //
   // key: item, value: url to tree management page
-  $itemCode = array('req' => 'lib/requirements/reqSpecListTree.php', 
-                    'reqspec' => 'lib/requirements/reqSpecListTree.php',
-                    'testcase' => 'lib/testcases/listTestCases.php?feature=edit_tc',
-                    'testsuite' => 'lib/testcases/listTestCases.php?feature=edit_tc');
-
   
-  $op = array('status_ok' => true, 'msg' => '');
+  $common = "tproject_id=" . intval($args->tproject_id);
+  $itemCode = [
+    'req' => 'lib/requirements/reqSpecListTree.php?' . $common , 
+    'reqspec' => 'lib/requirements/reqSpecListTree.php?' . $common,
+    'testcase' => 'lib/testcases/listTestCases.php?feature=edit_tc&' . $common,
+    'testsuite' => 'lib/testcases/listTestCases.php?feature=edit_tc&' . $common
+  ];
+  
+  $op = [
+    'status_ok' => true, 
+    'msg' => ''
+  ];
 
   // First check for keys in _GET that MUST EXIST
   // key: key on _GET, value: labelID defined on strings.txt
-  $mustKeys = array('tprojectPrefix' => 'testproject_not_set',
-                    'item' => 'item_not_set', 'id' => 'id_not_set');
+  $mustKeys = [
+    'tprojectPrefix' => 'testproject_not_set',
+    'item' => 'item_not_set', 
+    'id' => 'id_not_set'
+  ];
 
-  foreach($mustKeys as $key => $labelID)
-  {
+  foreach($mustKeys as $key => $labelID) {
     $op['status_ok'] = isset($_GET[$key]);
-    if( !$op['status_ok'])
-    {
+    if( !$op['status_ok']) {
       $op['msg'] = lang_get($labelID);
       break;
     }
@@ -131,15 +138,12 @@ else
     if(($op['status_ok'] = !is_null($tproject_data))) {
       $op['status_ok'] = isset($itemCode[$args->item]);
       $op['msg'] = sprintf(lang_get('invalid_item'),$args->item);
-    }
-    else 
-    {
+    } else {
       $op['msg'] = sprintf(lang_get('testproject_not_found'),$args->tprojectPrefix);
     }
   } 
 
-  if($op['status_ok'])
-  {
+  if($op['status_ok']) {
     // Build  name of function to call for doing the job.
     $pfn = 'process_' . $args->item;
     $jump_to = $pfn($db, $args->id, $tproject_data['id'], $args->tprojectPrefix, $args->version);
@@ -147,8 +151,7 @@ else
     $op['msg'] = $jump_to['msg'];
   }
 
-  if($op['status_ok'])
-  {
+  if($op['status_ok']) {
     // need to set test project item on Navbar
     // add anchor to URL
     $url = $jump_to['url'] . $args->anchor;
@@ -158,9 +161,7 @@ else
     $smarty->assign('workframe', $url);
     $smarty->assign('treeframe', $itemCode[$args->item]);
     $smarty->display('frmInner.tpl');
-  }
-  else
-  {
+  } else {
     echo $op['msg'];
     ob_end_flush();
     exit();
@@ -405,8 +406,10 @@ function process_testsuite(&$dbHandler,$tsuiteID, $tprojectID, $tprojectPrefix)
   $ret['url'] = null;
   $ret['msg'] = sprintf(lang_get('testsuite_not_found'), $tsuiteID, $tprojectPrefix);
 
-  $ret['url'] = 'lib/testcases/archiveData.php?print_scope=test_specification' .
-                '&edit=testsuite&level=testsuite&containerType=testsuite&id=' . $tsuiteID;
+  $ret['url'] = "lib/testcases/archiveData.php?print_scope=test_specification" .
+                "&edit=testsuite&level=testsuite&containerType=testsuite" .
+                "&tproject_id=" . intval($tprojectID) .
+                "&id=" . $tsuiteID;
 
   $ret['msg'] = 'ok';
 

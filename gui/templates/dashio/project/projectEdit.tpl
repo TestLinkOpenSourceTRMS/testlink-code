@@ -75,10 +75,16 @@ function manageTracker(selectOID,targetOID)
 }
 
 </script>
+
+{* --------------------------------------------------------------------- *}
+{* Both are needed *}
+{include file="bootstrap.inc.tpl"}
+<script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
+{* --------------------------------------------------------------------- *}
 </head>
 
 <body onload="manageTracker('issue_tracker_id','issue_tracker_enabled');
-manageTracker('code_tracker_id','code_tracker_enabled');">
+      manageTracker('code_tracker_id','code_tracker_enabled');">
 
 {include file="aside.tpl"}
 <div id="main-content">
@@ -91,10 +97,11 @@ manageTracker('code_tracker_id','code_tracker_enabled');">
   {/if}
 </h1>
 
-{if $user_feedback != ''}
-  {include file="inc_update.tpl" 
-           user_feedback=$gui->user_feedback
-           feedback_type=$gui->feedback_type}
+{if $gui->user_feedback != ''}  
+  <script>
+  var userMsg = "{$gui->user_feedback}"
+  bootbox.alert(userMsg);
+  </script>
 {/if}
 
 <div class="workBack">

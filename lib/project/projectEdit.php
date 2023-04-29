@@ -167,6 +167,9 @@ switch($args->doAction) {
   break;
 }
 
+if (is_array($gui->user_feedback)) {
+  $gui->user_feedback = implode("\n",$gui->user_feedback);
+}
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $template);
 

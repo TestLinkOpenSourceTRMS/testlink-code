@@ -26,6 +26,10 @@ $tcase_cfg = config_get('testcase_cfg');
 $args = init_args($db);
 $gui = new stdClass();
 
+$gui->tproject_id = $args->tproject_id;
+$gui->tplan_id = $args->tplan_id;
+
+
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
 $gui->tcasePrefix .= $tcase_cfg->glue_character;
 $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
@@ -75,5 +79,5 @@ function init_args(&$dbH)
   $args->tprojectID = $args->tproject_id;
   $args->tprojectName = testproject::getName($dbH,$args->tproject_id);
        
-    return $args;
+  return $args;
 }

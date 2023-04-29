@@ -6,7 +6,7 @@
  * @filesource  reqSpecSearch.php
  * @package   TestLink
  * @author    asimon
- * @copyright   2005-2019
+ * @copyright   2005-2023
  * @link    http://www.testlink.org
  *
  * This page presents the search results for requirement specifications.
@@ -211,18 +211,23 @@ function init_args()
   list($args,$env) = initContext();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $strnull = array('requirement_document_id', 'name', 'scope', 'coverage',
-           'custom_field_value', 'reqSpecType', 'log_message');
+  $strnull = [
+    'requirement_document_id', 
+    'name', 
+    'scope', 
+    'coverage',
+    'custom_field_value', 
+    'reqSpecType', 
+    'log_message'
+  ];
 
-  foreach($strnull as $keyvar)
-  {
+  foreach($strnull as $keyvar) {
     $args->$keyvar = isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;
     $args->$keyvar = !is_null($args->$keyvar) && strlen($args->$keyvar) > 0 ? trim($args->$keyvar) : null;
   }
 
-  $int0 = array('custom_field_id');
-  foreach($int0 as $keyvar)
-  {
+  $int0 = ['custom_field_id'];
+  foreach($int0 as $keyvar) {
     $args->$keyvar = isset($_REQUEST[$keyvar]) ? intval($_REQUEST[$keyvar]) : 0;
   }
 

@@ -7,8 +7,8 @@
  * @filesource	reqSpecSearchForm.php
  * @package 	TestLink
  * @author		asimon
- * @copyright 	2005-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @copyright 	2005-2023, TestLink community 
+ * @link 		http://www.testlink.org/index.php
  *
  * This page presents the search form for requiremnt specifications.
  *
@@ -25,6 +25,8 @@ $tproject_mgr = new testproject($db);
 
 $args = init_args($db);
 $gui = new stdClass();
+$gui->tproject_id = $args->tproject_id;
+$gui->tplan_id = $args->tplan_id;
 $gui->tcasePrefix = '';
  
 $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
@@ -57,7 +59,7 @@ $smarty->display($templateCfg->template_dir . 'reqSpecSearchForm.tpl');
 */
 function init_args(&$dbH)
 {              
-  $args = new stdClass();
+  list($args,$env) = initContext();
   $args->tprojectID = $args->tproject_id;
   $args->tprojectName = testproject::getName($dbH,$args->tproject_id);
        

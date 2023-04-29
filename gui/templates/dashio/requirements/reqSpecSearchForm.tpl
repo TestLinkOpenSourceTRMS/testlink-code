@@ -23,6 +23,9 @@ Form for searching through requirement specifications.
 
 <div style="margin: 1px;">
 <form method="post" action="{$basehref}lib/requirements/reqSpecSearch.php" target="workframe">
+    <input type="hidden" name="tproject_id" value="{$gui->tproject_id}">
+    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}">
+
 	<table class="smallGrey" style="width:100%">
 		<caption>{$labels.caption_search_form_req_spec}</caption>
 		<tr>

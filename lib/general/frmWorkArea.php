@@ -14,6 +14,9 @@ $args = init_args();
 $tprojMgr = new testproject($db);
 $tprojOpt = $tprojMgr->getOptions($args->tproject_id);
 $gui = new stdClass();
+foreach($args as $prop => $value) {
+  $gui->$prop = $value;
+}
 $gui->testPriorityEnabled = $tprojOpt->testPriorityEnabled;  
 
 // Important Notes for Developers
@@ -133,7 +136,7 @@ if (in_array($showFeature,
     $ctx->tplanIDCard = $tplanIDCard;
     $ctx->featureTitle = $featureHint;
 
-    validateBuildAvailability($db,$ctx,$hasToBe);
+    validateBuildAvailability($db,$ctx,$gui,$hasToBe);
   } else {
     redirect($_SESSION['basehref'] . 
              "lib/plan/planView.php?tproject_id={$args->tproject_id}");
@@ -189,6 +192,7 @@ if (intval($args->tproject_id) > 0 || intval($args->tplan_id) > 0) {
 if(isset($full_screen[$showFeature])) {
   redirect($_SESSION['basehref'] . $leftPane);
 } else {
+  $smarty->assign('gui', $gui);
   $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
   $smarty->assign('treeframe', $leftPane);
   $smarty->assign('workframe', $rightPane);
@@ -205,7 +209,7 @@ if(isset($full_screen[$showFeature])) {
  *
  *
  **/
-function validateBuildAvailability(&$db,$context,$attrFilter)
+function validateBuildAvailability(&$db,$context,$guiObj,$attrFilter)
 {
   $tplanMgr = new testplan($db);
   $tpID = $context->tplanIDCard->id;
@@ -245,6 +249,9 @@ function validateBuildAvailability(&$db,$context,$attrFilter)
       
     // show info and exit
     $smarty = new TLSmarty;
+
+    $smarty->assign('gui', $guiObj);
+
     $smarty->assign('content', $message);
     $smarty->assign('link_to_op', $link_to_op);
     $smarty->assign('hint_text', $hint_text);

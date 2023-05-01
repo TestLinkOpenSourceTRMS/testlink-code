@@ -204,8 +204,12 @@ class cfield_mgr extends tlObject
     var $max_length_possible_values;
 
     var $decode;
-    var $html_date_input_suffix = array('input' => true,'hour' => true,
-                                        'minute' => true,'second' => true);
+    var $html_date_input_suffix = [
+      'input' => true,
+      'hour' => true,
+      'minute' => true,
+      'second' => true
+    ];
 
 	/**
 	 * Class constructor
@@ -1902,6 +1906,8 @@ function name_is_unique($id,$name)
     // ---------------------------------------------------------------------
     // Overwrite with values if custom field id exist
     if( !is_null($hash) ) {
+      $the_value = null;
+      $cfieldUXPosition = -1;  // useful for datetime that create multiple inputs!!
       foreach($hash as $key => $value) {
         if( strncmp($key,$cf_prefix,$len_cfp) == 0 ) {
           // Notes on DATE PART - _build_cfield
@@ -1932,8 +1938,14 @@ function name_is_unique($id,$name)
           //        	
           $dummy = explode('_',$key);
           $last_idx = count($dummy)-1;
+          
+          // ----------------------------------------------------------
+          if ($cfieldUXPosition != $dummy[$cfid_pos]) {
+            $the_value = null;
+            $cfieldUXPosition = $dummy[$cfid_pos];
+          }
+          // ----------------------------------------------------------
 
-          $the_value = null;  // without this #0008347 :(
           if( isset($this->html_date_input_suffix[$dummy[$last_idx]]) ) {
             $the_value[$dummy[$last_idx]] = $value;
           }
@@ -1941,8 +1953,10 @@ function name_is_unique($id,$name)
             $the_value = $value;
           }  
 
-          $cfield[$dummy[$cfid_pos]]=array("type_id"  => $dummy[$cftype_pos],
-                                           "cf_value" => $the_value);
+          $cfield[$dummy[$cfid_pos]] = [
+            "type_id"  => $dummy[$cftype_pos],
+            "cf_value" => $the_value
+          ];
         }
       }
     } //if( !is_null($hash) )

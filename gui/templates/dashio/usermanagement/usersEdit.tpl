@@ -131,11 +131,15 @@ function managePasswordInputs(oid,targetSetOID)
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
 
 {include file="bootstrap.inc.tpl"}
+<script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
 </head>
 
 <body>
 <h1 class="{#TITLE_CLASS#}">{$gui->main_title} </h1>
-{include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
+
+{if $gui->op->status > 0}
+  {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
+{/if}  
 
 {if $gui->op->status > 0}
   {$user_id=''}
@@ -148,9 +152,9 @@ function managePasswordInputs(oid,targetSetOID)
 
   {if $operation == 'doCreate'}
     {$check_password=1}
-      {if $gui->user neq null}
-        {$user_login=$gui->user->login}
-      {/if}
+    {if $gui->user neq null}
+      {$user_login=$gui->user->login}
+    {/if}
   {else}
      {$check_password=0}
      {$user_id=$gui->user->dbID}
@@ -173,188 +177,192 @@ function managePasswordInputs(oid,targetSetOID)
     {$show_password_field=0}
   {/if}  
 
+  <div class="workBack">
+    <form method="post" action="lib/usermanagement/usersEdit.php" class="x-form" name="useredit" 
+        onSubmit="javascript:return validateForm(this,{$check_password});">
+      <input type="hidden" name="user_id" id="user_id_form1" value="{$user_id}" />
+      <input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
 
-
-
-<div class="workBack">
-<form method="post" action="lib/usermanagement/usersEdit.php" class="x-form" name="useredit" 
-    onSubmit="javascript:return validateForm(this,{$check_password});">
-  <input type="hidden" name="user_id" id="user_id_form1" value="{$user_id}" />
-  <input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
-
-  <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
-  <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
-  {$labels.caption_user_details}
-  {if $gui->grants->mgt_view_events eq "yes" && $user_id}
-  <img style="margin-left:5px;" class="clickable" src="{$tlImages.help}" 
-       onclick="showEventHistoryFor('{$user_id}','users')"
-       alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
-  {/if}
-  </legend>
-  <table class="common">
-    <tr>
-      <th style="background:none;">{$labels.th_login}</th>
-      <td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}"
-      {$user_login_readonly} value="{$gui->user->login|escape}" required />
-      {include file="error_icon.tpl" field="login"}
-       </td>
-    </tr>
-    <tr>
-      <th style="background:none;">{$labels.th_first_name}</th>
-      <td><input type="text" name="firstName" value="{$gui->user->firstName|escape}"
-           size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" required />
-           {include file="error_icon.tpl" field="firstName"}
-      </td></tr>
-    <tr>
-      <th style="background:none;">{$labels.th_last_name}</th>
-      <td><input type="text" name="lastName" value="{$gui->user->lastName|escape}"
-           size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" required />
-           {include file="error_icon.tpl" field="lastName"}
-           </td>
-    </tr>
-
-    {if $show_password_field}
-      <tr id="passwordContainer">
-      {if $external_password_mgmt eq 0}
-        <th style="background:none;">{$labels.th_password}</th>
-        <td><input type="password" id="password" name="password"
-                   size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required />
-            {include file="error_icon.tpl" field="password"}
-        </td>
+      <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
+      <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
+      {$labels.caption_user_details}
+      {if $gui->grants->mgt_view_events eq "yes" && $user_id}
+      <img style="margin-left:5px;" class="clickable" src="{$tlImages.help}" 
+          onclick="showEventHistoryFor('{$user_id}','users')"
+          alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
       {/if}
-      </tr>
-   {/if}
+      </legend>
+      <table class="common">
+        <tr>
+          <th style="background:none;">{$labels.th_login}</th>
+          <td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}"
+          {$user_login_readonly} value="{$gui->user->login|escape}" required />
+          {include file="error_icon.tpl" field="login"}
+          </td>
+        </tr>
+        <tr>
+          <th style="background:none;">{$labels.th_first_name}</th>
+          <td><input type="text" name="firstName" value="{$gui->user->firstName|escape}"
+              size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" required />
+              {include file="error_icon.tpl" field="firstName"}
+          </td></tr>
+        <tr>
+          <th style="background:none;">{$labels.th_last_name}</th>
+          <td><input type="text" name="lastName" value="{$gui->user->lastName|escape}"
+              size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" required />
+              {include file="error_icon.tpl" field="lastName"}
+              </td>
+        </tr>
+
+        {if $show_password_field}
+          <tr id="passwordContainer">
+          {if $external_password_mgmt eq 0}
+            <th style="background:none;">{$labels.th_password}</th>
+            <td><input type="password" id="password" name="password"
+                      size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required />
+                {include file="error_icon.tpl" field="password"}
+            </td>
+          {/if}
+          </tr>
+      {/if}
 
 
-    <tr>
-      <th style="background:none;">{$labels.th_email}</th>
-      <td><input type="text" id="email" name="emailAddress" value="{$gui->user->emailAddress|escape}"
-                 size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" required />
-          {include file="error_icon.tpl" field="emailAddress"}
-      </td>
-    </tr>
-    <tr>
-      <th style="background:none;">{$labels.th_role}</th>
-      <td>
-        {$selected_role=$gui->user->globalRoleID}
-        {if $gui->user->globalRoleID eq 0}
-          {$selected_role=$tlCfg->default_roleid}
+        <tr>
+          <th style="background:none;">{$labels.th_email}</th>
+          <td><input type="text" id="email" name="emailAddress" value="{$gui->user->emailAddress|escape}"
+                    size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" required />
+              {include file="error_icon.tpl" field="emailAddress"}
+          </td>
+        </tr>
+        <tr>
+          <th style="background:none;">{$labels.th_role}</th>
+          <td>
+            {$selected_role=$gui->user->globalRoleID}
+            {if $gui->user->globalRoleID eq 0}
+              {$selected_role=$tlCfg->default_roleid}
+            {/if}
+            <select name="rights_id">
+            {foreach key=role_id item=role from=$optRights}
+                <option value="{$role_id}" {if $role_id == $selected_role} selected="selected" {/if}>
+              {$role->getDisplayName()|escape}
+            </option>
+            {/foreach}
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <th style="background:none;">{$labels.th_locale}</th>
+          <td>
+            {$selected_locale=$gui->user->locale}
+            {if $gui->user->locale|count_characters eq 0}
+              {$selected_locale=$locale}
+            {/if}
+
+            <select name="locale">
+            {html_options options=$gui->optLocale selected=$selected_locale}
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <th style="background:none;">{$labels.authentication_method}</th>
+          <td>
+            <select id="authentication" name="authentication"> 
+            {html_options options=$gui->auth_method_opt selected=$gui->user->authentication}
+            </select>
+          </td>
+        </tr>
+
+
+        <tr>
+          <th style="background:none;">{$labels.th_active}</th>
+          <td>
+            <input type="checkbox"  name="user_is_active" {if $gui->user->isActive eq 1} checked {/if} />
+          </td>
+        </tr>
+
+        {if $gui->expDateEnabled}
+        <tr>
+          <th style="background:none;">{$labels.expiration_date}</th>
+          <td>
+
+            <input type="text" name="expiration_date" id="expiration_date" 
+                  value="{$gui->user->expiration_date|escape}" size="{#DATE_PICKER#}"
+                  onclick="showCal('expiration_date-cal','expiration_date','{$gsmarty_datepicker_format}');" readonly />
+
+            <img title="{$labels.show_calender}" src="{$tlImages.calendar}"
+                onclick="showCal('expiration_date-cal','expiration_date','{$gsmarty_datepicker_format}');" >
+
+
+            <img title="{$labels.clear_date}" src="{$tlImages.clear}"
+                  onclick="javascript:var x = document.getElementById('expiration_date'); x.value = '';" >
+            <div id="expiration_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+
+          </td>
+        </tr>
         {/if}
-        <select name="rights_id">
-        {foreach key=role_id item=role from=$optRights}
-            <option value="{$role_id}" {if $role_id == $selected_role} selected="selected" {/if}>
-          {$role->getDisplayName()|escape}
-        </option>
-        {/foreach}
-        </select>
-      </td>
-    </tr>
 
-    <tr>
-      <th style="background:none;">{$labels.th_locale}</th>
-      <td>
-        {$selected_locale=$gui->user->locale}
-        {if $gui->user->locale|count_characters eq 0}
-           {$selected_locale=$locale}
+        {if $external_password_mgmt eq 1}
+          <td>{$labels.password_mgmt_is_external}</td>
         {/if}
 
-        <select name="locale">
-        {html_options options=$gui->optLocale selected=$selected_locale}
-        </select>
-      </td>
-    </tr>
+      </table>
 
-    <tr>
-      <th style="background:none;">{$labels.authentication_method}</th>
-      <td>
-        <select id="authentication" name="authentication"> 
-        {html_options options=$gui->auth_method_opt selected=$gui->user->authentication}
-        </select>
-      </td>
-    </tr>
+      {$submitEnabled="1"}
+      {if $tlCfg->demoMode}
+        {if $operation == 'doUpdate'}
+          {$submitEnabled="0"}
+        {/if} 
+      {/if}
 
 
-    <tr>
-      <th style="background:none;">{$labels.th_active}</th>
-      <td>
-        <input type="checkbox"  name="user_is_active" {if $gui->user->isActive eq 1} checked {/if} />
-      </td>
-    </tr>
+      <div class="groupBtn">
+      {if $submitEnabled}
+        <input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}" />
+        <input class="{#BUTTON_CLASS#}" type="submit" 
+              name="do_update" id="do_update"   
+              value="{$labels.btn_save}" />
+      {else}
+        {$labels.demo_update_user_disabled}<br>
+      {/if}
+      <input class="{#BUTTON_CLASS#}" type="button" 
+            name="cancel" id="cancel" 
+            value="{$labels.btn_cancel}"
+            onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
 
-    {if $gui->expDateEnabled}
-    <tr>
-      <th style="background:none;">{$labels.expiration_date}</th>
-      <td>
+      </div>
+    </fieldset>
+    </form>
 
-        <input type="text" name="expiration_date" id="expiration_date" 
-               value="{$gui->user->expiration_date|escape}" size="{#DATE_PICKER#}"
-               onclick="showCal('expiration_date-cal','expiration_date','{$gsmarty_datepicker_format}');" readonly />
+    <br />
+    <form method="post" action="lib/usermanagement/usersEdit.php" 
+          style=" {$reset_password_form_style}" 
+          id="user_reset_password" name="user_reset_password">
+      {if $tlCfg->demoMode}
+        {$labels.demo_reset_password_disabled}
+      {else}
+        <input type="hidden" name="doAction" id="doReset" value="" />
+        <input type="hidden" name="user_id" id="user_id_form2" value="{$user_id}" />
+        <input type="submit" id="do_reset_password" name="do_reset_password" 
+              value="{$labels.button_reset_password}" 
+              onclick="doReset.value='resetPassword'"/>
 
-        <img title="{$labels.show_calender}" src="{$tlImages.calendar}"
-             onclick="showCal('expiration_date-cal','expiration_date','{$gsmarty_datepicker_format}');" >
-
-
-        <img title="{$labels.clear_date}" src="{$tlImages.clear}"
-               onclick="javascript:var x = document.getElementById('expiration_date'); x.value = '';" >
-        <div id="expiration_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
-
-      </td>
-    </tr>
-    {/if}
-
-    {if $external_password_mgmt eq 1}
-      <td>{$labels.password_mgmt_is_external}</td>
-    {/if}
-
-  </table>
-
-  {$submitEnabled="1"}
-  {if $tlCfg->demoMode}
-    {if $operation == 'doUpdate'}
-      {$submitEnabled="0"}
-    {/if} 
-  {/if}
-
-
-  <div class="groupBtn">
-  {if $submitEnabled}
-    <input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}" />
-    <input class="{#BUTTON_CLASS#}" type="submit" 
-           name="do_update" id="do_update"   
-           value="{$labels.btn_save}" />
-  {else}
-    {$labels.demo_update_user_disabled}<br>
-  {/if}
-  <input class="{#BUTTON_CLASS#}" type="button" 
-         name="cancel" id="cancel" 
-         value="{$labels.btn_cancel}"
-         onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
-
+        {if $tlCfg->api->enabled && $submitEnabled}       
+        <input type="submit" id="genAPIKey" value="{$labels.btn_apikey_generate}" 
+              onclick="doReset.value='genAPIKey'"/>
+        {/if}
+      {/if} 
+    </form>
   </div>
-</fieldset>
-</form>
 
-<br />
-<form method="post" action="lib/usermanagement/usersEdit.php" 
-      style=" {$reset_password_form_style}" 
-      id="user_reset_password" name="user_reset_password">
-  {if $tlCfg->demoMode}
-    {$labels.demo_reset_password_disabled}
-  {else}
-    <input type="hidden" name="doAction" id="doReset" value="" />
-    <input type="hidden" name="user_id" id="user_id_form2" value="{$user_id}" />
-    <input type="submit" id="do_reset_password" name="do_reset_password" 
-           value="{$labels.button_reset_password}" 
-           onclick="doReset.value='resetPassword'"/>
-
-    {if $tlCfg->api->enabled && $submitEnabled}       
-    <input type="submit" id="genAPIKey" value="{$labels.btn_apikey_generate}" 
-           onclick="doReset.value='genAPIKey'"/>
-    {/if}
-  {/if} 
-</form>
-</div>
-
+{else}
+  {if $user_feedback != ''}  
+    <script>
+    var userMsg = "{$user_feedback}"
+    bootbox.alert(userMsg);
+    </script>
+  {/if}
 {/if}
 </body>
 </html>

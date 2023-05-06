@@ -102,6 +102,9 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 	<input type="hidden" name="featureID" value="{$featureID}" />
 	<input type="hidden" name="featureType" value="{$gui->featureType}" />
 
+	<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+	<input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+
   {$styleLH="padding: 0px 30px 10px 5px;"}
   <div class="panel panel-default" style="background-color: #EAEAED;">
     <div class="panel-body">

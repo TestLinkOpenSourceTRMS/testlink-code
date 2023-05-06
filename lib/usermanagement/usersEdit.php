@@ -50,8 +50,7 @@ switch($args->doAction)
   
   case "doUpdate":
     $highlight->edit_user = 1;
-    $sessionUserID = $_SESSION['currentUser']->dbID;
-    $gui->op = doUpdate($db,$args,$sessionUserID);
+    $gui->op = doUpdate($db,$args,$_SESSION['currentUser']->dbID);
     $gui->user = $gui->op->user;
     $gui->main_title = $lbl['action_edit_user'];
   break;
@@ -99,8 +98,7 @@ renderGui($smarty,$args,$templateCfg);
 function init_args()
 {
   $_REQUEST=strings_stripSlashes($_REQUEST);
-  $iParams = array("delete" => array(tlInputParameter::INT_N),
-                   "user" => array(tlInputParameter::INT_N),
+  $iParams = array("delete" => array(tlInputParameter::INT_N), 
                    "user_id" => array(tlInputParameter::INT_N),
                    "rights_id" => array(tlInputParameter::INT_N),
                    "doAction" => array(tlInputParameter::STRING_N,0,30),
@@ -331,9 +329,8 @@ function createNewAPIKey(&$dbHandler,&$argsObj,&$userObj)
 */
 function initializeUserProperties(&$userObj,&$argsObj)
 {
-  if (!is_null($argsObj->login))
-  {
-      $userObj->login = $argsObj->login;
+  if (!is_null($argsObj->login)) {
+    $userObj->login = $argsObj->login;
   }
   $userObj->emailAddress = $argsObj->emailAddress;
 
@@ -346,6 +343,7 @@ function initializeUserProperties(&$userObj,&$argsObj)
   $userObj->locale = $argsObj->locale;
   $userObj->isActive = $argsObj->user_is_active;
   $userObj->authentication = trim($argsObj->authentication);
+  $userObj->expiration_date = trim($argsObj->expiration_date);
 }
 
 function decodeRoleId(&$dbHandler,$roleID)
@@ -396,6 +394,7 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 function initializeGui(&$dbHandler,&$argsObj)
 {
   $userObj = &$argsObj->user;
+
   $guiObj = new stdClass(); 
   $guiObj->user = null;
 
@@ -412,10 +411,12 @@ function initializeGui(&$dbHandler,&$argsObj)
         $guiObj->op = new stdClass();
         $guiObj->op->status = tl::ERROR;
         $guiObj->op->user_feedback = sprintf(lang_get('login_does_not_exist'),$argsObj->login);
-      }  else {  
-        $guiObj->user = new tlUser(intval($argsObj->user_id));
-        $guiObj->user->readFromDB($dbHandler);
+        return $guiObj;
       }  
+      
+      // Go ahead
+      $guiObj->user = new tlUser(intval($argsObj->user_id));
+      $guiObj->user->readFromDB($dbHandler);
       $guiObj->main_title = lang_get("action_{$argsObj->doAction}_user");
     break;
 
@@ -445,19 +446,22 @@ function initializeGui(&$dbHandler,&$argsObj)
   }  
 
   $guiObj->auth_method_opt = array_flip($guiObj->auth_method_opt);
-
   $guiObj->optLocale = config_get('locales');
-
   $guiObj->grants = getGrantsForUserMgmt($dbHandler,$userObj);
-
   $guiObj->grants->mgt_view_events = $userObj->hasRight($dbHandler,"mgt_view_events");
 
-  // needs to be localized, because $argsObj->expiration_date is ISO
+  if ($guiObj->user != null) {
+    // needs to be localized, because $argsObj->expiration_date is ISO
+    $dateFormatPHP = str_replace(['%','/','.'],['','-','-'],config_get('date_format'));
 
-  $dateFormatPHP = str_replace(['%','/','.'],['','-','-'],config_get('date_format'));
-  $ts = date($dateFormatPHP, strtotime($guiObj->user->expiration_date));
-  $guiObj->user->expiration_date = $ts;
-
+    if (!is_null($guiObj->user->expiration_date)) {
+      $ts = date($dateFormatPHP, strtotime($guiObj->user->expiration_date));
+      $guiObj->user->expiration_date = $ts;  
+    } else {
+      $guiObj->user->expiration_date = '';
+    }
+  }
+  
   $noExpirationUsers = array_flip(config_get('noExpDateUsers'));
   $guiObj->expDateEnabled = true;
   if( !is_null($guiObj->user) ) {

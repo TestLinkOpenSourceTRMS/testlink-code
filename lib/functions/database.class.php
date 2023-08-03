@@ -196,8 +196,12 @@ class database {
       $logLevel = 'ERROR';
 
 
-      tLog("ERROR ON exec_query() - database.class.php <br />" . $this->error(htmlspecialchars($p_query)) . 
-           "<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");     
+      $forTLOG = "ERROR ON exec_query() - database.class.php <br />" . 
+                 $this->error(htmlspecialchars($p_query)) . 
+                 "<br />THE MESSAGE : $message"; 
+      tLog($forTLOG, 'ERROR', "DATABASE");   
+      echo "<pre> $forTLOG </pre>";     
+           
       echo "<pre> ============================================================================== </pre>";
       echo "<pre> DB Access Error - debug_print_backtrace() OUTPUT START </pre>";
       echo "<pre> ATTENTION: Enabling more debug info will produce path disclosure weakness (CWE-200) </pre>";
@@ -214,7 +218,7 @@ class database {
         die();
       }   
       echo "<pre>"; debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS); echo "</pre>";
-        die();
+      die();
       
       //else
       //{

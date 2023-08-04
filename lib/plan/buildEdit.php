@@ -293,7 +293,7 @@ function doDelete(&$dbHandler,&$argsObj,&$buildMgr,&$tplanMgr) {
   $build = $buildMgr->get_by_id($argsObj->build_id);
   
   $qty = $tplanMgr->getExecCountOnBuild($argsObj->tplan_id,$argsObj->build_id);
-  if($qty > 0 && !$argsObj->user->hasRight($dbHandler,'exec_delete'))
+  if($qty > 0 && !$argsObj->user->hasRightOnProj($dbHandler,'exec_delete'))
   {
     // Need to check if user has rigth to delete executions
     $op->user_feedback = sprintf(lang_get("cannot_delete_build_no_exec_delete"),$build['name']);

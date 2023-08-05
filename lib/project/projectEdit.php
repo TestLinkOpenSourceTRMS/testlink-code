@@ -6,7 +6,7 @@
  * test project management
  *
  * @package     TestLink
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2023, TestLink community 
  * @filesource  projectEdit.php
  * @uses        projectCommon.php
  * @link        http://www.testlink.org
@@ -109,6 +109,10 @@ $feedback_type = '';
 if(!$status_ok) {
   $feedback_type = 'error';  
   $args->doAction = "ErrorOnAction";
+}
+
+if (is_array($gui->user_feedback)) {
+  $gui->user_feedback = implode("<br>",$gui->user_feedback);
 }
 
 switch($args->doAction) {
@@ -565,10 +569,6 @@ function edit(&$argsObj,&$tprojectMgr)
             - name is valid ?
             - name already exists ?
             - prefix already exits ?
-  args:
-
-  returns: -
-
 
 */
 function crossChecks($argsObj,&$tprojectMgr) 
@@ -577,8 +577,8 @@ function crossChecks($argsObj,&$tprojectMgr)
   $updateAdditionalSQLFilter = null ;
   $op = $tprojectMgr->checkName($argsObj->tprojectName);
 
-  $check_op = array();
-  $check_op['msg'] = array();
+  $check_op = [];
+  $check_op['msg'] = [];
   $check_op['status_ok'] = $op['status_ok'];
 
   if($argsObj->doAction == 'doUpdate') {
@@ -601,7 +601,6 @@ function crossChecks($argsObj,&$tprojectMgr)
     $check_op['msg'][] = $op['msg'];
   }
   
-  //  var_dump($check_op);
   return $check_op;
 }
 

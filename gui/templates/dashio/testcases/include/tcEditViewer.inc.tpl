@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-tcEdit_New_viewer.tpl
+tcEditViewer.inc.tpl
 Purpose: smarty template - create new testcase
 
 @internal revisions

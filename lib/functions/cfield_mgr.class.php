@@ -2501,20 +2501,18 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
     
     returns: value converted
     
-    rev: 20080816 - franciscom
-
   */
   function build_cfield_radio($custom_field_value) 
   {
+    $value = $custom_field_value;
+    if (is_array($custom_field_value)) {
+      $value = $custom_field_value[0];
       if( count($custom_field_value) > 1)
       {
         $value=implode('|',$custom_field_value);
-      }
-      else
-      {
-        $value=is_array($custom_field_value) ? $custom_field_value[0] :$custom_field_value;
-      }
-      return $value;
+      }        
+    }
+    return $value;
   }
 
 

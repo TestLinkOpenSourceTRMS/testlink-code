@@ -539,8 +539,6 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr,&$tprojMgr)
 function initializeOptionTransferCfg($otName,&$argsObj,&$tprojMgr)
 {
   $otCfg = new stdClass();
-  $otCfg->js_ot_name = $otName;
-
   switch($argsObj->doAction) {
     case 'create':
     case 'edit':
@@ -549,10 +547,10 @@ function initializeOptionTransferCfg($otName,&$argsObj,&$tprojMgr)
       $otCfg->global_lbl = '';
       $otCfg->from->lbl = lang_get('available_kword');
       $otCfg->to->lbl = lang_get('assigned_kword');
-      $otCfg->from->map = 
-        $tprojMgr->get_keywords_map($argsObj->tproject_id);
+      $otCfg->from->map = $tprojMgr->get_keywords_map($argsObj->tproject_id);
     break;
   }
+  $otCfg->js_ot_name = $otName;
   
   return $otCfg;
 }

@@ -133,7 +133,7 @@ function initializeGui(&$db,&$args,$dateFormat)
 					$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
 					                     "<img title=\"{$l18n['execution_history']}\" src=\"{$history_img}\" /></a> ";
 	
-					$edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
+					$edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id},{$tcversion_id},{$gui->tproject_id});\">" .
 					             "<img title=\"{$l18n['design']}\" src=\"{$edit_img}\" /></a> ";
 					
 					$current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_history_link . 

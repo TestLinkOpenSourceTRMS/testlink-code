@@ -138,7 +138,7 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj) {
         $cuRow[] = htmlspecialchars($tcase['path']);
         
         // Create linked icons
-        $edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id},{$tcversion_id});\">" .
+        $edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id},{$tcversion_id},{$guiObj->tproject_id});\">" .
                      "<img title=\"{$guiObj->l18n['design']}\" src=\"{$guiObj->images['edit']}\" /></a> ";
             
         $cuRow[] = "<!-- " . sprintf("%010d", $tcase['external_id']) . " -->" .
@@ -156,7 +156,6 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj) {
     // Different table ID for different reports:
     $table_id = "tl_table_tc_created_per_user_";
   
-    // Add test plan ID to table ID
     $table_id .= $guiObj->tproject_id;
     
     $matrix = new tlExtTable($columns, $rows, $table_id);

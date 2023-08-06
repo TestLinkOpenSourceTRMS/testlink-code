@@ -341,6 +341,9 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg) {
   $gui->steps_results_layout = $cfg['spec']->steps_results_layout;
   $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
 
+  $tprj = new testproject($dbHandler);
+  $gui->tprojOpt = $tprj->getOptions($args->tproject_id);
+    
   if( ($args->caller == 'navBar') && !is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0) {
 
     $args->id = $item_mgr->getInternalID($args->targetTestCase);
@@ -428,9 +431,7 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg) {
     $xbm->tproject_id = $args->tproject_id;
 
 
-    $tprj = new testproject($dbHandler);
-    $oo = $tprj->getOptions($args->tproject_id);
-    $xbm->filter_by['requirement_doc_id'] = $oo->requirementsEnabled; 
+    $xbm->filter_by['requirement_doc_id'] = $gui->tprojOpt->requirementsEnabled; 
     $xbm->keywords = $tprj->getKeywords($args->tproject_id);
     $xbm->filter_by['keyword'] = !is_null($xbm->keywords);
 

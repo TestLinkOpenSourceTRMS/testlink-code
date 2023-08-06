@@ -81,9 +81,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
   <!-- Second Row -->
   <div style="padding-top:10px">
-    <form style="display:inline;" id="estimatedExecDurationForm_{$args_testcase.id}" 
-          name="estimatedExecDurationForm_{$args_testcase.id}" method="post"
-          action="{$managerURL}">
+    <form style="display:inline;" 
+          id="estimatedExecDurationForm_{$args_testcase.id}" 
+          name="estimatedExecDurationForm_{$args_testcase.id}" 
+          method="post" action="{$managerURL}" onSubmit="return validateFormEstimatedExecDuration(this);">
 
       <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
       <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />      
@@ -99,7 +100,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}"
              title="{$tcView_viewer_labels.estimated_execution_duration}" 
              value="{$args_testcase.estimated_exec_duration}" {$tlCfg->testcase_cfg->estimated_execution_duration->required}>
-        <input type="submit" name="setEstimated" value="{$tcView_viewer_labels.btn_save}" />
+        <input type="submit" name="setEstimatedExecDuration" value="{$tcView_viewer_labels.btn_save}" />
       {else}
         {$args_testcase.estimated_exec_duration}
       {/if}

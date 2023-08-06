@@ -8,7 +8,7 @@ Purpose: smarty template - view test case in test specification
 {config_load file="input_dimensions.conf"}
 {lang_get var='labels' 
           s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count,actions,
-             file_upload_ko'}
+             file_upload_ko,warning_estimated_execution_duration_format '}
 
 {* Configure Actions *}
 {$showMode=$gui->show_mode}
@@ -35,6 +35,27 @@ function jsCallDeleteFile(btn, text, o_id) {
     window.location=my_action;
   }
 }         
+
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_estimated_execution_duration_format = "{$labels.warning_estimated_execution_duration_format|escape:'javascript'}";
+
+/**
+ * validate certain form controls before submitting
+ *
+ */
+function validateFormEstimatedExecDuration(the_form)
+{
+  var status_ok = true;  
+  var estimated_execution_duration =  document.getElementById('estimated_execution_duration');
+  if (estimated_execution_duration) {
+    var val2check = estimated_execution_duration.value;
+    if( isNaN(val2check) || /^\s+$/.test(val2check.trim()))
+    {
+      alert_message(alert_box_title,warning_estimated_execution_duration_format);
+      return false;
+    }
+  }
+}
 </script>
 
 {include file="inc_ext_js.tpl" css_only=1}

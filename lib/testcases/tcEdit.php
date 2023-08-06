@@ -658,6 +658,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
   list($add2args,$guiObj) = initUserEnv($dbHandler,$argsObj);
 
   $guiObj->uploadOp = null;
+  $guiObj->tprojOpt = $argsObj->tprojOpt;
   $guiObj->tplan_id = $argsObj->tplan_id;
   $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->editorType = $cfgObj->webEditorCfg['type'];

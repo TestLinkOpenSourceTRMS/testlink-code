@@ -45,18 +45,24 @@ function validateForm(the_form)
 {
   var status_ok = true;
   
-  if (isWhitespace(the_form.testcase_name.value))
-  {
-    alert_message(alert_box_title,warning_empty_testcase_name);
-    selectField(the_form,'testcase_name');
-    return false;
+  var testcase_name = document.getElementById('testcase_name');
+  if(testcase_name) {
+    if (isWhitespace(testcase_name.value))
+    {
+      alert_message(alert_box_title,warning_empty_testcase_name);
+      selectField(the_form,'testcase_name');
+      return false;
+    }
   }
 
-  var val2check = the_form.estimated_execution_duration.value;
-  if( isNaN(val2check) || /^\s+$/.test(val2check.trim()))
-  {
-    alert_message(alert_box_title,warning_estimated_execution_duration_format);
-    return false;
+  var estimated_execution_duration =  document.getElementById('estimated_execution_duration');
+  if (estimated_execution_duration) {
+    var val2check = estimated_execution_duration.value;
+    if( isNaN(val2check) || /^\s+$/.test(val2check.trim()))
+    {
+      alert_message(alert_box_title,warning_estimated_execution_duration_format);
+      return false;
+    }
   }
 
   var cf_designTime = document.getElementById('cfields_design_time');

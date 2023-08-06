@@ -8,7 +8,7 @@ Purpose: smarty template - create new testcase
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,
-                          warning_empty_tc_title,warning_unsaved,stay_here_tc'}
+                          warning_empty_tc_title,warning_unsaved,stay_here_tc,warning_estimated_execution_duration_format'}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -30,21 +30,34 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
+var warning_estimated_execution_duration_format = "{$labels.warning_estimated_execution_duration_format|escape:'javascript'}";
 
 function validateForm(f)
 {
-  // get the div that contains the custom fields, accession by id
- 	var cf_designTime = document.getElementById('cfields_design_time');
-  if (isWhitespace(f.testcase_name.value)) 
-  {
-    alert_message(alert_box_title,warning_empty_testcase_name);
-    selectField(f, 'testcase_name');
-    return false;
+  var testcase_name = document.getElementById('testcase_name');
+  if(testcase_name) {
+    if (isWhitespace(testcase_name.value))
+    {
+      alert_message(alert_box_title,warning_empty_testcase_name);
+      selectField(f,'testcase_name');
+      return false;
+    }
   }
-  
+
+  var estimated_execution_duration =  document.getElementById('estimated_execution_duration');
+  if (estimated_execution_duration) {
+    var val2check = estimated_execution_duration.value;
+    if( isNaN(val2check) || /^\s+$/.test(val2check.trim()))
+    {
+      alert_message(alert_box_title,warning_estimated_execution_duration_format);
+      return false;
+    }
+  }
+ 
   /* Validation of a limited type of custom fields */
-	if (cf_designTime)
- 	{
+  // get the div that contains the custom fields, accession by id
+  var cf_designTime = document.getElementById('cfields_design_time');
+  if (cf_designTime) {
  		var cfields_container = cf_designTime.getElementsByTagName('input');
  		var cfieldsChecks = validateCustomFields(cfields_container);
 		if(!cfieldsChecks.status_ok)

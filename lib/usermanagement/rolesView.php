@@ -26,7 +26,7 @@ switch ($args->doAction) {
     $role = tlRole::getByID($db,$args->roleid,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
     if ($role)
     {
-      $gui->affectedUsers = $role->getAllUsersWithRole($db);
+      $gui->affectedUsers = (array)$role->getAllUsersWithRole($db);
       $doDelete = (sizeof($gui->affectedUsers) == 0);
     }
   break;
@@ -38,6 +38,8 @@ switch ($args->doAction) {
 $userFeedback = null;
 if($doDelete)
 {
+
+  /*
   // CSRF check
   if( !is_null($args->csrfid) && !is_null($args->csrftoken) && 
       csrfguard_validate_token($args->csrfid,$args->csrftoken) )
@@ -54,7 +56,15 @@ if($doDelete)
     $msg = lang_get('CSRF_attack');
     tLog($msg,'ERROR');
     die($msg);
-  }  
+  } 
+  */ 
+
+  // only NON SYSTEM ROLES CAN be deleted
+  if($args->roleid > TL_LAST_SYSTEM_ROLE) {   
+    $userFeedback = deleteRole($db,$args->roleid);
+    checkSessionValid($db);  //refresh the current user
+  }
+
 }
 
 $gui->roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);

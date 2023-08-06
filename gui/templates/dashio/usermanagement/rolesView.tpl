@@ -142,11 +142,18 @@ Purpose: smarty template - View defined roles
 // https://stackoverflow.com/questions/2435525/
 //         best-practice-access-form-elements-by-html-id-or-name-attribute
 // 
+/*
 var csrfid = document.getElementById("launch_create").elements["CSRFName"];
 var csrftoken = document.getElementById("launch_create").elements["CSRFToken"];
 var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete'+
                '&csrfid=' + csrfid.value + 
                '&csrftoken=' + csrftoken.value +
                '&roleid=';
+alert(del_action)
+alert('kok')
+*/
+var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete'+
+               '&roleid=';
 </script>
+
 </body>

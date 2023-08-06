@@ -6,7 +6,7 @@
  * @filesource  tlTestPlanMetrics.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2004-2020, TestLink community 
+ * @copyright   2004-2023, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * @uses        config.inc.php 
  * @uses        common.php 
@@ -1023,10 +1023,9 @@ class tlTestPlanMetrics extends testplan
     $safe_id = intval($id);  
     list($my,$builds,$sqlStm,$union,$platformSet) = $this->helperBuildSQLExecCounters($id, $filters, $opt);
 
-    if(is_null($builds) || count($builds) <= 0) {
+    if(is_null($builds) || is_array($builds) == false || count($builds) <= 0) {
       return null;  // >>---> Bye!
     }  
-
 
     // Latest Executions By Platform (LEBP)
     $add2key = '';

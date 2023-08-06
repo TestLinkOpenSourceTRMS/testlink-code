@@ -37,7 +37,13 @@ function keyword_remove_confirmation(item_id, kw_link_id, keyword, title, msg, p
  */
 function remove_keyword(btn, text, item_id, kw_link_id) {
   var my_action = fRoot + 'lib/testcases/containerEdit.php?doAction=removeKeyword&item_id='
-                     + item_id + '&kw_link_id=' + kw_link_id;
+                        + item_id + '&kw_link_id=' + kw_link_id 
+
+  var tproject_id = "{$gui->tproject_id}"
+  var tplan_id = "{$gui->tplan_id}"
+
+  my_action += "&tproject_id=" + tproject_id + "&tplan_id=" + tplan_id 
+
   if( btn == 'yes' ) {
     window.location=my_action;
   }
@@ -58,6 +64,14 @@ var pF_remove_keyword = remove_keyword;
          value="{$args_item_id}" />
   <input type="hidden" name="containerType" id="containerType"
          value="{$gui->level}" />
+
+  {if property_exists($gui,'tproject_id') } 
+    <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+  {/if}
+
+  {if property_exists($gui,'tplan_id') } 
+    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+  {/if}
 
   {$kwView = $gsmarty_href_keywordsView|replace:'%s%':$gui->tproject_id}
 

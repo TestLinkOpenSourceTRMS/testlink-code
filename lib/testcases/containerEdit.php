@@ -528,8 +528,17 @@ function init_args(&$dbHandler,&$tprojectMgr,&$tsuiteMgr)
 
     case 'testsuite':
       $nodeID = !is_null($args->testsuiteID) ? $args->testsuiteID : $args->containerID;
-      $args->tproject_id = $tsuiteMgr->getTestProjectFromTestSuite($nodeID,null);
 
+      if( isset($_REQUEST['tproject_id']) ) {
+        $args->tproject_id = intval($_REQUEST['tproject_id']);
+      }
+      if( isset($_REQUEST['tprojectID']) ) {
+        $args->tproject_id = intval($_REQUEST['tprojectID']);
+      }    
+  
+      if( intval($args->tproject_id) == 0 ) {
+        $args->tproject_id = $tsuiteMgr->getTestProjectFromTestSuite($nodeID,null);
+      }
       $hipo = $tsuiteMgr->tree_manager->get_node_hierarchy_info($nodeID);
       $args->tsuite_name = $hipo['name'];
     break;

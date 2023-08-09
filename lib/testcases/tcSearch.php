@@ -200,19 +200,21 @@ if ($args->tproject_id && $args->doAction == 'doSearch') {
   $from['users'] = '';
   if( $args->created_by != '' )
   {
+    $safeCreatedBy = $db->prepare_string($args->created_by);
     $from['users'] .= " JOIN {$tables['users']} AUTHOR ON AUTHOR.id = TCV.author_id ";
-    $filter['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
-                        "       AUTHOR.first LIKE '%{$args->created_by}%' OR " .
-                        "       AUTHOR.last LIKE '%{$args->created_by}%') ";
+    $filter['author'] = " AND ( AUTHOR.login LIKE '%" . $safeCreatedBy . "%' OR " .
+                        "       AUTHOR.first LIKE '%" . $safeCreatedBy . "%' OR " .
+                        "       AUTHOR.last LIKE '%" . $safeCreatedBy . "%') ";
   }  
 
   $args->edited_by = trim($args->edited_by);
   if( $args->edited_by != '' )
   {
+    $safeEditedBy = $db->prepare_string($args->edited_by);
     $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";
-    $filter['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
-                        "         UPDATER.first LIKE '%{$args->edited_by}%' OR " .
-                        "         UPDATER.last LIKE '%{$args->edited_by}%') ";
+    $filter['modifier'] = " AND ( UPDATER.login LIKE '%" . $safeEditedBy . "%' OR " .
+                        "         UPDATER.first LIKE '%" . $safeEditedBy . "%' OR " .
+                        "         UPDATER.last LIKE '%" . $safeEditedBy . "%') ";
   }  
     
   $sqlFields = " SELECT NH_TC.id AS testcase_id,NH_TC.name,TCV.id AS tcversion_id," .

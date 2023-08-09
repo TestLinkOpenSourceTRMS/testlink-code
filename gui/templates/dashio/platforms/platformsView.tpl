@@ -90,11 +90,11 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
       {$oplat=$gui->platforms[platform]}
       <tr data-qa-item-name="{$oplat.name|escape}">
         <td data-qa-column="name">
-        	{$oplat.name|escape}
           <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$oplat.id}</span>
         	{if $gui->canManage != ""}
         	  <a href="{$managerURL}&doAction=edit&id={$oplat.id}&tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}">
         	{/if}
+        	{$oplat.name|escape}
         	{if $gui->canManage != ""}
         	  </a>
         	{/if}

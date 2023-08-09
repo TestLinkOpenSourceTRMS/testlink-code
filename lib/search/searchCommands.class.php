@@ -519,7 +519,7 @@ class searchCommands
       $filterRS['scope'] = ' OR ( ';
       $filterRS['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       foreach($targetSet as $target) {
-        $filterRS['scope'] .= $args->and_or . " $udf(RSRV.scope) $this->likeOp '%{$target}%' ";  
+        $filterRS['scope'] .= $args->and_or . " $udf(RSRV.scope) $this->likeOp '%" . $db->prepare_string($target) ."%' ";  
       }  
       $filterRS['scope'] .= ')';
   
@@ -527,7 +527,7 @@ class searchCommands
       $filterRS['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       foreach($targetSet as $trgt) {
         $target = trim($trgt);
-        $filterRS['name'] .= $args->and_or . " RSRV.name $this->likeOp '%{$target}%' ";  
+        $filterRS['name'] .= $args->and_or . " RSRV.name $this->likeOp '%" . $db->prepare_string($target) ."%' ";  
       }  
       $filterRS['name'] .= ')';
     }  
@@ -602,21 +602,23 @@ class searchCommands
     $from['users'] = '';
     if($args->created_by != '' )
     {
+      $safeCreatedBy = $db->prepare_string($args->created_by);
       $doFilter = true;
       $from['users'] .= " JOIN {$tables['users']} RQAUTHOR ON RQAUTHOR.id = RQV.author_id ";
-      $fi['author'] = " AND ( RQAUTHOR.login $this->likeOp '%{$args->created_by}%' OR " .
-                      "       RQAUTHOR.first $this->likeOp '%{$args->created_by}%' OR " .
-                      "       RQAUTHOR.last $this->likeOp '%{$args->created_by}%') ";
+      $fi['author'] = " AND ( RQAUTHOR.login $this->likeOp '%" . $safeCreatedBy . "%' OR " .
+                      "       RQAUTHOR.first $this->likeOp '%" . $safeCreatedBy . "%' OR " .
+                      "       RQAUTHOR.last $this->likeOp '%" . $safeCreatedBy . "%') ";
     }  
   
     $args->edited_by = trim($args->edited_by);
     if( $args->edited_by != '' )
     {
+      $safeEditedBy = $db->prepare_string($args->edited_by);
       $doFilter = true;
       $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = RQV.modifier_id ";
-      $fi['modifier'] = " AND ( UPDATER.login $this->likeOp '%{$args->edited_by}%' OR " .
-                            "       UPDATER.first $this->likeOp '%{$args->edited_by}%' OR " .
-                            "       UPDATER.last $this->likeOp '%{$args->edited_by}%') ";
+      $fi['modifier'] = " AND ( UPDATER.login $this->likeOp '%" . $safeEditedBy . "%' OR " .
+                            "       UPDATER.first $this->likeOp '%" . $safeEditedBy . "%' OR " .
+                            "       UPDATER.last $this->likeOp '%" . $safeEditedBy . "%') ";
     }  
 
     if( $doSql ) {  
@@ -651,7 +653,7 @@ class searchCommands
           $filterRQ['scope'] = ' OR ( ';
           $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
           foreach($targetSet as $target) {
-            $filterRQ['scope'] .= $args->and_or . " $udf(RQV.scope) $this->likeOp '%{$target}%' "; 
+            $filterRQ['scope'] .= $args->and_or . " $udf(RQV.scope) $this->likeOp '%" . $db->prepare_string($target) ."%' "; 
           }  
           $filterRQ['scope'] .= ')';
         }  
@@ -663,7 +665,7 @@ class searchCommands
 
           foreach($targetSet as $target)
           {
-            $filterRQ['name'] .= $args->and_or . " NHRQ.name $this->likeOp '%{$target}%' "; 
+            $filterRQ['name'] .= $args->and_or . " NHRQ.name $this->likeOp '%" . $db->prepare_string($target) ."%' "; 
           }  
           $filterRQ['name'] .= ')';
         }  
@@ -674,7 +676,7 @@ class searchCommands
           $filterRQ['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
           foreach($targetSet as $target)
           {
-            $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id $this->likeOp '%{$target}%' ";  
+            $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id $this->likeOp '%" . $db->prepare_string($target) ."%' ";  
           }  
           $filterRQ['req_doc_id'] .= ')';
         } 
@@ -725,16 +727,14 @@ class searchCommands
       return null;
     }  
 
-    $filterSpecial = null;
     $filterSpecial['tricky'] = " 1=0 ";
-
+  
     if( ($doIt = $args->ts_summary && $canUseTarget) ) {
       $filterSpecial['ts_summary'] = ' OR ( ';
       $filterSpecial['ts_summary'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       
       foreach($targetSet as $target) {
-        $filterSpecial['ts_summary'] .= $args->and_or . 
-          " $udf(TS.details) $this->likeOp '%{$target}%' ";
+        $filterSpecial['ts_summary'] .= $args->and_or . " $udf(TS.details) $this->likeOp '%{" . $db->prepare_string($target) . "}%' ";
       }  
       $filterSpecial['ts_summary'] .= ')';
     }  
@@ -744,13 +744,13 @@ class searchCommands
       $filterSpecial['ts_title'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
 
       foreach($targetSet as $target) {
-        $filterSpecial['ts_title'] .= $args->and_or . " NH_TS.name $this->likeOp '%{$target}%' ";
+        $filterSpecial['ts_title'] .= $args->and_or . " NH_TS.name $this->likeOp '%{" . $db->prepare_string($target) . "}%' ";
       }  
       $filterSpecial['ts_title'] .= ')';
     }  
 
     $otherFilters = '';  
-    if(!is_null($filterSpecial))
+    if(!is_null($filterSpecial) && is_array($filterSpecial))
     {
       $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
     }  
@@ -811,8 +811,7 @@ class searchCommands
     }  
 
 
-    $filter['by_tc_internal_id'] = " AND NH_TCV.parent_id IN (" . 
-                          implode(",",$tcaseSet) . ") ";
+    $filter['by_tc_internal_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$tcaseSet) . ") ";
 
 
     $filterSpecial['tricky'] = " 1=0 ";
@@ -833,11 +832,11 @@ class searchCommands
       }  
     }  
 
-    $doFilter = false;
+    // Bad variable choice :(
+    // these are booleans  
     $doFilter = ($args->tc_summary || $args->tc_title || $args->tc_id);
 
-    if($tc_cf_id > 0)
-    {
+    if($tc_cf_id > 0) {
       $cf_def = $gui->design_cf_tc[$tc_cf_id];
 
       $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
@@ -859,8 +858,8 @@ class searchCommands
       }
     }
 
-    if($args->tc_steps || $args->tc_expected_results)
-    {
+    // Booleans
+    if($args->tc_steps || $args->tc_expected_results) {
       $doFilter = true;
       $from['tc_steps'] = " LEFT OUTER JOIN {$tables['nodes_hierarchy']} " .
                           " NH_TCSTEPS ON NH_TCSTEPS.parent_id = NH_TCV.id " .
@@ -873,8 +872,7 @@ class searchCommands
       $filterSpecial['by_steps'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       
       foreach($targetSet as $target) {
-        $filterSpecial['by_steps'] .= $args->and_or . 
-          " $udf(TCSTEPS.actions) $this->likeOp '%{$target}%' ";  
+        $filterSpecial['by_steps'] .= $args->and_or . " $udf(TCSTEPS.actions) $this->likeOp '%" . $db->prepare_string($target) ."%' ";  
       }  
       $filterSpecial['by_steps'] .= ')';
     }    
@@ -885,7 +883,7 @@ class searchCommands
       
       foreach($targetSet as $target) {
         $filterSpecial['by_expected_results'] .= $args->and_or . 
-          " $udf(TCSTEPS.expected_results) $this->likeOp '%{$target}%' "; 
+          " $udf(TCSTEPS.expected_results) $this->likeOp '%" . $db->prepare_string($target) ."%' "; 
       }  
       $filterSpecial['by_expected_results'] .= ')';
     }    
@@ -893,8 +891,7 @@ class searchCommands
     if($canUseTarget)
     {
       $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
-      $i2s = array('name' => 'tc_title', 'summary' => 'tc_summary', 
-                   'preconditions' => 'tc_preconditions');
+      $i2s = array('name' => 'tc_title', 'summary' => 'tc_summary', 'preconditions' => 'tc_preconditions');
       foreach($k2w as $kf => $alias)
       {
         $in = $i2s[$kf];
@@ -914,7 +911,7 @@ class searchCommands
                 $xx = " $udf(" . $xx . ") ";
               break;
             }
-            $filterSpecial[$kf] .= "{$xx} {$this->likeOp}  '%{$target}%' "; 
+            $filterSpecial[$kf] .= "{$xx} {$this->likeOp}  '%" . $db->prepare_string($target) ."%' "; 
           }  
           $filterSpecial[$kf] .= ' )';
         }
@@ -923,10 +920,18 @@ class searchCommands
 
 
     $otherFilters = '';  
-    if(!is_null($filterSpecial) && count($filterSpecial) > 1)
+    if(!is_null($filterSpecial) && count($filterSpecial) > 1)  // because it always have 1 element with key 'tricky'
     {
-      $otherFilters = " AND (/* filterSpecial */ " . 
-                      implode("",$filterSpecial) . ")";
+      // remove emtpy values
+      $fs = [];
+      foreach($filterSpecial as $key => $value) {
+        if (trim($value) != '') {
+          $fs[$key] = $value;
+        } 
+      }  
+      if (count($fs) > 1) {
+        $otherFilters = " AND (/* filterSpecial Test Cases*/ " .  implode("",$fs) . ")";
+      }
     }  
 
     // Search on latest test case version using view    
@@ -937,12 +942,14 @@ class searchCommands
     {
       if($args->tcWKFStatus > 0)       
       {
+        $doFilter = true;
         $tg = intval($args->tcWKFStatus);
         $filter['by_tcWKFStatus'] = " AND TCV.status = {$tg} "; 
       }
 
       if($args->keyword_id)       
       {
+         $doFilter = true;
          $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
          $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
       }
@@ -951,21 +958,23 @@ class searchCommands
       $from['users'] = '';
       if( $created_by_on_tc != '' )
       {
+        $safeCreatedBy = $db->prepare_string($args->created_by);
         $doFilter = true;
         $from['users'] .= " JOIN {$tables['users']} AUTHOR ON AUTHOR.id = TCV.author_id ";
-        $filter['author'] = " AND ( AUTHOR.login $this->likeOp '%{$args->created_by}%' OR " .
-                            "       AUTHOR.first $this->likeOp '%{$args->created_by}%' OR " .
-                            "       AUTHOR.last $this->likeOp '%{$args->created_by}%') ";
+        $filter['author'] = " AND ( AUTHOR.login $this->likeOp '%" . $safeCreatedBy . "%' OR " .
+                            "       AUTHOR.first $this->likeOp '%" . $safeCreatedBy . "%' OR " .
+                            "       AUTHOR.last $this->likeOp '%" . $safeCreatedBy . "%') ";
       }  
     
       $edited_by_on_tc = $args->edited_by = trim($args->edited_by);
       if( $edited_by_on_tc != '' )
       {
+        $safeEditedBy = $db->prepare_string($args->edited_by);
         $doFilter = true;
         $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";
-        $filter['modifier'] = " AND ( UPDATER.login $this->likeOp '%{$args->edited_by}%' OR " .
-                            "         UPDATER.first $this->likeOp '%{$args->edited_by}%' OR " .
-                            "         UPDATER.last $this->likeOp '%{$args->edited_by}%') ";
+        $filter['modifier'] = " AND ( UPDATER.login $this->likeOp '%" . $safeEditedBy . "%' OR " .
+                            "         UPDATER.first $this->likeOp '%" . $safeEditedBy . "%' OR " .
+                            "         UPDATER.last $this->likeOp '%" . $safeEditedBy . "%') ";
       }  
     }
 
@@ -995,7 +1004,7 @@ class searchCommands
    
       $sql = $sqlFields . $sqlPart2 . $otherFilters;
 
-      //DEBUGecho __FUNCTION__ . '-' . __LINE__ . '-' . $sql .'<br>';
+      //DEBUG echo __FUNCTION__ . '-' . __LINE__ . '-' . $sql .'<br>';
       $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
     }  
 

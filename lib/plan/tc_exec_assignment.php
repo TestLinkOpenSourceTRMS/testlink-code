@@ -5,7 +5,7 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2022, TestLink community 
+ * @copyright   2005-2023, TestLink community 
  * @filesource  tc_exec_assignment.php
  * @link        http://www.testlink.org
  *
@@ -237,7 +237,7 @@ function init_args(&$dbH,&$tplanMgr)
   list($args,$env) = initContext();
 
   $args->user_id = intval($_SESSION['userID']);
-  $args->user = intval($_SESSION['currentUser']);
+  $args->user = $_SESSION['currentUser'];
 
   // For more information about the data accessed in session here, 
   // see the comment

@@ -97,6 +97,8 @@ class TLSmarty extends Smarty {
     parent::__construct();
     
     $main = TL_ABS_PATH . 'gui/templates/dashio/';
+
+    // @20230812 I need to review documentation about how this is used
     $this->template_dir = 
              ['main' => $main,
               'attach' => $main . 'attachments/',
@@ -106,15 +108,18 @@ class TLSmarty extends Smarty {
               'tcaseInc' => $main . 'testcases/include/',
               'tcaseLbl' => $main . 'testcases/labels/'
              ];
-                          
+
+    // Can not access in templates without doing the ->assign().
+    $this->assign("templateDirFor",$this->template_dir);
+         
     $this->config_dir = TL_ABS_PATH . 'gui/templates/conf';
     $this->compile_dir = TL_TEMP_PATH;
+
 
     // 20200222
     // Can not access $this->dashioHome in templates
     // without doing the ->assign().
-    // I declare the variable anyway, to be able to access
-    // it from PHP code
+    // I declare the variable anyway, to be able to access it from PHP code
     //
     $this->dashioHome = 'gui/templates/dashio/dashio-template/';
     $this->assign('dashioHome', $this->dashioHome);

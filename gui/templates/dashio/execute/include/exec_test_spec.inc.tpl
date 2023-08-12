@@ -51,7 +51,7 @@ Author : franciscom
     {/if}
 
     {if $args_tc_exec.steps != '' && !is_null($args_tc_exec.steps)}
-      {include file="testcases/inc_steps.tpl"
+      {include file="testcases/include/steps.inc.tpl"
                layout=$args_cfg->exec_cfg->steps_results_layout
                edit_enabled=false
                ghost_control=false

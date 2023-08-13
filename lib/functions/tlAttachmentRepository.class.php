@@ -118,15 +118,20 @@ class tlAttachmentRepository extends tlObjectWithDB
   **/
   public function insertAttachment($fkid,$fkTableName,$title,$fInfo,$opt=null)
   {
-    $op = new stdClass();
-    $op->statusOK = false;
-    $op->msg = '';
-    $op->statusCode = 0;
-
+  
     $fName = isset($fInfo['name']) ? $fInfo['name'] : null;
     $fType = isset($fInfo['type']) ? $fInfo['type'] : '';
     $fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
     $fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
+
+    $op = new stdClass();
+    $op->statusOK = false;
+    $op->msg = '';
+    $op->statusCode = 0;
+    $op->filename = $fName;
+    $op->filenameRegExp = trim($this->attachmentCfg->allowed_filenames_regexp);
+    $op->allowedFilenameExt = trim($this->attachmentCfg->allowed_files);
+
 
     if (null == $fName || '' == $fType || 0 == $fSize) {
       $op->statusCode = 'fNameORfTypeOrfSize';
@@ -135,8 +140,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 
     // Process filename against XSS
     // Thanks to http://owasp.org/index.php/Unrestricted_File_Upload
-    $pattern = trim($this->attachmentCfg->allowed_filenames_regexp);
-    if( '' != $pattern && !preg_match($pattern,$fName) ){
+    if( '' != $op->filenameRegExp && !preg_match($op->filenameRegExp,$fName) ){
       $op->msg = 'allowed_filenames_regexp -> failed';
       $op->statusCode = 'allowed_filenames_regexp';
       return $op; 
@@ -149,7 +153,7 @@ class tlAttachmentRepository extends tlObjectWithDB
       return $op; 
     }
 
-    $allowed = explode(',',$this->attachmentCfg->allowed_files);
+    $allowed = explode(',',$op->allowedFilenameExt);
     if (!in_array($fExt, $allowed)) {
       $op->msg = 'allowed_files -> failed';
       $op->statusCode = 'allowed_files';

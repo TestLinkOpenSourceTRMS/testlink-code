@@ -13,7 +13,7 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2020 TestLink community 
+ * @Copyright   2005,2023 TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -712,6 +712,19 @@ function getFileUploadErrorMessage($fInfo,$tlInfo=null)
 
   if (null == $msg && null != $tlInfo && $tlInfo->statusOK == false) {
     $msg = lang_get('FILE_UPLOAD_' . $tlInfo->statusCode);
+
+    if (strpos($msg,"%filename%") !== false && property_exists($tlInfo,'filename')) {
+      $msg = str_replace("%filename%",$tlInfo->filename,$msg);
+    }
+
+    if (strpos($msg,"%regexp%") !== false && property_exists($tlInfo,'filenameRegExp')) {
+      $msg = str_replace("%regexp%",$tlInfo->filenameRegExp,$msg);
+    }
+
+    if (strpos($msg,"%allowedextension%") !== false && property_exists($tlInfo,'allowedFilenameExt')) {
+      $msg = str_replace("%allowedextension%",$tlInfo->allowedFilenameExt,$msg);
+    }
+    
   }
   return $msg;
 }

@@ -24,10 +24,8 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 </script> 
 
 {if $gui->items != ''}
-  {$ll = #pagination_length#}
-  {include file="DataTables.inc.tpl" 
-           DataTablesSelector="#item_view"
-           DataTableslengthMenu=$ll}
+  {$ll = $tlCfg->gui->{$cfg_section}->pagination->length}
+  {include file="DataTables.inc.tpl" DataTablesSelector="#item_view" DataTablesLengthMenu=$ll}
 {/if}
 
 </head>

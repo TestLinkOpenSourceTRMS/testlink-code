@@ -690,8 +690,20 @@ $tlCfg->gui->keywordsView->itemQtyForTopButton = 10;
 $tlCfg->gui->platformsView = new stdClass();
 $tlCfg->gui->platformsView->pagination = new stdClass();
 $tlCfg->gui->platformsView->pagination->enabled = true;
-$tlCfg->gui->platformsView->pagination->length = '[40, 60, 80, -1], [40, 60, 80, "All"]';
+$tlCfg->gui->platformsView->pagination->length = '[20, 40, 60, 80, -1], [20, 40, 60, 80, "All"]';
 $tlCfg->gui->platformsView->itemQtyForTopButton = 10;
+
+$tlCfg->gui->issueTrackerView = new stdClass();
+$tlCfg->gui->issueTrackerView->pagination = new stdClass();
+$tlCfg->gui->issueTrackerView->pagination->enabled = true;
+$tlCfg->gui->issueTrackerView->pagination->length = '[20, 40, 60, 80, -1], [20, 40, 60, 80, "All"]';
+$tlCfg->gui->issueTrackerView->itemQtyForTopButton = 10;
+
+$tlCfg->gui->codeTrackerView = new stdClass();
+$tlCfg->gui->codeTrackerView->pagination = new stdClass();
+$tlCfg->gui->codeTrackerView->pagination->enabled = true;
+$tlCfg->gui->codeTrackerView->pagination->length = '[20, 40, 60, 80, -1], [20, 40, 60, 80, "All"]';
+$tlCfg->gui->codeTrackerView->itemQtyForTopButton = 10;
 
 
 /** 

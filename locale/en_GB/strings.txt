@@ -3904,7 +3904,7 @@ $TLS_id = 'ID';
 
 $TLS_search_words_or = 'Search must match at least ONE word (OR)';
 $TLS_search_words_and = 'Search has to match ALL words (AND)';
-$TLS_search_words_placeholder = 'write here the words you want search for';
+$TLS_search_words_placeholder = 'write here the words you want search for SEPARATED BY SPACE';
 $TLS_search_words_on_attr = "Word/Words will be searched among one or more attributes you will select below";
 
 $TLS_search_other_attr = "You can set search criteria that does not use words. But This search criteria will be added on AND mode";
@@ -4019,10 +4019,13 @@ $TLS_info_resultsTCAbsoluteLatest_report = $TLS_resultsTCAbsoluteLatest;
 
 $TLS_resultsTCAbsoluteLatest_title = "Latest execution in Selected Platform  computed over all builds";
 
-$TLS_FILE_UPLOAD_allowed_filenames_regexp = 'File Name does not pass REGEXP checkings <br> <b> %filename% </b>';
+$TLS_FILE_UPLOAD_allowed_filenames_regexp = 'Filename <b>%filename%</b> <br>does not pass this REGEXP checkings: %regexp% <br>' . 
+                                            '<br> You can use https://www.autoregex.xyz/ or ' .
+                                            'https://www.regextranslator.com/<br>to translate %regexp% to human readable English';
+
 
 $TLS_FILE_UPLOAD_empty_extension = 'Empty Extension is Forbidden';
-$TLS_FILE_UPLOAD_allowed_files = 'File does not pass allowed file type check <br> <b> %filename% </b>';
+$TLS_FILE_UPLOAD_allowed_files = '<b>File: %filename% </b> <br>does not pass allowed file type check (valid/allowed extensions: %allowedextension%)<br>';
 
 $TLS_file_upload_ok = 'File Upload OK <br> <b> %filename%</b>';
 $TLS_file_upload_step_exec_ok ='File Upload OK - Test Case Step: %step% <br> <b> %filename%</b>';

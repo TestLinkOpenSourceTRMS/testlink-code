@@ -38,7 +38,7 @@ Purpose: show search form
           </option>
           <option value="and" {$gui->and_selected} >{$labels.search_words_and|escape}</option>
          </select>
-         <input style="width: 20rem" type="text" name="target" id="target" 
+         <input style="width: 40rem" type="text" name="target" id="target" 
                 value="{$gui->target|escape}" 
                 placeholder="{$labels.search_words_placeholder|escape}">
      </td>

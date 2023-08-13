@@ -42,17 +42,17 @@ function validateForm(f)
 
 <div class="workBack">
 {if $gui->file_check.show_results}
-	  {if $gui->file_check.import_msg.ok != ''}
-	      {$labels.imported}<br>
+	  {if $gui->file_check.import_msg.ok != '' && count($gui->file_check.import_msg.ok) > 0}
+	      <b>{$labels.imported}</b><br>
 	      {foreach item=result from=$gui->file_check.import_msg.ok}
-	      	<b>{$result|escape}</b><br />
+	      	<b><i>{$result|escape}</i></b><br />
 	      {/foreach}
 	  {/if} 
 	  <br>
-	  {if $gui->file_check.import_msg.ko != ''}
-	      {$labels.not_imported}<br>
+	  {if $gui->file_check.import_msg.ko != '' && count($gui->file_check.import_msg.ko) > 0}
+	      <b>{$labels.not_imported}</b><br>
 	      {foreach item=result from=$gui->file_check.import_msg.ko}
-	      	<b>{$result|escape}</b><br />
+	      	<b><i>{$result|escape}</i></b><br />
 	      {/foreach}
 	  {/if} 
 	  <form method="post" action="{$SCRIPT_NAME}">

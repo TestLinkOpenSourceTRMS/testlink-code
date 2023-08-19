@@ -376,6 +376,12 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)  {
 function init_args(&$tprojectMgr) {
   $_REQUEST=strings_stripSlashes($_REQUEST);
 
+  // IMPORTANT NOTICE
+  // "creation_date_from" => array(tlInputParameter::STRING_N,0,10),
+  // 0 -> min len
+  // 10 -> forced len by the tlInputParameter
+  //                
+
   $args = new stdClass();
   $iParams = array("doAction" => array(tlInputParameter::STRING_N,0,10),
                    "tproject_id" => array(tlInputParameter::INT_N), 
@@ -394,10 +400,10 @@ function init_args(&$tprojectMgr) {
                    "preconditions" => array(tlInputParameter::STRING_N,0,50),
                    "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
                    "importance" => array(tlInputParameter::INT_N),
-                   "creation_date_from" => array(tlInputParameter::STRING_N),
-                   "creation_date_to" => array(tlInputParameter::STRING_N),
-                   "modification_date_from" => array(tlInputParameter::STRING_N),
-                   "modification_date_to" => array(tlInputParameter::STRING_N),
+                   "creation_date_from" => array(tlInputParameter::STRING_N,0,10),
+                   "creation_date_to" => array(tlInputParameter::STRING_N,0,10),
+                   "modification_date_from" => array(tlInputParameter::STRING_N,0,10),
+                   "modification_date_to" => array(tlInputParameter::STRING_N,0,10),
                    "jolly" => array(tlInputParameter::STRING_N));
     
   $args = new stdClass();
@@ -430,16 +436,22 @@ function init_args(&$tprojectMgr) {
                'modification_date_from' => ' modification_ts >= ', 
                'modification_date_to' => ' modification_ts <= ');
 
-
+  // We are duplicating code present in searchCommands.class.php
   $dateFormat = config_get('date_format');
+  $PHPdateFormat = str_replace('%','',$dateFormat);
   $filter = null;
   foreach($k2w as $key => $value) {
-    if (isset($args->$key) && $args->$key != '') {
-      $da = split_localized_date($args->$key, $dateFormat);
-      if ($da != null) {
-        $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
-        $filter[$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
+    if (validateDate($args->$key,$PHPdateFormat)) {
+      if (isset($args->$key) && $args->$key != '') {
+        $da = split_localized_date($args->$key, $dateFormat);
+        if ($da != null) {
+          $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
+          $filter[$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
+        }
       }
+    } else {
+      // Cleanup no good date
+      $args->$key = '';
     }
   } 
 
@@ -528,4 +540,15 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr) {
       $gui->$key = '';  
     }  
   }  
+}
+
+
+/**
+ * https://uibakery.io/regex-library/date-regex-php
+ * https://tecadmin.net/validate-date-string-in-php/
+ */
+function validateDate($dateToValidate, $format = 'Y-m-d')
+{
+    $ddd = DateTime::createFromFormat($format, $dateToValidate);
+    return $ddd && $ddd->format($format) === $dateToValidate;
 }

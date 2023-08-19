@@ -55,7 +55,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <tbody>
     {foreach key=cf_id item=cf_def from=$gui->cf_map}
       <tr>
-      <td width="5%" class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&cfield_id={$cf_def.id}"
+      <td width="5%" class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&cfield_id={$cf_def.id}&tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}"
                           title="{$labels.manage_cfield}">{$cf_def.name|escape}</a></td>
       <td width="10%">{$cf_def.label|escape}</td>
       <td width="5%">{$gui->cf_types[$cf_def.type]}</td>

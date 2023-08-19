@@ -126,66 +126,55 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
   // Get email addresses for all users that have default role = administrator
  
   $cfg = config_get('notifications');
-  if( !is_null($cfg->userSignUp->to->roles) )
-  {
+  if( !is_null($cfg->userSignUp->to->roles) ) {
     $opt = array('active' => 1);
-    foreach($cfg->userSignUp->to->roles as $roleID)
-    {
+    foreach($cfg->userSignUp->to->roles as $roleID) {
       $roleMgr = new tlRole($roleID);
       $userSet = $roleMgr->getUsersWithGlobalRole($dbHandler,$opt);
       $key2loop = array_keys($userSet);
-      foreach($key2loop as $userID)
-      {
-        if(!isset($mail['to'][$userID]))
-        {
+      foreach($key2loop as $userID) {
+        if(!isset($mail['to'][$userID])) {
           $mail['to'][$userID] = $userSet[$userID]->emailAddress; 
         }  
       }
     }  
   }  
-  if( !is_null($cfg->userSignUp->to->users) )
-  {
+
+  if( !is_null($cfg->userSignUp->to->users) ) {
     // Brute force query
     $tables = tlObject::getDBTables('users');
     $sql = " SELECT id,email FROM {$tables['users']} " .
            " WHERE login IN('" . implode("','", $cfg->userSignUp->to->users) . "')";
     $userSet = $dbHandler->fetchRowsIntoMap($sql,'id');
-    if(!is_null($userSet))
-    {
-      foreach($userSet as $userID => $elem)
-      {
-        if(!isset($mail['to'][$userID]))
-        {
+    if(!is_null($userSet)) {
+      foreach($userSet as $userID => $elem) {
+        if(!isset($mail['to'][$userID])) {
           $mail['to'][$userID] = $elem['email'];
         }  
       }
     }  
   }
 
-  if($mail['to'] != '')
-  {
-    $dest = null;  
+  if($mail['to'] != '') {
+    $dest = [];  
     $validator = new Zend_Validate_EmailAddress();
-    foreach($mail['to'] as $mm)
-    {
+    foreach($mail['to'] as $mm) {
       $ema = trim($mm);
-      if($ema == '' || !$validator->isValid($ema))
-      {
+      if($ema == '' || !$validator->isValid($ema)) {
         continue;
       }  
       $dest[] = $ema;
     }  
-    $mail['to'] = implode(',',$dest); // email_api uses ',' as list separator
-    $mail['subject'] = lang_get('new_account');
-    $mail['body'] = lang_get('new_account') . "\n";
-    $mail['body'] .= " user:$userObj->login\n"; 
-    $mail['body'] .= " first name:$userObj->firstName surname:$userObj->lastName\n";
-    $mail['body'] .= " email:{$userObj->emailAddress}\n";
-      
-    // silence errors
-    if(!is_null($dest))
-    {
+
+    if(count($dest) > 0) {
+      $mail['to'] = implode(',',$dest); // email_api uses ',' as list separator
+      $mail['subject'] = lang_get('new_account');
+      $mail['body'] = lang_get('new_account') . "\n";
+      $mail['body'] .= " user:$userObj->login\n"; 
+      $mail['body'] .= " first name:$userObj->firstName surname:$userObj->lastName\n";
+      $mail['body'] .= " email:{$userObj->emailAddress}\n";
+
       @email_send(config_get('from_email'), $mail['to'], $mail['subject'], $mail['body']);
-    }  
+    }
   }  
 }

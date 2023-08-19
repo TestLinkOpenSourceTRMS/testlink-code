@@ -25,13 +25,13 @@ var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';
  * 
  *
  */
-function relation_delete_confirmation(item_id, relation_id, title, msg, pFunction) 
+function relation_delete_confirmation(item_id, relation_id, tproject_id, title, msg, pFunction) 
 {
   var my_msg = msg.replace('%i',relation_id);
   var safe_title = escapeHTML(title);
   Ext.Msg.confirm(safe_title, my_msg,
                   function(btn, text) { 
-                    pFunction(btn,text,item_id, relation_id);
+                    pFunction(btn,text,item_id, relation_id,tproject_id);
                   });
 }
 
@@ -40,10 +40,11 @@ function relation_delete_confirmation(item_id, relation_id, title, msg, pFunctio
  * 
  *
  */
-function delete_relation(btn, text, item_id, relation_id) 
+function delete_relation(btn, text, item_id, relation_id,tproject_id) 
 {
   var my_action = fRoot + 'lib/testcases/tcEdit.php?doAction=doDeleteRelation&tcase_id='
-                     + item_id + '&relation_id=' + relation_id;
+                        + item_id + '&relation_id=' + relation_id 
+                        + '&tproject_id=' + tproject_id;
   if( btn == 'yes' ) 
   {
     window.location=my_action;
@@ -173,7 +174,7 @@ var pF_delete_relation = delete_relation;
           
 		     {if $canDel}
           <td align="center">
-            <a href="javascript:relation_delete_confirmation({$args_relations.item.testcase_id}, {$rx.id}, 
+            <a href="javascript:relation_delete_confirmation({$args_relations.item.testcase_id}, {$rx.id},{$gui->tproject_id}, 
                                                               delete_rel_msgbox_title, delete_rel_msgbox_msg, 
                                                               pF_delete_relation);">
            <img src="{$tlImages.delete}" title="{$rel_labels.img_title_delete_relation}"  style="border:none" /></a>

@@ -505,4 +505,34 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
     return $rs;
   }
 
+  /**
+   * 
+   */
+  static function getErrorMessage($code) {
+
+    switch($code) {
+      case tlKeyword::E_NAMENOTALLOWED:
+        $msg = lang_get('keywords_char_not_allowed'); 
+        break;
+  
+      case tlKeyword::E_NAMELENGTH:
+        $msg = lang_get('empty_keyword_no');
+        break;
+  
+      case tlKeyword::E_DBERROR:
+      case ERROR: 
+        $msg = lang_get('kw_update_fails');
+        break;
+  
+      case tlKeyword::E_NAMEALREADYEXISTS:
+        $msg = lang_get('keyword_already_exists');
+        break;
+  
+      default:
+        $msg = 'ok';
+    }
+    return $msg;
+  }
+  
+
 }

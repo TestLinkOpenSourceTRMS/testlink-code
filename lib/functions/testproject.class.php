@@ -1087,8 +1087,11 @@ function setPublicStatus($id,$status)
   public function addKeyword($tprojID,$keyword,$notes) {
     $kw = new tlKeyword();
     $kw->initialize(null,$tprojID,$keyword,$notes);
-    $op = array('status' => tlKeyword::E_DBERROR, 'id' => -1, 
-                'msg' => 'ko DB Error');
+    $op = [
+      'status' => tlKeyword::E_DBERROR, 
+      'id' => -1, 
+      'msg' => 'ko DB Error'
+    ];
     $op['status'] = $kw->writeToDB($this->db);
     if ($op['status'] >= tl::OK) {
       $op['id'] = $kw->dbID;
@@ -1097,7 +1100,7 @@ function setPublicStatus($id,$status)
                        testproject::getName($this->db,$tprojID));
       logAuditEvent($audit,"CREATE",$op['id'],"keywords");
     } else {
-      $op['msg'] = tlKeyword::getError($op['status']);
+      $op['msg'] = tlKeyword::getErrorMessage($op['status']);
     }
 
     return $op;

@@ -8,7 +8,7 @@
  * @filesource  searchCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2023, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  *
@@ -212,16 +212,20 @@ class searchCommands
                 "ts_summary" => array(tlInputParameter::CB_BOOL),
                 "ts_title" => array(tlInputParameter::CB_BOOL));
 
-
+    // IMPORTANT NOTICE
+    // "creation_date_from" => array(tlInputParameter::STRING_N,0,10),
+    // 0 -> min len
+    // 10 -> forced len by the tlInputParameter
+    //                
     $strIn = array("tcWKFStatus" => array(tlInputParameter::STRING_N,0,1),
                    "reqStatus" => array(tlInputParameter::STRING_N,0,1),
                    "reqType" => array(tlInputParameter::STRING_N),
                    "created_by" => array(tlInputParameter::STRING_N,0,50),
                    "edited_by" => array(tlInputParameter::STRING_N,0,50),
-                   "creation_date_from" => array(tlInputParameter::STRING_N),
-                   "creation_date_to" => array(tlInputParameter::STRING_N),
-                   "modification_date_from" => array(tlInputParameter::STRING_N),
-                   "modification_date_to" => array(tlInputParameter::STRING_N),
+                   "creation_date_from" => array(tlInputParameter::STRING_N,0,10),
+                   "creation_date_to" => array(tlInputParameter::STRING_N,0,10),
+                   "modification_date_from" => array(tlInputParameter::STRING_N,0,10),
+                   "modification_date_to" => array(tlInputParameter::STRING_N,0,10),
                    "and_or" => array(tlInputParameter::STRING_N,2,3) );
 
     $numIn = array("keyword_id" => array(tlInputParameter::INT_N),
@@ -236,6 +240,7 @@ class searchCommands
     $args = &$this->args;
 
     $iParams = $iParams + $cb + $strIn + $numIn;
+
 
     R_PARAMS($iParams,$this->args);
 
@@ -304,8 +309,8 @@ class searchCommands
                  'modification_date_from' => ' modification_ts >= ', 
                  'modification_date_to' => ' modification_ts <= ');
 
-
     $dateFormat = config_get('date_format');
+    $PHPdateFormat = str_replace('%','',$dateFormat);
     $filter['dates4tc'] = null;
     $filter['dates4rq'] = null;
     foreach($k2w as $key => $value)
@@ -315,14 +320,19 @@ class searchCommands
       
       if (isset($args->$key) && $args->$key != '') 
       {
-        $da = split_localized_date($args->$key, $dateFormat);
-        if ($da != null) 
-        {
-          $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
-          $this->filters['dates4tc'][$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
-          $this->filters['dates4rq'][$key] = " AND RQV.{$k2f[$key]} '{$args->$key}' ";
-
-          $args->$lk = implode("/",$da);
+        // SQL Injection fence
+        if ($this->validateDate($args->$key,$PHPdateFormat)) {
+          $da = split_localized_date($args->$key, $dateFormat);
+          if ($da != null) {
+            $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
+            $this->filters['dates4tc'][$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
+            $this->filters['dates4rq'][$key] = " AND RQV.{$k2f[$key]} '{$args->$key}' ";
+  
+            $args->$lk = implode("/",$da);
+          }  
+        } else {
+          // clean up
+          $args->$key = '';
         }
       }
     } 
@@ -1021,6 +1031,16 @@ class searchCommands
       $cv[$cc] = lang_get('testCaseStatus_' . $vv);
     }  
     return $cv;
+  }
+
+  /**
+   * https://uibakery.io/regex-library/date-regex-php
+   * https://tecadmin.net/validate-date-string-in-php/
+   */
+  static function validateDate($dateToValidate, $format = 'Y-m-d')
+  {
+      $ddd = DateTime::createFromFormat($format, $dateToValidate);
+      return $ddd && $ddd->format($format) === $dateToValidate;
   }
 
 

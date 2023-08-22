@@ -1411,7 +1411,7 @@ function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
   if( count($tcaseSet) > 0 ) {
     
     $k2s = [
-      'tc_status' => 'setStatus',
+       'tc_status' => 'setStatus',
        'importance' => 'setImportance',
        'execution_type' => 'setExecutionType'
     ];
@@ -1426,20 +1426,24 @@ function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
 
     // second round, on Custom Fields
     $cf_map = $tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tproject_id,ENABLED,NO_FILTER_SHOW_ON_EXEC,'testcase');
+    $valuesFromUX = [];
     if( !is_null($cf_map) ) {
       // get checkboxes from $_REQUEST
       $k2i = array_keys($_REQUEST);
-      $cfval = null;
+      $cfDefinition = null;
       foreach($k2i as $val) { 
         if(strpos($val,'check_custom_field_') !== FALSE) {
-          $cfid = explode('_',$val);
-          $cfid = end($cfid);
-          $cfval[$cfid] = $cf_map[$cfid];
+          $cfid = end(explode('_',$val));
+          $cfDefinition[$cfid] = $cf_map[$cfid];
+
+          $accessToValue = str_replace('check_custom_field_','custom_field_',$val);
+          $valuesFromUX[$accessToValue] = $_REQUEST[$accessToValue];
         }  
-      } 
-      if(!is_null($cfval)) {
+      }
+      
+      if(!is_null($cfDefinition)) {
         foreach($tcaseSet as $tcversion_id => $tcase_id) {
-          $tcaseMgr->cfield_mgr->design_values_to_db($_REQUEST,$tcversion_id,$cfval);
+          $tcaseMgr->cfield_mgr->design_values_to_db($valuesFromUX,$tcversion_id,$cfDefinition);
         }
       }  
     }  

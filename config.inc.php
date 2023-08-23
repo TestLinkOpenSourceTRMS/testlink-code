@@ -2097,8 +2097,7 @@ Used when creating a Test Suite using copy
 and you have choose  $g_action_on_duplicate_name = 'generate_new'
 if the name exist.
 */
-$g_prefix_name_for_copy = @strftime("%Y%m%d-%H:%M:%S", time());
-
+$g_prefix_name_for_copy = (new DateTimeImmutable())->format('Ymd-H:i:s');
 
 /** 
  * Configurable templates this can help if you want to use a non standard template.

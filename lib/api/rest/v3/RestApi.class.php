@@ -164,32 +164,49 @@ class RestApi
   public function authenticate(Request $request, RequestHandler $handler) 
   {
     $hh = $request->getHeaders();
-    if( isset($hh['Apikey']) ) {
-        $apiKey = $hh['Apikey'][0];
-    } else {
-      // it seems this needs special configuration
-      // with Apache when you use CGI Module
-      // http://man.hubwiz.com/docset/PHP.docset/Contents/Resources/
-      //        Documents/php.net/manual/en/features.http-auth.html
-      // 
-      // @20200317 - Not tested 
-      $apiKey = $hh['PHP_AUTH_USER'][0];
+    
+    $apiKey = null;
+
+    // @20200317 - Not tested 
+    // IMPORTANT NOTICE: 'PHP_AUTH_USER'
+    // it seems this needs special configuration
+    // with Apache when you use CGI Module
+    // http://man.hubwiz.com/docset/PHP.docset/Contents/Resources/
+    //        Documents/php.net/manual/en/features.http-auth.html
+    // 
+    $apiKeySet = [
+      'Apikey',
+      'ApiKey',
+      'APIKEY',
+      'PHP_AUTH_USER'
+    ];
+    foreach( $apiKeySet as $accessKey ) {
+      if (isset($hh[$accessKey])) {
+        $apiKey = trim($hh[$accessKey][0]);
+        break;
+      }  
     }
 
-    $sql = "SELECT id FROM {$this->tables['users']} " .
+    if ($apiKey != null && $apiKey != '') {
+      $sql = "SELECT id FROM {$this->tables['users']} " .
            "WHERE script_key='" . 
            $this->db->prepare_string($apiKey) . "'";
 
-    $this->userID = $this->db->fetchFirstRowSingleColumn($sql, "id");
+      $this->userID = $this->db->fetchFirstRowSingleColumn($sql, "id");
+      if( ($ok=!is_null($this->userID)) ) {
+        $this->user = tlUser::getByID($this->db,$this->userID);  
+        return $handler->handle($request);
+      } 
+    }
 
-    if( ($ok=!is_null($this->userID)) ) {
-      $this->user = tlUser::getByID($this->db,$this->userID);  
-      return $handler->handle($request);
-    } 
-
+    // =========================================================
     // Houston we have a problem
+    $msg = 'Authentication Error';
+    if ($apiKey == null) {
+      $msg .= " (missing authentication key) ";
+    } 
     $response = new Response();
-    $response->getBody()->write('Authentication Error');
+    $response->getBody()->write($msg);
     $response->withStatus(401);
     return $response;
   }

@@ -6075,8 +6075,8 @@ class testplan extends tlObjectWithAttachments
     }
 
     $platform4EE = " ";
-    if( !is_null($my['filters']['platform_id']) )
-    {
+    if( !is_null($my['filters']['platform_id']) && (intval($my['filters']['platform_id'])) >0 )
+    {    
       $platform4EE = " AND EE.platform_id = " . intval($my['filters']['platform_id']);
     }
   

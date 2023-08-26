@@ -6,7 +6,7 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2020, TestLink community
+ * @copyright   2005-2023, TestLink community
  * @link        http://www.testlink.org/
  *
  */
@@ -3989,7 +3989,7 @@ class testcase extends tlObjectWithAttachments {
     $filterKeys = array('build_id','platform_id');
     foreach($filterKeys as $key) {
       $filterBy[$key] = '';
-      if( !is_null($$key) ) {
+      if(!is_null($$key) && intval($$key) > 0) {  // 20230826
         $itemSet = implode(',', (array)$$key);
         $filterBy[$key] = " AND e.{$key} IN ({$itemSet}) ";
       }

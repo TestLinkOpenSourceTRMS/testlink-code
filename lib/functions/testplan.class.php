@@ -9,7 +9,7 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2023, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  **/
@@ -5738,7 +5738,7 @@ class testplan extends tlObjectWithAttachments
 
     $platformClause = " AND EE.platform_id = " . $safe_id['platform'];
     $platformField = " ,EE.platform_id ";
-    if( $my['options']['ignorePlatform'] ) {
+    if( $my['options']['ignorePlatform'] || $safe_id['platform'] == -1) {  //20230826
       $platformClause = " ";
       $platformField = " ";
     }

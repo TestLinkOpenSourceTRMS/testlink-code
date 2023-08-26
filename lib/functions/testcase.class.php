@@ -6328,9 +6328,12 @@ class testcase extends tlObjectWithAttachments {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     // IMPORTANT NOTICE: keys are field names of executions tables
-    $my['filters'] = array('tcversion_id' => null,'testplan_id' => null,
-                           'platform_id' => null, 'build_id' => null);
-
+    $my['filters'] = [
+      'tcversion_id' => null,
+      'testplan_id' => null,
+      'platform_id' => null,
+      'build_id' => null
+    ];
 
     $my['filters'] = array_merge($my['filters'], (array)$filters);
 
@@ -6338,9 +6341,20 @@ class testcase extends tlObjectWithAttachments {
     $my['options'] = array_merge($my['options'], (array)$options);
 
     $filterBy = array();
-    $filterKeys = array('build_id','platform_id','testplan_id','tcversion_id');
+    $filterKeys = [
+      'build_id',
+      'platform_id',
+      'testplan_id',
+      'tcversion_id'
+    ];
+    
+    
     foreach($filterKeys as $fieldName)
     {
+      if ($fieldName == 'platform_id' && $my['filters'][$fieldName] == -1) {
+        continue;
+      }
+  
       $filterBy[$fieldName] = '';
       if( !is_null($my['filters'][$fieldName]) )
       {
@@ -6348,6 +6362,8 @@ class testcase extends tlObjectWithAttachments {
         $filterBy[$fieldName] = " AND E.{$fieldName} IN ({$itemSet}) ";
       }
     }
+
+
 
 
     // --------------------------------------------------------------------

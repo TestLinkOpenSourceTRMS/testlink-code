@@ -207,7 +207,8 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
       $uploadOp->tcLevel = null;
       $uploadOp->stepLevel = null;
       if( isset($_FILES['uploadedFile']['name'][0]) && 
-          !is_null($_FILES['uploadedFile']['name'][0])) {
+          !is_null($_FILES['uploadedFile']['name'][0]) &&
+          $_FILES['uploadedFile']['name'][0][0] != '') {
         $uploadOp->tcLevel = addAttachmentsToExec($execution_id,$docRepo);
       }  
 
@@ -1033,6 +1034,10 @@ function addAttachmentsToExec($execID,&$docRepo) {
 
   $tableRef = DB_TABLE_PREFIX . 'executions';
   $repOpt = array('allow_empty_title' => TRUE);
+
+  echo '<pre>';
+  var_dump($_FILES['uploadedFile']['name'][0]);
+  echo '</pre>';
 
   $honeyPot = [
     'name' => null,

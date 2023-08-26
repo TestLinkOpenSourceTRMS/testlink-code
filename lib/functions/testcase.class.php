@@ -6351,11 +6351,12 @@ class testcase extends tlObjectWithAttachments {
     
     foreach($filterKeys as $fieldName)
     {
+      $filterBy[$fieldName] = '';  // default -> no filter
+
       if ($fieldName == 'platform_id' && $my['filters'][$fieldName] == -1) {
         continue;
       }
-  
-      $filterBy[$fieldName] = '';
+
       if( !is_null($my['filters'][$fieldName]) )
       {
         $itemSet = implode(',', (array)($my['filters'][$fieldName]));

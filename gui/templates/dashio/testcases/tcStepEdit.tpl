@@ -10,6 +10,9 @@ Purpose: create/edit test case step
 {$module='lib/testcases/'}
 {$tcase_id=$gui->tcase_id}
 {$tcversion_id=$gui->tcversion_id}
+{$tproject_id=$gui->tproject_id}
+
+
 
 {* Used on several operations to implement goback *}
 {$showMode=$gui->show_mode} 
@@ -17,7 +20,7 @@ Purpose: create/edit test case step
 {$tcViewAction="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
 {$goBackAction="$basehref$tcViewAction"}
 {$goBackActionURLencoded=$goBackAction|escape:'url'}
-{$url_args="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{$url_args="tcEdit.php?doAction=editStep&tproject_id=$tproject_id&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {$url_args="$url_args&goback_url=$goBackActionURLencoded&step_id="}
 {$hrefEditStep="$basehref$module$url_args"}
 
@@ -45,7 +48,6 @@ function validateForm(the_form,step_set,step_number_on_edit)
   var value_found_on_set=false;
   var value_step_mistmatch=false;
   value = parseInt(the_form.step_number.value);
-
   if( isNaN(value) || value <= 0)
   {
     alert_message(alert_box_title,warning_step_number);
@@ -66,6 +68,14 @@ function validateForm(the_form,step_set,step_number_on_edit)
     }
   }
   return Ext.ux.requireSessionAndSubmit(the_form);
+}
+
+
+function buildURL(who) {
+  var step_id = who.split('-').pop()
+  const link = document.getElementById(who);
+  link.href = '{$hrefEditStep}' + step_id
+  return true;
 }
 </script>
 
@@ -211,11 +221,11 @@ var tc_editor = "{$gui->editorType}";
           </td>
           {/if}
       {else}
-        <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
-        <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
-        <td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
+        <td style="text-align:left;" onclick="buildURL('step_number-{$step_info.id}');"><a id="step_number-{$step_info.id}" href="">{$step_info.step_number}</a></td>
+        <td onclick="buildURL('step_actions-{$step_info.id}');"><a id="step_actions-{$step_info.id}" href="">{$step_info.actions}</a></td>
+        <td onclick="buildURL('step_expected-{$step_info.id}');"><a id="step_expected-{$step_info.id}" href="">{$step_info.expected_results}</a></td>
         {if $gui->tprojOpt->automationEnabled}
-          <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
+          <td onclick="buildURL('step_exec_type-{$step_info.id}');"><a id="step_exec_type-{$step_info.id}" href="">{$gui->execution_types[$step_info.execution_type]}</a></td>
         {/if}  
       {/if}
     {$rCount=$row+$step_info.step_number}

@@ -2,6 +2,11 @@
 Testlink: smarty template - 
 @filesource usersAssign.tpl
 
+IMPORTANT NOTICE:
+For system consistency we need to remove admin roles from selection.
+Because we are using the JS search present in DataTables, having
+comments inside the cells creates bad behaviour!!!
+
 *}
 {lang_get var="labels" 
           s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,show_only_authorized_users,
@@ -210,7 +215,6 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
                 {$applySelected = ' selected="selected" '} 
             {/if}
 
-            /* For system consistency we need to remove admin role from selection */
             {$removeRole = 0}
             {if $role_id == $smarty.const.TL_ROLES_ADMIN && $applySelected == '' }
                 {$removeRole = 1}

@@ -586,6 +586,9 @@ $tlCfg->priority['code_label'] = array(HIGH => 'high_priority',MEDIUM => 'medium
 define('TL_REL_TYPE_PARENT_CHILD', 1);
 define('TL_REL_TYPE_BLOCKS_DEPENDS', 2);
 define('TL_REL_TYPE_RELATED', 3);
+define('TL_REL_TYPE_AUTOMATION_PARENT_CHILD', 4);
+define('TL_REL_TYPE_EXECUTE_TOGETHER',5);
+
 
 
 /**

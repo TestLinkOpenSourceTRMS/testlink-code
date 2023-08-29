@@ -218,6 +218,8 @@ $TLS_max_size_file_msg = "Max. allowed file size:  %s KB";
 $TLS_due_since = "Assigned Since (days)";
 $TLS_parent_child = 'is Parent or is Child';
 $TLS_blocks_depends = 'Blocks or Depends';
+$TLS_automation_script = 'Automates or is Automated By (Depends)';
+
 $TLS_unknown_code = 'unknown code: %s';
 $TLS_in_percent = "[%]";
 $TLS_user_has_no_right_for_action = 'User has not needed right to do requested action';
@@ -379,6 +381,12 @@ $TLS_child_of = "is child of";
 $TLS_blocks = "blocks";
 $TLS_depends = "depends on";
 $TLS_related_to = "is related to";
+$TLS_automates_also = "automates also";
+$TLS_is_automated_by = "is automated by";
+$TLS_executed_me_and_also = "execute me and also";
+
+
+
 
 $TLS_tcase_relation_hint = "PREFIX-ID";
 $TLS_tcase_relation_help = "(if you are linking to a test on same test project, you can write ONLY the ID)";

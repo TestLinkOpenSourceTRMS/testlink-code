@@ -1272,16 +1272,22 @@ $tlCfg->testcase_cfg->relations->interproject_linking = FALSE;
  **/
 
 $tlCfg->testcase_cfg->relations->type_labels = array(
-  TL_REL_TYPE_PARENT_CHILD => array('source' => 'parent_of','destination' => 'child_of'),
-  TL_REL_TYPE_BLOCKS_DEPENDS => array('source' => 'blocks','destination' => 'depends'),
-  TL_REL_TYPE_RELATED => array('source' => 'related_to','destination' => 'related_to')
+  TL_REL_TYPE_PARENT_CHILD => ['source' => 'parent_of','destination' => 'child_of'],
+  TL_REL_TYPE_BLOCKS_DEPENDS => ['source' => 'blocks','destination' => 'depends'],
+  TL_REL_TYPE_RELATED => ['source' => 'related_to','destination' => 'related_to'],
+  TL_REL_TYPE_AUTOMATION_PARENT_CHILD => ['source' => 'automates_also', 'destination' => 'is_automated_by'],
+  TL_REL_TYPE_EXECUTE_TOGETHER => ['source' => 'executed_me_and_also', 'destination' => 'executed_me_and_also']
 );
 
 
 
-$tlCfg->testcase_cfg->relations->type_description = array(TL_REL_TYPE_PARENT_CHILD => 'parent_child',
-                                                          TL_REL_TYPE_BLOCKS_DEPENDS => 'blocks_depends',
-                                                          TL_REL_TYPE_RELATED => 'related_to');
+$tlCfg->testcase_cfg->relations->type_description = [
+  TL_REL_TYPE_PARENT_CHILD => 'parent_child',
+  TL_REL_TYPE_BLOCKS_DEPENDS => 'blocks_depends',
+  TL_REL_TYPE_RELATED => 'related_to',
+  TL_REL_TYPE_AUTOMATION_PARENT_CHILD => 'automation_script',
+  TL_REL_TYPE_EXECUTE_TOGETHER => 'executed_me_and_also'
+];
 
 
 

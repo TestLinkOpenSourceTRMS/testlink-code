@@ -263,15 +263,17 @@ class RestApi
   /**
    *
    * @param array idCard if provided identifies test project
-   *                     'id' -> DBID
-   *                     'name' ->
-   *                     'prefix' -> 
+   *              Slim Framework will provided a map with a key
+   *              as defined in the route.
+   *              $app->get('/testprojects/{mixedID}/testplans', ...
+   *  
+   * 
    */
   private function getProjects($idCard=null, $opt=null) 
   {
     $options = array_merge(array('output' => 'rest'), (array)$opt);
     $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
-    if(is_null($idCard)) {
+    if(is_null($idCard) || count($idCard) == 0) {
       $opOptions = array('output' => 'array_of_map', 
                          'order_by' => " ORDER BY name ", 
                          'add_issuetracker' => true,
@@ -288,8 +290,8 @@ class RestApi
                      $this->userID,$opOptions);
 
       $targetID = null;
-      if (isset($idCard['id'])) {
-        $safeID = intval($idCard['id']);
+      $safeID = intval($idCard['mixedID']);
+      if ($safeID > 0) {
         if( isset($zx[$safeID]) ) {
           $targetID = $safeID;
         } 
@@ -297,8 +299,8 @@ class RestApi
       else {
         // Will consider id = name or prefix
         foreach( $zx as $itemID => $value ) {
-          if( strcmp($value['name'],$idCard) == 0 || 
-              strcmp($value['prefix'],$idCard) == 0 ) {
+          if( strcmp($value['name'],$idCard['mixedID']) == 0 || 
+              strcmp($value['prefix'],$idCard['mixedID']) == 0 ) {
             $targetID = $itemID;
             break;   
           }  
@@ -414,9 +416,12 @@ class RestApi
                                       Response $response,
                                       $idCard) 
   {
-    $op  = array('status' => 'ok', 
-                 'message' => 'ok', 
-                 'items' => null);
+    $op  = [
+      'status' => 'ok', 
+      'message' => 'ok', 
+      'items' => null
+    ];
+    
     $tproj = $this->getProjects($idCard, 
                       array('output' => 'internal'));
  

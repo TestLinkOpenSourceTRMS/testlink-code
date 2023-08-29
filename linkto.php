@@ -14,6 +14,8 @@
  * 
  * - direct link to testcase KAOS-4 in test project KAOS:
  * http://<testlink_home>/linkto.php?tprojectPrefix=KAOS&item=testcase&id=KAOS-4
+ * http://<testlink_home>/linkto.php?testcase=KAOS-4
+ * 
  * 
  * - direct link to requirement REQ-002 in test project KAOS:
  * http://<testlink_home>/linkto.php?tprojectPrefix=KAOS&item=req&id=REQ-002
@@ -34,7 +36,7 @@
  * 
  * @package     TestLink
  * @author      asimon
- * @copyright   2007-2017, TestLink community
+ * @copyright   2007-2023, TestLink community
  * @link        http://www.teamst.org/index.php
  *
  */
@@ -73,11 +75,9 @@ if (!isset($_GET['load']))
   if( $args->status_ok )
   {
     $user = $_SESSION['currentUser'];
-    if($args->tprojectPrefix != '')
-    {
+    if($args->tprojectPrefix != '') {
       $hasRight = checkTestProject($db,$user,$args);
-      if( $hasRight )
-      {
+      if( $hasRight ) {
         $gui = new stdClass();
         $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
         $gui->navbar_height = config_get('navbar_height');
@@ -107,24 +107,31 @@ else
                     'testsuite' => 'lib/testcases/listTestCases.php?feature=edit_tc');
 
   
-  $op = array('status_ok' => true, 'msg' => '');
-
-  // First check for keys in _GET that MUST EXIST
-  // key: key on _GET, value: labelID defined on strings.txt
-  $mustKeys = array('tprojectPrefix' => 'testproject_not_set',
-                    'item' => 'item_not_set', 'id' => 'id_not_set');
-
-  foreach($mustKeys as $key => $labelID)
-  {
-    $op['status_ok'] = isset($_GET[$key]);
-    if( !$op['status_ok'])
-    {
-      $op['msg'] = lang_get($labelID);
-      break;
-    }
-  } 
+  $op = [
+    'status_ok' => true, 
+    'msg' => ''
+  ];
 
   $args = init_args();
+  if ($args->status_ok == false) {
+    // key: key on _GET, value: labelID defined on strings.txt
+    $mustKeys = [
+      'tprojectPrefix' => 'testproject_not_set',
+      'item' => 'item_not_set', 
+      'id' => 'id_not_set'
+    ];
+
+    foreach($mustKeys as $key => $labelID)
+    {
+      $op['status_ok'] = isset($_GET[$key]);
+      if( !$op['status_ok'])
+      {
+        $op['msg'] = __FILE__ . ' >> ' . lang_get($labelID);
+        break;
+      }
+    }     
+  }
+
   if($op['status_ok'])
   {
     $tproject = new testproject($db);
@@ -220,8 +227,22 @@ function init_args()
   $args->version = isset($_GET['version']) ? $_GET['version'] : null;
   $args->item = isset($_GET['item']) ? $_GET['item'] : null;
 
-  $args->status_ok = !is_null($args->tprojectPrefix) && !is_null($args->id) && !is_null($args->item);
 
+  $args->status_ok = !is_null($args->tprojectPrefix) && !is_null($args->id) && !is_null($args->item);
+  if ($args->status_ok == false) {
+    // new try
+    // http://<testlink_home>/linkto.php?testcase=KAOS-4
+    $args->id = isset($_GET['testcase']) ? $_GET['testcase'] : null;
+    $args->testcase = $args->id;
+    $args->item = 'testcase';
+    $glue = config_get('testcase_cfg')->glue_character;
+    $pieces = explode($glue,$args->testcase);
+    if (count($pieces) != 2) {
+      return $args->status_ok;
+    }
+    $args->tprojectPrefix = $pieces[0];
+    $args->status_ok = !is_null($args->tprojectPrefix) && !is_null($args->id) && !is_null($args->item);
+  }  
   return $args;  
 }
 
@@ -232,12 +253,39 @@ function buildLink(&$argsObj)
 {
   
   // link => $item . $id . $version . $tprojectPrefix . '&load' . $anchor;
+  $key2loop = [
+    "item",
+    "id",
+    "version",
+    "tprojectPrefix",
+    "testcase",
+    "anchor"
+  ];
+  $lk = 'load';
+  foreach ($key2loop as $key) {
+    $value = '';
+    if (isset($_GET[$key])) {
+      $value = $_GET[$key];  
+    } 
+    if (property_exists($argsObj,$key)) {
+      $value = $argsObj->$key;  
+    }
+
+    if ($key == "tprojectPrefix" || $key == "testcase" || $key == "id" ) {
+      $value = urlencode($value);
+    }
+    $lk .= "&" . $key . "=" . $value;
+
+  }
+  /*
   $lk = isset($_GET['item']) ? "item=" . $_GET['item'] : '';
   $lk .= isset($_GET['id']) ? "&id=" . urlencode($_GET['id']) : '';
   $lk .= isset($_GET['version']) ? "&version=" . $_GET['version'] : '';
   $lk .= isset($_GET['tprojectPrefix']) ? "&tprojectPrefix=" . urlencode($_GET['tprojectPrefix']) : '';
+  $lk .= isset($_GET['testcase']) ? "&testcase=" . urlencode($_GET['testcase']) : '';
+  
   $lk .= '&load' . (isset($_GET['anchor']) ? '&anchor=' . $_GET['anchor'] : "");
- 
+  */
   return $lk;
 }
 

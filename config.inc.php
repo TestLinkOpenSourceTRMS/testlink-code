@@ -199,8 +199,7 @@ $tlCfg->cookie->domain = '';
 $tlCfg->cookie->secure = false;
 $tlCfg->cookie->httponly = false;
 
-$tlCfg->cookie->testProjectMemory = $tlCfg->cookie->prefix . 
-                                    '_PROJ_ID_USER_ID_';
+$tlCfg->cookie->testProjectMemory = $tlCfg->cookie->prefix . '_PROJ_ID_USER_ID_';
 
 /**
  * Copied from MantisBT

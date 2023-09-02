@@ -248,6 +248,7 @@ switch($db_type) {
     
     case 'mysql':
     case 'mysqli':
+    case 'mysqlnd':
     @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, 'mysql'); 
     $try_create_user=1;
     break;
@@ -287,6 +288,7 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
 
         case 'mysql':
         case 'mysqli':
+        case 'mysqlnd':  
         default:
         // Starting with MySQL 8 the following sentence is WRONG !!
         // for MySQL making the user and assign right is the same operation
@@ -304,6 +306,7 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
       switch($db_type) {
         case 'mysql':
         case 'mysqli':
+        case 'mysqlnd':  
         $op = _mysql_assign_grants($db,$the_host,$db_name,$login,$passwd);
         break;
         
@@ -399,11 +402,17 @@ function check_db_loaded_extension($db_type) {
   $dbType2PhpExtension = array('postgres' => 'pgsql');
 
   $isPHPGTE7 = version_compare(phpversion(), "7.0.0", ">=");
+  $isPHPGTE82 = version_compare(phpversion(), "8.2.0", ">=");
 
   $ext2search = $db_type;  
   if( $ext2search == 'mysql' &&  $isPHPGTE7) {
     $ext2search = 'mysqli';
   }
+
+  if( ($ext2search == 'mysql' || $ext2search == 'mysqli') &&  $isPHPGTE82) {
+    $ext2search = 'mysqlnd';
+  }
+
 
 	if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
 

@@ -9,7 +9,7 @@
  * @filesource  configCheck.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2022, TestLink community 
+ * @copyright   2007-2023, TestLink community 
  * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
@@ -559,13 +559,18 @@ function checkPhpExtensions(&$errCounter) {
   if( version_compare(phpversion(), "7.4.27", ">=") ) {
     $mysqlExt = 'mysqli';
   } 
+  if( version_compare(phpversion(), "8.2.0", ">=") ) {
+    $mysqlExt = 'mysqlnd';
+  } 
+
+  
   $checks[]=array('extension' => $mysqlExt,
                   'msg' => array('feedback' => 'MySQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
  
   // ----------------------------------------------------------------------------    
   // special check for MSSQL
   $isPHPGTE7 = version_compare(phpversion(), "7.0.0", ">=");
-
+  
   $extid = 'mssql';
   if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
     // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express

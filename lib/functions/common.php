@@ -944,6 +944,7 @@ function tlSubStr($str,$start,$length = null)
 function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='') {
     $editorTemplate = config_get($itemTemplate);
     $value=$defaultText;
+
     if( !is_null($editorTemplate) ) {
       if (property_exists($editorTemplate, $webEditorName)) {
         switch($editorTemplate->$webEditorName->type) {
@@ -964,7 +965,6 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
           break;
              
           default:
-            $value = '';
           break;
         }
       }
@@ -1523,6 +1523,10 @@ function initUserEnv(&$dbH, $context, $opt=null) {
   }
   */
 
+  $gui->tprojOpt = $tprjMgr->getOptions($args->tproject_id);
+  $gui->opt_requirements = isset($gui->tprojOpt->requirementsEnabled) ? 
+                           $gui->tprojOpt->requirementsEnabled : null; 
+ 
   if( $doInitUX ) {
     // echo 'doInitUX<br>';
     $gui->grants = getGrantSetWithExit($dbH,$args,$tprjMgr,$options);
@@ -1556,8 +1560,7 @@ function initUserEnv(&$dbH, $context, $opt=null) {
                  $eRoleObj->getDisplayName() . 
                  $cfg->role_separator_close;
 
-  $gui->launcher = $_SESSION['basehref'] . 
-    'lib/general/frmWorkArea.php';
+  $gui->launcher = $_SESSION['basehref'] . 'lib/general/frmWorkArea.php';
 
   $gui->docs = config_get('userDocOnDesktop') ? getUserDocumentation() : null;
 
@@ -1569,11 +1572,7 @@ function initUserEnv(&$dbH, $context, $opt=null) {
     $gui->securityNotes = getSecurityNotes($dbH);
   }  
   
-  $gui->tprojOpt = $tprjMgr->getOptions($args->tproject_id);
-  $gui->opt_requirements = 
-    isset($gui->tprojOpt->requirementsEnabled) ? 
-    $gui->tprojOpt->requirementsEnabled : null; 
-
+ 
   getActions($gui,$_SESSION['basehref']);
 
   if( $gui->current_tproject_id == null || 
@@ -1845,6 +1844,7 @@ function getAccess(&$gui) {
  */
 function getMenuVisibility(&$gui) 
 {
+
   $showMenu = getFirstLevelMenuStructure();
 
   if($gui->tproject_id > 0  && 
@@ -1875,7 +1875,7 @@ function getMenuVisibility(&$gui)
   }
 
   if ( $gui->tproject_id > 0  && 
-       //$gui->opt_requirements == true && TO REACTIVATE
+       $gui->opt_requirements == true &&
        ($gui->grants->reqs_view == "yes" || 
         $gui->grants->reqs_edit == "yes" ||
         $gui->grants->monitor_req == "yes" || 

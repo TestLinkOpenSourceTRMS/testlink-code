@@ -77,12 +77,18 @@ switch($args->featureType) {
 }
 
 if ($args->featureID && $args->doUpdate && $featureMgr) {
+  // this can happens when filtering via Javascript
+  if ($args->map_userid_roleid == null) {
+    $gui->user_feedback = lang_get('no_users_selected');
+  } else {
     if(checkRightsForUpdate($db,$args->user,$args->testprojectID,$args->featureType,$args->featureID)) {
       doUpdate($db,$args,$featureMgr);
       if( $gui->user_feedback == '' ) {
         $gui->user_feedback = $gui->roles_updated;
-    	}
-    }
+      }
+    }  
+  }
+  
 }
 // -----------------------------------------------------------
 // Important: 
@@ -549,6 +555,11 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 
 function doUpdate(&$dbHandler,&$argsObj,&$featureMgr)
 {
+  // this can happens when filtering via Javascript
+  if ($argsObj->map_userid_roleid == null) {
+    return;
+  }
+
 	$featureMgr->deleteUserRoles($argsObj->featureID,
                                array_keys($argsObj->map_userid_roleid));
 	foreach($argsObj->map_userid_roleid as $user_id => $role_id)

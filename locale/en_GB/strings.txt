@@ -4187,4 +4187,5 @@ $TLS_no_testplan_checked = "Please select at least one Test Plan.";
 $TLS_testproject_prefix_hint = '16 characters are allowed, but we advice to use no more than 5';
 $TLS_show_calendar = "Show calendar";
 
+$TLS_no_users_selected = "No users selected - nothing done"; 
 // ----- END -----------------------------------------------------------------------

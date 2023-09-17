@@ -48,12 +48,17 @@ switch($args->edit) {
     $testsuite = $tsuite_mgr->get_by_id($args->id);
     $gui->keyword_assignment_subtitle = lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
 
+    $tcs = null;
     if($args->useFilteredSet) {
       $tcs = $args->tcaseSet;    
     } 
-    else {
+
+    // The checkbox on UX to assign only to selected test cases is ALWAYS Visible
+    // This generates issue when NO filter was applied and the checkbox checked
+    if ($tcs == null) {
       $tcs = $tsuite_mgr->get_testcases_deep($args->id,'only_id');
     } 
+    
 
     if( ($loop2do = sizeof($tcs)) ) {
       $gui->can_do = 1;

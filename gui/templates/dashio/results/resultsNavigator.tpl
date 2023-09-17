@@ -67,7 +67,7 @@ function pre_submit() {
 {if $gui->do_report.status_ok}
   {foreach from=$gui->menuItems item=menu}
     <span>
-      <a href="{$menu.href}format={$gui->selectedReportType}&amp;tplan_id={$gui->tplan_id}
+      <a href="{$menu.href}format={$gui->selectedReportType}&tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}
             {if $gui->checked_show_inactive_tplans}&amp;show_inactive_tplans=1{/if}" 
        target="workframe">{$menu.name}</a>
     {if $menu.directLink != ''}{$menu.toggle}{/if}

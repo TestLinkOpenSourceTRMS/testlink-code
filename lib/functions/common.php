@@ -1922,7 +1922,7 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
   if($tprojOpt->inventoryEnabled) {
     $invr = array('project_inventory_view','project_inventory_management');
     foreach($invr as $r){
-      $grants[$r] = ($user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
+      $grants[$r] = ($argsObj->user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
     }
   }
 

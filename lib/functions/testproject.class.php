@@ -784,6 +784,10 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
     $gui->sqlResult = $sqlResult;
   }
 
+  if (!property_exists($gui, 'uploadOp')) {
+    $gui->uploadOp = null;
+  }
+  
   $p2ow = array('refreshTree' => false, 'user_feedback' => '');
   foreach ($p2ow as $prop => $value) {
     if (!property_exists($gui,$prop)) {

@@ -1635,10 +1635,16 @@ function openExecHistoryWindow(tc_id,tplan_check) {
   var width = getCookie("execHistoryPopupWidth");
   var height = getCookie("execHistoryPopupHeight");
 
-  if(tplan_check != undefined)
+  //performance: by default show only executions from active plans
+  if (tplan_check == undefined)
   {
-    url = url + '&onlyActiveTestPlans=' + tplan_check;    
-  }  
+    tplan_check = 1;
+  }
+  
+  if (tplan_check == 1 || tplan_check == 0)
+  {
+    url = url + '&onlyActiveTestPlans=' + tplan_check;
+  } 
 
   if (width == null)
   {
@@ -1649,7 +1655,7 @@ function openExecHistoryWindow(tc_id,tplan_check) {
   {
     height = "600";
   }
-  
+
   var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
   window.open(fRoot+url, '_blank', windowCfg);
 }

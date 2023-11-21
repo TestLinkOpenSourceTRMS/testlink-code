@@ -868,7 +868,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         } else {
             // See if this ITS ID exists in the db
             $its = $this->getITSMgr()->getByID( $this->args[self::$itsIDParamName] );
-            $status = is_null($its);
+            $status = ! is_null($its);
         }
 
         return $status;
@@ -9079,7 +9079,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         }
 
         $checkFunctions = array('authenticate',
-                                'checkITSID');
+                                'checkItsID');
 
         if ($this->_runChecks($checkFunctions, $msg_prefix) &&
             $this->userHasRight("issuetracker_management", self::CHECK_PUBLIC_PRIVATE_ATTR)) {
@@ -9119,7 +9119,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $checkFunctions = array('authenticate',
                                 'checkTestProjectID',
-                                'checkITSID');
+                                'checkItsID');
 
         if($this->_runChecks($checkFunctions, $msg_prefix) && $this->userHasRight( "mgt_modify_product" )) {
 

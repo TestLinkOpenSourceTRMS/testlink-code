@@ -10,9 +10,6 @@
  * @link        http://www.teamst.org
  * @since       1.9
  *
- * @internal revisions
- * @since 1.9.7
- * 20130320 - franciscom - TICKET 5577: Requirements based Report is empty (buildColumns())
  * 
  **/
 
@@ -24,12 +21,20 @@ require_once('table.class.php');
  */
 class tlExtTable extends tlTable
 {
+  // Just for documentation
+  protected $customTypes = [
+    "issueSummary",
+    "notes",
+    "status",
+    "textArea"
+  ];
+
   /**
-   * Array of custom behaviour indexed by column type.
+   * Custom behaviour indexed by column type.
    * Behaviour means custom rendering and/or sorting available.
    * @see addCustomBehaviour($type,$behaviour)
    */
-  protected $customBehaviour = array();
+  protected $customBehaviour = [];
   
   /**
    * if true toolbar offers multisort feature.
@@ -137,6 +142,7 @@ class tlExtTable extends tlTable
   /**
    * Creates a helper object to render a table to a EXT-JS GridPanel.
    * For use of column['type'] see $this->customTypes
+   * 
    * @param string $tableID tableID is used to create a store for
    *                        table settings. tableID should be unique for
    *                        each table occurence in each project.
@@ -147,10 +153,20 @@ class tlExtTable extends tlTable
   public function __construct($columns, $data, $tableID)
   {
     parent::__construct($columns, $data, $tableID);
-    $this->addCustomBehaviour('status', array('render' => 'statusRenderer',
-                                              'sort' => 'statusCompare',
-                                              'filter' => 'Status'
-                                             ));
+    $this->addCustomBehaviour('status', 
+                              ['render' => 'statusRenderer',
+                               'sort' => 'statusCompare',
+                               'filter' => 'Status'
+                              ]);
+
+    $this->addCustomBehaviour('notes', 
+                              ['render' => 'columnWrap']);
+    
+    $this->addCustomBehaviour('textArea', 
+                              ['render' => 'columnWrap']);
+                          
+    $this->addCustomBehaviour('issueSummary', 
+                              ['render' => 'columnWrap']);
 
     $this->showExportButton = config_get('enableTableExportButton');
   }
@@ -219,8 +235,8 @@ class tlExtTable extends tlTable
 
       // new dBug($column);
       // Because sometimes a column can be made HIDDEN but used to generate a group
-      // (this happens in the requirements based report), if we remove ths column
-      // only checking for 'hidden' attribute, we will generate an issue
+      // (this happens in the requirements based report), 
+      // if we remove this column only checking for 'hidden' attribute, we will generate an issue
       //
       $isGroupable = isset($column['groupable']) ? $column['groupable'] : false;
 	    if( (isset($column['hidden']) && $column['hidden']) && !$isGroupable )
@@ -282,7 +298,11 @@ class tlExtTable extends tlTable
       if( isset($column['type']) && isset($this->customBehaviour[$column['type']]))
       {
         $customBehaviour = $this->customBehaviour[$column['type']];
-        $filterSet = array('Status','Priority','Importance');
+        $filterSet = [
+          'Status',
+          'Priority',
+          'Importance'
+        ];
         foreach($filterSet as $target)
         {
           if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == $target)
@@ -336,6 +356,9 @@ class tlExtTable extends tlTable
     }
     $s = trim($s,",\n");
     $s .= '];';
+    
+    //echo $s; die();
+
     return $s;
 
   }

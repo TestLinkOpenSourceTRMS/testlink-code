@@ -4863,8 +4863,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
-     * Helper method to see if an execution id exists on DB
-     * no checks regarding other data like test case , test plam, build, etc are done
+     * Helper method to see if the provided execution id is valid
+     * no checks regarding other data like test case, test plan, build, etc are done
      *
      *
      *
@@ -4878,11 +4878,13 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $msg = $messagePrefix . sprintf( MISSING_REQUIRED_PARAMETER_STR, $pname );
             $this->errors[] = new IXR_Error( MISSING_REQUIRED_PARAMETER, $msg );
         } else {
+            if (gettype($this->args[$pname]) == "string" and intval($this->args[$pname])) {
+              $this->args[$pname] = intval($this->args[$pname]);
+            }
             $status_ok = is_int( $this->args[$pname] ) && $this->args[$pname] > 0;
             if(! $status_ok) {
                 $msg = $messagePrefix . sprintf( PARAMETER_NOT_INT_STR, $pname, $this->args[$pname] );
                 $this->errors[] = new IXR_Error( PARAMETER_NOT_INT, $msg );
-            } else {
             }
         }
         return $status_ok;
@@ -7389,8 +7391,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
     /**
      * Returns all bugs linked to a particular testcase on a test plan.
-     * If there are no filter criteria regarding platform and build,
-     * result will be get WITHOUT checking for a particular platform and build.
+     * If there are no filter criteria regarding platform, build and execution,
+     * result will be get WITHOUT checking for a particular platform, build or execution.
      *
      * @param struct $args
      * @param string $args["devKey"]
@@ -7403,7 +7405,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
      *            Pseudo optional.
      *            if does not is present then testcaseid MUST BE present
      *
-     * @param string $args["platformid"]:
+     * @param int $args["platformid"]:
      *            optional.
      *            ONLY if not present, then $args["platformname"]
      *            will be analized(if exists)
@@ -7418,6 +7420,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param int $args["buildname"]
      *            - optional(see $args["buildid"])
      *
+     * @param int $args["executionid"]: optional
+     *                                  Restrict bugs of the given execution. Otherwise, give all
+     *                                  bugs of all executions of the Test Case (possibly filtered on
+     *                                  platforms and builds)
      *
      * @return mixed $resultInfo
      *         if execution found
@@ -7448,7 +7454,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $execContext = array(
                 'tplan_id' => $this->args[self::$testPlanIDParamName],
                 'platform_id' => null,
-                'build_id' => null
+                'build_id' => null,
+                'execution_id' => null
         );
 
         // Now we can check for Optional parameters
@@ -7458,38 +7465,54 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
         }
 
-        if($status_ok) {
+        if ($status_ok) {
             if($this->_isParamPresent( self::$platformIDParamName, $msg_prefix ) || $this->_isParamPresent( self::$platformNameParamName, $msg_prefix )) {
                 $status_ok = $this->checkPlatformIdentity( $this->args[self::$testPlanIDParamName] );
-                if($status_ok) {
+                if ($status_ok) {
                     $execContext['platform_id'] = $this->args[self::$platformIDParamName];
                 }
             }
         }
 
-        if($status_ok) {
-            $sql = " SELECT id AS exec_id FROM {$this->tables['executions']} " . " WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} " . " AND tcversion_id IN(" . " SELECT id FROM {$this->tables['nodes_hierarchy']} " . " WHERE parent_id = {$this->args[self::$testCaseIDParamName]})";
-
-            if(! is_null( $execContext['build_id'] )) {
-                $sql .= " AND build_id = " . intval( $execContext['build_id'] );
-            }
-
-            if(! is_null( $execContext['platform_id'] )) {
-                $sql .= " AND platform_id = " . intval( $execContext['platform_id'] );
-            }
-
-            $rs = $this->dbObj->fetchRowsIntoMap( $sql, 'exec_id' );
-            if(is_null( $rs )) {
-                // has not been executed
-                // execution id = -1 => test case has not been runned.
-                $resultInfo[] = array(
-                        'id' => - 1
-                );
-            } else {
-                $targetIDs = array();
-                foreach( $rs as $execrun ) {
-                    $targetIDs[] = $execrun['exec_id'];
+        if ($status_ok) {
+            if( $this->_isParamPresent(self::$executionIDParamName, $msg_prefix) ) {
+                $status_ok = $this->checkExecutionID($msg_prefix);
+                if ($status_ok) {
+                    $execContext['execution_id'] = $this->args[self::$executionIDParamName];
                 }
+            }
+        }
+
+        if ($status_ok) {
+            $targetIDs = array();
+            if ( is_null($execContext['execution_id']) ) {
+                $sql = " SELECT id AS exec_id FROM {$this->tables['executions']} " . " WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} " . " AND tcversion_id IN(" . " SELECT id FROM {$this->tables['nodes_hierarchy']} " . " WHERE parent_id = {$this->args[self::$testCaseIDParamName]})";
+
+                if(! is_null( $execContext['build_id'] )) {
+                    $sql .= " AND build_id = " . intval( $execContext['build_id'] );
+                }
+
+                if(! is_null( $execContext['platform_id'] )) {
+                    $sql .= " AND platform_id = " . intval( $execContext['platform_id'] );
+                }
+
+                $rs = $this->dbObj->fetchRowsIntoMap( $sql, 'exec_id' );
+                if(is_null( $rs )) {
+                    // has not been executed
+                    // execution id = -1 => test case has not been runned.
+                    $resultInfo[] = array(
+                                          'id' => - 1
+                                          );
+                } else {
+                    foreach( $rs as $execrun ) {
+                        $targetIDs[] = $execrun['exec_id'];
+                    }
+                }
+            } else {
+                $targetIDs[] = $execContext['execution_id'];
+            }
+
+            if ( count($targetIDs) > 0 ) {
                 $resultInfo[0]['bugs'] = array();
                 $sql = " SELECT DISTINCT bug_id FROM {$this->tables['execution_bugs']} " . " WHERE execution_id in(" . implode( ',', $targetIDs ) . ")";
                 $resultInfo[0]['bugs'] =( array ) $this->dbObj->get_recordset( $sql );

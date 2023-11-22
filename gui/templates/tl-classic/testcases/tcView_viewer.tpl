@@ -122,8 +122,7 @@ viewer for test case in test specification
         {$warning_edit_msg=""}
         {$warning_delete_msg=""}
     {else} 
-      {if isset($args_tcase_cfg) 
-        && $args_tcase_cfg->can_edit_executed == 1}
+      {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
         {$edit_enabled=1} 
         {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
       {/if} 
@@ -395,6 +394,7 @@ viewer for test case in test specification
     <div class="messages" align="center">{$tcView_viewer_labels.can_not_edit_frozen_tc}</div>
   {/if}
 
+
    {if $warning_edit_msg != ""}
        <div class="messages" align="center">
          {$warning_edit_msg|escape}<br>
@@ -405,7 +405,28 @@ viewer for test case in test specification
          {$warning_delete_msg|escape}<br>
        </div>
    {/if}
-   
+  {if count($gui->additionalMessages) > 0}
+    {foreach $gui->additionalMessages as $msgCfg}
+      {lang_get s=$msgCfg->label var="additionalMsg"}
+
+      {$defClass="messages"} 
+      {if property_exists($msgCfg, "class") && $msgCfg->class != ""}
+        {$defClass=$msgCfg->class} 
+      {/if}
+
+
+      <div class="{$defClass}" align="center">
+        {if property_exists($msgCfg, "tlImagesAccessKey") && $msgCfg->tlImagesAccessKey != ""}
+          {$imgAccessKey = $msgCfg->tlImagesAccessKey}
+          <img class="clickable" src="{$tlImages[$msgCfg->tlImagesAccessKey]}" />
+        {/if}      
+      {$additionalMsg}
+      </div>
+    {/foreach}
+  {/if}
+
+
+
 <script type="text/javascript">
   /**
    * used instead of window.open().

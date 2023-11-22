@@ -15,7 +15,7 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 
 $platform_mgr = new tlPlatform($db, $args->tproject_id);
-$gui = $platform_mgr->initViewGui($args->currentUser);	  
+$gui = $platform_mgr->initViewGui($args->currentUser,$args);	  
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -28,22 +28,26 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args() {
 	$args = new stdClass();
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+	$args->currentUser = $_SESSION['currentUser']; 
 
+  list($context,$env) = initContext();
+  $args->tproject_id = $context->tproject_id;
+  $args->tplan_id = $context->tplan_id;
+  
   if( 0 == $args->tproject_id ) {
     throw new Exception("Unable Get Test Project ID => Can Not Proceed", 1);
   }
 
-	$args->currentUser = $_SESSION['currentUser']; 
-
 	return $args;
 }
+
+
 
 /**
  * 
  *
  */
 function checkRights(&$db,&$user) {
-	return ($user->hasRightOnProj($db,'platform_management') 
-          || $user->hasRightOnProj($db,'platform_view'));
+	return ($user->hasRightOnProj($db,'platform_management') || 
+          $user->hasRightOnProj($db,'platform_view'));
 }

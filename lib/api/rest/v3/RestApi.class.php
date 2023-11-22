@@ -164,32 +164,49 @@ class RestApi
   public function authenticate(Request $request, RequestHandler $handler) 
   {
     $hh = $request->getHeaders();
-    if( isset($hh['Apikey']) ) {
-        $apiKey = $hh['Apikey'][0];
-    } else {
-      // it seems this needs special configuration
-      // with Apache when you use CGI Module
-      // http://man.hubwiz.com/docset/PHP.docset/Contents/Resources/
-      //        Documents/php.net/manual/en/features.http-auth.html
-      // 
-      // @20200317 - Not tested 
-      $apiKey = $hh['PHP_AUTH_USER'][0];
+    
+    $apiKey = null;
+
+    // @20200317 - Not tested 
+    // IMPORTANT NOTICE: 'PHP_AUTH_USER'
+    // it seems this needs special configuration
+    // with Apache when you use CGI Module
+    // http://man.hubwiz.com/docset/PHP.docset/Contents/Resources/
+    //        Documents/php.net/manual/en/features.http-auth.html
+    // 
+    $apiKeySet = [
+      'Apikey',
+      'ApiKey',
+      'APIKEY',
+      'PHP_AUTH_USER'
+    ];
+    foreach( $apiKeySet as $accessKey ) {
+      if (isset($hh[$accessKey])) {
+        $apiKey = trim($hh[$accessKey][0]);
+        break;
+      }  
     }
 
-    $sql = "SELECT id FROM {$this->tables['users']} " .
+    if ($apiKey != null && $apiKey != '') {
+      $sql = "SELECT id FROM {$this->tables['users']} " .
            "WHERE script_key='" . 
            $this->db->prepare_string($apiKey) . "'";
 
-    $this->userID = $this->db->fetchFirstRowSingleColumn($sql, "id");
+      $this->userID = $this->db->fetchFirstRowSingleColumn($sql, "id");
+      if( ($ok=!is_null($this->userID)) ) {
+        $this->user = tlUser::getByID($this->db,$this->userID);  
+        return $handler->handle($request);
+      } 
+    }
 
-    if( ($ok=!is_null($this->userID)) ) {
-      $this->user = tlUser::getByID($this->db,$this->userID);  
-      return $handler->handle($request);
-    } 
-
+    // =========================================================
     // Houston we have a problem
+    $msg = 'Authentication Error';
+    if ($apiKey == null) {
+      $msg .= " (missing authentication key) ";
+    } 
     $response = new Response();
-    $response->getBody()->write('Authentication Error');
+    $response->getBody()->write($msg);
     $response->withStatus(401);
     return $response;
   }
@@ -246,15 +263,17 @@ class RestApi
   /**
    *
    * @param array idCard if provided identifies test project
-   *                     'id' -> DBID
-   *                     'name' ->
-   *                     'prefix' -> 
+   *              Slim Framework will provided a map with a key
+   *              as defined in the route.
+   *              $app->get('/testprojects/{mixedID}/testplans', ...
+   *  
+   * 
    */
   private function getProjects($idCard=null, $opt=null) 
   {
     $options = array_merge(array('output' => 'rest'), (array)$opt);
     $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
-    if(is_null($idCard)) {
+    if(is_null($idCard) || count($idCard) == 0) {
       $opOptions = array('output' => 'array_of_map', 
                          'order_by' => " ORDER BY name ", 
                          'add_issuetracker' => true,
@@ -271,8 +290,8 @@ class RestApi
                      $this->userID,$opOptions);
 
       $targetID = null;
-      if (isset($idCard['id'])) {
-        $safeID = intval($idCard['id']);
+      $safeID = intval($idCard['mixedID']);
+      if ($safeID > 0) {
         if( isset($zx[$safeID]) ) {
           $targetID = $safeID;
         } 
@@ -280,8 +299,8 @@ class RestApi
       else {
         // Will consider id = name or prefix
         foreach( $zx as $itemID => $value ) {
-          if( strcmp($value['name'],$idCard) == 0 || 
-              strcmp($value['prefix'],$idCard) == 0 ) {
+          if( strcmp($value['name'],$idCard['mixedID']) == 0 || 
+              strcmp($value['prefix'],$idCard['mixedID']) == 0 ) {
             $targetID = $itemID;
             break;   
           }  
@@ -397,9 +416,12 @@ class RestApi
                                       Response $response,
                                       $idCard) 
   {
-    $op  = array('status' => 'ok', 
-                 'message' => 'ok', 
-                 'items' => null);
+    $op  = [
+      'status' => 'ok', 
+      'message' => 'ok', 
+      'items' => null
+    ];
+    
     $tproj = $this->getProjects($idCard, 
                       array('output' => 'internal'));
  

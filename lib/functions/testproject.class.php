@@ -4235,5 +4235,19 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
     return is_null($rs) ? $rs : $rs[0]['name'];
   }
 
+  /***
+   *
+   * @used-by testcase.class.php 
+   */
+  function getKeywordsAsMapByName($tproject_id) {
+    $keywordMap = null;
+    $keywords = $this->getKeywords($tproject_id);
+    if ($keywords) {
+      foreach($keywords as $kw) {
+        $keywordMap[$kw->name] = $kw->notes;
+      }
+    }
+    return $keywordMap;
+  }
 
 } // end class

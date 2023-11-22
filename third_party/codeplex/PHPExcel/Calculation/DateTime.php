@@ -534,7 +534,7 @@ class PHPExcel_Calculation_DateTime
                 if ($testVal2 !== false) {
                     $testVal3 = strtok('- ');
                     if ($testVal3 === false) {
-                        $testVal3 = strftime('%Y');
+                        $testVal3 = @strftime('%Y');
                     }
                 } else {
                     return PHPExcel_Calculation_Functions::VALUE();
@@ -554,16 +554,16 @@ class PHPExcel_Calculation_DateTime
         if (($PHPDateArray !== false) && ($PHPDateArray['error_count'] == 0)) {
             // Execute function
             if ($PHPDateArray['year'] == '') {
-                $PHPDateArray['year'] = strftime('%Y');
+                $PHPDateArray['year'] = @strftime('%Y');
             }
             if ($PHPDateArray['year'] < 1900) {
                 return PHPExcel_Calculation_Functions::VALUE();
             }
             if ($PHPDateArray['month'] == '') {
-                $PHPDateArray['month'] = strftime('%m');
+                $PHPDateArray['month'] = @strftime('%m');
             }
             if ($PHPDateArray['day'] == '') {
-                $PHPDateArray['day'] = strftime('%d');
+                $PHPDateArray['day'] = @strftime('%d');
             }
             $excelDateValue = floor(
                 PHPExcel_Shared_Date::FormattedPHPToExcel(

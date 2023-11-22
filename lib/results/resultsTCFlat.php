@@ -75,9 +75,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) ||
   }
   createSpreadsheet($gui,$args);
   $args->format = FORMAT_XLS;
-}  
-else
-{
+} else {
   // We need to ask user to do a choice
   $tpl = 'resultsTCFlatLauncher.tpl';
   $gui->pageTitle = $labels['test_result_flat_filters'];
@@ -214,8 +212,8 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $guiObj->printDate = '';
   $guiObj->matrix = array();
 
-  $guiObj->platforms = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
-  $guiObj->show_platforms = !is_null($guiObj->platforms);
+  $guiObj->platforms = (array)$tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
+  $guiObj->show_platforms = (count($guiObj->platforms) > 0);
 
   $guiObj->img = new stdClass();
   $guiObj->img->exec = $imgSet['exec_icon'];
@@ -515,9 +513,7 @@ execution_type => NEED TO DECODE
       htmlspecialchars("{$eid}:{$metrics[$ix]['name']}",ENT_QUOTES);
 
     $rows[$cols['version']] = $metrics[$ix]['version'];
-
-    if ($gui->show_platforms)
-    {
+    if ($gui->show_platforms) {
       $rows[$cols['platform']] = $gui->platforms[$metrics[$ix]['platform_id']];
     }
 

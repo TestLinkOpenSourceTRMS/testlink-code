@@ -1,6 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource DataTablesColumnFiltering.inc.tpl
+@param DataTablesSelector
+@param DataTablesLengthMenu
 
 @see https://datatables.net/extensions/fixedheader/examples/options/columnFiltering.html
 
@@ -9,10 +11,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
 <script>
 $(document).ready(function() {
-    var pimpedTable = $('#item_view').DataTable( {
+
+
+    // 20210530 
+    // stateSave: true produces weird behaivour when using filter on individual columns
+    var pimpedTable = $('{$DataTablesSelector}').DataTable( {
         orderCellsTop: true,
         fixedHeader: true,
-        lengthMenu: [{$menuLen}],
+        lengthMenu: [{$DataTablesLengthMenu}],
         stateSave: true,
 
         // https://datatables.net/reference/option/dom
@@ -24,8 +30,12 @@ $(document).ready(function() {
     // Setup - add a text input to each footer cell
     // Clone & append the whole header row
     // clone(false) -> is the solution to avoid sort action when clicking
-    $('#item_view thead tr').clone(false).prop("id","column_filters").appendTo( '#item_view thead' );
-    $('#item_view thead tr:eq(1) th').each( function (idx) {
+    $('{$DataTablesSelector} thead tr').clone(false).prop("id","column_filters").appendTo( '{$DataTablesSelector} thead' );
+    $('{$DataTablesSelector} thead tr:eq(1) th').each( function (idx) {
+
+        // IMPORTANT NOTICE!!!: Remove class from cloned <th>, to remove sort icons!!
+         $(this).removeClass(['sorting','sorting_desc','sorting_asc']);
+
         if (typeof  $(this).data('draw-filter') != 'undefined') {
           var title = '';
           var dst = $(this).data('draw-filter');

@@ -51,12 +51,14 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   // may be we can remove ?
 
   // keys -> filter_* come from tlTestCaseFilterControl.class.php
-  $my['filters'] = array('keywords' => null, 
-                         'executionType' => null, 
-                         'importance' => null,
-                         'testplan' => null, 
-                         'filter_tc_id' => null,
-                         'filter_platforms' => null);
+  $my['filters'] = [
+    'keywords' => null, 
+    'executionType' => null, 
+    'importance' => null,
+    'testplan' => null, 
+    'filter_tc_id' => null,
+    'filter_platforms' => null
+  ];
 
   $my['options'] = array_merge($my['options'], (array)$options);
   $my['options']['showTestCaseID'] = config_get('treemenu_show_testcase_id');
@@ -1182,7 +1184,7 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
         $sql .=  " AND ({$cf_sql}) ";
       }
 
-      $rows = $db->fetchColumnsIntoArray($sql,'value');
+      $rows = (array)$db->fetchColumnsIntoArray($sql,'value');
       
       //if there exist as many rows as custom fields to be filtered by
       //the tc does meet the criteria

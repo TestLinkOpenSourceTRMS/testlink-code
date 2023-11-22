@@ -9,7 +9,7 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2023, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  **/
@@ -1618,11 +1618,8 @@ class testplan extends tlObjectWithAttachments
   
     Note: test urgency is set to default in the new Test plan (not copied)
     
-    @internal revisions
-    20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
-    20101114 - franciscom - BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
   */
-  private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping)
+  private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -1968,7 +1965,7 @@ class testplan extends tlObjectWithAttachments
 
     $the_sql[]="DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id ".
            "IN ($execIDSetSQL)";
-    
+    $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps_wip']} WHERE testplan_id={$id}";
     $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps']} WHERE execution_id ".
            "IN ($execIDSetSQL) ";           
     $the_sql[]="DELETE FROM {$this->tables['executions']} WHERE testplan_id={$id}";
@@ -5741,7 +5738,7 @@ class testplan extends tlObjectWithAttachments
 
     $platformClause = " AND EE.platform_id = " . $safe_id['platform'];
     $platformField = " ,EE.platform_id ";
-    if( $my['options']['ignorePlatform'] ) {
+    if( $my['options']['ignorePlatform'] || $safe_id['platform'] == -1) {  //20230826
       $platformClause = " ";
       $platformField = " ";
     }
@@ -6078,8 +6075,8 @@ class testplan extends tlObjectWithAttachments
     }
 
     $platform4EE = " ";
-    if( !is_null($my['filters']['platform_id']) )
-    {
+    if( !is_null($my['filters']['platform_id']) && (intval($my['filters']['platform_id'])) >0 )
+    {    
       $platform4EE = " AND EE.platform_id = " . intval($my['filters']['platform_id']);
     }
   

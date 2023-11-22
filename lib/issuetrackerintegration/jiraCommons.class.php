@@ -46,7 +46,7 @@ class jiraCommons
     {
       $ret = date_parse($date2parse);
       $ret = ((gmmktime(0, 0, 0, $ret['month'], $ret['day'], $ret['year'])));
-      $ret = $this->l18n['duedate'] . gmstrftime("%d %b %Y",($ret));
+      $ret = $this->l18n['duedate'] . @gmstrftime("%d %b %Y",($ret));
     }
     return $ret ;
   }

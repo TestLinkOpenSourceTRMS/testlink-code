@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource attachmentupload.php,v $
+ * @filesource attachmentupload.php
  *
  * Upload dialog for attachments
  * Multiple file upload via HTML5 attribute
@@ -102,4 +102,3 @@ function checkRights(&$db,&$user)
 {
   return (config_get("attachments")->enabled);
 }
-?>

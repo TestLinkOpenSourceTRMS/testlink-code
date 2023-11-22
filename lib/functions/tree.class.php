@@ -715,8 +715,8 @@ class tree extends tlObject
   function getBottomOrder($parentID,$opt=null) {
     $debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
     
-    $my['opt'] = array();
-    $my['opt'] = array_merge(array('node_type' => null),(array)$opt);
+    $my['opt'] = [];
+    $my['opt'] = array_merge(['node_type' => null],(array)$opt);
 
     
     $sql = "SELECT MAX(node_order) AS max_order" .
@@ -728,9 +728,9 @@ class tree extends tlObject
     }       
 
     $sql .= " GROUP BY parent_id ";
-    $rs=$this->db->get_recordset($sql);
+    $rs = (array)$this->db->get_recordset($sql);
       
-    return $rs[0]['max_order'];     
+    return (count($rs) > 0 ? $rs[0]['max_order']: 0);     
   }
   
   

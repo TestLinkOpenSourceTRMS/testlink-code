@@ -53,5 +53,14 @@ var {$gui->dialogName} = new std_dialog();
     </div>
   </form>
 </div>
+
+<script>
+jQuery( document ).ready(function() {
+  /* Chosen Config */
+  jQuery(".chosen-select").chosen({ width: "100%" , allow_single_deselect: true, search_contains: true});
+ jQuery('select[data-cfield="list"]').chosen({ width: "100%" , allow_single_deselect: true, search_contains: true});
+});
+</script>
+
 </body>
 </html>

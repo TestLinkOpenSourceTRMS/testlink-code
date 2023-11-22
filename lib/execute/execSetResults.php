@@ -48,6 +48,8 @@ $templateCfg = templateConfiguration();
 $tcversion_id = null;
 $submitResult = null;
 list($args,$its,$cts) = init_args($db,$cfg);
+// the default -1 create an out of range error on TC execution without platform
+if ($args->platform_id == -1) $args->platform_id = 0;
 
 $smarty = new TLSmarty();
 $smarty->assign('tsuite_info',null);

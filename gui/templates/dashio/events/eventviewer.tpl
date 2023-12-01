@@ -171,7 +171,7 @@ fieldset
 			         name="clear" id="clear"
 			         value="{$labels.btn_clear_events}" 
 			         onclick="doAction.value='clear'" />
-			  <img src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" title="{$labels.clear_tip}">
+				<i class="fa fa-question-circle" style="cursor:help" aria-hidden="true" title="{$labels.clear_tip}" alt="title="{$labels.clear_tip}"></i>			 
 			{/if}
 			</fieldset>
 			<br />

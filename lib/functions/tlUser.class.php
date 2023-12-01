@@ -589,7 +589,7 @@ class tlUser extends tlDBObject {
     $encriptedPWD = $this->getPassword();
     if (strlen($encriptedPWD) == 32) {
       /* Update the old MD5 hash to the new bcrypt */
-      if ($encriptedPWD == md5($pwd)) {
+      if ($encriptedPWD === md5($pwd)) {
         $this->password = $this->encryptPassword($pwd,$this->authentication);
         $this->writePasswordToDB($dbH);
         return tl::OK;

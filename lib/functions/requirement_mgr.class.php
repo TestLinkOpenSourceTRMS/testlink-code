@@ -1537,12 +1537,12 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
   $checkLengthOK = true;
   $what2add = '';
-  if( strlen($req['title']) > $fieldSize->req_title ) {
+  if( mb_strlen($req['title'], $tlCfg->charset) > $fieldSize->req_title ) {
      $checkLengthOK = false;
      $what2add = $labels['req_title_lenght_exceeded'] . '/';
   }  
 
-  if( strlen($req['docid']) > $fieldSize->req_docid ) {
+  if( mb_strlen($req['docid'], $tlCfg->charset) > $fieldSize->req_docid ) {
      $checkLengthOK = false;
      $what2add .= $labels['req_docid_lenght_exceeded'];
   }  

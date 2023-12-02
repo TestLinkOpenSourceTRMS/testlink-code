@@ -1197,7 +1197,12 @@ function initializeGui(&$dbHandler,&$argsObj)
   $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?";
 
   if (intval($argsObj->containerID) > 0) {
-    $guiObj->cancelActionJS .= 'edit=testsuite&id=' . intval($argsObj->containerID);
+    if (intval($argsObj->containerID) == intval($argsObj->tproject_id)) {
+      $guiObj->cancelActionJS .= 'edit=testproject';
+    } else {
+      $guiObj->cancelActionJS .= 'edit=testsuite';
+    }
+    $guiObj->cancelActionJS .= '&id=' . intval($argsObj->containerID);
   } else {
     $guiObj->cancelActionJS .= 'edit=testcase&id=' . intval($argsObj->tcase_id);
   }

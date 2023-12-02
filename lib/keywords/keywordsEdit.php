@@ -264,16 +264,14 @@ function do_cfl(&$args,&$guiObj,&$tproject_mgr) {
   $guiObj->action_descr = lang_get('create_keyword');
 
   $op = $tproject_mgr->addKeyword($args->tproject_id,$args->keyword,$args->notes);
-  
-  if( $op['status'] ) {
+  if( $op['status'] >= tl::OK ) {
     $tcaseMgr = new testcase($tproject_mgr->db);
     $tbl = tlObject::getDBTables('nodes_hierarchy');
     $sql = "SELECT parent_id FROM {$tbl['nodes_hierarchy']}
             WHERE id=" . intval($args->tcversion_id);
     $rs = $tproject_mgr->db->get_recordset($sql);
     $tcase_id = intval($rs[0]['parent_id']);
-    $tcaseMgr->addKeywords($tcase_id,$args->tcversion_id,
-        array($op['id']));
+    $tcaseMgr->addKeywords($tcase_id,$args->tcversion_id,array($op['id']));
   }
 
   $ret = new stdClass();

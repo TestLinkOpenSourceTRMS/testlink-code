@@ -41,8 +41,7 @@ Purpose: show form for search through ...
     </tr>
     <tr>
       <td>{$labels.th_tcversion}</td>
-      <td><input type="text" name="version"
-                 size="{#VERSION_SIZE#}" maxlength="{#VERSION_MAXLEN#}" /></td>
+      <td><input type="numeric" name="version" min="1" /></td>
     </tr>
     <tr>
       <td>{$labels.th_title}</td>

@@ -258,7 +258,7 @@ function process_testcase(&$dbHandler,$externalID, $tprojectID, $tprojectPrefix,
   $tcaseID = $tcase_mgr->getInternalID($externalID);
   if($tcaseID > 0)
   {
-    $ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}";
+    $ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}&tproject_id=" . intval($tprojectID);
     $ret['msg'] = 'ok';
 
     $ckCfg = config_get('cookie');    

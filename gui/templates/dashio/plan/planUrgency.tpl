@@ -74,7 +74,7 @@ Smarty template - manage test case urgency
         {$start = false}
           <td style="text-align: left;">
             <img class="clickable" src="{$tlImages.history_small}"
-                 onclick="javascript:openExecHistoryWindow({$res.testcase_id});"
+                 onclick="javascript:openExecHistoryWindow({$res.testcase_id},undefined,{$gui->tproject});"
                  title="{$labels.execution_history}" />
             <img class="clickable" src="{$tlImages.edit_icon}"
                  onclick="javascript:openTCaseWindow({$res.testcase_id});"

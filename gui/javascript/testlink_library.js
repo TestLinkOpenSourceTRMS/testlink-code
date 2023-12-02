@@ -1672,16 +1672,18 @@ function openPrintPreview(type, id, child_id, revision, print_action) {
 
 
 
-function openExecHistoryWindow(tc_id,tplan_check) {
+function openExecHistoryWindow(tc_id,tplan_check,tproject_id) {
   var url = "lib/execute/execHistory.php?tcase_id=" + tc_id;
 
   var width = getCookie("execHistoryPopupWidth");
   var height = getCookie("execHistoryPopupHeight");
 
+  url = url + "&tproject_id=" + tproject_id
   if(tplan_check != undefined)
   {
     url = url + '&onlyActiveTestPlans=' + tplan_check;    
   }  
+
 
   if (width == null)
   {

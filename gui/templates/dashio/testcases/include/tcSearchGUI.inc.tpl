@@ -32,8 +32,9 @@ Purpose: show form for search through test cases in test specification
                  size="{#TC_ID_SIZE#}" maxlength="{#TC_ID_MAXLEN#}" value="{$gui->targetTestCase|escape}"/></div>
 
       <div class="col-sm-1 col-md-1 col-lg-1"><label>{$labels.th_tcversion}</label></div>
-      <div class="col-sm-2 col-md-2 col-lg-2"><input type="text" name="version"
-                 size="{#VERSION_SIZE#}" maxlength="{#VERSION_MAXLEN#}" value="{$gui->tcversion|escape}" /></div>
+      <div class="col-sm-2 col-md-2 col-lg-2">
+      <input type="number" name="version" min="1"
+              value="{$gui->tcversion|escape}" /></div>
       
       <div class="col-sm-1 col-md-1 col-lg-1"><label>{$labels.th_title}</label></div>
       <div class="col-sm-2 col-md-2 col-lg-2"><input type="text" name="name" id="name" 

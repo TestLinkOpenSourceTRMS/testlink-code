@@ -849,7 +849,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
         $getFilters['status'] = array('not_in' => array_keys($s2h));   
       }
       
-      //var_dump($getFilters);
       $tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
       
       switch($specViewType) {
@@ -1504,10 +1503,6 @@ function getFilteredSpecViewFlat(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
                           'cfields' => null,
                           'platforms' => $argsObj->platform_id);
               
-  echo '<pre>';
-  var_dump($genSpecFilters);
-  echo '</pre>';
-
   if (isset($my['filters']['cfieldsFilter'])) {
     $genSpecFilters['cfields'] = $my['filters']['cfieldsFilter'];
   }           

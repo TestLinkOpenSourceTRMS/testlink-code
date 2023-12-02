@@ -2257,7 +2257,7 @@ $TLS_system_config = 'System';
 $TLS_title_plugins = 'Plugins';
 
 $TLS_href_search_req = "Search Requirements";
-$TLS_href_search_req_spec = "Search Requirement Specifications";
+$TLS_href_search_req_spec = "Search Req. Specs";
 $TLS_caption_search_form_req = "Search Requirements";
 $TLS_caption_search_form_req_spec = "Search Requirement Specifications";
 $TLS_title_search_req = "Search";

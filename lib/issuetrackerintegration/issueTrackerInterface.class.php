@@ -128,11 +128,12 @@ abstract class issueTrackerInterface
       $msg .= 'Message: ' .$e->getMessage();
     }
 
-    if( !($retval = is_null($msg)) )
-    {
-      tLog(__METHOD__ . $msg, 'ERROR');  
+    if ($this->cfg == false) {
+      tLog(__METHOD__ . $msg, 'ERROR'); 
+      return false; 
     }  
 
+    // Everything seems OK
     // 
     if( !property_exists($this->cfg,'userinteraction') )
     {

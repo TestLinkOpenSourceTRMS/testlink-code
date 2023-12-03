@@ -593,18 +593,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   $my['filters'] = array('status' => null, 'type' => null);
   $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-  switch($my['options']['output']) {
-	  case 'count':
-	   	$rs = 0;	   
-	  break;
-
-  	case 'standard':
-   	default:
-			$rs = null;
-	  break;
-  }
-
-	
+  $rs = null;	
 	$tcase_filter = '';
   
 	// First Step - get only req info
@@ -645,15 +634,16 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     $getOptions['decodeUsers'] = $my['options']['decodeUsers'];
 
 
-	  $rs = $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,
-                                    $getOptions,$my['filters']);	 
+	  $rs = (array)$this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,
+                                           $getOptions,$my['filters']);	 
 
     switch($my['options']['output']) {
      	case 'standard':
 		  break;
 		    
 		  case 'count':
-		   	$rs = !is_null($rs) ? count($rs) : 0;	   
+		   	// $rs = !is_null($rs) ? count($rs) : 0;	
+        return(!is_null($rs) ? count($rs) : 0);	    
 		  break;
 		}
 	}
@@ -713,7 +703,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 				if(is_null($rs)){
 					$rs =  $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	
 				} else {
-					$rs = array_merge($rs, $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']));
+					$rs = array_merge($rs, (array)$this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']));
 				}
 				
 

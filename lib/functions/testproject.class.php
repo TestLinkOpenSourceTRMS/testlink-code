@@ -2112,11 +2112,11 @@ function setPublicStatus($id,$status)
       switch ($my['options']['output'])  {
         case 'external_id':
           $inClause = " (" .implode(',',$itemSet) . " )";
-          $sql = " SELECT DISTINCT NH.parent_id, TCV.tc_external_id
-                   FROM {$this->tables['nodes_hierarchy']} NH
+          $sql = " SELECT DISTINCT NHTCV.parent_id, TCV.tc_external_id
+                   FROM {$this->tables['nodes_hierarchy']} NHTCV
                    JOIN  {$this->tables['tcversions']} TCV 
                    ON TCV.id = NHTCV.id 
-                   WHERE NHTCV.parent_id $inClause";
+                   WHERE NHTCV.parent_id IN $inClause";
             
           $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
           foreach ($rs as $parent_id => $elem) {

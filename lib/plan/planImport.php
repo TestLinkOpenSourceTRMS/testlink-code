@@ -121,14 +121,16 @@ function init_args(&$dbH)
   $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
   $args->do_upload = isset($_REQUEST['uploadFile']) ? 1 : 0;
     
+  $args->user = $_SESSION['currentUser'];
   $args->userID = intval($_SESSION['userID']);
 
-  $kp = array('tplan_id','itemID');
+
+  $kp = ['tplan_id','itemID'];
   foreach ($kp as $ktp) {
-    $args->tplan_id = isset($_REQUEST[$ktp]) ? intval($_REQUEST[$ktp]) : 0;    
+    $args->$ktp = isset($_REQUEST[$ktp]) ? intval($_REQUEST[$ktp]) : 0;    
   }
 
-  if ($args->tplan_id==0) {
+  if ($args->tplan_id == 0) {
     $args->tplan_id = $args->itemID;
   }
 
@@ -150,11 +152,11 @@ function init_args(&$dbH)
   // ----------------------------------------------------------------
   // Feature Access Check
   // This feature is affected only for right at Test Project Level
-  $env = array()
-  $env['script'] = basename(__FILE__);
-  $env['tproject_id'] = $args->tproject_id;
-  $args->user->checkGUISecurityClearance($dbH,$env,
-                    array('mgt_testplan_create'),'and');
+  $env = [
+    'script' => basename(__FILE__),
+    'tproject_id' => $args->tproject_id
+  ];
+  $args->user->checkGUISecurityClearance($dbH,$env,['mgt_testplan_create'],'and');
   // ----------------------------------------------------------------
 
   
@@ -277,7 +279,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
     if( $status_ok && $xml->xpath('//executables') )
     {
       $tables = tlObjectWithDB::getDBTables(array('testplan_tcversions'));
-      $platformSet = $tplanMgr->getPlatforms($contextObj->tplan_id,array('outputFormat' => 'mapAccessByName'));
+      $platformSet = (array)$tplanMgr->getPlatforms($contextObj->tplan_id,array('outputFormat' => 'mapAccessByName'));
       $targetHasPlatforms = (count($platformSet) > 0);
       
       $xmlLinks = $xml->executables->children();

@@ -192,12 +192,13 @@ function init_args(&$dbH)
  */
 function initializeGui(&$dbHandler,&$argsObj,&$reqSpecMgr,&$reqMgr)
 {
-  $gui=new stdClass();
+  $gui = new stdClass();
   $gui->file_check = array('status_ok' => 1, 'msg' => 'ok');
   $gui->items=null;
   $gui->try_upload = $argsObj->bUpload;
   $gui->importResult = null;
   $gui->refreshTree = false;
+  $gui->tproject_id = $argsObj->tproject_id;
 
   $gui->doAction=$argsObj->doAction;
   $gui->scope = $argsObj->scope;

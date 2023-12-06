@@ -55,6 +55,9 @@ function check_action_precondition(container_id,action,msg)
 
 	<form id="bulkMon" name="bulkMon" method="post" action="{$gui->page2call}">
     <input type="hidden" name="req_spec_id"  id="req_spec_id"  value="{$gui->req_spec_id}" />
+    <input type="hidden" name="tproject_id"  id="tproject_id"  value="{$gui->tproject_id}" />
+    <input type="hidden" name="tplan_id"  id="tplan_id"  value="{$gui->tplan_id}" />
+
 	  
 		<br />
 

@@ -49,7 +49,7 @@ viewer for requirement
   {if $args_grants->req_mgmt == "yes"}
     <form style="display: inline;" id="reqViewF_{$req_version_id}" 
           name="reqViewF_{$req_version_id}" 
-          action="{$basehref}lib/requirements/reqEdit.php" method="post">
+          action="{$basehref}lib/requirements/reqEdit.php?tproject_id={$gui->tproject_id}" method="post">
       <input type="hidden" name="requirement_id" value="{$args_req.id}" />
       <input type="hidden" name="req_version_id" value="{$args_req.version_id}" />
       <input type="hidden" name="doAction" value="" />
@@ -125,7 +125,7 @@ viewer for requirement
 
   {* Option to print single requirement *}
   <form style="display: inline;" method="post" 
-     action="{$basehref}lib/requirements/reqEdit.php" name="reqPrinterFriendly">
+     action="{$basehref}lib/requirements/reqEdit.php?tproject_id={$gui->tproject_id}" name="reqPrinterFriendly">
     <input type="hidden" id="rpfReqID" name="requirement_id" value="{$req_id}" />
     <input type="hidden" id="rpfAction" name="doAction" value="" />
 
@@ -201,7 +201,7 @@ viewer for requirement
     
     {if $args_req_coverage != ''}
       <form style="display: inline;" id="reqRemoveTestCase_{$req_version_id}" name="reqRemoveTestCase_{$req_version_id}" 
-            action="{$basehref}lib/requirements/reqEdit.php" method="post">
+            action="{$basehref}lib/requirements/reqEdit.php?tproject_id={$gui->tproject_id}" method="post">
         <input type="hidden" id="rtRID" name="requirement_id" value="{$args_req.id}" />
         <input type="hidden" id="rtRVID" name="req_version_id" value="{$args_req.version_id}" />
         <input type="hidden" id="rtAction" name="doAction" value="removeTestCase" />
@@ -239,7 +239,7 @@ viewer for requirement
     {if ( !isset($args_can_manage_coverage) || $args_can_manage_coverage == TRUE ) &&
        $args_grants->req_tcase_link_management == "yes"}
     <form style="display: inline;" id="reqAddTestCase_{$req_version_id}" name="reqAddTestCase_{$req_version_id}" 
-          action="{$basehref}lib/requirements/reqEdit.php" method="post">
+          action="{$basehref}lib/requirements/reqEdit.php?tproject_id={$gui->tproject_id}" method="post">
       <input type="hidden" id="atRID" name="requirement_id" value="{$args_req.id}" />
       <input type="hidden" id="atRVID" name="req_version_id" value="{$args_req.version_id}" />
       <input type="hidden" id="atAction" name="doAction" value="addTestCase" />

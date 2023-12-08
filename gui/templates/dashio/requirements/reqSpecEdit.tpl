@@ -14,7 +14,7 @@ Purpose: smarty template - create a new req document
           s='warning,warning_empty_req_spec_title,title,scope,req_total,type,
              doc_id,cancel,show_event_history,warning_empty_doc_id,warning_countreq_numeric,
              warning_unsaved,revision_log_title,please_add_revision_log,
-             warning_suggest_create_revision,suggest_create_revision_html'}
+             warning_suggest_create_revision,suggest_create_revision_html,max_num_of_chars'}
              
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
@@ -171,6 +171,7 @@ function validateForm(f)
   	</div>
 	  <div><input type="text" name="doc_id" id="doc_id"
   		        size="{#REQSPEC_DOCID_SIZE#}" maxlength="{#REQSPEC_DOCID_MAXLEN#}"
+							placeholder="{$labels.max_num_of_chars} {#REQSPEC_DOCID_MAXLEN#}"
   		        value="{$reqSpecDocId|escape}" required />
   				{include file="error_icon.tpl" field="doc_id"}
   	</div>
@@ -185,7 +186,8 @@ function validateForm(f)
 	   	<div>
 		    <input type="text" id="title" name="title"
 		           size="{#REQ_SPEC_TITLE_SIZE#}"
-				   maxlength="{#REQ_SPEC_TITLE_MAXLEN#}"
+				       maxlength="{#REQ_SPEC_TITLE_MAXLEN#}"
+					 		 placeholder="{$labels.max_num_of_chars} {#REQ_SPEC_TITLE_MAXLEN#}"
 		           value="{$reqSpecTitle|escape}" required />
 		  	{include file="error_icon.tpl" field="req_spec_title"}
 	   	</div>

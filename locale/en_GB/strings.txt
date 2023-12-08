@@ -4188,4 +4188,6 @@ $TLS_testproject_prefix_hint = '16 characters are allowed, but we advice to use 
 $TLS_show_calendar = "Show calendar";
 
 $TLS_no_users_selected = "No users selected - nothing done"; 
+$TLS_max_num_of_chars = "Max num of chars:";
+
 // ----- END -----------------------------------------------------------------------

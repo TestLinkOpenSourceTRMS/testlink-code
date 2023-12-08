@@ -43,6 +43,7 @@ $args = init_args($date_format_cfg);
 
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
 $gui->tcasePrefix .= $tcase_cfg->glue_character;
+$gui->tproject_id = $args->tproject_id;
 
 if ($args->tprojectID) {
   $sql = build_search_sql($db,$args,$gui);
@@ -134,8 +135,8 @@ function buildExtTable($gui, $charset) {
     
     $key2loop = array_keys($gui->resultSet);
     $img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
-    // req_id, req_version_id
-    $reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
+    // req_id, req_version_id, tproject_id
+    $reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
     // req_revision_id
     $reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">' . $labels['version_revision_tag'] . ' </a>'; 
     
@@ -147,18 +148,16 @@ function buildExtTable($gui, $charset) {
       // We Group by Requirement path
       $rowData[] = htmlentities($gui->path_info[$rfx['id']], ENT_QUOTES, $charset);
 
-      $edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $rfx['id'] . ")\">" . "{$img}</a> ";
+      $edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $rfx['id'] . "," . $gui->tproject_id . ")\">" . "{$img}</a> ";
       $title = htmlentities($rfx['req_doc_id'], ENT_QUOTES, $charset) . ":" .
                htmlentities($rfx['name'], ENT_QUOTES, $charset);
 
       $matches = '';
       foreach($itemSet as $rx) {
         if($rx['revision_id'] > 0) {
-          $dummy = sprintf($reqRevHref,$rx['revision_id'],$rx['version'],
-                           $rx['revision']);
+          $dummy = sprintf($reqRevHref,$rx['revision_id'],$rx['version'],$rx['revision']);
         } else {
-          $dummy = sprintf($reqVerHref,$req_id,$rx['version_id'],$rx['version'],
-                           $rx['revision']);
+          $dummy = sprintf($reqVerHref,$req_id,$rx['version_id'],$gui->tproject_id,$rx['version'],$rx['revision']);
         } 
         $matches .= $dummy;
       }

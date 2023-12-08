@@ -143,7 +143,7 @@ if(count($gui->reqIDs) > 0)  {
         
       $result[] = $pathCache[$req[0]['srs_id']];
         
-      $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' . 
+      $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ',' . $gui->tproject_id . ')">' . 
                    '<img title="' .$labels['requirement'] . '" src="' . $imgSet['edit'] . '" /></a> ';
       
       $result[] =  '<!-- ' . $title . ' -->' . $edit_link . $title;

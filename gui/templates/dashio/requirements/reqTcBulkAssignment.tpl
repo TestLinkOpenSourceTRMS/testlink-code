@@ -99,7 +99,7 @@ function check_action_precondition(form_id,action){
           		<td>
                 &nbsp;
           			<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-          			     onclick="javascript:openLinkedReqVersionWindow({$reqID},{$reqVersionID});"
+          			     onclick="javascript:openLinkedReqVersionWindow({$reqID},{$reqVersionID},{$gui->tproject_id});"
           			     title="{$labels.requirement}" />
           			{$gui->requirements[row].title|escape}
           		</td>

@@ -206,7 +206,7 @@ viewer for test case in test specification
         {* execution history *}
       	<span>
             <input class="{#BUTTON_CLASS#}" type="button" 
-                   onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id},1);"
+                   onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id},1,{$gui->tproject_id});"
                  value="{$tcView_viewer_labels.btn_show_exec_history}" />
         </span>
       </fieldset>
@@ -543,7 +543,7 @@ viewer for test case in test specification
                 
                 
                 <img class="clickable" src="{$tlImages.edit}"
-                     onclick="javascript:openLinkedReqVersionWindow({$reqID},{$reqVersionID});"
+                     onclick="javascript:openLinkedReqVersionWindow({$reqID},{$reqVersionID},{$gui->tproject_id});"
                      title="{$tcView_viewer_labels.requirement}" />
                 {$openC}{$args_reqs[item].req_spec_title|escape}{$closeC}
                 {$args_reqs[item].req_doc_id|escape}&nbsp{$openC}{$tcView_viewer_labels.version_short}{$reqVersionNum}{$closeC}{$sepC}{$args_reqs[item].title|escape}

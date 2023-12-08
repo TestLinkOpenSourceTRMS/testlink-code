@@ -1036,7 +1036,7 @@ function openLinkedReqVersionWindow(req_id, req_version_id, tproject_id, anchor)
  * @param req_id Requirement ID
  * @param anchor string with anchor name
  */
-function openLinkedReqWindow(req_id, anchor) {
+function openLinkedReqWindow(req_id, tproject_id, anchor) {
   var width = getCookie("ReqPopupWidth");
   var height = getCookie("ReqPopupHeight");
   var windowCfg='';
@@ -1057,7 +1057,8 @@ function openLinkedReqWindow(req_id, anchor) {
     height = "600";
   }
 
-  feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + anchor;
+  feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id; 
+  feature_url += "&tproject_id=" + tproject_id + anchor;
   windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
   window.open(fRoot+feature_url,"Requirement",windowCfg);
 }

@@ -997,18 +997,22 @@ function openTCaseWindow(tcase_id,tcversion_id,show_mode) {
  * 
  * @param req_id Requirement ID
  * @param req_version_id Requirement Version ID
+ * @param tproject_id 
  * @param anchor string with anchor name
  */
-function openLinkedReqVersionWindow(req_id, req_version_id, anchor) {
+function openLinkedReqVersionWindow(req_id, req_version_id, tproject_id, anchor) {
+
   if (anchor == null) {
     anchor = '';
   } else {
     anchor = '#' + anchor;
   }
   
+
   var windowCfg='';
   var feature_url = "lib/requirements/reqView.php";
-  feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + "&req_version_id=" + req_version_id + anchor;
+  feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + "&req_version_id=" + req_version_id;
+  feature_url += "&tproject_id=" + tproject_id + anchor;
 
   var width = getCookie("ReqPopupWidth");
   var height = getCookie("ReqPopupHeight");
@@ -1065,7 +1069,7 @@ function openLinkedReqWindow(req_id, anchor) {
  * @param req_version_id Requirement Version ID
  * @param anchor string with anchor name
  */
-function openLinkedReqVersionWindow(req_id,req_version_id, anchor) {
+function DUPLICATEDopenLinkedReqVersionWindow(req_id,req_version_id, anchor) {
   var width = getCookie("ReqPopupWidth");
   var height = getCookie("ReqPopupHeight");
   var windowCfg='';

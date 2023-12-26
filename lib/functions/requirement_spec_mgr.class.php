@@ -653,7 +653,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 		  break;
 		    
 		  case 'count':
-		   	$rs = !is_null($rs) ? count($rs) : 0;	   
+		   	return(!is_null($rs) ? count($rs) : 0);	   
 		  break;
 		}
 	}

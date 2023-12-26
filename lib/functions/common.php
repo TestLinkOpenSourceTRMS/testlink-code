@@ -1076,8 +1076,8 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
             } 
           break;
              
+          case 'none':
           default:
-            $value = '';
           break;
         }
       }

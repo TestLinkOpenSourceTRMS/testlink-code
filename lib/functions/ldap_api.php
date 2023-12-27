@@ -6,19 +6,19 @@
  * @filesource  ldap_api.php
  * 
  * @author This piece of software has been copied and adapted from:
- *    Mantis - a php based bugtracking system (GPL)
- *    Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
- *    Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @author franciscom (code adaptation)
  *
  * LDAP API (authentication)
  *
  *
- * @internal revisions
- * @since 1.9.16
  *
  */
-  
+
+use LdapRecord\Container;
+use LdapRecord\Connection;
+use LdapRecord\Models\Entry;
+ 
+ 
 // Connect and bind to the LDAP directory
 function ldap_connect_bind( $authCfg, $p_binddn = '', $p_password = '') 
 {

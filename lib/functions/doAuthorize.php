@@ -8,14 +8,18 @@
  * @filesource  doAuthorize.php
  * @package     TestLink
  * @author      Chad Rosen, Martin Havlat,Francisco Mancardi
- * @copyright   2003-2018, TestLink community 
+ * @copyright   2003-2023, TestLink community 
  * @link        http://www.testlink.org
  *
  */
 
 require_once("users.inc.php");
 require_once("roles.inc.php");
-require_once("ldap_api.php");
+#require_once("ldap_api.php");
+
+use LdapRecord\Container;
+use LdapRecord\Connection;
+use LdapRecord\Models\Entry;
 
 /** 
  * authorization function verifies login & password and set user session data 

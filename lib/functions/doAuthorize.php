@@ -15,11 +15,7 @@
 
 require_once("users.inc.php");
 require_once("roles.inc.php");
-#require_once("ldap_api.php");
-
-use LdapRecord\Container;
-use LdapRecord\Connection;
-use LdapRecord\Models\Entry;
+require_once("ldap_api.php");
 
 /** 
  * authorization function verifies login & password and set user session data 
@@ -127,9 +123,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
     
         if( $check->status_ok ) {
           $forceUserCreation = true;
-          $uf = getUserFieldsFromLDAP($user->login,
-                  $authCfg['ldap'][$check->ldap_index]);
-            
+          $uf = getUserFieldsFromLDAP($user->login,$authCfg['ldap'][$check->ldap_index],$check->ldap_connection);
           $user->emailAddress = $uf->emailAddress;
           $user->firstName = $uf->firstName;
           $user->lastName = $uf->lastName;
@@ -322,26 +316,40 @@ function auth_does_password_match(&$db,&$userObj,$cleartext_password)
  */
 function getUserFieldsFromLDAP($login,$ldapCfg)
 {
-  $k2l = array('emailAddress' => 'email', 'firstName' => 'firstname', 'lastName' => 'surname'); 
-  $ret = new stdClass();
-  
-  foreach($k2l as $p => $ldf)
+  $testlink2ldap = [
+    'emailAddress' => 'email', 
+    'firstName' => 'firstname', 
+    'lastName' => 'surname'
+  ]; 
+
+  $decode = [];
+  $getFieldsCfg = [];
+  foreach($testlink2ldap as $p => $ldf)
   {
-    $ret->$p = ldap_get_field_from_username($ldapCfg,$login,
-                                            strtolower($ldapCfg['ldap_' . $ldf . '_field']));
+    $prop = strtolower($ldapCfg['ldap_' . $ldf . '_field']);
+    $getFieldsCfg[] = $prop;
+    $decode[$p] = $prop;
   }  
+  $ldapFields = ldap_get_field_from_username($ldapCfg, $login, $getFieldsCfg);
 
   // Defaults
-  $k2l = array('firstName' => $login,'lastName' => $login, 'emailAddress' => 'no_mail_configured@on_ldapserver.org');
-  foreach($k2l as $prop => $val)
-  {
-    if( is_null($ret->$prop) || strlen($ret->$prop) == 0 )
+  $k2value = [
+    'firstName' => $login,
+    'lastName' => $login, 
+    'emailAddress' => 'no_mail_configured@on_ldapserver.org'
+  ];
+
+  $fieldsByTLKeys = new stdClass();
+  foreach($k2value as $prop => $defaultValue) {
+    $target = $decode[$prop];
+    $fieldsByTLKeys->$prop = $ldapFields->$target;
+    if( is_null($ldapFields->$target) || strlen($ldapFields->$target) == 0 )
     {
-      $ret->$prop = $val;  
+      $fieldsByTLKeys->$prop = $defaultValue;
     }
   }  
 
-  return $ret;
+  return $fieldsByTLKeys;
 } 
 
 

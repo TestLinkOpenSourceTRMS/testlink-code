@@ -570,8 +570,16 @@ $tlCfg->authentication['ldap'][1]['ldap_tls'] = false; // true -> use tls
 // This can be used to manage situation like explained on post on forum:
 // ActiveDirectory + users in AD group
 // 
-$tlCfg->authentication['ldap'][1]['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
-$tlCfg->authentication['ldap'][1]['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
+// Deprecated $tlCfg->authentication['ldap'][1]['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
+// Deprecated $tlCfg->authentication['ldap'][1]['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
+// 
+// examples:
+// root_dn: ou=Users,o=5b2e60eb39193845a6811bd1,dc=jumpcloud,dc=com
+// filter: (&(uid=%user%)(memberOf=cn=TestLinkUsersG1,ou=Users,o=5b2e60eb39193845a6811bd1,dc=jumpcloud,dc=com))
+// 
+$tlCfg->authentication['ldap'][1]['ldap_filter'] = '(uid=%login%)'; // Use 'sAMAccountName' for Active Directory
+
+
 
 // Configure following fields in custom_config.inc.php according your configuration
 $tlCfg->authentication['ldap'][1]['ldap_email_field'] = 'mail';

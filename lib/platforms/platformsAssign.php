@@ -55,18 +55,59 @@ if (isset($args->tplan_id) && $args->tplan_id >0) {
     $gui->mainTitle = sprintf($gui->mainTitle,$tplanData['name']);
   }
 
-    
-  if ($args->doAction == 'doAssignPlatforms') {
+  // -------------------------------------------------------------------------------------------------
+  if ($args->doAction == 'doAssignPlatforms' || $args->doAction == 'doAssignAndLinkTCV') {
     $platform_mgr->linkToTestplan($args->platformsToAdd,$args->tplan_id);
     $platform_mgr->unlinkFromTestplan($args->platformsToRemove,$args->tplan_id);
-    if( $fix_needed && count($args->platformsToAdd) == 1)
-    {
+  }	
+
+  if ($args->doAction == 'doAssignPlatforms') {
+    if( $fix_needed && count($args->platformsToAdd) == 1) {
       reset($args->platformsToAdd);
       $tplan_mgr->changeLinkedTCVersionsPlatform($args->tplan_id,0,current($args->platformsToAdd));
     }
     // Update option panes with newly updated config
     $gui->platform_count_js = init_option_panels($tplan_mgr, $platform_mgr, $opt_cfg, $args);
   }
+
+  if ($args->doAction == 'doAssignAndLinkTCV') {
+
+    // Get all linked platforms and filter out the platforms WITH TESTCASES
+     $platWithZeroTCV = [];
+     if ($args->onRightSide != null && count($args->onRightSide)) {
+      foreach($args->onRightSide as $platID) {
+        if (!isset($qtyByPlatform[$platID])) {
+          $platWithZeroTCV[$platID] = $platID;  
+        }
+      }
+     }
+
+    // get all linked to the first of selectec platforms
+    $fromPlat = intval($_REQUEST["to_select_box"]);
+    if ($fromPlat == 0) {
+      // try to get first on set
+      if ($gui->hasTCVWithPlat) {
+        $platSetLink = array_keys($qtyByPlatform);
+        $fromPlat = current($platSetLink);
+      }	
+    }
+
+    // test again
+    if ($fromPlat != 0) {
+       // does this platform linked TCV? if not -> nothing can be done
+       if (isset($qtyByPlatform[$fromPlat])) {
+         foreach($platWithZeroTCV as $toPlat) {
+           $tplan_mgr->copyLinkFromPlatformToPlatform($args->tplan_id,$fromPlat,$toPlat,$args->user_id);
+         }	
+       }
+      // Update option panes with newly updated config
+      $gui->platform_count_js = init_option_panels($tplan_mgr, $platform_mgr, $opt_cfg, $args);
+    }
+  }
+  // -------------------------------------------------------------------------------------------------
+
+
+
 }
 
 

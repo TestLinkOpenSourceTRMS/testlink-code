@@ -549,13 +549,14 @@ $g_role_colour = array (
 
 
 // --------------------------------------------------------------------------------------
-/** LDAP authentication errors */
-define( 'ERROR_LDAP_AUTH_FAILED',1400);
-define( 'ERROR_LDAP_SERVER_CONNECT_FAILED',1401);
-define( 'ERROR_LDAP_UPDATE_FAILED',1402 );
-define( 'ERROR_LDAP_USER_NOT_FOUND',1403);
-define( 'ERROR_LDAP_BIND_FAILED',1404);
-define( 'ERROR_LDAP_START_TLS_FAILED',1405);
+/** LDAP authentication status code */
+define('LDAP_BIND_OK',0);
+define('ERROR_LDAP_AUTH_FAILED',1400);
+define('ERROR_LDAP_SERVER_CONNECT_FAILED',1401);
+define('ERROR_LDAP_UPDATE_FAILED',1402 );
+define('ERROR_LDAP_USER_NOT_FOUND',1403);
+define('ERROR_LDAP_BIND_FAILED',1404);
+define('ERROR_LDAP_START_TLS_FAILED',1405);
 
 // --------------------------------------------------------------------------------------
 /* [Priority, Urgency, Importance] */

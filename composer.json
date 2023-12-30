@@ -14,6 +14,7 @@
         "league/oauth2-client": "^2.6",
         "league/oauth2-github": "^3.0",
         "league/oauth2-google": "^4.0",
-        "omines/oauth2-gitlab": "^3.4"
+        "omines/oauth2-gitlab": "^3.4",
+        "directorytree/ldaprecord": "^3.3"
     }
 }

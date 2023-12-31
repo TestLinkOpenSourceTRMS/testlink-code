@@ -87,7 +87,7 @@ var del_action=fRoot+'{$deleteAction}';
     <table class="{#item_view_table#}" id="item_view">
       <thead class="{#item_view_thead#}">
     		<tr>
-    			<th {#SMART_SEARCH#}>{$tlImages.toggle_api_info}{$labels.th_title}</th>
+    			<th {#SMART_SEARCH#}>{$labels.th_title}</th>
     			<th {#NOT_SORTABLE#}>{$labels.th_description}</th>
     			<th {#NOT_SORTABLE#} style="width:90px;">{$labels.release_date}</th>
     			<th class="icon_cell" {#NOT_SORTABLE#}>{$labels.th_active}</th>
@@ -98,8 +98,9 @@ var del_action=fRoot+'{$deleteAction}';
       <tbody>
   		{foreach item=build from=$gui->buildSet}
         	<tr>
-  				<td><a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
-                 <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
+  				<td>
+              <i class="fas fa-cubes" style="cursor: help" title="API {$tlCfg->api->id_format|replace:"%s":$build.id}"></i>
+              <a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
   					  </a>   
   				</td>
   				<td>{if $gui->editorType == 'none'}{$build.notes|nl2br}{else}{$build.notes}{/if}</td>

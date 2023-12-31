@@ -82,7 +82,7 @@ if (isset($args->tplan_id) && $args->tplan_id >0) {
       }
      }
 
-    // get all linked to the first of selectec platforms
+    // get all linked to the first of selected platforms
     $fromPlat = intval($_REQUEST["to_select_box"]);
     if ($fromPlat == 0) {
       // try to get first on set

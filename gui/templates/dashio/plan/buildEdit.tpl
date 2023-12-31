@@ -104,7 +104,7 @@ function validateForm(f)
         <td>
                 <input type="text" 
                        name="release_date" id="release_date" 
-               value="{$gui->release_date}" />
+               value="{$gui->release_date}" readonly />
         <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
              onclick="showCal('release_date-cal','release_date','{$gsmarty_datepicker_format}');" >
         <img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"

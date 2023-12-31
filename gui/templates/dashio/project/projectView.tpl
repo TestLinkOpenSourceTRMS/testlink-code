@@ -85,7 +85,7 @@ var del_action=fRoot+'{$deleteAction}';
           <table id="item_view" class="{#item_view_table#}">
             <thead class="{#item_view_thead#}">
               <tr>
-                <th {#SMART_SEARCH#}>{$tlImages.toggle_api_info}{$labels.th_name}</th>
+                <th {#SMART_SEARCH#}>{$labels.th_name}</th>
                 <th {#NOT_SORTABLE#}>{$labels.th_notes}</th>
                 <th {#SMART_SEARCH#}>{$labels.tcase_id_prefix}</th>
                 <th >{$labels.th_issuetracker}</th>
@@ -101,9 +101,10 @@ var del_action=fRoot+'{$deleteAction}';
             <tbody>
             {foreach item=testproject from=$gui->tprojects}
             <tr>
-              <td>    <a href="{$editAction}{$testproject.id}">
+              <td>   
+              <i class="fas fa-cubes" style="cursor: help" title="API {$tlCfg->api->id_format|replace:"%s":$testproject.id}"></i>
+                     <a href="{$editAction}{$testproject.id}">
                      {$testproject.name|escape}
-                     <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testproject.id}</span>
                      {if $gsmarty_gui->show_icon_edit}
                           <img title="{$labels.testproject_alt_edit}" alt="{$labels.testproject_alt_edit}"
                                src="{$tlImages.edit}"/>

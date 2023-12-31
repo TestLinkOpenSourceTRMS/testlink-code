@@ -358,7 +358,6 @@ function init_args(&$dbH,&$tplanMgr)
   foreach ($checkboxes_keys as $key => $value) {
     $args->$key = isset($_REQUEST[$key]) ? 1 : 0;
   }
-  echo '<pre> ARGS -> notes ' . __LINE__; var_dump($args->notes); echo'</pre>';
 
   $intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0);
   foreach ($intval_keys as $key => $value) {
@@ -481,7 +480,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
                         lang_get('testproject') . ' ' . $argsObj->tproject_name;
 
   
-  $guiObj->attachments = getAttachmentInfosFrom($tplan_mgr,$guiObj->tplan_id);
+  $guiObj->attachments = getAttachmentInfosFrom($tplan_mgr,$guiObj->itemID);
   $guiObj->attachmentTableName = $tplan_mgr->getAttachmentTableName();
 
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $tplan_mgr->getFileUploadRelativeURL($guiObj->tplan_id,$guiObj->tproject_id);

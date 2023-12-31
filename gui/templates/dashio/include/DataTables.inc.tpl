@@ -98,11 +98,18 @@ Sorting icons now are UTF-8 character based rather than using external images an
 
   <script type="text/javascript" language="javascript" class="init">
   $(document).ready(function() {
-    $('{$DataTablesSelector}').DataTable(
-      { "lengthMenu": [ {$DataTablesLengthMenu} ],
-        "stateSave": true, 
-        "conditionalPaging": true
-      });
+
+    config = { 
+      "lengthMenu": [ {$DataTablesLengthMenu} ],
+      "stateSave": true, 
+      "conditionalPaging": true
+    };
+
+    if (addToDataTablesConfig != undefined) {
+      config = { ...config,...addToDataTablesConfig };
+    }
+
+    $('{$DataTablesSelector}').DataTable(config);
   } );
   </script>
 {/if}  

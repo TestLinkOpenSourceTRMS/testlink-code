@@ -80,7 +80,6 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
     "columnDefs": [ { "searchable": false, "targets": 1 }],
     "language": { "search": "{$labels.User}" }
   };  
-  console.log(addToDataTablesConfig);
   </script>
   {include file="DataTables.inc.tpl" DataTablesSelector="#item_view" DataTablesLengthMenu=$ll}
 {/if}

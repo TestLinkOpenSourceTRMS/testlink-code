@@ -98,7 +98,7 @@ var del_action=fRoot+'{$gui->actions->deleteAction}';
             <thead class="{#item_view_thead#}">
               <tr>
                 <th class="icon_cell">&nbsp;</th>
-                <th>{$tlImages.toggle_api_info}{$labels.testplan_th_name}</th>       
+                <th>{$labels.testplan_th_name}</th>       
                 <th {#NOT_SORTABLE#}>{$labels.testplan_th_notes}</th>
                 <th title="{$labels.testcase_number_help}">{$labels.testcase_qty}</th>
                 <th title="{$labels.build_number_help}">{$labels.build_qty}</th>
@@ -114,10 +114,11 @@ var del_action=fRoot+'{$gui->actions->deleteAction}';
               {foreach item=testplan from=$gui->tplans}
                 <tr>
                   <td><input type="checkbox" name="tplan2use[{$testplan.id}]" id="tplan2use{$testplan.id}" value="{$testplan.id}" /> </td> 
-                  <td><a href="{$gui->actions->editAction}{$testplan.id}"> 
+                  <td>
+                  
+                      <i class="fas fa-cubes" style="cursor: help" title="API {$tlCfg->api->id_format|replace:"%s":$testplan.id}"></i>
+                      <a href="{$gui->actions->editAction}{$testplan.id}"> 
                         {$testplan.name|escape}
-                        <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
-                      
                         {if $gsmarty_gui->show_icon_edit}
                             <img title="{$labels.testplan_alt_edit_tp}"  alt="{$labels.testplan_alt_edit_tp}" 
                                   src="{$tlImages.edit}"/>

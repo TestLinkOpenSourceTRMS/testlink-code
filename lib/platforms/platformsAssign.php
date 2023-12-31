@@ -184,15 +184,15 @@ function init_args(&$opt_cfg)
   $args->doAction = $pParams["doAction"];
   $args->currentUser = $_SESSION['currentUser'];
   
-  $args->platformsToAdd = null;
+  $args->platformsToAdd = [];
   if ($pParams[$added] != "") {
-     $args->platformsToAdd = explode(",", $pParams[$added]);
+     $args->platformsToAdd = (array)explode(",", $pParams[$added]);
   }
   
-  $args->platformsToRemove = null;
+  $args->platformsToRemove = [];
   if( $pParams[$removed] != "" ) 
   {
-    $args->platformsToRemove = explode(",", $pParams[$removed]);
+    $args->platformsToRemove = (array)explode(",", $pParams[$removed]);
   }
 
   return $args;

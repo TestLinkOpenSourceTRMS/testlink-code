@@ -75,7 +75,7 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
     <table class="{#item_view_table#}" id="item_view">
       <thead class="{#item_view_thead#}">
     	<tr>
-    	  <th {#SMART_SEARCH#} width="30%">{$tlImages.toggle_api_info}{$labels.th_platform}</th>
+    	  <th {#SMART_SEARCH#} width="30%">{$labels.th_platform}</th>
     	  <th {#SMART_SEARCH#}>{$labels.th_notes}</th>
           <th {#NOT_SORTABLE#}>{$labels.on_design}</th>
           <th {#NOT_SORTABLE#}>{$labels.on_exec}</th>
@@ -90,7 +90,7 @@ var del_action=fRoot+'{$managerURL}'+'&doAction=do_delete&id=';
       {$oplat=$gui->platforms[platform]}
       <tr data-qa-item-name="{$oplat.name|escape}">
         <td data-qa-column="name">
-          <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$oplat.id}</span>
+          <i class="fas fa-cubes" style="cursor: help" title="API {$tlCfg->api->id_format|replace:"%s":$oplat.id}"></i>
         	{if $gui->canManage != ""}
         	  <a href="{$managerURL}&doAction=edit&id={$oplat.id}&tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}">
         	{/if}

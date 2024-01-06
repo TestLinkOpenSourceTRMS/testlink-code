@@ -403,24 +403,6 @@ function modifyRoles_warning()
   return ret;
 }
 
-/**
- * 
- * @param string feature the feature, could be testplan or product
- **/
-function changeFeature(feature)
-{
-  var tmp = document.getElementById('featureSel');
-  var fID = '';
-  if (!tmp)
-  {
-    return;
-  }
-  fID = tmp.value;
-  if(fID)
-  {
-    location = fRoot+"lib/usermanagement/usersAssign.php?featureType="+feature+"&featureID="+fID;
-  } 
-}
 
 /**
  *

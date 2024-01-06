@@ -703,7 +703,7 @@ class reqSpecCommands
     
     $obj = $this->initGuiBean();
     $obj->user_feedback = $ret['msg'];
-    $obj->template = "reqSpecView.php?req_spec_id={$argsObj->req_spec_id}";
+    $obj->template = "reqSpecView.php?req_spec_id={$argsObj->req_spec_id}&tprojec_id={$argsObj->tproject_id}";
     $obj->req_spec = null;
     $obj->req_spec_id=$argsObj->req_spec_id;
     $obj->req_spec_revision_id = $ret['id'];
@@ -783,7 +783,8 @@ class reqSpecCommands
         $guiObj->main_descr = '';
         $guiObj->action_descr = '';
         $guiObj->template = "reqSpecView.php?refreshTree={$argsObj->refreshTree}&" .
-                            "req_spec_id={$guiObj->req_spec_id}";
+                            "req_spec_id={$guiObj->req_spec_id}&" .
+                            "tproject_id={{$argsObj->tproject_id}";
   
         // TODO 
         // logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
@@ -839,7 +840,7 @@ class reqSpecCommands
     $guiObj->askForRevision = $guiObj->askForLog = false;
     $guiObj->action_status_ok = true;
     $guiObj->req_spec_id = $argsObj->req_spec_id;
-    $guiObj->template = "reqSpecView.php?refreshTree=0&req_spec_id={$argsObj->req_spec_id}";
+    $guiObj->template = "reqSpecView.php?refreshTree=0&req_spec_id={$argsObj->req_spec_id}&tproject_id={$argsObj->tproject_id}";
     $guiObj->uploadOp = $argsObj->uploadOp;
     return $guiObj;    
   }

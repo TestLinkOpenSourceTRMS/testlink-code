@@ -455,8 +455,15 @@ class tlRole extends tlDBObject
    */
   protected function addRightsToDB(&$db) {
     $status_ok = 1;
+
     if ($this->rights) {
       foreach($this->rights as $right) {
+
+        // when copy role without rights (reserved roles)
+        if (is_null($right->dbID)) {
+          continue;
+        }
+
         $rightID = $right->dbID;
         $sql = "INSERT INTO {$this->tables['role_rights']} (role_id,right_id) " .
                "VALUES ({$this->dbID},{$rightID})";

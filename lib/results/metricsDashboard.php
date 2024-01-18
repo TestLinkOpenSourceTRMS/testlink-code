@@ -463,7 +463,7 @@ function checkRights(&$db,&$user,$context = null)
   $checkOrMode = array('testplan_metrics','testplan_execute');
   foreach($checkOrMode as $right)
   {
-    if( $user->hasRight($db,$right,$context->tproject_id,$context->tplan_id,$context->getAccessAttr) )
+    if( $user->hasRightOnProj($db,$right,$context->tproject_id,$context->tplan_id,$context->getAccessAttr) )
     {
       return true;  
     }

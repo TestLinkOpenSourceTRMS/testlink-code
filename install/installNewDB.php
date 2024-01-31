@@ -664,7 +664,7 @@ function drop_tables(&$dbHandler,$dbTablePrefix,$dbType)
       if( in_array($targetTable,$tablesOnDB) )
       {
         // Need to add option (CASCADE ?) to delete dependent object
-        echo "Droping $targetTable" . "<br />";
+        echo "Dropping $targetTable" . "<br />";
         $sql="DROP TABLE $targetTable";
         $sql .= (($dbType != 'mssql') && ($dbType != 'sqlsrv')) ? " CASCADE " : ' ';
         $dbHandler->exec_query($sql);
@@ -690,7 +690,7 @@ function drop_views(&$dbHandler,$dbItemPrefix,$dbType)
       if( in_array($target,$itemsOnDB) )
       {
         // Need to add option (CASCADE ?) to delete dependent object
-        echo "Droping $target" . "<br />";
+        echo "Dropping $target" . "<br />";
         $sql="DROP VIEW $target";
         $sql .= (($dbType != 'mssql') && ($dbType != 'sqlsrv')) ? " CASCADE " : ' ';
         $dbHandler->exec_query($sql);

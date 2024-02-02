@@ -28,9 +28,26 @@ docker build --no-cache --tag testlink-code:1.9.20 --tag testlink:latest .
 docker compose up -d
 ```
 
+You should now be able to open https://localhost:8080 in your browser to proceed with the Testlink setup
+
+### Database configuration
+
+Based on the default `docker-compose.yml` and `.env` configuration, you'll use the following settings for the database setup:
+
+| Key | Value |
+| - | - |
+| Database type | MySQL/MariaDB (5.6+ / 10.+) |
+| Database host | testlink-mysql |
+| Database admin login | root |
+| Database admin password | masterkey |
+
+You can provide your own values for `Database name`, `TestLink DB login` and `TestLink DB password`.
+
 ## Troubleshooting
 
 ### Creating the Testlink database user manually
+
+You'll need to create the testlink user yourself should you be presented with the following error during setup:
 
 > 1045 - Access denied for user 'testlink'@'172.29.0.3' (using password: YES)
 > TestLink ::: Fatal Error
@@ -40,8 +57,10 @@ docker compose up -d
 Connect to the app or database container and, using the `mysql` CLI, execute the following commands:
 
 ```sql
+/* update the database name, user name and password
+   values based on what you specified during setup */
 use `testlink`;
-CREATE USER 'testlink'@'%' IDENTIFIED BY 'pwd123';
+CREATE USER 'testlink'@'%' IDENTIFIED BY 'masterkey';
 GRANT SELECT, UPDATE, DELETE, INSERT ON *.* TO 'testlink'@'%' WITH GRANT OPTION;
 ```
 

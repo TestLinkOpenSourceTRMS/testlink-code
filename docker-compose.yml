@@ -4,19 +4,20 @@ networks:
     name: testlink
 services:
   testlink-mysql:
-    image: mysql:latest
+    image: mysql:8.0.36-bullseye
     networks:
     - testlink
     restart: unless-stopped
     user: mysql
     command: --default-authentication-plugin=mysql_native_password
     environment:
-    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
     - mysql:/var/lib/mysql
 
   testlink-app:
     image: testlink:1.9.20
+    build: .
     restart: unless-stopped
     depends_on:
       testlink-mysql:

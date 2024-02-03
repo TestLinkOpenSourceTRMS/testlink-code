@@ -4,16 +4,29 @@ networks:
     name: testlink
 services:
   testlink-mysql:
-    image: mysql:8.0.36-bullseye
+    image: mysql:8.3.0
     networks:
     - testlink
     restart: unless-stopped
     user: mysql
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
     - mysql:/var/lib/mysql
+
+  testlink-maildev:
+    image: maildev/maildev:latest
+    networks:
+    - testlink
+    ports:
+    - 1080:1080
+    - 1025:1025
+    restart: unless-stopped
+    environment:
+    - NODE_TLS_REJECT_UNAUTHORIZED=0
+    volumes:
+    - maildev:/tmp/maildev-1
 
   testlink-app:
     image: testlink:1.9.20
@@ -21,6 +34,8 @@ services:
     restart: unless-stopped
     depends_on:
       testlink-mysql:
+        condition: service_started
+      testlink-maildev:
         condition: service_started
     networks:
     - testlink
@@ -33,3 +48,4 @@ services:
 
 volumes:
   mysql:
+  maildev:

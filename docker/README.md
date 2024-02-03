@@ -43,6 +43,14 @@ Based on the default `docker-compose.yml` and `.env` configuration, you'll use t
 
 You can provide your own values for `Database name`, `TestLink DB login` and `TestLink DB password`.
 
+### Email configuration
+
+Copy the mail configuration to your installation with:
+
+```bash
+cp -n docker/custom_config.inc.php ./
+```
+
 ## Troubleshooting
 
 ### Creating the Testlink database user manually
@@ -71,5 +79,6 @@ If you wish to reset your database, you'll need to delete the mysql volume and `
 ```bash
 docker compose down
 docker volume rm testlink-code_mysql
+docker volume rm testlink-code_maildev
 /bin/rm -f config_db.inc.php
 ```

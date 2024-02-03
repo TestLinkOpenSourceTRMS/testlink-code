@@ -51,6 +51,8 @@ Copy the mail configuration to your installation with:
 cp -n docker/custom_config.inc.php ./
 ```
 
+You can view the test emails at http://localhost:1080
+
 ## Troubleshooting
 
 ### Creating the Testlink database user manually
@@ -79,6 +81,5 @@ If you wish to reset your database, you'll need to delete the mysql volume and `
 ```bash
 docker compose down
 docker volume rm testlink-code_mysql
-docker volume rm testlink-code_maildev
 /bin/rm -f config_db.inc.php
 ```

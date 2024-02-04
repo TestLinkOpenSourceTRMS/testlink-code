@@ -2044,6 +2044,43 @@ INSERT INTO `users` VALUES (1,'admin','$2y$10$R2V1vQ8341Pamp7xz5XwPuMGNWlfkukqea
 UNLOCK TABLES;
 
 --
+-- Dumping routines for database 'testlink'
+--
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP FUNCTION IF EXISTS `UDFStripHTMLTags` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = latin1 */ ;
+/*!50003 SET character_set_results = latin1 */ ;
+/*!50003 SET collation_connection  = latin1_swedish_ci */ ;
+
+DELIMITER ;;
+CREATE DEFINER=`testlink`@`%` FUNCTION `UDFStripHTMLTags`(Dirty TEXT) RETURNS text CHARSET utf8mb3
+    DETERMINISTIC
+BEGIN
+DECLARE iStart, iEnd, iLength int;
+   WHILE Locate( '<', Dirty ) > 0 And Locate( '>', Dirty, Locate( '<', Dirty )) > 0 DO
+      BEGIN
+        SET iStart = Locate( '<', Dirty ), iEnd = Locate( '>', Dirty, Locate('<', Dirty ));
+        SET iLength = ( iEnd - iStart) + 1;
+        IF iLength > 0 THEN
+          BEGIN
+            SET Dirty = Insert( Dirty, iStart, iLength, '');
+          END;
+        END IF;
+      END;
+    END WHILE;
+RETURN Dirty;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
 -- Final view structure for view `exec_by_date_time`
 --
 
@@ -2268,4 +2305,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-04 15:15:56
+-- Dump completed on 2024-02-04 15:57:11

@@ -1,27 +1,19 @@
--- MySQL dump 10.13  Distrib 5.5.16, for Linux (i686)
+-- MariaDB dump 10.19  Distrib 10.5.21-MariaDB, for debian-linux-gnu (aarch64)
 --
--- Host: localhost    Database: tl193_sample01
+-- Host: testlink-mysql    Database: testlink
 -- ------------------------------------------------------
--- Server version	5.5.16
+-- Server version	8.3.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Current Database: `tl193_sample01`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `tl193_sample01` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
-USE `tl193_sample01`;
 
 --
 -- Table structure for table `assignment_status`
@@ -31,10 +23,10 @@ DROP TABLE IF EXISTS `assignment_status`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `assignment_status` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `description` varchar(100) NOT NULL DEFAULT 'unknown',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -55,11 +47,11 @@ DROP TABLE IF EXISTS `assignment_types`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `assignment_types` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `fk_table` varchar(30) DEFAULT '',
   `description` varchar(100) NOT NULL DEFAULT 'unknown',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,20 +72,21 @@ DROP TABLE IF EXISTS `attachments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `attachments` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `fk_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `fk_id` int unsigned NOT NULL DEFAULT '0',
   `fk_table` varchar(250) DEFAULT '',
   `title` varchar(250) DEFAULT '',
   `description` varchar(250) DEFAULT '',
   `file_name` varchar(250) NOT NULL DEFAULT '',
   `file_path` varchar(250) DEFAULT '',
-  `file_size` int(11) NOT NULL DEFAULT '0',
+  `file_size` int NOT NULL DEFAULT '0',
   `file_type` varchar(250) NOT NULL DEFAULT '',
-  `date_added` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `content` longblob,
-  `compression_type` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `compression_type` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `attachments_idx1` (`fk_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,6 +99,63 @@ LOCK TABLES `attachments` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `baseline_l1l2_context`
+--
+
+DROP TABLE IF EXISTS `baseline_l1l2_context`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `baseline_l1l2_context` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `testplan_id` int unsigned NOT NULL DEFAULT '0',
+  `platform_id` int unsigned NOT NULL DEFAULT '0',
+  `begin_exec_ts` timestamp NOT NULL,
+  `end_exec_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `udx1_context` (`testplan_id`,`platform_id`,`creation_ts`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `baseline_l1l2_context`
+--
+
+LOCK TABLES `baseline_l1l2_context` WRITE;
+/*!40000 ALTER TABLE `baseline_l1l2_context` DISABLE KEYS */;
+/*!40000 ALTER TABLE `baseline_l1l2_context` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `baseline_l1l2_details`
+--
+
+DROP TABLE IF EXISTS `baseline_l1l2_details`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `baseline_l1l2_details` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `context_id` int unsigned NOT NULL,
+  `top_tsuite_id` int unsigned NOT NULL DEFAULT '0',
+  `child_tsuite_id` int unsigned NOT NULL DEFAULT '0',
+  `status` char(1) DEFAULT NULL,
+  `qty` int unsigned NOT NULL DEFAULT '0',
+  `total_tc` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `udx1_details` (`context_id`,`top_tsuite_id`,`child_tsuite_id`,`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `baseline_l1l2_details`
+--
+
+LOCK TABLES `baseline_l1l2_details` WRITE;
+/*!40000 ALTER TABLE `baseline_l1l2_details` DISABLE KEYS */;
+/*!40000 ALTER TABLE `baseline_l1l2_details` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `builds`
 --
 
@@ -113,20 +163,24 @@ DROP TABLE IF EXISTS `builds`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `builds` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `testplan_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `testplan_id` int unsigned NOT NULL DEFAULT '0',
   `name` varchar(100) NOT NULL DEFAULT 'undefined',
   `notes` text,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `is_open` tinyint(1) NOT NULL DEFAULT '1',
-  `author_id` int(10) unsigned DEFAULT NULL,
+  `author_id` int unsigned DEFAULT NULL,
   `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `release_date` date DEFAULT NULL,
   `closed_on_date` date DEFAULT NULL,
+  `commit_id` varchar(64) DEFAULT NULL,
+  `tag` varchar(64) DEFAULT NULL,
+  `branch` varchar(64) DEFAULT NULL,
+  `release_candidate` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`testplan_id`,`name`),
   KEY `testplan_id` (`testplan_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='Available builds';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COMMENT='Available builds';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -135,8 +189,33 @@ CREATE TABLE `builds` (
 
 LOCK TABLES `builds` WRITE;
 /*!40000 ALTER TABLE `builds` DISABLE KEYS */;
-INSERT INTO `builds` VALUES (1,4,'PZ X.1','',1,1,NULL,'2012-05-01 09:26:40',NULL,NULL),(2,4,'PZ X.2','',1,1,NULL,'2012-05-01 09:26:54',NULL,NULL),(3,4,'PZ X.3','',1,1,NULL,'2012-05-01 09:27:08',NULL,NULL);
+INSERT INTO `builds` VALUES (1,4,'PZ X.1','',1,1,NULL,'2022-05-01 09:26:40',NULL,NULL,NULL,NULL,NULL,NULL),(2,4,'PZ X.2','',1,1,NULL,'2022-05-01 09:26:54',NULL,NULL,NULL,NULL,NULL,NULL),(3,4,'PZ X.3','',1,1,NULL,'2022-05-01 09:27:08',NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `builds` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cfield_build_design_values`
+--
+
+DROP TABLE IF EXISTS `cfield_build_design_values`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cfield_build_design_values` (
+  `field_id` int NOT NULL DEFAULT '0',
+  `node_id` int NOT NULL DEFAULT '0',
+  `value` varchar(4000) NOT NULL DEFAULT '',
+  PRIMARY KEY (`field_id`,`node_id`),
+  KEY `idx_cfield_build_design_values` (`node_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cfield_build_design_values`
+--
+
+LOCK TABLES `cfield_build_design_values` WRITE;
+/*!40000 ALTER TABLE `cfield_build_design_values` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cfield_build_design_values` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -147,12 +226,12 @@ DROP TABLE IF EXISTS `cfield_design_values`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cfield_design_values` (
-  `field_id` int(10) NOT NULL DEFAULT '0',
-  `node_id` int(10) NOT NULL DEFAULT '0',
+  `field_id` int NOT NULL DEFAULT '0',
+  `node_id` int NOT NULL DEFAULT '0',
   `value` varchar(4000) NOT NULL DEFAULT '',
   PRIMARY KEY (`field_id`,`node_id`),
   KEY `idx_cfield_design_values` (`node_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -172,13 +251,13 @@ DROP TABLE IF EXISTS `cfield_execution_values`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cfield_execution_values` (
-  `field_id` int(10) NOT NULL DEFAULT '0',
-  `execution_id` int(10) NOT NULL DEFAULT '0',
-  `testplan_id` int(10) NOT NULL DEFAULT '0',
-  `tcversion_id` int(10) NOT NULL DEFAULT '0',
+  `field_id` int NOT NULL DEFAULT '0',
+  `execution_id` int NOT NULL DEFAULT '0',
+  `testplan_id` int NOT NULL DEFAULT '0',
+  `tcversion_id` int NOT NULL DEFAULT '0',
   `value` varchar(4000) NOT NULL DEFAULT '',
   PRIMARY KEY (`field_id`,`execution_id`,`testplan_id`,`tcversion_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,11 +277,11 @@ DROP TABLE IF EXISTS `cfield_node_types`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cfield_node_types` (
-  `field_id` int(10) NOT NULL DEFAULT '0',
-  `node_type_id` int(10) NOT NULL DEFAULT '0',
+  `field_id` int NOT NULL DEFAULT '0',
+  `node_type_id` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`field_id`,`node_type_id`),
   KEY `idx_custom_fields_assign` (`node_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -222,12 +301,12 @@ DROP TABLE IF EXISTS `cfield_testplan_design_values`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cfield_testplan_design_values` (
-  `field_id` int(10) NOT NULL DEFAULT '0',
-  `link_id` int(10) NOT NULL DEFAULT '0' COMMENT 'point to testplan_tcversion id',
+  `field_id` int NOT NULL DEFAULT '0',
+  `link_id` int NOT NULL DEFAULT '0' COMMENT 'point to testplan_tcversion id',
   `value` varchar(4000) NOT NULL DEFAULT '',
   PRIMARY KEY (`field_id`,`link_id`),
   KEY `idx_cfield_tplan_design_val` (`link_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -247,15 +326,17 @@ DROP TABLE IF EXISTS `cfield_testprojects`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cfield_testprojects` (
-  `field_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `testproject_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `display_order` smallint(5) unsigned NOT NULL DEFAULT '1',
-  `location` smallint(5) unsigned NOT NULL DEFAULT '1',
+  `field_id` int unsigned NOT NULL DEFAULT '0',
+  `testproject_id` int unsigned NOT NULL DEFAULT '0',
+  `display_order` smallint unsigned NOT NULL DEFAULT '1',
+  `location` smallint unsigned NOT NULL DEFAULT '1',
   `active` tinyint(1) NOT NULL DEFAULT '1',
+  `required` tinyint(1) NOT NULL DEFAULT '0',
   `required_on_design` tinyint(1) NOT NULL DEFAULT '0',
   `required_on_execution` tinyint(1) NOT NULL DEFAULT '0',
+  `monitorable` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`field_id`,`testproject_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -268,6 +349,32 @@ LOCK TABLES `cfield_testprojects` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `codetrackers`
+--
+
+DROP TABLE IF EXISTS `codetrackers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `codetrackers` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `type` int DEFAULT '0',
+  `cfg` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `codetrackers_uidx1` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `codetrackers`
+--
+
+LOCK TABLES `codetrackers` WRITE;
+/*!40000 ALTER TABLE `codetrackers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `codetrackers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `custom_fields`
 --
 
@@ -275,24 +382,24 @@ DROP TABLE IF EXISTS `custom_fields`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `custom_fields` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL DEFAULT '',
   `label` varchar(64) NOT NULL DEFAULT '' COMMENT 'label to display on user interface',
-  `type` smallint(6) NOT NULL DEFAULT '0',
+  `type` smallint NOT NULL DEFAULT '0',
   `possible_values` varchar(4000) NOT NULL DEFAULT '',
   `default_value` varchar(4000) NOT NULL DEFAULT '',
   `valid_regexp` varchar(255) NOT NULL DEFAULT '',
-  `length_min` int(10) NOT NULL DEFAULT '0',
-  `length_max` int(10) NOT NULL DEFAULT '0',
-  `show_on_design` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '1=> show it during specification design',
-  `enable_on_design` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '1=> user can write/manage it during specification design',
-  `show_on_execution` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1=> show it during test case execution',
-  `enable_on_execution` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1=> user can write/manage it during test case execution',
-  `show_on_testplan_design` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `enable_on_testplan_design` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `length_min` int NOT NULL DEFAULT '0',
+  `length_max` int NOT NULL DEFAULT '0',
+  `show_on_design` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1=> show it during specification design',
+  `enable_on_design` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1=> user can write/manage it during specification design',
+  `show_on_execution` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '1=> show it during test case execution',
+  `enable_on_execution` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '1=> user can write/manage it during test case execution',
+  `show_on_testplan_design` tinyint unsigned NOT NULL DEFAULT '0',
+  `enable_on_testplan_design` tinyint unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_custom_fields_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -313,9 +420,10 @@ DROP TABLE IF EXISTS `db_version`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `db_version` (
   `version` varchar(50) NOT NULL DEFAULT 'unknown',
-  `upgrade_ts` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `notes` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `upgrade_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `notes` text,
+  PRIMARY KEY (`version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -324,7 +432,7 @@ CREATE TABLE `db_version` (
 
 LOCK TABLES `db_version` WRITE;
 /*!40000 ALTER TABLE `db_version` DISABLE KEYS */;
-INSERT INTO `db_version` VALUES ('DB 1.4','2012-05-01 10:56:28','TestLink 1.9.1');
+INSERT INTO `db_version` VALUES ('DB 1.9.20','2022-02-04 14:59:03','TestLink 1.9.20 Raijin');
 /*!40000 ALTER TABLE `db_version` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -336,19 +444,19 @@ DROP TABLE IF EXISTS `events`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `events` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `transaction_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `log_level` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `transaction_id` int unsigned NOT NULL DEFAULT '0',
+  `log_level` smallint unsigned NOT NULL DEFAULT '0',
   `source` varchar(45) DEFAULT NULL,
   `description` text NOT NULL,
-  `fired_at` int(10) unsigned NOT NULL DEFAULT '0',
+  `fired_at` int unsigned NOT NULL DEFAULT '0',
   `activity` varchar(45) DEFAULT NULL,
-  `object_id` int(10) unsigned DEFAULT NULL,
+  `object_id` int unsigned DEFAULT NULL,
   `object_type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `transaction_id` (`transaction_id`),
   KEY `fired_at` (`fired_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=265 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=302 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -357,9 +465,37 @@ CREATE TABLE `events` (
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
-INSERT INTO `events` VALUES (1,1,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(2,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(3,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(4,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(5,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(6,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(7,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(8,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(9,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(10,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(11,2,2,'GUI','E_NOTICE\nUndefined index: testprojectOptions - in /hdextra/development/tl-old/tl193-untouched/lib/general/mainPage.php - Line 63',1335862631,'PHP',NULL,NULL),(12,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/general/mainPage.php - Line 63',1335862631,'PHP',NULL,NULL),(13,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(14,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(15,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(16,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(17,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(18,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(19,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(20,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(21,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(22,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(23,2,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862631,'PHP',NULL,NULL),(24,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(25,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(26,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(27,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(28,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(29,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(30,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(31,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(32,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(33,3,2,'GUI','E_NOTICE\nUndefined index: testprojectOptions - in /hdextra/development/tl-old/tl193-untouched/lib/general/mainPage.php - Line 63',1335862696,'PHP',NULL,NULL),(34,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/general/mainPage.php - Line 63',1335862696,'PHP',NULL,NULL),(35,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(36,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(37,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(38,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(39,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(40,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(41,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(42,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(43,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(44,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(45,3,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(46,4,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlUser.class.php - Line 726',1335862696,'PHP',NULL,NULL),(47,5,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:21:\"audit_login_succeeded\";s:6:\"params\";a:2:{i:0;s:5:\"admin\";i:1;s:9:\"127.0.0.1\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335862713,'LOGIN',1,'users'),(48,6,2,'GUI','No project found: Assume a new installation and redirect to create it',1335862714,NULL,NULL,NULL),(49,7,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_testproject_created\";s:6:\"params\";a:1:{i:0;s:22:\"TestLink 193 - Reports\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335862746,'CREATE',1,'testprojects'),(50,8,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_testproject_created\";s:6:\"params\";a:1:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864014,'CREATE',2,'testprojects'),(51,9,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_testproject_created\";s:6:\"params\";a:1:{i:0;s:29:\"Formula One Pirelli Wet Tyres\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864053,'CREATE',3,'testprojects'),(52,10,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:22:\"audit_testplan_created\";s:6:\"params\";a:2:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";i:1;s:22:\"P Zero Red (Supersoft)\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864120,'CREATED',4,'testplans'),(53,11,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:22:\"audit_testplan_created\";s:6:\"params\";a:2:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";i:1;s:20:\"P Zero Yellow (Soft)\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864160,'CREATED',5,'testplans'),(54,12,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:22:\"audit_testplan_created\";s:6:\"params\";a:2:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";i:1;s:21:\"P Zero White (Medium)\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864193,'CREATED',6,'testplans'),(55,13,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:22:\"audit_testplan_created\";s:6:\"params\";a:2:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";i:1;s:20:\"P Zero Silver (Hard)\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864246,'CREATED',7,'testplans'),(56,14,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:22:\"audit_testplan_created\";s:6:\"params\";a:2:{i:0;s:29:\"Formula One Pirelli Wet Tyres\";i:1;s:30:\"Cinturato Green (Intermediate)\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864293,'CREATED',8,'testplans'),(57,15,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:22:\"audit_testplan_created\";s:6:\"params\";a:2:{i:0;s:29:\"Formula One Pirelli Wet Tyres\";i:1;s:20:\"Cinturato Blue (Wet)\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864326,'CREATED',9,'testplans'),(58,16,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:40:\"audit_all_user_roles_removed_testproject\";s:6:\"params\";a:1:{i:0;s:22:\"TestLink 193 - Reports\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864347,'ASSIGN',1,'testprojects'),(59,16,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_testproject_deleted\";s:6:\"params\";a:1:{i:0;s:22:\"TestLink 193 - Reports\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864347,'DELETE',1,'testprojects'),(60,17,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:19:\"audit_build_created\";s:6:\"params\";a:3:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";i:1;s:22:\"P Zero Red (Supersoft)\";i:2;s:11:\"ZeroRed X.1\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864400,'CREATE',1,'builds'),(61,18,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:19:\"audit_build_created\";s:6:\"params\";a:3:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";i:1;s:22:\"P Zero Red (Supersoft)\";i:2;s:11:\"ZeroRed X.2\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864414,'CREATE',2,'builds'),(62,19,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:19:\"audit_build_created\";s:6:\"params\";a:3:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";i:1;s:22:\"P Zero Red (Supersoft)\";i:2;s:11:\"ZeroRed X.3\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864428,'CREATE',3,'builds'),(63,20,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:17:\"audit_build_saved\";s:6:\"params\";a:3:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";i:1;s:22:\"P Zero Red (Supersoft)\";i:2;s:6:\"PZ X.1\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864459,'SAVE',1,'builds'),(64,21,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:17:\"audit_build_saved\";s:6:\"params\";a:3:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";i:1;s:22:\"P Zero Red (Supersoft)\";i:2;s:6:\"PZ X.2\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864466,'SAVE',2,'builds'),(65,22,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:17:\"audit_build_saved\";s:6:\"params\";a:3:{i:0;s:29:\"Formula One Pirelli Dry Tyres\";i:1;s:22:\"P Zero Red (Supersoft)\";i:2;s:6:\"PZ X.3\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335864473,'SAVE',3,'builds'),(66,23,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:21:\"audit_keyword_created\";s:6:\"params\";a:1:{i:0;s:10:\"Mechanical\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335866991,'CREATE',1,'keywords'),(67,24,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:21:\"audit_keyword_created\";s:6:\"params\";a:1:{i:0;s:10:\"Resistance\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867005,'CREATE',2,'keywords'),(68,25,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:21:\"audit_keyword_created\";s:6:\"params\";a:1:{i:0;s:15:\"Tear Resistance\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867022,'CREATE',3,'keywords'),(69,26,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:21:\"audit_keyword_created\";s:6:\"params\";a:1:{i:0;s:12:\"Mountability\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867034,'CREATE',4,'keywords'),(70,27,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:21:\"audit_keyword_created\";s:6:\"params\";a:1:{i:0;s:10:\"Subjective\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867048,'CREATE',5,'keywords'),(71,28,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:21:\"audit_keyword_created\";s:6:\"params\";a:1:{i:0;s:9:\"Objective\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867057,'CREATE',6,'keywords'),(72,29,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:11:\"GRIP-SL-001\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867108,'ASSIGN',31,'nodes_hierarchy'),(73,29,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"GRIP-SL-001\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867108,'ASSIGN',31,'nodes_hierarchy'),(74,30,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"GRIP-SL-002\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867121,'ASSIGN',33,'nodes_hierarchy'),(75,30,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:11:\"GRIP-SL-002\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867121,'ASSIGN',33,'nodes_hierarchy'),(76,31,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:11:\"GRIP-LC-001\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867626,'ASSIGN',35,'nodes_hierarchy'),(77,31,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"GRIP-LC-001\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867626,'ASSIGN',35,'nodes_hierarchy'),(78,31,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:11:\"GRIP-LC-002\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867626,'ASSIGN',37,'nodes_hierarchy'),(79,31,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"GRIP-LC-002\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867626,'ASSIGN',37,'nodes_hierarchy'),(80,31,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:11:\"GRIP-LC-003\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867626,'ASSIGN',39,'nodes_hierarchy'),(81,31,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"GRIP-LC-003\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867626,'ASSIGN',39,'nodes_hierarchy'),(82,31,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:11:\"GRIP-LC-004\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867626,'ASSIGN',41,'nodes_hierarchy'),(83,31,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"GRIP-LC-004\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867626,'ASSIGN',41,'nodes_hierarchy'),(84,32,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:12:\"GRIP-HYD-101\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867682,'ASSIGN',43,'nodes_hierarchy'),(85,32,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:12:\"GRIP-HYD-101\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867682,'ASSIGN',43,'nodes_hierarchy'),(86,32,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:12:\"GRIP-HYD-102\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867682,'ASSIGN',45,'nodes_hierarchy'),(87,32,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:12:\"GRIP-HYD-102\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867682,'ASSIGN',45,'nodes_hierarchy'),(88,32,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:12:\"GRIP-HYD-103\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867682,'ASSIGN',47,'nodes_hierarchy'),(89,32,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:12:\"GRIP-HYD-103\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867682,'ASSIGN',47,'nodes_hierarchy'),(90,32,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:12:\"GRIP-HYD-104\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867682,'ASSIGN',49,'nodes_hierarchy'),(91,32,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:12:\"GRIP-HYD-104\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867682,'ASSIGN',49,'nodes_hierarchy'),(92,33,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"BRK-AA-101\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867747,'ASSIGN',51,'nodes_hierarchy'),(93,33,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"BRK-AA-101\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867747,'ASSIGN',51,'nodes_hierarchy'),(94,33,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"BRK-AA-102\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867747,'ASSIGN',53,'nodes_hierarchy'),(95,33,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"BRK-AA-102\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867747,'ASSIGN',53,'nodes_hierarchy'),(96,33,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"BRK-AA-103\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867747,'ASSIGN',55,'nodes_hierarchy'),(97,33,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"BRK-AA-103\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867747,'ASSIGN',55,'nodes_hierarchy'),(98,33,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"BRK-AA-104\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867747,'ASSIGN',57,'nodes_hierarchy'),(99,33,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"BRK-AA-104\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867747,'ASSIGN',57,'nodes_hierarchy'),(100,34,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"BRK-BB-101\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867792,'ASSIGN',59,'nodes_hierarchy'),(101,34,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"BRK-BB-101\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867792,'ASSIGN',59,'nodes_hierarchy'),(102,34,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"BRK-BB-102\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867792,'ASSIGN',61,'nodes_hierarchy'),(103,34,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"BRK-BB-102\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867792,'ASSIGN',61,'nodes_hierarchy'),(104,34,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"BRK-BB-103\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867792,'ASSIGN',63,'nodes_hierarchy'),(105,34,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"BRK-BB-103\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867792,'ASSIGN',63,'nodes_hierarchy'),(106,34,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"BRK-BB-104\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867792,'ASSIGN',65,'nodes_hierarchy'),(107,34,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"BRK-BB-104\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867792,'ASSIGN',65,'nodes_hierarchy'),(108,35,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"DRV-AX-101\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867847,'ASSIGN',67,'nodes_hierarchy'),(109,35,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-AX-101\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867847,'ASSIGN',67,'nodes_hierarchy'),(110,35,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"DRV-AX-102\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867847,'ASSIGN',69,'nodes_hierarchy'),(111,35,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-AX-102\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867847,'ASSIGN',69,'nodes_hierarchy'),(112,35,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"DRV-AX-103\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867847,'ASSIGN',71,'nodes_hierarchy'),(113,35,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-AX-103\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867847,'ASSIGN',71,'nodes_hierarchy'),(114,35,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"DRV-AX-104\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867847,'ASSIGN',73,'nodes_hierarchy'),(115,35,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-AX-104\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867847,'ASSIGN',73,'nodes_hierarchy'),(116,36,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"DRV-JT-801\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867890,'ASSIGN',75,'nodes_hierarchy'),(117,36,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-JT-801\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867890,'ASSIGN',75,'nodes_hierarchy'),(118,36,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"DRV-JT-802\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867891,'ASSIGN',77,'nodes_hierarchy'),(119,36,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-JT-802\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867891,'ASSIGN',77,'nodes_hierarchy'),(120,36,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"DRV-JT-803\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867891,'ASSIGN',79,'nodes_hierarchy'),(121,36,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-JT-803\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867891,'ASSIGN',79,'nodes_hierarchy'),(122,36,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"DRV-JT-804\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867891,'ASSIGN',81,'nodes_hierarchy'),(123,36,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-JT-804\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867891,'ASSIGN',81,'nodes_hierarchy'),(124,37,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"DRV-TC-701\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867956,'ASSIGN',83,'nodes_hierarchy'),(125,37,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-TC-701\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867956,'ASSIGN',83,'nodes_hierarchy'),(126,37,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"DRV-TC-702\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867956,'ASSIGN',85,'nodes_hierarchy'),(127,37,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-TC-702\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867956,'ASSIGN',85,'nodes_hierarchy'),(128,37,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"DRV-TC-703\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867956,'ASSIGN',87,'nodes_hierarchy'),(129,37,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-TC-703\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867956,'ASSIGN',87,'nodes_hierarchy'),(130,37,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"DRV-TC-704\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867956,'ASSIGN',89,'nodes_hierarchy'),(131,37,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-TC-704\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867956,'ASSIGN',89,'nodes_hierarchy'),(132,37,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"DRV-TC-705\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867956,'ASSIGN',91,'nodes_hierarchy'),(133,37,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"DRV-TC-705\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335867956,'ASSIGN',91,'nodes_hierarchy'),(134,38,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"INO-ZX-701\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868010,'ASSIGN',93,'nodes_hierarchy'),(135,38,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"INO-ZX-701\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868010,'ASSIGN',93,'nodes_hierarchy'),(136,38,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"INO-ZX-702\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868010,'ASSIGN',95,'nodes_hierarchy'),(137,38,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"INO-ZX-702\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868010,'ASSIGN',95,'nodes_hierarchy'),(138,38,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"INO-ZX-703\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868011,'ASSIGN',97,'nodes_hierarchy'),(139,38,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"INO-ZX-703\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868011,'ASSIGN',97,'nodes_hierarchy'),(140,38,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"INO-ZX-704\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868011,'ASSIGN',99,'nodes_hierarchy'),(141,38,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"INO-ZX-704\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868011,'ASSIGN',99,'nodes_hierarchy'),(142,38,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"INO-ZX-705\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868011,'ASSIGN',101,'nodes_hierarchy'),(143,38,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"INO-ZX-705\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868011,'ASSIGN',101,'nodes_hierarchy'),(144,39,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"INO-ZW-601\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868064,'ASSIGN',103,'nodes_hierarchy'),(145,39,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"INO-ZW-601\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868064,'ASSIGN',103,'nodes_hierarchy'),(146,39,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"INO-ZW-602\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868064,'ASSIGN',105,'nodes_hierarchy'),(147,39,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"INO-ZW-602\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868064,'ASSIGN',105,'nodes_hierarchy'),(148,39,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"INO-ZW-603\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868064,'ASSIGN',107,'nodes_hierarchy'),(149,39,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"INO-ZW-603\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868064,'ASSIGN',107,'nodes_hierarchy'),(150,39,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"INO-ZW-604\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868064,'ASSIGN',109,'nodes_hierarchy'),(151,39,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"INO-ZW-604\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868064,'ASSIGN',109,'nodes_hierarchy'),(152,39,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"INO-ZW-605\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868064,'ASSIGN',111,'nodes_hierarchy'),(153,39,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"INO-ZW-605\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868064,'ASSIGN',111,'nodes_hierarchy'),(154,40,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:11:\"EXNO-ZW-601\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868106,'ASSIGN',113,'nodes_hierarchy'),(155,40,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"EXNO-ZW-601\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868106,'ASSIGN',113,'nodes_hierarchy'),(156,40,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:11:\"EXNO-ZW-602\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868106,'ASSIGN',115,'nodes_hierarchy'),(157,40,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"EXNO-ZW-602\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868106,'ASSIGN',115,'nodes_hierarchy'),(158,40,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:11:\"EXNO-ZW-603\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868107,'ASSIGN',117,'nodes_hierarchy'),(159,40,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"EXNO-ZW-603\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868107,'ASSIGN',117,'nodes_hierarchy'),(160,40,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:11:\"EXNO-ZW-604\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868107,'ASSIGN',119,'nodes_hierarchy'),(161,40,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"EXNO-ZW-604\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868107,'ASSIGN',119,'nodes_hierarchy'),(162,40,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:11:\"EXNO-ZW-605\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868107,'ASSIGN',121,'nodes_hierarchy'),(163,40,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"EXNO-ZW-605\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868107,'ASSIGN',121,'nodes_hierarchy'),(164,41,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:11:\"EXNO-WW-001\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868144,'ASSIGN',123,'nodes_hierarchy'),(165,41,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"EXNO-WW-001\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868144,'ASSIGN',123,'nodes_hierarchy'),(166,41,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:11:\"EXNO-WW-002\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868144,'ASSIGN',125,'nodes_hierarchy'),(167,41,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"EXNO-WW-002\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868144,'ASSIGN',125,'nodes_hierarchy'),(168,41,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:11:\"EXNO-WW-003\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868144,'ASSIGN',127,'nodes_hierarchy'),(169,41,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"EXNO-WW-003\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868144,'ASSIGN',127,'nodes_hierarchy'),(170,41,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:11:\"EXNO-WW-004\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868144,'ASSIGN',129,'nodes_hierarchy'),(171,41,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"EXNO-WW-004\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868144,'ASSIGN',129,'nodes_hierarchy'),(172,41,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:11:\"EXNO-WW-005\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868144,'ASSIGN',131,'nodes_hierarchy'),(173,41,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:11:\"EXNO-WW-005\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868144,'ASSIGN',131,'nodes_hierarchy'),(174,42,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"TYW-77-001\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868185,'ASSIGN',133,'nodes_hierarchy'),(175,42,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-001\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868185,'ASSIGN',133,'nodes_hierarchy'),(176,42,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"TYW-77-002\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868185,'ASSIGN',135,'nodes_hierarchy'),(177,42,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-002\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868185,'ASSIGN',135,'nodes_hierarchy'),(178,42,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"TYW-77-003\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868185,'ASSIGN',137,'nodes_hierarchy'),(179,42,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-003\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868185,'ASSIGN',137,'nodes_hierarchy'),(180,42,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"TYW-77-004\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868185,'ASSIGN',139,'nodes_hierarchy'),(181,42,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-004\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868185,'ASSIGN',139,'nodes_hierarchy'),(182,42,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"TYW-77-005\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868185,'ASSIGN',141,'nodes_hierarchy'),(183,42,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-005\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868185,'ASSIGN',141,'nodes_hierarchy'),(184,43,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"TYW-77-101\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868220,'ASSIGN',143,'nodes_hierarchy'),(185,43,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-101\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868220,'ASSIGN',143,'nodes_hierarchy'),(186,43,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"TYW-77-102\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868220,'ASSIGN',145,'nodes_hierarchy'),(187,43,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-102\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868220,'ASSIGN',145,'nodes_hierarchy'),(188,43,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"TYW-77-103\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868220,'ASSIGN',147,'nodes_hierarchy'),(189,43,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-103\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868220,'ASSIGN',147,'nodes_hierarchy'),(190,43,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"TYW-77-104\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868220,'ASSIGN',149,'nodes_hierarchy'),(191,43,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-104\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868220,'ASSIGN',149,'nodes_hierarchy'),(192,43,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"TYW-77-105\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868220,'ASSIGN',151,'nodes_hierarchy'),(193,43,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-105\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868220,'ASSIGN',151,'nodes_hierarchy'),(194,44,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"TYW-77-201\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868246,'ASSIGN',153,'nodes_hierarchy'),(195,44,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-201\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868246,'ASSIGN',153,'nodes_hierarchy'),(196,44,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"TYW-77-202\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868246,'ASSIGN',155,'nodes_hierarchy'),(197,44,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-202\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868246,'ASSIGN',155,'nodes_hierarchy'),(198,44,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Mechanical\";i:1;s:10:\"TYW-77-203\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868246,'ASSIGN',157,'nodes_hierarchy'),(199,44,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-203\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868246,'ASSIGN',157,'nodes_hierarchy'),(200,44,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"TYW-77-204\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868246,'ASSIGN',159,'nodes_hierarchy'),(201,44,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-204\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868246,'ASSIGN',159,'nodes_hierarchy'),(202,44,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:10:\"Resistance\";i:1;s:10:\"TYW-77-205\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868246,'ASSIGN',161,'nodes_hierarchy'),(203,44,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:25:\"audit_keyword_assigned_tc\";s:6:\"params\";a:2:{i:0;s:9:\"Objective\";i:1;s:10:\"TYW-77-205\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868247,'ASSIGN',161,'nodes_hierarchy'),(204,45,2,'GUI','E_NOTICE\nTrying to get property of non-object - in /hdextra/development/tl-old/tl193-untouched/lib/functions/tlTestCaseFilterControl.class.php - Line 880',1335868398,'PHP',NULL,NULL),(205,46,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-1 : GRIP-SL-001\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868429,'ASSIGN',4,'testplans'),(206,46,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-1 : GRIP-SL-001\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868429,'ASSIGN',4,'testplans'),(207,46,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-1 : GRIP-SL-001\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868429,'ASSIGN',4,'testplans'),(208,46,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-1 : GRIP-SL-001\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868429,'ASSIGN',4,'testplans'),(209,46,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-2 : GRIP-SL-002\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868429,'ASSIGN',4,'testplans'),(210,46,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-2 : GRIP-SL-002\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868429,'ASSIGN',4,'testplans'),(211,46,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-2 : GRIP-SL-002\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868429,'ASSIGN',4,'testplans'),(212,46,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-2 : GRIP-SL-002\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868429,'ASSIGN',4,'testplans'),(213,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:20:\"PDT-7 : GRIP-HYD-101\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(214,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:20:\"PDT-7 : GRIP-HYD-101\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(215,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:20:\"PDT-7 : GRIP-HYD-101\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(216,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:20:\"PDT-9 : GRIP-HYD-103\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(217,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:20:\"PDT-9 : GRIP-HYD-103\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(218,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:20:\"PDT-9 : GRIP-HYD-103\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(219,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:20:\"PDT-8 : GRIP-HYD-102\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(220,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:20:\"PDT-8 : GRIP-HYD-102\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(221,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:20:\"PDT-8 : GRIP-HYD-102\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(222,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:21:\"PDT-10 : GRIP-HYD-104\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(223,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:21:\"PDT-10 : GRIP-HYD-104\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(224,47,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:21:\"PDT-10 : GRIP-HYD-104\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868446,'ASSIGN',4,'testplans'),(225,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-32 : INO-ZX-701\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(226,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-32 : INO-ZX-701\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(227,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-34 : INO-ZX-703\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(228,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-34 : INO-ZX-703\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(229,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-33 : INO-ZX-702\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(230,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-33 : INO-ZX-702\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(231,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-35 : INO-ZX-704\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(232,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-35 : INO-ZX-704\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(233,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-36 : INO-ZX-705\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(234,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-36 : INO-ZX-705\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(235,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-37 : INO-ZW-601\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(236,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-37 : INO-ZW-601\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(237,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-39 : INO-ZW-603\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(238,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-39 : INO-ZW-603\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(239,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-38 : INO-ZW-602\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(240,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-38 : INO-ZW-602\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(241,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-40 : INO-ZW-604\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(242,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-40 : INO-ZW-604\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(243,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-41 : INO-ZW-605\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(244,48,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-41 : INO-ZW-605\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868481,'ASSIGN',4,'testplans'),(245,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-57 : TYW-77-101\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(246,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-57 : TYW-77-101\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(247,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-57 : TYW-77-101\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(248,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-57 : TYW-77-101\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(249,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-59 : TYW-77-103\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(250,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-59 : TYW-77-103\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(251,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-59 : TYW-77-103\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(252,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-59 : TYW-77-103\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(253,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-58 : TYW-77-102\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(254,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-58 : TYW-77-102\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(255,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-58 : TYW-77-102\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(256,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-58 : TYW-77-102\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(257,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-60 : TYW-77-104\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(258,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-60 : TYW-77-104\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(259,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-60 : TYW-77-104\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(260,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-60 : TYW-77-104\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(261,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-61 : TYW-77-105\";i:1;s:1:\"1\";i:2;s:41:\"P Zero Red (Supersoft) - Platform:Ferrari\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(262,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-61 : TYW-77-105\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mc Laren\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(263,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-61 : TYW-77-105\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Mercedes\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans'),(264,49,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:26:\"audit_tc_added_to_testplan\";s:6:\"params\";a:3:{i:0;s:19:\"PDT-61 : TYW-77-105\";i:1;s:1:\"1\";i:2;s:42:\"P Zero Red (Supersoft) - Platform:Red Bull\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1335868496,'ASSIGN',4,'testplans');
+INSERT INTO `events` VALUES (265,50,16,'GUI','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:18:\"audit_login_failed\";s:6:\"params\";a:2:{i:0;s:5:\"admin\";i:1;s:12:\"192.168.65.1\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1707059206,'LOGIN_FAILED',1,'users'),(266,51,16,'GUI - Test Project ID : 2','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:21:\"audit_login_succeeded\";s:6:\"params\";a:2:{i:0;s:5:\"admin\";i:1;s:12:\"192.168.65.1\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1707059211,'LOGIN',1,'users'),(267,52,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: DataTablesSelector - in /var/www/testlink/gui/templates_c/6e35d38c467944a048705ebd8774a98926e2ced6_0.file.DataTables.inc.tpl.php - Line 35',1707059214,'PHP',0,NULL),(268,52,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to get property \'value\' of non-object - in /var/www/testlink/gui/templates_c/6e35d38c467944a048705ebd8774a98926e2ced6_0.file.DataTables.inc.tpl.php - Line 35',1707059214,'PHP',0,NULL),(269,53,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: DataTablesSelector - in /var/www/testlink/gui/templates_c/6e35d38c467944a048705ebd8774a98926e2ced6_0.file.DataTables.inc.tpl.php - Line 35',1707059224,'PHP',0,NULL),(270,53,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to get property \'value\' of non-object - in /var/www/testlink/gui/templates_c/6e35d38c467944a048705ebd8774a98926e2ced6_0.file.DataTables.inc.tpl.php - Line 35',1707059224,'PHP',0,NULL),(271,53,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: DataTablesSelector - in /var/www/testlink/gui/templates_c/8c2b5b97f935ad5a2c97c9ca634a8aad40cbfb8f_0.file.DataTablesColumnFiltering.inc.tpl.php - Line 31',1707059224,'PHP',0,NULL),(272,53,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to get property \'value\' of non-object - in /var/www/testlink/gui/templates_c/8c2b5b97f935ad5a2c97c9ca634a8aad40cbfb8f_0.file.DataTablesColumnFiltering.inc.tpl.php - Line 31',1707059224,'PHP',0,NULL),(273,53,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: DataTablesSelector - in /var/www/testlink/gui/templates_c/8c2b5b97f935ad5a2c97c9ca634a8aad40cbfb8f_0.file.DataTablesColumnFiltering.inc.tpl.php - Line 48',1707059224,'PHP',0,NULL),(274,53,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to get property \'value\' of non-object - in /var/www/testlink/gui/templates_c/8c2b5b97f935ad5a2c97c9ca634a8aad40cbfb8f_0.file.DataTablesColumnFiltering.inc.tpl.php - Line 48',1707059224,'PHP',0,NULL),(275,53,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: DataTablesSelector - in /var/www/testlink/gui/templates_c/8c2b5b97f935ad5a2c97c9ca634a8aad40cbfb8f_0.file.DataTablesColumnFiltering.inc.tpl.php - Line 49',1707059224,'PHP',0,NULL),(276,53,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to get property \'value\' of non-object - in /var/www/testlink/gui/templates_c/8c2b5b97f935ad5a2c97c9ca634a8aad40cbfb8f_0.file.DataTablesColumnFiltering.inc.tpl.php - Line 49',1707059224,'PHP',0,NULL),(277,53,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: DataTablesSelector - in /var/www/testlink/gui/templates_c/8c2b5b97f935ad5a2c97c9ca634a8aad40cbfb8f_0.file.DataTablesColumnFiltering.inc.tpl.php - Line 51',1707059224,'PHP',0,NULL),(278,53,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to get property \'value\' of non-object - in /var/www/testlink/gui/templates_c/8c2b5b97f935ad5a2c97c9ca634a8aad40cbfb8f_0.file.DataTablesColumnFiltering.inc.tpl.php - Line 51',1707059224,'PHP',0,NULL),(279,54,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: build - in /var/www/testlink/lib/functions/cfield_mgr.class.php - Line 298',1707059232,'PHP',0,NULL),(280,55,2,'GUI - Test Project ID : 2','E_WARNING\ngetimagesize(http://localhost:8080/gui/themes/default/images/tl-logo-transparent-25.png): failed to open stream: Cannot assign requested address - in /var/www/testlink/lib/functions/print.inc.php - Line 694',1707059578,'PHP',0,NULL),(281,56,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: build - in /var/www/testlink/lib/functions/cfield_mgr.class.php - Line 489',1707059648,'PHP',0,NULL),(282,57,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: build - in /var/www/testlink/lib/functions/cfield_mgr.class.php - Line 489',1707059672,'PHP',0,NULL),(283,58,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: build - in /var/www/testlink/lib/functions/cfield_mgr.class.php - Line 489',1707059672,'PHP',0,NULL),(284,59,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: build - in /var/www/testlink/lib/functions/cfield_mgr.class.php - Line 489',1707059678,'PHP',0,NULL),(285,59,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: build - in /var/www/testlink/lib/functions/cfield_mgr.class.php - Line 489',1707059678,'PHP',0,NULL),(286,59,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/gui/templates_c/76a998150d2db34c4f158f1d58a406eac7079c26_0.file.inc_exec_show_tc_exec.tpl.php - Line 242',1707059678,'PHP',0,NULL),(287,60,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: build - in /var/www/testlink/lib/functions/cfield_mgr.class.php - Line 489',1707059678,'PHP',0,NULL),(288,60,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: build - in /var/www/testlink/lib/functions/cfield_mgr.class.php - Line 489',1707059678,'PHP',0,NULL),(289,60,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/gui/templates_c/76a998150d2db34c4f158f1d58a406eac7079c26_0.file.inc_exec_show_tc_exec.tpl.php - Line 242',1707059678,'PHP',0,NULL),(290,61,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: build - in /var/www/testlink/lib/functions/cfield_mgr.class.php - Line 489',1707059679,'PHP',0,NULL),(291,61,2,'GUI - Test Project ID : 2','E_NOTICE\nUndefined index: build - in /var/www/testlink/lib/functions/cfield_mgr.class.php - Line 489',1707059679,'PHP',0,NULL),(292,61,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/gui/templates_c/76a998150d2db34c4f158f1d58a406eac7079c26_0.file.inc_exec_show_tc_exec.tpl.php - Line 242',1707059679,'PHP',0,NULL),(293,62,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/lib/functions/specview.php - Line 706',1707059689,'PHP',0,NULL),(294,62,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/lib/functions/specview.php - Line 711',1707059689,'PHP',0,NULL),(295,62,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/lib/functions/specview.php - Line 748',1707059689,'PHP',0,NULL),(296,62,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/lib/functions/specview.php - Line 1172',1707059689,'PHP',0,NULL),(297,63,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/lib/functions/specview.php - Line 706',1707059692,'PHP',0,NULL),(298,63,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/lib/functions/specview.php - Line 711',1707059692,'PHP',0,NULL),(299,63,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/lib/functions/specview.php - Line 748',1707059692,'PHP',0,NULL),(300,63,2,'GUI - Test Project ID : 2','E_NOTICE\nTrying to access array offset on value of type null - in /var/www/testlink/lib/functions/specview.php - Line 1172',1707059692,'PHP',0,NULL),(301,64,16,'GUI - Test Project ID : 2','O:18:\"tlMetaStringHelper\":4:{s:5:\"label\";s:17:\"audit_user_logout\";s:6:\"params\";a:1:{i:0;s:5:\"admin\";}s:13:\"bDontLocalize\";b:0;s:14:\"bDontFireEvent\";b:0;}',1707059711,'LOGOUT',1,'users');
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Temporary table structure for view `exec_by_date_time`
+--
+
+DROP TABLE IF EXISTS `exec_by_date_time`;
+/*!50001 DROP VIEW IF EXISTS `exec_by_date_time`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `exec_by_date_time` AS SELECT
+ 1 AS `testplan_name`,
+  1 AS `yyyy_mm_dd`,
+  1 AS `yyyy_mm`,
+  1 AS `hh`,
+  1 AS `hour`,
+  1 AS `id`,
+  1 AS `build_id`,
+  1 AS `tester_id`,
+  1 AS `execution_ts`,
+  1 AS `status`,
+  1 AS `testplan_id`,
+  1 AS `tcversion_id`,
+  1 AS `tcversion_number`,
+  1 AS `platform_id`,
+  1 AS `execution_type`,
+  1 AS `execution_duration`,
+  1 AS `notes` */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `execution_bugs`
@@ -369,10 +505,11 @@ DROP TABLE IF EXISTS `execution_bugs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `execution_bugs` (
-  `execution_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `bug_id` varchar(16) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`execution_id`,`bug_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `execution_id` int unsigned NOT NULL DEFAULT '0',
+  `bug_id` varchar(64) NOT NULL DEFAULT '0',
+  `tcstep_id` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`execution_id`,`bug_id`,`tcstep_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -385,6 +522,64 @@ LOCK TABLES `execution_bugs` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `execution_tcsteps`
+--
+
+DROP TABLE IF EXISTS `execution_tcsteps`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `execution_tcsteps` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `execution_id` int unsigned NOT NULL DEFAULT '0',
+  `tcstep_id` int unsigned NOT NULL DEFAULT '0',
+  `notes` text,
+  `status` char(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `execution_tcsteps_idx1` (`execution_id`,`tcstep_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `execution_tcsteps`
+--
+
+LOCK TABLES `execution_tcsteps` WRITE;
+/*!40000 ALTER TABLE `execution_tcsteps` DISABLE KEYS */;
+/*!40000 ALTER TABLE `execution_tcsteps` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `execution_tcsteps_wip`
+--
+
+DROP TABLE IF EXISTS `execution_tcsteps_wip`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `execution_tcsteps_wip` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `tcstep_id` int unsigned NOT NULL DEFAULT '0',
+  `testplan_id` int unsigned NOT NULL DEFAULT '0',
+  `platform_id` int unsigned NOT NULL DEFAULT '0',
+  `build_id` int unsigned NOT NULL DEFAULT '0',
+  `tester_id` int unsigned DEFAULT NULL,
+  `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `notes` text,
+  `status` char(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `execution_tcsteps_wip_idx1` (`tcstep_id`,`testplan_id`,`platform_id`,`build_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `execution_tcsteps_wip`
+--
+
+LOCK TABLES `execution_tcsteps_wip` WRITE;
+/*!40000 ALTER TABLE `execution_tcsteps_wip` DISABLE KEYS */;
+/*!40000 ALTER TABLE `execution_tcsteps_wip` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `executions`
 --
 
@@ -392,21 +587,23 @@ DROP TABLE IF EXISTS `executions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `executions` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `build_id` int(10) NOT NULL DEFAULT '0',
-  `tester_id` int(10) unsigned DEFAULT NULL,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `build_id` int NOT NULL DEFAULT '0',
+  `tester_id` int unsigned DEFAULT NULL,
   `execution_ts` datetime DEFAULT NULL,
   `status` char(1) DEFAULT NULL,
-  `testplan_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `tcversion_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `tcversion_number` smallint(5) unsigned NOT NULL DEFAULT '1',
-  `platform_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `testplan_id` int unsigned NOT NULL DEFAULT '0',
+  `tcversion_id` int unsigned NOT NULL DEFAULT '0',
+  `tcversion_number` smallint unsigned NOT NULL DEFAULT '1',
+  `platform_id` int unsigned NOT NULL DEFAULT '0',
   `execution_type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 -> manual, 2 -> automated',
+  `execution_duration` decimal(6,2) DEFAULT NULL COMMENT 'NULL will be considered as NO DATA Provided by user',
   `notes` text,
   PRIMARY KEY (`id`),
   KEY `executions_idx1` (`testplan_id`,`tcversion_id`,`platform_id`,`build_id`),
-  KEY `executions_idx2` (`execution_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `executions_idx2` (`execution_type`),
+  KEY `executions_idx3` (`tcversion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -426,17 +623,17 @@ DROP TABLE IF EXISTS `inventory`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `inventory` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `testproject_id` int(10) unsigned NOT NULL,
-  `owner_id` int(10) unsigned NOT NULL,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `testproject_id` int unsigned NOT NULL,
+  `owner_id` int unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
   `ipaddress` varchar(255) NOT NULL,
   `content` text,
   `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modification_ts` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `modification_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `inventory_idx1` (`testproject_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -449,6 +646,32 @@ LOCK TABLES `inventory` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `issuetrackers`
+--
+
+DROP TABLE IF EXISTS `issuetrackers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `issuetrackers` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `type` int DEFAULT '0',
+  `cfg` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `issuetrackers_uidx1` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `issuetrackers`
+--
+
+LOCK TABLES `issuetrackers` WRITE;
+/*!40000 ALTER TABLE `issuetrackers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `issuetrackers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `keywords`
 --
 
@@ -456,14 +679,15 @@ DROP TABLE IF EXISTS `keywords`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `keywords` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `keyword` varchar(100) NOT NULL DEFAULT '',
-  `testproject_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `testproject_id` int unsigned NOT NULL DEFAULT '0',
   `notes` text,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `keyword_testproject_id` (`keyword`,`testproject_id`),
   KEY `testproject_id` (`testproject_id`),
   KEY `keyword` (`keyword`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -477,6 +701,119 @@ INSERT INTO `keywords` VALUES (1,'Mechanical',2,''),(2,'Resistance',2,''),(3,'Te
 UNLOCK TABLES;
 
 --
+-- Temporary table structure for view `latest_exec_by_context`
+--
+
+DROP TABLE IF EXISTS `latest_exec_by_context`;
+/*!50001 DROP VIEW IF EXISTS `latest_exec_by_context`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `latest_exec_by_context` AS SELECT
+ 1 AS `tcversion_id`,
+  1 AS `testplan_id`,
+  1 AS `build_id`,
+  1 AS `platform_id`,
+  1 AS `id` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `latest_exec_by_testplan`
+--
+
+DROP TABLE IF EXISTS `latest_exec_by_testplan`;
+/*!50001 DROP VIEW IF EXISTS `latest_exec_by_testplan`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `latest_exec_by_testplan` AS SELECT
+ 1 AS `tcversion_id`,
+  1 AS `testplan_id`,
+  1 AS `id` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `latest_exec_by_testplan_plat`
+--
+
+DROP TABLE IF EXISTS `latest_exec_by_testplan_plat`;
+/*!50001 DROP VIEW IF EXISTS `latest_exec_by_testplan_plat`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `latest_exec_by_testplan_plat` AS SELECT
+ 1 AS `tcversion_id`,
+  1 AS `testplan_id`,
+  1 AS `platform_id`,
+  1 AS `id` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `latest_req_version`
+--
+
+DROP TABLE IF EXISTS `latest_req_version`;
+/*!50001 DROP VIEW IF EXISTS `latest_req_version`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `latest_req_version` AS SELECT
+ 1 AS `req_id`,
+  1 AS `version` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `latest_req_version_id`
+--
+
+DROP TABLE IF EXISTS `latest_req_version_id`;
+/*!50001 DROP VIEW IF EXISTS `latest_req_version_id`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `latest_req_version_id` AS SELECT
+ 1 AS `req_id`,
+  1 AS `version`,
+  1 AS `req_version_id` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `latest_rspec_revision`
+--
+
+DROP TABLE IF EXISTS `latest_rspec_revision`;
+/*!50001 DROP VIEW IF EXISTS `latest_rspec_revision`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `latest_rspec_revision` AS SELECT
+ 1 AS `req_spec_id`,
+  1 AS `testproject_id`,
+  1 AS `revision` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `latest_tcase_version_id`
+--
+
+DROP TABLE IF EXISTS `latest_tcase_version_id`;
+/*!50001 DROP VIEW IF EXISTS `latest_tcase_version_id`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `latest_tcase_version_id` AS SELECT
+ 1 AS `testcase_id`,
+  1 AS `version`,
+  1 AS `tcversion_id` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `latest_tcase_version_number`
+--
+
+DROP TABLE IF EXISTS `latest_tcase_version_number`;
+/*!50001 DROP VIEW IF EXISTS `latest_tcase_version_number`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `latest_tcase_version_number` AS SELECT
+ 1 AS `testcase_id`,
+  1 AS `version` */;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `milestones`
 --
 
@@ -484,18 +821,18 @@ DROP TABLE IF EXISTS `milestones`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `milestones` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `testplan_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `target_date` date DEFAULT NULL,
-  `start_date` date NOT NULL DEFAULT '0000-00-00',
-  `a` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `b` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `c` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `testplan_id` int unsigned NOT NULL DEFAULT '0',
+  `target_date` date NOT NULL,
+  `start_date` date DEFAULT NULL,
+  `a` tinyint unsigned NOT NULL DEFAULT '0',
+  `b` tinyint unsigned NOT NULL DEFAULT '0',
+  `c` tinyint unsigned NOT NULL DEFAULT '0',
   `name` varchar(100) NOT NULL DEFAULT 'undefined',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_testplan_id` (`name`,`testplan_id`),
   KEY `testplan_id` (`testplan_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -515,10 +852,10 @@ DROP TABLE IF EXISTS `node_types`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `node_types` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `description` varchar(100) NOT NULL DEFAULT 'testproject',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -539,14 +876,15 @@ DROP TABLE IF EXISTS `nodes_hierarchy`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `nodes_hierarchy` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT NULL,
-  `parent_id` int(10) unsigned DEFAULT NULL,
-  `node_type_id` int(10) unsigned NOT NULL DEFAULT '1',
-  `node_order` int(10) unsigned DEFAULT NULL,
+  `parent_id` int unsigned DEFAULT NULL,
+  `node_type_id` int unsigned NOT NULL DEFAULT '1',
+  `node_order` int unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `pid_m_nodeorder` (`parent_id`,`node_order`)
-) ENGINE=InnoDB AUTO_INCREMENT=163 DEFAULT CHARSET=utf8;
+  KEY `pid_m_nodeorder` (`parent_id`,`node_order`),
+  KEY `nodes_hierarchy_node_type_id` (`node_type_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=163 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -567,12 +905,13 @@ DROP TABLE IF EXISTS `object_keywords`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `object_keywords` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `fk_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `fk_id` int unsigned NOT NULL DEFAULT '0',
   `fk_table` varchar(30) DEFAULT '',
-  `keyword_id` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `keyword_id` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `udx01_object_keywords` (`fk_id`,`fk_table`,`keyword_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -592,13 +931,16 @@ DROP TABLE IF EXISTS `platforms`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `platforms` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `testproject_id` int(10) unsigned NOT NULL,
+  `testproject_id` int unsigned NOT NULL,
   `notes` text NOT NULL,
+  `enable_on_design` tinyint unsigned NOT NULL DEFAULT '0',
+  `enable_on_execution` tinyint unsigned NOT NULL DEFAULT '1',
+  `is_open` tinyint unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_platforms` (`testproject_id`,`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -607,8 +949,62 @@ CREATE TABLE `platforms` (
 
 LOCK TABLES `platforms` WRITE;
 /*!40000 ALTER TABLE `platforms` DISABLE KEYS */;
-INSERT INTO `platforms` VALUES (1,'Ferrari',2,''),(2,'Mc Laren',2,''),(3,'Red Bull',2,''),(4,'Mercedes',2,''),(7,'Renault',2,'');
+INSERT INTO `platforms` VALUES (1,'Ferrari',2,'',0,1,1),(2,'Mc Laren',2,'',0,1,1),(3,'Red Bull',2,'',0,1,1),(4,'Mercedes',2,'',0,1,1),(7,'Renault',2,'',0,1,1);
 /*!40000 ALTER TABLE `platforms` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `plugins`
+--
+
+DROP TABLE IF EXISTS `plugins`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `plugins` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `basename` varchar(100) NOT NULL,
+  `enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `author_id` int unsigned DEFAULT NULL,
+  `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `plugins`
+--
+
+LOCK TABLES `plugins` WRITE;
+/*!40000 ALTER TABLE `plugins` DISABLE KEYS */;
+/*!40000 ALTER TABLE `plugins` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `plugins_configuration`
+--
+
+DROP TABLE IF EXISTS `plugins_configuration`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `plugins_configuration` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `testproject_id` int NOT NULL,
+  `config_key` varchar(255) NOT NULL,
+  `config_type` int NOT NULL,
+  `config_value` varchar(255) NOT NULL,
+  `author_id` int unsigned DEFAULT NULL,
+  `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `plugins_configuration`
+--
+
+LOCK TABLES `plugins_configuration` WRITE;
+/*!40000 ALTER TABLE `plugins_configuration` DISABLE KEYS */;
+/*!40000 ALTER TABLE `plugins_configuration` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -619,10 +1015,20 @@ DROP TABLE IF EXISTS `req_coverage`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `req_coverage` (
-  `req_id` int(10) NOT NULL,
-  `testcase_id` int(10) NOT NULL,
-  KEY `req_testcase` (`req_id`,`testcase_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='relation test case ** requirements';
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `req_id` int NOT NULL,
+  `req_version_id` int NOT NULL,
+  `testcase_id` int NOT NULL,
+  `tcversion_id` int NOT NULL,
+  `link_status` int NOT NULL DEFAULT '1',
+  `is_active` int NOT NULL DEFAULT '1',
+  `author_id` int unsigned DEFAULT NULL,
+  `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `review_requester_id` int unsigned DEFAULT NULL,
+  `review_request_ts` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `req_coverage_full_link` (`req_id`,`req_version_id`,`testcase_id`,`tcversion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='relation test case version ** requirement version';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -635,6 +1041,30 @@ LOCK TABLES `req_coverage` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `req_monitor`
+--
+
+DROP TABLE IF EXISTS `req_monitor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `req_monitor` (
+  `req_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `testproject_id` int NOT NULL,
+  PRIMARY KEY (`req_id`,`user_id`,`testproject_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `req_monitor`
+--
+
+LOCK TABLES `req_monitor` WRITE;
+/*!40000 ALTER TABLE `req_monitor` DISABLE KEYS */;
+/*!40000 ALTER TABLE `req_monitor` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `req_relations`
 --
 
@@ -642,14 +1072,14 @@ DROP TABLE IF EXISTS `req_relations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `req_relations` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `source_id` int(10) unsigned NOT NULL,
-  `destination_id` int(10) unsigned NOT NULL,
-  `relation_type` smallint(5) unsigned NOT NULL DEFAULT '1',
-  `author_id` int(10) unsigned DEFAULT NULL,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `source_id` int unsigned NOT NULL,
+  `destination_id` int unsigned NOT NULL,
+  `relation_type` smallint unsigned NOT NULL DEFAULT '1',
+  `author_id` int unsigned DEFAULT NULL,
   `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -669,9 +1099,9 @@ DROP TABLE IF EXISTS `req_revisions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `req_revisions` (
-  `parent_id` int(10) unsigned NOT NULL,
-  `id` int(10) unsigned NOT NULL,
-  `revision` smallint(5) unsigned NOT NULL DEFAULT '1',
+  `parent_id` int unsigned NOT NULL,
+  `id` int unsigned NOT NULL,
+  `revision` smallint unsigned NOT NULL DEFAULT '1',
   `req_doc_id` varchar(64) DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
   `scope` text,
@@ -679,15 +1109,15 @@ CREATE TABLE `req_revisions` (
   `type` char(1) DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `is_open` tinyint(1) NOT NULL DEFAULT '1',
-  `expected_coverage` int(10) NOT NULL DEFAULT '1',
+  `expected_coverage` int NOT NULL DEFAULT '1',
   `log_message` text,
-  `author_id` int(10) unsigned DEFAULT NULL,
+  `author_id` int unsigned DEFAULT NULL,
   `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modifier_id` int(10) unsigned DEFAULT NULL,
-  `modification_ts` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `modifier_id` int unsigned DEFAULT NULL,
+  `modification_ts` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `req_revisions_uidx1` (`parent_id`,`revision`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -707,20 +1137,13 @@ DROP TABLE IF EXISTS `req_specs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `req_specs` (
-  `id` int(10) unsigned NOT NULL,
-  `testproject_id` int(10) unsigned NOT NULL,
+  `id` int unsigned NOT NULL,
+  `testproject_id` int unsigned NOT NULL,
   `doc_id` varchar(64) NOT NULL,
-  `scope` text,
-  `total_req` int(10) NOT NULL DEFAULT '0',
-  `type` char(1) DEFAULT 'n',
-  `author_id` int(10) unsigned DEFAULT NULL,
-  `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modifier_id` int(10) unsigned DEFAULT NULL,
-  `modification_ts` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
   UNIQUE KEY `req_spec_uk1` (`doc_id`,`testproject_id`),
   KEY `testproject_id` (`testproject_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -733,6 +1156,42 @@ LOCK TABLES `req_specs` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `req_specs_revisions`
+--
+
+DROP TABLE IF EXISTS `req_specs_revisions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `req_specs_revisions` (
+  `parent_id` int unsigned NOT NULL,
+  `id` int unsigned NOT NULL,
+  `revision` smallint unsigned NOT NULL DEFAULT '1',
+  `doc_id` varchar(64) DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `scope` text,
+  `total_req` int NOT NULL DEFAULT '0',
+  `status` int unsigned DEFAULT '1',
+  `type` char(1) DEFAULT NULL,
+  `log_message` text,
+  `author_id` int unsigned DEFAULT NULL,
+  `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modifier_id` int unsigned DEFAULT NULL,
+  `modification_ts` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `req_specs_revisions_uidx1` (`parent_id`,`revision`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `req_specs_revisions`
+--
+
+LOCK TABLES `req_specs_revisions` WRITE;
+/*!40000 ALTER TABLE `req_specs_revisions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `req_specs_revisions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `req_versions`
 --
 
@@ -740,22 +1199,22 @@ DROP TABLE IF EXISTS `req_versions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `req_versions` (
-  `id` int(10) unsigned NOT NULL,
-  `version` smallint(5) unsigned NOT NULL DEFAULT '1',
-  `revision` smallint(5) unsigned NOT NULL DEFAULT '1',
+  `id` int unsigned NOT NULL,
+  `version` smallint unsigned NOT NULL DEFAULT '1',
+  `revision` smallint unsigned NOT NULL DEFAULT '1',
   `scope` text,
   `status` char(1) NOT NULL DEFAULT 'V',
   `type` char(1) DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `is_open` tinyint(1) NOT NULL DEFAULT '1',
-  `expected_coverage` int(10) NOT NULL DEFAULT '1',
-  `author_id` int(10) unsigned DEFAULT NULL,
+  `expected_coverage` int NOT NULL DEFAULT '1',
+  `author_id` int unsigned DEFAULT NULL,
   `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modifier_id` int(10) unsigned DEFAULT NULL,
-  `modification_ts` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `modifier_id` int unsigned DEFAULT NULL,
+  `modification_ts` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `log_message` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -768,6 +1227,32 @@ LOCK TABLES `req_versions` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `reqmgrsystems`
+--
+
+DROP TABLE IF EXISTS `reqmgrsystems`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `reqmgrsystems` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `type` int DEFAULT '0',
+  `cfg` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `reqmgrsystems_uidx1` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reqmgrsystems`
+--
+
+LOCK TABLES `reqmgrsystems` WRITE;
+/*!40000 ALTER TABLE `reqmgrsystems` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reqmgrsystems` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `requirements`
 --
 
@@ -775,12 +1260,12 @@ DROP TABLE IF EXISTS `requirements`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `requirements` (
-  `id` int(10) unsigned NOT NULL,
-  `srs_id` int(10) unsigned NOT NULL,
+  `id` int unsigned NOT NULL,
+  `srs_id` int unsigned NOT NULL,
   `req_doc_id` varchar(64) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `requirements_req_doc_id` (`srs_id`,`req_doc_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -800,11 +1285,11 @@ DROP TABLE IF EXISTS `rights`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `rights` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `description` varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `rights_descr` (`description`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -825,14 +1310,14 @@ DROP TABLE IF EXISTS `risk_assignments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `risk_assignments` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `testplan_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `node_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `testplan_id` int unsigned NOT NULL DEFAULT '0',
+  `node_id` int unsigned NOT NULL DEFAULT '0',
   `risk` char(1) NOT NULL DEFAULT '2',
   `importance` char(1) NOT NULL DEFAULT 'M',
   PRIMARY KEY (`id`),
   UNIQUE KEY `risk_assignments_tplan_node_id` (`testplan_id`,`node_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -852,10 +1337,10 @@ DROP TABLE IF EXISTS `role_rights`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `role_rights` (
-  `role_id` int(10) NOT NULL DEFAULT '0',
-  `right_id` int(10) NOT NULL DEFAULT '0',
+  `role_id` int NOT NULL DEFAULT '0',
+  `right_id` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`role_id`,`right_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -876,12 +1361,12 @@ DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roles` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `description` varchar(100) NOT NULL DEFAULT '',
   `notes` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `role_rights_roles_descr` (`description`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -902,14 +1387,14 @@ DROP TABLE IF EXISTS `tcsteps`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tcsteps` (
-  `id` int(10) unsigned NOT NULL,
-  `step_number` int(11) NOT NULL DEFAULT '1',
+  `id` int unsigned NOT NULL,
+  `step_number` int NOT NULL DEFAULT '1',
   `actions` text,
   `expected_results` text,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `execution_type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 -> manual, 2 -> automated',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -929,23 +1414,24 @@ DROP TABLE IF EXISTS `tcversions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tcversions` (
-  `id` int(10) unsigned NOT NULL,
-  `tc_external_id` int(10) unsigned DEFAULT NULL,
-  `version` smallint(5) unsigned NOT NULL DEFAULT '1',
-  `layout` smallint(5) unsigned NOT NULL DEFAULT '1',
-  `status` smallint(5) unsigned NOT NULL DEFAULT '1',
+  `id` int unsigned NOT NULL,
+  `tc_external_id` int unsigned DEFAULT NULL,
+  `version` smallint unsigned NOT NULL DEFAULT '1',
+  `layout` smallint unsigned NOT NULL DEFAULT '1',
+  `status` smallint unsigned NOT NULL DEFAULT '1',
   `summary` text,
   `preconditions` text,
-  `importance` smallint(5) unsigned NOT NULL DEFAULT '2',
-  `author_id` int(10) unsigned DEFAULT NULL,
+  `importance` smallint unsigned NOT NULL DEFAULT '2',
+  `author_id` int unsigned DEFAULT NULL,
   `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updater_id` int(10) unsigned DEFAULT NULL,
-  `modification_ts` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updater_id` int unsigned DEFAULT NULL,
+  `modification_ts` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `is_open` tinyint(1) NOT NULL DEFAULT '1',
   `execution_type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 -> manual, 2 -> automated',
+  `estimated_exec_duration` decimal(6,2) DEFAULT NULL COMMENT 'NULL will be considered as NO DATA Provided by user',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -954,9 +1440,35 @@ CREATE TABLE `tcversions` (
 
 LOCK TABLES `tcversions` WRITE;
 /*!40000 ALTER TABLE `tcversions` DISABLE KEYS */;
-INSERT INTO `tcversions` VALUES (32,1,1,1,1,'','',2,1,'2012-05-01 10:08:43',1,'2012-05-01 12:11:47',1,1,1),(34,2,1,1,1,'','',2,1,'2012-05-01 10:08:56',1,'2012-05-01 12:12:01',1,1,1),(36,3,1,1,1,'','',2,1,'2012-05-01 10:20:26',NULL,'0000-00-00 00:00:00',1,1,1),(38,4,1,1,1,'','',2,1,'2012-05-01 10:20:26',NULL,'0000-00-00 00:00:00',1,1,1),(40,5,1,1,1,'','',2,1,'2012-05-01 10:20:26',NULL,'0000-00-00 00:00:00',1,1,1),(42,6,1,1,1,'','',2,1,'2012-05-01 10:20:26',NULL,'0000-00-00 00:00:00',1,1,1),(44,7,1,1,1,'','',2,1,'2012-05-01 10:21:22',NULL,'0000-00-00 00:00:00',1,1,1),(46,8,1,1,1,'','',2,1,'2012-05-01 10:21:22',NULL,'0000-00-00 00:00:00',1,1,1),(48,9,1,1,1,'','',2,1,'2012-05-01 10:21:22',NULL,'0000-00-00 00:00:00',1,1,1),(50,10,1,1,1,'','',2,1,'2012-05-01 10:21:22',NULL,'0000-00-00 00:00:00',1,1,1),(52,11,1,1,1,'','',2,1,'2012-05-01 10:22:27',NULL,'0000-00-00 00:00:00',1,1,1),(54,12,1,1,1,'','',2,1,'2012-05-01 10:22:27',NULL,'0000-00-00 00:00:00',1,1,1),(56,13,1,1,1,'','',2,1,'2012-05-01 10:22:27',NULL,'0000-00-00 00:00:00',1,1,1),(58,14,1,1,1,'','',2,1,'2012-05-01 10:22:27',NULL,'0000-00-00 00:00:00',1,1,1),(60,15,1,1,1,'','',2,1,'2012-05-01 10:23:12',NULL,'0000-00-00 00:00:00',1,1,1),(62,16,1,1,1,'','',2,1,'2012-05-01 10:23:12',NULL,'0000-00-00 00:00:00',1,1,1),(64,17,1,1,1,'','',2,1,'2012-05-01 10:23:12',NULL,'0000-00-00 00:00:00',1,1,1),(66,18,1,1,1,'','',2,1,'2012-05-01 10:23:12',NULL,'0000-00-00 00:00:00',1,1,1),(68,19,1,1,1,'','',2,1,'2012-05-01 10:24:07',NULL,'0000-00-00 00:00:00',1,1,1),(70,20,1,1,1,'','',2,1,'2012-05-01 10:24:07',NULL,'0000-00-00 00:00:00',1,1,1),(72,21,1,1,1,'','',2,1,'2012-05-01 10:24:07',NULL,'0000-00-00 00:00:00',1,1,1),(74,22,1,1,1,'','',2,1,'2012-05-01 10:24:07',NULL,'0000-00-00 00:00:00',1,1,1),(76,23,1,1,1,'','',2,1,'2012-05-01 10:24:50',NULL,'0000-00-00 00:00:00',1,1,1),(78,24,1,1,1,'','',2,1,'2012-05-01 10:24:51',NULL,'0000-00-00 00:00:00',1,1,1),(80,25,1,1,1,'','',2,1,'2012-05-01 10:24:51',NULL,'0000-00-00 00:00:00',1,1,1),(82,26,1,1,1,'','',2,1,'2012-05-01 10:24:51',NULL,'0000-00-00 00:00:00',1,1,1),(84,27,1,1,1,'','',2,1,'2012-05-01 10:25:56',NULL,'0000-00-00 00:00:00',1,1,1),(86,28,1,1,1,'','',2,1,'2012-05-01 10:25:56',NULL,'0000-00-00 00:00:00',1,1,1),(88,29,1,1,1,'','',2,1,'2012-05-01 10:25:56',NULL,'0000-00-00 00:00:00',1,1,1),(90,30,1,1,1,'','',2,1,'2012-05-01 10:25:56',NULL,'0000-00-00 00:00:00',1,1,1),(92,31,1,1,1,'','',2,1,'2012-05-01 10:25:56',NULL,'0000-00-00 00:00:00',1,1,1),(94,32,1,1,1,'','',2,1,'2012-05-01 10:26:50',NULL,'0000-00-00 00:00:00',1,1,1),(96,33,1,1,1,'','',2,1,'2012-05-01 10:26:50',NULL,'0000-00-00 00:00:00',1,1,1),(98,34,1,1,1,'','',2,1,'2012-05-01 10:26:51',NULL,'0000-00-00 00:00:00',1,1,1),(100,35,1,1,1,'','',2,1,'2012-05-01 10:26:51',NULL,'0000-00-00 00:00:00',1,1,1),(102,36,1,1,1,'','',2,1,'2012-05-01 10:26:51',NULL,'0000-00-00 00:00:00',1,1,1),(104,37,1,1,1,'','',2,1,'2012-05-01 10:27:44',NULL,'0000-00-00 00:00:00',1,1,1),(106,38,1,1,1,'','',2,1,'2012-05-01 10:27:44',NULL,'0000-00-00 00:00:00',1,1,1),(108,39,1,1,1,'','',2,1,'2012-05-01 10:27:44',NULL,'0000-00-00 00:00:00',1,1,1),(110,40,1,1,1,'','',2,1,'2012-05-01 10:27:44',NULL,'0000-00-00 00:00:00',1,1,1),(112,41,1,1,1,'','',2,1,'2012-05-01 10:27:44',NULL,'0000-00-00 00:00:00',1,1,1),(114,42,1,1,1,'','',2,1,'2012-05-01 10:28:26',NULL,'0000-00-00 00:00:00',1,1,1),(116,43,1,1,1,'','',2,1,'2012-05-01 10:28:26',NULL,'0000-00-00 00:00:00',1,1,1),(118,44,1,1,1,'','',2,1,'2012-05-01 10:28:27',NULL,'0000-00-00 00:00:00',1,1,1),(120,45,1,1,1,'','',2,1,'2012-05-01 10:28:27',NULL,'0000-00-00 00:00:00',1,1,1),(122,46,1,1,1,'','',2,1,'2012-05-01 10:28:27',NULL,'0000-00-00 00:00:00',1,1,1),(124,47,1,1,1,'','',2,1,'2012-05-01 10:29:04',NULL,'0000-00-00 00:00:00',1,1,1),(126,48,1,1,1,'','',2,1,'2012-05-01 10:29:04',NULL,'0000-00-00 00:00:00',1,1,1),(128,49,1,1,1,'','',2,1,'2012-05-01 10:29:04',NULL,'0000-00-00 00:00:00',1,1,1),(130,50,1,1,1,'','',2,1,'2012-05-01 10:29:04',NULL,'0000-00-00 00:00:00',1,1,1),(132,51,1,1,1,'','',2,1,'2012-05-01 10:29:04',NULL,'0000-00-00 00:00:00',1,1,1),(134,52,1,1,1,'','',2,1,'2012-05-01 10:29:45',NULL,'0000-00-00 00:00:00',1,1,1),(136,53,1,1,1,'','',2,1,'2012-05-01 10:29:45',NULL,'0000-00-00 00:00:00',1,1,1),(138,54,1,1,1,'','',2,1,'2012-05-01 10:29:45',NULL,'0000-00-00 00:00:00',1,1,1),(140,55,1,1,1,'','',2,1,'2012-05-01 10:29:45',NULL,'0000-00-00 00:00:00',1,1,1),(142,56,1,1,1,'','',2,1,'2012-05-01 10:29:45',NULL,'0000-00-00 00:00:00',1,1,1),(144,57,1,1,1,'','',2,1,'2012-05-01 10:30:20',NULL,'0000-00-00 00:00:00',1,1,1),(146,58,1,1,1,'','',2,1,'2012-05-01 10:30:20',NULL,'0000-00-00 00:00:00',1,1,1),(148,59,1,1,1,'','',2,1,'2012-05-01 10:30:20',NULL,'0000-00-00 00:00:00',1,1,1),(150,60,1,1,1,'','',2,1,'2012-05-01 10:30:20',NULL,'0000-00-00 00:00:00',1,1,1),(152,61,1,1,1,'','',2,1,'2012-05-01 10:30:20',NULL,'0000-00-00 00:00:00',1,1,1),(154,62,1,1,1,'','',2,1,'2012-05-01 10:30:46',NULL,'0000-00-00 00:00:00',1,1,1),(156,63,1,1,1,'','',2,1,'2012-05-01 10:30:46',NULL,'0000-00-00 00:00:00',1,1,1),(158,64,1,1,1,'','',2,1,'2012-05-01 10:30:46',NULL,'0000-00-00 00:00:00',1,1,1),(160,65,1,1,1,'','',2,1,'2012-05-01 10:30:46',NULL,'0000-00-00 00:00:00',1,1,1),(162,66,1,1,1,'','',2,1,'2012-05-01 10:30:47',NULL,'0000-00-00 00:00:00',1,1,1);
+INSERT INTO `tcversions` VALUES (32,1,1,1,1,'','',2,1,'2022-05-01 10:08:43',1,'2022-05-01 12:11:47',1,1,1,NULL),(34,2,1,1,1,'','',2,1,'2022-05-01 10:08:56',1,'2022-05-01 12:12:01',1,1,1,NULL),(36,3,1,1,1,'','',2,1,'2022-05-01 10:20:26',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(38,4,1,1,1,'','',2,1,'2022-05-01 10:20:26',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(40,5,1,1,1,'','',2,1,'2022-05-01 10:20:26',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(42,6,1,1,1,'','',2,1,'2022-05-01 10:20:26',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(44,7,1,1,1,'','',2,1,'2022-05-01 10:21:22',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(46,8,1,1,1,'','',2,1,'2022-05-01 10:21:22',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(48,9,1,1,1,'','',2,1,'2022-05-01 10:21:22',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(50,10,1,1,1,'','',2,1,'2022-05-01 10:21:22',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(52,11,1,1,1,'','',2,1,'2022-05-01 10:22:27',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(54,12,1,1,1,'','',2,1,'2022-05-01 10:22:27',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(56,13,1,1,1,'','',2,1,'2022-05-01 10:22:27',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(58,14,1,1,1,'','',2,1,'2022-05-01 10:22:27',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(60,15,1,1,1,'','',2,1,'2022-05-01 10:23:12',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(62,16,1,1,1,'','',2,1,'2022-05-01 10:23:12',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(64,17,1,1,1,'','',2,1,'2022-05-01 10:23:12',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(66,18,1,1,1,'','',2,1,'2022-05-01 10:23:12',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(68,19,1,1,1,'','',2,1,'2022-05-01 10:24:07',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(70,20,1,1,1,'','',2,1,'2022-05-01 10:24:07',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(72,21,1,1,1,'','',2,1,'2022-05-01 10:24:07',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(74,22,1,1,1,'','',2,1,'2022-05-01 10:24:07',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(76,23,1,1,1,'','',2,1,'2022-05-01 10:24:50',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(78,24,1,1,1,'','',2,1,'2022-05-01 10:24:51',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(80,25,1,1,1,'','',2,1,'2022-05-01 10:24:51',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(82,26,1,1,1,'','',2,1,'2022-05-01 10:24:51',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(84,27,1,1,1,'','',2,1,'2022-05-01 10:25:56',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(86,28,1,1,1,'','',2,1,'2022-05-01 10:25:56',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(88,29,1,1,1,'','',2,1,'2022-05-01 10:25:56',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(90,30,1,1,1,'','',2,1,'2022-05-01 10:25:56',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(92,31,1,1,1,'','',2,1,'2022-05-01 10:25:56',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(94,32,1,1,1,'','',2,1,'2022-05-01 10:26:50',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(96,33,1,1,1,'','',2,1,'2022-05-01 10:26:50',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(98,34,1,1,1,'','',2,1,'2022-05-01 10:26:51',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(100,35,1,1,1,'','',2,1,'2022-05-01 10:26:51',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(102,36,1,1,1,'','',2,1,'2022-05-01 10:26:51',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(104,37,1,1,1,'','',2,1,'2022-05-01 10:27:44',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(106,38,1,1,1,'','',2,1,'2022-05-01 10:27:44',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(108,39,1,1,1,'','',2,1,'2022-05-01 10:27:44',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(110,40,1,1,1,'','',2,1,'2022-05-01 10:27:44',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(112,41,1,1,1,'','',2,1,'2022-05-01 10:27:44',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(114,42,1,1,1,'','',2,1,'2022-05-01 10:28:26',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(116,43,1,1,1,'','',2,1,'2022-05-01 10:28:26',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(118,44,1,1,1,'','',2,1,'2022-05-01 10:28:27',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(120,45,1,1,1,'','',2,1,'2022-05-01 10:28:27',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(122,46,1,1,1,'','',2,1,'2022-05-01 10:28:27',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(124,47,1,1,1,'','',2,1,'2022-05-01 10:29:04',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(126,48,1,1,1,'','',2,1,'2022-05-01 10:29:04',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(128,49,1,1,1,'','',2,1,'2022-05-01 10:29:04',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(130,50,1,1,1,'','',2,1,'2022-05-01 10:29:04',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(132,51,1,1,1,'','',2,1,'2022-05-01 10:29:04',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(134,52,1,1,1,'','',2,1,'2022-05-01 10:29:45',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(136,53,1,1,1,'','',2,1,'2022-05-01 10:29:45',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(138,54,1,1,1,'','',2,1,'2022-05-01 10:29:45',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(140,55,1,1,1,'','',2,1,'2022-05-01 10:29:45',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(142,56,1,1,1,'','',2,1,'2022-05-01 10:29:45',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(144,57,1,1,1,'','',2,1,'2022-05-01 10:30:20',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(146,58,1,1,1,'','',2,1,'2022-05-01 10:30:20',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(148,59,1,1,1,'','',2,1,'2022-05-01 10:30:20',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(150,60,1,1,1,'','',2,1,'2022-05-01 10:30:20',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(152,61,1,1,1,'','',2,1,'2022-05-01 10:30:20',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(154,62,1,1,1,'','',2,1,'2022-05-01 10:30:46',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(156,63,1,1,1,'','',2,1,'2022-05-01 10:30:46',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(158,64,1,1,1,'','',2,1,'2022-05-01 10:30:46',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(160,65,1,1,1,'','',2,1,'2022-05-01 10:30:46',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(162,66,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(164,67,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(166,69,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(168,71,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(170,73,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(172,75,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(174,77,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(176,79,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(178,81,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(180,83,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(182,85,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(184,87,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(186,89,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(188,91,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(190,93,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(192,95,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(194,97,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(196,99,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(198,101,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(200,103,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(202,105,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(204,107,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(206,109,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(208,111,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(210,113,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(212,115,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(214,117,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(216,119,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(218,121,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(220,123,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(222,125,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(224,127,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(226,129,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(228,131,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(230,133,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(232,135,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(234,137,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(236,139,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(238,141,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(240,143,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(242,145,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(244,147,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(246,149,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(248,151,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(250,153,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(252,155,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(254,157,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(256,159,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL),(258,161,1,1,1,'','',2,1,'2022-05-01 10:30:47',NULL,'2022-05-01 12:13:31',1,1,1,NULL);
 /*!40000 ALTER TABLE `tcversions` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Temporary table structure for view `tcversions_without_keywords`
+--
+
+DROP TABLE IF EXISTS `tcversions_without_keywords`;
+/*!50001 DROP VIEW IF EXISTS `tcversions_without_keywords`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `tcversions_without_keywords` AS SELECT
+ 1 AS `testcase_id`,
+  1 AS `id` */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `tcversions_without_platforms`
+--
+
+DROP TABLE IF EXISTS `tcversions_without_platforms`;
+/*!50001 DROP VIEW IF EXISTS `tcversions_without_platforms`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `tcversions_without_platforms` AS SELECT
+ 1 AS `testcase_id`,
+  1 AS `id` */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `testcase_keywords`
@@ -966,10 +1478,14 @@ DROP TABLE IF EXISTS `testcase_keywords`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `testcase_keywords` (
-  `testcase_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `keyword_id` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`testcase_id`,`keyword_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `testcase_id` int unsigned NOT NULL DEFAULT '0',
+  `tcversion_id` int unsigned NOT NULL DEFAULT '0',
+  `keyword_id` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx01_testcase_keywords` (`testcase_id`,`tcversion_id`,`keyword_id`),
+  KEY `idx02_testcase_keywords` (`tcversion_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -978,8 +1494,90 @@ CREATE TABLE `testcase_keywords` (
 
 LOCK TABLES `testcase_keywords` WRITE;
 /*!40000 ALTER TABLE `testcase_keywords` DISABLE KEYS */;
-INSERT INTO `testcase_keywords` VALUES (31,1),(31,6),(33,2),(33,6),(35,1),(35,6),(37,2),(37,6),(39,1),(39,6),(41,2),(41,6),(43,1),(43,6),(45,2),(45,6),(47,1),(47,6),(49,2),(49,6),(51,1),(51,6),(53,2),(53,6),(55,1),(55,6),(57,2),(57,6),(59,1),(59,6),(61,2),(61,6),(63,1),(63,6),(65,2),(65,6),(67,1),(67,6),(69,2),(69,6),(71,1),(71,6),(73,2),(73,6),(75,1),(75,6),(77,2),(77,6),(79,1),(79,6),(81,2),(81,6),(83,1),(83,6),(85,2),(85,6),(87,1),(87,6),(89,2),(89,6),(91,2),(91,6),(93,1),(93,6),(95,2),(95,6),(97,1),(97,6),(99,2),(99,6),(101,2),(101,6),(103,1),(103,6),(105,2),(105,6),(107,1),(107,6),(109,2),(109,6),(111,2),(111,6),(113,1),(113,6),(115,2),(115,6),(117,1),(117,6),(119,2),(119,6),(121,2),(121,6),(123,1),(123,6),(125,2),(125,6),(127,1),(127,6),(129,2),(129,6),(131,2),(131,6),(133,1),(133,6),(135,2),(135,6),(137,1),(137,6),(139,2),(139,6),(141,2),(141,6),(143,1),(143,6),(145,2),(145,6),(147,1),(147,6),(149,2),(149,6),(151,2),(151,6),(153,1),(153,6),(155,2),(155,6),(157,1),(157,6),(159,2),(159,6),(161,2),(161,6);
+INSERT INTO `testcase_keywords` VALUES (1,31,92,1),(2,31,92,6),(3,33,96,2),(4,33,96,6),(5,35,100,1),(6,35,100,6),(7,37,104,2),(8,37,104,6),(9,39,108,1),(10,39,108,6),(11,41,112,2),(12,41,112,6),(13,43,116,1),(14,43,116,6),(15,45,120,2),(16,45,120,6),(17,47,124,1),(18,47,124,6),(19,49,128,2),(20,49,128,6),(21,51,132,1),(22,51,132,6),(23,53,136,2),(24,53,136,6),(25,55,140,1),(26,55,140,6),(27,57,144,2),(28,57,144,6),(29,59,148,1),(30,59,148,6),(31,61,152,2),(32,61,152,6),(33,63,156,1),(34,63,156,6),(35,65,160,2),(36,65,160,6),(37,67,164,1),(38,67,164,6),(39,69,166,2),(40,69,166,6),(41,71,168,1),(42,71,168,6),(43,73,170,2),(44,73,170,6),(45,75,172,1),(46,75,172,6),(47,77,174,2),(48,77,174,6),(49,79,176,1),(50,79,176,6),(51,81,178,2),(52,81,178,6),(53,83,180,1),(54,83,180,6),(55,85,182,2),(56,85,182,6),(57,87,184,1),(58,87,184,6),(59,89,186,2),(60,89,186,6),(61,91,188,2),(62,91,188,6),(63,93,190,1),(64,93,190,6),(65,95,192,2),(66,95,192,6),(67,97,194,1),(68,97,194,6),(69,99,196,2),(70,99,196,6),(71,101,198,2),(72,101,198,6),(73,103,200,1),(74,103,200,6),(75,105,202,2),(76,105,202,6),(77,107,204,1),(78,107,204,6),(79,109,206,2),(80,109,206,6),(81,111,208,2),(82,111,208,6),(83,113,210,1),(84,113,210,6),(85,115,212,2),(86,115,212,6),(87,117,214,1),(88,117,214,6),(89,119,216,2),(90,119,216,6),(91,121,218,2),(92,121,218,6),(93,123,220,1),(94,123,220,6),(95,125,222,2),(96,125,222,6),(97,127,224,1),(98,127,224,6),(99,129,226,2),(100,129,226,6),(101,131,228,2),(102,131,228,6),(103,133,230,1),(104,133,230,6),(105,135,232,2),(106,135,232,6),(107,137,234,1),(108,137,234,6),(109,139,236,2),(110,139,236,6),(111,141,238,2),(112,141,238,6),(113,143,240,1),(114,143,240,6),(115,145,242,2),(116,145,242,6),(117,147,244,1),(118,147,244,6),(119,149,246,2),(120,149,246,6),(121,151,248,2),(122,151,248,6),(123,153,250,1),(124,153,250,6),(125,155,252,2),(126,155,252,6),(127,157,254,1),(128,157,254,6),(129,159,256,2),(130,159,256,6),(131,161,258,2),(132,161,258,6);
 /*!40000 ALTER TABLE `testcase_keywords` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `testcase_platforms`
+--
+
+DROP TABLE IF EXISTS `testcase_platforms`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `testcase_platforms` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `testcase_id` int unsigned NOT NULL DEFAULT '0',
+  `tcversion_id` int unsigned NOT NULL DEFAULT '0',
+  `platform_id` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx01_testcase_platform` (`testcase_id`,`tcversion_id`,`platform_id`),
+  KEY `idx02_testcase_platform` (`tcversion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `testcase_platforms`
+--
+
+LOCK TABLES `testcase_platforms` WRITE;
+/*!40000 ALTER TABLE `testcase_platforms` DISABLE KEYS */;
+/*!40000 ALTER TABLE `testcase_platforms` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `testcase_relations`
+--
+
+DROP TABLE IF EXISTS `testcase_relations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `testcase_relations` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `source_id` int unsigned NOT NULL,
+  `destination_id` int unsigned NOT NULL,
+  `link_status` tinyint(1) NOT NULL DEFAULT '1',
+  `relation_type` smallint unsigned NOT NULL DEFAULT '1',
+  `author_id` int unsigned DEFAULT NULL,
+  `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `testcase_relations`
+--
+
+LOCK TABLES `testcase_relations` WRITE;
+/*!40000 ALTER TABLE `testcase_relations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `testcase_relations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `testcase_script_links`
+--
+
+DROP TABLE IF EXISTS `testcase_script_links`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `testcase_script_links` (
+  `tcversion_id` int unsigned NOT NULL DEFAULT '0',
+  `project_key` varchar(64) NOT NULL,
+  `repository_name` varchar(64) NOT NULL,
+  `code_path` varchar(255) NOT NULL,
+  `branch_name` varchar(64) DEFAULT NULL,
+  `commit_id` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`tcversion_id`,`project_key`,`repository_name`,`code_path`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `testcase_script_links`
+--
+
+LOCK TABLES `testcase_script_links` WRITE;
+/*!40000 ALTER TABLE `testcase_script_links` DISABLE KEYS */;
+/*!40000 ALTER TABLE `testcase_script_links` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -990,12 +1588,13 @@ DROP TABLE IF EXISTS `testplan_platforms`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `testplan_platforms` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `testplan_id` int(10) unsigned NOT NULL,
-  `platform_id` int(10) unsigned NOT NULL,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `testplan_id` int unsigned NOT NULL,
+  `platform_id` int unsigned NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_testplan_platforms` (`testplan_id`,`platform_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='Connects a testplan with platforms';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 COMMENT='Connects a testplan with platforms';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1004,7 +1603,7 @@ CREATE TABLE `testplan_platforms` (
 
 LOCK TABLES `testplan_platforms` WRITE;
 /*!40000 ALTER TABLE `testplan_platforms` DISABLE KEYS */;
-INSERT INTO `testplan_platforms` VALUES (1,4,1),(2,4,2),(4,4,3),(3,4,4);
+INSERT INTO `testplan_platforms` VALUES (1,4,1,1),(2,4,2,1),(3,4,4,1),(4,4,3,1);
 /*!40000 ALTER TABLE `testplan_platforms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1016,17 +1615,17 @@ DROP TABLE IF EXISTS `testplan_tcversions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `testplan_tcversions` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `testplan_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `tcversion_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `node_order` int(10) unsigned NOT NULL DEFAULT '1',
-  `urgency` smallint(5) NOT NULL DEFAULT '2',
-  `platform_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `author_id` int(10) unsigned DEFAULT NULL,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `testplan_id` int unsigned NOT NULL DEFAULT '0',
+  `tcversion_id` int unsigned NOT NULL DEFAULT '0',
+  `node_order` int unsigned NOT NULL DEFAULT '1',
+  `urgency` smallint NOT NULL DEFAULT '2',
+  `platform_id` int unsigned NOT NULL DEFAULT '0',
+  `author_id` int unsigned DEFAULT NULL,
   `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `testplan_tcversions_tplan_tcversion` (`testplan_id`,`tcversion_id`,`platform_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1035,7 +1634,7 @@ CREATE TABLE `testplan_tcversions` (
 
 LOCK TABLES `testplan_tcversions` WRITE;
 /*!40000 ALTER TABLE `testplan_tcversions` DISABLE KEYS */;
-INSERT INTO `testplan_tcversions` VALUES (1,4,32,1000,2,1,1,'2012-05-01 10:33:49'),(2,4,32,1000,2,2,1,'2012-05-01 10:33:49'),(3,4,32,1000,2,4,1,'2012-05-01 10:33:49'),(4,4,32,1000,2,3,1,'2012-05-01 10:33:49'),(5,4,34,1010,2,1,1,'2012-05-01 10:33:49'),(6,4,34,1010,2,2,1,'2012-05-01 10:33:49'),(7,4,34,1010,2,4,1,'2012-05-01 10:33:49'),(8,4,34,1010,2,3,1,'2012-05-01 10:33:49'),(9,4,44,1000,2,1,1,'2012-05-01 10:34:05'),(10,4,44,1000,2,2,1,'2012-05-01 10:34:05'),(11,4,44,1000,2,4,1,'2012-05-01 10:34:05'),(12,4,48,1000,2,1,1,'2012-05-01 10:34:05'),(13,4,48,1000,2,2,1,'2012-05-01 10:34:05'),(14,4,48,1000,2,4,1,'2012-05-01 10:34:05'),(15,4,46,1010,2,1,1,'2012-05-01 10:34:05'),(16,4,46,1010,2,2,1,'2012-05-01 10:34:05'),(17,4,46,1010,2,4,1,'2012-05-01 10:34:05'),(18,4,50,1010,2,1,1,'2012-05-01 10:34:05'),(19,4,50,1010,2,2,1,'2012-05-01 10:34:05'),(20,4,50,1010,2,4,1,'2012-05-01 10:34:05'),(21,4,94,1000,2,4,1,'2012-05-01 10:34:41'),(22,4,94,1000,2,3,1,'2012-05-01 10:34:41'),(23,4,98,1000,2,4,1,'2012-05-01 10:34:41'),(24,4,98,1000,2,3,1,'2012-05-01 10:34:41'),(25,4,96,1010,2,4,1,'2012-05-01 10:34:41'),(26,4,96,1010,2,3,1,'2012-05-01 10:34:41'),(27,4,100,1010,2,4,1,'2012-05-01 10:34:41'),(28,4,100,1010,2,3,1,'2012-05-01 10:34:41'),(29,4,102,1010,2,4,1,'2012-05-01 10:34:41'),(30,4,102,1010,2,3,1,'2012-05-01 10:34:41'),(31,4,104,1000,2,4,1,'2012-05-01 10:34:41'),(32,4,104,1000,2,3,1,'2012-05-01 10:34:41'),(33,4,108,1000,2,4,1,'2012-05-01 10:34:41'),(34,4,108,1000,2,3,1,'2012-05-01 10:34:41'),(35,4,106,1010,2,4,1,'2012-05-01 10:34:41'),(36,4,106,1010,2,3,1,'2012-05-01 10:34:41'),(37,4,110,1010,2,4,1,'2012-05-01 10:34:41'),(38,4,110,1010,2,3,1,'2012-05-01 10:34:41'),(39,4,112,1010,2,4,1,'2012-05-01 10:34:41'),(40,4,112,1010,2,3,1,'2012-05-01 10:34:41'),(41,4,144,1000,2,1,1,'2012-05-01 10:34:56'),(42,4,144,1000,2,2,1,'2012-05-01 10:34:56'),(43,4,144,1000,2,4,1,'2012-05-01 10:34:56'),(44,4,144,1000,2,3,1,'2012-05-01 10:34:56'),(45,4,148,1000,2,1,1,'2012-05-01 10:34:56'),(46,4,148,1000,2,2,1,'2012-05-01 10:34:56'),(47,4,148,1000,2,4,1,'2012-05-01 10:34:56'),(48,4,148,1000,2,3,1,'2012-05-01 10:34:56'),(49,4,146,1010,2,1,1,'2012-05-01 10:34:56'),(50,4,146,1010,2,2,1,'2012-05-01 10:34:56'),(51,4,146,1010,2,4,1,'2012-05-01 10:34:56'),(52,4,146,1010,2,3,1,'2012-05-01 10:34:56'),(53,4,150,1010,2,1,1,'2012-05-01 10:34:56'),(54,4,150,1010,2,2,1,'2012-05-01 10:34:56'),(55,4,150,1010,2,4,1,'2012-05-01 10:34:56'),(56,4,150,1010,2,3,1,'2012-05-01 10:34:56'),(57,4,152,1010,2,1,1,'2012-05-01 10:34:56'),(58,4,152,1010,2,2,1,'2012-05-01 10:34:56'),(59,4,152,1010,2,4,1,'2012-05-01 10:34:56'),(60,4,152,1010,2,3,1,'2012-05-01 10:34:56');
+INSERT INTO `testplan_tcversions` VALUES (1,4,32,1000,2,1,1,'2022-05-01 10:33:49'),(2,4,32,1000,2,2,1,'2022-05-01 10:33:49'),(3,4,32,1000,2,4,1,'2022-05-01 10:33:49'),(4,4,32,1000,2,3,1,'2022-05-01 10:33:49'),(5,4,34,1010,2,1,1,'2022-05-01 10:33:49'),(6,4,34,1010,2,2,1,'2022-05-01 10:33:49'),(7,4,34,1010,2,4,1,'2022-05-01 10:33:49'),(8,4,34,1010,2,3,1,'2022-05-01 10:33:49'),(9,4,44,1000,2,1,1,'2022-05-01 10:34:05'),(10,4,44,1000,2,2,1,'2022-05-01 10:34:05'),(11,4,44,1000,2,4,1,'2022-05-01 10:34:05'),(12,4,48,1000,2,1,1,'2022-05-01 10:34:05'),(13,4,48,1000,2,2,1,'2022-05-01 10:34:05'),(14,4,48,1000,2,4,1,'2022-05-01 10:34:05'),(15,4,46,1010,2,1,1,'2022-05-01 10:34:05'),(16,4,46,1010,2,2,1,'2022-05-01 10:34:05'),(17,4,46,1010,2,4,1,'2022-05-01 10:34:05'),(18,4,50,1010,2,1,1,'2022-05-01 10:34:05'),(19,4,50,1010,2,2,1,'2022-05-01 10:34:05'),(20,4,50,1010,2,4,1,'2022-05-01 10:34:05'),(21,4,94,1000,2,4,1,'2022-05-01 10:34:41'),(22,4,94,1000,2,3,1,'2022-05-01 10:34:41'),(23,4,98,1000,2,4,1,'2022-05-01 10:34:41'),(24,4,98,1000,2,3,1,'2022-05-01 10:34:41'),(25,4,96,1010,2,4,1,'2022-05-01 10:34:41'),(26,4,96,1010,2,3,1,'2022-05-01 10:34:41'),(27,4,100,1010,2,4,1,'2022-05-01 10:34:41'),(28,4,100,1010,2,3,1,'2022-05-01 10:34:41'),(29,4,102,1010,2,4,1,'2022-05-01 10:34:41'),(30,4,102,1010,2,3,1,'2022-05-01 10:34:41'),(31,4,104,1000,2,4,1,'2022-05-01 10:34:41'),(32,4,104,1000,2,3,1,'2022-05-01 10:34:41'),(33,4,108,1000,2,4,1,'2022-05-01 10:34:41'),(34,4,108,1000,2,3,1,'2022-05-01 10:34:41'),(35,4,106,1010,2,4,1,'2022-05-01 10:34:41'),(36,4,106,1010,2,3,1,'2022-05-01 10:34:41'),(37,4,110,1010,2,4,1,'2022-05-01 10:34:41'),(38,4,110,1010,2,3,1,'2022-05-01 10:34:41'),(39,4,112,1010,2,4,1,'2022-05-01 10:34:41'),(40,4,112,1010,2,3,1,'2022-05-01 10:34:41'),(41,4,144,1000,2,1,1,'2022-05-01 10:34:56'),(42,4,144,1000,2,2,1,'2022-05-01 10:34:56'),(43,4,144,1000,2,4,1,'2022-05-01 10:34:56'),(44,4,144,1000,2,3,1,'2022-05-01 10:34:56'),(45,4,148,1000,2,1,1,'2022-05-01 10:34:56'),(46,4,148,1000,2,2,1,'2022-05-01 10:34:56'),(47,4,148,1000,2,4,1,'2022-05-01 10:34:56'),(48,4,148,1000,2,3,1,'2022-05-01 10:34:56'),(49,4,146,1010,2,1,1,'2022-05-01 10:34:56'),(50,4,146,1010,2,2,1,'2022-05-01 10:34:56'),(51,4,146,1010,2,4,1,'2022-05-01 10:34:56'),(52,4,146,1010,2,3,1,'2022-05-01 10:34:56'),(53,4,150,1010,2,1,1,'2022-05-01 10:34:56'),(54,4,150,1010,2,2,1,'2022-05-01 10:34:56'),(55,4,150,1010,2,4,1,'2022-05-01 10:34:56'),(56,4,150,1010,2,3,1,'2022-05-01 10:34:56'),(57,4,152,1010,2,1,1,'2022-05-01 10:34:56'),(58,4,152,1010,2,2,1,'2022-05-01 10:34:56'),(59,4,152,1010,2,4,1,'2022-05-01 10:34:56'),(60,4,152,1010,2,3,1,'2022-05-01 10:34:56');
 /*!40000 ALTER TABLE `testplan_tcversions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1047,15 +1646,17 @@ DROP TABLE IF EXISTS `testplans`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `testplans` (
-  `id` int(10) unsigned NOT NULL,
-  `testproject_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL,
+  `testproject_id` int unsigned NOT NULL DEFAULT '0',
   `notes` text,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `is_open` tinyint(1) NOT NULL DEFAULT '1',
   `is_public` tinyint(1) NOT NULL DEFAULT '1',
+  `api_key` varchar(64) NOT NULL DEFAULT '829a2ded3ed0829a2dedd8ab81dfa2c77e8235bc3ed0d8ab81dfa2c77e8235bc',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `testplans_api_key` (`api_key`),
   KEY `testplans_testproject_id_active` (`testproject_id`,`active`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1064,8 +1665,77 @@ CREATE TABLE `testplans` (
 
 LOCK TABLES `testplans` WRITE;
 /*!40000 ALTER TABLE `testplans` DISABLE KEYS */;
-INSERT INTO `testplans` VALUES (4,2,'<p><strong>P Zero&trade; Red</strong>, a supersoft for street circuits. Of the  four slick tyres, this is the only one to remain unchanged from the 2011  season. It showed itself to be particularly versatile, offering high  peaks of performance over slow and twisty circuits that are  characterised by slippery asphalt and low lateral loadings. This is the  ideal compound for street circuits or semipermanent facilities.</p>',1,1,1),(5,2,'<p><strong>P Zero&trade; Yellow</strong>, softer with less blistering. The new  soft tyre is well suited to circuits with low tyre wear. It is designed  to offer a high level of grip coupled with a significant amount of  degradation, resulting in a comparatively short lifespan that will give  the teams a greater number of options with pit stop strategy and even  closer racing. Compared to the equivalent tyre in 2011, the new soft  offers greater thermal resistance to reduce the risk of blistering.  Tested for the first time during free practice at last year&rsquo;s Abu Dhabi  Grand Prix, the new soft tyre is set to be one of the most frequent  nominations in 2012, together with the new medium tyre. This combination  offers a great deal of flexibility and also a rapid warm-up time.</p>',1,1,1),(6,2,'<p><strong>P Zero&trade; White</strong>, the medium tyre that is well suited to  all conditions. This extremely versatile tyre adapts itself well to all  sorts of track conditions, particularly when asphalt and circuit  characteristics are variable. The brand new P Zero&trade; White is intended as  the &lsquo;option&rsquo; tyre on tracks with high temperatures or abrasive surfaces  and as the &lsquo;prime&rsquo; tyre on tracks that are less severe with fewer  demands on the tyres. The new medium compound was tried out last year  during free practice at the German Grand Prix and made another  appearance during the young driver test in Abu Dhabi.</p>',1,1,1),(7,2,'<p><strong>P Zero&trade; Silver</strong>, hard but not inflexible. The new hard  tyre guarantees maximum durability and the least degradation, together  with optimal resistance to the most extreme conditions, but is not as  hard as the equivalent tyre last year. The P Zero&trade; Silver is ideal for  long runs, taking more time to warm up, as well as being suited to  circuits with abrasive asphalt, big lateral forces and high  temperatures. The new P Zero&trade; Silver was tested at the Barcelona circuit  by Pirelli&rsquo;s test driver Lucas di Grassi, and is the only one of the  new compounds that the regular drivers have not yet experienced.</p>',1,1,1),(8,3,'<p><strong>Cinturato&trade; Green</strong>, the intermediate for light rain.  After the excellent performances seen from this tyre throughout the 2011  season during particularly demanding races such as the Canadian Grand  Prix, Pirelli&rsquo;s engineers decided not to make any changes to the  intermediate tyres. The shallower grooves compared to the full wet tyres  mean that the intermediates do not drain away as much water, making  this the ideal choice for wet or drying asphalt, without compromising on  performance.</p>',1,1,1),(9,3,'<p><strong>Cinturato&trade; Blue</strong>, the full wets. Of the two wet tyres,  only the full wet has been significantly altered compared to the 2011  version. The changes relate to the rear tyres, which use a different  profile in order to optimise the dispersal of water in case of  aquaplaning and guarantee a greater degree of driving precision.  Characterised by deep grooves, similar to those seen on a road car tyre,  the wet tyres are designed to expel more than 60 litres of water per  second at a speed of 300 kph: six times more than a road car tyre, which  disperses about 10 litres per second at a much lower speed.</p>',1,1,1);
+INSERT INTO `testplans` VALUES (4,2,'<p><strong>P Zero&trade; Red</strong>, a supersoft for street circuits. Of the  four slick tyres, this is the only one to remain unchanged from the 2011  season. It showed itself to be particularly versatile, offering high  peaks of performance over slow and twisty circuits that are  characterised by slippery asphalt and low lateral loadings. This is the  ideal compound for street circuits or semipermanent facilities.</p>',1,1,1,'829a2ded3ed0829a2dedd8ab81dfa2c77e8235bc3ed0d8ab81dfa2c77e8235ba'),(5,2,'<p><strong>P Zero&trade; Yellow</strong>, softer with less blistering. The new  soft tyre is well suited to circuits with low tyre wear. It is designed  to offer a high level of grip coupled with a significant amount of  degradation, resulting in a comparatively short lifespan that will give  the teams a greater number of options with pit stop strategy and even  closer racing. Compared to the equivalent tyre in 2011, the new soft  offers greater thermal resistance to reduce the risk of blistering.  Tested for the first time during free practice at last year&rsquo;s Abu Dhabi  Grand Prix, the new soft tyre is set to be one of the most frequent  nominations in 2012, together with the new medium tyre. This combination  offers a great deal of flexibility and also a rapid warm-up time.</p>',1,1,1,'829a2ded3ed0829a2dedd8ab81dfa2c77e8235bc3ed0d8ab81dfa2c77e8235bb'),(6,2,'<p><strong>P Zero&trade; White</strong>, the medium tyre that is well suited to  all conditions. This extremely versatile tyre adapts itself well to all  sorts of track conditions, particularly when asphalt and circuit  characteristics are variable. The brand new P Zero&trade; White is intended as  the &lsquo;option&rsquo; tyre on tracks with high temperatures or abrasive surfaces  and as the &lsquo;prime&rsquo; tyre on tracks that are less severe with fewer  demands on the tyres. The new medium compound was tried out last year  during free practice at the German Grand Prix and made another  appearance during the young driver test in Abu Dhabi.</p>',1,1,1,'829a2ded3ed0829a2dedd8ab81dfa2c77e8235bc3ed0d8ab81dfa2c77e8235bc'),(7,2,'<p><strong>P Zero&trade; Silver</strong>, hard but not inflexible. The new hard  tyre guarantees maximum durability and the least degradation, together  with optimal resistance to the most extreme conditions, but is not as  hard as the equivalent tyre last year. The P Zero&trade; Silver is ideal for  long runs, taking more time to warm up, as well as being suited to  circuits with abrasive asphalt, big lateral forces and high  temperatures. The new P Zero&trade; Silver was tested at the Barcelona circuit  by Pirelli&rsquo;s test driver Lucas di Grassi, and is the only one of the  new compounds that the regular drivers have not yet experienced.</p>',1,1,1,'829a2ded3ed0829a2dedd8ab81dfa2c77e8235bc3ed0d8ab81dfa2c77e8235bd'),(8,3,'<p><strong>Cinturato&trade; Green</strong>, the intermediate for light rain.  After the excellent performances seen from this tyre throughout the 2011  season during particularly demanding races such as the Canadian Grand  Prix, Pirelli&rsquo;s engineers decided not to make any changes to the  intermediate tyres. The shallower grooves compared to the full wet tyres  mean that the intermediates do not drain away as much water, making  this the ideal choice for wet or drying asphalt, without compromising on  performance.</p>',1,1,1,'829a2ded3ed0829a2dedd8ab81dfa2c77e8235bc3ed0d8ab81dfa2c77e8235be'),(9,3,'<p><strong>Cinturato&trade; Blue</strong>, the full wets. Of the two wet tyres,  only the full wet has been significantly altered compared to the 2011  version. The changes relate to the rear tyres, which use a different  profile in order to optimise the dispersal of water in case of  aquaplaning and guarantee a greater degree of driving precision.  Characterised by deep grooves, similar to those seen on a road car tyre,  the wet tyres are designed to expel more than 60 litres of water per  second at a speed of 300 kph: six times more than a road car tyre, which  disperses about 10 litres per second at a much lower speed.</p>',1,1,1,'829a2ded3ed0829a2dedd8ab81dfa2c77e8235bc3ed0d8ab81dfa2c77e8235bf');
 /*!40000 ALTER TABLE `testplans` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `testproject_codetracker`
+--
+
+DROP TABLE IF EXISTS `testproject_codetracker`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `testproject_codetracker` (
+  `testproject_id` int unsigned NOT NULL,
+  `codetracker_id` int unsigned NOT NULL,
+  PRIMARY KEY (`testproject_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `testproject_codetracker`
+--
+
+LOCK TABLES `testproject_codetracker` WRITE;
+/*!40000 ALTER TABLE `testproject_codetracker` DISABLE KEYS */;
+/*!40000 ALTER TABLE `testproject_codetracker` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `testproject_issuetracker`
+--
+
+DROP TABLE IF EXISTS `testproject_issuetracker`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `testproject_issuetracker` (
+  `testproject_id` int unsigned NOT NULL,
+  `issuetracker_id` int unsigned NOT NULL,
+  PRIMARY KEY (`testproject_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `testproject_issuetracker`
+--
+
+LOCK TABLES `testproject_issuetracker` WRITE;
+/*!40000 ALTER TABLE `testproject_issuetracker` DISABLE KEYS */;
+/*!40000 ALTER TABLE `testproject_issuetracker` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `testproject_reqmgrsystem`
+--
+
+DROP TABLE IF EXISTS `testproject_reqmgrsystem`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `testproject_reqmgrsystem` (
+  `testproject_id` int unsigned NOT NULL,
+  `reqmgrsystem_id` int unsigned NOT NULL,
+  PRIMARY KEY (`testproject_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `testproject_reqmgrsystem`
+--
+
+LOCK TABLES `testproject_reqmgrsystem` WRITE;
+/*!40000 ALTER TABLE `testproject_reqmgrsystem` DISABLE KEYS */;
+/*!40000 ALTER TABLE `testproject_reqmgrsystem` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1076,7 +1746,7 @@ DROP TABLE IF EXISTS `testprojects`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `testprojects` (
-  `id` int(10) unsigned NOT NULL,
+  `id` int unsigned NOT NULL,
   `notes` text,
   `color` varchar(12) NOT NULL DEFAULT '#9BD',
   `active` tinyint(1) NOT NULL DEFAULT '1',
@@ -1085,12 +1755,17 @@ CREATE TABLE `testprojects` (
   `option_automation` tinyint(1) NOT NULL DEFAULT '0',
   `options` text,
   `prefix` varchar(16) NOT NULL,
-  `tc_counter` int(10) unsigned NOT NULL DEFAULT '0',
+  `tc_counter` int unsigned NOT NULL DEFAULT '0',
   `is_public` tinyint(1) NOT NULL DEFAULT '1',
+  `issue_tracker_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `code_tracker_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `reqmgr_integration_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `api_key` varchar(64) NOT NULL DEFAULT '0d8ab81dfa2c77e8235bc829a2ded3edfa2c78235bc829a27eded3ed0d8ab81d',
   PRIMARY KEY (`id`),
   UNIQUE KEY `testprojects_prefix` (`prefix`),
+  UNIQUE KEY `testprojects_api_key` (`api_key`),
   KEY `testprojects_id_active` (`id`,`active`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1099,7 +1774,7 @@ CREATE TABLE `testprojects` (
 
 LOCK TABLES `testprojects` WRITE;
 /*!40000 ALTER TABLE `testprojects` DISABLE KEYS */;
-INSERT INTO `testprojects` VALUES (2,'<p>In accordance with the regulations laid down by the FIA (F&eacute;d&eacute;ration  Internationale de l\'Automobile) Pirelli will supply two different types  of tyre designed for two different types of use.<br />\r\nThe first type of tyre has been designed for dry surfaces, while the second is for wet surfaces.</p>','',1,0,0,0,'O:8:\"stdClass\":4:{s:19:\"requirementsEnabled\";i:1;s:19:\"testPriorityEnabled\";i:1;s:17:\"automationEnabled\";i:1;s:16:\"inventoryEnabled\";i:1;}','PDT',66,1),(3,'<p>in accordance with the regulations laid down by the FIA (F&eacute;d&eacute;ration  Internationale de l\'Automobile) Pirelli will supply two different types  of tyre designed for two different types of use.<br />\r\nThe first type of tyre has been designed for dry surfaces, while the second is for wet surfaces.</p>','',1,0,0,0,'O:8:\"stdClass\":4:{s:19:\"requirementsEnabled\";i:1;s:19:\"testPriorityEnabled\";i:1;s:17:\"automationEnabled\";i:1;s:16:\"inventoryEnabled\";i:1;}','PWT',0,1);
+INSERT INTO `testprojects` VALUES (2,'<p>In accordance with the regulations laid down by the FIA (F&eacute;d&eacute;ration  Internationale de l\'Automobile) Pirelli will supply two different types of tyre designed for two different types of use.<br />\r\nThe first type of tyre has been designed for dry surfaces, while the second is for wet surfaces.</p>','',1,0,0,0,'O:8:\"stdClass\":4:{s:19:\"requirementsEnabled\";i:1;s:19:\"testPriorityEnabled\";i:1;s:17:\"automationEnabled\";i:1;s:16:\"inventoryEnabled\";i:1;}','PDT',66,1,0,0,0,'0d8ab81dfa2c77e8235bc829a2ded3edfa2c78235bc829a27eded3ed0d8ab81d'),(3,'<p>in accordance with the regulations laid down by the FIA (F&eacute;d&eacute;ration  Internationale de l\'Automobile) Pirelli will supply two different types of tyre designed for two different types of use.<br />\r\nThe first type of tyre has been designed for dry surfaces, while the second is for wet surfaces.</p>','',1,0,0,0,'O:8:\"stdClass\":4:{s:19:\"requirementsEnabled\";i:1;s:19:\"testPriorityEnabled\";i:1;s:17:\"automationEnabled\";i:1;s:16:\"inventoryEnabled\";i:1;}','PWT',0,1,0,0,0,'0d8ab81dfa2c77e8235bc829a2ded3edfa2c78235bc829a27eded3ed0d8ab81e');
 /*!40000 ALTER TABLE `testprojects` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1111,10 +1786,10 @@ DROP TABLE IF EXISTS `testsuites`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `testsuites` (
-  `id` int(10) unsigned NOT NULL,
+  `id` int unsigned NOT NULL,
   `details` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1128,6 +1803,34 @@ INSERT INTO `testsuites` VALUES (10,''),(11,'<p><br />\r\n<br />\r\n<br />\r\n</
 UNLOCK TABLES;
 
 --
+-- Table structure for table `text_templates`
+--
+
+DROP TABLE IF EXISTS `text_templates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `text_templates` (
+  `id` int unsigned NOT NULL,
+  `type` smallint unsigned NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `template_data` text,
+  `author_id` int unsigned DEFAULT NULL,
+  `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_public` tinyint(1) NOT NULL DEFAULT '0',
+  UNIQUE KEY `idx_text_templates` (`type`,`title`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='Global Project Templates';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `text_templates`
+--
+
+LOCK TABLES `text_templates` WRITE;
+/*!40000 ALTER TABLE `text_templates` DISABLE KEYS */;
+/*!40000 ALTER TABLE `text_templates` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `transactions`
 --
 
@@ -1135,14 +1838,14 @@ DROP TABLE IF EXISTS `transactions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `transactions` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `entry_point` varchar(45) NOT NULL DEFAULT '',
-  `start_time` int(10) unsigned NOT NULL DEFAULT '0',
-  `end_time` int(10) unsigned NOT NULL DEFAULT '0',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `start_time` int unsigned NOT NULL DEFAULT '0',
+  `end_time` int unsigned NOT NULL DEFAULT '0',
+  `user_id` int unsigned NOT NULL DEFAULT '0',
   `session_id` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1151,9 +1854,27 @@ CREATE TABLE `transactions` (
 
 LOCK TABLES `transactions` WRITE;
 /*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
-INSERT INTO `transactions` VALUES (1,'/tl193-untouched/lib/general/navBar.php',1335862631,1335862631,210,'95p2svhjqusr1vjbhgj9bird23'),(2,'/tl193-untouched/lib/general/mainPage.php',1335862631,1335862631,210,'95p2svhjqusr1vjbhgj9bird23'),(3,'/tl193-untouched/lib/general/mainPage.php',1335862696,1335862696,210,'95p2svhjqusr1vjbhgj9bird23'),(4,'/tl193-untouched/lib/general/navBar.php',1335862696,1335862696,210,'95p2svhjqusr1vjbhgj9bird23'),(5,'/development/tl-old/tl193-untouched/login.php',1335862713,1335862713,1,'190eh67vq7bsrde26gde2g46c3'),(6,'/tl193-untouched/lib/general/mainPage.php',1335862714,1335862714,1,'190eh67vq7bsrde26gde2g46c3'),(7,'/tl193-untouched/lib/project/projectEdit.php',1335862746,1335862746,1,'190eh67vq7bsrde26gde2g46c3'),(8,'/tl193-untouched/lib/project/projectEdit.php',1335864014,1335864014,1,'190eh67vq7bsrde26gde2g46c3'),(9,'/tl193-untouched/lib/project/projectEdit.php',1335864053,1335864053,1,'190eh67vq7bsrde26gde2g46c3'),(10,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864120,1335864120,1,'190eh67vq7bsrde26gde2g46c3'),(11,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864160,1335864160,1,'190eh67vq7bsrde26gde2g46c3'),(12,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864193,1335864193,1,'190eh67vq7bsrde26gde2g46c3'),(13,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864246,1335864246,1,'190eh67vq7bsrde26gde2g46c3'),(14,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864293,1335864294,1,'190eh67vq7bsrde26gde2g46c3'),(15,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864326,1335864326,1,'190eh67vq7bsrde26gde2g46c3'),(16,'/tl193-untouched/lib/project/projectEdit.php',1335864347,1335864347,1,'190eh67vq7bsrde26gde2g46c3'),(17,'/tl193-untouched/lib/plan/buildEdit.php',1335864400,1335864400,1,'190eh67vq7bsrde26gde2g46c3'),(18,'/tl193-untouched/lib/plan/buildEdit.php',1335864414,1335864414,1,'190eh67vq7bsrde26gde2g46c3'),(19,'/tl193-untouched/lib/plan/buildEdit.php',1335864428,1335864429,1,'190eh67vq7bsrde26gde2g46c3'),(20,'/tl193-untouched/lib/plan/buildEdit.php',1335864459,1335864459,1,'190eh67vq7bsrde26gde2g46c3'),(21,'/tl193-untouched/lib/plan/buildEdit.php',1335864466,1335864466,1,'190eh67vq7bsrde26gde2g46c3'),(22,'/tl193-untouched/lib/plan/buildEdit.php',1335864473,1335864473,1,'190eh67vq7bsrde26gde2g46c3'),(23,'/lib/keywords/keywordsEdit.php',1335866991,1335866991,1,'190eh67vq7bsrde26gde2g46c3'),(24,'/lib/keywords/keywordsEdit.php',1335867005,1335867005,1,'190eh67vq7bsrde26gde2g46c3'),(25,'/lib/keywords/keywordsEdit.php',1335867022,1335867022,1,'190eh67vq7bsrde26gde2g46c3'),(26,'/lib/keywords/keywordsEdit.php',1335867034,1335867034,1,'190eh67vq7bsrde26gde2g46c3'),(27,'/lib/keywords/keywordsEdit.php',1335867048,1335867048,1,'190eh67vq7bsrde26gde2g46c3'),(28,'/lib/keywords/keywordsEdit.php',1335867057,1335867057,1,'190eh67vq7bsrde26gde2g46c3'),(29,'/tl193-untouched/lib/testcases/tcEdit.php',1335867108,1335867108,1,'190eh67vq7bsrde26gde2g46c3'),(30,'/tl193-untouched/lib/testcases/tcEdit.php',1335867121,1335867121,1,'190eh67vq7bsrde26gde2g46c3'),(31,'/tl193-untouched/lib/testcases/tcImport.php',1335867626,1335867626,1,'190eh67vq7bsrde26gde2g46c3'),(32,'/tl193-untouched/lib/testcases/tcImport.php',1335867682,1335867682,1,'190eh67vq7bsrde26gde2g46c3'),(33,'/tl193-untouched/lib/testcases/tcImport.php',1335867747,1335867747,1,'190eh67vq7bsrde26gde2g46c3'),(34,'/tl193-untouched/lib/testcases/tcImport.php',1335867792,1335867792,1,'190eh67vq7bsrde26gde2g46c3'),(35,'/tl193-untouched/lib/testcases/tcImport.php',1335867847,1335867847,1,'190eh67vq7bsrde26gde2g46c3'),(36,'/tl193-untouched/lib/testcases/tcImport.php',1335867890,1335867891,1,'190eh67vq7bsrde26gde2g46c3'),(37,'/tl193-untouched/lib/testcases/tcImport.php',1335867956,1335867956,1,'190eh67vq7bsrde26gde2g46c3'),(38,'/tl193-untouched/lib/testcases/tcImport.php',1335868010,1335868011,1,'190eh67vq7bsrde26gde2g46c3'),(39,'/tl193-untouched/lib/testcases/tcImport.php',1335868064,1335868064,1,'190eh67vq7bsrde26gde2g46c3'),(40,'/tl193-untouched/lib/testcases/tcImport.php',1335868106,1335868107,1,'190eh67vq7bsrde26gde2g46c3'),(41,'/tl193-untouched/lib/testcases/tcImport.php',1335868144,1335868144,1,'190eh67vq7bsrde26gde2g46c3'),(42,'/tl193-untouched/lib/testcases/tcImport.php',1335868185,1335868185,1,'190eh67vq7bsrde26gde2g46c3'),(43,'/tl193-untouched/lib/testcases/tcImport.php',1335868220,1335868220,1,'190eh67vq7bsrde26gde2g46c3'),(44,'/tl193-untouched/lib/testcases/tcImport.php',1335868246,1335868247,1,'190eh67vq7bsrde26gde2g46c3'),(45,'/lib/plan/planAddTCNavigator.php',1335868398,1335868399,1,'190eh67vq7bsrde26gde2g46c3'),(46,'/tl193-untouched/lib/plan/planAddTC.php',1335868429,1335868429,1,'190eh67vq7bsrde26gde2g46c3'),(47,'/tl193-untouched/lib/plan/planAddTC.php',1335868446,1335868446,1,'190eh67vq7bsrde26gde2g46c3'),(48,'/tl193-untouched/lib/plan/planAddTC.php',1335868481,1335868481,1,'190eh67vq7bsrde26gde2g46c3'),(49,'/tl193-untouched/lib/plan/planAddTC.php',1335868496,1335868496,1,'190eh67vq7bsrde26gde2g46c3');
+INSERT INTO `transactions` VALUES (1,'/tl193-untouched/lib/general/navBar.php',1335862631,1335862631,210,'95p2svhjqusr1vjbhgj9bird23'),(2,'/tl193-untouched/lib/general/mainPage.php',1335862631,1335862631,210,'95p2svhjqusr1vjbhgj9bird23'),(3,'/tl193-untouched/lib/general/mainPage.php',1335862696,1335862696,210,'95p2svhjqusr1vjbhgj9bird23'),(4,'/tl193-untouched/lib/general/navBar.php',1335862696,1335862696,210,'95p2svhjqusr1vjbhgj9bird23'),(5,'/development/tl-old/tl193-untouched/login.php',1335862713,1335862713,1,'190eh67vq7bsrde26gde2g46c3'),(6,'/tl193-untouched/lib/general/mainPage.php',1335862714,1335862714,1,'190eh67vq7bsrde26gde2g46c3'),(7,'/tl193-untouched/lib/project/projectEdit.php',1335862746,1335862746,1,'190eh67vq7bsrde26gde2g46c3'),(8,'/tl193-untouched/lib/project/projectEdit.php',1335864014,1335864014,1,'190eh67vq7bsrde26gde2g46c3'),(9,'/tl193-untouched/lib/project/projectEdit.php',1335864053,1335864053,1,'190eh67vq7bsrde26gde2g46c3'),(10,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864120,1335864120,1,'190eh67vq7bsrde26gde2g46c3'),(11,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864160,1335864160,1,'190eh67vq7bsrde26gde2g46c3'),(12,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864193,1335864193,1,'190eh67vq7bsrde26gde2g46c3'),(13,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864246,1335864246,1,'190eh67vq7bsrde26gde2g46c3'),(14,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864293,1335864294,1,'190eh67vq7bsrde26gde2g46c3'),(15,'/tl-old/tl193-untouched/lib/plan/planEdit.php',1335864326,1335864326,1,'190eh67vq7bsrde26gde2g46c3'),(16,'/tl193-untouched/lib/project/projectEdit.php',1335864347,1335864347,1,'190eh67vq7bsrde26gde2g46c3'),(17,'/tl193-untouched/lib/plan/buildEdit.php',1335864400,1335864400,1,'190eh67vq7bsrde26gde2g46c3'),(18,'/tl193-untouched/lib/plan/buildEdit.php',1335864414,1335864414,1,'190eh67vq7bsrde26gde2g46c3'),(19,'/tl193-untouched/lib/plan/buildEdit.php',1335864428,1335864429,1,'190eh67vq7bsrde26gde2g46c3'),(20,'/tl193-untouched/lib/plan/buildEdit.php',1335864459,1335864459,1,'190eh67vq7bsrde26gde2g46c3'),(21,'/tl193-untouched/lib/plan/buildEdit.php',1335864466,1335864466,1,'190eh67vq7bsrde26gde2g46c3'),(22,'/tl193-untouched/lib/plan/buildEdit.php',1335864473,1335864473,1,'190eh67vq7bsrde26gde2g46c3'),(23,'/lib/keywords/keywordsEdit.php',1335866991,1335866991,1,'190eh67vq7bsrde26gde2g46c3'),(24,'/lib/keywords/keywordsEdit.php',1335867005,1335867005,1,'190eh67vq7bsrde26gde2g46c3'),(25,'/lib/keywords/keywordsEdit.php',1335867022,1335867022,1,'190eh67vq7bsrde26gde2g46c3'),(26,'/lib/keywords/keywordsEdit.php',1335867034,1335867034,1,'190eh67vq7bsrde26gde2g46c3'),(27,'/lib/keywords/keywordsEdit.php',1335867048,1335867048,1,'190eh67vq7bsrde26gde2g46c3'),(28,'/lib/keywords/keywordsEdit.php',1335867057,1335867057,1,'190eh67vq7bsrde26gde2g46c3'),(29,'/tl193-untouched/lib/testcases/tcEdit.php',1335867108,1335867108,1,'190eh67vq7bsrde26gde2g46c3'),(30,'/tl193-untouched/lib/testcases/tcEdit.php',1335867121,1335867121,1,'190eh67vq7bsrde26gde2g46c3'),(31,'/tl193-untouched/lib/testcases/tcImport.php',1335867626,1335867626,1,'190eh67vq7bsrde26gde2g46c3'),(32,'/tl193-untouched/lib/testcases/tcImport.php',1335867682,1335867682,1,'190eh67vq7bsrde26gde2g46c3'),(33,'/tl193-untouched/lib/testcases/tcImport.php',1335867747,1335867747,1,'190eh67vq7bsrde26gde2g46c3'),(34,'/tl193-untouched/lib/testcases/tcImport.php',1335867792,1335867792,1,'190eh67vq7bsrde26gde2g46c3'),(35,'/tl193-untouched/lib/testcases/tcImport.php',1335867847,1335867847,1,'190eh67vq7bsrde26gde2g46c3'),(36,'/tl193-untouched/lib/testcases/tcImport.php',1335867890,1335867891,1,'190eh67vq7bsrde26gde2g46c3'),(37,'/tl193-untouched/lib/testcases/tcImport.php',1335867956,1335867956,1,'190eh67vq7bsrde26gde2g46c3'),(38,'/tl193-untouched/lib/testcases/tcImport.php',1335868010,1335868011,1,'190eh67vq7bsrde26gde2g46c3'),(39,'/tl193-untouched/lib/testcases/tcImport.php',1335868064,1335868064,1,'190eh67vq7bsrde26gde2g46c3'),(40,'/tl193-untouched/lib/testcases/tcImport.php',1335868106,1335868107,1,'190eh67vq7bsrde26gde2g46c3'),(41,'/tl193-untouched/lib/testcases/tcImport.php',1335868144,1335868144,1,'190eh67vq7bsrde26gde2g46c3'),(42,'/tl193-untouched/lib/testcases/tcImport.php',1335868185,1335868185,1,'190eh67vq7bsrde26gde2g46c3'),(43,'/tl193-untouched/lib/testcases/tcImport.php',1335868220,1335868220,1,'190eh67vq7bsrde26gde2g46c3'),(44,'/tl193-untouched/lib/testcases/tcImport.php',1335868246,1335868247,1,'190eh67vq7bsrde26gde2g46c3'),(45,'/lib/plan/planAddTCNavigator.php',1335868398,1335868399,1,'190eh67vq7bsrde26gde2g46c3'),(46,'/tl193-untouched/lib/plan/planAddTC.php',1335868429,1335868429,1,'190eh67vq7bsrde26gde2g46c3'),(47,'/tl193-untouched/lib/plan/planAddTC.php',1335868446,1335868446,1,'190eh67vq7bsrde26gde2g46c3'),(48,'/tl193-untouched/lib/plan/planAddTC.php',1335868481,1335868481,1,'190eh67vq7bsrde26gde2g46c3'),(49,'/tl193-untouched/lib/plan/planAddTC.php',1335868496,1335868496,1,'190eh67vq7bsrde26gde2g46c3'),(50,'/login.php',1707059206,1707059206,0,NULL),(51,'/login.php',1707059211,1707059211,1,'4u1jb7quupeh336m1aj69j5qu5'),(52,'/lib/project/projectView.php',1707059214,1707059214,1,'4u1jb7quupeh336m1aj69j5qu5'),(53,'/lib/usermanagement/usersAssign.php',1707059224,1707059224,1,'4u1jb7quupeh336m1aj69j5qu5'),(54,'/lib/cfields/cfieldsTprojectAssign.php',1707059232,1707059232,1,'4u1jb7quupeh336m1aj69j5qu5'),(55,'/lib/results/printDocument.php',1707059578,1707059578,1,'4u1jb7quupeh336m1aj69j5qu5'),(56,'/lib/plan/buildView.php',1707059648,1707059648,1,'4u1jb7quupeh336m1aj69j5qu5'),(57,'/lib/execute/execDashboard.php',1707059672,1707059672,1,'4u1jb7quupeh336m1aj69j5qu5'),(58,'/lib/execute/execDashboard.php',1707059672,1707059672,1,'4u1jb7quupeh336m1aj69j5qu5'),(59,'/lib/execute/execSetResults.php',1707059678,1707059678,1,'4u1jb7quupeh336m1aj69j5qu5'),(60,'/lib/execute/execSetResults.php',1707059678,1707059678,1,'4u1jb7quupeh336m1aj69j5qu5'),(61,'/lib/execute/execSetResults.php',1707059679,1707059679,1,'4u1jb7quupeh336m1aj69j5qu5'),(62,'/lib/plan/planAddTC.php',1707059689,1707059689,1,'4u1jb7quupeh336m1aj69j5qu5'),(63,'/lib/plan/planAddTC.php',1707059692,1707059692,1,'4u1jb7quupeh336m1aj69j5qu5'),(64,'/logout.php',1707059711,1707059711,1,'4u1jb7quupeh336m1aj69j5qu5');
 /*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Temporary table structure for view `tsuites_tree_depth_2`
+--
+
+DROP TABLE IF EXISTS `tsuites_tree_depth_2`;
+/*!50001 DROP VIEW IF EXISTS `tsuites_tree_depth_2`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `tsuites_tree_depth_2` AS SELECT
+ 1 AS `prefix`,
+  1 AS `testproject_name`,
+  1 AS `level1_name`,
+  1 AS `level2_name`,
+  1 AS `testproject_id`,
+  1 AS `level1_id`,
+  1 AS `level2_id` */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `user_assignments`
@@ -1163,18 +1884,18 @@ DROP TABLE IF EXISTS `user_assignments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_assignments` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `type` int(10) unsigned NOT NULL DEFAULT '1',
-  `feature_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `user_id` int(10) unsigned DEFAULT '0',
-  `build_id` int(10) unsigned DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `type` int unsigned NOT NULL DEFAULT '1',
+  `feature_id` int unsigned NOT NULL DEFAULT '0',
+  `user_id` int unsigned DEFAULT '0',
+  `build_id` int unsigned DEFAULT '0',
   `deadline_ts` datetime DEFAULT NULL,
-  `assigner_id` int(10) unsigned DEFAULT '0',
+  `assigner_id` int unsigned DEFAULT '0',
   `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` int(10) unsigned DEFAULT '1',
+  `status` int unsigned DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `user_assignments_feature_id` (`feature_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1183,7 +1904,7 @@ CREATE TABLE `user_assignments` (
 
 LOCK TABLES `user_assignments` WRITE;
 /*!40000 ALTER TABLE `user_assignments` DISABLE KEYS */;
-INSERT INTO `user_assignments` VALUES (1,1,1,4,1,NULL,1,'2012-05-01 10:36:33',1),(2,1,2,3,1,NULL,1,'2012-05-01 10:36:33',1),(3,1,4,2,1,NULL,1,'2012-05-01 10:36:33',1),(4,1,3,5,1,NULL,1,'2012-05-01 10:36:33',1),(5,1,5,4,1,NULL,1,'2012-05-01 10:36:33',1),(6,1,6,3,1,NULL,1,'2012-05-01 10:36:33',1),(7,1,8,2,1,NULL,1,'2012-05-01 10:36:33',1),(8,1,7,5,1,NULL,1,'2012-05-01 10:36:33',1),(9,1,9,4,1,NULL,1,'2012-05-01 10:36:58',1),(10,1,10,3,1,NULL,1,'2012-05-01 10:36:58',1),(11,1,11,5,1,NULL,1,'2012-05-01 10:36:58',1),(12,1,12,4,1,NULL,1,'2012-05-01 10:36:58',1),(13,1,13,3,1,NULL,1,'2012-05-01 10:36:58',1),(14,1,14,5,1,NULL,1,'2012-05-01 10:36:58',1),(15,1,22,2,1,NULL,1,'2012-05-01 10:37:46',1),(16,1,24,2,1,NULL,1,'2012-05-01 10:37:46',1),(17,1,23,5,1,NULL,1,'2012-05-01 10:37:46',1),(18,1,26,2,1,NULL,1,'2012-05-01 10:37:46',1),(19,1,25,5,1,NULL,1,'2012-05-01 10:37:46',1),(20,1,28,2,1,NULL,1,'2012-05-01 10:37:46',1),(21,1,27,5,1,NULL,1,'2012-05-01 10:37:46',1),(22,1,30,2,1,NULL,1,'2012-05-01 10:37:46',1);
+INSERT INTO `user_assignments` VALUES (1,1,1,4,1,NULL,1,'2022-05-01 10:36:33',1),(2,1,2,3,1,NULL,1,'2022-05-01 10:36:33',1),(3,1,4,2,1,NULL,1,'2022-05-01 10:36:33',1),(4,1,3,5,1,NULL,1,'2022-05-01 10:36:33',1),(5,1,5,4,1,NULL,1,'2022-05-01 10:36:33',1),(6,1,6,3,1,NULL,1,'2022-05-01 10:36:33',1),(7,1,8,2,1,NULL,1,'2022-05-01 10:36:33',1),(8,1,7,5,1,NULL,1,'2022-05-01 10:36:33',1),(9,1,9,4,1,NULL,1,'2022-05-01 10:36:58',1),(10,1,10,3,1,NULL,1,'2022-05-01 10:36:58',1),(11,1,11,5,1,NULL,1,'2022-05-01 10:36:58',1),(12,1,12,4,1,NULL,1,'2022-05-01 10:36:58',1),(13,1,13,3,1,NULL,1,'2022-05-01 10:36:58',1),(14,1,14,5,1,NULL,1,'2022-05-01 10:36:58',1),(15,1,22,2,1,NULL,1,'2022-05-01 10:37:46',1),(16,1,24,2,1,NULL,1,'2022-05-01 10:37:46',1),(17,1,23,5,1,NULL,1,'2022-05-01 10:37:46',1),(18,1,26,2,1,NULL,1,'2022-05-01 10:37:46',1),(19,1,25,5,1,NULL,1,'2022-05-01 10:37:46',1),(20,1,28,2,1,NULL,1,'2022-05-01 10:37:46',1),(21,1,27,5,1,NULL,1,'2022-05-01 10:37:46',1),(22,1,30,2,1,NULL,1,'2022-05-01 10:37:46',1);
 /*!40000 ALTER TABLE `user_assignments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1195,12 +1916,12 @@ DROP TABLE IF EXISTS `user_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_group` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
   `description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_user_group` (`title`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1220,10 +1941,10 @@ DROP TABLE IF EXISTS `user_group_assign`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_group_assign` (
-  `usergroup_id` int(10) unsigned NOT NULL,
-  `user_id` int(10) unsigned NOT NULL,
+  `usergroup_id` int unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL,
   UNIQUE KEY `idx_user_group_assign` (`usergroup_id`,`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1243,11 +1964,11 @@ DROP TABLE IF EXISTS `user_testplan_roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_testplan_roles` (
-  `user_id` int(10) NOT NULL DEFAULT '0',
-  `testplan_id` int(10) NOT NULL DEFAULT '0',
-  `role_id` int(10) NOT NULL DEFAULT '0',
+  `user_id` int NOT NULL DEFAULT '0',
+  `testplan_id` int NOT NULL DEFAULT '0',
+  `role_id` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`,`testplan_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1267,11 +1988,11 @@ DROP TABLE IF EXISTS `user_testproject_roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_testproject_roles` (
-  `user_id` int(10) NOT NULL DEFAULT '0',
-  `testproject_id` int(10) NOT NULL DEFAULT '0',
-  `role_id` int(10) NOT NULL DEFAULT '0',
+  `user_id` int NOT NULL DEFAULT '0',
+  `testproject_id` int NOT NULL DEFAULT '0',
+  `role_id` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`,`testproject_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1291,20 +2012,25 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `login` varchar(30) NOT NULL DEFAULT '',
-  `password` varchar(32) NOT NULL DEFAULT '',
-  `role_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `login` varchar(100) NOT NULL DEFAULT '',
+  `password` varchar(255) NOT NULL DEFAULT '',
+  `role_id` int unsigned NOT NULL DEFAULT '0',
   `email` varchar(100) NOT NULL DEFAULT '',
-  `first` varchar(30) NOT NULL DEFAULT '',
-  `last` varchar(30) NOT NULL DEFAULT '',
+  `first` varchar(50) NOT NULL DEFAULT '',
+  `last` varchar(50) NOT NULL DEFAULT '',
   `locale` varchar(10) NOT NULL DEFAULT 'en_GB',
-  `default_testproject_id` int(10) DEFAULT NULL,
+  `default_testproject_id` int DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `script_key` varchar(32) DEFAULT NULL,
+  `cookie_string` varchar(64) NOT NULL DEFAULT '',
+  `auth_method` varchar(10) DEFAULT '',
+  `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `expiration_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `users_login` (`login`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='User information';
+  UNIQUE KEY `users_login` (`login`),
+  UNIQUE KEY `users_cookie_string` (`cookie_string`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3 COMMENT='User information';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1313,9 +2039,225 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','21232f297a57a5a743894a0e4a801fc3',8,'','Testlink','Administrator','en_GB',NULL,1,NULL),(2,'Mark.Webber','9651cbc7c0b5fb1a81f2858a07813c82',8,'Mark.Webber@formulaone.com','Mark','Webber','en_GB',NULL,1,'DEVKEY-Webber'),(3,'Lewis.Hamilton','9651cbc7c0b5fb1a81f2858a07813c82',9,'Lewis.Hamilton@formulaone.com','Lewis','Hamilton','it_IT',NULL,1,'DEVKEY-Hamilton'),(4,'Fernando.Alonso','9651cbc7c0b5fb1a81f2858a07813c82',6,'Fernando.Alonso@formulaone.com','Fernando','Alonso','en_GB',NULL,1,'DEVKEY-Alonso'),(5,'Michael.Schumacher','9651cbc7c0b5fb1a81f2858a07813c82',8,'Michael.Schumacher@formulaone.com','Michael','Schumacher','en_GB',NULL,1,'DEVKEY-Schumacher');
+INSERT INTO `users` VALUES (1,'admin','$2y$10$R2V1vQ8341Pamp7xz5XwPuMGNWlfkukqeanCHHFZE19rHbZDDGeD6',8,'','Testlink','Administrator','en_GB',NULL,1,NULL,'36ddb442ea04877d8ff949e6120843c405cf032131f34b2d54f379eac0cc1b88',NULL,'2022-05-01 10:36:33',NULL),(2,'Mark.Webber','9651cbc7c0b5fb1a81f2858a07813c82',8,'Mark.Webber@formulaone.com','Mark','Webber','en_GB',NULL,1,'DEVKEY-Webber','b',NULL,'2022-05-01 10:36:33',NULL),(3,'Lewis.Hamilton','9651cbc7c0b5fb1a81f2858a07813c82',9,'Lewis.Hamilton@formulaone.com','Lewis','Hamilton','it_IT',NULL,1,'DEVKEY-Hamilton','c',NULL,'2022-05-01 10:36:33',NULL),(4,'Fernando.Alonso','9651cbc7c0b5fb1a81f2858a07813c82',6,'Fernando.Alonso@formulaone.com','Fernando','Alonso','en_GB',NULL,1,'DEVKEY-Alonso','d',NULL,'2022-05-01 10:36:33',NULL),(5,'Michael.Schumacher','9651cbc7c0b5fb1a81f2858a07813c82',8,'Michael.Schumacher@formulaone.com','Michael','Schumacher','en_GB',NULL,1,'DEVKEY-Schumacher','e',NULL,'2022-05-01 10:36:33',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Final view structure for view `exec_by_date_time`
+--
+
+/*!50001 DROP VIEW IF EXISTS `exec_by_date_time`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `exec_by_date_time` AS select `NHTPL`.`name` AS `testplan_name`,date_format(`E`.`execution_ts`,'%Y-%m-%d') AS `yyyy_mm_dd`,date_format(`E`.`execution_ts`,'%Y-%m') AS `yyyy_mm`,date_format(`E`.`execution_ts`,'%H') AS `hh`,date_format(`E`.`execution_ts`,'%k') AS `hour`,`E`.`id` AS `id`,`E`.`build_id` AS `build_id`,`E`.`tester_id` AS `tester_id`,`E`.`execution_ts` AS `execution_ts`,`E`.`status` AS `status`,`E`.`testplan_id` AS `testplan_id`,`E`.`tcversion_id` AS `tcversion_id`,`E`.`tcversion_number` AS `tcversion_number`,`E`.`platform_id` AS `platform_id`,`E`.`execution_type` AS `execution_type`,`E`.`execution_duration` AS `execution_duration`,`E`.`notes` AS `notes` from ((`executions` `E` join `testplans` `TPL` on((`TPL`.`id` = `E`.`testplan_id`))) join `nodes_hierarchy` `NHTPL` on((`NHTPL`.`id` = `TPL`.`id`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `latest_exec_by_context`
+--
+
+/*!50001 DROP VIEW IF EXISTS `latest_exec_by_context`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `latest_exec_by_context` AS select `executions`.`tcversion_id` AS `tcversion_id`,`executions`.`testplan_id` AS `testplan_id`,`executions`.`build_id` AS `build_id`,`executions`.`platform_id` AS `platform_id`,max(`executions`.`id`) AS `id` from `executions` group by `executions`.`tcversion_id`,`executions`.`testplan_id`,`executions`.`build_id`,`executions`.`platform_id` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `latest_exec_by_testplan`
+--
+
+/*!50001 DROP VIEW IF EXISTS `latest_exec_by_testplan`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `latest_exec_by_testplan` AS select `executions`.`tcversion_id` AS `tcversion_id`,`executions`.`testplan_id` AS `testplan_id`,max(`executions`.`id`) AS `id` from `executions` group by `executions`.`tcversion_id`,`executions`.`testplan_id` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `latest_exec_by_testplan_plat`
+--
+
+/*!50001 DROP VIEW IF EXISTS `latest_exec_by_testplan_plat`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `latest_exec_by_testplan_plat` AS select `executions`.`tcversion_id` AS `tcversion_id`,`executions`.`testplan_id` AS `testplan_id`,`executions`.`platform_id` AS `platform_id`,max(`executions`.`id`) AS `id` from `executions` group by `executions`.`tcversion_id`,`executions`.`testplan_id`,`executions`.`platform_id` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `latest_req_version`
+--
+
+/*!50001 DROP VIEW IF EXISTS `latest_req_version`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `latest_req_version` AS select `RQ`.`id` AS `req_id`,max(`RQV`.`version`) AS `version` from ((`nodes_hierarchy` `NHRQV` join `requirements` `RQ` on((`RQ`.`id` = `NHRQV`.`parent_id`))) join `req_versions` `RQV` on((`RQV`.`id` = `NHRQV`.`id`))) group by `RQ`.`id` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `latest_req_version_id`
+--
+
+/*!50001 DROP VIEW IF EXISTS `latest_req_version_id`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `latest_req_version_id` AS select `LRQVN`.`req_id` AS `req_id`,`LRQVN`.`version` AS `version`,`REQV`.`id` AS `req_version_id` from ((`latest_req_version` `LRQVN` join `nodes_hierarchy` `NHRQV` on((`NHRQV`.`parent_id` = `LRQVN`.`req_id`))) join `req_versions` `REQV` on(((`REQV`.`id` = `NHRQV`.`id`) and (`REQV`.`version` = `LRQVN`.`version`)))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `latest_rspec_revision`
+--
+
+/*!50001 DROP VIEW IF EXISTS `latest_rspec_revision`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `latest_rspec_revision` AS select `RSR`.`parent_id` AS `req_spec_id`,`RS`.`testproject_id` AS `testproject_id`,max(`RSR`.`revision`) AS `revision` from (`req_specs_revisions` `RSR` join `req_specs` `RS` on((`RS`.`id` = `RSR`.`parent_id`))) group by `RSR`.`parent_id`,`RS`.`testproject_id` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `latest_tcase_version_id`
+--
+
+/*!50001 DROP VIEW IF EXISTS `latest_tcase_version_id`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `latest_tcase_version_id` AS select `LTCVN`.`testcase_id` AS `testcase_id`,`LTCVN`.`version` AS `version`,`TCV`.`id` AS `tcversion_id` from ((`latest_tcase_version_number` `LTCVN` join `nodes_hierarchy` `NHTCV` on((`NHTCV`.`parent_id` = `LTCVN`.`testcase_id`))) join `tcversions` `TCV` on(((`TCV`.`id` = `NHTCV`.`id`) and (`TCV`.`version` = `LTCVN`.`version`)))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `latest_tcase_version_number`
+--
+
+/*!50001 DROP VIEW IF EXISTS `latest_tcase_version_number`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `latest_tcase_version_number` AS select `NH_TC`.`id` AS `testcase_id`,max(`TCV`.`version`) AS `version` from ((`nodes_hierarchy` `NH_TC` join `nodes_hierarchy` `NH_TCV` on((`NH_TCV`.`parent_id` = `NH_TC`.`id`))) join `tcversions` `TCV` on((`NH_TCV`.`id` = `TCV`.`id`))) group by `testcase_id` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `tcversions_without_keywords`
+--
+
+/*!50001 DROP VIEW IF EXISTS `tcversions_without_keywords`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `tcversions_without_keywords` AS select `NHTCV`.`parent_id` AS `testcase_id`,`NHTCV`.`id` AS `id` from `nodes_hierarchy` `NHTCV` where ((`NHTCV`.`node_type_id` = 4) and exists(select 1 from `testcase_keywords` `TCK` where (`TCK`.`tcversion_id` = `NHTCV`.`id`)) is false) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `tcversions_without_platforms`
+--
+
+/*!50001 DROP VIEW IF EXISTS `tcversions_without_platforms`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `tcversions_without_platforms` AS select `NHTCV`.`parent_id` AS `testcase_id`,`NHTCV`.`id` AS `id` from `nodes_hierarchy` `NHTCV` where ((`NHTCV`.`node_type_id` = 4) and exists(select 1 from `testcase_platforms` `TCPL` where (`TCPL`.`tcversion_id` = `NHTCV`.`id`)) is false) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `tsuites_tree_depth_2`
+--
+
+/*!50001 DROP VIEW IF EXISTS `tsuites_tree_depth_2`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `tsuites_tree_depth_2` AS select `TPRJ`.`prefix` AS `prefix`,`NHTPRJ`.`name` AS `testproject_name`,`NHTS_L1`.`name` AS `level1_name`,`NHTS_L2`.`name` AS `level2_name`,`NHTPRJ`.`id` AS `testproject_id`,`NHTS_L1`.`id` AS `level1_id`,`NHTS_L2`.`id` AS `level2_id` from (((`testprojects` `TPRJ` join `nodes_hierarchy` `NHTPRJ` on((`TPRJ`.`id` = `NHTPRJ`.`id`))) left join `nodes_hierarchy` `NHTS_L1` on((`NHTS_L1`.`parent_id` = `NHTPRJ`.`id`))) left join `nodes_hierarchy` `NHTS_L2` on((`NHTS_L2`.`parent_id` = `NHTS_L1`.`id`))) where ((`NHTPRJ`.`node_type_id` = 1) and (`NHTS_L1`.`node_type_id` = 2) and (`NHTS_L2`.`node_type_id` = 2)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -1326,4 +2268,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-05-01 12:38:54
+-- Dump completed on 2022-02-04 15:15:56

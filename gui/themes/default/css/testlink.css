@@ -368,7 +368,7 @@ fieldset.groupBtn form {
 
 /* ***** Help ***************************************************************************
  * This allows link help from text e.g. instruction
- * Using: <span class="help" onclick="javascript:open_popup('../help/glosary.html#testspec');">
+ * Using: <span class="help" onclick="javascript:open_popup('../help/glossary.html#testspec');">
  * 			Test Specification</span>
  */
 img.help {

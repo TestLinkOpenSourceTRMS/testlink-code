@@ -86,7 +86,7 @@ $TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to vi
 	"to assign <b>keywords</b> for improved traceability.</li>
 	<li>Navigate via the tree view on the left side and edit data. Each Test case stores own history.</li>
 	<li>Assign your created Test Specification to a 	<span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when your Test cases are ready.</li>
+	\"javascript:open_help_window('glossary','$locale');\">Test Plan</span> when your Test cases are ready.</li>
 </ol>
 
 <p>With TestLink you can organize Test Cases into Test Suites." .

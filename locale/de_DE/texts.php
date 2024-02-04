@@ -94,7 +94,7 @@ $TLS_htmltext['editTc'] 		= "<p>Die <i>Testspezifikation</i> ermöglicht das " .
 	"(Traceability) können den Testfällen <b>Stichwörter</b> zugewiesen werden.</li>
 	<li>In der Baumansicht auf der linken Seite können Sie die Daten bearbeiten. Jeder Testfall speichert den eigenen Verlauf.</li>
 	<li>Die erstellte Test Spezifikation kann einem <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> zugewiesen werden, wenn die Testfälle fertig sind.</li>
+	\"javascript:open_help_window('glossary','$locale');\">Test Plan</span> zugewiesen werden, wenn die Testfälle fertig sind.</li>
 </ol>
 
 <p>Mit TestLink können Testfälle in Test Suiten gegliedert werden." .

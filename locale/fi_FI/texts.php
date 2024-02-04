@@ -67,7 +67,7 @@ $TLS_htmltext['editTc'] = "<h2>Tarkoitus:</h2>
 "siirtää <b>avainsanat</b> parantaa jäljitettävyyttä.</li>
 <li>Navigoi kautta puunäkymässä vasemmalla puolella ja muokata tietoja. Testitapauksia tallentaa oman historian.</li>
 <li>Anna teidän luonut testauseritelmä on <span class=\"help\" onclick=
-\"javascript:open_help_window('glosary','$locale');\">Test Plan kun testitapauksia ovat valmiita.</li>
+\"javascript:open_help_window('glossary','$locale');\">Test Plan kun testitapauksia ovat valmiita.</li>
 </ol>
 
 <p>TestLinkillä voit järjestellä testi tapauksissa osaksi testi sviittiä." .

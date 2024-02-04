@@ -84,7 +84,7 @@ $TLS_htmltext['editTc'] 		= "<p>A <i>Especificação de Teste</i> permite aos us
 	"atribuir <b>palavras-chave</b> para melhorar a rastreabilidade.</li>
 	<li>Navegue pela árvore de navegação do lado esquerdo e edite os dados. Os Casos de Teste armazenam histórico próprio.</li>
 	<li>Atribua suas Especificações de Teste criadas ao <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> quando seus Casos de Teste estiverem prontos.</li>
+	\"javascript:open_help_window('glossary','$locale');\">Test Plan</span> quando seus Casos de Teste estiverem prontos.</li>
 </ol>
 
 <p>Com o TestLink você organiza os Casos de Teste em Suítes de Teste." .

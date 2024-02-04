@@ -73,7 +73,7 @@ $TLS_htmltext['editTc'] 		= "<h2>目的:</h2>
 	"<b>关键字</b> 以方便跟踪查询.</li>
 	<li>从左边的导航树里选择和编辑数据来实现导航功能. 测试用例可以保存自己的所有历史.</li>
 	<li>测试用例编写完毕后, 你可以把它的测试规范关联到 <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">测试计划</span> .</li>
+	\"javascript:open_help_window('glossary','$locale');\">测试计划</span> .</li>
 </ol>
 
     <p>TestLink可以帮你整理测试套件,可以把测试套件分类成为不同的测试套件子集. 测试套件子集还可以包含更下级的测试案例子集. 

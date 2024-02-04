@@ -76,7 +76,7 @@ $TLS_htmltext['editTc'] 		= "<p><i>Specyfikacja testowa</i> pozwala użytkowniko
 	"przypisać <b>słowa kluczowe</b> dla zwiększenia efektywności śledzenia.</li>
 	<li>Zarządzaj poprzez drzewko  nawigatora z lewej strony i edytuj dane. Każdy przypadek testowy zawiera własną historie.</li>
 	<li>Przypisz stworzoną przez siebie Specyfikacje testową	<span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Plan Testu</span> kiedy twój Przypadek testowy jest gotowy.</li>
+	\"javascript:open_help_window('glossary','$locale');\">Plan Testu</span> kiedy twój Przypadek testowy jest gotowy.</li>
 </ol>
 
 <p>Poprzez TestLink mozesz zorganizować  Przypadki testowe w  Zestawy testowe." .

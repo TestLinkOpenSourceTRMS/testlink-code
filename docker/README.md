@@ -53,6 +53,14 @@ cp -n docker/custom_config.inc.php ./
 
 You can view the test emails at http://localhost:1080
 
+### Restoring the sample database
+
+There is a sample database in `docs/db_sample` which you can restore with:
+
+```bash
+docker compose up testlink-restore
+```
+
 ## Troubleshooting
 
 ### Creating the Testlink database user manually

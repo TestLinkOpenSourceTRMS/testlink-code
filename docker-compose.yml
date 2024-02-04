@@ -26,7 +26,7 @@ services:
     environment:
     - NODE_TLS_REJECT_UNAUTHORIZED=0
 
-  testlink-app:
+  testlink-app: &testlink-app
     image: testlink:1.9.20
     build: .
     restart: unless-stopped
@@ -43,6 +43,17 @@ services:
     - ./:/var/www/testlink
     - ./logs:/var/testlink/logs
     - ./upload_area:/var/testlink/upload_area
+
+  testlink-restore:
+    <<: *testlink-app
+    depends_on:
+      testlink-app:
+        condition: service_started
+    restart: no
+    ports: []
+    profiles:
+    - tools
+    command: ['/bin/bash', '-c', 'cd ./docs/db_sample && ./restore_sample.sh']
 
 volumes:
   mysql:

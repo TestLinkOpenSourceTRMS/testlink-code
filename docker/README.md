@@ -69,7 +69,7 @@ Connect to the app or database container and, using the `mysql` CLI, execute the
 ```sql
 /* update the database name, user name and password
    values based on what you specified during setup */
-use `testlink`;
+USE `testlink`;
 CREATE USER 'testlink'@'%' IDENTIFIED BY 'masterkey';
 GRANT SELECT, UPDATE, DELETE, INSERT ON *.* TO 'testlink'@'%' WITH GRANT OPTION;
 ```
@@ -82,4 +82,5 @@ If you wish to reset your database, you'll need to delete the mysql volume and `
 docker compose down
 docker volume rm testlink-code_mysql
 /bin/rm -f config_db.inc.php
+docker compose up -d
 ```

@@ -82,7 +82,7 @@ $TLS_htmltext['editTc'] 		= "<h2>Objectif :</h2>
 	"d'affecter des <b>mots clés</b> pour améliorer la traçabilité.</li>
 	<li>Naviguez via l'arborescence sur le côté gauche et éditer les données. Les fiches de tests stockent leur propre historique.</li>
 	<li>Affectez votre fiche de test créée à la <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Campagne de test</span> lorsque votre fiche de test est prête.</li>
+	\"javascript:open_help_window('glossary','$locale');\">Campagne de test</span> lorsque votre fiche de test est prête.</li>
 </ol>
 
 <p>Avec TestLink vous pouvez organiser les fiches de tests dans des dossiers de tests." .

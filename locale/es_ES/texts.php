@@ -90,7 +90,7 @@ $TLS_htmltext['editTc'] 		= "<h2>Propósito:</h2>
 	"asignar <b>keywords</b> para mejorar la trazabilidad.</li>
 	<li>Navega por la vista en árbol del lado izquierdo y edite la información. Los Casos de Prueba almacenan su propio historial.</li>
 	<li>Asigna tu Especificación de Pruebas al <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Plan de Pruebas</span> cuando tus Casos de Prueba estén preparados.</li>
+	\"javascript:open_help_window('glossary','$locale');\">Plan de Pruebas</span> cuando tus Casos de Prueba estén preparados.</li>
 </ol>
 
 <p>Con TestLink organizas los casos de prueba en suites de pruebas." .

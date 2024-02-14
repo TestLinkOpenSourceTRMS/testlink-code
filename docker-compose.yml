@@ -27,7 +27,7 @@ services:
     - NODE_TLS_REJECT_UNAUTHORIZED=0
 
   testlink-app: &testlink-app
-    image: testlink:1.9.20
+    image: testlink:2.0.0
     build: .
     restart: unless-stopped
     depends_on:

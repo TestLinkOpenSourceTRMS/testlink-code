@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.1-apache
 
 RUN apt update && apt upgrade -y
 RUN apt install -y \

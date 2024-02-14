@@ -16,7 +16,8 @@ mysql -h ${DB_HOST} -u ${DB_ROOT_USER} --password=${DB_ROOT_PASS} --database=${T
 # Create the testlink user
 echo "Creating user '${TL_DB_USER}'..."
 echo "CREATE USER IF NOT EXISTS '${TL_DB_USER}'@'%' IDENTIFIED BY '${TL_DB_PASS}';" | mysql -h ${DB_HOST} -u ${DB_ROOT_USER} --password=${DB_ROOT_PASS}
-echo "GRANT SELECT, UPDATE, DELETE, INSERT ON *.* TO '${TL_DB_USER}'@'%' WITH GRANT OPTION;" | mysql -h ${DB_HOST} -u ${DB_ROOT_USER} --password=${DB_ROOT_PASS}
+echo "GRANT SELECT, UPDATE, DELETE, INSERT ON \`${TL_DB_NAME}\`.* TO '${TL_DB_USER}'@'%' WITH GRANT OPTION;" | mysql -h ${DB_HOST} -u ${DB_ROOT_USER} --password=${DB_ROOT_PASS}
+echo "GRANT EXECUTE ON FUNCTION \`${TL_DB_NAME}\`.UDFStripHTMLTags TO '${TL_DB_USER}'@'%';" | mysql -h ${DB_HOST} -u ${DB_ROOT_USER} --password=${DB_ROOT_PASS}
 
 # Update config_db.inc.php
 echo "Creating 'config_db.inc.php' file..."

@@ -429,6 +429,28 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $tprojectid = intval( $dummy['tproject_id'] );
         }
 
+        // Some APIs only provide TestSuiteID or TestCaseID, look up TestProjectID
+        if ($tprojectid <= 0 && $tplanid == -1) {
+            // Try using TestSuiteID to get TestProjectID
+            $tsuitid = intval( isset( $context[self::$testSuiteIDParamName] ) ? $context[self::$testSuiteIDParamName] : 0 );
+            if($tsuiteid == 0 && isset( $this->args[self::$testSuiteIDParamName] )) {
+                $tsuiteid = intval( $this->args[self::$testSuiteIDParamName] );
+            }
+            if ($tsuiteid > 0) {
+                $dummy = $this->tprojectMgr->tree_manager->get_path( $tsuiteid );
+                $tprojectid = $dummy[0]['parent_id'];
+            } else {
+                // Try using TestCaseID to get TestProjectID
+                $tcaseid = intval( isset( $context[self::$testCaseIDParamName] ) ? $context[self::$testCaseIDParamName] : 0 );
+                if($tcaseid == 0 && isset( $this->args[self::$testCaseIDParamName] )) {
+                    $tcaseid = intval( $this->args[self::$testCaseIDParamName] );
+                }
+                if ($tcaseid > 0) {
+                    $tprojectid = $this->tcaseMgr->get_testproject( $tcaseid );
+                }
+            }
+        }
+
         if(! $this->user->hasRight( $this->dbObj, $rightToCheck, $tprojectid, $tplanid, $checkPublicPrivateAttr )) {
             $status_ok = false;
             $msg = sprintf( INSUFFICIENT_RIGHTS_STR, $this->user->login, $rightToCheck, $tprojectid, $tplanid );

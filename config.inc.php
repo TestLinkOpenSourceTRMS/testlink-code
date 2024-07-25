@@ -431,7 +431,7 @@ $tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'a
 /* Default Authentication method */
 $tlCfg->authentication['method'] = 'DB';
 
-// Applies only if authentication methos is DB.
+// Applies only if authentication method is DB.
 // Used when:
 // 1. user sign up
 //

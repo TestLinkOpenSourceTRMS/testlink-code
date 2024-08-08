@@ -7608,7 +7608,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $link = $link[$tplan_id]; // Inside test plan, is indexed by platform
             $hits = count( $link );
             $platform_id = 0;
-            $check_platform =(count( $hits ) > 1) || ! isset( $link[0] );
+            $check_platform =( $hits > 1) || ! isset( $link[0] );
         }
 
         if($status_ok && $check_platform) {

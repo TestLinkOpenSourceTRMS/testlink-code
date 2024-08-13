@@ -54,7 +54,7 @@ function ldap_connect_bind( $authCfg, $p_binddn = '', $p_password = '')
   // if you use -  echo 'ldap_errno:' . ldap_err2str(ldap_errno($t_ds ));
   // you will get Success!!!, no matter what has happened
   //
-  // NOTE regarding PHP >8.1.0
+  // NOTE regarding PHP >=8.1.0
   // type of return parameter of ldap_connect has changed,
   // see https://www.php.net/manual/de/function.ldap-connect.php
   //

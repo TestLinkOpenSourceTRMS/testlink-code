@@ -84,6 +84,10 @@ class tlLogger extends tlObject
   protected $eventManager;
   protected $loggerTypeClass = array('db' => null, 'file' => null, 'mail' => null);
   protected $loggerTypeDomain;
+
+  protected $logLevelFilter;
+  protected $db;
+
     
   public function __construct(&$db)
   {
@@ -124,9 +128,8 @@ class tlLogger extends tlObject
                                $activityCodes = null,$limit = -1,$startTime = null,
                                $endTime = null, $users = null)
   {
-    return $this->eventManager->getEventsFor($logLevels,
-                    $objectIDs,$objectTypes,$activityCodes,
-                    $limit,$startTime,$endTime,$users);
+    return $this->eventManager->getEventsFor($logLevels,$objectIDs,$objectTypes,$activityCodes,
+                                              $limit,$startTime,$endTime,$users);
   }
   
   public function deleteEventsFor($logLevels = null,$startTime = null)
@@ -1206,12 +1209,8 @@ class tlFileLogger extends tlObject
   {
     global $tlCfg;
     $uID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-    $lp = $tlCfg->log_path;
-    if ($uID > 0) {
-      return $lp . 'userlog' . $uID . ".log";
-    }
-    return $lp . 'testlinklog.log';
 
+    return $tlCfg->log_path . 'userlog' . $uID . ".log";
   }
 
   /**
@@ -1423,14 +1422,14 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
   if ($doIt && isset($errors[$errno]) )
   {
     // suppress some kind of errors
-    // strftime(),strtotime(),date()
+    // @strftime(),strtotime(),date()
     // work in block just to make copy and paste easier
     // Block 1 - errstr
     // Block 2 - errfile
     // 
     if( ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false) ||
         ($errno == E_NOTICE && strpos($errstr,"ob_end_clean()") !== false) ||
-        ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) ||
+        ($errno == E_STRICT && strpos($errstr,"@strftime()") !== false) ||
         ($errno == E_STRICT && strpos($errstr,"mktime()") !== false) ||
         ($errno == E_STRICT && strpos($errstr,"date()") !== false) ||
         ($errno == E_STRICT && strpos($errstr,"strtotime()") !== false) ||

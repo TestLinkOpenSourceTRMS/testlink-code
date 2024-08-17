@@ -424,7 +424,7 @@ function initProject(&$db,$hash_user_sel) {
   $tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
 
   // Now we need to validate the TestPlan
-  $ckObj->name = $ckCfg->prefix .  "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
+  $ckObj->name = $ckCfg->prefix .  "TL_user{$_SESSION['userID']}_proj{$tproject_id}_testPlanId";
 
   if($user_sel["tplan_id"] != 0) {
     $ckObj->value = $user_sel["tplan_id"];
@@ -1076,8 +1076,8 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
             } 
           break;
              
+          case 'none':
           default:
-            $value = '';
           break;
         }
       }

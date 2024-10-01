@@ -44,7 +44,8 @@ function ldap_connect_bind( $p_binddn = '', $p_password = '' )
         } 
     }
 
-	if( $t_ds !== false && $t_ds > 0 ) 
+	if( ( version_compare(PHP_VERSION, '8.1.0') >= 0 && $t_ds !== false ) || 
+	    ( version_compare(PHP_VERSION, '8.1.0') < 0  && $t_ds !== false && $t_ds > 0 ) )
 	{
 		ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $authCfg['ldap_version']);
 		ldap_set_option($t_ds, LDAP_OPT_REFERRALS, 0);

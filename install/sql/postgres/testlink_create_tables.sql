@@ -1090,6 +1090,15 @@ CREATE OR REPLACE VIEW /*prefix*/tcversions_without_platforms AS
 
 --
 --
+CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan_plat AS
+(
+  SELECT tcversion_id, testplan_id,platform_id,max(id) AS id
+  FROM /*prefix*/executions
+  GROUP BY tcversion_id,testplan_id,platform_id
+);
+
+--
+--
 CREATE OR REPLACE VIEW /*prefix*/tsuites_tree_depth_2 AS 
 (
   SELECT TPRJ.prefix,

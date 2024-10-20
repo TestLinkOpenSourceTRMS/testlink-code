@@ -49,6 +49,13 @@ $tcversion_id = null;
 $submitResult = null;
 list($args,$its,$cts) = init_args($db,$cfg);
 
+// ------------------------------------------------------------------------------
+// the default -1 create an out of range error on TC execution without platform
+if ($args->platform_id == -1){
+  $args->platform_id = 0;
+} 
+// ------------------------------------------------------------------------------
+
 $smarty = new TLSmarty();
 $smarty->assign('tsuite_info',null);
 
@@ -78,11 +85,13 @@ if($args->doExec == 1 && !is_null($args->tc_versions) && count($args->tc_version
 
 
 // link Update will be done on Context
-// Context = testplan,platform (if any) 
+// Context = testplan 
+//
+// @20210901 -> CRITIC 
+// because we do not allow different versions on different platforms
+// for same test plan -> platform MUST NOT BE USED
 if( $args->linkLatestVersion && $args->level == 'testcase') {
-  $plat = $args->platform_id > 0 ? $args->platform_id : null;
-  $args->version_id = 
-    $tcase_mgr->updateTPlanLinkToLatestTCV($args->TCVToUpdate,$args->tplan_id,$plat);
+  $args->version_id = $tcase_mgr->updateTPlanLinkToLatestTCV($args->TCVToUpdate, $args->tplan_id);
 }
 
 
@@ -2275,13 +2284,23 @@ function getSettingsAndFilters(&$argsObj) {
   $argsObj->testcases_to_show = isset($sf['testcases_to_show']) ? $sf['testcases_to_show'] : null;
 
   // just for better readability
-  $filters = array('filter_status' => 'filter_result_result','filter_assigned_to' => 'filter_assigned_user',
-                   'execution_type' => 'filter_execution_type', 'priority' => 'filter_priority',
-                   'filter_cfields' => 'filter_custom_fields');
-  $settings = array('build_id' => 'setting_build', 'platform_id' => 'setting_platform');
+  $filters = [
+    'filter_status' => 'filter_result_result',
+    'filter_assigned_to' => 'filter_assigned_user',
+    'execution_type' => 'filter_execution_type', 
+    'priority' => 'filter_priority',
+    'filter_cfields' => 
+    'filter_custom_fields'];
+  $settings = [
+    'build_id' => 'setting_build', 
+    'platform_id' => 'setting_platform'
+  ];
 
   $key2null = array_merge($filters,$settings);
-  $isNumeric = array('build_id' => 0, 'platform_id' => -1);
+  $isNumeric = [
+    'build_id' => 0, 
+    'platform_id' => -1
+  ];
 
   foreach($key2null as $key => $sfKey)
   {
@@ -2317,6 +2336,9 @@ function getSettingsAndFilters(&$argsObj) {
   }
 
   // 20190119
+  if (!property_exists($argsObj,'refreshTree')) {
+    $argsObj->refreshTree = true;
+  }
   $argsObj->refreshTree = isset($sf['setting_refresh_tree_on_action']) ? 
                                 $sf['setting_refresh_tree_on_action'] : $argsObj->refreshTree;
                                   

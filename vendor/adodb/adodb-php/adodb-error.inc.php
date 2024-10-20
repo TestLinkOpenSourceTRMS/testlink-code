@@ -1,18 +1,26 @@
 <?php
 /**
- * @version   v5.20.17  31-Mar-2020
- * @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
- * @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
- * Released under both BSD license and Lesser GPL library license.
- * Whenever there is any discrepancy between the two licenses,
- * the BSD license will take precedence.
+ * Error handling code and constants.
  *
- * Set tabs to 4 for best viewing.
+ * Adapted from the PEAR DB error handling code.
+ * Portions (c)1997-2002 The PHP Group
  *
- * The following code is adapted from the PEAR DB error handling code.
- * Portions (c)1997-2002 The PHP Group.
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
  */
-
 
 if (!defined("DB_ERROR")) define("DB_ERROR",-1);
 
@@ -70,6 +78,10 @@ function adodb_error($provider,$dbType,$errno)
 	case 'oracle':
 	case 'oci8': $map = adodb_error_oci8(); break;
 
+	// As discussed in https://github.com/ADOdb/ADOdb/issues/201#issuecomment-188154980
+	// firebird uses the ibase error handler for now. This may change if and
+	// when the PHP driver is updated to use the new SQLSTATE error codes
+	case 'firebird':
 	case 'ibase': $map = adodb_error_ibase(); break;
 
 	case 'odbc': $map = adodb_error_odbc(); break;
@@ -245,9 +257,9 @@ static $MAP = array(
            1006 => DB_ERROR_CANNOT_CREATE,
            1007 => DB_ERROR_ALREADY_EXISTS,
            1008 => DB_ERROR_CANNOT_DROP,
-		   1045 => DB_ERROR_ACCESS_VIOLATION,
+	   1045 => DB_ERROR_ACCESS_VIOLATION,
            1046 => DB_ERROR_NODBSELECTED,
-		   1049 => DB_ERROR_NOSUCHDB,
+	   1049 => DB_ERROR_NOSUCHDB,
            1050 => DB_ERROR_ALREADY_EXISTS,
            1051 => DB_ERROR_NOSUCHTABLE,
            1054 => DB_ERROR_NOSUCHFIELD,
@@ -257,8 +269,8 @@ static $MAP = array(
            1136 => DB_ERROR_VALUE_COUNT_ON_ROW,
            1146 => DB_ERROR_NOSUCHTABLE,
            1048 => DB_ERROR_CONSTRAINT,
-		    2002 => DB_ERROR_CONNECT_FAILED,
-			2005 => DB_ERROR_CONNECT_FAILED
+	   2002 => DB_ERROR_CONNECT_FAILED,
+           2005 => DB_ERROR_CONNECT_FAILED
        );
 
 	return $MAP;

@@ -1,19 +1,30 @@
 <?php
+/**
+ * ADOdb Session Management
+ *
+ * This file provides PHP4 session management using the ADODB database
+ * wrapper library.
+ *
+ * @deprecated
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
+
 /*
-@version   v5.20.17  31-Mar-2020
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
-	  Set tabs to 4 for best viewing.
-
-  Latest version is available at http://adodb.org/
-  ======================================================================
-
- This file provides PHP4 session management using the ADODB database
-wrapper library.
-
  Example
  =======
 
@@ -110,7 +121,7 @@ if (!defined('ADODB_SESSION')) {
  define('ADODB_SESSION_SYNCH_SECS',60);
 
  /*
-	Thanks Joe Li. See http://phplens.com/lens/lensforum/msgs.php?id=11487&x=1
+	Thanks Joe Li. See PHPLens Issue No: 11487&x=1
 */
 function adodb_session_regenerate_id()
 {
@@ -307,7 +318,7 @@ function adodb_sess_write($key, $val)
 		ADOConnection::outp( '
 -- Session Replace: '.$ADODB_SESS_CONN->ErrorMsg().'</p>',false);
 	}  else {
-		// bug in access driver (could be odbc?) means that info is not commited
+		// bug in access driver (could be odbc?) means that info is not committed
 		// properly unless select statement executed in Win2000
 		if ($ADODB_SESS_CONN->databaseType == 'access')
 			$rs = $ADODB_SESS_CONN->Execute("select sesskey from $ADODB_SESSION_TBL WHERE sesskey='$key'");

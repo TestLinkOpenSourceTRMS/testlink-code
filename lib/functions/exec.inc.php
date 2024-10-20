@@ -7,7 +7,7 @@
  * Legacy code (party covered by classes now)
  *
  * @package     TestLink
- * @copyright   2005-2020, TestLink community 
+ * @copyright   2005-2023, TestLink community 
  * @filesource  exec.inc.php
  * @link        http://www.testlink.org/
  *
@@ -207,7 +207,8 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
       $uploadOp->tcLevel = null;
       $uploadOp->stepLevel = null;
       if( isset($_FILES['uploadedFile']['name'][0]) && 
-          !is_null($_FILES['uploadedFile']['name'][0])) {
+          !is_null($_FILES['uploadedFile']['name'][0]) &&
+          $_FILES['uploadedFile']['name'][0][0] != '') {
         $uploadOp->tcLevel = addAttachmentsToExec($execution_id,$docRepo);
       }  
 
@@ -221,10 +222,16 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
       if( $hasMoreData->nike ) {
         $target = DB_TABLE_PREFIX . 'execution_tcsteps';
         $key2loop = array_keys($exec_data['step_notes']);
+
+        $stepsSql = " SELECT id, step_number FROM " . DB_TABLE_PREFIX . 'tcsteps' . 
+                    " WHERE id IN (" . implode(",", $key2loop) . ")"; 
+
+        $stepsDecod = $db->fetchRowsIntoMap($stepsSql,'id'); 
+
         foreach( $key2loop as $step_id ) {
           $doIt = (!is_null($exec_data['step_notes'][$step_id]) && 
                    trim($exec_data['step_notes'][$step_id]) != '') || 
-                  $exec_data['step_status'][$step_id] != $resultsCfg['status_code']['not_run'];
+                   $exec_data['step_status'][$step_id] != $resultsCfg['status_code']['not_run'];
 
           if( $doIt ) {
             $sql = " INSERT INTO {$target} (execution_id,tcstep_id,notes";
@@ -243,16 +250,20 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
             $execution_tcsteps_id = $db->insert_id($target);
 
             // NOW MANAGE attachments
+            $repOpt = array('allow_empty_title' => TRUE);
+            $opeOKMsg = lang_get('file_upload_step_exec_ok');
+            $opeKOMsg = lang_get('file_upload_step_exec_ko');
+
             if( isset($_FILES['uploadedFile']['name'][$step_id]) && 
+                $_FILES['uploadedFile']['name'][$step_id] != '' &&
                 !is_null($_FILES['uploadedFile']['name'][$step_id])) {
-              $repOpt = array('allow_empty_title' => TRUE);
 
               // May be we have enabled MULTIPLE on file upload
               if( is_array($_FILES['uploadedFile']['name'][$step_id])) {
-                $curly = count($_FILES['uploadedFile']['name'][$step_id]);
+                $curly = count($_FILES['uploadedFile']['name'][$step_id]); 
                 for($moe=0; $moe < $curly; $moe++) {
                   $fSize = isset($_FILES['uploadedFile']['size'][$step_id][$moe]) ? 
-                  $_FILES['uploadedFile']['size'][$step_id][$moe] : 0;
+                           $_FILES['uploadedFile']['size'][$step_id][$moe] : 0;
 
                   $fTmpName = isset($_FILES['uploadedFile']['tmp_name'][$step_id][$moe]) ? 
                               $_FILES['uploadedFile']['tmp_name'][$step_id][$moe] : '';
@@ -263,12 +274,28 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
                       $fInfo[$tk] = $_FILES['uploadedFile'][$tk][$step_id][$moe];
                     }  
 
-                    $upx = $docRepo->insertAttachment(
-                      $execution_tcsteps_id,$target,'',$fInfo,$repOpt);
-                    if ($upx != null && $upx->statusOK == false 
-                        && $uploadOp->stepLevel == null) {
-                      $uploadOp->stepLevel = $upx;
+                    $upx = $docRepo->insertAttachment($execution_tcsteps_id,$target,'',$fInfo,$repOpt);                    
+                    if (is_null($uploadOp->stepLevel)) {
+                      $uploadOp->stepLevel = new stdClass();
+                      $uploadOp->stepLevel->msg = '';
                     } 
+                    if ($uploadOp->stepLevel->msg != '') {
+                      $uploadOp->stepLevel->msg .= '<br>';
+                    }
+                
+                    $uploadMsg = $opeOKMsg;
+                    if ($upx->statusOK == false) {
+                      $uploadMsg = $opeKOMsg;
+                    }
+                    $userMsg = str_replace( '%step%',
+                                            $stepsDecod[$step_id]['step_number'],
+                                            str_replace('%filename%',$fInfo['name'],$uploadMsg) 
+                                          ); 
+                    $uploadOp->stepLevel->msg .= $userMsg . '<br>';
+                    if ($upx->statusOK == false) {
+                      $uploadOp->stepLevel->msg .= $upx->msg . '<br>';                       
+                    }
+                    
                   }
                 }  
               } else {
@@ -283,8 +310,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
                   }  
                   $upx = $docRepo->insertAttachment($execution_tcsteps_id,
                                                     $target,'',$fInfo);
-                  if ($upx != null && $upx->statusOK == false 
-                      && $uploadOp->stepLevel == null) {
+                  if ($upx != null && $upx->statusOK == false && $uploadOp->stepLevel == null) {
                     $uploadOp->stepLevel = $upx;
                   } 
                 }
@@ -1009,38 +1035,72 @@ function addAttachmentsToExec($execID,&$docRepo) {
   $tableRef = DB_TABLE_PREFIX . 'executions';
   $repOpt = array('allow_empty_title' => TRUE);
 
-  // 0 is magic!!, 0 is used in the smarty template
-  // May be we have enabled MULTIPLE on file upload
+  echo '<pre>';
+  var_dump($_FILES['uploadedFile']['name'][0]);
+  echo '</pre>';
 
-  $honeyPot = array('name' => null,'size' => null,
-                    'tmp_name' => null, 'type' => null,
-                    'error' => null);
+  $honeyPot = [
+    'name' => null,
+    'size' => null,
+    'tmp_name' => null, 
+    'type' => null,
+    'error' => null,
+    'full_path' => null
+  ];
+ 
   foreach($honeyPot as $bee => $nuu) {
-   $honeyPot[$bee] = (array)$_FILES['uploadedFile'][$bee][0];
+    // 0 is magic!!, 0 is used in the smarty template
+    // May be we have enabled MULTIPLE on file upload
+    $honeyPot[$bee] = (array)$_FILES['uploadedFile'][$bee][0];
   }
 
   $curly = count($honeyPot);
-  $op = null;
+  $op = new stdClass();
+  $op->msg = '';
+
+  $opeOKMsg = lang_get('file_upload_ok');
+  $fInfo = [];
   for($moe=0; $moe < $curly; $moe++) {
-    $fSize = isset($honeyPot['size'][$moe]) ? 
-             $honeyPot['size'][$moe] : 0;
+    $fSize = isset($honeyPot['size'][$moe]) ? $honeyPot['size'][$moe] : 0;
+    $fTmpName = isset($honeyPot['tmp_name'][$moe]) ? $honeyPot['tmp_name'][$moe] : '';
 
-    $fTmpName = isset($honeyPot['tmp_name'][$moe]) ? 
-                $honeyPot['tmp_name'][$moe] : '';
-
-    if ($fSize && $fTmpName != "") {
+    if ($fSize >0  && $fTmpName != "") {
       $fk2loop = array_keys($_FILES['uploadedFile']);
       foreach($fk2loop as $tk) {
         $fInfo[$tk] = $honeyPot[$tk][$moe];
       }  
 
-      $uploadOp = $docRepo->insertAttachment($execID,$tableRef,'',
-                                               $fInfo,$repOpt);
+      $uploadOp = $docRepo->insertAttachment($execID,$tableRef,'',$fInfo,$repOpt);
 
-      if ($uploadOp->statusOK == false && $op == null) {
-        $op = $uploadOp;
+      /*
+      object(stdClass)#627 (3) {
+          ["statusOK"]=>
+          int(1)
+          ["msg"]=>
+          string(0) ""
+          ["statusCode"]=>
+          int(0)
+        }
+      */
+      /*
+      echo '<pre>';
+      var_dump($uploadOp);
+      echo '</pre>';
+      die();
+      */
+      if ($op->msg != '') {
+        $op->msg .= '<br>';
       }
+      if ($uploadOp->statusOK){
+        $op->msg .= str_replace('%filename%',$fInfo['name'],$opeOKMsg); 
+      }
+      $op->msg .= $uploadOp->msg . '<br>';
+
     }
   } 
+
+  if ($op->msg == '') {
+    $op = null;
+  }
   return $op;
 }

@@ -6,7 +6,7 @@
  *
  * @package     TestLink
  * @author      syji
- * @copyright   2010,2019 TestLink community
+ * @copyright   2010,2023 TestLink community
  * @filesource  execResult.js
  * @link        http://www.testlink.org
  * @used-by     execSetResult.tpl
@@ -17,6 +17,7 @@
  *
  */
 function doSubmitForHTML5() {
+  jQuery("#overlay").show(); // Usefult to block user action when saving exec result 
   jQuery("#hidden-submit-button").click();
 }
 

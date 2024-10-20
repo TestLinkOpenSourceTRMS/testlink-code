@@ -79,15 +79,20 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       {/if}
       </span>
       <span id="tcstep_{$step_info.id}">{$step_info.step_number}</span>
+      {$spanid="tcstep_ghost_{$step_info.id}"}
       {if $ghost_control}
-        <span class='ghost' style='display:none'>{$step_info.ghost_action}</span>    
+        <span id="{$spanid}" 
+              class="ghost" 
+              style="display:none"
+              title="{$inc_steps_labels.click_to_copy_ghost_to_clipboard}"
+              onclick="copyGhostString('{$spanid}')">{$step_info.ghost_action}</span>    
       {/if}
     </td>
-    <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.actions|nl2br}{else}{$step_info.actions}{/if}
+    <td title="{$inc_steps_labels.doubleclick_to_edit}" {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" ondblclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.actions|nl2br}{else}{$step_info.actions}{/if}
     </td>
-    <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.expected_results|nl2br}{else}{$step_info.expected_results}{/if}</td>
+    <td title="{$inc_steps_labels.doubleclick_to_edit}" {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" ondblclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.expected_results|nl2br}{else}{$step_info.expected_results}{/if}</td>
     {if $session['testprojectOptions']->automationEnabled}
-    <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
+    <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" ondblclick="launchEditStep({$step_info.id})" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
     {/if}
 
     {if $edit_enabled && $args_frozen_version=="no"}

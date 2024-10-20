@@ -1,8 +1,8 @@
 # ADOdb Documentation
 
-ADOdb documentation is available in the following locations
+ADOdb documentation is available in the following locations:
 
-- [Online](http://adodb.org/)
+- [Online](https://adodb.org/)
 - [Download](https://sourceforge.net/projects/adodb/files/Documentation/) for offline use
 
 ## Legacy documentation

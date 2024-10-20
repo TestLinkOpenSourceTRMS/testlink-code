@@ -460,9 +460,9 @@ abstract class kintParser extends kintVariableData
 			 * These prepended values have null bytes on either side.
 			 * http://www.php.net/manual/en/language.types.array.php#language.types.array.casting
 			 */
-			if ( $key{0} === "\x00" ) {
+			if ( $key[0] === "\x00" ) {
 
-				$access = $key{1} === "*" ? "protected" : "private";
+				$access = $key[1] === "*" ? "protected" : "private";
 
 				// Remove the access level from the variable name
 				$key = substr( $key, strrpos( $key, "\x00" ) + 1 );

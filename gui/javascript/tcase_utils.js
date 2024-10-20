@@ -39,7 +39,7 @@
  *
  * returns: -
  */
-function checkTCaseDuplicateName(tcase_id,tcase_name,tsuite_id,warningOID) 
+function checkTCaseDuplicateName(tcase_id,tcase_name,tsuite_id,tproject_id,warningOID) 
 {
   Ext.Ajax.request({
     url: fRoot+'lib/ajax/checkTCaseDuplicateName.php',
@@ -47,7 +47,9 @@ function checkTCaseDuplicateName(tcase_id,tcase_name,tsuite_id,warningOID)
     params: {
       name: tcase_name,
       testcase_id: tcase_id,
-      testsuite_id: tsuite_id
+      testsuite_id: tsuite_id,
+      testproject_id: tproject_id,
+
     },
     success: function(result, request) {
       var obj = Ext.util.JSON.decode(result.responseText);

@@ -382,7 +382,7 @@ class PHPExcel_Calculation_DateTime {
 				if ($testVal2 !== False) {
 					$testVal3 = strtok('- ');
 					if ($testVal3 === False) {
-						$testVal3 = strftime('%Y');
+						$testVal3 = @strftime('%Y');
 					}
 				} else {
 					return PHPExcel_Calculation_Functions::VALUE();
@@ -401,9 +401,9 @@ class PHPExcel_Calculation_DateTime {
 
 		if (($PHPDateArray !== False) && ($PHPDateArray['error_count'] == 0)) {
 			// Execute function
-			if ($PHPDateArray['year'] == '')	{ $PHPDateArray['year'] = strftime('%Y'); }
-			if ($PHPDateArray['month'] == '')	{ $PHPDateArray['month'] = strftime('%m'); }
-			if ($PHPDateArray['day'] == '')		{ $PHPDateArray['day'] = strftime('%d'); }
+			if ($PHPDateArray['year'] == '')	{ $PHPDateArray['year'] = @strftime('%Y'); }
+			if ($PHPDateArray['month'] == '')	{ $PHPDateArray['month'] = @strftime('%m'); }
+			if ($PHPDateArray['day'] == '')		{ $PHPDateArray['day'] = @strftime('%d'); }
 			$excelDateValue = floor(PHPExcel_Shared_Date::FormattedPHPToExcel($PHPDateArray['year'],$PHPDateArray['month'],$PHPDateArray['day'],$PHPDateArray['hour'],$PHPDateArray['minute'],$PHPDateArray['second']));
 
 			switch (PHPExcel_Calculation_Functions::getReturnDateType()) {

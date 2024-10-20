@@ -13,7 +13,7 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2019 TestLink community 
+ * @Copyright   2005,2022 TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -424,7 +424,7 @@ function initProject(&$db,$hash_user_sel) {
   $tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
 
   // Now we need to validate the TestPlan
-  $ckObj->name = $ckCfg->prefix .  "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
+  $ckObj->name = $ckCfg->prefix .  "TL_user{$_SESSION['userID']}_proj{$tproject_id}_testPlanId";
 
   if($user_sel["tplan_id"] != 0) {
     $ckObj->value = $user_sel["tplan_id"];
@@ -837,6 +837,9 @@ function getFileUploadErrorMessage($fInfo,$tlInfo=null)
 
   if (null == $msg && null != $tlInfo && $tlInfo->statusOK == false) {
     $msg = lang_get('FILE_UPLOAD_' . $tlInfo->statusCode);
+    if( property_exists($tlInfo,'msg') ) {
+      $msg = $tlInfo->msg;
+    }
   }
   return $msg;
 }
@@ -1073,8 +1076,8 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
             } 
           break;
              
+          case 'none':
           default:
-            $value = '';
           break;
         }
       }
@@ -1960,7 +1963,6 @@ function getMenuVisibility(&$gui)
     $showMenu['search'] = true;
   }
 
-  //var_dump(__FUNCTION__,$gui->tproject_id,$gui->tplan_id); 
   if($gui->tproject_id > 0  && 
      ($gui->grants->cfield_assignment == "yes" ||
       $gui->grants->cfield_management == "yes" || 
@@ -2115,9 +2117,12 @@ function pageAccessCheck(&$db, &$user, $context)
   
   $checkAnd = true;
   foreach ($context->rightsAnd as $ri) {
-    $checkAnd &= $user->hasRight($db,$ri,
-                          $context->tproject_id,
-                          $tplan_id,true);
+    // $user->hasRight() needs refactoring to return ALWAYS boolean
+    //                   right now it seems will return 
+    //                   false or null -> for FALSE
+    //                   'yes' -> for TRUE !!! 
+    $boolCheck = ($user->hasRight($db,$ri,$context->tproject_id,$tplan_id,true) == 'yes');
+    $checkAnd &= $boolCheck;
   }
  
   $checkOr = true;

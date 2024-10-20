@@ -3,10 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *  
- * @filesource 	tlRestApi.class.php
+ * @filesource  tlRestApi.class.php
  *
- * @author 		Francisco Mancardi <francisco.mancardi@gmail.com>
- * @package 	TestLink
+ * @author    Francisco Mancardi <francisco.mancardi@gmail.com>
+ * @package   TestLink
  * @since     1.9.7             
  * 
  * Implemented using Slim framework Version 2.2.0
@@ -39,7 +39,7 @@ require 'Slim/Slim.php';
  */
 class tlRestApi
 {
-  public static $version = "2.1";
+  public static $version = "2.1.1";
     
     
   /**
@@ -580,11 +580,17 @@ class tlRestApi
     }  
 
     if($status_ok) {
+      $msg = 'Last Step Get testCaseVersionNumber';
       $ret = new stdClass();
       $ret->testProjectID = $testPlan['testproject_id'];
       $ret->testCaseVersionID = key($links);
-      $ret->testCaseVersionNumber = 
-        $links[$ret->testCaseVersionID][$ex->testPlanID][$platform]['version'];
+
+      $status_ok = false;
+      if (isset($links[$ret->testCaseVersionID][$ex->testPlanID][$platform]['version'])) {
+        $ret->testCaseVersionNumber = 
+          $links[$ret->testCaseVersionID][$ex->testPlanID][$platform]['version'];
+        $status_ok = true;
+      }
     }
 
     if(!$status_ok) {
@@ -670,26 +676,45 @@ class tlRestApi
   }
 
   /**
+   *
    * "name"
    * "testSuite": {"id": xxx}
    * "testProject" : {"id": xxx} or {"prefix": yyy}
    * "authorLogin"
    * "authorID"
-   * "summary"
-   * "preconditions"
+   *
+   * "summary"        can be a string or an array of strings
+   * "preconditions"  can be a string or an array of strings
+   *
    * "importance" - see const.inc.php for domain
    * "executionType"  - see ... for domain
    * "order"
    *
    * "estimatedExecutionDuration"  // to be implemented
+   * "steps": array of objects
+   *           IMPORTANT NOTICE: actions and expected_results
+   *                             Can be string or array of strings
+   *           [
+   *             { "step_number":1,
+   *               "actions": "red",  
+   *               "expected_results": "#f00",
+   *               "execution_type":1
+   *             },
+   *             { "step_number":12,
+   *               "actions": "red12",
+   *               "expected_results": "#f00",
+   *               "execution_type":2
+   *             }
+   *            ]
    */
   public function createTestCase() {
     $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
     try {
       $request = $this->app->request();
       
-      //$body = str_replace("\n", '', $request->getBody());
-      //$item = json_decode($request->getBody());
+      // It will be important to document WHY!!!
+      // AFAIK some issues with json_decode()
+      // https://stackoverflow.com/questions/34486346/new-lines-and-tabs-in-json-decode-php-7
       $body = str_replace("\n", '', $request->getBody());
       $item = json_decode($body);
 
@@ -1034,24 +1059,51 @@ class tlRestApi
                      ? $obj->$key : $value;
     } 
 
-    // name is the access
+    // --------------------------------------------------------------
+    // summary & preconditions
+    // if type is array -> generate string in this way
+    // - add <pre>
+    // - concact the elements with "\n"
+    // - add </pre>
+    // --------------------------------------------------------------
+    $sk2d = array('summary' => '',
+                  'preconditions' => '');
+    foreach($sk2d as $key => $value) {
+      if (is_array($tcase->$key)) {
+        $tcase->$key = "<pre>" . implode("\n", $tcase->$key) . "</pre>";
+      } 
+    } 
+    // --------------------------------------------------------------
+
+
+    // --------------------------------------------------------------
+    // these are objects with name as property.
     $tcfg = $this->cfg['tcase'];
-    $ck2d = array('executionType' => 
-                     $tcfg['executionType']['manual'], 
-                  'importance' => 
-                    $tcfg['defaults']['importance'], 
-                  'status' => 
-                    $tcfg['status']['draft']);
+    $ck2d = array('executionType' => $tcfg['executionType']['manual'], 
+                  'importance' => $tcfg['defaults']['importance'], 
+                  'status' => $tcfg['status']['draft']);
 
     foreach($ck2d as $prop => $defa) {
       $tcase->$prop = property_exists($obj, $prop) ? 
         $tcfg[$prop][$obj->$prop->name] : $defa;      
     }  
+    // --------------------------------------------------------------
 
-
+    // --------------------------------------------------------------
     if(property_exists($obj, 'steps')) {
-      $tcase->steps = $obj->steps;
+      $tcase->steps = [];
+      $sk2d = array('actions' => '',
+                    'expected_results' => '');
+      foreach($obj->steps as $stepObj) {
+        foreach($sk2d as $key => $value) {
+          if (is_array($stepObj->$key)) {
+            $stepObj->$key = "<pre>" . implode("\n", $stepObj->$key) . "</pre>";
+          }
+        } 
+        $tcase->steps[] = $stepObj;
+      }      
     }
+    // --------------------------------------------------------------
 
     return $tcase;
   }

@@ -24,6 +24,7 @@ ALTER TABLE /*prefix*/users MODIFY password VARCHAR(255) NOT NULL default '';
 ALTER TABLE /*prefix*/testplan_platforms ADD COLUMN active tinyint(1) NOT NULL default '1';
 ALTER TABLE /*prefix*/platforms ADD COLUMN  enable_on_design tinyint(1) NOT NULL default '0';
 ALTER TABLE /*prefix*/platforms ADD COLUMN  enable_on_execution tinyint(1) NOT NULL default '1';
+ALTER TABLE /*prefix*/platforms ADD COLUMN  is_open tinyint(1) NOT NULL default '1';
 
 --
 ALTER TABLE /*prefix*/nodes_hierarchy ADD INDEX /*prefix*/nodes_hierarchy_node_type_id (node_type_id);

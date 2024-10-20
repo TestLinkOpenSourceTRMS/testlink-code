@@ -30,33 +30,34 @@ show Test Results and Metrics
 <body>
 
 {if $gui->printDate == ''}
-{* +++++++++++++++++++++++++++ *}
-{* Form to launch Excel Export *}
-<form name="resultsTC" id="resultsTC" METHOD="POST"
-      target="avoidPageRefreshWhenSendindMail"
-      action="lib/results/resultsTC.php?format=3&do_action=result&tplan_id={$gui->tplan_id}&tproject_id={$gui->tproject_id}&buildListForExcel={$gui->buildListForExcel}">
+  {* +++++++++++++++++++++++++++ *}
+  {* Form to launch Excel Export *}
+  <form name="resultsTC" id="resultsTC" METHOD="POST"
+        target="avoidPageRefreshWhenSendindMail"
+        action="lib/results/resultsTC.php?format=3&doAction=result&tplan_id={$gui->tplan_id}&tproject_id={$gui->tproject_id}&buildListForExcel={$gui->buildListForExcel}">
 
-  {if $gui->apikey != ''}
-  <input type="hidden" name="apikey" id="apikey" value="{$gui->apikey}">
-  {/if}
+    {if $gui->apikey != ''}
+    <input type="hidden" name="apikey" id="apikey" value="{$gui->apikey}">
+    {/if}
 
-<h1 class="title">{$gui->title|escape}
-</h1>
+  <h1 class="title">{$gui->title|escape}
+  </h1>
 
-  &nbsp;&nbsp;
-  <input type="image" name="exportSpreadSheet" id="exportSpreadSheet" 
-         src="{$tlImages.export_excel}" title="{$labels.export_as_spreadsheet}">
+    &nbsp;&nbsp;
+    <input type="image" name="exportSpreadSheet" id="exportSpreadSheet" 
+           src="{$tlImages.export_excel}" title="{$labels.export_as_spreadsheet}">
 
-  <input type="image" name="sendSpreadSheetByMail" id="sendSpreadSheetByMail" 
-         src="{$tlImages.email}" title="{$labels.send_spreadsheet_by_email}">
-</form>
+    <input type="image" name="sendSpreadSheetByMail" id="sendSpreadSheetByMail" 
+           src="{$tlImages.email}" title="{$labels.send_spreadsheet_by_email}">
 
-{else}{* print data to excel *}
-<table style="font-size: larger;font-weight: bold;">
-	<tr><td>{$labels.title}</td><td>{$gui->title|escape}</td><tr>
-	<tr><td>{$labels.date}</td><td>{$gui->printDate|escape}</td><tr>
-	<tr><td>{$labels.printed_by}</td><td>{$user|escape}</td><tr>
-</table>
+  </form>
+
+{else}
+  <table style="font-size: larger;font-weight: bold;">
+  	<tr><td>{$labels.title}</td><td>{$gui->title|escape}</td><tr>
+  	<tr><td>{$labels.date}</td><td>{$gui->printDate|escape}</td><tr>
+  	<tr><td>{$labels.printed_by}</td><td>{$user|escape}</td><tr>
+  </table>
 {/if}
 
 <div class="workBack">

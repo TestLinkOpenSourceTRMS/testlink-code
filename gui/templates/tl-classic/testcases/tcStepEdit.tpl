@@ -26,7 +26,7 @@ Purpose: create/edit test case step
              expected_results,step_actions,step_number_verbose,btn_cancel,btn_create_step,ghost,
              show_ghost_string,display_author_updater,
              btn_create,btn_cp,btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr,
-             title_created,version,by,summary,preconditions,title_last_mod"}
+             title_created,version,by,summary,preconditions,title_last_mod,click_to_copy_ghost_to_clipboard"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 

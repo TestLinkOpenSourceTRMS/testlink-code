@@ -143,7 +143,8 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
           $tproject->importKeywordsFromSimpleXML($tproject_id,$xmlKeywords[$idx]);
         }
         $kwMap = $tproject->get_keywords_map($tproject_id);
-        $kwMap = is_null($kwMap) ? null : array_flip($kwMap);
+        // change keywords to lowercase to be case insensitive
+        $kwMap = is_null($kwMap) ? null : array_change_key_case(array_flip($kwMap), CASE_LOWER);
       }
 
       if (!$useRecursion &&  ($xml->getName() == 'testcases') ) {
@@ -268,6 +269,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   for($idx = 0; $idx <$tc_qty ; $idx++) {
     $tc = $tcData[$idx];
     $name = $tc['name'];
+    
     $summary = $tc['summary'];
     $steps = $tc['steps'];
     $internalid = $tc['internalid'];
@@ -311,7 +313,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     // if use has not provided order I think is OK TestLink make any choice.
     $node_order = isset($tc['node_order']) ? intval($tc['node_order']) : ($idx+1);
     $internalid = $tc['internalid'];
+    
     $preconditions = $tc['preconditions'];
+    
     $exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
     $importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;   
 
@@ -423,7 +427,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
            break;
            
            default:
-               $doCreate=false; 
+             $doCreate=false; 
            break;
        }
     }
@@ -514,12 +518,14 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 
     $hasAttachments=(isset($tc['attachments']) && !is_null($tc['attachments']));
     if($hasAttachments) {
-      $fk_id = $doCreate ? $ret['id'] : $internalid;
+      $fk_id = $doCreate ? $ret['tcversion_id'] : $internalid;
+
       if ($internalid == "" && $item_id>0) { 
         $internalid = $item_id;
       }
-      $msg = processAttachments( $db, $name, $internalid, $fk_id, $tc['attachments'], 
-               $feedbackMsg );
+
+        
+      $msg = processAttachments( $db, true, $name, $internalid, $fk_id, $tc['attachments'], $feedbackMsg );
       if( !is_null($msg) ) {
         $resultMap = array_merge($resultMap,$msg);
       }      
@@ -534,6 +540,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 // -------------------------------------------------------------------------------
 /*
   function: buildKeywordList
+
+  Build the list of DB ID of the keywords used in the XML.
+
   args :
   returns: 
 */
@@ -541,7 +550,8 @@ function buildKeywordList($kwMap,$keywords) {
   $items = array();
   $loop2do = sizeof($keywords);
   for($jdx = 0; $jdx <$loop2do ; $jdx++) {
-    $items[] = $kwMap[trim($keywords[$jdx]['name'])]; 
+    // change Map keys (keyword) to lowercase to be case insensitive
+    $items[] = $kwMap[strtolower(trim($keywords[$jdx]['name']))];
   }
   return $items;
 }
@@ -764,14 +774,13 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcIDCard,
  * Else return an array of messages.
  *
  */
-function processAttachments( &$dbHandler, $tcaseName, $xmlInternalID, $fk_Id, $tcAtt, $messages )
+function processAttachments( &$dbHandler, $isTestCase, $tcaseName, $xmlInternalID, $fk_Id, $tcAtt, $messages )
 {  
 	static $duplicateAttachment;
 	$resultMsg=null;	
-	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy','attachments'));
+	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy','attachments','tcversions'));
 	
-	foreach( $tcAtt as $ydx => $value )
-	{	
+	foreach( $tcAtt as $ydx => $value ) {	
 		$addAttachment = false;
 		
 		// Is it a CREATION or an UPDATE?
@@ -789,28 +798,29 @@ function processAttachments( &$dbHandler, $tcaseName, $xmlInternalID, $fk_Id, $t
 			// allow attachment import only if no record with the same signature have been found in database
 			$addAttachment = ( is_null($rsx) || count($rsx) < 1 );
 			if( $addAttachment === false ){ // inform user that the attachment has been skipped
-			  if( !isset($duplicateAttachment[$value['id']]) )
-			  {
-				$duplicateAttachment[$value['id']]=sprintf($messages['attachment'],$value['name']);  
+			  if( !isset($duplicateAttachment[$value['id']]) ) {
+				  $duplicateAttachment[$value['id']]=sprintf($messages['attachment'],$value['name']);  
 			  }
 			  $resultMsg[] = array($tcaseName,$duplicateAttachment[$value['id']]); 
 			}
 			
-		}else{
+		} else{
 			// Creation
 			$addAttachment = true;
 		}
 		
-		if( $addAttachment )
-		{
+		if( $addAttachment ) {
 			$attachRepo = tlAttachmentRepository::create($dbHandler);
 				
 			$fileInfo = $attachRepo->createAttachmentTempFile( $value['content'] );	
 			$fileInfo['name'] = $value['name'];
 			$fileInfo['type'] = $value['file_type'];
-
-			$attachRepo->insertAttachment( $fk_Id, $tables['nodes_hierarchy'], $value['title'], $fileInfo);
-		}
+      $tableRef = $tables['nodes_hierarchy'];
+      if ($isTestCase) {
+        $tableRef = $tables['tcversions'];
+      }
+			$iaOp = $attachRepo->insertAttachment( $fk_Id, $tableRef, $value['title'], $fileInfo);
+    }
 	} //foreach
 	 
 	return $resultMsg;
@@ -840,6 +850,11 @@ function importTestCasesFromSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id
  */
 function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 {
+  static $cfg;
+  if (!$cfg) {
+    $cfg = config_get('testcase_cfg')->import;
+  }	
+
   $tcSet = null;
   if (!$xmlTCs)
   {
@@ -862,16 +877,39 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
   $tcXML['attributes'] = array('string' => array("name" => 'trim'), 
                                'integer' =>array('internalid' => null));
 
+
   for($idx = 0; $idx < $loops2do; $idx++)
   {
     $dummy = getItemsFromSimpleXMLObj(array($xmlTCs[$idx]),$tcXML);
     $tc = $dummy[0]; 
-        
-    if ($tc)
-    {
+    if ($tc) {
+     
+      if ($cfg->wordwrap->summary > 0) {
+        $tc['summary'] = wordwrap($tc['summary'],$cfg->wordwrap->summary);
+      } 
+      if ($cfg->wordwrap->preconditions > 0) {
+        $tc['preconditions'] = wordwrap($tc['preconditions'],$cfg->wordwrap->preconditions);
+      }
+
+
       // Test Case Steps
       $steps = getStepsFromSimpleXMLObj($xmlTCs[$idx]->steps->step);
       $tc['steps'] = $steps;
+
+      if ($cfg->wordwrap->actions > 0 || $cfg->wordwrap->expected_results > 0) {
+	    foreach ($tc['steps'] as $sdx => $elem) {
+	    
+	      if ($cfg->wordwrap->actions > 0) {
+	      	$tc['steps'][$sdx]['actions'] = wordwrap($tc['steps'][$sdx]['actions'],
+	      		                                     $cfg->wordwrap->actions);	      	
+	      }
+
+	      if ($cfg->wordwrap->expected_results > 0) {
+	      	$tc['steps'][$sdx]['expected_results'] = wordwrap($tc['steps'][$sdx]['expected_results'],
+	      		                                     $cfg->wordwrap->expected_results);
+          }
+	    }
+      }
 
       $keywords = getKeywordsFromSimpleXMLObj($xmlTCs[$idx]->keywords->keyword);
       if ($keywords)
@@ -886,15 +924,13 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
       } 
 
       $requirements = getRequirementsFromSimpleXMLObj($xmlTCs[$idx]->requirements->requirement);
-      if($requirements)
-      {
+      if($requirements) {
           $tc['requirements'] = $requirements;  
       } 
 
 	  $attachments = getAttachmentsFromSimpleXMLObj($xmlTCs[$idx]->attachments->attachment);
-	  if($attachments)
-	  {
-		$tc['attachments'] = $attachments;  
+    if($attachments) {
+		  $tc['attachments'] = $attachments;  
 	  }
 	}
 	$tcaseSet[$jdx++] = $tc;    
@@ -1063,7 +1099,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 			if ($tsuiteXMLID == "" && $info[0]['id']>0){ // testsuite id is optionnal in XML schema, id may has been retrieved from name during update
 				$tsuiteXMLID = $info[0]['id'];
 			}
-		  $msg = processAttachments( $dbHandler, $tsuite['name'], $tsuiteXMLID, $tsuite['id'], $attachments, $feedbackMsg );
+		  $msg = processAttachments( $dbHandler, false, $tsuite['name'], $tsuiteXMLID, $tsuite['id'], $attachments, $feedbackMsg );
 		  if( !is_null($msg) )
 		  {
 			$resultMap = array_merge($resultMap,$msg);

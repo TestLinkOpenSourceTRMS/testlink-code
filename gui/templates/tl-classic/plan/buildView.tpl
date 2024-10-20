@@ -36,6 +36,27 @@ Purpose: smarty template - Show existing builds
 var del_action=fRoot+'{$deleteAction}';
 </script>
 
+
+{* ------------------------------------------------------------------------------------------------ *}
+{* 
+   IMPORTANT DEVELOPMENT NOTICE 
+   Because we are using also DataTablesColumnFiltering
+   We MUST NOT Initialize the Data Table on DataTables.inc.tpl.
+   We got this effect with DataTablesOID=""
+*}
+  {* Data Tables Config Area - BEGIN*}
+  {$gridHTMLID="item_view"}
+  {* Do not initialize in DataTables.inc.tpl -> DataTablesSelector="" *}
+  {include file="DataTables.inc.tpl" DataTablesSelector=""}
+  {include 
+    file="DataTablesColumnFiltering.inc.tpl" 
+    DataTablesSelector="#{$gridHTMLID}" 
+    DataTablesLengthMenu=$tlCfg->gui->{$cfg_section}->pagination->length
+  }
+  {* Data Tables Config Area - End*}
+{* ------------------------------------------------------------------------------------------------ *}
+
+
 {include file="bootstrap.inc.tpl"}
 </head>
 
@@ -65,30 +86,47 @@ var del_action=fRoot+'{$deleteAction}';
 
 
     {* table id MUST BE item_view to use show/hide API info *}
-  	<table id="item_view" class="table table-bordered sortable">
+  	<table id="{$gridHTMLID}" class="table table-bordered no-sortable">
       <thead class="thead-dark">
     		<tr>
-    			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_title}</th>
-    			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
-    			<th class="{$noSortableColumnClass}" style="width:90px;">{$labels.release_date}</th>
-    			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
-    			<th class="{$noSortableColumnClass}">{$labels.th_open}</th>
-    			<th class="{$noSortableColumnClass}">{$labels.th_delete}</th>
+    			<th data-draw-filter="smartsearch">{$tlImages.toggle_api_info}{$labels.th_title}</th>
+    			<th data-draw-filter="smartsearch">{$labels.th_description}</th>
+    			<th data-draw-filter="smartsearch"  style="width:90px;">{$labels.release_date}</th>
+
+          {* Custom Fields *}
+          {if $gui->cfieldsColumns != null}
+             {foreach item=cflbl from=$gui->cfieldsColumns}
+              <th data-draw-filter="regexp" title="{$cflbl}">{$cflbl}</th>
+             {/foreach}
+          {/if}
+
+    			<th {#NOT_SORTABLE#}>{$labels.th_active}</th>
+    			<th {#NOT_SORTABLE#}>{$labels.th_open}</th>
+    			<th {#NOT_SORTABLE#}>{$labels.th_delete}</th>
     		</tr>
       </thead>
       <tbody>
   		{foreach item=build from=$gui->buildSet}
         	<tr>
-  				<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
+  				<td>
   				    <a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}
   					         <img style="border:none" alt="{$labels.alt_edit_build}" title="{$labels.alt_edit_build}"
   					              src="{$tlImages.edit}"/>
   					     {/if}    
   					  </a>   
+              <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
   				</td>
   				<td>{if $gui->editorType == 'none'}{$build.notes|nl2br}{else}{$build.notes}{/if}</td>
   				<td>{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
+
+          {* Custom fields *}
+          {if $gui->cfieldsColumns != null}
+             {foreach item=cflbl from=$gui->cfieldsColumns}
+               <td data-sort="{$build[$cflbl]['data-order']}">{$build[$cflbl]['value']|escape}</td>
+             {/foreach}
+          {/if}
+
 
           <td class="clickable_icon">
             {if $build.active==1} 

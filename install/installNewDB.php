@@ -8,7 +8,7 @@
  * @filesource  installNewDB.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2008,2019 TestLink community
+ * @copyright   2008,2021 TestLink community
  * @copyright   inspired by Etomite Content Management System
  *              2003, 2004 Alexander Andrew Butter 
  *
@@ -479,9 +479,9 @@ if( $migration_process != '' ) {
 
 // -------------------------------------------------
 // Data Operations
-if ( count($a_sql_data > 0) ) {
+if ( count($a_sql_data) > 0 ) {
   foreach($a_sql_data as $sql_data ) {
-    if ( count($sql_data > 0) ) {
+    if ( count($sql_data) > 0 ) {
       foreach ($sql_data as $sql_file)  {
         $sqlParser->process($sql_file);
       }
@@ -664,7 +664,7 @@ function drop_tables(&$dbHandler,$dbTablePrefix,$dbType)
       if( in_array($targetTable,$tablesOnDB) )
       {
         // Need to add option (CASCADE ?) to delete dependent object
-        echo "Droping $targetTable" . "<br />";
+        echo "Dropping $targetTable" . "<br />";
         $sql="DROP TABLE $targetTable";
         $sql .= (($dbType != 'mssql') && ($dbType != 'sqlsrv')) ? " CASCADE " : ' ';
         $dbHandler->exec_query($sql);
@@ -690,7 +690,7 @@ function drop_views(&$dbHandler,$dbItemPrefix,$dbType)
       if( in_array($target,$itemsOnDB) )
       {
         // Need to add option (CASCADE ?) to delete dependent object
-        echo "Droping $target" . "<br />";
+        echo "Dropping $target" . "<br />";
         $sql="DROP VIEW $target";
         $sql .= (($dbType != 'mssql') && ($dbType != 'sqlsrv')) ? " CASCADE " : ' ';
         $dbHandler->exec_query($sql);

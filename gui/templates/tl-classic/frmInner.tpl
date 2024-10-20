@@ -21,7 +21,7 @@
     	{include file="bootstrap.inc.tpl"}
     </head>
     <body>
-      <iframe src="{$treeframe}" name="treeframe" class="treeframe"></iframe>
-      <iframe src="{$workframe}" name="workframe" class="workframe"></iframe>
+      <iframe src="{$treeframe}" name="treeframe" id="treeframe" class="treeframe"></iframe>
+      <iframe src="{$workframe}" name="workframe" id="workframe" class="workframe"></iframe>
     </body>
 </html>

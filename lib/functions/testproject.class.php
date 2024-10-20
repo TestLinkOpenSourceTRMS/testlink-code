@@ -2879,7 +2879,13 @@ private function copy_platforms($source_id, $target_id)
     $platform_mgr->setTestProjectID($target_id);
     foreach($platformSet as $platform)
     {
-      $op = $platform_mgr->create($platform['name'],$platform['notes']);
+      $item = new stdClass();
+      $item->name = $platform['name'];
+      $item->notes = (string)$platform['notes'];
+      $item->enable_on_design = intval($platform['enable_on_design']);
+      $item->enable_on_execution = intval($platform['enable_on_execution']);
+
+      $op = $platform_mgr->create($item);
       $old_new[$platform['id']] = $op['id'];
     }
   }
@@ -3076,7 +3082,6 @@ function getTestSpec($id,$filters=null,$options=null) {
   
   $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
 
-  // var_dump($method2call);
   $qnum = $this->$method2call($id,$items,$my['filters'],$my['options']);
   return $items;
 }
@@ -3213,7 +3218,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
             " FROM {$this->tables['tcversions']} TCVX " . 
             " JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
             " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
-            " WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
+            " WHERE NHTCX.parent_id IN (" . implode(',',$tclist) . ")" .
             " GROUP BY NHTCX.parent_id";
   
     // 2018, again where is the active check?
@@ -4230,5 +4235,19 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
     return is_null($rs) ? $rs : $rs[0]['name'];
   }
 
+  /***
+   *
+   * @used-by testcase.class.php 
+   */
+  function getKeywordsAsMapByName($tproject_id) {
+    $keywordMap = null;
+    $keywords = $this->getKeywords($tproject_id);
+    if ($keywords) {
+      foreach($keywords as $kw) {
+        $keywordMap[$kw->name] = $kw->notes;
+      }
+    }
+    return $keywordMap;
+  }
 
 } // end class

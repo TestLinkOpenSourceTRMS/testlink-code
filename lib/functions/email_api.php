@@ -94,11 +94,10 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
   $mail = new PHPMailer(true);
 
   $mail->SMTPAutoTLS = config_get('SMTPAutoTLS');    
-  $mail->PluginDir = PHPMAILER_PATH;
 
   // Need to get strings file for php mailer
   // To avoid problems I choose ENglish
-  $mail->SetLanguage( 'en', PHPMAILER_PATH . 'language' . DIRECTORY_SEPARATOR );
+  $mail->SetLanguage('en');
 
   # Select the method to send mail
   switch ( config_get( 'phpMailer_method' ) ) 
@@ -163,15 +162,15 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
   # add to the Recipient list
   $t_recipient_list = explode(',', $ot->recipient);
 
-  while ( list( , $t_recipient ) = each( $t_recipient_list ) ) {
+  foreach ( $t_recipient_list as $t_recipient ) {  
     if ( !is_blank( $t_recipient ) ) {
         $mail->AddAddress( $t_recipient, '' );
     }
   }
 
   $t_cc_list = explode(',', $p_cc);
-  while(list(, $t_cc) = each($t_cc_list)) {
-    if ( !is_blank( $t_cc ) ) {
+  foreach ( $t_cc_list as $t_cc ) {  
+      if ( !is_blank( $t_cc ) ) {
         $mail->AddCC( $t_cc, '' );
     }
   }

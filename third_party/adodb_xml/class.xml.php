@@ -138,7 +138,7 @@ class XMLTag
     var $parent;
     var $curtag;
 
-    function XMLTag(&$parent)
+    function __construct(&$parent)
     {
         if (is_object( $parent ))
         {
@@ -333,7 +333,7 @@ class XMLFile
 	* @access			public
 	* @since			july / 2004
 	*/
-    function XMLFile($version = "1.0", $encoding = "UTF-8")
+    function __construct($version = "1.0", $encoding = "UTF-8")
     {
 		    $this->version  = $version;
 		    $this->encoding = $encoding;	

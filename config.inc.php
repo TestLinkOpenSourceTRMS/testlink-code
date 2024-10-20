@@ -18,7 +18,7 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2020, TestLink community
+ * @copyright   2005-2023, TestLink community
  * @link        http://www.testlink.org
  *
  *
@@ -67,6 +67,12 @@ $tlCfg->reqTCLinks = new stdClass();
 
 
 $tlCfg->keywords = new stdClass();
+
+$tlCfg->keywords->annotations = [
+  "@TestCaseSpecDisplay:"
+];
+
+
 $tlCfg->keywords->onDeleteCheckFrozenTCVersions = TRUE;
 $tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
 
@@ -82,6 +88,15 @@ $tlCfg->keywords->byTestProject = array();
 $tlCfg->keywords->headsUpTSuiteOnExec = 'CMD_OPEN_ON_EXEC';
 
 $tlCfg->accessWithoutLogin = array();
+
+
+$tlCfg->platforms = new stdClass();
+$tlCfg->platforms->allowedOnAssign = [
+  'enable_on_design' => false, 
+  'enable_on_execution' => true,
+  'is_open' => true
+];
+
 
 
 /** @uses database access definition (generated automatically by TL installer) */ 
@@ -238,6 +253,18 @@ $tlCfg->gui_title_separator_2 = ' - '; // parent - child
  * Could not be empty
  */
 $tlCfg->testcase_cfg->glue_character = '-';
+
+
+
+$tlCfg->testcase_cfg->import = new stdClass();
+$tlCfg->testcase_cfg->import->wordwrap = new stdClass();
+
+/* 0 => do not apply wordwrap() */
+$tlCfg->testcase_cfg->import->wordwrap->summary = 0;
+$tlCfg->testcase_cfg->import->wordwrap->preconditions = 0;
+$tlCfg->testcase_cfg->import->wordwrap->actions = 0;
+$tlCfg->testcase_cfg->import->wordwrap->expected_results = 0;
+
 
 /**
  * fonts set used to draw charts
@@ -431,7 +458,7 @@ $tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'a
 /* Default Authentication method */
 $tlCfg->authentication['method'] = 'DB';
 
-// Applies only if authentication methos is DB.
+// Applies only if authentication method is DB.
 // Used when:
 // 1. user sign up
 //
@@ -624,7 +651,17 @@ $tlCfg->gui->planView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All
 $tlCfg->gui->planView->itemQtyForTopButton = 10;
 
 $tlCfg->gui->buildView = new stdClass();
+$tlCfg->gui->buildView->pagination = new stdClass();
+$tlCfg->gui->buildView->pagination->enabled = true;
+$tlCfg->gui->buildView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
 $tlCfg->gui->buildView->itemQtyForTopButton = 10;
+
+$tlCfg->gui->keywordsView = new stdClass();
+$tlCfg->gui->keywordsView->pagination = new stdClass();
+$tlCfg->gui->keywordsView->pagination->enabled = true;
+$tlCfg->gui->keywordsView->pagination->length = '[40, 60, 80, -1], [40, 60, 80, "All"]';
+$tlCfg->gui->keywordsView->itemQtyForTopButton = 10;
+
 
 
 /** 
@@ -761,17 +798,35 @@ $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 */
 
 $tlCfg->gui->text_editor = array();
-$tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor','toolbar' => 'Testlink',
-                                        'configFile' => 'cfg/tl_ckeditor_config.js',
-                                        'height' => 150);
+$tlCfg->gui->text_editor['all'] = ['type' => 'ckeditor',
+	                               'toolbar' => 'Testlink',
+                                   'configFile' => 'cfg/tl_ckeditor_config.js',
+                                   'height' => 150];
+
 
 // mini toolbar for test case steps edit
-$tlCfg->gui->text_editor['steps_design'] = array('type' => 'ckeditor','toolbar' => 'TestlinkMini',
-                                                 'configFile' => 'cfg/tl_ckeditor_config.js',
-                                                 'height' => 100);
+$tlCfg->gui->text_editor['steps_design'] = ['type' => 'ckeditor',
+	                                        'toolbar' => 'TestlinkMini',
+                                            'configFile' => 'cfg/tl_ckeditor_config.js',
+                                            'height' => 100];
 
-$tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
-$tlCfg->gui->text_editor['edit_execution'] = array( 'type' => 'none', 'cols' => 80, 'rows' => 20);
+// 
+$tlCfg->gui->text_editor['preconditions'] = ['type' => 'ckeditor',
+	                                         'toolbar' => 'Testlink',
+                                             'configFile' => 'cfg/tl_ckeditor_config.js',
+                                             'height' => 150
+                                            ];
+
+$tlCfg->gui->text_editor['summary'] = ['type' => 'ckeditor',
+	                                   'toolbar' => 'Testlink',
+                                       'configFile' => 'cfg/tl_ckeditor_config.js',
+                                       'height' => 600
+                                      ]; 
+
+
+
+$tlCfg->gui->text_editor['execution'] = array('type' => 'none');
+$tlCfg->gui->text_editor['edit_execution'] = array('type' => 'none', 'cols' => 80, 'rows' => 20);
 $tlCfg->gui->text_editor['display_execution_notes'] = array('type' => 'none', 'cols' => 80, 'rows' => 20);
 
 /** User can choose order of menu areas */
@@ -1217,16 +1272,22 @@ $tlCfg->testcase_cfg->relations->interproject_linking = FALSE;
  **/
 
 $tlCfg->testcase_cfg->relations->type_labels = array(
-  TL_REL_TYPE_PARENT_CHILD => array('source' => 'parent_of','destination' => 'child_of'),
-  TL_REL_TYPE_BLOCKS_DEPENDS => array('source' => 'blocks','destination' => 'depends'),
-  TL_REL_TYPE_RELATED => array('source' => 'related_to','destination' => 'related_to')
+  TL_REL_TYPE_PARENT_CHILD => ['source' => 'parent_of','destination' => 'child_of'],
+  TL_REL_TYPE_BLOCKS_DEPENDS => ['source' => 'blocks','destination' => 'depends'],
+  TL_REL_TYPE_RELATED => ['source' => 'related_to','destination' => 'related_to'],
+  TL_REL_TYPE_AUTOMATION_PARENT_CHILD => ['source' => 'automates_also', 'destination' => 'is_automated_by'],
+  TL_REL_TYPE_EXECUTE_TOGETHER => ['source' => 'executed_me_and_also', 'destination' => 'executed_me_and_also']
 );
 
 
 
-$tlCfg->testcase_cfg->relations->type_description = array(TL_REL_TYPE_PARENT_CHILD => 'parent_child',
-                                                          TL_REL_TYPE_BLOCKS_DEPENDS => 'blocks_depends',
-                                                          TL_REL_TYPE_RELATED => 'related_to');
+$tlCfg->testcase_cfg->relations->type_description = [
+  TL_REL_TYPE_PARENT_CHILD => 'parent_child',
+  TL_REL_TYPE_BLOCKS_DEPENDS => 'blocks_depends',
+  TL_REL_TYPE_RELATED => 'related_to',
+  TL_REL_TYPE_AUTOMATION_PARENT_CHILD => 'automation_script',
+  TL_REL_TYPE_EXECUTE_TOGETHER => 'executed_me_and_also'
+];
 
 
 
@@ -1970,8 +2031,7 @@ Used when creating a Test Suite using copy
 and you have choose  $g_action_on_duplicate_name = 'generate_new'
 if the name exist.
 */
-$g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
-
+$g_prefix_name_for_copy = date("Y-m-d-H:i:s", time());
 
 
 /** 
@@ -1993,6 +2053,35 @@ $g_tpl['login'] = 'login/login-model-marcobiedermann.tpl';
 
 /** Add o replace images */
 $tlCfg->images = array();
+
+// ----------------------------------------------------------------------------
+/* [REST API using Slim - Begin] */
+$tlCfg->restAPI = new stdClass();
+
+// CRITIC 
+// This will work if your url to test link 
+// is something like
+//
+// https://testlink.antartic.org/
+//
+$tlCfg->restAPI->basePath = "/lib/api/rest/v3";
+
+// If your URL is like this
+//   https://myserver.ibiza.org/testlink/
+// You need to use:
+//   $basePath = "/testlink/lib/api/rest/v3";
+//
+// The standard .htaccess provided with testlink, 
+// that is similar to the .htaccess provided by MantisBT
+// it's ok!!!
+// No need to proceed as detailed in this documentation
+// - https://www.slimframework.com/docs/v4/start/web-servers.html 
+//   Section: Running in a sub-directory
+//
+// - https://akrabat.com/running-slim-4-in-a-subdirectory/
+//   BUT this is a good example to understand how to configure 
+//
+/* [REST API using Slim - End] */
 
 
 
@@ -2027,7 +2116,7 @@ if( !defined('TL_JQUERY') )
 
 if( !defined('TL_DATATABLES_DIR') )
 {
-  define('TL_DATATABLES_DIR','DataTables-1.10.4' );
+  define('TL_DATATABLES_DIR','DataTables-1.10.24' );
 }
 
 /** root of testlink directory location seen through the web server */

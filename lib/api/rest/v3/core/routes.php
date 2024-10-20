@@ -20,7 +20,7 @@ return function (App $app) {
   
   $app->get('/testprojects/{id}/testcases',
             array($app->restApi,'getProjectTestCases'));
-  $app->get('/testprojects/{id}/testplans', 
+  $app->get('/testprojects/{mixedID}/testplans', 
             array($app->restApi,'getProjectTestPlans'));
 
   $app->get('/testplans/{tplanApiKey}/builds', 

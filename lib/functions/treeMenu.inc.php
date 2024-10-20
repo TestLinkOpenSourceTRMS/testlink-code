@@ -51,23 +51,42 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   // may be we can remove ?
 
   // keys -> filter_* come from tlTestCaseFilterControl.class.php
-  $my['filters'] = array('keywords' => null, 
-                         'executionType' => null, 
-                         'importance' => null,
-                         'testplan' => null, 
-                         'filter_tc_id' => null,
-                         'filter_platforms' => null);
+  $my['filters'] = [
+    'keywords' => null, 
+    'executionType' => null, 
+    'importance' => null,
+    'testplan' => null, 
+    'filter_tc_id' => null,
+    'filter_platforms' => null
+  ];
 
   $my['options'] = array_merge($my['options'], (array)$options);
   $my['options']['showTestCaseID'] = config_get('treemenu_show_testcase_id');
 
   $my['filters'] = array_merge($my['filters'], (array)$filters);
 
+  // CRITIC: call with immediate return!!!
   if( $my['options']['viewType'] == 'testSpecTree' ) {
+
+    // Special processing for keywords
+    if ($filters['filter_keywords'] != null && 
+    	count($filters['filter_keywords']) == 1 &&
+        $filters['filter_keywords'][0] == 0
+       ) {
+       // Get all available keywords on test project and apply these set
+       // will be affected by mode ?
+       // TODOD
+       $tproject_mgr = new testproject($db);
+       $usedKeywordsByKeyID = $tproject_mgr->getUsedKeywordsMap($tproject_id);
+       $filters['filter_keywords'] = array_keys($usedKeywordsByKeyID);
+    }
+
     $rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
     return $rr;
   }
 
+
+  // --------------------------------------------------------------------------------- 
   // OK - Go ahead here we have other type of features  
   $treeMenu = new stdClass(); 
   $treeMenu->rootnode = null;
@@ -98,6 +117,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   
   $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . 
                   $glueChar;
+
   $test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
 
   // where the Keyword filter will be applied?
@@ -116,6 +136,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   if($test_spec) {
     $attr_map['keywords'] = null;  // means no filter
     if(!is_null($my['filters']['filter_keywords'])) {
+
+      // if 	
       $attr_map['keywords'] = 
         $tproject_mgr->getKeywordsLatestTCV($tproject_id,
            $my['filters']['filter_keywords'],
@@ -144,7 +166,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
     // keywords using $attr_map['keywords'];
     $pnFilters = null;
     $keys2init = array('filter_testcase_name',
-                       'filter_execution_type','filter_priority',
+                       'filter_execution_type',
+                       'filter_priority',
                        'filter_tc_id');
     foreach ($keys2init as $keyname) {
       $pnFilters[$keyname] = isset($my['filters'][$keyname]) ? $my['filters'][$keyname] : null;
@@ -1161,7 +1184,7 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
         $sql .=  " AND ({$cf_sql}) ";
       }
 
-      $rows = $db->fetchColumnsIntoArray($sql,'value');
+      $rows = (array)$db->fetchColumnsIntoArray($sql,'value');
       
       //if there exist as many rows as custom fields to be filtered by
       //the tc does meet the criteria

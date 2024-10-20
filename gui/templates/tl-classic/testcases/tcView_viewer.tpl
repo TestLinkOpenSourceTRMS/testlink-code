@@ -1,6 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource tcView_viewer.tpl
+@used-by tcView.tpl
+
 viewer for test case in test specification
 *}
 {lang_get var="tcView_viewer_labels"
@@ -19,7 +21,8 @@ viewer for test case in test specification
              estimated_execution_duration,status,btn_save,estimated_execution_duration_short,
              requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements,
              code_mgmt,code_link_tl_to_cts,can_not_edit_frozen_tc,testcase_operations,
-			 testcase_version_operations,goto_execute,"}
+			       testcase_version_operations,goto_execute,tc_has_relations,
+             click_to_copy_ghost_to_clipboard,do_not_execute"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -31,7 +34,7 @@ viewer for test case in test specification
 
 {$module='lib/testcases/'}
 {$tcase_id=$args_testcase.testcase_id}
-{$tcversion_id=$args_testcase.id}
+{$tcversion_id=$args_testcase.id}  {* @used-by relations.inc.tpl *}
 {$showMode=$gui->show_mode} 
 
 {$openC = $gsmarty_gui->role_separator_open}
@@ -101,6 +104,16 @@ viewer for test case in test specification
   {$has_been_executed=1}  
 {/if}
 
+{foreach from=$gui->TCWKFStatusDisplayHintOnTestDesign key=wkfStatusVerbose item=lblKey}
+  {if $lblKey != '' && $gui->TCWKFStatusVerboseCode[$wkfStatusVerbose] == $args_testcase.status}
+    {lang_get var="TCWKFMsg" s="$lblKey"}
+    <div id="overlay-text">{$gui->domainTCStatus[$args_testcase.status]}<br>{$TCWKFMsg}</div>
+  {/if}
+{/foreach}
+
+
+
+
 {if $args_can_do->edit == "yes"}
     {if $args_status_quo == null 
         || $args_status_quo[$args_testcase.id].executed == null}
@@ -109,8 +122,7 @@ viewer for test case in test specification
         {$warning_edit_msg=""}
         {$warning_delete_msg=""}
     {else} 
-      {if isset($args_tcase_cfg) 
-        && $args_tcase_cfg->can_edit_executed == 1}
+      {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
         {$edit_enabled=1} 
         {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
       {/if} 
@@ -382,6 +394,7 @@ viewer for test case in test specification
     <div class="messages" align="center">{$tcView_viewer_labels.can_not_edit_frozen_tc}</div>
   {/if}
 
+
    {if $warning_edit_msg != ""}
        <div class="messages" align="center">
          {$warning_edit_msg|escape}<br>
@@ -392,7 +405,27 @@ viewer for test case in test specification
          {$warning_delete_msg|escape}<br>
        </div>
    {/if}
-   
+  {if count($gui->additionalMessages) > 0}
+    {foreach $gui->additionalMessages as $msgCfg}
+      {lang_get s=$msgCfg->label var="additionalMsg"}
+
+      {$defClass="messages"} 
+      {if property_exists($msgCfg, "class") && $msgCfg->class != ""}
+        {$defClass=$msgCfg->class} 
+      {/if}
+
+
+      <div class="{$defClass}" align="center">
+        {if property_exists($msgCfg, "tlImagesAccessKey") && $msgCfg->tlImagesAccessKey != ""}
+          {$imgAccessKey = $msgCfg->tlImagesAccessKey}
+          <img class="clickable" src="{$tlImages[$msgCfg->tlImagesAccessKey]}" />
+        {/if}      
+      {$additionalMsg}
+      </div>
+    {/foreach}
+  {/if}
+
+
 
 <script type="text/javascript">
   /**
@@ -433,6 +466,7 @@ viewer for test case in test specification
 
   <div class="workBack">
     {include file="{$tplConfig.inc_tcbody}" 
+             inc_relations = $args_relations
              inc_tcbody_close_table=false
              inc_tcbody_testcase=$args_testcase
              inc_tcbody_show_title=$args_show_title

@@ -288,29 +288,50 @@ function string_insert_hrefs( $p_string ) {
 
 		# valid set of characters that may occur in url scheme. Note: - should be first (A-F != -AF).
 		$t_url_valid_chars       = '-_.,!~*\';\/?%^\\\\:@&={\|}+$#[:alnum:]\pL';
-		$t_url_chars             = "(?:${t_url_hex}|[${t_url_valid_chars}\(\)\[\]])";
-		$t_url_chars2            = "(?:${t_url_hex}|[${t_url_valid_chars}])";
-		$t_url_chars_in_brackets = "(?:${t_url_hex}|[${t_url_valid_chars}\(\)])";
-		$t_url_chars_in_parens   = "(?:${t_url_hex}|[${t_url_valid_chars}\[\]])";
+		$t_url_chars             = "(?:{$t_url_hex}|[{$t_url_valid_chars}\(\)\[\]])";
+		$t_url_chars2            = "(?:{$t_url_hex}|[{$t_url_valid_chars}])";
+		$t_url_chars_in_brackets = "(?:{$t_url_hex}|[{$t_url_valid_chars}\(\)])";
+		$t_url_chars_in_parens   = "(?:{$t_url_hex}|[{$t_url_valid_chars}\[\]])";
 
-		$t_url_part1 = "${t_url_chars}";
-		$t_url_part2 = "(?:\(${t_url_chars_in_parens}*\)|\[${t_url_chars_in_brackets}*\]|${t_url_chars2})";
+		$t_url_part1 = "{$t_url_chars}";
+		$t_url_part2 = "(?:\({$t_url_chars_in_parens}*\)|\[{$t_url_chars_in_brackets}*\]|{$t_url_chars2})";
 
-		$s_url_regex = "/(${t_url_protocol}(${t_url_part1}*?${t_url_part2}+))/su";
+		$s_url_regex = "/({$t_url_protocol}({$t_url_part1}*?{$t_url_part2}+))/su";
 
 		# e-mail regex
 		$s_email_regex = substr_replace( email_regex_simple(), '(?:mailto:)?', 1, 0 );
 	}
 
 	# Find any URL in a string and replace it by a clickable link
+	/*
 	$t_function = create_function( '$p_match', '
 		$t_url_href = \'href="\' . rtrim( $p_match[1], \'.\' ) . \'"\';
-		return "<a ${t_url_href}>${p_match[1]}</a> [<a ${t_url_href} target=\"_blank\">^</a>]";
+		return "<a {$t_url_href}>{$p_match[1]}</a> [<a {$t_url_href} target=\"_blank\">^</a>]";
 	' );
 	$p_string = preg_replace_callback( $s_url_regex, $t_function, $p_string );
 	if( $t_change_quotes ) {
 		ini_set( 'magic_quotes_sybase', true );
-	}
+	}*/
+
+	# Find any URL in a string and replace it with a clickable link
+	# From MantisBT 2.25.2
+	$p_string = preg_replace_callback(
+		$s_url_regex,
+		function ( $p_match ) {
+			$t_url_href = 'href="' . rtrim( $p_match[1], '.' ) . '"';
+			if( config_get( 'html_make_links' ) == LINKS_NEW_WINDOW ) {
+				$t_url_target = ' target="_blank"';
+			} else {
+				$t_url_target = '';
+			}
+			return "<a {$t_url_href}{$t_url_target}>{$p_match[1]}</a>";
+		},
+		$p_string
+	);
+	
+
+
+
 
 	# Find any email addresses in the string and replace them with a clickable
 	# mailto: link, making sure that we skip processing of any existing anchor
@@ -514,9 +535,9 @@ function email_regex_simple() {
 
 		# a domain is one or more subdomains
 		$t_subdomain = "(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)";
-		$t_domain    = "(${t_subdomain}(?:\.${t_subdomain})*)";
+		$t_domain    = "({$t_subdomain}(?:\.{$t_subdomain})*)";
 
-		$s_email_regex = "/${t_recipient}\@${t_domain}/i";
+		$s_email_regex = "/{$t_recipient}\@{$t_domain}/i";
 	}
 	return $s_email_regex;
 }

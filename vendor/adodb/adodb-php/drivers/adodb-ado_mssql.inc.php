@@ -1,28 +1,31 @@
 <?php
-/*
-@version   v5.20.17  31-Mar-2020
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
-Set tabs to 4 for best viewing.
-
-  Latest version is available at http://adodb.org/
-
-  Microsoft SQL Server ADO data driver. Requires ADO and MSSQL client.
-  Works only on MS Windows.
-
-  Warning: Some versions of PHP (esp PHP4) leak memory when ADO/COM is used.
-  Please check http://bugs.php.net/ for more info.
-*/
+/**
+ * Microsoft SQL Server ADO driver.
+ *
+ * Requires ADO and MSSQL client. Works only on MS Windows.
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
 
 // security - hide paths
 if (!defined('ADODB_DIR')) die();
 
 if (!defined('_ADODB_ADO_LAYER')) {
-	if (PHP_VERSION >= 5) include(ADODB_DIR."/drivers/adodb-ado5.inc.php");
-	else include(ADODB_DIR."/drivers/adodb-ado.inc.php");
+	include_once(ADODB_DIR . "/drivers/adodb-ado5.inc.php");
 }
 
 
@@ -41,14 +44,14 @@ class  ADODB_ado_mssql extends ADODB_ado {
 
 	//var $_inTransaction = 1; // always open recordsets, so no transaction problems.
 
-	function _insertid()
+	protected function _insertID($table = '', $column = '')
 	{
-	        return $this->GetOne('select SCOPE_IDENTITY()');
+			return $this->GetOne('select SCOPE_IDENTITY()');
 	}
 
 	function _affectedrows()
 	{
-	        return $this->GetOne('select @@rowcount');
+			return $this->GetOne('select @@rowcount');
 	}
 
 	function SetTransactionMode( $transaction_mode )
@@ -62,40 +65,40 @@ class  ADODB_ado_mssql extends ADODB_ado {
 		$this->Execute("SET TRANSACTION ".$transaction_mode);
 	}
 
-	function qstr($s,$magic_quotes=false)
+	function qStr($s, $magic_quotes=false)
 	{
-		$s = ADOConnection::qstr($s, $magic_quotes);
+		$s = ADOConnection::qStr($s);
 		return str_replace("\0", "\\\\000", $s);
 	}
 
 	function MetaColumns($table, $normalize=true)
 	{
-        $table = strtoupper($table);
-        $arr= array();
-        $dbc = $this->_connectionID;
+		$table = strtoupper($table);
+		$arr= array();
+		$dbc = $this->_connectionID;
 
-        $osoptions = array();
-        $osoptions[0] = null;
-        $osoptions[1] = null;
-        $osoptions[2] = $table;
-        $osoptions[3] = null;
+		$osoptions = array();
+		$osoptions[0] = null;
+		$osoptions[1] = null;
+		$osoptions[2] = $table;
+		$osoptions[3] = null;
 
-        $adors=@$dbc->OpenSchema(4, $osoptions);//tables
+		$adors=@$dbc->OpenSchema(4, $osoptions);//tables
 
-        if ($adors){
-                while (!$adors->EOF){
-                        $fld = new ADOFieldObject();
-                        $c = $adors->Fields(3);
-                        $fld->name = $c->Value;
-                        $fld->type = 'CHAR'; // cannot discover type in ADO!
-                        $fld->max_length = -1;
-                        $arr[strtoupper($fld->name)]=$fld;
+		if ($adors){
+			while (!$adors->EOF){
+				$fld = new ADOFieldObject();
+				$c = $adors->Fields(3);
+				$fld->name = $c->Value;
+				$fld->type = 'CHAR'; // cannot discover type in ADO!
+				$fld->max_length = -1;
+				$arr[strtoupper($fld->name)]=$fld;
 
-                        $adors->MoveNext();
-                }
-                $adors->Close();
-        }
-        $false = false;
+				$adors->MoveNext();
+			}
+			$adors->Close();
+		}
+		$false = false;
 		return empty($arr) ? $false : $arr;
 	}
 
@@ -137,14 +140,10 @@ class  ADODB_ado_mssql extends ADODB_ado {
 		//return $this->GetOne("SELECT CONVERT(varchar(255), NEWID()) AS 'Char'");
 	}
 
-	} // end class
+} // end class
 
-	class  ADORecordSet_ado_mssql extends ADORecordSet_ado {
+class ADORecordSet_ado_mssql extends ADORecordSet_ado {
 
 	var $databaseType = 'ado_mssql';
 
-	function __construct($id,$mode=false)
-	{
-	        return parent::__construct($id,$mode);
-	}
 }

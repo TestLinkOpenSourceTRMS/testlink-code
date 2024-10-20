@@ -8,7 +8,7 @@
  * Allows users to create/edit keywords. 
  *
  * @package    TestLink
- * @copyright  2005,2019 TestLink community 
+ * @copyright  2005,2023 TestLink community 
  * @link       http://www.testlink.org/
  *  
 **/
@@ -318,6 +318,7 @@ function getKeywordErrorMessage($code) {
 function initializeGui(&$dbH,&$args) {
 
   $gui = new stdClass();
+  $gui->dialogName='keywordsEdit_dialog';
   $gui->openByOther = $args->openByOther;
   $gui->directAccess = $args->directAccess;
   $gui->tcversion_id = $args->tcversion_id;
@@ -339,7 +340,8 @@ function initializeGui(&$dbH,&$args) {
   $gui->keyword = $args->keyword;
   $gui->keywordID = $args->keyword_id;
 
-  $gui->editUrl = $_SESSION['basehref'] . "lib/keywords/keywordsEdit.php?" .
+  $gui->editUrl = $_SESSION['basehref'] . 
+                  "lib/keywords/keywordsEdit.php?" .
                   "tproject_id={$gui->tproject_id}"; 
 
   return $gui;

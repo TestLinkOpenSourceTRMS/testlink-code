@@ -701,6 +701,7 @@ CREATE TABLE /*prefix*/platforms (
   notes text NOT NULL,
   enable_on_design INT2 NOT NULL DEFAULT '0',
   enable_on_execution INT2 NOT NULL DEFAULT '1',
+  is_open INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX /*prefix*/platforms_uidx1 ON /*prefix*/platforms (testproject_id,name);
@@ -1085,6 +1086,15 @@ CREATE OR REPLACE VIEW /*prefix*/tcversions_without_platforms AS
   WHERE NHTCV.node_type_id = 4 
   AND NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_platforms TCPL
                  WHERE TCPL.tcversion_id = NHTCV.id ) )
+);
+
+--
+--
+CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan_plat AS
+(
+  SELECT tcversion_id, testplan_id,platform_id,max(id) AS id
+  FROM /*prefix*/executions
+  GROUP BY tcversion_id,testplan_id,platform_id
 );
 
 --

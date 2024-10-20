@@ -5,7 +5,7 @@
  *
  * @package     TestLink
  * @author      Andreas Morsing
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2023, TestLink community 
  * @filesource  tlAttachmentRepository.class.php
  * @link        http://www.testlink.org/index.php
  *
@@ -138,7 +138,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     $pattern = trim($this->attachmentCfg->allowed_filenames_regexp);
     if( '' != $pattern && !preg_match($pattern,$fName) ){
       $op->statusCode = 'allowed_filenames_regexp';
-      $op->msg = lang_get('FILE_UPLOAD_' . $op->statusCode);
+      $op->msg = str_replace('%filename%',$fName,lang_get('FILE_UPLOAD_' . $op->statusCode));
       return $op; 
     }
     
@@ -152,7 +152,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     $allowed = explode(',',$this->attachmentCfg->allowed_files);
     if (!in_array($fExt, $allowed)) {
       $op->statusCode = 'allowed_files';
-      $op->msg = lang_get('FILE_UPLOAD_' . $op->statusCode);
+      $op->msg = str_replace('%filename%',$fName,lang_get('FILE_UPLOAD_' . $op->statusCode));
       return $op; 
     }
 
@@ -173,8 +173,10 @@ class tlAttachmentRepository extends tlObjectWithDB
     }
 
     if ($op->statusOK) {
+      $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX,'',$fkTableName);
       $op->statusOK = 
-        ($this->attmObj->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title,$opt) >= tl::OK);
+        ($this->attmObj->create($fkid,$stdTableUsedAsFolder,$fName,$destFPath,
+                                $fContents,$fType,$fSize,$title,$opt) >= tl::OK);
       
       if ($op->statusOK) {
         $op->statusOK = $this->attmObj->writeToDb($this->db);
@@ -288,12 +290,17 @@ class tlAttachmentRepository extends tlObjectWithDB
    **/
   protected function buildRepositoryFolderFor($tableName,$id,$mkDir = false)
   {
-    $path = $this->repositoryPath.DIRECTORY_SEPARATOR.$tableName;
-    if ($mkDir && !file_exists($path))
+    // use always the STANDARD table name i.e. WITHOUT PREFIX
+    $leafFolder = str_replace(DB_TABLE_PREFIX,'',$tableName);
+    $path = $this->repositoryPath . DIRECTORY_SEPARATOR . $leafFolder;
+    if ($mkDir && !file_exists($path)) {
       mkdir($path);
-    $path .= DIRECTORY_SEPARATOR.$id;
-    if ($mkDir && !file_exists($path))
+    }
+
+    $path .= DIRECTORY_SEPARATOR . $id;
+    if ($mkDir && !file_exists($path)) {
       mkdir($path);
+    }
 
     return $path;
   }
@@ -474,8 +481,10 @@ class tlAttachmentRepository extends tlObjectWithDB
    * @return boolean returns bSuccess if all attachments are deleted, false else
    */
   public function deleteAttachmentsFor($fkid,$fkTableName) {
+
+    $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX,'',$fkTableName);
     $statusOK = true;
-    $attachmentIDs = (array)$this->getAttachmentIDsFor($fkid,$fkTableName);
+    $attachmentIDs = (array)$this->getAttachmentIDsFor($fkid,$stdTableUsedAsFolder);
     
     for($i = 0;$i < sizeof($attachmentIDs);$i++) {
       $id = $attachmentIDs[$i];
@@ -483,7 +492,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     }
 
     if ($statusOK) {
-      $folder = $this->buildRepositoryFolderFor($fkTableName,$fkid);
+      $folder = $this->buildRepositoryFolderFor($stdTableUsedAsFolder,$fkid);
       if (is_dir($folder)) {
         rmdir($folder);
       }
@@ -519,7 +528,9 @@ class tlAttachmentRepository extends tlObjectWithDB
   public function getAttachmentInfosFor($fkid,$fkTableName,$accessKey='std')
   {
     $itemSet = null;
-    $idSet = (array)$this->getAttachmentIDsFor($fkid,$fkTableName);
+    $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX,'',$fkTableName);
+
+    $idSet = (array)$this->getAttachmentIDsFor($fkid,$stdTableUsedAsFolder);
     $loop2do = sizeof($idSet);
     for($idx = 0;$idx < $loop2do; $idx++) {
       $attachmentInfo = $this->getAttachmentInfo($idSet[$idx]);
@@ -553,10 +564,12 @@ class tlAttachmentRepository extends tlObjectWithDB
    */
   public function getAttachmentIDsFor($fkid,$fkTableName)
   {
+    $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX,'',$fkTableName);
+
     $order_by = $this->attachmentCfg->order_by;
 
     $query = "SELECT id FROM {$this->tables['attachments']} WHERE fk_id = {$fkid} " .
-             " AND fk_table = '" . $this->db->prepare_string($fkTableName). "' " . $order_by;
+             " AND fk_table = '" . $this->db->prepare_string($stdTableUsedAsFolder). "' " . $order_by;
     $attachmentIDs = $this->db->fetchColumnsIntoArray($query,'id');
 
     return $attachmentIDs;
@@ -571,7 +584,9 @@ class tlAttachmentRepository extends tlObjectWithDB
     $destFPath = null;
     $mangled_fname = '';
     $status_ok = false;
-    $attachments = $this->getAttachmentInfosFor($source_id,$fkTableName);
+    $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX,'',$fkTableName);
+
+    $attachments = $this->getAttachmentInfosFor($source_id,$stdTableUsedAsFolder);
     if( null != $attachments && count($attachments) > 0) {
       foreach($attachments as $key => $value) {
         $file_contents = null;
@@ -579,7 +594,7 @@ class tlAttachmentRepository extends tlObjectWithDB
         $mangled_fname = $f_parts[count($f_parts)-1];
         
         if ($this->repositoryType == TL_REPOSITORY_TYPE_FS) {
-          $destFPath = $this->buildRepositoryFilePath($mangled_fname,$fkTableName,$target_id);
+          $destFPath = $this->buildRepositoryFilePath($mangled_fname,$stdTableUsedAsFolder,$target_id);
           $status_ok = copy($this->repositoryPath . $value['file_path'],$destFPath);
         } else {
           $file_contents = $this->getAttachmentContentFromDB($value['id']);
@@ -587,7 +602,7 @@ class tlAttachmentRepository extends tlObjectWithDB
         }
         
         if($status_ok) {
-          $this->attmObj->create($target_id,$fkTableName,$value['file_name'],
+          $this->attmObj->create($target_id,$stdTableUsedAsFolder,$value['file_name'],
                                  $destFPath,$file_contents,$value['file_type'],
                                  $value['file_size'],$value['title']);
           $attID = 0;

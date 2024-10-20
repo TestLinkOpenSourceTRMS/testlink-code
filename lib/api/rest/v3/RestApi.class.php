@@ -164,32 +164,49 @@ class RestApi
   public function authenticate(Request $request, RequestHandler $handler) 
   {
     $hh = $request->getHeaders();
-    if( isset($hh['Apikey']) ) {
-        $apiKey = $hh['Apikey'][0];
-    } else {
-      // it seems this needs special configuration
-      // with Apache when you use CGI Module
-      // http://man.hubwiz.com/docset/PHP.docset/Contents/Resources/
-      //        Documents/php.net/manual/en/features.http-auth.html
-      // 
-      // @20200317 - Not tested 
-      $apiKey = $hh['PHP_AUTH_USER'][0];
+    
+    $apiKey = null;
+
+    // @20200317 - Not tested 
+    // IMPORTANT NOTICE: 'PHP_AUTH_USER'
+    // it seems this needs special configuration
+    // with Apache when you use CGI Module
+    // http://man.hubwiz.com/docset/PHP.docset/Contents/Resources/
+    //        Documents/php.net/manual/en/features.http-auth.html
+    // 
+    $apiKeySet = [
+      'Apikey',
+      'ApiKey',
+      'APIKEY',
+      'PHP_AUTH_USER'
+    ];
+    foreach( $apiKeySet as $accessKey ) {
+      if (isset($hh[$accessKey])) {
+        $apiKey = trim($hh[$accessKey][0]);
+        break;
+      }  
     }
 
-    $sql = "SELECT id FROM {$this->tables['users']} " .
+    if ($apiKey != null && $apiKey != '') {
+      $sql = "SELECT id FROM {$this->tables['users']} " .
            "WHERE script_key='" . 
            $this->db->prepare_string($apiKey) . "'";
 
-    $this->userID = $this->db->fetchFirstRowSingleColumn($sql, "id");
+      $this->userID = $this->db->fetchFirstRowSingleColumn($sql, "id");
+      if( ($ok=!is_null($this->userID)) ) {
+        $this->user = tlUser::getByID($this->db,$this->userID);  
+        return $handler->handle($request);
+      } 
+    }
 
-    if( ($ok=!is_null($this->userID)) ) {
-      $this->user = tlUser::getByID($this->db,$this->userID);  
-      return $handler->handle($request);
-    } 
-
+    // =========================================================
     // Houston we have a problem
+    $msg = 'Authentication Error';
+    if ($apiKey == null) {
+      $msg .= " (missing authentication key) ";
+    } 
     $response = new Response();
-    $response->getBody()->write('Authentication Error');
+    $response->getBody()->write($msg);
     $response->withStatus(401);
     return $response;
   }
@@ -246,15 +263,17 @@ class RestApi
   /**
    *
    * @param array idCard if provided identifies test project
-   *                     'id' -> DBID
-   *                     'name' ->
-   *                     'prefix' -> 
+   *              Slim Framework will provided a map with a key
+   *              as defined in the route.
+   *              $app->get('/testprojects/{mixedID}/testplans', ...
+   *  
+   * 
    */
   private function getProjects($idCard=null, $opt=null) 
   {
     $options = array_merge(array('output' => 'rest'), (array)$opt);
     $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
-    if(is_null($idCard)) {
+    if(is_null($idCard) || count($idCard) == 0) {
       $opOptions = array('output' => 'array_of_map', 
                          'order_by' => " ORDER BY name ", 
                          'add_issuetracker' => true,
@@ -271,8 +290,8 @@ class RestApi
                      $this->userID,$opOptions);
 
       $targetID = null;
-      if (isset($idCard['id'])) {
-        $safeID = intval($idCard['id']);
+      $safeID = intval($idCard['mixedID']);
+      if ($safeID > 0) {
         if( isset($zx[$safeID]) ) {
           $targetID = $safeID;
         } 
@@ -280,8 +299,8 @@ class RestApi
       else {
         // Will consider id = name or prefix
         foreach( $zx as $itemID => $value ) {
-          if( strcmp($value['name'],$idCard) == 0 || 
-              strcmp($value['prefix'],$idCard) == 0 ) {
+          if( strcmp($value['name'],$idCard['mixedID']) == 0 || 
+              strcmp($value['prefix'],$idCard['mixedID']) == 0 ) {
             $targetID = $itemID;
             break;   
           }  
@@ -397,9 +416,12 @@ class RestApi
                                       Response $response,
                                       $idCard) 
   {
-    $op  = array('status' => 'ok', 
-                 'message' => 'ok', 
-                 'items' => null);
+    $op  = [
+      'status' => 'ok', 
+      'message' => 'ok', 
+      'items' => null
+    ];
+    
     $tproj = $this->getProjects($idCard, 
                       array('output' => 'internal'));
  
@@ -1115,8 +1137,9 @@ class RestApi
    * "authorID"
    * ------------------------------------------
    *
-   * "summary"
-   * "preconditions"
+   * "summary"        can be a string or an array of strings
+   * "preconditions"  can be a string or an array of strings
+   *
    * "importance": {"name": "verbose"} 
    *               - see const.inc.php for domain
    * "executionType": {"name": "verbose"}
@@ -1124,6 +1147,23 @@ class RestApi
    * "order"
    *
    * "estimatedExecutionDuration"  // to be implemented
+   *
+   * "steps": array of objects
+   *           IMPORTANT NOTICE: actions and expected_results
+   *                             Can be string or array of strings
+   *           [
+   *             { "step_number":1,
+   *               "actions": "red",  
+   *               "expected_results": "#f00",
+   *               "execution_type":1
+   *             },
+   *             { "step_number":12,
+   *               "actions": "red12",
+   *               "expected_results": "#f00",
+   *               "execution_type":2
+   *             }
+   *            ]
+   *
    */
   public function createTestCase(Request $request, 
                                  Response $response, 
@@ -1131,6 +1171,10 @@ class RestApi
   {
     $op = $this->getStdIDKO();
     try {
+
+      // It will be important to document WHY!!!
+      // AFAIK some issues with json_decode()
+      // https://stackoverflow.com/questions/34486346/new-lines-and-tabs-in-json-decode-php-7      
       $body = str_replace("\n", '', $request->getBody());
       $item = json_decode($body);
 
@@ -1360,23 +1404,29 @@ class RestApi
 
     $tcase->testProjectID = intval($info[0]['id']);
 
+    // --------------------------------------------------------------
+    // summary & preconditions
+    // if type is array -> generate string in this way
+    // - add <pre>
+    // - concact the elements with "\n"
+    // - add </pre>
+    // --------------------------------------------------------------
     $sk2d = array('summary' => '',
-                  'preconditions' => '',
-                  'order' => 100, 
-                  'estimatedExecutionTime' => 0);
+                  'preconditions' => '');
     foreach($sk2d as $key => $value) {
-      $tcase->$key = property_exists($obj, $key) 
-                     ? $obj->$key : $value;
+      if (is_array($tcase->$key)) {
+        $tcase->$key = "<pre>" . implode("\n", $tcase->$key) . "</pre>";
+      } 
     } 
+    // --------------------------------------------------------------
 
-    // name is the access
+
+    // --------------------------------------------------------------
+    // these are objects with name as property.
     $tcfg = $this->cfg['tcase'];
-    $ck2d = array('executionType' => 
-                     $tcfg['executionType']['manual'], 
-                  'importance' => 
-                    $tcfg['defaults']['importance'], 
-                  'status' => 
-                    $tcfg['status']['draft']);
+    $ck2d = array('executionType' => $tcfg['executionType']['manual'], 
+                  'importance'    => $tcfg['defaults']['importance'], 
+                  'status'        => $tcfg['status']['draft']);
 
     foreach($ck2d as $prop => $defa) {
       $tcase->$prop = property_exists($obj, $prop) ? 
@@ -1384,9 +1434,22 @@ class RestApi
     }  
 
 
+    // --------------------------------------------------------------
     if(property_exists($obj, 'steps')) {
-      $tcase->steps = $obj->steps;
+      $tcase->steps = [];
+      $sk2d = array('actions' => '',
+                    'expected_results' => '');
+      foreach($obj->steps as $stepObj) {
+        foreach($sk2d as $key => $value) {
+          if (is_array($stepObj->$key)) {
+            $stepObj->$key = "<pre>" . implode("\n", $stepObj->$key) . "</pre>";
+          }
+        } 
+        $tcase->steps[] = $stepObj;
+      }      
     }
+    // --------------------------------------------------------------
+
 
     return $tcase;
   }

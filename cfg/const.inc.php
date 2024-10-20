@@ -20,7 +20,7 @@ define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_VERSION_NUMBER', '1.9.20'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] '); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' [fixed] '); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Latest Database version that is used to give users feedback 
@@ -586,6 +586,9 @@ $tlCfg->priority['code_label'] = array(HIGH => 'high_priority',MEDIUM => 'medium
 define('TL_REL_TYPE_PARENT_CHILD', 1);
 define('TL_REL_TYPE_BLOCKS_DEPENDS', 2);
 define('TL_REL_TYPE_RELATED', 3);
+define('TL_REL_TYPE_AUTOMATION_PARENT_CHILD', 4);
+define('TL_REL_TYPE_EXECUTE_TOGETHER',5);
+
 
 
 /**
@@ -935,9 +938,26 @@ $tlCfg->results['charts']['dimensions'] =
 // see strings.txt for labels
 // $TLS_testCaseStatus_KEY => $TLS_testCaseStatus_draft
 //  
-$tlCfg->testCaseStatus = array( 'draft' => 1, 'readyForReview' => 2, 
-                                'reviewInProgress' => 3, 'rework' => 4, 
-                                'obsolete' => 5, 'future' => 6, 'final' => 7 );   
+$tlCfg->testCaseStatus = array( 'draft' => 1, 
+                                'readyForReview' => 2, 
+                                'reviewInProgress' => 3, 
+                                'rework' => 4, 
+                                'obsolete' => 5, 
+                                'future' => 6, 
+                                'final' => 7 );   
+
+
+// see strings.txt for labels
+// $TLS_testCaseStatus_hint_KEY => $TLS_testCaseStatus_hint_draft
+//
+$tlCfg->testCaseStatusDisplayHintOnTestDesign = ['draft' => '' /* 'testCaseStatus_hint_draft' */, 
+                                                 'readyForReview' => '', 
+                                                 'reviewInProgress' => '', 
+                                                 'rework' => '', 
+                                                 'obsolete' => 'testCaseStatus_hint_obsolete', 
+                                                 'future' => '', 
+                                                 'final' => '' ];   
+// -----------------------------------------------------------------------------------------
 
 
 /** @uses testcase.class.php */

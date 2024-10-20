@@ -1,23 +1,31 @@
 <?php
-
-/*
-@version   v5.20.17  31-Mar-2020
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
-  Set tabs to 8.
-
-*/
+/**
+ * PDO PostgreSQL (pgsql) driver
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
 
 class ADODB_pdo_pgsql extends ADODB_pdo {
 	var $metaDatabasesSQL = "select datname from pg_database where datname not in ('template0','template1') order by 1";
-    var $metaTablesSQL = "select tablename,'T' from pg_tables where tablename not like 'pg\_%'
-	and tablename not in ('sql_features', 'sql_implementation_info', 'sql_languages',
-	 'sql_packages', 'sql_sizing', 'sql_sizing_profiles')
-	union
-        select viewname,'V' from pg_views where viewname not like 'pg\_%'";
+	var $metaTablesSQL = "select tablename,'T' from pg_tables where tablename not like 'pg\_%'
+		and tablename not in ('sql_features', 'sql_implementation_info', 'sql_languages',
+			'sql_packages', 'sql_sizing', 'sql_sizing_profiles')
+		union
+		select viewname,'V' from pg_views where viewname not like 'pg\_%'";
 	//"select tablename from pg_tables where tablename not like 'pg_%' order by 1";
 	var $isoDates = true; // accepts dates in ISO format
 	var $sysDate = "CURRENT_DATE";
@@ -26,15 +34,15 @@ class ADODB_pdo_pgsql extends ADODB_pdo {
 	var $metaColumnsSQL = "SELECT a.attname,t.typname,a.attlen,a.atttypmod,a.attnotnull,a.atthasdef,a.attnum
 		FROM pg_class c, pg_attribute a,pg_type t
 		WHERE relkind in ('r','v') AND (c.relname='%s' or c.relname = lower('%s')) and a.attname not like '....%%'
-AND a.attnum > 0 AND a.atttypid = t.oid AND a.attrelid = c.oid ORDER BY a.attnum";
+		AND a.attnum > 0 AND a.atttypid = t.oid AND a.attrelid = c.oid ORDER BY a.attnum";
 
 	// used when schema defined
 	var $metaColumnsSQL1 = "SELECT a.attname, t.typname, a.attlen, a.atttypmod, a.attnotnull, a.atthasdef, a.attnum
-FROM pg_class c, pg_attribute a, pg_type t, pg_namespace n
-WHERE relkind in ('r','v') AND (c.relname='%s' or c.relname = lower('%s'))
- and c.relnamespace=n.oid and n.nspname='%s'
-	and a.attname not like '....%%' AND a.attnum > 0
-	AND a.atttypid = t.oid AND a.attrelid = c.oid ORDER BY a.attnum";
+		FROM pg_class c, pg_attribute a, pg_type t, pg_namespace n
+		WHERE relkind in ('r','v') AND (c.relname='%s' or c.relname = lower('%s'))
+		and c.relnamespace=n.oid and n.nspname='%s'
+		and a.attname not like '....%%' AND a.attnum > 0
+		AND a.atttypid = t.oid AND a.attrelid = c.oid ORDER BY a.attnum";
 
 	// get primary key etc -- from Freek Dijkstra
 	var $metaKeySQL = "SELECT ic.relname AS index_name, a.attname AS column_name,i.indisunique AS unique_key, i.indisprimary AS primary_key
@@ -52,7 +60,7 @@ WHERE relkind in ('r','v') AND (c.relname='%s' or c.relname = lower('%s'))
 	var $_genIDSQL = "SELECT NEXTVAL('%s')";
 	var $_genSeqSQL = "CREATE SEQUENCE %s START %s";
 	var $_dropSeqSQL = "DROP SEQUENCE %s";
-	var $metaDefaultsSQL = "SELECT d.adnum as num, d.adsrc as def from pg_attrdef d, pg_class c where d.adrelid=c.oid and c.relname='%s' order by d.adnum";
+	var $metaDefaultsSQL = "SELECT d.adnum as num, pg_get_expr(d.adbin, d.adrelid) as def from pg_attrdef d, pg_class c where d.adrelid=c.oid and c.relname='%s' order by d.adnum";
 	var $random = 'random()';		/// random function
 	var $concat_operator='||';
 
@@ -89,23 +97,27 @@ WHERE relkind in ('r','v') AND (c.relname='%s' or c.relname = lower('%s'))
 	{
 		$info = $this->ServerInfo();
 		if ($info['version'] >= 7.3) {
-	    	$this->metaTablesSQL = "select tablename,'T' from pg_tables where tablename not like 'pg\_%'
-			  and schemaname  not in ( 'pg_catalog','information_schema')
-	union
-        select viewname,'V' from pg_views where viewname not like 'pg\_%'  and schemaname  not in ( 'pg_catalog','information_schema') ";
+			$this->metaTablesSQL = "
+select tablename,'T' from pg_tables
+where tablename not like 'pg\_%' and schemaname  not in ( 'pg_catalog','information_schema')
+union
+select viewname,'V' from pg_views
+where viewname not like 'pg\_%'  and schemaname  not in ( 'pg_catalog','information_schema')";
 		}
 		if ($mask) {
 			$save = $this->metaTablesSQL;
 			$mask = $this->qstr(strtolower($mask));
 			if ($info['version']>=7.3)
 				$this->metaTablesSQL = "
-select tablename,'T' from pg_tables where tablename like $mask and schemaname not in ( 'pg_catalog','information_schema')
- union
-select viewname,'V' from pg_views where viewname like $mask and schemaname  not in ( 'pg_catalog','information_schema')  ";
+select tablename,'T' from pg_tables
+where tablename like $mask and schemaname not in ( 'pg_catalog','information_schema')
+union
+select viewname,'V' from pg_views
+where viewname like $mask and schemaname  not in ( 'pg_catalog','information_schema')";
 			else
 				$this->metaTablesSQL = "
 select tablename,'T' from pg_tables where tablename like $mask
- union
+union
 select viewname,'V' from pg_views where viewname like $mask";
 		}
 		$ret = ADOConnection::MetaTables($ttype,$showSchema);
@@ -229,4 +241,83 @@ select viewname,'V' from pg_views where viewname like $mask";
 
 	}
 
+	function BeginTrans()
+	{
+		if (!$this->hasTransactions) {
+			return false;
+		}
+		if ($this->transOff) {
+			return true;
+		}
+		$this->transCnt += 1;
+
+		return $this->_connectionID->beginTransaction();
+	}
+
+	function CommitTrans($ok = true)
+	{
+		if (!$this->hasTransactions) {
+			return false;
+		}
+		if ($this->transOff) {
+			return true;
+		}
+		if (!$ok) {
+			return $this->RollbackTrans();
+		}
+		if ($this->transCnt) {
+			$this->transCnt -= 1;
+		}
+		$this->_autocommit = true;
+
+		$ret = $this->_connectionID->commit();
+		return $ret;
+	}
+
+	function RollbackTrans()
+	{
+		if (!$this->hasTransactions) {
+			return false;
+		}
+		if ($this->transOff) {
+			return true;
+		}
+		if ($this->transCnt) {
+			$this->transCnt -= 1;
+		}
+		$this->_autocommit = true;
+
+		$ret = $this->_connectionID->rollback();
+		return $ret;
+	}
+
+	function SetTransactionMode( $transaction_mode )
+	{
+		$this->_transmode  = $transaction_mode;
+		if (empty($transaction_mode)) {
+			$this->_connectionID->query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
+			return;
+		}
+		if (!stristr($transaction_mode,'isolation')) $transaction_mode = 'ISOLATION LEVEL '.$transaction_mode;
+		$this->_connectionID->query("SET TRANSACTION ".$transaction_mode);
+	}
+
+	/**
+	 * Returns a driver-specific format for a bind parameter
+	 *
+	 * Unlike the native driver, we use :name parameters
+	 * instead of offsets
+	 *
+	 * @param string $name
+	 * @param string $type (ignored in driver)
+	 *
+	 * @return string
+	 */
+	public function param($name,$type='C') {
+		if (!$name) {
+			return '';
+		}
+
+		return sprintf(':%s', $name);
+	}
 }

@@ -35,9 +35,8 @@ class ckeditorInterface {
   /**
    *
    */
-	function CreateHtml() {
-		$Html = $this->Editor->editor($this->InstanceName, $this->Value, $config = array());
-		
+	function CreateHtml($config=[]) {
+		$Html = $this->Editor->editor($this->InstanceName, $this->Value, $config);
 		return $Html ;
 	}
 

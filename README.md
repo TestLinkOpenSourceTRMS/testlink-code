@@ -8,7 +8,7 @@ Next TestLink version will 2.x with a new UX based on the Dashio - Bootstrap Adm
 
 ## Contents
  1. [Introduction](#1-introduction)
- 2. [Release notes / Critical Configuration Notes](2-release-notes--critical-configuration-notes)
+ 2. [Release notes / Critical Configuration Notes](#2-release-notes--critical-configuration-notes)
  3. [System Requirements](#3-system-requirements---server)
  4. [Installation & SECURITY](#4-installation--security)
  5. [Upgrade and Migration](#5-upgrade-and-migration)
@@ -25,6 +25,7 @@ Next TestLink version will 2.x with a new UX based on the Dashio - Bootstrap Adm
 16. [User cries: I WANT HELP !!!](#16-user-cries-i-want-help-)
 17. [Use Mantis documentation](#17-use-mantis-documentation)
 18. [Link to GITORIOUS COMMITS](#18-link-to-gitorious-commits)
+19. [Running Testlink using Docker](./docker/README.md)
 
 ## 1. Introduction
 

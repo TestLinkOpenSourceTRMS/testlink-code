@@ -1,17 +1,24 @@
 <?php
 /**
- * @version   v5.20.17  31-Mar-2020
- * @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
- * @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
- * Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
+ * Error Handler with PEAR support.
  *
- * Set tabs to 4 for best viewing.
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
  *
- * Latest version is available at http://adodb.org/
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
  *
-*/
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
+
 include_once('PEAR.php');
 
 if (!defined('ADODB_ERROR_HANDLER')) define('ADODB_ERROR_HANDLER','ADODB_Error_PEAR');
@@ -78,7 +85,7 @@ global $ADODB_Last_PEAR_Error;
 
 /**
 * Returns last PEAR_Error object. This error might be for an error that
-* occured several sql statements ago.
+* occurred several sql statements ago.
 */
 function ADODB_PEAR_Error()
 {

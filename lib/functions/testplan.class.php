@@ -9,7 +9,7 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2023, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  **/
@@ -1618,11 +1618,8 @@ class testplan extends tlObjectWithAttachments
   
     Note: test urgency is set to default in the new Test plan (not copied)
     
-    @internal revisions
-    20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
-    20101114 - franciscom - BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
   */
-  private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping)
+  private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -1968,7 +1965,7 @@ class testplan extends tlObjectWithAttachments
 
     $the_sql[]="DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id ".
            "IN ($execIDSetSQL)";
-    
+    $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps_wip']} WHERE testplan_id={$id}";
     $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps']} WHERE execution_id ".
            "IN ($execIDSetSQL) ";           
     $the_sql[]="DELETE FROM {$this->tables['executions']} WHERE testplan_id={$id}";
@@ -5741,7 +5738,7 @@ class testplan extends tlObjectWithAttachments
 
     $platformClause = " AND EE.platform_id = " . $safe_id['platform'];
     $platformField = " ,EE.platform_id ";
-    if( $my['options']['ignorePlatform'] ) {
+    if( $my['options']['ignorePlatform'] || $safe_id['platform'] == -1) {  //20230826
       $platformClause = " ";
       $platformField = " ";
     }
@@ -6078,8 +6075,8 @@ class testplan extends tlObjectWithAttachments
     }
 
     $platform4EE = " ";
-    if( !is_null($my['filters']['platform_id']) )
-    {
+    if( !is_null($my['filters']['platform_id']) && (intval($my['filters']['platform_id'])) >0 )
+    {    
       $platform4EE = " AND EE.platform_id = " . intval($my['filters']['platform_id']);
     }
   
@@ -7936,8 +7933,10 @@ class testplan extends tlObjectWithAttachments
           JOIN {$this->tables['executions']} E 
           ON  E.id = LEXBTPLANPL.id 
           AND E.testplan_id = LEXBTPLANPL.testplan_id         
-          AND E.platform_id = LEXBTPLANPL.platform_id 
-          WHERE TPTCV.testplan_id = {$safe['tplan_id']} " .
+          AND E.platform_id = LEXBTPLANPL.platform_id " .
+        $my['join']['bugs'] .
+
+        " WHERE TPTCV.testplan_id = {$safe['tplan_id']} " .
         $my['where']['where'];
 
     $xql = is_null($union['not_run']) ? $union['exec'] : $union;
@@ -8064,6 +8063,8 @@ class testplan extends tlObjectWithAttachments
         " JOIN {$this->tables['executions']} E " .
         " ON  E.id = LEXBTPLAN.id " .
         " AND E.testplan_id = LEXBTPLAN.testplan_id " .        
+        $my['join']['bugs'] .
+
         $my['where']['where'];
 
     $xql = is_null($union['not_run']) ? $union['exec'] : $union;
@@ -8102,7 +8103,31 @@ class testplan extends tlObjectWithAttachments
     $rs = $dbh->get_recordset($sql);
     return is_null($rs) ? $rs : $rs[0]['name'];
   }
-  
+
+
+  /**  
+   *  
+   */  
+  function getCustomFieldsValues($id,$tproject_id,$scope='design',$filters=null)
+  {
+    $cf_map = $this->get_linked_cfields_at_design($id,$tproject_id,$filters);
+    $cf = [];
+    if( !is_null($cf_map) ) {
+      foreach($cf_map as $cf_id => $cf_info) {
+        $value = '';
+        if (isset($cf_info['node_id']) || $cf_info['node_id']) {
+          $value = $this->cfield_mgr->string_custom_field_value($cf_info,$id);
+        }
+        $cf[] = ["label" => $cf_info['label'],
+                 "name"  => $cf_info['name'],
+                 "type"  => trim($this->cfield_mgr->custom_field_types[$cf_info['type']]),
+                 "value" => $value];
+      }
+    }
+    return $cf;
+  }
+
+
 } // end class testplan
 
 
@@ -8125,6 +8150,28 @@ class build_mgr extends tlObject {
     parent::__construct();
     $this->db = &$db;
     $this->cfield_mgr = new cfield_mgr($this->db);
+  }
+
+  /**  
+   * builds  
+   */  
+  function getCustomFieldsValues($build_id,$tproject_id,$scope='design',$filters=null)
+  {
+    $cf_map = $this->get_linked_cfields_at_design($build_id,$tproject_id,$filters);
+    $cf = [];
+    if( !is_null($cf_map) ) {
+      foreach($cf_map as $cf_id => $cf_info) {
+        $value = '';
+        if (isset($cf_info['node_id']) || $cf_info['node_id']) {
+          $value = $this->cfield_mgr->string_custom_field_value($cf_info,$build_id);
+        }
+        $cf[] = ["label" => $cf_info['label'],
+                 "name"  => $cf_info['name'],
+                 "type"  => trim($this->cfield_mgr->custom_field_types[$cf_info['type']]),
+                 "value" => $value];
+      }
+    }
+    return $cf;
   }
 
 
@@ -8587,11 +8634,11 @@ class build_mgr extends tlObject {
    *
    * NEWNEW
    */
-  function get_linked_cfields_at_design($id,$tproject_id,$filters=null,$access_key='id') 
+  function get_linked_cfields_at_design($build_id,$tproject_id,$filters=null,$access_key='id') 
   {
-    $safeID = $id == 0 ? null : intval($id);
+    $safeID = $build_id == 0 ? null : intval($build_id);
     $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,
-                                                              $filters,'build',$id,$access_key);
+                                                              $filters,'build',$safeID,$access_key);
     return $cf_map;
   }
 

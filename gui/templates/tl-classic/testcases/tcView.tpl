@@ -7,7 +7,8 @@ Purpose: smarty template - view test case in test specification
 
 {config_load file="input_dimensions.conf"}
 {lang_get var='labels' 
-          s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count,actions,
+          s='no_records_found,other_versions,show_hide_reorder,version,
+             title_test_case,match_count,actions,
              file_upload_ko'}
 
 {* Configure Actions *}
@@ -45,7 +46,17 @@ Purpose: smarty template - view test case in test specification
   padding: 5px 3px 4px 5px;
   order: 99;  
 }
-
+#overlay-text{
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  font-size: 50px;
+  color: gray;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  background-color: #EBEBEB;
+  opacity: 0.75;
+}
 </style>
 
 
@@ -209,13 +220,16 @@ function jsCallDeleteFile(btn, text, o_id) {
       {$loadOnCancelURL=""}
     {/if} 
 
-  <div class="workBack">
-  {include file="attachments.inc.tpl" 
-           attach_attachmentInfos=$gui->attachments[$tcVersionID]  
-           attach_downloadOnly=$bDownloadOnly
-           attach_uploadURL={$gui->fileUploadURL[$tcVersionID]}
-           attach_loadOnCancelURL=$gui->loadOnCancelURL}
-  </div>
+    {if $gui->attachments != ''}
+      <div class="workBack">
+          {include file="attachments.inc.tpl" 
+                  attach_attachmentInfos=$gui->attachments[$tcVersionID]  
+                  attach_downloadOnly=$bDownloadOnly
+                  attach_uploadURL={$gui->fileUploadURL[$tcVersionID]}
+                  attach_loadOnCancelURL=$gui->loadOnCancelURL}
+      </div>
+    {/if}
+
   
   {* Other Versions *}
   {if 'editOnExec' != $gui->show_mode && 

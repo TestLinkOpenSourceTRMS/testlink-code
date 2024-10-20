@@ -255,15 +255,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * Its keys are the names of the settings, its values the arrays for the input parser.
    * @var array
    */
-  private $all_settings = 
-    array('setting_testplan' => array("REQUEST", tlInputParameter::INT_N),
-          'setting_build' => array("REQUEST", tlInputParameter::INT_N),
-          'setting_platform' => array("REQUEST", tlInputParameter::INT_N),
-          'setting_refresh_tree_on_action' => array("POST", tlInputParameter::CB_BOOL),
-		  'setting_testsgroupby' => array("REQUEST", tlInputParameter::INT_N),
-          'setting_exec_tree_counters_logic' =>
-             array("REQUEST", tlInputParameter::INT_N)
-          );
+  private $all_settings = [
+    'setting_testplan' => ["REQUEST", tlInputParameter::INT_N],
+    'setting_build'    => ["REQUEST", tlInputParameter::INT_N],
+    'setting_platform' => ["REQUEST", tlInputParameter::INT_N],
+		'setting_testsgroupby'             => ["REQUEST", tlInputParameter::INT_N],
+    'setting_refresh_tree_on_action'   => ["POST", tlInputParameter::CB_BOOL],
+    'setting_exec_tree_counters_logic' => ["REQUEST", tlInputParameter::INT_N]
+  ];
 
   /**
    * This array is used to map the modes to their available settings.
@@ -538,16 +537,17 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     foreach ($this->all_settings as $name => $info) {
       $init_method = "init_$name";
-      //echo '<br>'; echo $init_method; echo '<br>';
       if (in_array($name, $this->mode_setting_mapping[$this->mode]) && 
-        method_exists($this, $init_method)) 
-      {
+        method_exists($this, $init_method)) {
         // is valid, configured, exists and therefore can be used, so initialize this setting
         $this->$init_method();
         $at_least_one_active = true;
       } else {
-        // is not needed, simply deactivate it by setting it to false in main array
-        $this->settings[$name] = false;
+        // is not needed, simply deactivate 
+        $this->settings[$name] = [
+          "items" =>  null,
+          "selected" => -1 
+        ];
       }
     }
     
@@ -555,8 +555,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // the build setting is in plan mode only needed for one feature
     if ($this->mode == 'plan_mode' && 
         ($this->args->feature != 'tc_exec_assignment' && $this->args->feature != 'test_urgency') ) {
-      $this->settings['setting_build'] = false;
-      $this->settings['setting_platform'] = false;
+      $this->settings['setting_build'] = [
+        "items" => null,
+        "selected" => -1
+      ];
+      $this->settings['setting_platform'] = [
+        "items" => null,
+        "selected" => -1
+      ];
     }
   
     // if at least one active setting is left to display, switch settings panel on
@@ -575,9 +581,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
   protected function init_filters() {
     // In resulting data structure, all values have to be defined (at least initialized),
     // no matter wether they are wanted for filtering or not.
-    $dummy = array('filter_keywords_filter_type','filter_result_result',
-                   'filter_result_method','filter_result_build',
-                   'filter_assigned_user_include_unassigned');
+    $dummy = [
+      'filter_keywords_filter_type',
+      'filter_result_result',
+      'filter_result_method',
+      'filter_result_build',
+      'filter_assigned_user_include_unassigned'
+    ];
     
     foreach ($dummy as $filtername) {
       $this->active_filters[$filtername] = null;
@@ -783,7 +793,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
       // important: the token with which the page in right frame can access data in session
       $string .= '&form_token=' . $this->form_token;
 
-      $key2loop = array('setting_build','setting_platform');
+      $key2loop = [
+        'setting_build',
+        'setting_platform'
+      ];
       foreach($key2loop as $kiwi) {
         if($this->settings[$kiwi]) {
           $string .= "&{$kiwi}={$this->settings[$kiwi]['selected']}";
@@ -858,6 +871,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $loader = '';
     $children = "[]";
     $cookie_prefix = '';
+    $root_node = new stdClass();
 
     // by default, disable drag and drop, then later enable if needed
     $drag_and_drop = new stdClass();
@@ -1035,20 +1049,20 @@ class tlTestCaseFilterControl extends tlFilterControl {
         } 
         else 
         {
-		  if ($mode == 'mode_test_suite')
-		  {
-				  $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-                    	"root_node={$this->args->testproject_id}&show_tcases=0" .
-                    	"&" . http_build_query(array('tsuiteHelp' => lang_get('display_tsuite_contents')));
+    		  if ($mode == 'mode_test_suite')
+    		  {
+    				  $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+                        	"root_node={$this->args->testproject_id}&show_tcases=0" .
+                        	"&" . http_build_query(array('tsuiteHelp' => lang_get('display_tsuite_contents')));
 
-				  $root_node = new stdClass();
-				  $root_node->href = "javascript:EP({$this->args->testproject_id})";
-				  $root_node->id = $this->args->testproject_id;
-				  $root_node->name = $this->args->testproject_name;
-				  $root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . '">';
-				          $root_node->wrapClose = '</span>';
-				  $root_node->testlink_node_type = 'testproject';
-		  }
+    				  $root_node = new stdClass();
+    				  $root_node->href = "javascript:EP({$this->args->testproject_id})";
+    				  $root_node->id = $this->args->testproject_id;
+    				  $root_node->name = $this->args->testproject_name;
+    				  $root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . '">';
+    				          $root_node->wrapClose = '</span>';
+    				  $root_node->testlink_node_type = 'testproject';
+    		  }
         }
       break;
       
@@ -1097,6 +1111,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
         // Usage of wrong values in $this->args->xyz for cookiePrefix
         // instead of correct values in $filters->setting_xyz
         //
+
+        // does this plan has platforms?
         $cookie_prefix = 'test_exec_build_id_' . $filters->setting_build . '_';
         if (isset($filters->setting_platform)) {
           $cookie_prefix .= 'platform_id_' . $filters->setting_platform . '_';
@@ -1293,16 +1309,22 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
     
     $platformSet = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
-
-    if( is_null($platformSet) ) {
+    if( is_null($platformSet) || count($platformSet) == 0) {
       // Brute force bye, bye !! >>--->
-      $this->settings[$key] = false;
+      $this->settings[$key] = [
+        'items' => null, 
+        'selected' => -1
+      ];
       $_SESSION[$session_key] = null;
       return;
     }  
 
     // Ok, there are platforms, go ahead
-    $this->settings[$key] = array('items' => null, 'selected' => -1);
+    $this->settings[$key] = [
+      'items' => null, 
+      'selected' => -1
+    ];
+    
     if( is_null($this->args->$key) ) {
       $this->args->$key = intval($session_selection);  
     }  
@@ -1310,7 +1332,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     switch($this->mode) {
       case 'plan_mode':
-        $this->settings[$key]['items'] = array(0 => $this->option_strings['any']);
+        $this->settings[$key]['items'] = [0 => $this->option_strings['any']];
         $this->settings[$key]['items'] += $platformSet;
       break;
 
@@ -1333,6 +1355,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     if($this->args->$key <= 0) {
       $this->settings[$key]['selected'] = key($this->settings[$key]['items']);
     }  
+
     $_SESSION[$session_key] = $this->settings[$key]['selected'];
   } // end of method
 
@@ -1475,7 +1498,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       case 'edit_mode':
         $special['domain'] = 
           array(-1 => $this->option_strings['without_keywords'], 
-                0 => $this->option_strings['any']);       
+                 0 => $this->option_strings['any']);       
         $special['filter_mode'] = array('NotLinked' => $l10n['not_linked']);
       break;
 
@@ -1520,8 +1543,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
     
     if ($atLeastOneKW) {
       // set the active value to filter
-      // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
-      if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {
+      // delete keyword filter if:
+      // - "any" (0) is part of the selection AND 
+      // - there are several elements in the array (user selection)
+      // !!Regardless of filter mode!!
+      //
+      if (is_array($this->filters[$key]['selected']) && 
+          count($this->filters[$key]['selected']) > 1 &&  
+          in_array(0, $this->filters[$key]['selected'])) {
         $this->active_filters[$key] = null;
       } else {
         $this->active_filters[$key] = $this->filters[$key]['selected'];
@@ -2040,8 +2069,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
   protected function init_setting_testsgroupby() {
   	$key = 'setting_testsgroupby';
   	
-  	// now load info from session
-  	$mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 0;
+  	$mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 'mode_test_suite';
   	$this->args->testsgroupedby_mode = $mode;
   	$this->args->{$key} = $mode;
   	$this->settings[$key]['selected'] = $mode;
@@ -2062,7 +2090,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $cfx = $this->configuration->exec_cfg->tcases_counters_mode_domain;
     $logic = $this->configuration->exec_cfg->tcases_counters_mode;
     $wow = 'without_platforms';
-    if( $this->settings['setting_platform'] != false ) {
+    if( $this->settings['setting_platform']["items"] != null ) {
       $wow = 'with_platforms';
     }
     $defaultAlgo = $logic[$wow];
@@ -2153,18 +2181,22 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     }
 
-    $platformSet = $this->platform_mgr->getAllAsMap($opxy);
+    $platformSet = (array)$this->platform_mgr->getAllAsMap($opxy);
     $this->filters[$key] = array('items' => $platformSet,
                                  'selected' => $selection);
-
+    $this->filters[$key]['size'] = min(count($this->filters[$key]['items']),
+                                       self::ADVANCED_FILTER_ITEM_QUANTITY);
+                             
     // set the active value to filter
-    // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
+    // delete filter if "any" (0) is part of the selection - regardless of filter mode
     if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {
       $this->active_filters[$key] = null;
     } else {
       $this->active_filters[$key] = $this->filters[$key]['selected'];
     }
-          
+
+  
+
 
   } // end of method
 

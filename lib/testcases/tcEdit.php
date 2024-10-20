@@ -531,10 +531,17 @@ function createWebEditors($basehref,$editorCfg,$editorSet=null)
     $cols = array('steps' => array('horizontal' => 38, 'vertical' => 44),
                   'expected_results' => array('horizontal' => 38, 'vertical' => 44));
 
-    $owe->cfg = array('summary' => array('rows'=> null,'cols' => null),
-                      'preconditions' => array('rows'=> null,'cols' => null) ,
-                      'steps' => array('rows'=> null,'cols' => $cols['steps'][$layout]) ,
-                      'expected_results' => array('rows'=> null, 'cols' => $cols['expected_results'][$layout]));
+
+    $editorsCfg = config_get('gui')->text_editor;
+    $owe->cfg = ['summary' => ['height' => $editorsCfg['summary']['height']],
+                 'preconditions' => ['height' => $editorsCfg['preconditions']['height']],
+                 'steps' => ['rows'=> null,
+                             'cols' => $cols['steps'][$layout]
+                            ],
+                 'expected_results' => ['rows'=> null, 
+                                        'cols' => $cols['expected_results'][$layout]
+                                       ]
+                ];
     
     $owe->editor = array();
     $force_create = is_null($editorSet);
@@ -695,9 +702,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys) {
 
   foreach ($oWebEditor->cfg as $key => $value) {
     $of = &$oWebEditor->editor[$key];
-    $rows = $oWebEditor->cfg[$key]['rows'];
-    $cols = $oWebEditor->cfg[$key]['cols'];
-    
+
     switch($argsObj->doAction) {
       case "edit":
       case "delete":
@@ -733,7 +738,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys) {
     } else if( $cleanUpWebEditor ) {
       $of->Value = '';
     }
-    $smartyObj->assign($key, $of->CreateHTML($rows,$cols));
+    $smartyObj->assign($key, $of->CreateHTML($oWebEditor->cfg[$key]));
   }
       
   switch($argsObj->doAction) {

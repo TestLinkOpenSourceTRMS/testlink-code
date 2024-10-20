@@ -8,7 +8,12 @@ searchResults.tpl
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {$tableID="$matrix->tableID"}
+  {* Side effect reported in #0009107
+     with newer PHP versions using the double quotes in this way -> "$matrix->tableID"  
+     generates an issue -> blank page
+     the error is written in apache error.log
+  *}
+  {$tableID=$matrix->tableID} 
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}

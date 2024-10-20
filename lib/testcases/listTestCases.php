@@ -50,7 +50,7 @@ function initializeGui(&$dbHandler, &$control)
                         'keywordsAssign' => "lib/keywords/keywordsAssign.php",
                         'assignReqs' => "lib/requirements/reqTcAssign.php");
 
-  $gui->tree_drag_and_drop_enabled = array('edit_tc' => (has_rights($dbHandler, "mgt_modify_tc") == 'yes'),
+  $gui->tree_drag_and_drop_enabled = array('edit_tc' => ($_SESSION['currentUser']->hasRightOnProj($dbHandler, "mgt_modify_tc") == 'yes'),
                                            'keywordsAssign' => false,
                                            'assignReqs' => false);
 

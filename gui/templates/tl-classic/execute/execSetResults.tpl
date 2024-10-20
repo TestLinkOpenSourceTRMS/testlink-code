@@ -123,7 +123,13 @@ updateLinkToLatestTCVersion,
 version,
 warning,
 warning_delete_execution,
-warning_nothing_will_be_saved,file_upload_ko,pleaseOpenTSuite'}
+warning_nothing_will_be_saved,
+file_upload_ko,
+file_upload_tclevel_ok,
+file_upload_steplevel_ok,
+file_upload_steplevel_ko,
+pleaseOpenTSuite,
+pleaseWait'}
 
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -231,35 +237,6 @@ function validateForm(f) {
   return status_ok;
 }
 
-
-
-
-
-
-function OLDvalidateForm(f)
-{
-  var status_ok=true;
-  var cfields_inputs='';
-  var cfValidityChecks;
-  var cfield_container;
-  var access_key;
-  cfield_container=document.getElementById('save_button_clicked').value;
-  access_key='cfields_exec_time_tcversionid_'+cfield_container; 
-    
-  if( document.getElementById(access_key) != null )
-  {    
- 	    cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
-      cfValidityChecks=validateCustomFields(cfields_inputs);
-      if( !cfValidityChecks.status_ok )
-      {
-          var warning_msg=cfMessages[cfValidityChecks.msg_id];
-          alert_message(alert_box_title,warning_msg.replace(/%s/, cfValidityChecks.cfield_label));
-          return false;
-      }
-  }
-  return true;
-}
-
 /*
   function: checkSubmitForStatusCombo
             $statusCode has been checked, then false is returned to block form submit().
@@ -333,6 +310,8 @@ function jsCallDeleteFile(btn, text, o_id) {
 {include file="bootstrap.inc.tpl"}
 <script src="{$basehref}third_party/clipboard/clipboard.min.js"></script>
 <script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
+
+<link rel="stylesheet" href="{$smarty.const.TL_THEME_CSS_DIR}protection.css">
 </head>
 {*
 IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php
@@ -361,21 +340,21 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 {if $gui->uploadOp != null }
   <script>
-  var uplMsg = "{$labels.file_upload_ko}<br>";
+  var uplMsg = "";
   var doAlert = false;
-  {if $gui->uploadOp->tcLevel != null 
-      && $gui->uploadOp->tcLevel->statusOK == false}
-    uplMsg += "{$gui->uploadOp->tcLevel->msg}<br>";
-    doAlert = true;
-  {/if}
 
-  {if $gui->uploadOp->stepLevel != null 
-      && $gui->uploadOp->stepLevel->statusOK == false}
-    uplMsg += "{$gui->uploadOp->stepLevel->msg}<br>";
-    if (doAlert == false) {
-      doAlert = true;
-    }
-  {/if}
+  {if $gui->uploadOp->tcLevel != null}
+    uplMsg = "{$labels.file_upload_tclevel_ok}";
+    uplMsg += "{$gui->uploadOp->tcLevel->msg}<br><br>";
+    doAlert = true;
+  {/if} 
+
+  {if $gui->uploadOp->stepLevel != null}
+     uplMsg += "{$labels.file_upload_steplevel_ok}";
+     uplMsg += "{$gui->uploadOp->stepLevel->msg}<br><br>";
+     doAlert = true;
+  {/if} 
+
   if (doAlert) {
     bootbox.alert(uplMsg);
   }
@@ -389,6 +368,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   </script>
 {/if}
 
+<!-- @see execSetResults.js -->
+<div id="overlay"> 
+  <div id="text-for-overlay">{$labels.pleaseWait} 
+  </div>
+</div>
 
 <h1 class="title">
 	{$labels.title_t_r_on_build} {$gui->build_name|escape}
@@ -598,6 +582,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 <script>
 jQuery( document ).ready(function() {
   clipboard = new Clipboard('.clip');
+
+  /* Chosen Config */
+  jQuery(".chosen-select").chosen({ width: "200%" , allow_single_deselect: true, search_contains: true});
+ jQuery('select[data-cfield="list"]').chosen({ width: "200%" , allow_single_deselect: true, search_contains: true});
 });
 </script>
 <script language="JavaScript" src="gui/javascript/execSetResults.js" type="text/javascript"></script>

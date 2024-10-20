@@ -249,3 +249,53 @@ function checkTimeStamp($ts)
     }  
   }  
 }
+
+
+
+/**  
+ *  
+ *  
+ */
+function locateDateToISO($localeDateString,$dateFormat) {
+
+  $y=2;
+  $m=1;
+  $d=0;
+  $sepa='/';
+
+  switch($dateFormat) {
+    case '%d.%m.%Y':
+      $sepa='.';
+    break;
+
+    case '%d-%m-%Y':
+      $sepa='-';
+    break;
+
+    case '%m/%d/%Y':
+      $m=0;
+      $d=1;
+    break;
+
+    case '%Y/%m/%d':
+      $y=0;
+      $m=1;
+      $d=2;
+    break;
+    
+    case '%Y-%m-%d':
+      $sepa='-';
+      $y=0;
+      $m=1;
+      $d=2;
+    break;    
+
+    case '%d/%m/%Y':
+    default:
+    break;
+  }
+
+  $pieces = explode($sepa,$localeDateString);
+  $iso = $pieces[$y] . $pieces[$m] . $pieces[$d];
+  return $iso;
+}

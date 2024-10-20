@@ -58,10 +58,10 @@ Originally, the user had to call adodb_sess_open().
 	Postgres
 	SAP
 
-* filter(): Used to support multiple, simulataneous encryption/compression
+* filter(): Used to support multiple, simultaneous encryption/compression
 schemes.
 
-* Debug support is improved thru _rsdump() function, which is called after
+* Debug support is improved through _rsdump() function, which is called after
 every database call.
 
 ------------
@@ -120,7 +120,7 @@ next release of ADODB.
 
 If so, I will modify the current documentation to detail the new
 functionality.  To that end, what file(s) contain the documentation?  Please
-send them to me if they are not publically available.
+send them to me if they are not publicly available.
 
 Also, if there is *anything* in the code that you like to see changed, let
 me know.

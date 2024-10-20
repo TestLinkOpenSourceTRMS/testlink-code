@@ -49,12 +49,10 @@ setUpBuilds($args,$gui);
 $buildSet = array('buildSet' => $args->builds->idSet);
 
 if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || 
-    ($args->doAction == 'result' 
-     && count($args->builds->idSet) <= $gui->matrixCfg->buildQtyLimit) )
-{
+    ($args->doAction == 'result' && 
+     count($args->builds->idSet) <= $gui->matrixCfg->buildQtyLimit) ) {
 
   $tpl = $templateCfg->default_template;
-  //$buildSet = array('buildSet' => $args->builds->idSet);
 
   $opt = array('getExecutionNotes' => true);
   if($args->format == FORMAT_XLS) {
@@ -63,14 +61,14 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) ||
                  'getExecutionTimestamp' => true, 'getExecutionDuration' => true);
   }    
   $execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id,$buildSet,$opt);
+
   $metrics = $execStatus['metrics'];
   $latestExecution = $execStatus['latestExec']; 
 
   // Every Test suite a row on matrix to display will be created
   // One matrix will be created for every platform that has testcases
   $args->cols = initCols($gui->show_platforms);
-  if( !is_null($execStatus['metrics']) )
-  {
+  if( !is_null($execStatus['metrics']) ) {
     buildDataSet($db,$args,$gui,$execStatus,$labels);
   }
 
@@ -137,25 +135,37 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null) {
   $buildIDSet = $argsObj->builds->idSet;
   $latestBuild = $argsObj->builds->latest;
 
-  $columns = array(array('title_key' => 'title_test_suite_name', 'width' => 100),
-                   array('title_key' => 'title_test_case_title', 'width' => 150));
-
-  $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,
-                           'priority' => null, 'result_on_last_build' => null, 
-                           'title_test_case_title' => null,
-                           'latest_exec_notes' => null));
-  
+  $lbl = init_labels(['title_test_suite_name' => null,
+                      'platform' => null,
+                      'priority' => null, 
+                      'result_on_last_build' => null, 
+                      'title_test_case_title' => null,
+                      'latest_exec_notes' => null]);
   $group_name = $lbl['title_test_suite_name'];
 
-  if(!is_null($guiObj->platforms))
-  {
-    $columns[] = array('title_key' => 'platform', 'width' => 60, 'filter' => 'list', 
-                       'filterOptions' => $guiObj->platforms);
+  // Column order is CRITIC, because is used in the build data logic
+  $columns = [
+    ['title_key' => 'title_test_suite_name', 'width' => 100],
+    ['title_key' => 'title_test_case_title', 'width' => 150]
+  ];
+  
+  if(!is_null($guiObj->platforms) && (count($guiObj->platforms) > 0)) {
+    $columns[] = [
+      'title_key' => 'platform', 
+      'width' => 60, 
+      'filter' => 'list', 
+      'filterOptions' => $guiObj->platforms
+    ];
     $group_name = $lbl['platform'];
   }
+
   if($guiObj->options->testPriorityEnabled) 
   {
-    $columns[] = array('title_key' => 'priority', 'type' => 'priority', 'width' => 40);
+    $columns[] = [
+      'title_key' => 'priority', 
+      'type' => 'priority', 
+      'width' => 40
+    ];
   }
   
   // --------------------------------------------------------------------
@@ -168,37 +178,66 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null) {
   }  
 
   if( $guiObj->matrixCfg->buildColumns['showExecutionResultLatestCreatedBuild'] ) {
-    $buildSet[] = array('name' => $lbl['result_on_last_build'] . ' ' . $latestBuild->name);
+    $buildSet[] = ['name' => $lbl['result_on_last_build'] . ' ' . $latestBuild->name];
   }
 
   foreach($buildSet as $build) 
   {
-    $columns[] = array('title' => $build['name'], 'type' => 'status', 'width' => 100);
+    $columns[] = [
+      'title' => $build['name'], 
+      'type' => 'status', // OK because we display status
+      'width' => 100
+    ];
   }
 
   if ($guiObj->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild']) {
-    $columns[] = array('title_key' => 'test_exec_notes_latest_created_build', 
-      'type' => 'status', 'width' => 100);
+    $columns[] = [
+      'title_key' => 'test_exec_notes_latest_created_build', 
+      'type' => 'notes', 
+      'width' => 100
+    ];
   }
 
   // --------------------------------------------------------------------
-  $columns[] = array('title_key' => 'last_execution', 'type' => 'status', 'width' => 100);
+  $columns[] = [
+    'title_key' => 'last_execution', 
+    'type' => 'status', // OK because we display status
+    'width' => 100
+  ];
 
-  $columns[] = array('title_key' => 'latest_exec_notes', 'type' => 'status', 'width' => 100);
+  $columns[] = [
+    'title_key' => 'latest_exec_notes', 
+    'type' => 'notes', 
+    'width' => 100
+  ];
 
   $fo = !is_null($forceFormat) ? $forceFormat : $argsObj->format; 
   if ($fo == FORMAT_HTML) 
   {
-    $matrix = new tlExtTable($columns, $guiObj->matrix, 'tl_table_results_tc');
+
+    // 20221231 - having a differente name for the table it's critic
+    //            because it seems that column ID, of the column used for sorting are
+    //            saves in a cookie that is not rested.
+    //            This has created an issue when using the Test Results matrix
+    //            in a Test Plan with platforms, and then request for a Test Plan
+    //            without platforms, because the EXTJS code was trying to access
+    //            sort info from a column named id_platform that does not exist
+    //            obvioulsy in the data to be displayed
+    //            That's why I've added the $group_name to the name
+    //            I was able to fix this using the ext-all-debug-w-comments.js
+    // 
+    $matrix = new tlExtTable($columns, $guiObj->matrix, 'tlTestResultMatrix' . $group_name);
+    
     
     //if platforms feature is enabled group by platform otherwise group by test suite
     $matrix->setGroupByColumnName($group_name);
+
     $matrix->sortDirection = 'DESC';
 
     if($guiObj->options->testPriorityEnabled) {
       // Developer Note:
       // To understand 'filter' => 'Priority' => see exttable.class.php => buildColumns()
-      $matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer', 'filter' => 'Priority'));
+      $matrix->addCustomBehaviour('priority', ['render' => 'priorityRenderer', 'filter' => 'Priority']);
       $matrix->setSortByColumnName($lbl['priority']);
     } else {
       $matrix->setSortByColumnName($lbl['title_test_case_title']);
@@ -212,7 +251,6 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null) {
   } else {
     $matrix = new tlHTMLTable($columns, $guiObj->matrix, 'tl_table_results_tc');
   }
-  unset($columns);
   
   return $matrix;
 }
@@ -247,10 +285,10 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $guiObj->map_status_css = null;
   $guiObj->title = lang_get('title_test_report_all_builds');
   $guiObj->printDate = '';
-  $guiObj->matrix = array();
+  $guiObj->matrix = [];
 
-  $guiObj->platforms = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
-  $guiObj->show_platforms = !is_null($guiObj->platforms);
+  $guiObj->platforms = (array)$tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
+  $guiObj->show_platforms = (count($guiObj->platforms) > 0);
 
   $guiObj->img = new stdClass();
   $guiObj->img->exec = $imgSet['exec_icon'];
@@ -363,9 +401,12 @@ function createSpreadsheet($gui,$args,$media) {
   // Latest Execution result (Hmm need to explain better)
   // Latest Execution notes
   // 
-  $dataHeader = array($lbl['title_test_suite_name'],$lbl['title_test_case_title']);
+  $dataHeader = [
+    $lbl['title_test_suite_name'],
+    $lbl['title_test_case_title']
+  ];
 
-  if( $showPlatforms = !is_null($gui->platforms) )
+  if( $showPlatforms = count($gui->platforms) > 0 )
   {
     $dataHeader[] = $lbl['platform'];
   }
@@ -520,6 +561,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
     
     foreach($tcaseSet as $tcaseID) {
 
+      // If there are NO PLATFORMS anyway we have the platformID=0!!!
       $platformSet = array_keys($metrics[$tsuiteID][$tcaseID]);
       foreach($platformSet as $platformID) {
         $rf = &$metrics[$tsuiteID][$tcaseID][$platformID];
@@ -552,8 +594,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
           $rows[$cols['link']] = "{$external_id}:{$rf[$top]['name']}";
         }
 
-        if ($gui->show_platforms)
-        {
+        if ($gui->show_platforms) {
           $rows[$cols['platform']] = $gui->platforms[$platformID];
         }
 
@@ -575,7 +616,8 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
         // Now loop on result on each build, but following order
         $buildExecStatus = null;  
         $execOnLatestCreatedBuild = null;
-        $execNoteLatestCreatedBuild = ['text' => ''];
+        $execNoteLatestCreatedBuild = '';
+
         foreach($args->builds->idSet as $buildID)
         {
           $r4build['text'] = "";
@@ -637,7 +679,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
             $args->builds->latest->id == $buildID &&
             $rf[$buildID]['execution_notes'])
           {
-            $execNoteLatestCreatedBuild['text'] = $rf[$buildID]['execution_notes'];
+            $execNoteLatestCreatedBuild = $rf[$buildID]['execution_notes'];
           }
 
           // why we do special reasoning on NOT RUN ???
@@ -665,14 +707,8 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
 
         $rows = array_merge($rows, $buildExecStatus);
           
-        if ($gui->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild'])
-        {
-          if( $fo == FORMAT_XLS) {
-            $rows[] = $execNoteLatestCreatedBuild['text'];
-          } 
-          if( $fo == FORMAT_HTML) {
-            $rows[] = $execNoteLatestCreatedBuild;
-          }
+        if ($gui->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild']) {
+          $rows[] = $execNoteLatestCreatedBuild;
         }
 
         // Always righmost column will display lastest execution result
@@ -681,20 +717,13 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
         // @see lib/functions/tlTestPlanMetrics.class.php
         //      getExecStatusMatrix($id, $filters=null, $opt=null)
         //
-        $dfx = $latestExecution[$platformID][$tcaseID];
-        
+        $dfx = $latestExecution[$platformID][$tcaseID];        
         $nv = '';
         if( isset($dfx['execution_notes']) ) {
           $nv = is_null($dfx['execution_notes']) ? '' : $dfx['execution_notes'];
         }
-
-
-        if( $fo == FORMAT_XLS) {
-          $rows[] = $nv;
-        } 
-        if( $fo == FORMAT_HTML) {
-          $rows[] = ['text' => $nv];
-        }
+        $rows[] = $nv;
+        // ----------------------------------------------------------------------
 
         $gui->matrix[] = $rows;
         unset($r4build);
@@ -710,13 +739,25 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
  *
  */
 function initLblSpreadsheet() {
-  $lbl = init_labels(array('title_test_suite_name' => null,
-                           'platform' => null,'priority' => null,
-                           'build' => null, 'title_test_case_title' => null,'test_exec_by' => null,
-                           'notes' => null, 'date_time_run' => null, 'execution_duration' => null,
-                           'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
-                           'result_on_last_build' => null,'last_execution' => null,'assigned_to' => null,'latest_exec_notes' => null,
-                           'test_exec_notes_latest_created_build' => null));
+  $lbl = init_labels([
+    'title_test_suite_name' => null,
+    'platform' => null,
+    'priority' => null,
+    'build' => null, 
+    'title_test_case_title' => null,
+    'test_exec_by' => null,
+    'notes' => null, 
+    'date_time_run' => null, 
+    'execution_duration' => null,
+    'testproject' => null,
+    'generated_by_TestLink_on' => null,
+    'testplan' => null,
+    'result_on_last_build' => null,
+    'last_execution' => null,
+    'assigned_to' => null,
+    'latest_exec_notes' => null,
+    'test_exec_notes_latest_created_build' => null]
+  );
   return $lbl;
 } 
 

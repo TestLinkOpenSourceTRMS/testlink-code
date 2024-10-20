@@ -40,7 +40,7 @@ class ADODB_XML
 	*	@param		string		Codification to be used	
 	*	@access		public
 	*/
-	function ADODB_XML($version = "", $encoding = "", $tmpDir = null) 
+	function __construct($version = "", $encoding = "", $tmpDir = null) 
 	{
 	  $this->xml = new XMLFile($version, $encoding);
 	  $this->tmpDir = is_null($tmpDir) ? sys_get_temp_dir() : $tmpDir; 
@@ -96,7 +96,8 @@ class ADODB_XML
 	  {
 		 $this->xml->roottag->add_subtag($this->rowTagName, array());
 		 $tag = &$this->xml->roottag->curtag;
-		 
+		
+		 /*
 		 for ($i = 0; $i < $rs->_numOfFields ; $i++)
 		 {
 			list($field, $value) = each($rs->fields);		 
@@ -104,7 +105,16 @@ class ADODB_XML
 			// 20080921 - francisco.mancardi@gmail.com
 			// added CDATA to avoid problem with special characters
 			$tag->curtag->cdata = "<![CDATA[{$value}]]>";
-		 }	  
+		 }
+		 */
+		
+		 // 20220514 - each() deprecated PHP 8
+		 foreach ($rs->fields as $field => $value) {
+			$tag->add_subtag($field);
+			// 20080921 - francisco.mancardi@gmail.com
+			// added CDATA to avoid problem with special characters
+			$tag->curtag->cdata = "<![CDATA[{$value}]]>";
+		 }
 	  
 		 $rs->moveNext();
 	  }

@@ -1,22 +1,23 @@
 <?php
-/*
-@version   v5.20.17  31-Mar-2020
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence. See License.txt.
-  Set tabs to 4 for best viewing.
-
-  Latest version is available at http://adodb.org/
-
-  Library for basic performance monitoring and tuning.
-
-  My apologies if you see code mixed with presentation. The presentation suits
-  my needs. If you want to separate code from presentation, be my guest. Patches
-  are welcome.
-
-*/
+/**
+ * performance monitoring and tuning.
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
 
 if (!defined('ADODB_DIR')) include_once(dirname(__FILE__).'/adodb.inc.php');
 include_once(ADODB_DIR.'/tohtml.inc.php');
@@ -170,6 +171,9 @@ function adodb_log_sql(&$connx,$sql,$inputarr)
 				mysqli_free_result($conn->_queryID);
 			}
 			$ok = $conn->Execute($isql,$arr);
+			if($conn instanceof ADODB_mysqli && $conn->_queryID){
+				mysqli_free_result($conn->_queryID);
+            		}
 		} else
 			$ok = true;
 
@@ -229,7 +233,7 @@ class adodb_perf {
 	var $cliFormat = "%32s => %s \r\n";
 	var $sql1 = 'sql1';  // used for casting sql1 to text for mssql
 	var $explain = true;
-	var $helpurl = '<a href="http://adodb.org/dokuwiki/doku.php?id=v5:performance:logsql">LogSQL help</a>';
+	var $helpurl = '<a href="https://adodb.org/dokuwiki/doku.php?id=v5:performance:logsql">LogSQL help</a>';
 	var $createTableSQL = false;
 	var $maxLength = 2000;
 
@@ -263,12 +267,6 @@ processes 69293
 		// Algorithm is taken from
 		// http://social.technet.microsoft.com/Forums/en-US/winservergen/thread/414b0e1b-499c-411e-8a02-6a12e339c0f1/
 		if (strncmp(PHP_OS,'WIN',3)==0) {
-			if (PHP_VERSION == '5.0.0') return false;
-			if (PHP_VERSION == '5.0.1') return false;
-			if (PHP_VERSION == '5.0.2') return false;
-			if (PHP_VERSION == '5.0.3') return false;
-			if (PHP_VERSION == '4.3.10') return false; # see http://bugs.php.net/bug.php?id=31737
-
 			static $FAIL = false;
 			if ($FAIL) return false;
 
@@ -593,7 +591,7 @@ Committed_AS:   348732 kB
 	}
 
 	/*
-		Raw function returning array of poll paramters
+		Raw function returning array of poll parameters
 	*/
 	function PollParameters()
 	{
@@ -694,12 +692,6 @@ Committed_AS:   348732 kB
 	}
 	$this->conn->LogSQL($savelog);
 
-	// magic quotes
-
-	if (isset($_GET['sql']) && get_magic_quotes_gpc()) {
-		$_GET['sql'] = $_GET['sql'] = str_replace(array("\\'",'\"'),array("'",'"'),$_GET['sql']);
-	}
-
 	if (!isset($_SESSION['ADODB_PERF_SQL'])) $nsql = $_SESSION['ADODB_PERF_SQL'] = 10;
 	else  $nsql = $_SESSION['ADODB_PERF_SQL'];
 
@@ -724,7 +716,7 @@ Committed_AS:   348732 kB
 
 	if  (empty($_GET['hidem']))
 	echo "<table border=1 width=100% bgcolor=lightyellow><tr><td colspan=2>
-	<b><a href=http://adodb.org/dokuwiki/doku.php?id=v5:performance:performance_index>ADOdb</a> Performance Monitor</b> <font size=1>for $app</font></tr><tr><td>
+	<b><a href=https://adodb.org/dokuwiki/doku.php?id=v5:performance:performance_index>ADOdb</a> Performance Monitor</b> <font size=1>for $app</font></tr><tr><td>
 	<a href=?do=stats><b>Performance Stats</b></a> &nbsp; <a href=?do=viewsql><b>View SQL</b></a>
 	 &nbsp; <a href=?do=tables><b>View Tables</b></a> &nbsp; <a href=?do=poll><b>Poll Stats</b></a>",
 	 $allowsql ? ' &nbsp; <a href=?do=dosql><b>Run SQL</b></a>' : '',
@@ -767,7 +759,6 @@ Committed_AS:   348732 kB
 			echo $this->Tables(); break;
 		}
 		global $ADODB_vers;
-		echo "<p><div align=center><font size=1>$ADODB_vers Sponsored by <a href=http://phplens.com/>phpLens</a></font></div>";
 	}
 
 	/*
@@ -956,7 +947,7 @@ Committed_AS:   348732 kB
 <?php
 		if (!isset($_REQUEST['sql'])) return;
 
-		$sql = $this->undomq(trim($sql));
+		$sql = trim($sql);
 		if (substr($sql,strlen($sql)-1) === ';') {
 			$print = true;
 			$sqla = $this->SplitSQL($sql);
@@ -999,18 +990,6 @@ Committed_AS:   348732 kB
 		$arr = explode(';',$sql);
 		return $arr;
 	}
-
-	function undomq($m)
-	{
-	if (get_magic_quotes_gpc()) {
-		// undo the damage
-		$m = str_replace('\\\\','\\',$m);
-		$m = str_replace('\"','"',$m);
-		$m = str_replace('\\\'','\'',$m);
-	}
-	return $m;
-}
-
 
    /************************************************************************/
 

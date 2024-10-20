@@ -19,6 +19,7 @@
 16. [User cries: I WANT HELP !!!](#16-user-cries-i-want-help-)
 17. [Use Mantis documentation](#17-use-mantis-documentation)
 18. [Link to GITORIOUS COMMITS](#18-link-to-gitorious-commits)
+19. [Running Testlink using Docker](./docker/README.md)
 
 ## 1. Introduction
 

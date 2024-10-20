@@ -54,7 +54,11 @@ function ldap_connect_bind( $authCfg, $p_binddn = '', $p_password = '')
   // if you use -  echo 'ldap_errno:' . ldap_err2str(ldap_errno($t_ds ));
   // you will get Success!!!, no matter what has happened
   //
-  if( $t_ds !== false && $t_ds > 0 ) 
+  // NOTE regarding PHP >=8.1.0
+  // type of return parameter of ldap_connect has changed,
+  // see https://www.php.net/manual/de/function.ldap-connect.php
+  //
+  if( ( is_resource($t_ds) && $t_ds > 0 ) || $t_ds !== false )
   {
     $ret->handler=$t_ds;
     ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $authCfg['ldap_version']);
@@ -129,7 +133,6 @@ function ldap_connect_bind( $authCfg, $p_binddn = '', $p_password = '')
 }
 
 
-// ----------------------------------------------------------------------------
 // Attempt to authenticate the user against the LDAP directory
 function ldap_authenticate( $p_login_name, $p_password ) 
 {

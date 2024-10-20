@@ -9562,8 +9562,11 @@ class testcase extends tlObjectWithAttachments {
    * 
    */
   public function deleteStepsPartialExec($stepsIds,$context) {
-    $inClause = implode(",",$stepsIds);
     if( count($stepsIds) > 0 ) {
+      // https://github.com/TestLinkOpenSourceTRMS/testlink-code/pull/327
+      // Security
+      $inClause = $this->db->prepare_string(implode(",",$stepsIds));
+
       $sql = " DELETE FROM {$this->tables['execution_tcsteps_wip']} 
                WHERE tcstep_id IN (" . $inClause . ") " .
              " AND testplan_id = " . 

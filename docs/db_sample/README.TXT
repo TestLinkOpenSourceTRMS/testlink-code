@@ -4,22 +4,23 @@
  *
  * Filename $RCSfile: README.TXT,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/05/03 14:37:59 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2024/02/14 20:06:12 $ by $Author: dcoomber $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
  */
-restore-postgres.bat:  this bat will help you to restore postgres-testlinkAPI.sql backup
-                       Remember that:
-                       - you need to create DB before doing restore.
-                       - you need may be to change user name
-                       
-                       
-postgres-testlinkAPI.sql: Postgres PLAIN backup of a TL DB that can be used to test API Calls.
-                          All php API samples must run without problems againts this DB.
-                          Password for admin user: admin
-              
+
 testlink_sample.sql: MySQL TL sample DB            
                      Password for admin user: admin     
- 
+
+After restoring the DB dump, you'll need to grant execute permissions on the 
+`UDFStripHTMLTags` user-defined function in order for test case search to work.
+
+The example below assumes that your database name is `testlink_sample` and 
+that your TestLink user is `testlink`:
+
+```
+use testlink_sample;
+grant execute on function UDFStripHTMLTags TO 'testlink'@'%';
+```

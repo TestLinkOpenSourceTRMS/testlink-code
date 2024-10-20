@@ -15,7 +15,7 @@
         "laminas/laminas-diactoros": "^2.2",
         "adodb/adodb-php": "^5.22",
         "phpmailer/phpmailer": "^6.1",
-        "smarty/smarty": "^3.1",
+        "smarty/smarty": "^4.5",
         "psr/log": "^1.1",
         "symfony/polyfill-mbstring": "^1.15",
         "league/oauth2-client": "^2.4",

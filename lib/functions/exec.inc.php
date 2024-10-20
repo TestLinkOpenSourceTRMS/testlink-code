@@ -98,7 +98,10 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
       $map_nodeid_array_cfnames[$dummy[$cf_nodeid_pos]][]=$input_name;
     } 
   }
-  
+
+  $executedInPlatform = ($execSign->platform_id == -1) ? 0 : $execSign->platform_id;
+
+
   // Steps Partial Execution Feature
   // When writting the execution, we will delete any partial execution
   // if the test case version has steps defined.
@@ -109,7 +112,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
     $stepsIDSet = array_keys($_REQUEST['step_notes']);
     $ctx = new stdClass();
     $ctx->testplan_id = $execSign->tplan_id;
-    $ctx->platform_id = $execSign->platform_id;
+    $ctx->platform_id = $executedInPlatform;
     $ctx->build_id = $execSign->build_id;
     $tcaseMgr->deleteStepsPartialExec($stepsIDSet,$ctx);
   }
@@ -144,7 +147,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
              " execution_ts,notes,tcversion_number,platform_id,execution_duration)".
              " VALUES ( {$execSign->build_id}, {$execSign->user_id}, '{$exec_data[$execStatusKey][$tcversion_id]}',".
              "{$execSign->tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
-             "{$version_number},{$execSign->platform_id}";
+             "{$version_number},{$executedInPlatform}";
 
       $dura = 'NULL ';
       if(isset($exec_data['execution_duration'])) {

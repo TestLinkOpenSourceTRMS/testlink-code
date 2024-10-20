@@ -76,7 +76,7 @@ $TLS_htmltext['editTc'] 		= "<h2>Účel</h2>
 	<li>Testovací případy můžete procházet a editovat za pomoci stromové struktury navigačního panelu na levé straně obrazovky. Pro každý testovací případ 
   se ukládá jeho historie.</li>
 	<li>Po dokončení definice testovacích případů, přiřaďte testovací sadu do požadovaného <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">testovacího plánu</span>.</li>
+	\"javascript:open_help_window('glossary','$locale');\">testovacího plánu</span>.</li>
 </ol>
 
 <p>V Testlinku jsou testovací případy organizovány za pomoci testovacích sad." .

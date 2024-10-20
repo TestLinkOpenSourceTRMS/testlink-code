@@ -3,9 +3,7 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: README.TXT,v $
- *
- * @version $Revision: 1.3 $
- * @modified $Date: 2024/02/14 20:06:12 $ by $Author: dcoomber $
+ * @modified 2024/02/14 20:06:12 by $Author: dcoomber
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 

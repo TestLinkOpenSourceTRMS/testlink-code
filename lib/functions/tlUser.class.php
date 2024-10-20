@@ -587,7 +587,7 @@ class tlUser extends tlDBObject {
     // MD5 hash check
     // This is valid ONLY for internal password management
     $encriptedPWD = $this->getPassword();
-    if (strlen($encriptedPWD) == 32) {
+    if (strlen($encriptedPWD) === 32) {
       /* Update the old MD5 hash to the new bcrypt */
       if ($encriptedPWD == md5($pwd)) {
         $this->password = $this->encryptPassword($pwd,$this->authentication);

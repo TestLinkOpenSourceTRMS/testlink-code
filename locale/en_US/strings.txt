@@ -3640,6 +3640,7 @@ $TLS_gitlab_bug_created = "GITLAB Issue Created (summary:%s) on project with ide
 $TLS_gitlab_bug_comment = "GITLAB Commented Issue (summary:%s)";
 $TLS_kaiten_bug_created = "KAITEN Issue Created (summary:%s) on project with identifier:%s";
 $TLS_kaiten_bug_comment = "KAITEN Commented Issue (summary:%s)";
+$TLS_tuleap_bug_created = "TULEAP Issue Created (summary:%s) on project with identifier:%s";
 $TLS_bts_check_ok = "Connection is OK";
 $TLS_bts_check_ko = "Connection is KO (detailed messages on TestLink Event Log), check configuration";
 $TLS_check_bts_connection = "Check connection";

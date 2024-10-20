@@ -75,7 +75,7 @@ $TLS_author = "Autor przypadku";
 $TLS_automated = "Automatyczny";
 $TLS_automatic = "Automatyczny";
 $TLS_availability = "Dostępność";
-$TLS_build = "Wydanie";
+$TLS_build = "build";
 $TLS_check_uncheck_all = "Zaznacz / odznacz wszystko";
 $TLS_check_uncheck_all_for_remove = "zaznacz / odznacz wszystko do usunięcia";
 $TLS_click_to_set_open = "Zamknięte (kliknij, aby otworzyć)";
@@ -810,22 +810,22 @@ $TLS_btn_apply_filter = $TLS_btn_apply;
 $TLS_btn_reset_filters = "Resetuj filtry";
 $TLS_caption_nav_filters = "Filtry";
 $TLS_caption_nav_settings = "Ustawienia";
-$TLS_current_build = "Aktualne wydanie";
+$TLS_current_build = "Aktualne build";
 $TLS_filter_owner = "Przypisane do";
 $TLS_filter_result = "Wynik";
 $TLS_filter_on = "dnia";
 $TLS_filter_tcID = "ID przypadku";
 $TLS_include_unassigned_testcases = "dołącz nieprzydzielone przypadki";
 $TLS_filter_result_all_builds = "wszystkie wydania";
-$TLS_filter_result_any_build = "dowolne wydanie";
-$TLS_filter_result_specific_build = "wybrane wydanie";
+$TLS_filter_result_any_build = "dowolne build";
+$TLS_filter_result_specific_build = "wybrane build";
 $TLS_filter_result_latest_execution = "najnowsze wykonanie";
-$TLS_filter_result_current_build = "Wydanie wybrane do wykonania";
+$TLS_filter_result_current_build = "build wybrane do wykonania";
 $TLS_filter_somebody = "ktoś";
-$TLS_exec_build = "Wydanie do wykonania";
-$TLS_assign_build = "Wydanie do przydzielenia";
+$TLS_exec_build = "build do wykonania";
+$TLS_assign_build = "build do przydzielenia";
 $TLS_filter_result_all_prev_builds = "wszystkie poprzednie wydania";
-$TLS_filter_result_any_prev_build = "dowolne poprzednie wydanie";
+$TLS_filter_result_any_prev_build = "dowolne poprzednie build";
 $TLS_document_id = "ID dokumentu";
 $TLS_req_type = "Rodzaj wymagania";
 $TLS_req_spec_type = "Rodzaj spec. wym.";
@@ -907,7 +907,7 @@ $TLS_skip_frozen_req = "Pomiń zamrożone wymagania";
 
 
 // gui/templates/inc_attachments.tpl
-$TLS_alt_delete_build = "Kliknij tu, aby usunąć to wydanie";
+$TLS_alt_delete_build = "Kliknij tu, aby usunąć to build";
 $TLS_alt_delete_attachment = "Kliknij tu, aby usunąć ten załącznik";
 $TLS_attached_files = "Załączone pliki";
 $TLS_attachment_feature_disabled = "załączanie wyłączone";
@@ -923,7 +923,7 @@ $TLS_show_inactive_tplans = "Pokaż nieaktywne plany testów";
 $TLS_send_results = "Wyślij rezultaty";
 $TLS_send_to = "Do:";
 $TLS_subject = "Temat:";
-$TLS_title_active_build = "Aktywne wydanie";
+$TLS_title_active_build = "Aktywne build";
 $TLS_title_report_type = "Format raportu";
 $TLS_via_email = "emailem";
 $TLS_link_results_import = "Importuj wyniki";
@@ -1014,9 +1014,9 @@ $TLS_enter_build_notes = "Opis";
 //                 "Description should include: list of delivered packages, approvals, status, etc.";
 $TLS_open = "Otwórz";
 $TLS_title_build_2 = "Zarządzanie wydaniami";
-$TLS_title_build_create = "Utwórz nowe wydanie";
-$TLS_title_build_update = "Uaktualnij wydanie";
-$TLS_title_build_edit = "Edytuj wydanie";
+$TLS_title_build_create = "Utwórz nowe build";
+$TLS_title_build_update = "Uaktualnij build";
+$TLS_title_build_edit = "Edytuj build";
 $TLS_warning_empty_build_name = "Nadaj nazwę dla wydania!";
 $TLS_copy_to_all_tplans = "Skopiuj do wszystkich planów testów";
 $TLS_release_date = "Data publikacji";
@@ -1407,16 +1407,16 @@ $TLS_bug_create_into_bts = "Utwórz raport defektu";
 $TLS_bug_copy_from_latest_exec = "Skopiuj zagadnienia z ostatniego wykonania";
 
 $TLS_btn_export_testcases = "Eksport przypadków testowych";
-$TLS_build_is_closed = "Wydanie jest zamknięte";
+$TLS_build_is_closed = "build jest zamknięte";
 $TLS_builds_notes = "Opis wydania";
 $TLS_bulk_tc_status_management = "Hurtowe zarządzanie statusem przypadków";
-$TLS_closed_build = "wydanie zamknięte. Nie można dokonać żadnej operacji.";
+$TLS_closed_build = "build zamknięte. Nie można dokonać żadnej operacji.";
 $TLS_date_time_run = "Data";
 $TLS_details = "Szczegóły";
 $TLS_edit_notes = "edytuj uwagi";
 $TLS_execute_and_save_results ="Wykonaj i zapisz wynik";
-$TLS_exec_any_build = "(dowolne wydanie)";
-$TLS_exec_current_build = "(aktualne wydanie)";
+$TLS_exec_any_build = "(dowolne build)";
+$TLS_exec_current_build = "(aktualne build)";
 $TLS_exec_notes = "Uwagi";
 $TLS_exec_status = $TLS_status;
 $TLS_execution_history = "Historia wykonania przypadku";
@@ -1846,7 +1846,7 @@ $TLS_all_reqspecs_in_tproject = "Wszystkie specyfikacje wym. w projekcie testowy
 
 
 // ----- gui/templates/resultsAllBuilds.tpl -----
-$TLS_th_build = "Wydanie";
+$TLS_th_build = "build";
 $TLS_th_tc_total = "Ilość testów";
 $TLS_th_tc_assigned = "Przypisane";
 $TLS_title_met_of_build = "Metryki dla wydania";
@@ -1873,14 +1873,14 @@ $TLS_info_bugs_per_tc_report = "Raport pokazuje wszystkie defekty powiązane do 
 $TLS_info_resultsTC_report = "Raport pokazuje wyniki ostatniego wykonania przypadku testowego dla każdego z wydań, " .
 							 "analizując przypadki zarówno <b>przypisanie jak i nie przypisane do testerów.</b> <br />" .
                              "<br /><b>Przykład:</b><br />Przypadek testowy był wykonany w nastepującej kolejności: " .
-                             "<br />Wydanie 1.0 - Pozytywny; Wydanie 1.0 - Negatywny<br />-> Najnowsze wykonanie dla wydania 1.0 " .
+                             "<br />build 1.0 - Pozytywny; build 1.0 - Negatywny<br />-> Najnowsze wykonanie dla wydania 1.0 " .
                              "jest Negatywny ponieważ drugie wykonanie nadpisuje starsze wyniki.<br /><br />" .
-                             "Kolumny \"[Najnowsze wydanie]\" i \"Najnowsze wykonanie\" pokazują dane tak jak przedstawiono " .
+                             "Kolumny \"[Najnowsze build]\" i \"Najnowsze wykonanie\" pokazują dane tak jak przedstawiono " .
                              "na <b>przykładzie:</b><br />Przypadek testowy był wykonany w nastepującej kolejności:<br />" .
-                             "Wydanie 1.0 - Pozytywny; Wydanie 1.0 - Negatywny; Wydanie 2.0 - Zablokowany; " .
-                             "Wydanie 1.0 - Pozytywny<br>-> [Najnowsze wydanie] : Zablokowany ponieważ Wydanie 2.0 jest " .
-                             "najnowszym utworzonym wydaniem w którym wykonano test.<br />-> \"Najnowsze wykonanie\" : " .
-                             "Pozytywny ponieważ Wydanie 1.0 było wykonane jako ostatnie.<br /><br />Wyświetlany priorytet ".
+                             "build 1.0 - Pozytywny; build 1.0 - Negatywny; build 2.0 - Zablokowany; " .
+                             "build 1.0 - Pozytywny<br>-> [Najnowsze build] : Zablokowany ponieważ build 2.0 jest " .
+                             "najnowszym utworzonym buildm w którym wykonano test.<br />-> \"Najnowsze wykonanie\" : " .
+                             "Pozytywny ponieważ build 1.0 było wykonane jako ostatnie.<br /><br />Wyświetlany priorytet ".
                              "jest wyliczany na podstawie wagi aktualnie podpiętej wersji przypadku testowego.";
 
 
@@ -1914,8 +1914,8 @@ $TLS_no_blocked_with_tester = "Nie ma żadnych przypadków testowych (Z PRZYPISA
 
 
 // ----- gui/templates/resultsByTesterPerBuild.tpl -----
-$TLS_caption_results_by_tester_per_build = "Wyniki dla testera per wydanie";
-$TLS_results_by_tester_per_build = "Wyniki dla testera per wydanie";
+$TLS_caption_results_by_tester_per_build = "Wyniki dla testera per build";
+$TLS_results_by_tester_per_build = "Wyniki dla testera per build";
 $TLS_progress = "Postęp planu [%]";
 $TLS_executions_without_assignment = "Nieprzypisane wykonania";
 $TLS_no_testers_per_build = "W tym planie testów nie ma przypisanych testerów w żadnym otwartym wydaniu.";
@@ -2280,30 +2280,30 @@ $TLS_warning_empty_filename = "Podaj nazwę pliku";
 
 
 // ----- gui/templates/buildView.tpl -----
-$TLS_alt_active_build = "Aktywne wydanie";
-$TLS_alt_edit_build = "Edytuj wydanie";
-$TLS_alt_open_build = "Otwórz wydanie";
+$TLS_alt_active_build = "Aktywne build";
+$TLS_alt_edit_build = "Edytuj build";
+$TLS_alt_open_build = "Otwórz build";
 $TLS_btn_build_create = "Utwórz";
 $TLS_no_builds = "Nie zdefiniowano żadnego wydania dla tego planu testów!";
 $TLS_th_description = "Opis";
 $TLS_th_open = "Otwórz";
 $TLS_title_build_list = "Lista istniejących wydań";
-$TLS_warning_delete_build = "<p>Zamierzasz usunąć wydanie: %s </p>" .
+$TLS_warning_delete_build = "<p>Zamierzasz usunąć build: %s </p>" .
 		"<p><b>Wszystkie</b> powiązane z nim dane (m.in, WYNIKI TESTÓW tego wydania) również zostaną usunięte!</p>" .
 		"<p>Jesteś pewien, że tego chcesz?</p>";
-$TLS_builds_description = "Wydanie jest to obiekt podrzędny planu testów. Każde wydanie jest powiązane z aktywnym planem testów.<br />" . 
+$TLS_builds_description = "build jest to obiekt podrzędny planu testów. Każde build jest powiązane z aktywnym planem testów.<br />" . 
         "Wydania są identyfikowane po tytułach. Nazwa wydania powinna odpowiadać nazwie Release Candidatów umieszczanych w svn, w gałęzi released.<br /><br />" .
         "Opis wydania musi zawierać:" .
 		"<br />-> numer rewizji SVN – dla zapewnienia identyfikowalności testów i kodu źródłowego." .
 		"<br />-> link do zagadnienia w Redmine, która grupuje błędy zgłaszane podczas danego cyklu testowego.<br />" .
 	    "powinien też zawierać: </br>->listę dostarczonych paczek, poprawek lub funkcjonalności, statusy, itd.<br />" .
 		"<br /> Wydania mają dwa atrybuty:<br />" .
-		"Aktywny / Nieaktywny &ndash; określa czy wydanie może być używane. " .
+		"Aktywny / Nieaktywny &ndash; określa czy build może być używane. " .
 		"Nieaktywnych wydań nie ma dostępnych na stronie wykonywania testów i na stronach raportów.<br />" .
 		"Otwarte / Zamknięte &ndash; Wyniki testów mogą być modyfikowane tylko dla otwarych wydań.";
 $TLS_build_copy_help = "Jeśli zaznaczysz opcję: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
 		"&nbsp;,nazwa wydania będzie sprawdzona we wszystkich planach testów tego projektu testowego" .
-		"i jeśli taka nazwa nie istnieje, wydanie zostanie utworzone.";
+		"i jeśli taka nazwa nie istnieje, build zostanie utworzone.";
 
 
 // ----- gui/templates/planView.tpl -----
@@ -2529,7 +2529,7 @@ $TLS_desc_project_inventory_management="Zarządzanie sprzętem testowym";
 
 
 $TLS_desc_role_management = "Zarządzanie rolami";
-$TLS_desc_testplan_create_build = "Utwórz / edytuj wydanie";
+$TLS_desc_testplan_create_build = "Utwórz / edytuj build";
 $TLS_desc_testplan_execute = "Wykonanie planu";
 $TLS_desc_testplan_metrics = "Statystyki planu testowego";
 $TLS_desc_testplan_planning = "Tworzenie planu testowego";
@@ -2673,7 +2673,7 @@ $TLS_text_counter_feedback = "Możesz wprowadzić do %d znaków. Zostało ";
 
 
 // ----- lib/general/frmWorkArea.php -----
-$TLS_create_a_build = "Utwórz wydanie";
+$TLS_create_a_build = "Utwórz build";
 $TLS_no_build_warning_part1 = "Nie znaleziono wydania utworzonego dla tego planu testów.";
 $TLS_no_build_warning_part2 = "Najpierw go utwórz, albo zapytaj administratora.";
 
@@ -2709,10 +2709,10 @@ $TLS_kword_to_be_assigned_to_testcases = "Słowa kluczowe do przypisania do przy
 
 
 // ----- lib/plan/buildNew.php -----
-$TLS_cannot_add_build = "Wydanie nie może zostać dodane!";
+$TLS_cannot_add_build = "build nie może zostać dodane!";
 $TLS_cannot_delete_build = "Nie można usunąć wydania!";
 $TLS_cannot_update_build = "Błąd podczas aktualizacji wydania!";
-$TLS_warning_duplicate_build = "Istnieje już wydanie z tym identyfikatorem";
+$TLS_warning_duplicate_build = "Istnieje już build z tym identyfikatorem";
 
 
 
@@ -2964,7 +2964,7 @@ $TLS_info_testPlanWithCF = "This Report shows all test cases with any custom fie
 
 
 // ----- lib/results/resultsTC.php -----
-$TLS_result_on_last_build = '[Najnowsze wydanie]';
+$TLS_result_on_last_build = '[Najnowsze build]';
 $TLS_tcversion_indicator = ' [v%s]';
 
 
@@ -3783,7 +3783,7 @@ $TLS_testCaseStatus_final = 'Wersja finalna';
 // printDocument.php
 $TLS_report_test_plan_design = 'Plan Testów';	
 $TLS_report_test_plan_execution = 'Raport z wykonania Planu Testów';	
-$TLS_report_test_plan_execution_on_build = 'Raport z wykonania Planu Testów (wydanie)';	
+$TLS_report_test_plan_execution_on_build = 'Raport z wykonania Planu Testów (build)';	
 $TLS_execution_time_metrics = 'Metryki czasów wykonania przypadków';	
 $TLS_gen_test_plan_design_report = 'Generate Test Plan Design Report';
 $TLS_right_pane_test_plan_tree = "Click to display Test Plan Tree (on right pane)";

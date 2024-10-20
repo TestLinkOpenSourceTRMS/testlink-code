@@ -468,6 +468,29 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $tprojectid = intval( $dummy['tproject_id'] );
         }
 
+        // Contribution by frankfal
+        // Some APIs only provide TestSuiteID or TestCaseID, look up TestProjectID
+        if ($tprojectid <= 0 && $tplanid == -1) {
+            // Try using TestSuiteID to get TestProjectID
+            $tsuitid = intval( isset( $context[self::$testSuiteIDParamName] ) ? $context[self::$testSuiteIDParamName] : 0 );
+            if($tsuiteid == 0 && isset( $this->args[self::$testSuiteIDParamName] )) {
+                $tsuiteid = intval( $this->args[self::$testSuiteIDParamName] );
+            }
+            if ($tsuiteid > 0) {
+                $dummy = $this->tprojectMgr->tree_manager->get_path( $tsuiteid );
+                $tprojectid = $dummy[0]['parent_id'];
+            } else {
+                // Try using TestCaseID to get TestProjectID
+                $tcaseid = intval( isset( $context[self::$testCaseIDParamName] ) ? $context[self::$testCaseIDParamName] : 0 );
+                if($tcaseid == 0 && isset( $this->args[self::$testCaseIDParamName] )) {
+                    $tcaseid = intval( $this->args[self::$testCaseIDParamName] );
+                }
+                if ($tcaseid > 0) {
+                    $tprojectid = $this->tcaseMgr->get_testproject( $tcaseid );
+                }
+            }
+        }
+
         if(! $this->user->hasRight( $this->dbObj, $rightToCheck, $tprojectid, $tplanid, $checkPublicPrivateAttr )) {
             $status_ok = false;
             $msg = sprintf( INSUFFICIENT_RIGHTS_STR, $this->user->login, $rightToCheck, $tprojectid, $tplanid );
@@ -7338,9 +7361,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
             // more than 1 item => we have platforms
             // access key => tcversion_id, tplan_id, platform_id
             $link = current( $info );
-            $link = $link[$tplan_id];
-            $hits = count( $link );
-            $check_platform =(count( $hits ) > 1) || ! isset( $link[0] );
+            $link = $link[$tplan_id]; // Inside test plan, is indexed by platform
+            $check_platform =(count( $link ) > 1) || ! isset( $link[0] );
         }
 
         if($status_ok && $check_platform) {
@@ -7606,9 +7628,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
             // access key => tcversion_id, tplan_id, platform_id
             $link = current( $info );
             $link = $link[$tplan_id]; // Inside test plan, is indexed by platform
-            $hits = count( $link );
             $platform_id = 0;
-            $check_platform =(count( $hits ) > 1) || ! isset( $link[0] );
+            $check_platform =(count( $link ) > 1) || ! isset( $link[0] );
         }
 
         if($status_ok && $check_platform) {

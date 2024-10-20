@@ -84,7 +84,7 @@ $TLS_htmltext['editTc'] = "<p>De <i>Testspecificatie </i> stelt gebruikers in st
 "<b>trefwoorden</b> toe te wijzen voor een betere traceerbaarheid. </li>
 <li>Navigeer via de boomstructuur aan de linkerkant en bewerk de data. Elke testcase heeft zijn eigen geschiedenis.</li>
 <li>Wijs uw gecreëerde testspecificatie voor <span class=\"help\" onclick=
-	\"Javascript: open_help_window ( 'glosary', '$locale'); \">Testplan </span> wanneer uw testcases klaar zijn.</li>
+	\"Javascript: open_help_window ( 'glossary', '$locale'); \">Testplan </span> wanneer uw testcases klaar zijn.</li>
 </ol>
 
 <p>Met TestLink kunt u testcases in testsuites organiseren. ".

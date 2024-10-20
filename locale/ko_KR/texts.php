@@ -81,7 +81,7 @@ $TLS_htmltext['editTc'] 		= "<h2>목적:</h2>
 	"추적성을 높이기 위해 <b>키워드</b> 를 지정할 수도 있습니다.</li> " .
 	"<li>왼쪽의 트리메뉴를 이용해 테스트 케이스를 탐색하고 편집할 수 있습니다. 테스트 케이스는 변경된 이력을 기록합니다.</li>
 	<li>테스트 케이스들이 준비 되면, 만들어진 테스트 명세를 <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">테스트 계획</span> 에 지정합니다.</li>
+	\"javascript:open_help_window('glossary','$locale');\">테스트 계획</span> 에 지정합니다.</li>
 </ol>
 
 <p>TestLink를 사용하여 테스트 케이스들을 테스트 스위트로 정리할 수 있습니다." .

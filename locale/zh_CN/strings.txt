@@ -33,7 +33,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Last localization update: 2016-01-05 (Testlink 1.9.15)";
+$TLS_last_update = "Last localization update: 2021-06-15 (Testlink 1.9.19)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = '活动 (点击后设置为不活动)';
@@ -1759,10 +1759,10 @@ $TLS_title_testproject_management = "测试项目管理";
 $TLS_tcase_id_prefix = "测试用例标识";
 $TLS_testproject_alt_delete = "删除测试项目";
 // Warning!!! - if JS string you must use \\n to get \n
-$TLS_popup_product_delete = "警告！这个操作会永久删除与产品相关的所有数据（包括测试结果、计划等）。' .
+$TLS_popup_product_delete = '警告！这个操作会永久删除与产品相关的所有数据（包括测试结果、计划等）。' .
 			    '你也可以使用禁用来代替删除操作。\\n' .
 			    '建议：首先备份数据库。\\n' .
-			    '你确定要删除这个产品吗？";
+			    '你确定要删除这个产品吗？';
 
 $TLS_th_reqmgrsystem_short = '需求管理系统';
 $TLS_available_test_projects = '(%d 个测试项目)';

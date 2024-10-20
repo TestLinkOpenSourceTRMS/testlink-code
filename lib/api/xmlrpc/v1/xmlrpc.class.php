@@ -7361,9 +7361,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
             // more than 1 item => we have platforms
             // access key => tcversion_id, tplan_id, platform_id
             $link = current( $info );
-            $link = $link[$tplan_id];
-            $hits = count( $link );
-            $check_platform =(count( $hits ) > 1) || ! isset( $link[0] );
+            $link = $link[$tplan_id]; // Inside test plan, is indexed by platform
+            $check_platform =(count( $link ) > 1) || ! isset( $link[0] );
         }
 
         if($status_ok && $check_platform) {
@@ -7629,9 +7628,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
             // access key => tcversion_id, tplan_id, platform_id
             $link = current( $info );
             $link = $link[$tplan_id]; // Inside test plan, is indexed by platform
-            $hits = count( $link );
             $platform_id = 0;
-            $check_platform =(count( $hits ) > 1) || ! isset( $link[0] );
+            $check_platform =(count( $link ) > 1) || ! isset( $link[0] );
         }
 
         if($status_ok && $check_platform) {

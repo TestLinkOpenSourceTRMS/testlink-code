@@ -23,26 +23,49 @@ function doSubmitForHTML5() {
 
 /**
  * Submit Executions status.
- * Used 
- *
+ * @param tcvID int test case id
+ * @param status test status
+ * @param notesConcat concatenate step note in exec notes
+ * @param goNext open next test case
+ * 
  */
-function saveExecStatus(tcvID, status, msg, goNext) {
-	
+function saveExecStatus(tcvID, status, notesConcat, goNext) {
   /* Init */
   jQuery('#save_and_next').val(0);
-	jQuery('#save_results').val(0);
-	jQuery('#save_partial_steps_exec').val(0);
-
+  jQuery('#save_results').val(0);
+  jQuery('#save_partial_steps_exec').val(0);
   jQuery('#save_button_clicked').val(tcvID);
   jQuery('#statusSingle_' + tcvID).val(status);
-  if( goNext == undefined || goNext == 0 ) {
-  	jQuery('#save_results').val(1);
-  } else {
-  	if( goNext == 1 ) {
-  	  jQuery('#save_and_next').val(1);  		
-  	}
-  }
+  if(notesConcat == true){
+      // Get all steps status
+      var myRegexp = /step_row_(\d+)/g;
+      var stepresult = document.querySelectorAll('[id^=step_row_]')
+      var tcNotes = document.getElementById('notes['+tcvID+']');
+      stepresult.forEach(function(item){
+          match = myRegexp.exec(item.id);
+          myRegexp.lastIndex = 0;
+          stepNum = document.getElementById('tcstep_'+match[1]);
+          var row = stepNum.innerHTML;
+          var note = '';
+          var statusTc = ''
 
+
+          if ( item.getElementsByClassName('step_status').length > 0 )
+                statusTc = item.getElementsByClassName('step_status')[0].value;
+                if ( item.getElementsByClassName('step_note_textarea').length > 0 )
+                        note = item.getElementsByClassName('step_note_textarea')[0].value;
+                if (statusTc == 'f' ||statusTc == 'b' || note != ''){
+                          tcNotes.value = tcNotes.value + '\nStep '+ row + ' ('+ statusTc+'):' + note ;
+          }
+      })
+  }
+  if( goNext == undefined || goNext == 0 ) {
+        jQuery('#save_results').val(1);
+  } else {
+        if( goNext == 1 ) {
+          jQuery('#save_and_next').val(1);
+        }
+  }
   doSubmitForHTML5();
 }
 

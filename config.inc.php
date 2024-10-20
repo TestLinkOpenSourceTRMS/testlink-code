@@ -1133,6 +1133,12 @@ $tlCfg->exec_cfg->steps_exec_notes_default = 'empty';
 // 'latest' => latest execution notes.
 $tlCfg->exec_cfg->steps_exec_status_default = 'empty';
 
+/**
+ * Concatenate execution steps note in the execution notes (the later is attached to the test run) 
+ **/
+
+$tlCfg->exec_cfg->steps_notes_concat = false;
+
 // Parameters to show notes/details when entering test execution feature
 // EXPAND: show expanded/open
 // COLLAPSE: show collapsed/closede

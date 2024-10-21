@@ -1207,7 +1207,7 @@ class testplan extends tlObjectWithAttachments
     // First get the executions id if any exist
     $sql = " /* $debugMsg */ SELECT id AS execution_id 
              FROM {$this->tables['executions']}
-             WHERE testplan_id = {$id} AND ${where_clause}";
+             WHERE testplan_id = {$id} AND {$where_clause}";
 
     $exec_ids = $this->db->fetchRowsIntoMap($sql,'execution_id');
     
@@ -1266,7 +1266,7 @@ class testplan extends tlObjectWithAttachments
  
       // Grand Finale now remove executions
       $sql = " /* $debugMsg */ DELETE FROM {$this->tables['executions']}
-               WHERE testplan_id = {$id} AND ${where_clause}";
+               WHERE testplan_id = {$id} AND {$where_clause}";
       $result = $this->db->exec_query($sql);
     }
     

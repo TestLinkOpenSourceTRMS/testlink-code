@@ -4,6 +4,7 @@ Left side menu
 @filesource aside.tpl
 *}
 {$whoami = $smarty.template}
+{debug}
 {include file="./labels/labels.$whoami"} 
     <aside>
       <div id="sidebar" class="nav-collapse ">
@@ -11,7 +12,7 @@ Left side menu
         <ul class="sidebar-menu" id="nav-accordion">
           <p class="centered"><img src="{$gui->logo}"></p>
           <h4 class="centered"><a href="{$gui->userInfo}">{$gui->whoami}</a></h4>
-          {if $gui != null}
+          {if $gui->showMenu != null}
             {if $gui->showMenu.dashboard == true}
             <li class="mt">
               <a class="{$gui->activeMenu.dashboard}" href="../project/projectView.php">

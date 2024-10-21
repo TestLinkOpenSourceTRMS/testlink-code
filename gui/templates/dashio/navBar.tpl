@@ -72,25 +72,27 @@ The _top value of the target attribute specifies that the URL should open in the
   </li>
 
   {* the place for test plans will be always displayed*}
-  <li class="combo">
-    <form style="display:inline" name="planForm" 
-          target="{$topBrowsingContext}"
-          action="index.php?action=planChange" 
-          method="post">
-       {$labels.testplan}
-      <input type="hidden" name="tproject_id" value="{$gui->tproject_id}"> 
-      <select style="font-size: 80%;position:relative; top:-1px;" 
-          name="tplan_id" onchange="this.form.submit();">
-          {foreach key=idx item=tplan from=$gui->testPlans}
-           {$planID = $tplan['id']} 
-           {$planName = $tplan['name']}
-          <option value="{$planID}" title="{$planName|escape}"
-            {if $planID == $gui->tplan_id} selected="selected" {/if}>
-            {$planName|escape}</option>
-        {/foreach}
-      </select>
-    </form>
-  </li>
+  {if $gui->testPlans != null} 
+    <li class="combo">
+      <form style="display:inline" name="planForm" 
+            target="{$topBrowsingContext}"
+            action="index.php?action=planChange" 
+            method="post">
+        {$labels.testplan}
+        <input type="hidden" name="tproject_id" value="{$gui->tproject_id}">
+        <select style="font-size: 80%;position:relative; top:-1px;" 
+            name="tplan_id" onchange="this.form.submit();">
+            {foreach key=idx item=tplan from=$gui->testPlans}
+            {$planID = $tplan['id']} 
+            {$planName = $tplan['name']}
+            <option value="{$planID}" title="{$planName|escape}"
+              {if $planID == $gui->tplan_id} selected="selected" {/if}>
+              {$planName|escape}</option>
+          {/foreach}
+        </select>
+      </form>
+    </li>
+  {/if}
 
 
 {/if}

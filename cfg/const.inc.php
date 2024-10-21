@@ -370,6 +370,7 @@ $att_model_m2->show_upload_column = true;
  * The code is used in DB to store results (not GUI).  
  * Do not do localisation here, i.e do not change "passed" by your national language.
  */ 
+$tlCfg = new stdClass();
 $tlCfg->results['status_code'] = array('failed' => 'f','blocked' => 'b',
                                        'passed' => 'p','not_run' => 'n',
                                        'not_available' => 'x','unknown' => 'u',

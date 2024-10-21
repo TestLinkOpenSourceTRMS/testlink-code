@@ -97,7 +97,7 @@ function manageTracker(selectOID,targetOID)
   {/if}
 </h1>
 
-{if $gui->user_feedback != ''}  
+{if property_exists($gui,'user_feedback') && $gui->user_feedback != ''}  
   <script>
   var userMsg = "{$gui->user_feedback}"
   bootbox.alert(userMsg);

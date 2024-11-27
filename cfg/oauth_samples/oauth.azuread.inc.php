@@ -36,15 +36,17 @@ $tlCfg->OAuthServers['azuread']['oauth_client_id'] = 'CHANGE_WITH_CLIENT_ID';
 $tlCfg->OAuthServers['azuread']['oauth_client_secret'] = 
   'CHANGE_WITH_CLIENT_SECRET';
 
+// https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0/.well-known/openid-configuration
 $azureADBaseURL = 'https://login.microsoftonline.com/CHANGE_WITH_TENANT_ID';
+$msGraphURL = 'https://graph.microsoft.com';
 $tlCfg->OAuthServers['azuread']['oauth_url'] = 
-  $azureADBaseURL . '/oauth2/authorize';
+  $azureADBaseURL . '/oauth2/v2.0/authorize';
 
 $tlCfg->OAuthServers['azuread']['token_url'] = 
-  $azureADBaseURL . '/oauth2/token';
+  $azureADBaseURL . '/oauth2/v2.0/token';
 
 $tlCfg->OAuthServers['azuread']['oauth_profile'] = 
-  $azureADBaseURL . '/openid/userinfo';
+  $msGraphURL . '/oidc/userinfo';
 
 
 $tlCfg->OAuthServers['azuread']['oauth_enabled'] = true;

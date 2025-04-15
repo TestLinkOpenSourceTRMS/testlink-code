@@ -1301,7 +1301,7 @@ $tlCfg->testcase_cfg->relations->type_description = [
 // This means that at GUI Level, will not be possible:
 // add a new attachment to an Executed Test Case Version
 // delete an attachment from Executed Test Case Version
-$tlCfg->testcase_cfg->downloadOnlyAfterExec = TRUE;
+$tlCfg->testcase_cfg->downloadOnlyAfterExec = FALSE;
 
 // This means that at GUI Level, will not be possible:
 // add a new req version link to an Executed Test Case Version

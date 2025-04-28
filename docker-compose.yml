@@ -9,9 +9,11 @@ services:
     - testlink
     restart: unless-stopped
     user: mysql
-    command: --default-authentication-plugin=mysql_native_password
     environment:
-    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    - MYSQL_USER=teste
+    - MYSQL_PASSWORD=teste
+    - MYSQL_ROOT_PASSWORD=teste
+    - MYSQL_DATABASE=testlink
     volumes:
     - mysql:/var/lib/mysql
 
@@ -27,7 +29,6 @@ services:
     - NODE_TLS_REJECT_UNAUTHORIZED=0
 
   testlink-app: &testlink-app
-    image: testlink:1.9.20
     build: .
     restart: unless-stopped
     depends_on:
@@ -40,7 +41,6 @@ services:
     ports:
     - 8080:80
     volumes:
-    - ./:/var/www/testlink
     - ./logs:/var/testlink/logs
     - ./upload_area:/var/testlink/upload_area
 

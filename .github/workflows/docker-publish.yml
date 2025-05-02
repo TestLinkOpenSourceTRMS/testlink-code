@@ -15,7 +15,6 @@ on:
   pull_request:
     branches: [ "testlink_1_9_20_fixed" ]
   workflow_dispatch:
-    on
 
 env:
   # Use docker.io for Docker Hub if empty

@@ -5,9 +5,6 @@ name: Docker
 # separate terms of service, privacy policy, and support
 # documentation.
 
-on:
-  workflow_dispatch:
-
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io

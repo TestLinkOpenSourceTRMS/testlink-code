@@ -73,7 +73,6 @@ if (!isset($_GET['code'])) {
       $oap['client_id'] = $cfg['oauth_client_id'];
       $oap['scope'] = $cfg['oauth_scope'];
 
-      $oap['prompt'] = 'none';
       $oap['response_type'] = 'code';
 
       if ($oauth2Name == 'azuread') {

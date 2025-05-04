@@ -522,6 +522,9 @@ $tlCfg->authentication['SSO_logout_destination'] = 'YOUR LOGOUT DESTINATION';
 //$tlCfg->authentication['SSO_uid_field'] = 'REMOTE_USER';
 //$tlCfg->authentication['SSO_user_target_dbfield'] = 'email';
 
+// Allow to restrict authentication to SSO
+$tlCfg->authentication['sso_only'] = false;
+
 
 /**
  * LDAP authentication credentials, Multiple LDAP Servers can be used. 

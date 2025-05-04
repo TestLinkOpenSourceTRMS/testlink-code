@@ -13,7 +13,6 @@
 
 // Get token
 function oauth_get_token($authCfg, $code) {
-
   $result = new stdClass();
   $result->status = array('status' => tl::OK, 'msg' => null);
 
@@ -48,7 +47,7 @@ function oauth_get_token($authCfg, $code) {
     'Content-Type: application/json',
     'Authorization: Bearer ' . $tokenInfo['access_token']
   ];
-  curl_setopt($graph_curl, CURLOPT_URL, 'https://graph.microsoft.com/v1.0/me');
+  curl_setopt($graph_curl, CURLOPT_URL, $authCfg['oauth_profile']);
   curl_setopt($graph_curl, CURLOPT_HTTPHEADER, $graph_api_header);
   curl_setopt($graph_curl, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($graph_curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -65,7 +64,7 @@ function oauth_get_token($authCfg, $code) {
 
     if (isset($jwtInfo['oid'])){
       if (isset($authCfg['oauth_domain'])) {
-        $domain = substr(strrchr($userInfo['userPrincipalName'], "@"), 1);
+        $domain = substr(strrchr($userInfo['email'], "@"), 1);
         if ($domain !== $authCfg['oauth_domain']){
           $result->status['msg'] = 
           "TestLink Oauth policy - User email domain:$domain does not 
@@ -79,9 +78,9 @@ function oauth_get_token($authCfg, $code) {
     }
 
     $options = new stdClass();
-    $options->givenName = $userInfo['givenName'];
-    $options->familyName = $userInfo['surname'];
-    $options->user = $userInfo['userPrincipalName'];
+    $options->givenName = $userInfo['given_name'];
+    $options->familyName = $userInfo['family_name'];
+    $options->user = $userInfo['email'];
     $options->auth = 'oauth';
 
     $result->options = $options;

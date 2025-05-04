@@ -49,6 +49,7 @@
             <input type="hidden" name="ssodisable" value="{$gui->ssodisable}"/>
             {/if}
 
+            {if ! $gui->authCfg['sso_only']}
             <div class="form__field">
               <label for="tl_login"><i class="fa fa-user"></i></label>
               <input maxlength="{#LOGIN_MAXLEN#}" name="tl_login" id="tl_login" type="text" class="form__input" placeholder="{$labels.login_name}" required>
@@ -62,6 +63,7 @@
             <div class="form__field">
               <input id="tl_login_button" type="submit" value="{$labels.btn_login}">
             </div>
+            {/if}
 
             {foreach from=$gui->oauth item=oauth_item}
                 <div class="button">

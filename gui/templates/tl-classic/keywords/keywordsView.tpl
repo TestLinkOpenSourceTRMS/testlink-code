@@ -25,7 +25,17 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
                  '&openByOther={$gui->openByOther}&id=';
 </script>
 
-{if $gui->bodyOnLoad != ''}
+{$bodyOnLoad=''}
+{$bodyOnUnload=''}
+{if property_exists($gui,'bodyOnLoad')}
+  {$bodyOnLoad=$gui->bodyOnLoad}
+{/if}
+{if property_exists($gui,'bodyOnUnload')}
+  {$bodyOnUnload=$gui->bodyOnUnload}
+{/if}
+
+
+{if $bodyOnLoad != ''}
   <script language="JavaScript">
   var {$gui->dialogName} = new std_dialog();
   </script>
@@ -54,8 +64,8 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
 
 {include file="bootstrap.inc.tpl"}
 </head>
-<body onLoad="{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}"
-      class="testlink">
+
+<body onLoad="{$bodyOnLoad}" onUnload="{$bodyOnUnload}" class="testlink">
 
 <h1 class="title">{$labels.menu_manage_keywords}</h1>
 

@@ -27,15 +27,26 @@ function validateForm(f)
 }
 </script>
 
-{if $gui->bodyOnLoad != ''}
+{$bodyOnLoad=''}
+{$bodyOnUnload=''}
+{if property_exists($gui,'bodyOnLoad')}
+  {$bodyOnLoad=$gui->bodyOnLoad}
+{/if}
+{if property_exists($gui,'bodyOnUnload')}
+  {$bodyOnUnload=$gui->bodyOnUnload}
+{/if}
+
+
+{if $bodyOnLoad != ''}
   <script language="JavaScript">
   var {$gui->dialogName} = new std_dialog();
-  </script>  
+  </script>
 {/if}
+
 
 </head>
 
-<body onLoad="{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
+<body onLoad="{$bodyOnLoad}" onUnload="{$bodyOnUnload}">
 
 
 <h1 class="title">{$gui->main_descr|escape}</h1>

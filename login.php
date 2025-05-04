@@ -246,13 +246,17 @@ function init_gui(&$db,$args) {
     }
   }
 
-  $gui->external_password_mgmt = false;
-  $domain = $gui->authCfg['domain'];
-  $mm = $gui->authCfg['method'];
-  if( isset($domain[$mm]) ) {
-    $ac = $domain[$mm];
-    $gui->external_password_mgmt = !$ac['allowPasswordManagement'];
-  }  
+  if (isset($gui->authCfg['sso_only']) && $gui->authCfg['sso_only']) {
+    $gui->external_password_mgmt = true;
+  } else {
+    $gui->external_password_mgmt = false;
+    $domain = $gui->authCfg['domain'];
+    $mm = $gui->authCfg['method'];
+    if( isset($domain[$mm]) ) {
+      $ac = $domain[$mm];
+      $gui->external_password_mgmt = !$ac['allowPasswordManagement'];
+    }
+  }
 
   $gui->login_disabled = (('LDAP' == $gui->authCfg['method']) && !checkForLDAPExtension()) ? 1 : 0;
 

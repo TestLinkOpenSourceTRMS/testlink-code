@@ -1,9 +1,8 @@
-version: "3.9"
 networks: 
   testlink:
     name: testlink
 services:
-  testlink-mysql:
+  db:
     image: mysql:8.3.0
     networks:
     - testlink
@@ -17,7 +16,7 @@ services:
     volumes:
     - mysql:/var/lib/mysql
 
-  testlink-maildev:
+  maildev:
     image: maildev/maildev:latest
     networks:
     - testlink
@@ -28,26 +27,26 @@ services:
     environment:
     - NODE_TLS_REJECT_UNAUTHORIZED=0
 
-  testlink-app: &testlink-app
+  app: &app
     build: .
     restart: unless-stopped
     depends_on:
-      testlink-mysql:
+      db:
         condition: service_started
-      testlink-maildev:
+      maildev:
         condition: service_started
     networks:
     - testlink
     ports:
-    - 8080:80
+    - 8090:80
     volumes:
-    - ./logs:/var/testlink/logs
-    - ./upload_area:/var/testlink/upload_area
+      - ./logs:/var/testlink/logs:Z
+      - ./upload_area:/var/testlink/upload_area:Z
 
-  testlink-restore:
-    <<: *testlink-app
+  restore:
+    <<: *app
     depends_on:
-      testlink-app:
+      app:
         condition: service_started
     restart: no
     ports: []

@@ -804,6 +804,24 @@ CREATE TABLE /*prefix*/testproject_issuetracker
 );
 
 
+CREATE TABLE /*prefix*/codetrackers
+(
+  "id" BIGSERIAL NOT NULL ,
+  "name" VARCHAR(100) NOT NULL,
+  "type" INTEGER NOT NULL DEFAULT '0',
+  "cfg" TEXT,
+  PRIMARY KEY  ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/codetrackers_uidx1 ON /*prefix*/codetrackers ("name");
+
+
+CREATE TABLE /*prefix*/testproject_codetracker
+(
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  "codetracker_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/codetrackers (id) ON DELETE CASCADE,
+  PRIMARY KEY ("testproject_id")
+);
+
 
 CREATE TABLE /*prefix*/reqmgrsystems
 (

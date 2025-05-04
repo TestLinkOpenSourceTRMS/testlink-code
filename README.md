@@ -179,6 +179,11 @@ ATTENTION: we have not enough resources to test on all kind of browsers.
 
 ## 4. Installation & SECURITY
 
+### With containers
+use [README.containers.md](README.containers.md)
+
+### Without containers
+
 The following details the basic steps for installation on any system.
 Instructions may seem unix-centric but should work on Windows systems.
 

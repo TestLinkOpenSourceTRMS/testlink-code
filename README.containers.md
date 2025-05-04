@@ -1,0 +1,62 @@
+# Containers
+## compose
+```yml
+networks:
+  testlink:
+    name: testlink
+services:
+  db:
+    image: mysql:8.3.0
+    networks:
+    - testlink
+    restart: unless-stopped
+    user: mysql
+    environment:
+    - MYSQL_USER=teste
+    - MYSQL_PASSWORD=teste
+    - MYSQL_ROOT_PASSWORD=teste
+    - MYSQL_DATABASE=testlink
+    volumes:
+    - mysql:/var/lib/mysql
+
+  maildev:
+    image: maildev/maildev:latest
+    networks:
+    - testlink
+    ports:
+    - 1080:1080
+    - 1025:1025
+    restart: unless-stopped
+    environment:
+    - NODE_TLS_REJECT_UNAUTHORIZED=0
+
+  app: &app
+    image: ghcr.io/neiesc/testlink-code:testlink_1_9_20_fixed
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_started
+      maildev:
+        condition: service_started
+    networks:
+    - testlink
+    ports:
+    - 8090:80
+    volumes:
+      - ./logs:/var/testlink/logs:Z
+      - ./upload_area:/var/testlink/upload_area:Z
+
+  restore:
+    <<: *app
+    depends_on:
+      app:
+        condition: service_started
+    restart: no
+    ports: []
+    profiles:
+    - tools
+    command: ['/bin/bash', '-c', 'cd ./docs/db_sample && ./restore_sample.sh']
+
+volumes:
+  mysql:
+```

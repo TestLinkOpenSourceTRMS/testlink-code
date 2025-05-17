@@ -41,287 +41,256 @@
  *
  */
 
-// use output buffer to prevent headers/data from being sent before 
+// use output buffer to prevent headers/data from being sent before
 // cookies are set, else it will fail
 ob_start();
 
-// some session and settings stuff from original index.php 
-require_once('lib/functions/configCheck.php');
+// some session and settings stuff from original index.php
+require_once 'lib/functions/configCheck.php';
 checkConfiguration();
-require_once('config.inc.php');
-require_once('common.php');
-require_once('attachments.inc.php');
-require_once('requirements.inc.php');
-require_once('testcase.class.php');
-require_once('testproject.class.php');
-require_once('users.inc.php');
+require_once 'config.inc.php';
+require_once 'common.php';
+require_once 'attachments.inc.php';
+require_once 'requirements.inc.php';
+require_once 'testcase.class.php';
+require_once 'testproject.class.php';
+require_once 'users.inc.php';
 testlinkInitPage($db, true);
 
 $smarty = new TLSmarty();
 
 // display outer or inner frame?
-if (!isset($_GET['load'])) 
-{
-  // display outer frame, pass parameters to next script call for inner frame
-  // Direct link to testcase where TC ID prefix contains an '&' (the ampersand symbol), does not link
-  // 
-  // ATTENTION:
-  // Because we are going to recreate an URL with paramenters on the URL, we need 
-  // to use urlencode() on data we have got.
-  //
+if (! isset($_GET['load'])) {
+    // display outer frame, pass parameters to next script call for inner frame
+    // Direct link to testcase where TC ID prefix contains an '&' (the ampersand symbol), does not link
+    //
+    // ATTENTION:
+    // Because we are going to recreate an URL with paramenters on the URL, we need
+    // to use urlencode() on data we have got.
+    //
 
-  $args = init_args();
-  $args->tproject_id = 0;
-  if( $args->status_ok )
-  {
-    $user = $_SESSION['currentUser'];
-    if($args->tprojectPrefix != '') {
-      $hasRight = checkTestProject($db,$user,$args);
-      if( $hasRight ) {
-        $gui = new stdClass();
-        $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
-        $gui->navbar_height = config_get('navbar_height');
-        
-        if( $args->tproject_id > 0)
-        {
-          $gui->titleframe .= '&testproject=' . $args->tproject_id;
-        } 
-        $gui->title = lang_get('main_page_title');
-        $gui->mainframe = 'linkto.php?' . buildLink($args);
-        $smarty->assign('gui', $gui);
-        $smarty->display('main.tpl');
-      }  
-    }   
-  }  
-} 
-else 
-{
-  // 
-  // inner frame, parameters passed
-  // figure out what to display 
-  //
-  // key: item, value: url to tree management page
-  $itemCode = array('req' => 'lib/requirements/reqSpecListTree.php', 
-                    'reqspec' => 'lib/requirements/reqSpecListTree.php',
-                    'testcase' => 'lib/testcases/listTestCases.php?feature=edit_tc',
-                    'testsuite' => 'lib/testcases/listTestCases.php?feature=edit_tc');
+    $args = init_args();
+    $args->tproject_id = 0;
+    if ($args->status_ok) {
+        $user = $_SESSION['currentUser'];
+        if ($args->tprojectPrefix != '') {
+            $hasRight = checkTestProject($db, $user, $args);
+            if ($hasRight) {
+                $gui = new stdClass();
+                $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
+                $gui->navbar_height = config_get('navbar_height');
 
-  
-  $op = [
-    'status_ok' => true, 
-    'msg' => ''
-  ];
+                if ($args->tproject_id > 0) {
+                    $gui->titleframe .= '&testproject=' . $args->tproject_id;
+                }
+                $gui->title = lang_get('main_page_title');
+                $gui->mainframe = 'linkto.php?' . buildLink($args);
+                $smarty->assign('gui', $gui);
+                $smarty->display('main.tpl');
+            }
+        }
+    }
+} else {
+    //
+    // inner frame, parameters passed
+    // figure out what to display
+    //
+    // key: item, value: url to tree management page
+    $itemCode = array(
+        'req' => 'lib/requirements/reqSpecListTree.php',
+        'reqspec' => 'lib/requirements/reqSpecListTree.php',
+        'testcase' => 'lib/testcases/listTestCases.php?feature=edit_tc',
+        'testsuite' => 'lib/testcases/listTestCases.php?feature=edit_tc'
+    );
 
-  $args = init_args();
-  if ($args->status_ok == false) {
-    // key: key on _GET, value: labelID defined on strings.txt
-    $mustKeys = [
-      'tprojectPrefix' => 'testproject_not_set',
-      'item' => 'item_not_set', 
-      'id' => 'id_not_set'
+    $op = [
+        'status_ok' => true,
+        'msg' => ''
     ];
 
-    foreach($mustKeys as $key => $labelID)
-    {
-      $op['status_ok'] = isset($_GET[$key]);
-      if( !$op['status_ok'])
-      {
-        $op['msg'] = __FILE__ . ' >> ' . lang_get($labelID);
-        break;
-      }
-    }     
-  }
+    $args = init_args();
+    if ($args->status_ok == false) {
+        // key: key on _GET, value: labelID defined on strings.txt
+        $mustKeys = [
+            'tprojectPrefix' => 'testproject_not_set',
+            'item' => 'item_not_set',
+            'id' => 'id_not_set'
+        ];
 
-  if($op['status_ok'])
-  {
-    $tproject = new testproject($db);
-    $tproject_data = $tproject->get_by_prefix($args->tprojectPrefix);
-    if(($op['status_ok'] = !is_null($tproject_data))) 
-    {
-      $tproject->setSessionProject($tproject_data['id']);
-      $op['status_ok'] = isset($itemCode[$args->item]);
-      $op['msg'] = sprintf(lang_get('invalid_item'),$args->item);
+        foreach ($mustKeys as $key => $labelID) {
+            $op['status_ok'] = isset($_GET[$key]);
+            if (! $op['status_ok']) {
+                $op['msg'] = __FILE__ . ' >> ' . lang_get($labelID);
+                break;
+            }
+        }
     }
-    else 
-    {
-      $op['msg'] = sprintf(lang_get('testproject_not_found'),$args->tprojectPrefix);
+
+    if ($op['status_ok']) {
+        $tproject = new testproject($db);
+        $tproject_data = $tproject->get_by_prefix($args->tprojectPrefix);
+        if (($op['status_ok'] = ! is_null($tproject_data))) {
+            $tproject->setSessionProject($tproject_data['id']);
+            $op['status_ok'] = isset($itemCode[$args->item]);
+            $op['msg'] = sprintf(lang_get('invalid_item'), $args->item);
+        } else {
+            $op['msg'] = sprintf(lang_get('testproject_not_found'), $args->tprojectPrefix);
+        }
     }
-  } 
 
-  if($op['status_ok'])
-  {
-    // Build  name of function to call for doing the job.
-    $pfn = 'process_' . $args->item;
-    $jump_to = $pfn($db, $args->id, $tproject_data['id'], $args->tprojectPrefix, $args->version);
-    $op['status_ok'] = !is_null($jump_to['url']);
-    $op['msg'] = $jump_to['msg'];
-  }
+    if ($op['status_ok']) {
+        // Build name of function to call for doing the job.
+        $pfn = 'process_' . $args->item;
+        $jump_to = $pfn($db, $args->id, $tproject_data['id'], $args->tprojectPrefix, $args->version);
+        $op['status_ok'] = ! is_null($jump_to['url']);
+        $op['msg'] = $jump_to['msg'];
+    }
 
-  if($op['status_ok'])
-  {
-    // need to set test project item on Navbar
-    // add anchor to URL
-    $url = $jump_to['url'] . $args->anchor;
+    if ($op['status_ok']) {
+        // need to set test project item on Navbar
+        // add anchor to URL
+        $url = $jump_to['url'] . $args->anchor;
 
-    $smarty->assign('title', lang_get('main_page_title'));
-    $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
-    $smarty->assign('workframe', $url);
-    $smarty->assign('treeframe', $itemCode[$args->item]);
-    $smarty->display('frmInner.tpl');
-  }
-  else
-  {
-    echo $op['msg'];
-    ob_end_flush();
-    exit();
-  }
+        $smarty->assign('title', lang_get('main_page_title'));
+        $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
+        $smarty->assign('workframe', $url);
+        $smarty->assign('treeframe', $itemCode[$args->item]);
+        $smarty->display('frmInner.tpl');
+    } else {
+        echo $op['msg'];
+        ob_end_flush();
+        exit();
+    }
 }
 ob_end_flush();
 
-
 /**
- *
- *
  */
-function checkTestProject(&$db,&$user,&$args)
+function checkTestProject(&$db, &$user, &$args)
 {
-  $hasRight = false;
-  $tproject_mgr = new testproject($db);
-  $item_info = $tproject_mgr->get_by_prefix($args->tprojectPrefix);
+    $hasRight = false;
+    $tproject_mgr = new testproject($db);
+    $item_info = $tproject_mgr->get_by_prefix($args->tprojectPrefix);
 
-  if(($op['status_ok'] = !is_null($item_info)))
-  {
-    $args->tproject_id = intval($item_info['id']);
-    switch($args->item)
-    {
-      case 'testcase':
-      case 'testsuite':
-        $hasRight = $user->hasRight($db,'mgt_view_tc',$args->tproject_id);
-      break;
+    if (($op['status_ok'] = ! is_null($item_info))) {
+        $args->tproject_id = intval($item_info['id']);
+        switch ($args->item) {
+            case 'testcase':
+            case 'testsuite':
+                $hasRight = $user->hasRight($db, 'mgt_view_tc', $args->tproject_id);
+                break;
 
-      case 'req':
-      case 'reqspec':
-        $hasRight = $user->hasRight($db,'mgt_view_req',$args->tproject_id);
-      break;
+            case 'req':
+            case 'reqspec':
+                $hasRight = $user->hasRight($db, 'mgt_view_req', $args->tproject_id);
+                break;
 
-      default:
-        // need to fail!!
-      break;
-
+            default:
+                // need to fail!!
+                break;
+        }
     }
-  }
-  return $hasRight;
-}  
-
+    return $hasRight;
+}
 
 /**
- *
  */
 function init_args()
 {
-  $args = new stdClass();
-  $args->tprojectPrefix = isset($_GET['tprojectPrefix']) ? $_GET['tprojectPrefix'] : null;
-  $args->id = isset($_GET['id']) ? $_GET['id'] : null;
+    $args = new stdClass();
+    $args->tprojectPrefix = isset($_GET['tprojectPrefix']) ? $_GET['tprojectPrefix'] : null;
+    $args->id = isset($_GET['id']) ? $_GET['id'] : null;
 
-  $args->anchor = isset($_GET['anchor']) ? $_GET['anchor'] : null;
-  $args->version = isset($_GET['version']) ? $_GET['version'] : null;
-  $args->item = isset($_GET['item']) ? $_GET['item'] : null;
+    $args->anchor = isset($_GET['anchor']) ? $_GET['anchor'] : null;
+    $args->version = isset($_GET['version']) ? $_GET['version'] : null;
+    $args->item = isset($_GET['item']) ? $_GET['item'] : null;
 
-
-  $args->status_ok = !is_null($args->tprojectPrefix) && !is_null($args->id) && !is_null($args->item);
-  if ($args->status_ok == false) {
-    // new try
-    // http://<testlink_home>/linkto.php?testcase=KAOS-4
-    $args->id = isset($_GET['testcase']) ? $_GET['testcase'] : null;
-    $args->testcase = $args->id;
-    $args->item = 'testcase';
-    $glue = config_get('testcase_cfg')->glue_character;
-    $pieces = explode($glue,$args->testcase);
-    if (count($pieces) != 2) {
-      return $args->status_ok;
+    $args->status_ok = ! is_null($args->tprojectPrefix) && ! is_null($args->id) && ! is_null($args->item);
+    if ($args->status_ok == false) {
+        // new try
+        // http://<testlink_home>/linkto.php?testcase=KAOS-4
+        $args->id = isset($_GET['testcase']) ? $_GET['testcase'] : null;
+        $args->testcase = $args->id;
+        $args->item = 'testcase';
+        $glue = config_get('testcase_cfg')->glue_character;
+        $pieces = explode($glue, $args->testcase);
+        if (count($pieces) != 2) {
+            return $args->status_ok;
+        }
+        $args->tprojectPrefix = $pieces[0];
+        $args->status_ok = ! is_null($args->tprojectPrefix) && ! is_null($args->id) && ! is_null($args->item);
     }
-    $args->tprojectPrefix = $pieces[0];
-    $args->status_ok = !is_null($args->tprojectPrefix) && !is_null($args->id) && !is_null($args->item);
-  }  
-  return $args;  
+    return $args;
 }
 
 /**
- *
  */
 function buildLink(&$argsObj)
 {
-  
-  // link => $item . $id . $version . $tprojectPrefix . '&load' . $anchor;
-  $key2loop = [
-    "item",
-    "id",
-    "version",
-    "tprojectPrefix",
-    "testcase",
-    "anchor"
-  ];
-  $lk = 'load';
-  foreach ($key2loop as $key) {
-    $value = '';
-    if (isset($_GET[$key])) {
-      $value = $_GET[$key];  
-    } 
-    if (property_exists($argsObj,$key)) {
-      $value = $argsObj->$key;  
-    }
 
-    if ($key == "tprojectPrefix" || $key == "testcase" || $key == "id" ) {
-      $value = urlencode($value);
-    }
-    $lk .= "&" . $key . "=" . $value;
+    // link => $item . $id . $version . $tprojectPrefix . '&load' . $anchor;
+    $key2loop = [
+        "item",
+        "id",
+        "version",
+        "tprojectPrefix",
+        "testcase",
+        "anchor"
+    ];
+    $lk = 'load';
+    foreach ($key2loop as $key) {
+        $value = '';
+        if (isset($_GET[$key])) {
+            $value = $_GET[$key];
+        }
+        if (property_exists($argsObj, $key)) {
+            $value = $argsObj->$key;
+        }
 
-  }
-  /*
-  $lk = isset($_GET['item']) ? "item=" . $_GET['item'] : '';
-  $lk .= isset($_GET['id']) ? "&id=" . urlencode($_GET['id']) : '';
-  $lk .= isset($_GET['version']) ? "&version=" . $_GET['version'] : '';
-  $lk .= isset($_GET['tprojectPrefix']) ? "&tprojectPrefix=" . urlencode($_GET['tprojectPrefix']) : '';
-  $lk .= isset($_GET['testcase']) ? "&testcase=" . urlencode($_GET['testcase']) : '';
-  
-  $lk .= '&load' . (isset($_GET['anchor']) ? '&anchor=' . $_GET['anchor'] : "");
-  */
-  return $lk;
+        if ($key == "tprojectPrefix" || $key == "testcase" || $key == "id") {
+            $value = urlencode($value);
+        }
+        $lk .= "&" . $key . "=" . $value;
+    }
+    /*
+     * $lk = isset($_GET['item']) ? "item=" . $_GET['item'] : '';
+     * $lk .= isset($_GET['id']) ? "&id=" . urlencode($_GET['id']) : '';
+     * $lk .= isset($_GET['version']) ? "&version=" . $_GET['version'] : '';
+     * $lk .= isset($_GET['tprojectPrefix']) ? "&tprojectPrefix=" . urlencode($_GET['tprojectPrefix']) : '';
+     * $lk .= isset($_GET['testcase']) ? "&testcase=" . urlencode($_GET['testcase']) : '';
+     *
+     * $lk .= '&load' . (isset($_GET['anchor']) ? '&anchor=' . $_GET['anchor'] : "");
+     */
+    return $lk;
 }
-
-
-
 
 /**
  * process_testcase
- *
  */
-function process_testcase(&$dbHandler,$externalID, $tprojectID, $tprojectPrefix, $version)
+function process_testcase(&$dbHandler, $externalID, $tprojectID, $tprojectPrefix, $version)
 {
-  $ret = array();
-  $ret['url'] = null;
-  $ret['msg'] = sprintf(lang_get('testcase_not_found'), $externalID, $tprojectPrefix);
+    $ret = array();
+    $ret['url'] = null;
+    $ret['msg'] = sprintf(lang_get('testcase_not_found'), $externalID, $tprojectPrefix);
 
-  $tcase_mgr = new testcase($dbHandler);
-  $tcaseID = $tcase_mgr->getInternalID($externalID);
-  if($tcaseID > 0)
-  {
-    $ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}";
-    $ret['msg'] = 'ok';
+    $tcase_mgr = new testcase($dbHandler);
+    $tcaseID = $tcase_mgr->getInternalID($externalID);
+    if ($tcaseID > 0) {
+        $ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}";
+        $ret['msg'] = 'ok';
 
-    $ckCfg = config_get('cookie');    
-    $ckCfg->prefix .= 'ys-tproject_';
-    $cookie = buildCookie($dbHandler,$tcaseID,$tprojectID,$ckCfg->prefix);
+        $ckCfg = config_get('cookie');
+        $ckCfg->prefix .= 'ys-tproject_';
+        $cookie = buildCookie($dbHandler, $tcaseID, $tprojectID, $ckCfg->prefix);
 
-    $ckObj = new stdClass();
-    $ckObj->name = $cookie['value'];
-    $ckObj->value = $cookie['path'];
-    tlSetCookie($ckObj);
-  }
+        $ckObj = new stdClass();
+        $ckObj->name = $cookie['value'];
+        $ckObj->value = $cookie['path'];
+        tlSetCookie($ckObj);
+    }
 
-  return $ret;
+    return $ret;
 }
-
 
 /**
  * process_req
@@ -330,146 +299,130 @@ function process_testcase(&$dbHandler,$externalID, $tprojectID, $tprojectPrefix,
  */
 function process_req(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version)
 {
-  $ret = array('url' => null, 'msg' => null);
+    $ret = array(
+        'url' => null,
+        'msg' => null
+    );
 
-  // First step: get this requirement's database ID by its Doc-ID (only if this Doc-ID exists).
-  $req_mgr = new requirement_mgr($dbHandler);
-  $req = $req_mgr->getByDocID($docID, $tprojectID);
-  $req = is_null($req) ? null : current($req);
-  $req_id = is_null($req) ? null : $req['id'];
-  $version_id = null;
-
-  if (is_null($req_id)) 
-  {
-    $ret['msg'] = sprintf(lang_get('req_not_found'), $docID, $tprojectPrefix);
-  }
-
-  // Second step: If the requirement exists and a version was given, we have to check here if this specific version exists, too.
-  if(!is_null($req_id) && !is_null($version) && is_numeric($version)) 
-  {
-    $req = $req_mgr->get_by_id($req_id, null, $version);
+    // First step: get this requirement's database ID by its Doc-ID (only if this Doc-ID exists).
+    $req_mgr = new requirement_mgr($dbHandler);
+    $req = $req_mgr->getByDocID($docID, $tprojectID);
     $req = is_null($req) ? null : current($req);
+    $req_id = is_null($req) ? null : $req['id'];
+    $version_id = null;
 
-    // does this requirement really have the correct version number?
-    $version_id = !is_null($req) && ($req['version'] == $version) ? $req['version_id'] : null;
-
-    if (is_null($version_id)) 
-    {
-      // add direct link to current version to output
-      $req_url = $_SESSION['basehref'] . 'linkto.php?load&tprojectPrefix=' .
-                 urlencode($tprojectPrefix) . '&item=req&id=' . urlencode($docID);
-      $ret['msg'] = sprintf(lang_get('req_version_not_found'), $version, $docID, $tprojectPrefix);
-      $ret['msg'] .= sprintf(" <a href=\"$req_url\">%s</a>", lang_get('direct_link_on_wrong_version'));
-      $req_id = null;
+    if (is_null($req_id)) {
+        $ret['msg'] = sprintf(lang_get('req_not_found'), $docID, $tprojectPrefix);
     }
-  }
 
-  // Third and last step: set cookie and build the link (only if the requested item really was found).
-  if(!is_null($req_id)) 
-  {
-    $ret['url'] = "lib/requirements/reqView.php?item=requirement&requirement_id=$req_id";
+    // Second step: If the requirement exists and a version was given, we have to check here if this specific version exists, too.
+    if (! is_null($req_id) && ! is_null($version) && is_numeric($version)) {
+        $req = $req_mgr->get_by_id($req_id, null, $version);
+        $req = is_null($req) ? null : current($req);
 
-    // link to open in requirement frame must include version
-    if (!is_null($version_id)) 
-    {
-      $ret['url'] .= "&req_version_id=$version_id";
-    } 
+        // does this requirement really have the correct version number?
+        $version_id = ! is_null($req) && ($req['version'] == $version) ? $req['version_id'] : null;
 
-    $ckCfg = config_get('cookie');    
-    $ckCfg->prefix .= 'requirement_spec';
-    $cookie = buildCookie($dbHandler,$req_id,$tprojectID,$ckCfg->prefix);
+        if (is_null($version_id)) {
+            // add direct link to current version to output
+            $req_url = $_SESSION['basehref'] . 'linkto.php?load&tprojectPrefix=' . urlencode($tprojectPrefix) . '&item=req&id=' . urlencode($docID);
+            $ret['msg'] = sprintf(lang_get('req_version_not_found'), $version, $docID, $tprojectPrefix);
+            $ret['msg'] .= sprintf(" <a href=\"$req_url\">%s</a>", lang_get('direct_link_on_wrong_version'));
+            $req_id = null;
+        }
+    }
 
-    $ckObj = new stdClass();
-    $ckObj->name = $cookie['value'];
-    $ckObj->value = $cookie['path'];
-    tlSetCookie($ckObj);
-  }
+    // Third and last step: set cookie and build the link (only if the requested item really was found).
+    if (! is_null($req_id)) {
+        $ret['url'] = "lib/requirements/reqView.php?item=requirement&requirement_id=$req_id";
 
-  return $ret;
+        // link to open in requirement frame must include version
+        if (! is_null($version_id)) {
+            $ret['url'] .= "&req_version_id=$version_id";
+        }
+
+        $ckCfg = config_get('cookie');
+        $ckCfg->prefix .= 'requirement_spec';
+        $cookie = buildCookie($dbHandler, $req_id, $tprojectID, $ckCfg->prefix);
+
+        $ckObj = new stdClass();
+        $ckObj->name = $cookie['value'];
+        $ckObj->value = $cookie['path'];
+        tlSetCookie($ckObj);
+    }
+
+    return $ret;
 }
-
-
 
 /**
  * process_reqspec
- *
  */
 function process_reqspec(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version)
 {
-  $ret = array();
-  $ret['url'] = null;
-  $ret['msg'] = sprintf(lang_get('req_spec_not_found'), $docID,$tprojectPrefix);
+    $ret = array();
+    $ret['url'] = null;
+    $ret['msg'] = sprintf(lang_get('req_spec_not_found'), $docID, $tprojectPrefix);
 
-  $reqspec_mgr = new requirement_spec_mgr($dbHandler);
-  $reqSpec = $reqspec_mgr->getByDocID($docID,$tprojectID);
+    $reqspec_mgr = new requirement_spec_mgr($dbHandler);
+    $reqSpec = $reqspec_mgr->getByDocID($docID, $tprojectID);
 
-  if( !is_null($reqSpec) )
-  {
-    $reqSpec = current($reqSpec);
-    $id = $reqSpec['id'];
-    $ret['url'] = "lib/requirements/reqSpecView.php?req_spec_id={$id}";
+    if (! is_null($reqSpec)) {
+        $reqSpec = current($reqSpec);
+        $id = $reqSpec['id'];
+        $ret['url'] = "lib/requirements/reqSpecView.php?req_spec_id={$id}";
 
-    $ckCfg = config_get('cookie');    
-    $ckCfg->prefix .= 'ys-requirement_spec';
-    $cookie = buildCookie($dbHandler,$id,$tprojectID,$ckCfg->prefix);
+        $ckCfg = config_get('cookie');
+        $ckCfg->prefix .= 'ys-requirement_spec';
+        $cookie = buildCookie($dbHandler, $id, $tprojectID, $ckCfg->prefix);
 
-    $ckObj = new stdClass();
-    $ckObj->name = $cookie['value'];
-    $ckObj->value = $cookie['path'];
-    tlSetCookie($ckObj);
-  }
-  return $ret;
+        $ckObj = new stdClass();
+        $ckObj->name = $cookie['value'];
+        $ckObj->value = $cookie['path'];
+        tlSetCookie($ckObj);
+    }
+    return $ret;
 }
-
-
 
 /**
- * 
- *
  */
-function buildCookie(&$dbHandler,$itemID,$tprojectID,$cookiePrefix)
+function buildCookie(&$dbHandler, $itemID, $tprojectID, $cookiePrefix)
 {
-  $tree_mgr = new tree($dbHandler);
-  $path = $tree_mgr->get_path($itemID);
-  $parents = array();
-  $parents[] = $tprojectID;
-  foreach($path as $node) 
-  {
-    $parents[] = $node['id'];
-  }
-  array_pop($parents);
-  $cookieInfo['path'] = 'a:s%3A/' . implode("/", $parents);
-  $cookieInfo['value'] = $cookiePrefix . $tprojectID . '_ext-comp-1001' ;
-  return $cookieInfo;
+    $tree_mgr = new tree($dbHandler);
+    $path = $tree_mgr->get_path($itemID);
+    $parents = array();
+    $parents[] = $tprojectID;
+    foreach ($path as $node) {
+        $parents[] = $node['id'];
+    }
+    array_pop($parents);
+    $cookieInfo['path'] = 'a:s%3A/' . implode("/", $parents);
+    $cookieInfo['value'] = $cookiePrefix . $tprojectID . '_ext-comp-1001';
+    return $cookieInfo;
 }
-
 
 /**
  * process_testsuite
  *
  * http://localhost/development/gitorious/testlink/linkto.php?tprojectPrefix=333&item=testsuite&id=2894
-
  */
-function process_testsuite(&$dbHandler,$tsuiteID, $tprojectID, $tprojectPrefix)
+function process_testsuite(&$dbHandler, $tsuiteID, $tprojectID, $tprojectPrefix)
 {
-  $ret = array();
-  $ret['url'] = null;
-  $ret['msg'] = sprintf(lang_get('testsuite_not_found'), $tsuiteID, $tprojectPrefix);
+    $ret = array();
+    $ret['url'] = null;
+    $ret['msg'] = sprintf(lang_get('testsuite_not_found'), $tsuiteID, $tprojectPrefix);
 
-  $ret['url'] = 'lib/testcases/archiveData.php?print_scope=test_specification' .
-                '&edit=testsuite&level=testsuite&containerType=testsuite&id=' . $tsuiteID;
+    $ret['url'] = 'lib/testcases/archiveData.php?print_scope=test_specification' . '&edit=testsuite&level=testsuite&containerType=testsuite&id=' . $tsuiteID;
 
-  $ret['msg'] = 'ok';
+    $ret['msg'] = 'ok';
 
-  $ckCfg = config_get('cookie');    
-  $ckCfg->prefix .= 'ys-tproject_';
-  $cookie = buildCookie($dbHandler,$tsuiteID,$tprojectID,$ckCfg->prefix);
+    $ckCfg = config_get('cookie');
+    $ckCfg->prefix .= 'ys-tproject_';
+    $cookie = buildCookie($dbHandler, $tsuiteID, $tprojectID, $ckCfg->prefix);
 
-  $ckObj = new stdClass();
-  $ckObj->name = $cookie['value'];
-  $ckObj->value = $cookie['path'];
-  tlSetCookie($ckObj);
+    $ckObj = new stdClass();
+    $ckObj->name = $cookie['value'];
+    $ckObj->value = $cookie['path'];
+    tlSetCookie($ckObj);
 
-
-  return $ret;
+    return $ret;
 }

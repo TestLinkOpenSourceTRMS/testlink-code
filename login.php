@@ -398,7 +398,7 @@ function doBlockingChecks(&$dbHandler, &$guiObj)
  * simple piece of code used to clean up code layout
  *
  * @global $g_tlLogger
- * @param stdClassObject $guiObj
+ * @param $guiObj
  */
 function renderLoginScreen($guiObj)
 {
@@ -418,8 +418,8 @@ function renderLoginScreen($guiObj)
 
 /**
  *
- * @param stdClassObject $argsObj
- * @param hash $op
+ * @param $argsObj
+ * @param $op
  */
 function authorizePostProcessing($argsObj, $op)
 {

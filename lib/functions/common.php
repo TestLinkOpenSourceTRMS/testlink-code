@@ -152,11 +152,12 @@ $db = 0;
 /**
  * TestLink connects to the database
  *
- * @param &$db reference to resource, here resource pointer will be returned.
- *
+ * @param
+ *            &$db reference to resource, here resource pointer will be returned.
+ *            
  * @param boolean $onErrorExit
  *            default false, true standard page will be displayed
- *
+ *            
  * @return array aa['status'] = 1 -> OK , 0 -> KO
  *         aa['dbms_msg''] = 'ok', or $db->error_msg().
  */
@@ -165,7 +166,7 @@ function doDBConnect(&$db, $onErrorExit = false)
     global $g_tlLogger;
 
     $charSet = config_get('charset');
-    
+
     // CWE-563: Assignment to Variable without Use
     // $result = array(
     // 'status' => 1,
@@ -633,7 +634,7 @@ function check_string($str2check, $regexp_forbidden_chars)
  * @param string $config_id
  *            key for identification of configuration parameter
  * @return mixed the configuration parameter(s)
- *
+ *        
  * @internal Revisions
  */
 function config_get($config_id, $default = null)
@@ -774,9 +775,9 @@ function ini_get_bool($p_name)
  *            string
  * @param
  *            int [len]: how many chars return
- *
+ *            
  * @return string trimmed string
- *
+ *        
  * @author Francisco Mancardi - 20050905 - refactoring
  */
 function trim_and_limit($s, $len = 100)
@@ -850,7 +851,8 @@ function getFileUploadErrorMessage($fInfo, $tlInfo = null)
 /**
  * Redirect to a page with static html defined in locale/en_GB/texts.php
  *
- * @param string $key keyword for finding exact html text in definition array
+ * @param string $key
+ *            keyword for finding exact html text in definition array
  */
 function show_instructions($key, $refreshTree = 0)
 {
@@ -879,7 +881,7 @@ function templateConfiguration($template2get = null)
     $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
     $tcfg->template = null;
     $tcfg->tpl = $tcfg->template_dir . $tcfg->default_template;
-    
+
     return $tcfg;
 }
 
@@ -890,7 +892,7 @@ function templateConfiguration($template2get = null)
  * @param string $ISODateTime
  *            datetime to check
  * @return boolean True if string has correct format
- *
+ *        
  * @internal rev: 20080907 - franciscom - Code taked form PHP manual
  */
 function isValidISODateTime($ISODateTime)
@@ -1034,19 +1036,19 @@ function tlSubStr($str, $start, $length = null)
  *            templates that can be loaded when creating an item to semplify
  *            or guide user's work.
  *            $itemTemplate is a property (of type stdClass) of $tlCfg configuration object.
- *
+ *            
  *            supported values:
  *            testcase_template
- *
+ *            
  * @param string $webEditorName
  *            webeditor name, that identifies a propety of $tlCfg->$itemTemplate
  *            that holds input tenmplate configuration
- *
+ *            
  * @param string $defaultText
  *            text to use if:
  *            $tlCfg->itemTemplate OR $tlCfg->itemTemplate->$webEditorName
  *            does not exists.
- *
+ *            
  */
 function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText = '')
 {
@@ -1798,8 +1800,8 @@ function getGrantSetWithExit(&$dbHandler, &$argsObj, &$tprojMgr, $opt = null)
     $options = array_merge($options, (array) $opt);
 
     if ($options['forceCreateProj'] && $argsObj->zeroTestProjects && ($argsObj->user->hasRight($dbHandler, 'mgt_modify_product'))) {
-            redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
-            exit();
+        redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
+        exit();
     }
 
     // User has test project rights

@@ -7,16 +7,16 @@
  *
  * @filesource  login.php
  * @package     TestLink
- * @copyright   2006,2020 TestLink community 
+ * @copyright   2006,2020 TestLink community
  * @link        http://www.testlink.org
- * 
+ *
  **/
-require_once('lib/functions/configCheck.php');
+require_once 'lib/functions/configCheck.php';
 checkConfiguration();
-require_once('config.inc.php');
-require_once('common.php');
-require_once('oauth_api.php');
-require_once('doAuthorize.php');
+require_once 'config.inc.php';
+require_once 'common.php';
+require_once 'oauth_api.php';
+require_once 'doAuthorize.php';
 
 $templateCfg = templateConfiguration();
 $doRenderLoginScreen = false;
@@ -64,17 +64,17 @@ switch($args->action) {
     $oauth_params = getOAuthProviderCfg($args->oauth_name);
     if ($oauth_params != null) {
       $g2i = $args->oauth_name . '.php';
-      if (!include_once($g2i)) {
+      if (!include_once $g2i) {
         die("Oauth client doesn't exist");
       } else {
         $includeOK = true;
-      }             
+      }
     }
 
     // No good!
-    if ($includeOK == false) {
+    if (!$includeOK) {
       renderLoginScreen($gui);
-      die();      
+      die();
     }
    
     $user_token = oauth_get_token($oauth_params, $args->oauth_code);
@@ -84,7 +84,7 @@ switch($args->action) {
       $doAuthPostProcess = true;
     } else {
     	$gui->note = $user_token->status['msg'];
-    	$gui->draw=true;    
+    	$gui->draw=true;
       renderLoginScreen($gui);
       die();
     }
@@ -96,8 +96,7 @@ switch($args->action) {
     $op = null;
 
     // unfortunatelly we use $args->note in order to do some logic.
-    if( ($args->note=trim($args->note)) == "" ) {
-      if( $gui->authCfg['SSO_enabled'] ) {
+    if(($args->note=trim($args->note)) == "" && $gui->authCfg['SSO_enabled']) {
         doSessionStart(true);
         $doAuthPostProcess = true;
         
@@ -111,7 +110,6 @@ switch($args->action) {
             $op = doSSOWebServerVar($db,$gui->authCfg);
           break;
         }
-      }
     }
   break;
 }
@@ -125,7 +123,7 @@ if( $doRenderLoginScreen ) {
 }
 
 /**
- * 
+ *
  *
  */
 function init_args() {
@@ -164,14 +162,14 @@ function init_args() {
   $k2c = array('ajaxcheck' => 'do','ajaxlogin' => 'do');
   if (isset($k2c[$pParams['action']]))  {
     $args->action = $pParams['action'];
-  } else if (!is_null($args->login)) {
+  } elseif (!is_null($args->login)) {
     $args->action = 'doLogin';
-  // This 'if' branch may be removed in later versions. Kept for compatibility    
-  } else if (!is_null($pParams['oauth']) && $pParams['oauth']) {
+  // This 'if' branch may be removed in later versions. Kept for compatibility
+  } elseif (!is_null($pParams['oauth']) && $pParams['oauth']) {
     $args->action = 'oauth';
     $args->oauth_name = $pParams['oauth'];
     $args->oauth_code = $pParams['code'];
-  } else if (!is_null($pParams['state']) && !is_null($pParams['code'])) {
+  } elseif (!is_null($pParams['state']) && !is_null($pParams['code'])) {
    
     // We use state to undertand the provider when the redirect url
     // can not have query string, as happens with Microsoft
@@ -209,14 +207,16 @@ function validateOauth($name) {
     }
   }
 
-  if ($whitelistOK == false) {
+  if (!$whitelistOK) {
     die("Invalid Oauth Service");
-  } 
+  }
 }
 
 /**
- * 
  *
+ * @param unknown $db
+ * @param unknown $args
+ * @return stdClass
  */
 function init_gui(&$db,$args) {
   $gui = new stdClass();
@@ -224,11 +224,11 @@ function init_gui(&$db,$args) {
 
   $secCfg = config_get('config_check_warning_frequence');
   $gui->securityNotes = '';
-  if( (strcmp($secCfg, 'ALWAYS') == 0) || 
+  if( (strcmp($secCfg, 'ALWAYS') == 0) ||
       (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesDone'])) ) {
     $_SESSION['getSecurityNotesDone'] = 1;
     $gui->securityNotes = getSecurityNotes($db);
-  }  
+  }
 
   $gui->authCfg = config_get('authentication');
   $gui->user_self_signup = config_get('user_self_signup');
@@ -289,7 +289,7 @@ function init_gui(&$db,$args) {
   $gui->ssodisable = 0;
   if(property_exists($args,'ssodisable')) {
     $gui->ssodisable = $args->ssodisable;
-  }  
+  }
 
   $gui->reqURI = $args->reqURI ? $args->reqURI : $args->preqURI;
   $gui->destination = $args->destination;
@@ -309,8 +309,8 @@ function init_gui(&$db,$args) {
   $itemQty = count($imgSet)-1;
   $ixx = rand(0,$itemQty);
 
-  $gui->loginBackgroundImg = 
-    "gui/templates/dashio/img/login/" . $imgSet[$ixx]; 
+  $gui->loginBackgroundImg =
+    "gui/templates/dashio/img/login/" . $imgSet[$ixx];
   
   return $gui;
 }
@@ -323,7 +323,7 @@ function init_gui(&$db,$args) {
  *
  * @param &$dbHandler DataBase Handler
  * @param &$guiObj some gui elements that will be used to give feedback
- *  
+ *
  */
 function doBlockingChecks(&$dbHandler,&$guiObj) {
   $op = checkSchemaVersion($dbHandler);
@@ -338,7 +338,7 @@ function doBlockingChecks(&$dbHandler,&$guiObj) {
     if(isset($op['kill_session']) && $op['kill_session']) {
       session_unset();
       session_destroy();
-    } 
+    }
 
     $guiObj->draw = false;
     $guiObj->note = $op['msg'];
@@ -351,12 +351,12 @@ function doBlockingChecks(&$dbHandler,&$guiObj) {
 /**
  * renderLoginScreen
  * simple piece of code used to clean up code layout
- * 
- * @global  $g_tlLogger
- * @param stdClassObject $guiObj
+ *
+ * @global $g_tlLogger
+ * @param stdClass $guiObj
  */
 function renderLoginScreen($guiObj) {
-  global $g_tlLogger; 
+  global $g_tlLogger;
   $templateCfg = templateConfiguration();
   $logPeriodToDelete = config_get('removeEventsOlderThan');
   $g_tlLogger->deleteEventsFor(null, strtotime("-{$logPeriodToDelete} days UTC"));
@@ -373,7 +373,7 @@ function renderLoginScreen($guiObj) {
 
 /**
  * 
- * @param stdClassObject $argsObj
+ * @param stdClass $argsObj
  * @param hash $op
  */
 function authorizePostProcessing($argsObj,$op) {
@@ -394,9 +394,9 @@ function authorizePostProcessing($argsObj,$op) {
         // https://hsgdshdjs:80/bsbsbb
         // http://fjljfld:8080/Hhhhs
         // http://hjhsjdhshdk/
-        $baseURL = str_replace('://',':',TL_BASE_HREF);	
+        $baseURL = str_replace('://',':',TL_BASE_HREF);
         $basePieces = explode(':',TL_BASE_HREF);
-        $howManyPieces = count($basePieces); 
+        $howManyPieces = count($basePieces);
         switch ($howManyPieces) {
         	case 2:
           case 3:
@@ -404,10 +404,10 @@ function authorizePostProcessing($argsObj,$op) {
         	default:
             echo 'Security Check Failure';
         	  die();
-        	break;  
+        	break;
         }
 
-        // http:  hjhsjdhshdk/  
+        // http:  hjhsjdhshdk/
         // http:  hjhsjdhshdk/base_folder
         // https: hsgdshdjs: >> 80/bsbsbb
         // http:  fjljfld:   >> 8080/Hhhhs
@@ -421,7 +421,7 @@ function authorizePostProcessing($argsObj,$op) {
         // 2) check base_folder/linkto.php
         $where = strpos($argsObj->destination, $baseFolder . 'linkto.php');
         $checkOK = ($where !== false) && ($where == 0);
-        if ($checkOK == false) {
+        if (!$checkOK) {
           echo 'Security Check Failure';
           die();
         }
@@ -436,8 +436,7 @@ function authorizePostProcessing($argsObj,$op) {
         $ad = $argsObj->ssodisable ? '&ssodisable=1' : '';
         $ad .= ($argsObj->preqURI ? "&reqURI=".urlencode($argsObj->preqURI) :"");
 
-        $rul = $_SESSION['basehref'] . 
-                 "index.php?caller=login&viewer={$argsObj->viewer}" . $ad;
+        $rul = $_SESSION['basehref'] . "index.php?caller=login&viewer={$argsObj->viewer}" . $ad;
         
         redirect($rul);
       }
@@ -447,7 +446,7 @@ function authorizePostProcessing($argsObj,$op) {
     $note = '';
     if(!$argsObj->ssodisable) {
       $note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];
-    } 
+    }
 
     if($argsObj->action == 'ajaxlogin') {
       echo json_encode(array('success' => false,'reason' => $note));
@@ -460,7 +459,7 @@ function authorizePostProcessing($argsObj,$op) {
 }
 
 /**
- * 
+ *
  *
  */
 function processAjaxCheck(&$dbHandler) {

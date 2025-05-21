@@ -69,7 +69,7 @@ switch ($args->action) {
         }
 
         // No good!
-        if ($includeOK == false) {
+        if (! $includeOK) {
             renderLoginScreen($gui);
             die();
         }
@@ -93,21 +93,19 @@ switch ($args->action) {
         $op = null;
 
         // unfortunatelly we use $args->note in order to do some logic.
-        if (($args->note = trim($args->note)) == "") {
-            if ($gui->authCfg['SSO_enabled']) {
-                doSessionStart(true);
-                $doAuthPostProcess = true;
+        if (($args->note = trim($args->note)) == "" && $gui->authCfg['SSO_enabled']) {
+            doSessionStart(true);
+            $doAuthPostProcess = true;
 
-                switch ($gui->authCfg['SSO_method']) {
-                    case 'CLIENT_CERTIFICATE':
-                        $op = doSSOClientCertificate($db, $_SERVER, $gui->authCfg);
-                        break;
+            switch ($gui->authCfg['SSO_method']) {
+                case 'CLIENT_CERTIFICATE':
+                    $op = doSSOClientCertificate($db, $_SERVER, $gui->authCfg);
+                    break;
 
-                    case 'WEBSERVER_VAR':
-                        // DEBUGsyslogOnCloud('Trying to execute SSO using SAML');
-                        $op = doSSOWebServerVar($db, $gui->authCfg);
-                        break;
-                }
+                case 'WEBSERVER_VAR':
+                    // DEBUGsyslogOnCloud('Trying to execute SSO using SAML');
+                    $op = doSSOWebServerVar($db, $gui->authCfg);
+                    break;
             }
         }
         break;
@@ -122,6 +120,8 @@ if ($doRenderLoginScreen) {
 }
 
 /**
+ * 
+ * @return stdClass
  */
 function init_args()
 {
@@ -212,14 +212,14 @@ function init_args()
     );
     if (isset($k2c[$pParams['action']])) {
         $args->action = $pParams['action'];
-    } else if (! is_null($args->login)) {
+    } elseif (! is_null($args->login)) {
         $args->action = 'doLogin';
         // This 'if' branch may be removed in later versions. Kept for compatibility
-    } else if (! is_null($pParams['oauth']) && $pParams['oauth']) {
+    } elseif (! is_null($pParams['oauth']) && $pParams['oauth']) {
         $args->action = 'oauth';
         $args->oauth_name = $pParams['oauth'];
         $args->oauth_code = $pParams['code'];
-    } else if (! is_null($pParams['state']) && ! is_null($pParams['code'])) {
+    } elseif (! is_null($pParams['state']) && ! is_null($pParams['code'])) {
 
         // We use state to undertand the provider when the redirect url
         // can not have query string, as happens with Microsoft
@@ -257,7 +257,7 @@ function validateOauth($name)
         }
     }
 
-    if ($whitelistOK == false) {
+    if (!$whitelistOK) {
         die("Invalid Oauth Service");
     }
 }
@@ -368,7 +368,7 @@ function init_gui(&$db, $args)
  *            &$dbHandler DataBase Handler
  * @param
  *            &$guiObj some gui elements that will be used to give feedback
- *            
+ *
  */
 function doBlockingChecks(&$dbHandler, &$guiObj)
 {

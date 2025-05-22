@@ -1,16 +1,16 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Direct links for external access to testlink items with frames for navigation and tree.
  *
  * IMPORTANT - LIMITATIONS:
  * User has to login before clicking the link!
- * If user is not logged in he is redirected to login page. 
+ * If user is not logged in he is redirected to login page.
  * After login main page is shown, Clicking the link again then it works!
  *
- * 
+ *
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2015,2017 TestLink community
@@ -23,10 +23,10 @@
 ob_start();
 
 // some session and settings stuff from original index.php 
-require_once('lib/functions/configCheck.php');
+require_once 'lib/functions/configCheck.php';
 checkConfiguration();
-require_once('config.inc.php');
-require_once('common.php');
+require_once 'config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db, true);
 
 $smarty = new TLSmarty();
@@ -34,16 +34,16 @@ $smarty = new TLSmarty();
 // This process seems to have two steps
 //
 // Step 1
-// Display outer frame, and do a new call 
+// Display outer frame, and do a new call
 // to display the wished content, in inner frame
 //
 // Step 2
 // Here we will get what we need
-// 
+//
 // display outer or inner frame?
 // why I'm asking this question?
 //
-if (!isset($_GET['load'])) 
+if (!isset($_GET['load']))
 {
   // display outer frame, pass parameters to next script call for inner frame
   // ATTENTION:
@@ -51,7 +51,7 @@ if (!isset($_GET['load']))
   // to use urlencode() on data we have got.
   //
   $args = init_args($db);
-  $args->tproject_id = 0;  
+  $args->tproject_id = 0;
   
   if( $args->status_ok )
   {
@@ -62,19 +62,19 @@ if (!isset($_GET['load']))
       {
         $lof = 'launch_outer_' . $args->item;
         $lof($smarty,$args);
-      }  
-    }   
-  } 
+      }
+    }
+  }
   else
   {
     echo lang_get('security_check_ko');
     ob_end_flush();
-    exit();    
-  } 
-} 
-else 
+    exit();
+  }
+}
+else
 {
-  // 
+  //
   // inner frame, parameters passed
   // figure out what to display 
   //
@@ -83,7 +83,7 @@ else
   if(is_null($driver))
   {
     die();
-  }  
+  }
   
   $lif = 'launch_inner_' . $driver;
   $lif($db,$smarty);
@@ -94,6 +94,7 @@ ob_end_flush();
 /**
  *
  *
+ * @return boolean
  */
 function checkTestPlan(&$db,&$user,&$args)
 {
@@ -101,7 +102,7 @@ function checkTestPlan(&$db,&$user,&$args)
   $tplan_mgr = new testplan($db);
   
   $item_info = $tplan_mgr->get_by_id($args->tplan_id,array( 'output' => 'minimun'));
-  if(($op['status_ok'] = !is_null($item_info)))
+  if($op['status_ok'] = !is_null($item_info))
   {
     $args->tproject_id = intval($item_info['tproject_id']);
 
@@ -120,11 +121,12 @@ function checkTestPlan(&$db,&$user,&$args)
     }
   }
   return $hasRight;
-}  
+}
 
 
 /**
  *
+ * @return stdClass
  */
 function init_args(&$dbHandler)
 {
@@ -167,12 +169,13 @@ function init_args(&$dbHandler)
   if($args->status_ok && $cfn != '')
   {
     $cfn($dbHandler,$args);
-  }  
-  return $args;  
+  }
+  return $args;
 }
 
 /**
  *
+ * @return string
  */
 function build_link_exec(&$argsObj)
 {
@@ -181,12 +184,13 @@ function build_link_exec(&$argsObj)
   if($argsObj->feature_id >0)
   {
     $lk .= "&feature_id=" . $argsObj->feature_id;
-  } 
+  }
   else
   {
     $lk .= "&tplan_id=" . $argsObj->tplan_id . "&platform_id=" . $argsObj->platform_id;
-           "&tcversion_id=" . $argsObj->tcversion_id;
-  } 
+    // @Francisco: This line is not understandable. Please check and delete if necessary.
+    // "&tcversion_id=" . $argsObj->tcversion_id;
+  }
   $lk .= "&build_id=" . $argsObj->build_id;
   $lk .= '&load' . (isset($_GET['anchor']) ? '&anchor=' . $_GET['anchor'] : "");
  
@@ -197,27 +201,25 @@ function build_link_exec(&$argsObj)
 
 
 /**
- * 
+ *
  *
  */
 function process_exec(&$dbHandler,$context)
 {
-  $ret = array();
-  $ret['url'] = null;
-  $ret['msg'] = 'ko';
+  // $ret = array();
+  // $ret['url'] = null;
+  // $ret['msg'] = 'ko';
 
   $treeMgr = new tree($dbHandler);
   $info = $treeMgr->get_node_hierarchy_info($context['tcversion_id']);
-
+  $ret = array();
   $ret['url'] = "lib/execute/execSetResults.php?level=testcase" .
-                "&version_id=" . $context['tcversion_id'] . 
-                "&id=" . $info['parent_id'] . 
+                "&version_id=" . $context['tcversion_id'] .
+                "&id=" . $info['parent_id'] .
                 "&setting_testplan=" . $context['setting_testplan'] .
                 "&setting_build=" . $context['setting_build'] .
                 "&setting_platform=" . $context['setting_platform'];
-
-
-
+  
   $ret['msg'] = 'ok';
   return $ret;
 }
@@ -228,16 +230,16 @@ function process_exec(&$dbHandler,$context)
  */
 function process_xta2m(&$dbHandler,$context)
 {
-  $ret = array();
-  $ret['url'] = null;
-  $ret['msg'] = 'ko';
+  // $ret = array();
+  // $ret['url'] = null;
+  // $ret['msg'] = 'ko';
 
   $treeMgr = new tree($dbHandler);
   $info = $treeMgr->get_node_hierarchy_info($context['tcversion_id']);
-
+  $ret = array();
   $ret['url'] = "lib/execute/execSetResults.php?level=testcase" .
-                "&version_id=" . $context['tcversion_id'] . 
-                "&id=" . $info['parent_id'] . 
+                "&version_id=" . $context['tcversion_id'] .
+                "&id=" . $info['parent_id'] .
                 "&setting_testplan=" . $context['setting_testplan'] .
                 "&setting_build=" . $context['setting_build'] .
                 "&setting_platform=" . $context['setting_platform'];
@@ -266,19 +268,19 @@ function check_exec(&$dbHandler,&$argsObj)
     $argsObj->tplan_id = $rs[0]['testplan_id'];
     $argsObj->tcversion_id = $rs[0]['tcversion_id'];
     $argsObj->platform_id = $rs[0]['platform_id'];
-  } 
+  }
   else
   {
-    $argsObj->status_ok = ($argsObj->tplan_id > 0) &&  
-                          ($argsObj->tcversion_id >0); 
-  } 
+    $argsObj->status_ok = ($argsObj->tplan_id > 0) &&
+                          ($argsObj->tcversion_id >0);
+  }
 }
 
 /**
  *
  *
  */
-function check_xta2m(&$dbHandler,&$argsObj)
+function check_xta2m(&$argsObj)
 {
   $argsObj->status_ok = ($argsObj->target_user_id > 0 && 
                          $argsObj->tplan_id >0);
@@ -291,7 +293,7 @@ function check_xta2m(&$dbHandler,&$argsObj)
 
 
 /**
- * 
+ *
  *
  */
 function launch_inner_exec(&$dbHandler,&$tplMgr)
@@ -312,7 +314,7 @@ function launch_inner_exec(&$dbHandler,&$tplMgr)
       $op['msg'] = lang_get($labelID);
       break;
     }
-  } 
+  }
 
   if( $op['status_ok'] )
   {
@@ -331,26 +333,26 @@ function launch_inner_exec(&$dbHandler,&$tplMgr)
           $op['msg'] = lang_get($labelID);
           break;
         }
-      } 
-    }  
+      }
+    }
   }
 
   $args = init_args($dbHandler);
   if($op['status_ok'])
   {
-    // Set Environment    
+    // Set Environment
     $tplan_mgr = new testplan($dbHandler);
     $info = $tplan_mgr->get_by_id($args->tplan_id,array('output' => 'minimun'));
     
     if(is_null($info))
     {
       die('ltx - tplan info does not exist');
-    }  
+    }
 
     $tproject_mgr = new testproject($dbHandler);
     $tproject_mgr->setSessionProject($info['tproject_id']);
     $op['status_ok'] = true;
-  } 
+  }
 
   if($op['status_ok'])
   {
@@ -373,7 +375,7 @@ function launch_inner_exec(&$dbHandler,&$tplMgr)
   if($op['status_ok'])
   {
     $treeframe = $itemCode[$args->item] .
-                 '?loadExecDashboard=0' . 
+                 '?loadExecDashboard=0' .
                  '&setting_testplan=' . $args->tplan_id .
                  '&setting_build=' . $args->build_id .
                  '&setting_platform=' . $args->platform_id;
@@ -390,7 +392,7 @@ function launch_inner_exec(&$dbHandler,&$tplMgr)
     ob_end_flush();
     exit();
   }
-} // function end
+}
 
 /**
  * xta2m: eXecution Tasks Assigned TO Me
@@ -399,13 +401,6 @@ function launch_inner_exec(&$dbHandler,&$tplMgr)
 function launch_inner_xta2m(&$dbHandler,&$tplMgr)
 {
   $args = init_args($dbHandler);
-
-  //if($args->status_ok == FALSE)
-  //{
-  //  echo 'NOOO';
-  //  ob_end_flush();
-  //  exit();
-  //}  
 
   $jt = $_SESSION['basehref'] . '/lib/testcases/' .
         'tcAssignedToUser.php?user_id=' . $args->target_user_id .
@@ -416,8 +411,8 @@ function launch_inner_xta2m(&$dbHandler,&$tplMgr)
     if( property_exists($args,$tg) && $args->$tg > 0 )
     {
       $jt .= "&$tg=" . $args->$tg;
-    }      
-  }  
+    }
+  }
 
   $tplMgr->assign('workframe', $jt);
   $tplMgr->display('workframe.tpl');
@@ -435,7 +430,7 @@ function launch_outer_exec(&$tplMgr,$argsObj)
   if( $argsObj->tproject_id > 0)
   {
     $gui->titleframe .= '&testproject=' . $argsObj->tproject_id;
-  } 
+  }
   $gui->title = lang_get('main_page_title');
   $gui->mainframe = 'ltx.php?' . build_link_exec($argsObj);
 
@@ -455,7 +450,7 @@ function launch_outer_xta2m(&$tplMgr,$argsObj)
   if( $argsObj->tproject_id > 0)
   {
     $gui->titleframe .= '&testproject=' . $argsObj->tproject_id;
-  } 
+  }
   $gui->title = lang_get('main_page_title');
   $gui->mainframe = 'ltx.php?item=xta2m&load=1' .
                     '&user_id=' . $argsObj->target_user_id .
@@ -466,8 +461,9 @@ function launch_outer_xta2m(&$tplMgr,$argsObj)
 }
 
 /**
- * 
  *
+ *
+ * @return string
  */
 function buildCookie(&$dbHandler,$itemID,$tprojectID,$cookiePrefix)
 {
@@ -475,12 +471,12 @@ function buildCookie(&$dbHandler,$itemID,$tprojectID,$cookiePrefix)
   $path = $tree_mgr->get_path($itemID);
   $parents = array();
   $parents[] = $tprojectID;
-  foreach($path as $node) 
-  {
-    $parents[] = $node['id'];
+  foreach($path as $node) {
+      $parents[] = $node['id'];
   }
   array_pop($parents);
   $cookieInfo['path'] = 'a:s%3A/' . implode("/", $parents);
-  $cookieInfo['value'] = $cookiePrefix . $tprojectID . '_ext-comp-1001' ;
+  $cookieInfo['value'] = $cookiePrefix . $tprojectID . '_ext-comp-1001';
+  
   return $cookieInfo;
 }

@@ -2,48 +2,48 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
+ *
  * Load core functions for TestLink GUI
  * Common functions: database connection, session and data initialization,
  * maintain $_SESSION data, redirect page, log, etc.
- * 
- * Note: this file must uses only globally used functionality and cannot include 
+ *
+ * Note: this file must uses only globally used functionality and cannot include
  * a feature specific code because of performance and readability reasons
  *
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2022 TestLink community 
+ * @Copyright   2005,2022 TestLink community
  * @link        http://www.testlink.org
  *
  */
 
 /** core and parenthal classes */
-require_once('object.class.php');
-require_once('metastring.class.php');
+require_once 'object.class.php';
+require_once 'metastring.class.php';
 
 /** Testlink Plugin API helper methods, must be included before lang_api.php */
-require_once('plugin_api.php');
+require_once 'plugin_api.php';
 
 /** library for localization */
-require_once('lang_api.php');
+require_once 'lang_api.php';
 
 /** logging functions */
-require_once('logging.inc.php');
-require_once('logger.class.php');
-require_once('pagestatistics.class.php');
+require_once 'logging.inc.php';
+require_once 'logger.class.php';
+require_once 'pagestatistics.class.php';
 
 /** library of database wrapper */
-require_once('database.class.php');
+require_once 'database.class.php';
 
 /** user right checking */
-require_once('roles.inc.php');
+require_once 'roles.inc.php';
 
 /** Testlink Smarty class wrapper sets up the default smarty settings for testlink */
-require_once('tlsmarty.inc.php');
+require_once 'tlsmarty.inc.php';
 
 /** Initialize the Event System */
-require_once('event_api.php' );
+require_once 'event_api.php';
 
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');
@@ -52,23 +52,23 @@ spl_autoload_register('tlAutoload');
 /** TL_APICALL => TICKET 0007190 */
 if( !defined('TL_APICALL') )
 {
-  require_once("csrf.php");
-}  
+  require_once 'csrf.php';
+}
 
 /** Input data validation */
-require_once("inputparameter.inc.php");
+require_once 'inputparameter.inc.php';
 
 /** @TODO use the next include only if it is used -> must be removed */
-// require_once("testproject.class.php"); 
-require_once("treeMenu.inc.php");
+// require_once("testproject.class.php");
+require_once 'treeMenu.inc.php';
 
 
 // 20130526 checks need to be done in order to understand if this class is really needed
-require_once("exec_cfield_mgr.class.php");   
+require_once 'exec_cfield_mgr.class.php';
 
 /**
  * Automatic loader for PHP classes
- * See PHP Manual for details 
+ * See PHP Manual for details
  */
 function tlAutoload($class_name)  {
 
@@ -79,7 +79,7 @@ function tlAutoload($class_name)  {
   $classFileName = $class_name;
 
    
-  // 2. add a lower case directory 
+  // 2. add a lower case directory
   $addDirToInclude = array('Kint' => true);
 
   // this way Zend_Loader_Autoloader will take care of these classes.
@@ -89,7 +89,7 @@ function tlAutoload($class_name)  {
   }
 
   // Workaround
-  // https://github.com/smarty-php/smarty/issues/344 
+  // https://github.com/smarty-php/smarty/issues/344
   // https://github.com/smarty-php/smarty/pull/345
   if( strpos($class_name,'Smarty_Internal_Compile_') !== FALSE ) {
     return false;
@@ -102,24 +102,24 @@ function tlAutoload($class_name)  {
   
   if (isset($addDirToInclude[$class_name])) {
     $classFileName = strtolower($class_name) . "/" . $class_name;
-  }  
+  }
 
   // Plugin special processing, class name ends with Plugin (see plugin_register())
   // Does not use autoload
   if( preg_match('/Plugin$/', $class_name) == 1 ) {
     return;
-  }  
+  }
 
 
   // fix provided by BitNami for:
-  // Reason: We had a problem integrating TestLink with other apps. 
-  // You can reproduce it installing ThinkUp and TestLink applications in the same stack. 
+  // Reason: We had a problem integrating TestLink with other apps.
+  // You can reproduce it installing ThinkUp and TestLink applications in the same stack.
 
   try {
       include_once $classFileName . '.class.php';
-  } 
+  }
   catch (Exception $e) {
-  }  
+  }
   
 }
 
@@ -148,12 +148,12 @@ function doDBConnect(&$db,$onErrorExit=false) {
 
   switch(DB_TYPE) {
     case 'mssql':
-      $dbDriverName = 'mssqlnative';    
+      $dbDriverName = 'mssqlnative';
     break;
 
     default:
       $dbDriverName = DB_TYPE;
-    break;  
+    break;
   }
 
   $db = new database($dbDriverName);
@@ -174,7 +174,7 @@ function doDBConnect(&$db,$onErrorExit=false) {
       $smarty->assign('title', lang_get('fatal_page_title'));
       $smarty->assign('content', $logtext);
       $smarty->assign('link_to_op', null);
-      $smarty->display('workAreaSimple.tpl'); 
+      $smarty->display('workAreaSimple.tpl');
       exit();
     }
   }
@@ -185,7 +185,7 @@ function doDBConnect(&$db,$onErrorExit=false) {
     }
   }
   
-  // if we establish a DB connection, we reopen the session, 
+  // if we establish a DB connection, we reopen the session,
   // to attach the db connection
   $g_tlLogger->endTransaction();
   $g_tlLogger->startTransaction();
@@ -197,7 +197,7 @@ function doDBConnect(&$db,$onErrorExit=false) {
 /**
  * Set session data related to the current test plan
  * and saves a cookie with current testplan id
- * 
+ *
  * @param array $tplan_info result of DB query
  */
 function setSessionTestPlan($tplan_info) {
@@ -209,7 +209,7 @@ function setSessionTestPlan($tplan_info) {
     $ckObj = new stdClass();
 
     $ckCfg = config_get('cookie');
-    $ckObj->name = $ckCfg->prefix . 'TL_lastTestPlanForUserID_' . 
+    $ckObj->name = $ckCfg->prefix . 'TL_lastTestPlanForUserID_' .
                    intval($_SESSION['userID']);
     $ckObj->value = $tplan_info['id'];
 
@@ -233,14 +233,14 @@ function setPaths()
   if (!isset($_SESSION['basehref']))
   {
     $_SESSION['basehref'] = get_home_url(array('force_https' => config_get('force_https')));
-  } 
+  }
 }
 
 
-/** 
+/**
  * Verify if user is log in. Redirect to login page if not.
- * 
- * @param integer $db DB identifier 
+ *
+ * @param integer $db DB identifier
  * @param boolean $redirect if true (default) redirects user to login page, otherwise returns true/false as login status
  **/
 function checkSessionValid(&$db, $redirect=true)
@@ -287,10 +287,10 @@ function doSessionStart($setPaths=false) {
   if(!isset($_SESSION)) {
     session_start();
     if(defined('KINT_ON') && KINT_ON) {
-      Kint::enabled(true);      
+      Kint::enabled(true);
     } else {
-      Kint::enabled(false);      
-    }  
+      Kint::enabled(false);
+    }
   }
   
   if($setPaths) {
@@ -302,7 +302,7 @@ function doSessionStart($setPaths=false) {
 
 /**
  * Initialize structure of top menu for the user and the project.
- * 
+ *
  * @param integer $db DB connection identifier
  * @uses $_SESSION Requires initialized project, test plan and user data.
  * @since 1.9
@@ -319,16 +319,16 @@ function initTopMenu(&$db)
   // check if Project is available
   if (isset($_SESSION['testprojectID']) && $_SESSION['testprojectID'] > 0)
   {
-    $idx = 1; 
+    $idx = 1;
     foreach ($guiTopMenu as $element)
     {
       // check if Test Plan is available
       $testPlanID = (isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0) ? $_SESSION['testplanID'] : null;
       if ((!isset($element['condition'])) || ($element['condition'] == '') ||
-        (($element['condition'] == 'TestPlanAvailable') && 
+        (($element['condition'] == 'TestPlanAvailable') &&
          !is_null($testPlanID)) ||
-        (($element['condition'] == 'ReqMgmtEnabled') && 
-          isset($_SESSION['testprojectOptions']->requirementsEnabled) && 
+        (($element['condition'] == 'ReqMgmtEnabled') &&
+          isset($_SESSION['testprojectOptions']->requirementsEnabled) &&
             $_SESSION['testprojectOptions']->requirementsEnabled))
       {
         // (is_null($element['right']) => no right needed => display always
@@ -343,14 +343,14 @@ function initTopMenu(&$db)
               if( $addItem = (has_rights($db,$rg, $_SESSION['testprojectID'], $testPlanID) == "yes") )
               {
                 break;
-              }   
-            }  
-          } 
+              }
+            }
+          }
           else
           {
             $addItem = (has_rights($db,$element['right'], $_SESSION['testprojectID'], $testPlanID) == "yes");
-          } 
-        } 
+          }
+        }
 
         if( $addItem )
         {
@@ -361,13 +361,13 @@ function initTopMenu(&$db)
           if( isset($element['imgKey']) )
           {
            $_SESSION['testprojectTopMenu'] .= '<img src="' . $imageSet[$element['imgKey']] . '"' .
-             ' title="' . lang_get($element['label']) . '">'; 
-          }  
+             ' title="' . lang_get($element['label']) . '">';
+          }
           else
           {
-           $_SESSION['testprojectTopMenu'] .= 
-             lang_get($element['label']); 
-          }  
+           $_SESSION['testprojectTopMenu'] .=
+             lang_get($element['label']);
+          }
 
           $_SESSION['testprojectTopMenu'] .= "</a>&nbsp;&nbsp;&nbsp;";
         }
@@ -381,14 +381,14 @@ function initTopMenu(&$db)
 /**
  * Update Project and Test Plan data on Project change or startup
  * Data are stored in $_SESSION array
- * 
+ *
  * If we receive TestPlan ID in the _SESSION then do some checks and if everything OK
  * Update this value at Session Level, to set it available in other pieces of the application
- * 
+ *
  * @param integer $db DB connection identifier
  * @param array $hash_user_sel input data for the page ($_REQUEST)
- * 
- * @uses initMenu() 
+ *
+ * @uses initMenu()
  * @internal revisions
  **/
 function initProject(&$db,$hash_user_sel) {
@@ -430,7 +430,7 @@ function initProject(&$db,$hash_user_sel) {
     $ckObj->value = $user_sel["tplan_id"];
     $ckObj->expire = time()+60*60*24*90;
     tlSetCookie($ckObj);
-  } 
+  }
   elseif (isset($_COOKIE[$ckObj->name])) {
     $tplan_id = intval($_COOKIE[$ckObj->name]);
   }
@@ -450,7 +450,7 @@ function initProject(&$db,$hash_user_sel) {
   }
   
   // initialize structure of top menu for the user and the project
-  initTopMenu($db);   
+  initTopMenu($db);
 }
 
 
@@ -460,27 +460,27 @@ function initProject(&$db,$hash_user_sel) {
  * - init database
  * - check rights
  * - initialize project data (if requested)
- * 
+ *
  * @param integer $db DB connection identifier
- * @param boolean $initProject (optional) Set true if adjustment of Test Project or  
+ * @param boolean $initProject (optional) Set true if adjustment of Test Project or
  *                      Test Plan is required; default is FALSE
  * @param boolean $dontCheckSession (optional) Set to true if no session should be started
  * @param string $userRightsCheckFunction (optional) name of function used to check user right needed
  *                           to execute the page
  */
-function testlinkInitPage(&$db, $initProject = FALSE, 
+function testlinkInitPage(&$db, $initProject = FALSE,
                           $dontCheckSession = false,
-                          $userRightsCheckFunction = null, 
+                          $userRightsCheckFunction = null,
                           $onFailureGoToLogin = false)
 {
   static $pageStatistics = null;
 
   doSessionStart();
   setPaths();
-  if( isset($_SESSION['locale']) 
+  if( isset($_SESSION['locale'])
       && !is_null($_SESSION['locale']) ) {
     setDateTimeFormats($_SESSION['locale']);
-  } 
+  }
   doDBConnect($db);
   
   if (!$pageStatistics && (config_get('log_level') == 'EXTENDED')) {
@@ -542,14 +542,14 @@ function redirect($url, $level = 'location')
 
 /**
  * Security parser for input strings
- * 
+ *
  * @param string $parameter
  * @return string cleaned parameter
  */
 function strings_stripSlashes($parameter,$bGPC = true)
 {
   if ($bGPC && !ini_get('magic_quotes_gpc'))
-  { 
+  {
     return $parameter;
   }
 
@@ -561,21 +561,21 @@ function strings_stripSlashes($parameter,$bGPC = true)
       foreach($parameter as $key=>$value)
       {
         if (is_array($value))
-        {  
+        {
           $retParameter[$key] = strings_stripSlashes($value,$bGPC);
         }
         else
-        {  
+        {
           $retParameter[$key] = stripslashes($value);
-        }  
+        }
       }
     }
     return $retParameter;
   }
   else
-  {  
+  {
     return stripslashes($parameter);
-  }  
+  }
 }
 
 
@@ -608,7 +608,7 @@ function to_boolean($alt_boolean)
  * @param string $regexp_forbidden_chars Regular expression (perl format)
  *
  * @return boolean 1: check ok, 0:check KO
- * 
+ *
  * @todo havlatm: remove as obsolete or move to inputparam.inc.php
  */
 function check_string($str2check, $regexp_forbidden_chars)
@@ -628,15 +628,15 @@ function check_string($str2check, $regexp_forbidden_chars)
 
 /**
  * Load global configuration to function
- * 
+ *
  * @param string $config_id key for identification of configuration parameter
  * @return mixed the configuration parameter(s)
- * 
+ *
  * @internal Revisions
  */
 function config_get($config_id, $default=null) {
-  $t_value = (null == $default) ? '' : $default;  
-  $t_found = false;  
+  $t_value = (null == $default) ? '' : $default;
+  $t_found = false;
   $logInfo = array('msg' => "config option not available: {$config_id}", 'level' => 'WARNING');
   if(!$t_found) {
     $my = "g_" . $config_id;
@@ -655,7 +655,7 @@ function config_get($config_id, $default=null) {
     
     if( $t_found )
     {
-      $logInfo['msg'] = "config option: {$config_id} is " . 
+      $logInfo['msg'] = "config option: {$config_id} is " .
                 ((is_object($t_value) || is_array($t_value)) ? serialize($t_value) : $t_value);
       $logInfo['level'] = 'INFO';
     }
@@ -666,12 +666,12 @@ function config_get($config_id, $default=null) {
 }
 
 
-/**  
+/**
  * @return boolean Return true if the parameter is an empty string or a string
  * containing only whitespace, false otherwise
  * @author Copyright (C) 2000 - 2004  Mantis Team, Kenzaburo Ito
- */ 
-function is_blank( $p_var ) 
+ */
+function is_blank( $p_var )
 {
   $p_var = trim( $p_var );
   $str_len = strlen( $p_var );
@@ -706,7 +706,7 @@ function downloadContentsToFile($content,$fileName,$opt=null)
 
 /**
  * helper function for performance timing
- * 
+ *
  * @TODO havlatm: Andreas, move to logger?
  * returns: ?
  */
@@ -726,18 +726,18 @@ function priority_to_level($priority) {
   $urgencyImportance = config_get('urgencyImportance');
   
   if ($priority >= $urgencyImportance->threshold['high']) {
-    return HIGH;
-  } else if ($priority < $urgencyImportance->threshold['low']) {
-    return LOW;
+      return HIGH;
+  } elseif ($priority < $urgencyImportance->threshold['low']) {
+      return LOW;
   } else {
-    return MEDIUM;
+      return MEDIUM;
   }
 }
 
 
 /**
  * Get the named php ini variable but return it as a bool
- * 
+ *
  * @author Copyright (C) 2000 - 2004  Mantis Team, Kenzaburo Ito
  */
 function ini_get_bool( $p_name ) {
@@ -768,7 +768,7 @@ function ini_get_bool( $p_name ) {
 
 /**
  * Trim string and limit to N chars
- * 
+ *
  * @param string
  * @param int [len]: how many chars return
  *
@@ -811,7 +811,7 @@ function transform_nodes_order($nodes_order,$node_to_exclude=null)
 
 /**
  * Checks $_FILES for errors while uploading
- * 
+ *
  * @param array $fInfo an array used by uploading files ($_FILES)
  * @return string containing an error message (if any)
  */
@@ -847,7 +847,7 @@ function getFileUploadErrorMessage($fInfo,$tlInfo=null)
 
 /**
  * Redirect to a page with static html defined in locale/en_GB/texts.php
- * 
+ *
  * @param string $key keyword for finding exact html text in definition array
  */
 function show_instructions($key, $refreshTree=0)
@@ -856,7 +856,7 @@ function show_instructions($key, $refreshTree=0)
     
     if( $refreshTree )
     {
-        $myURL .= "&refreshTree=1";  
+        $myURL .= "&refreshTree=1";
     }
     redirect($myURL);
 }
@@ -888,11 +888,11 @@ function templateConfiguration($template2get=null)
 /**
  * Check if an string is a valid ISO date/time
  *          accepted format: YYYY-MM-DD HH:MM:SS
- * 
+ *
  * @param string $ISODateTime datetime to check
  * @return boolean True if string has correct format
- * 
- * @internal   
+ *
+ * @internal
  * rev: 20080907 - franciscom - Code taked form PHP manual
  */
 function isValidISODateTime($ISODateTime)
@@ -901,7 +901,7 @@ function isValidISODateTime($ISODateTime)
    
    $matches=null;
    $status_ok=false;
-   if (preg_match("/^(\d{4})-(\d{2})-(\d{2}) ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $ISODateTime, $matches)) 
+   if (preg_match("/^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/", $ISODateTime, $matches))
    {
        $status_ok=checkdate($matches[$dateParts['MONTH']],$matches[$dateParts['DAY']],$matches[$dateParts['YEAR']]);
    }
@@ -928,7 +928,7 @@ function is_valid_date($timestamp, $dateFormat) {
  * Returns array containing date pieces for a given timestamp according to dateFormat
  */
 
-function split_localized_date($timestamp,$dateFormat) 
+function split_localized_date($timestamp,$dateFormat)
 {
   if(strlen(trim($timestamp)) == 0)
   {
@@ -939,7 +939,7 @@ function split_localized_date($timestamp,$dateFormat)
   $needle = array(".","-","/","%");
   foreach($needle as $target)
   {
-    if (strpos($timestamp,$target) !== false) 
+    if (strpos($timestamp,$target) !== false)
     {
       $splitChar = $target;
       break;
@@ -950,10 +950,10 @@ function split_localized_date($timestamp,$dateFormat)
   $format = preg_split('//', $strippedDateFormat, -1, PREG_SPLIT_NO_EMPTY);
   $pieces = explode($splitChar,$timestamp);
   $result = array();
-  if( count($pieces) == 3 )  // MAGIC ALLOWED 
+  if( count($pieces) == 3 )  // MAGIC ALLOWED
   {
     $k2t = array('Y' => 'year', 'm' => 'month', 'd' => 'day');
-    foreach ($format as $idx => $access) 
+    foreach ($format as $idx => $access)
     {
       $result[$k2t[$access]] = $pieces[$idx];
     }
@@ -963,7 +963,7 @@ function split_localized_date($timestamp,$dateFormat)
 
 
 /**
- * 
+ *
  *
  */
 function checkUserRightsFor(&$db,$pfn,$onFailureGoToLogin=false)
@@ -992,7 +992,7 @@ function checkUserRightsFor(&$db,$pfn,$onFailureGoToLogin=false)
   }
   
   if($doExit)
-  {   
+  {
     $myURL = $_SESSION['basehref'];
     if($onFailureGoToLogin)
     {
@@ -1000,7 +1000,7 @@ function checkUserRightsFor(&$db,$pfn,$onFailureGoToLogin=false)
       redirect($myURL ."login.php");
     }
     else
-    {   
+    {
       redirect($myURL,"top.location");
     }
     exit();
@@ -1010,13 +1010,13 @@ function checkUserRightsFor(&$db,$pfn,$onFailureGoToLogin=false)
 
 function tlStringLen($str)
 {
-  $charset = config_get('charset'); 
+  $charset = config_get('charset');
   $nLen = iconv_strlen($str,$charset);
   if ($nLen === false)
   {
     throw new Exception("Invalid UTF-8 Data detected!");
   }
-  return $nLen; 
+  return $nLen;
 }
 
 
@@ -1026,7 +1026,7 @@ function tlSubStr($str,$start,$length = null)
   if ($length === null)
   {
     $length = iconv_strlen($str,$charset);
-  } 
+  }
   // BUGID 3951: replaced iconv_substr() by mb_substr()
   $function_call = "mb_substr";
   if (function_exists('iconv_substr') && version_compare(PHP_VERSION, '5.2.0') >= 0) {
@@ -1037,7 +1037,7 @@ function tlSubStr($str,$start,$length = null)
 
 /**
  * Get text from a configured item template for editor objects
- * 
+ *
  * @param $itemTemplate identifies a TestLink item that can have
  *        templates that can be loaded when creating an item to semplify
  *        or guide user's work.
@@ -1048,9 +1048,9 @@ function tlSubStr($str,$start,$length = null)
  *
  * @param $webEditorName webeditor name, that identifies a propety of $tlCfg->$itemTemplate
  *        that holds input tenmplate configuration
- * 
+ *
  * @param $defaultText text to use if:
- *        $tlCfg->itemTemplate OR $tlCfg->itemTemplate->$webEditorName 
+ *        $tlCfg->itemTemplate OR $tlCfg->itemTemplate->$webEditorName
  *        does not exists.
  *
  */
@@ -1071,9 +1071,9 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
           case 'file':
             $value = getFileContents($editorTemplate->$webEditorName->value);
             if (is_null($value)) {
-              $value = lang_get('problems_trying_to_access_template') . 
+              $value = lang_get('problems_trying_to_access_template') .
                        " {$editorTemplate->$webEditorName->value} ";
-            } 
+            }
           break;
              
           case 'none':
@@ -1082,7 +1082,7 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
         }
       }
     }
-    return $value; 
+    return $value;
 }
 
 
@@ -1103,13 +1103,13 @@ function buildExternalIdString($testCasePrefix, $external_id)
 }
 
 /**
- * 
+ *
  *
  */
 function displayMemUsage($msg='')
 {
   $dx = date('l jS \of F Y h:i:s A');
-  echo "<br>{$msg} :: <b>{$dx}</b> <br>";       
+  echo "<br>{$msg} :: <b>{$dx}</b> <br>";
   ob_flush();flush();
   echo "memory:" . memory_get_usage() . " - PEAK -> " . memory_get_peak_usage() .'<br>';
   ob_flush();flush();
@@ -1132,7 +1132,7 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
   if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) )
   {
     setDateTimeFormats($_SESSION['locale']);
-  } 
+  }
   doDBConnect($dbHandler);
 
   $user = tlUser::getByAPIKey($dbHandler,$apikey);
@@ -1146,7 +1146,7 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
 
     // if user do this:
     // 1. login to test link
-    // 2. get direct link and open in new tab or new window while still logged 
+    // 2. get direct link and open in new tab or new window while still logged
     // 3. logout
     // If user refresh tab / window open on (2), because on (3) we destroyed
     // session we have loose basehref, and we are not able to recreate it.
@@ -1160,16 +1160,16 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
     if (!isset($_SESSION['basehref'])) {
       session_unset();
       session_destroy();
-      if(property_exists($rightsCheck, 'redirect_target') 
+      if(property_exists($rightsCheck, 'redirect_target')
          && !is_null($rightsCheck->redirect_target)) {
-        redirect($rightsCheck->redirect_target);  
+        redirect($rightsCheck->redirect_target);
       } else {
         // best guess for all features that live on ./lib/results/
-        redirect("../../login.php?note=logout");  
-      } 
+        redirect("../../login.php?note=logout");
+      }
         
       exit();
-    }  
+    }
  
 
     if(!is_null($rightsCheck)) {
@@ -1181,12 +1181,12 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
 
 
 /*
-  returns map with config values and strings translated (using lang_get()) 
-  to be used on user interface  for a Test link configuration option that 
+  returns map with config values and strings translated (using lang_get())
+  to be used on user interface  for a Test link configuration option that
   is structure in this way:
     config_option = array( string_value => any_value, ...)
 
-    All this works if TL_ strings defined on strings.txt follows this naming standard.  
+    All this works if TL_ strings defined on strings.txt follows this naming standard.
 
     For a config option like:
     $tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
@@ -1201,10 +1201,10 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
     @param string accessMode: two values allowed 'key', 'code'
                               indicates how the returned map must be indexed.
 
-                              'key' => will be indexed by string                          
+                              'key' => will be indexed by string
                                        value that is key of config option
 
-                              'code' => will be indexed by value of config option         
+                              'code' => will be indexed by value of config option
 
   @example
 
@@ -1230,7 +1230,7 @@ function getConfigAndLabels($configKey,$accessMode='key')
     $index = ($accessMode == 'key') ? $accessKey : $code;
     $labels[$index] = lang_get($configKey . '_' . $accessKey);
   }
-  return array('cfg' => $stringKeyCode, 'lbl' => $labels); 
+  return array('cfg' => $stringKeyCode, 'lbl' => $labels);
 }
 
 
@@ -1281,11 +1281,11 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
   if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) )
   {
     setDateTimeFormats($_SESSION['locale']);
-  } 
+  }
   doDBConnect($dbHandler);
 
   // @since 1.9.14
-  $checkMode = 'paranoic'; 
+  $checkMode = 'paranoic';
   if(property_exists($rightsCheck->args, 'envCheckMode'))
   {
     $checkMode = $rightsCheck->args->envCheckMode;
@@ -1308,8 +1308,8 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
     if(!is_null($item))
     {
       break;
-    }  
-  }  
+    }
+  }
 
   $status_ok = false;
   if (!is_null($item)) {
@@ -1321,7 +1321,7 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
 
     // if user do this:
     // 1. login to test link
-    // 2. get direct link and open in new tab or new window while still logged 
+    // 2. get direct link and open in new tab or new window while still logged
     // 3. logout
     // If user refresh tab / window open on (2), because on (3) we destroyed
     // session we have loose basehref, and we are not able to recreate it.
@@ -1334,20 +1334,19 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
     //
     if(!isset($_SESSION['basehref']))
     {
-      // echo $rightsCheck->redirect_target;
       session_unset();
       session_destroy();
       if(property_exists($rightsCheck, 'redirect_target') && !is_null($rightsCheck->redirect_target))
       {
-        redirect($rightsCheck->redirect_target);  
-      } 
+        redirect($rightsCheck->redirect_target);
+      }
       else
       {
         // best guess for all features that live on ./lib/results/
-        redirect("../../login.php?note=logout");  
-      } 
+        redirect("../../login.php?note=logout");
+      }
       exit();
-    }  
+    }
 
     if(!is_null($rightsCheck->method))
     {
@@ -1367,7 +1366,7 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   
   $tables = tlObjectWithDB::getDBTables(array('testprojects','testplans'));
-  switch ($type) 
+  switch ($type)
   {
     case 'testproject':
       $target = $tables['testprojects'];
@@ -1384,7 +1383,7 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
   
   $sql = "/* $debugMsg */ " .
          " SELECT id FROM {$target} " .
-         " WHERE api_key = '" . 
+         " WHERE api_key = '" .
          $dbHandler->prepare_string($apiKey) . "'";
  
   $rs = $dbHandler->get_recordset($sql);
@@ -1398,7 +1397,7 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
 function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
 {
   // name of caller script
-  $script = basename($_SERVER['PHP_SELF']); 
+  $script = basename($_SERVER['PHP_SELF']);
   $doExit = false;
   $action = 'any';
   $env = array('tproject_id' => 0, 'tplan_id' => 0);
@@ -1406,7 +1405,7 @@ function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
   foreach($env as $key => $val)
   {
     $env[$key] = intval($val);
-  }  
+  }
   
   if( $doExit = (is_null($env) || $env['tproject_id'] == 0) )
   {
@@ -1418,7 +1417,7 @@ function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
       $status = $userObj->hasRight($dbHandler,$verboseRight,
                   $env['tproject_id'],$env['tplan_id'],true);
       if( ($doExit = !$status) && ($rightsToCheck->mode == 'and'))
-      { 
+      {
         $action = 'any';
         logAuditEvent(TLS("audit_security_user_right_missing",$userObj->login,$script,$action),
                   $action,$userObj->dbID,"users");
@@ -1428,7 +1427,7 @@ function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
   }
 
   if ($doExit)
-  {   
+  {
     redirect($_SESSION['basehref'],"top.location");
     exit();
   }
@@ -1453,8 +1452,8 @@ function getWebEditorCfg($feature='all')
     if(!isset($webEditorCfg[$key]))
     {
       $webEditorCfg[$key] = $defaultCfg[$key];
-    }   
-  } 
+    }
+  }
   return $webEditorCfg;
 }
 
@@ -1464,31 +1463,31 @@ function getWebEditorCfg($feature='all')
 function downloadXls($fname,$xlsType,$gui,$filePrefix)
 {
   $sets = array();
-  $sets['Excel2007'] = array('ext' => '.xlsx', 
+  $sets['Excel2007'] = array('ext' => '.xlsx',
                              'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  $sets['Excel5'] = array('ext' => '.xls', 
+  $sets['Excel5'] = array('ext' => '.xls',
                           'Content-Type' => 'application/vnd.ms-excel');
 
 
   $dct = array('Content-Type' =>  $sets[$xlsType]['Content-Type']);
   $content = file_get_contents($fname);
-  $f2d = $filePrefix . $gui->tproject_name . '_' . $gui->tplan_name . 
+  $f2d = $filePrefix . $gui->tproject_name . '_' . $gui->tplan_name .
          $sets[$xlsType]['ext'];
 
   downloadContentsToFile($content,$f2d,$dct);
   unlink($fname);
-  exit();    
+  exit();
 }
 
 /**
  * POC on papertrailapp.com
  */
-function syslogOnCloud($message, $component = "web", $program = "TestLink") 
+function syslogOnCloud($message, $component = "web", $program = "TestLink")
 {
   $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-  foreach(explode("\n", $message) as $line) 
+  foreach(explode("\n", $message) as $line)
   {
-    $syslog_message = "<22>" . date('M d H:i:s ') . $program . ' ' . 
+    $syslog_message = "<22>" . date('M d H:i:s ') . $program . ' ' .
                       $component . ': ' . $line;
     socket_sendto($sock, $syslog_message, strlen($syslog_message), 0,
                   'logs5.papertrailapp.com', 11613);
@@ -1522,7 +1521,7 @@ function tlSetCookie($ckObj) {
 /**
  *
  * $opt: skip map each element can be a map
- *         tplanForInit 
+ *         tplanForInit
  *         tplanToGetEffectiveRole
  */
 function initUserEnv(&$dbH, $context, $opt=null) {
@@ -1547,18 +1546,18 @@ function initUserEnv(&$dbH, $context, $opt=null) {
   }
 
   $args->user = $_SESSION['currentUser'];
-  $k2l = array( 'tproject_id' => 0, 
+  $k2l = array( 'tproject_id' => 0,
                 'current_tproject_id' => 0,
                 'tplan_id' => 0);
 
   foreach($k2l as $pp => $vv) {
-    $args->$pp = $vv;  
+    $args->$pp = $vv;
     if( isset($_REQUEST[$pp]) ) {
       $args->$pp = intval($_REQUEST[$pp]);
-    } else if (null != $context && property_exists($context, $pp)) {
-      $args->$pp = intval($context->$pp);      
+    } elseif (null != $context && property_exists($context, $pp)) {
+      $args->$pp = intval($context->$pp);
     }
-  } 
+  }
   $tprjMgr = new testproject($dbH);
   $guiCfg = config_get("gui");
   $opx = array('output' => 'map_name_with_inactive_mark',
@@ -1568,10 +1567,10 @@ function initUserEnv(&$dbH, $context, $opt=null) {
   $gui->prjSet = $tprjMgr->get_accessible_for_user($args->user->dbID, $opx);
   $gui->prjQtyWholeSystem = $tprjMgr->getItemCount();
   $gui->zeroTestProjects = ($gui->prjQtyWholeSystem == 0);
-  $args->zeroTestProjects = $gui->zeroTestProjects; 
+  $args->zeroTestProjects = $gui->zeroTestProjects;
 
-  $args->userIsBlindFolded = 
-    (is_null($gui->prjSet) || count($gui->prjSet) == 0) 
+  $args->userIsBlindFolded =
+    (is_null($gui->prjSet) || count($gui->prjSet) == 0)
     && $gui->prjQtyWholeSystem > 0;
   if( $args->userIsBlindFolded ) {
     $args->current_tproject_id = 0;
@@ -1580,10 +1579,10 @@ function initUserEnv(&$dbH, $context, $opt=null) {
   }
 
 
-  // It's ok to get testproject context if 
+  // It's ok to get testproject context if
   // we have the testplan id?
   // Can this be a potential security issue?
-  // Can this create a non coherent situation on GUI?  
+  // Can this create a non coherent situation on GUI?
   if( $args->tproject_id == 0 ) {
     $args->tproject_id = key($gui->prjSet);
   }
@@ -1603,14 +1602,14 @@ function initUserEnv(&$dbH, $context, $opt=null) {
 
     $gui->num_active_tplans = $tprjMgr->getActiveTestPlansCount($args->tproject_id);
 
-    // get Test Plans available for the user 
+    // get Test Plans available for the user
     // $gpOpt = array('output' => 'map');
     $gpOpt = null;
     $gui->tplanSet = (array)$args->user->getAccessibleTestPlans($dbH,$args->tproject_id,$gpOpt);
     $gui->countPlans = count($gui->tplanSet);
   
     /* 20191212 - will remove because have created issues
-       with IVU, and I not sure anymore of usefulness 
+       with IVU, and I not sure anymore of usefulness
     if (false == $optDeep['skip']['tplanForInit'] || $args->tplan_id <= 0) {
       $gui->tplan_id = $args->tplan_id = (int)doTestPlanSetup($gui);
     }
@@ -1618,31 +1617,18 @@ function initUserEnv(&$dbH, $context, $opt=null) {
     if ($args->tplan_id <= 0) {
       $gui->tplan_id = $args->tplan_id = (int)doTestPlanSetup($gui);
     }
-  } 
+  }
 
-  $doInitUX = ($args->tproject_id > 0) || $options['forceCreateProj']; 
+  $doInitUX = ($args->tproject_id > 0) || $options['forceCreateProj'];
   $gui->grants = null;
   $gui->access = null;
   $gui->showMenu = null;
   $gui->activeMenu = setSystemWideActiveMenuOFF();
 
-  /*
-  if ($options['caller'] != 'not provided') {
-    echo '<br> 1509 - caller => ' . $options['caller'] . '<br>';  
-  }
-  */
-
   if( $doInitUX ) {
-    // echo 'doInitUX<br>';
     $gui->grants = getGrantSetWithExit($dbH,$args,$tprjMgr,$options);
     $gui->access = getAccess($gui);
     $gui->showMenu = getMenuVisibility($gui);
-
-  /*
-  if ($options['caller'] != 'not provided') {
-    echo '<br> 1509 - caller => ' . $options['caller'] . '<br>';  
-  }
-  */
   }
   
   // Get Role Description to display.
@@ -1654,38 +1640,38 @@ function initUserEnv(&$dbH, $context, $opt=null) {
   //
   $tplan_id = $gui->tplan_id;
   if( $optDeep['skip']['tplanToGetEffectiveRole'] ) {
-    $tplan_id = null;      
-  } 
+    $tplan_id = null;
+  }
 
   $eRoleObj = $args->user->getEffectiveRole($dbH,$gui->tproject_id,$tplan_id);
   
   $cfg = config_get('gui');
-  $gui->whoami = $args->user->getDisplayName() . ' ' . 
-                 $cfg->role_separator_open . 
-                 $eRoleObj->getDisplayName() . 
+  $gui->whoami = $args->user->getDisplayName() . ' ' .
+                 $cfg->role_separator_open .
+                 $eRoleObj->getDisplayName() .
                  $cfg->role_separator_close;
 
-  $gui->launcher = $_SESSION['basehref'] . 
+  $gui->launcher = $_SESSION['basehref'] .
     'lib/general/frmWorkArea.php';
 
   $gui->docs = config_get('userDocOnDesktop') ? getUserDocumentation() : null;
 
   $secCfg = config_get('config_check_warning_frequence');
   $gui->securityNotes = '';
-  if( (strcmp($secCfg, 'ALWAYS') == 0) || 
+  if( (strcmp($secCfg, 'ALWAYS') == 0) ||
         (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesOnMainPageDone'])) ) {
     $_SESSION['getSecurityNotesOnMainPageDone'] = 1;
     $gui->securityNotes = getSecurityNotes($dbH);
-  }  
+  }
   
   $gui->tprojOpt = $tprjMgr->getOptions($args->tproject_id);
-  $gui->opt_requirements = 
-    isset($gui->tprojOpt->requirementsEnabled) ? 
-    $gui->tprojOpt->requirementsEnabled : null; 
+  $gui->opt_requirements =
+    isset($gui->tprojOpt->requirementsEnabled) ?
+    $gui->tprojOpt->requirementsEnabled : null;
 
   getActions($gui,$_SESSION['basehref']);
 
-  if( $gui->current_tproject_id == null || 
+  if( $gui->current_tproject_id == null ||
     trim($gui->current_tproject_id) == '' ) {
   }
 
@@ -1693,11 +1679,11 @@ function initUserEnv(&$dbH, $context, $opt=null) {
                config_get('logo_navbar');
         
 
-  $ft = 'form_token';             
+  $ft = 'form_token';
   $gui->$ft = isset($args->$ft) ? $args->$ft : 0;
   if ($gui->$ft == 0 && isset($_REQUEST[$ft])) {
     $gui->$ft = $_REQUEST[$ft];
-  }               
+  }
   $gui->treeFormToken = $gui->form_token;
 
   return array($args,$gui,$tprjMgr);
@@ -1728,14 +1714,14 @@ function getActions(&$gui,$baseURL) {
   $actions->events = "$bb/events/eventviewer.php?{$ctx}";
   $actions->usersAssign = "$bb/usermanagement/usersAssign.php?{$ctx}&featureType=testproject&featureID=" . intval($gui->tproject_id);
 
-  $actions->userMgmt = "$bb/usermanagement/usersView.php?{$ctx}" . 
+  $actions->userMgmt = "$bb/usermanagement/usersView.php?{$ctx}" .
                        intval($gui->tproject_id);
 
   $actions->userInfo = "$bb/usermanagement/userInfo.php?{$ctx}";
   $actions->projectView = "$bb/project/projectView.php?{$ctx}";
 
   $actions->cfAssignment = "$bb/cfields/cfieldsTprojectAssign.php?{$ctx}";
-  $actions->cfieldsView = "$bb/cfields/cfieldsView.php?{$ctx}";  
+  $actions->cfieldsView = "$bb/cfields/cfieldsView.php?{$ctx}";
 
   $actions->keywordsView = "$bb/keywords/keywordsView.php?{$ctx}";
   $actions->platformsView = "$bb/platforms/platformsView.php?{$ctx}";
@@ -1750,7 +1736,7 @@ function getActions(&$gui,$baseURL) {
 
   $actions->fullTextSearch = "$bb/search/searchMgmt.php?{$ctx}";
 
-  $actions->metrics_dashboard =  
+  $actions->metrics_dashboard =
     "$bb/results/metricsDashboard.php?{$ctx}";
 
 
@@ -1767,11 +1753,11 @@ function getActions(&$gui,$baseURL) {
     $actions->mileView = "$pp/planMilestonesView.php?{$ctx}";
     $actions->platformAssign = "$bb/platforms/platformsAssign.php?{$ctx}";
     $actions->milestonesView = "$bb/plan/planMilestonesView.php?{$ctx}";
-    $actions->testcase_assignments =  
+    $actions->testcase_assignments =
       "$bb/testcases/tcAssignedToUser.php?{$ctx}";
   }
 
-  $launcher = $_SESSION['basehref'] . 
+  $launcher = $_SESSION['basehref'] .
     "lib/general/frmWorkArea.php?feature=";
 
   $gui->workArea = new stdClass();
@@ -1828,7 +1814,7 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
 
   if ($options['forceCreateProj'] && $argsObj->zeroTestProjects) {
     if ($argsObj->user->hasRight($dbHandler,'mgt_modify_product')) {
-      redirect($_SESSION['basehref'] . 
+      redirect($_SESSION['basehref'] .
         'lib/project/projectEdit.php?doAction=create');
       exit();
     }
@@ -1840,7 +1826,7 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
   // key: more or less verbose
   // value: string present on rights table
 
-  $systemWideRights = 
+  $systemWideRights =
     array(
       'project_edit' => 'mgt_modify_product',
       'configuration' => "system_configuraton",
@@ -1849,10 +1835,10 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
       'user_mgmt' => "mgt_users"
     );
       
-  $r2cTranslate = 
+  $r2cTranslate =
     array(
-      'reqs_view' => "mgt_view_req", 
-      'monitor_req' => "monitor_requirement", 
+      'reqs_view' => "mgt_view_req",
+      'monitor_req' => "monitor_requirement",
       'reqs_edit' => "mgt_modify_req",
       'keywords_view' => "mgt_view_key",
       'keywords_edit' => "mgt_modify_key",
@@ -1890,24 +1876,24 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
     foreach($r2cSame as $rr) {
       $grants[$rr] = 'no';
     }
-    return (object)$grants;      
-  }  
+    return (object)$grants;
+  }
   
   // Go ahead, continue with the analysis
   // First get system wide rights
   foreach ($systemWideRights as $humankey => $right) {
-    $grants[$humankey] = $argsObj->user->hasRight($dbHandler,$right); 
+    $grants[$humankey] = $argsObj->user->hasRight($dbHandler,$right);
   }
 
   foreach ($r2cTranslate as $humankey => $right) {
-    $grants[$humankey] = 
-      $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id,$argsObj->tplan_id); 
+    $grants[$humankey] =
+      $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id,$argsObj->tplan_id);
   }
 
 
   foreach ($r2cSame as $right) {
-    $grants[$right] = 
-      $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id,$argsObj->tplan_id); 
+    $grants[$right] =
+      $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id,$argsObj->tplan_id);
   }
 
 
@@ -1916,7 +1902,7 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
   if($tprojOpt->inventoryEnabled) {
     $invr = array('project_inventory_view','project_inventory_management');
     foreach($invr as $r){
-      $grants[$r] = 
+      $grants[$r] =
         ($argsObj->user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
     }
   }
@@ -1927,7 +1913,7 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
       $argsObj->user->hasRight($db,"user_role_assignment",null,-1) == "yes" ) {
       $grants['tproject_user_role_assignment'] = "yes";
   }
-  return (object)$grants;  
+  return (object)$grants;
 }
 
 /**
@@ -1939,7 +1925,7 @@ function getAccess(&$gui) {
     $access[$ak] = 'no';
     $p_m = $ak . '_management';
     $p_v = $ak . '_view';
-    if( 'yes' == $gui->grants->$p_m || 
+    if( 'yes' == $gui->grants->$p_m ||
         'yes' == $gui->grants->$p_v ) {
       $access[$ak] = 'yes';
     }
@@ -1952,66 +1938,66 @@ function getAccess(&$gui) {
  *
  *
  */
-function getMenuVisibility(&$gui) 
+function getMenuVisibility(&$gui)
 {
   $showMenu = getFirstLevelMenuStructure();
 
-  if($gui->tproject_id > 0  && 
-     (   $gui->grants->view_tc == "yes" 
-      || $gui->grants->reqs_view == "yes" 
+  if($gui->tproject_id > 0  &&
+     (   $gui->grants->view_tc == "yes"
+      || $gui->grants->reqs_view == "yes"
       || $gui->grants->reqs_edit == "yes") ) {
     $showMenu['search'] = true;
   }
 
-  if($gui->tproject_id > 0  && 
+  if($gui->tproject_id > 0  &&
      ($gui->grants->cfield_assignment == "yes" ||
-      $gui->grants->cfield_management == "yes" || 
-      $gui->grants->issuetracker_management == "yes" || 
-      $gui->grants->codetracker_management == "yes" || 
+      $gui->grants->cfield_management == "yes" ||
+      $gui->grants->issuetracker_management == "yes" ||
+      $gui->grants->codetracker_management == "yes" ||
       $gui->grants->issuetracker_view == "yes" ||
       $gui->grants->codetracker_view == "yes") ) {
     $showMenu['system'] = true;
   }
 
-  if($gui->tproject_id > 0  && 
-     ($gui->grants->project_edit == "yes" || 
+  if($gui->tproject_id > 0  &&
+     ($gui->grants->project_edit == "yes" ||
       $gui->grants->tproject_user_role_assignment == "yes" ||
-      $gui->grants->cfield_management == "yes" || 
-      $gui->grants->platform_management == "yes" || 
+      $gui->grants->cfield_management == "yes" ||
+      $gui->grants->platform_management == "yes" ||
       $gui->grants->keywords_view == "yes") ) {
     $showMenu['projects'] = true;
   }
 
-  if ( $gui->tproject_id > 0  && 
+  if ( $gui->tproject_id > 0  &&
        //$gui->opt_requirements == true && TO REACTIVATE
-       ($gui->grants->reqs_view == "yes" || 
+       ($gui->grants->reqs_view == "yes" ||
         $gui->grants->reqs_edit == "yes" ||
-        $gui->grants->monitor_req == "yes" || 
+        $gui->grants->monitor_req == "yes" ||
         $gui->grants->req_tcase_link_management == "yes") ) {
     $showMenu['requirements_design'] = true;
   }
 
-  if($gui->tproject_id > 0  && 
+  if($gui->tproject_id > 0  &&
      ($gui->grants->view_tc == "yes") ) {
     $showMenu['tests_design'] = true;
   }
 
-  if($gui->tproject_id > 0  && 
+  if($gui->tproject_id > 0  &&
      ($gui->grants->testplan_planning == "yes" ||
-      $gui->grants->mgt_testplan_create == "yes" || 
+      $gui->grants->mgt_testplan_create == "yes" ||
       $gui->grants->testplan_user_role_assignment == "yes" ||
       $gui->grants->testplan_create_build == "yes") ) {
     $showMenu['plans'] = true;
   }
 
-  if ($gui->tproject_id > 0  
-      && $gui->tplan_id > 0 
-      && ($gui->grants->testplan_execute == "yes" || 
+  if ($gui->tproject_id > 0
+      && $gui->tplan_id > 0
+      && ($gui->grants->testplan_execute == "yes" ||
           $gui->grants->exec_ro_access == "yes") ) {
     $showMenu['execution'] = true;
   }
 
-  if($gui->tproject_id > 0 && $gui->tplan_id > 0) { 
+  if($gui->tproject_id > 0 && $gui->tplan_id > 0) {
     $showMenu['reports'] = true;
   }
 
@@ -2021,7 +2007,7 @@ function getMenuVisibility(&$gui)
 /**
  *
  */
-function setSystemWideActiveMenuOFF() 
+function setSystemWideActiveMenuOFF()
 {
   $items = getFirstLevelMenuStructure();
   foreach( $items as $ky => $dm) {
@@ -2033,7 +2019,7 @@ function setSystemWideActiveMenuOFF()
 /**
  *
  */
-function getFirstLevelMenuStructure() 
+function getFirstLevelMenuStructure()
 {
   return array('dashboard' => false,
                'system'=> false,
@@ -2070,7 +2056,7 @@ function doTestPlanSetup(&$gui) {
   if( $found == 0 ) {
     $index = 0;
     $gui->tplan_id = $gui->tplanSet[$index]['id'];
-  } 
+  }
 
   $gui->tplanSet[$index]['selected']=1;
 
@@ -2091,8 +2077,8 @@ function initContext()
   foreach ($k2ctx as $prop => $defa) {
     $context->$prop = isset($_REQUEST[$prop]) ? $_REQUEST[$prop] : $defa;
     if( is_numeric($defa) ) {
-      $context->$prop = intval($context->$prop);    
-    } 
+      $context->$prop = intval($context->$prop);
+    }
     if ($env != '') {
       $env .= "&";
     }
@@ -2105,9 +2091,9 @@ function initContext()
 
 
 /*
- * rights check 
+ * rights check
  */
-function pageAccessCheck(&$db, &$user, $context) 
+function pageAccessCheck(&$db, &$user, $context)
 {
   $tplan_id = 0;
   if (property_exists($context,'tplan_id')) {
@@ -2118,9 +2104,9 @@ function pageAccessCheck(&$db, &$user, $context)
   $checkAnd = true;
   foreach ($context->rightsAnd as $ri) {
     // $user->hasRight() needs refactoring to return ALWAYS boolean
-    //                   right now it seems will return 
+    //                   right now it seems will return
     //                   false or null -> for FALSE
-    //                   'yes' -> for TRUE !!! 
+    //                   'yes' -> for TRUE !!!
     $boolCheck = ($user->hasRight($db,$ri,$context->tproject_id,$tplan_id,true) == 'yes');
     $checkAnd &= $boolCheck;
   }
@@ -2142,7 +2128,7 @@ function pageAccessCheck(&$db, &$user, $context)
     $script = basename($_SERVER['PHP_SELF']);
     $action = 'Access Req Feature';
     $msg = TLS("audit_security_user_right_missing",
-               $user->login,$script,$action); 
+               $user->login,$script,$action);
     logAuditEvent($msg, $action,$user->dbID,"users");
     throw new Exception($msg, 1);
   }
@@ -2151,7 +2137,7 @@ function pageAccessCheck(&$db, &$user, $context)
 /**
  *
  */
-function XSS_StringScriptSafe($content) 
+function XSS_StringScriptSafe($content)
 {
   $needle = [];
   $needle[] = "<script";

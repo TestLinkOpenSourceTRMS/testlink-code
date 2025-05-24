@@ -1,7 +1,7 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  index.php
  * @package     TestLink
@@ -10,14 +10,14 @@
  *
  *
 **/
-require_once('lib/functions/configCheck.php');
+require_once 'lib/functions/configCheck.php';
 checkConfiguration();
-require_once('config.inc.php');
-require_once('common.php');
+require_once 'config.inc.php';
+require_once 'common.php';
 doSessionStart();
 
 // will be very interesting understand why we do this
-unset($_SESSION['basehref']);  
+unset($_SESSION['basehref']);
 setPaths();
 list($args,$gui) = initEnv();
 
@@ -37,8 +37,9 @@ if( isset($_SESSION['currentUser']) ) {
     $user->readFromDB($db);
     $dbSecurityCookie = $user->getSecurityCookie();
     $redir2login = ( $securityCookie != $dbSecurityCookie );
-  } 
+  }
 }
+
 
 if($redir2login) {
   // destroy user in session as security measure
@@ -60,7 +61,7 @@ if($redir2login) {
 
 
 // We arrive to these lines only if we are logged in
-// 
+//
 // Calling testlinkInitPage() I'm doing what we do on navBar.php
 // navBar.php is called via main.tpl
 // testlinkInitPage($db,('initProject' == 'initProject'));
@@ -81,10 +82,10 @@ function initEnv() {
   $args = new stdClass();
   $args->ssodisable = getSSODisable();
 
-  // CWE-79: 
-  // Improper Neutralization of Input 
+  // CWE-79:
+  // Improper Neutralization of Input
   // During Web Page Generation ('Cross-site Scripting')
-  // 
+  //
   // https://cxsecurity.com/issue/WLB-2019110139
   $args->reqURI = '';
   if ($pParams["reqURI"] != '') {
@@ -93,7 +94,7 @@ function initEnv() {
     // some sanity checks
     // strpos ( string $haystack , mixed $needle
     if (stripos($args->reqURI,'javascript') !== false) {
-      $args->reqURI = null; 
+      $args->reqURI = null;
     }
   }
   if (null == $args->reqURI) {
@@ -112,7 +113,7 @@ function initEnv() {
   $gui->navbar_height = config_get('navbar_height');
 
   $sso = ($args->ssodisable ? '&ssodisable' : '');
-  $gui->titleframe = "lib/general/navBar.php?" . 
+  $gui->titleframe = "lib/general/navBar.php?" .
                      "tproject_id={$args->tproject_id}&" .
                      "tplan_id={$args->tplan_id}&" .
                      "updateMainPage=1" . $sso;

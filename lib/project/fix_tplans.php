@@ -1,6 +1,6 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * 
+/** TestLink Open Source Project - http://testlink.sourceforge.net/
+ *
  * @filesource $RCSfile: fix_tplans.php,v $
  * @version $Revision: 1.6 $
  * @modified $Date: 2009/08/03 08:15:43 $  $Author: franciscom $
@@ -9,10 +9,10 @@
  * fixes bug 1021
 **/
  
-require_once('../../config.inc.php');
-require_once('users.inc.php');
-require_once('testproject.class.php');
-require_once('configCheck.php');
+require_once '../../config.inc.php';
+require_once 'users.inc.php';
+require_once 'testproject.class.php';
+require_once 'configCheck.php';
 
 testlinkInitPage($db);
 $template_dir='project/';
@@ -29,12 +29,12 @@ if ($can_manage_tprojects)
 		{
 			if ($testProject != "none")
 			{
-				echo "<br />changing test plan $testPlan to go with test project $testProject";			
+				echo "<br />changing test plan $testPlan to go with test project $testProject";
 				changeTestProjectForTestPlan($db, $testPlan, $testProject);
 			}
 		}
 		echo "<hr>";
-	}	
+	}
 	
 	$testPlans = getTestPlansWithoutProject($db);
 	$testPlansCount = count($testPlans);

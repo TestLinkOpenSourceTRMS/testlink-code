@@ -1,22 +1,22 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * test project management
  *
  * @filesource  projectEdit.php
  * @package     TestLink
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2019, TestLink community
  * @link        http://www.testlink.org
  *
  */
 
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once("web_editor.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'web_editor.php';
 $editorCfg = getWebEditorCfg('testproject');
-require_once(require_web_editor($editorCfg['type']));
+require_once require_web_editor($editorCfg['type']);
 
 testlinkInitPage($db,true,false,"checkRights");
 
@@ -101,9 +101,9 @@ $smarty->assign('gui_cfg',$gui_cfg);
 $smarty->assign('editorType',$editorCfg['type']);
 $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 
-$feedback_type = '';  
+$feedback_type = '';
 if(!$status_ok) {
-  $feedback_type = 'error';  
+  $feedback_type = 'error';
   $args->doAction = "ErrorOnAction";
 }
 
@@ -115,12 +115,12 @@ switch($args->doAction) {
   case "setInactive":
   case 'enableRequirements':
   case 'disableRequirements':
-    if( ($addIssueTracker = $addCodeTracker = $addReqMgrSystem = is_null($template)) ) {
+    if($addIssueTracker = $addCodeTracker = $addReqMgrSystem = is_null($template)) {
       $template = 'projectView.tpl';
       // needed after addition of search function on test project view
-      $gui->name = '';  
-      $gui->feedback = '';  
-    }  
+      $gui->name = '';
+      $gui->feedback = '';
+    }
 
     $gui->doAction = $reloadType;
     $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
@@ -133,7 +133,7 @@ switch($args->doAction) {
 
     if($gui->itemQty > 0) {
       $gui->pageTitle .= ' ' . sprintf(lang_get('available_test_projects'),$gui->itemQty);
-    }  
+    }
     $imgSet = $smarty->getImages();
 
 
@@ -147,7 +147,7 @@ switch($args->doAction) {
           $gui->tprojects[$idx]['itstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
                                                  ' alt="' . $labels[$ak . '_integration'] . '" ' .
                                                  ' src="' . $imgSet[$ak] . '"/>';
-        } 
+        }
       }
     }
         
@@ -161,9 +161,9 @@ switch($args->doAction) {
           $gui->tprojects[$idx]['ctstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
                                                  ' alt="' . $labels[$ak . '_integration'] . '" ' .
                                                  ' src="' . $imgSet[$ak] . '"/>';
-        } 
+        }
       }
-    }    
+    }
 
     if($addReqMgrSystem) {
       $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
@@ -175,11 +175,11 @@ switch($args->doAction) {
           $gui->tprojects[$idx]['rmsstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
                                                   ' alt="' . $labels[$ak . '_integration'] . '" ' .
                                                   ' src="' . $imgSet[$ak] . '"/>';
-        } 
+        }
       }
     }
         
-    $gui->editorType = $editorCfg['type'];    
+    $gui->editorType = $editorCfg['type'];
     $smarty->assign('gui',$gui);
     $smarty->display($templateCfg->template_dir . $template);
   break;
@@ -213,9 +213,10 @@ switch($args->doAction) {
  * Important: changes in HTML input elements on the Smarty template
  *            must be reflected here.
  *
+ * @param $tprojectMgr
  * @param array $request_hash the $_REQUEST
  * @param hash session_hash the $_SESSION
- * @return singleton object with html values tranformed and other
+ * @return stdClass singleton object with html values tranformed and other
  *                   generated variables.
  * @internal
  */
@@ -252,21 +253,20 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id) {
   $args->reqmgrsystem_id = isset($request_hash['reqmgrsystem_id']) ? intval($request_hash['reqmgrsystem_id']) : 0;
 
   // This way we are safe
-  if($args->issue_tracker_id == 0)
-  {
-    $args->issue_tracker_enabled = 0;  
-  }  
+  if($args->issue_tracker_id == 0) {
+    $args->issue_tracker_enabled = 0;
+  }
 
   if($args->code_tracker_id == 0) {
-    $args->code_tracker_enabled = 0;  
-  }  
+    $args->code_tracker_enabled = 0;
+  }
 
   if($args->doAction != 'doUpdate' && $args->doAction != 'doCreate') {
     if ($args->tprojectID > 0) {
       $the_data = $tprojectMgr->get_by_id($args->tprojectID);
       $args->notes = $the_data['notes'];
 
-      $args->issue_tracker_enabled = intval($the_data['issue_tracker_enabled']);  
+      $args->issue_tracker_enabled = intval($the_data['issue_tracker_enabled']);
       $args->issue_tracker_id = 0;
       $itMgr = new tlIssueTracker($tprojectMgr->db);
       $issueT = $itMgr->getLinkedTo($args->tprojectID);
@@ -274,7 +274,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id) {
         $args->issue_tracker_id = $issueT['issuetracker_id'];
       }
 
-      $args->code_tracker_enabled = intval($the_data['code_tracker_enabled']);  
+      $args->code_tracker_enabled = intval($the_data['code_tracker_enabled']);
       $args->code_tracker_id = 0;
       $ctMgr = new tlCodeTracker($tprojectMgr->db);
       $codeT = $ctMgr->getLinkedTo($args->tprojectID);
@@ -282,7 +282,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id) {
         $args->code_tracker_id = $codeT['codetracker_id'];
       }
 
-      $args->reqmgr_integration_enabled = intval($the_data['reqmgr_integration_enabled']);  
+      $args->reqmgr_integration_enabled = intval($the_data['reqmgr_integration_enabled']);
       $args->reqmgrsystem_id = 0;
       $mgr = new tlReqMgrSystem($tprojectMgr->db);
       $et = $mgr->getLinkedTo($args->tprojectID);
@@ -305,9 +305,9 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id) {
     $bl = array('<script>','</script>');
     foreach($bl as $tg) {
       $cl[] = htmlentities($tg);
-    }  
+    }
     $args->notes = str_replace($bl,$cl,$args->notes);
-  }  
+  }
 
   $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null;
   $args->userID = intval(isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0);
@@ -319,9 +319,9 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id) {
 
 /**
  * Collect a test project options (input from form) to a singleton
- * 
+ *
  * @param array $argsObj the page input
- * @return singleton data to be stored
+ * @return stdClass singleton data to be stored
  */
 function prepareOptions($argsObj) {
   $opts = new stdClass();
@@ -334,7 +334,7 @@ function prepareOptions($argsObj) {
 }
 
 /**
- * 
+ *
  * ATTENTION: logEvent() is done on testproject->create()
  *
  */
@@ -357,23 +357,23 @@ function doCreate($argsObj,&$tprojectMgr) {
 
   if($op->status_ok) {
     try {
-      $shazam = false;    
+      $shazam = false;
       $item = $argsObj;
       $item->name = $argsObj->tprojectName;
       $item->prefix = $argsObj->tcasePrefix;
       $item->options = prepareOptions($argsObj);
-      $new_id = $tprojectMgr->create($item, array('doChecks' => true, 'setSessionProject' => true));            
+      $new_id = $tprojectMgr->create($item, array('doChecks' => true, 'setSessionProject' => true));
     } catch (Exception $e) {
       $new_id = -1;
-      $op->status_ok = false;       
+      $op->status_ok = false;
       $op->msg = $e->getMessage();
-      $shazam = true;    
+      $shazam = true;
     }
                                    
     if ($new_id <= 0) {
-      if(!$shazam) { 
+      if(!$shazam) {
         $op->msg = lang_get('refer_to_log');
-      } 
+      }
     } else {
       $op->template = 'projectView.tpl';
       $op->id = $new_id;
@@ -386,7 +386,7 @@ function doCreate($argsObj,&$tprojectMgr) {
       
       
       $itMgr = new tlIssueTracker($tprojectMgr->db);
-      if($argsObj->issue_tracker_id > 0) { 
+      if($argsObj->issue_tracker_id > 0) {
         $itMgr->link($argsObj->issue_tracker_id,$new_id);
       }
 
@@ -398,7 +398,7 @@ function doCreate($argsObj,&$tprojectMgr) {
       
       
       $ctMgr = new tlCodeTracker($tprojectMgr->db);
-      if($argsObj->code_tracker_id > 0) { 
+      if($argsObj->code_tracker_id > 0) {
         $ctMgr->link($argsObj->code_tracker_id,$new_id);
       }
   
@@ -406,12 +406,12 @@ function doCreate($argsObj,&$tprojectMgr) {
         // Need to add specific role on test project in order to not make
         // it invisible for me!!!
         $tprojectMgr->addUserRole($argsObj->userID,$new_id,$argsObj->user->globalRole->dbID);
-      }  
+      }
     }
   }
 
   if( $op->status_ok ) {
-    $op->reloadType = 'reloadNavBar';      
+    $op->reloadType = 'reloadNavBar';
     if($argsObj->copy_from_tproject_id > 0) {
       $options = array('copy_requirements' => $argsObj->optReq);
       $tprojectMgr->copy_as($argsObj->copy_from_tproject_id,$new_id,
@@ -468,58 +468,57 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
       
       $tprojectMgr->setIssueTrackerEnabled($argsObj->tprojectID,$argsObj->issue_tracker_enabled);
       $itMgr = new tlIssueTracker($tprojectMgr->db);
-      if( ($doLink = $argsObj->issue_tracker_id > 0)  )
+      if($doLink = $argsObj->issue_tracker_id > 0)
       {
         $itMgr->link($argsObj->issue_tracker_id,$argsObj->tprojectID);
       }
       else
       {
         $issueT = $itMgr->getLinkedTo($argsObj->tprojectID);
-        if( !is_null($issueT) )
+        if(!is_null($issueT))
         {
           $itMgr->unlink($issueT['issuetracker_id'],$issueT['testproject_id']);
-        }  
-      } 
+        }
+      }
 
       $tprojectMgr->setCodeTrackerEnabled($argsObj->tprojectID,$argsObj->code_tracker_enabled);
       $ctMgr = new tlCodeTracker($tprojectMgr->db);
-      if( ($doLink = $argsObj->code_tracker_id > 0)  )
-      {
+      if($doLink = $argsObj->code_tracker_id > 0) {
         $ctMgr->link($argsObj->code_tracker_id,$argsObj->tprojectID);
       }
       else
       {
         $codeT = $ctMgr->getLinkedTo($argsObj->tprojectID);
-        if( !is_null($codeT) )
+        if(!is_null($codeT))
         {
           $ctMgr->unlink($codeT['codetracker_id'],$codeT['testproject_id']);
-        }  
-      } 
+        }
+      }
 
       $tprojectMgr->setReqMgrIntegrationEnabled($argsObj->tprojectID,$argsObj->reqmgr_integration_enabled);
       $mgr = new tlReqMgrSystem($tprojectMgr->db);
-      if( ($doLink = $argsObj->reqmgrsystem_id > 0)  )
+      if($doLink = $argsObj->reqmgrsystem_id > 0)
       {
         $mgr->link($argsObj->reqmgrsystem_id,$argsObj->tprojectID);
       }
       else
       {
         $et = $mgr->getLinkedTo($argsObj->tprojectID);
-        if( !is_null($et) )
+        if(!is_null($et))
         {
           $mgr->unlink($et['reqmgrsystem_id'],$et['testproject_id']);
-        }  
-      } 
+        }
+      }
       
-      if( !$argsObj->is_public)
+      if(!$argsObj->is_public)
       {
         // does user have an SPECIFIC role on Test Project ?
         // if answer is yes => do nothing
         if(!tlUser::hasRoleOnTestProject($tprojectMgr->db,$argsObj->userID,$argsObj->tprojectID))
-        {  
+        {
             $tprojectMgr->addUserRole($argsObj->userID,$argsObj->tprojectID,$argsObj->user->globalRole->dbID);
-        }  
-      }  
+        }
+      }
          
       $event = new stdClass();
       $event->message = TLS("audit_testproject_saved",$argsObj->tprojectName);
@@ -533,14 +532,14 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
     else
     {
       $op->status_ok=0;
-    }  
+    }
   }
     if($op->status_ok)
   {
     if($sessionTprojectID == $argsObj->tprojectID)
     {
       $op->reloadType = 'reloadNavBar';
-    }  
+    }
   }
   else
   {
@@ -572,7 +571,7 @@ function edit(&$argsObj,&$tprojectMgr)
   $argsObj->tcasePrefix = $tprojectInfo['prefix'];
 
   $k2l = array('color','notes', 'active','is_public','issue_tracker_enabled',
-               'code_tracker_enabled','reqmgr_integration_enabled','api_key');  
+               'code_tracker_enabled','reqmgr_integration_enabled','api_key');
   foreach($k2l as $key)
   {
     $argsObj->$key = $tprojectInfo[$key];

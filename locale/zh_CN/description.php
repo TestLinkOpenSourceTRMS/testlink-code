@@ -206,6 +206,77 @@ TestLink 不支持即包含需求规约又包含需求的版本。
 \"通过需求创建测试套件 - 自动\";)</i>. 标题和范围被复制到这些测试用例。</p>
 ";
 
+$TLS_hlp_req_coverage_table = "<h3>Coverage:</h3>
+A value of e.g. \"40% (8/20)\" means that 20 Test Cases have to be created for this Requirement 
+to test it completely. 8 of those have already been created and linked to this Requirement, which 
+makes a coverage of 40 percent.
+";
+
+
+// req_edit
+$TLS_hlp_req_edit = "<h3>Internal links on scope:</h3>
+<p>Internal links serve the purpose of creating links to other requirements/requirement specifications 
+with a special syntax. Internal Links behaviour can be changed in the config file.
+<br /><br />
+<b>Usage:</b>
+<br />
+Link to requirements: [req]req_doc_id[/req]<br />
+Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
+
+<p>The test project of the requirement / requirement specification, a version and an anchor 
+to jump to can also be specified:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
+This syntax also works for requirement specifications (version attribute has no effect).<br />
+If you do not specify a version the whole requirement including all versions will be shown.</p>
+
+<h3>Log message for changes:</h3>
+<p>Whenever a change is made Testlink will ask for a log message. This log message served the purpose of traceability.
+If only the scope of the requirement has changed you are free to decide whether to create a new revision or not. 
+Whenever anything besides the scope is changed you are forced to create a new revision.</p>
+";
+
+
+// req_view
+$TLS_hlp_req_view = "<h3>Direct Links:</h3>
+<p>To easily share this document with others simply click the globe icon at the top of this document to create a direct link.</p>
+
+<h3>View History:</h3>
+<p>This feature allows to compare revisions/versions of requirements if more than one revision/version of the requirement exists.
+The overview provides the Log message for each revision/version, a timestamp and the author of the last change.</p>
+
+<h3>Coverage:</h3>
+<p>Shows all linked test cases for this requirement.</p>
+
+<h3>Relations:</h3>
+<p>Requirement Relations are used to model relationships between requirements. 
+Custom relations and the option to allow relations between requirements of 
+different test projects can be configured on the config file.
+If you set the relation \"Requirement A is parent of Requirement B\", 
+Testlink will set the relation \"Requirement B is child of Requirement A\" implicitly.</p>
+";
+
+
+// req_spec_edit
+$TLS_hlp_req_spec_edit = "<h3>Internal links on scope:</h3>
+<p>Internal links serve the purpose of creating links to other requirements/requirement specifications 
+with a special syntax. Internal Links behaviour can be changed in the config file.
+<br /><br />
+<b>Usage:</b>
+<br />
+Link to requirements: [req]req_doc_id[/req]<br />
+Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
+
+<p>The test project of the requirement / requirement specification, a version and an anchor 
+to jump to can also be specified:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
+This syntax also works for requirement specifications (version attribute has no effect).<br />
+If you do not specify a version the whole requirement including all versions will be shown.</p>
+";
+
+
+
+
+
 
 // planAddTC_m1.tpl //已校对
 $TLS_hlp_planAddTC = "<h2>关于'保存自定义字段'</h2>
@@ -214,6 +285,17 @@ $TLS_hlp_planAddTC = "<h2>关于'保存自定义字段'</h2>
  '在测试计划设计里显示=true' 和 <br />
  '启用测试计划设计=true'<br />
 你将只能在已经与测试计划建立关联的测试用例页面看到这些关键字。
+";
+
+
+// resultsByTesterPerBuild.tpl
+$TLS_hlp_results_by_tester_per_build_table = "<b>More information about testers:</b><br />
+If you click on a tester name in this table, you will get a more detailed overview
+about all Test Cases assigned to that user and his testing progress.<br /><br />
+<b>Note:</b><br />
+This Report shows those test cases, which are assigned to a specific user and have been executed 
+based on each active build. Even if a test case has been executed by another user than the assigned user, 
+the test case will appear as executed for the assigned user.
 ";
 
 // xxx.html

@@ -3,15 +3,6 @@
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2010/06/24 17:25:53 $ $Author: asimon83 $
- * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
- * @author Martin Havlat and reviewers from TestLink Community
- *
- * --------------------------------------------------------------------------------------
- *
- * Scope:
  * English (en_GB) texts for help/instruction pages. Strings for dynamic pages
  * are stored in strings.txt pages.
  *
@@ -24,16 +15,25 @@
  *
  * Revisions history is not stored for the file
  *
+ * Filename $RCSfile: texts.php,v $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2010/06/24 17:25:53 $ $Author: asimon83 $
+ * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
+ * @author Martin Havlat and reviewers from TestLink Community
+ *
+ * --------------------------------------------------------------------------------------
+ 
+ 
  * ------------------------------------------------------------------------------------ */
-$TLS_htmltext_title['error']	= "Application error";
-$TLS_htmltext['error'] 		= "<p>Unexpected error happens. Please check event viewer or " .
-		"logs for details.</p><p>You are welcome to report the problem. Please visit our " .
-		"<a href='http://www.teamst.org'>website</a>.</p>";
+$TLS_htmltext_title['error']	= "应用程序错误";
+$TLS_htmltext['error'] 		= "<p>系统报错。请检查【事件查看器】或日志文件，获取更多问题信息。</p>" .
+		"<p>同时，也欢迎您登陆我们的站点报告问题。请具体访问如下地址：" .
+		"<a href='http://www.testlink.org'>www.testlink.org</a>.</p>";
 
 
 
 $TLS_htmltext_title['assignReqs']	= "分配需求给测试用例"; //已校对
-$TLS_htmltext['assignReqs'] 		= "<h2>目的:</h2>
+$TLS_htmltext['assignReqs'] 		= "<h2>用途：</h2>
 <p>用户可以设置测试套件和需求规约之间的关系. 设计者可以把此处的测试套件和需求规约一一关联
 .例如:一个测试用例可以被关联到零个、一个、多个测试套件,反之亦然.
 这些可追踪的模型帮助我们去研究测试用例对需求的覆盖情况,并且找出测试用例是否通过的情况.这些分析用来验证测试的覆盖程度是否达到预期的结果。</p>
@@ -52,7 +52,7 @@ $TLS_htmltext['assignReqs'] 		= "<h2>目的:</h2>
 
 // --------------------------------------------------------------------------------------
 $TLS_htmltext_title['editTc']	= "测试规范"; //已校对
-$TLS_htmltext['editTc'] 		= "<h2>目的:</h2>
+$TLS_htmltext['editTc'] 		= "<h2>用途：</h2>
 <h2>目的:</h2>
 <p> <i>测试规范</i> 允许用户查看和编辑所有现有的" .
 		"<i>测试套件</i> 和 <i>测试用例</i>. 测试用例默认使用当前版本.".
@@ -82,7 +82,7 @@ $TLS_htmltext['editTc'] 		= "<h2>目的:</h2>
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['searchTc']	= "测试用例搜索页"; //已校对
-$TLS_htmltext['searchTc'] 		= "<h2>目的:</h2>
+$TLS_htmltext['searchTc'] 		= "<h2>用途：</h2>
 
 <p>按照关键字和搜索字符串来进行搜索. 英文搜索是不区分大小写. 结果只包括当前测试项目中已有的测试用例.</p>
 
@@ -111,8 +111,8 @@ $TLS_htmltext['searchTc'] 		= "<h2>目的:</h2>
 /* contribution by asimon for 2976 */
 // requirements search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchReq']	= "Requirement Search Page";
-$TLS_htmltext['searchReq'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext_title['searchReq']	= "需求搜索页";
+$TLS_htmltext['searchReq'] 		= "<h2>用途：</h2>
 
 <p>Navigation according to keywords and/or searched strings. The search is not
 case sensitive. Result includes just requirements from actual Test Project.</p>
@@ -126,7 +126,7 @@ case sensitive. Result includes just requirements from actual Test Project.</p>
 	<li>All fulfilling requirements are shown. You can modify requirements via 'Title' link.</li>
 </ol>
 
-<h2>Note:</h2>
+<h2>注意事项：</h2>
 
 <p>- Only requirements within the current project will be searched.<br>
 - The search is case-insensitive.<br>
@@ -159,7 +159,7 @@ case sensitive. Result includes just requirement specifications from actual Test
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['printTestSpec']	= "打印需求规约"; //printTC.html //已校对
-$TLS_htmltext['printTestSpec'] 			= "<h2>目的:</h2>
+$TLS_htmltext['printTestSpec'] 			= "<h2>用途：</h2>
 <p>在这里你可以打印单个测试用例，测试套件中的所有测试用例或者测试项目或测试计划中的所有测试用例.</p>
 <h2>开始:</h2>
 <ol>
@@ -188,7 +188,6 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>你可以管理需求规约文档.</p>
 <p><b><a name='total_count'>需求覆盖数目</a></b> 
 是为了统计需求覆盖率而使用的,如果不把所有的需求提交到TestLink管理，<b>0</b>那么当前结果分析中需求的数量以TestLink管理起来的需求为依据.</p>
 <p><i>例如: SRS项目中包括200个需求,但是只有50个需求被TestLink管理起来.那么测试覆盖率就是25%(如果所有的测试需求被测试的情况下).</i></p>
-
 <h2><a name='req'>需求</a></h2>
 
 <p>点击已创建的需求规约，如果项目中还不存在需求规约先创建一个.然后你就可以为这个需求规约创建具体的需求。每个需求包括标题，范围和当前状态.需求的状态可以是'有效的'或者'不可测试的'.不可测试的需求在结果分析时不被计入统计数据。这个参数可以被用来设置那些不可实施的功能特点或者错误的需求.</p>
@@ -213,11 +212,11 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>你可以管理需求规约文档.</p>
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; //printReq
-$TLS_htmltext['printReqSpec'] = "<h2>Purpose:</h2>
+$TLS_htmltext_title['printReqSpec'] = "打印需求规格说明"; //printReq
+$TLS_htmltext['printReqSpec'] = "<h2>用途：</h2>
 <p>You can generate document with the requirements within a requirement specification,
 or all the requirements in a test project.</p>
-<h2>Get Started:</h2>
+<h2>简易上手指南：</h2>
 <ol>
 <li>
 <p>Select the parts of the requirements you want to display, and then click on a  
@@ -229,14 +228,14 @@ See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 '{$locale}');\">help</span> for more information.</p>
 </li>
 <li><p>Use your browser's print functionality to actually print the information.<br />
-<i>Note: Make sure to only print the right-hand frame.</i></p>
+<i>注意事项：Make sure to only print the right-hand frame.</i></p>
 </li>
 </ol>";
 
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['keywordsAssign']	= "指派关键字"; //已校对
-$TLS_htmltext['keywordsAssign'] 			= "<h2>目的:</h2>
+$TLS_htmltext['keywordsAssign'] 			= "<h2>用途：</h2>
 <p>在该功能中用户可以批量地把关键字设置到现有的测试用例和测试套件中
 </p>
 
@@ -258,7 +257,7 @@ $TLS_htmltext['keywordsAssign'] 			= "<h2>目的:</h2>
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['executeTest']	= "测试用例执行"; //已校对
-$TLS_htmltext['executeTest'] 		= "<h2>目的:</h2>
+$TLS_htmltext['executeTest'] 		= "<h2>用途说明：</h2>
 
 <p>允许用户执行测试用例.用户为了构建的需要可以把测试结果和相关测试用例关联起来.
  查看关于过滤器和设置的更多帮助 " .
@@ -370,7 +369,7 @@ $TLS_htmltext['planAddTC'] 			= "<h2>目的:</h2>
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['tc_exec_assignment']	= "给测试员分配测试任务"; //已校对
-$TLS_htmltext['tc_exec_assignment'] 		= "<h2>目的</h2>
+$TLS_htmltext['tc_exec_assignment'] 		= "<h2>用途说明：</h2>
 <p>管理者通过该页面来对测试人员分配具体测试任务.</p>
 
 <h2>开始</h2>
@@ -384,7 +383,7 @@ $TLS_htmltext['tc_exec_assignment'] 		= "<h2>目的</h2>
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['planUpdateTC']	= "更新测试计划中的测试用例"; //已校对
-$TLS_htmltext['planUpdateTC'] 		= "<h2>目的</h2>
+$TLS_htmltext['planUpdateTC'] 		= "<h2>用途说明：</h2>
 <p>如果需求规约版本改变了，可以通过该页面对测试用例进行更新.
         在测试过程中经常发生添加新的需求的情况." .
 		" 例如:用户更改了测试规约，但是这个改变需要传达到测试计划中. " .
@@ -401,8 +400,8 @@ $TLS_htmltext['planUpdateTC'] 		= "<h2>目的</h2>
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['test_urgency']	= "设置测试的紧急程度";
-$TLS_htmltext['test_urgency'] 		= "<h2>目的</h2>
-<p>TestLink允许设置测试套件的紧急程度来影响测试用例执行的优先级. 
+$TLS_htmltext['test_urgency'] 		= "<h2>用途说明：</h2>
+<p>TestLink 允许设置测试套件的紧急程度来影响测试用例执行的优先级. 
 	测试的优先级取决于测试用例的重要程度和定义在测试计划中的紧急程度两个方面.
     项目领导者可以设置哪一套测试用例先被执行. 使用这个功能来确保在时间允许的情
     况下覆盖最重要的测试用例.</p>

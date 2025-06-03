@@ -14,9 +14,9 @@
  */
 
 // some session and settings stuff from original index.php 
-require_once('config.inc.php');
-require_once('reports.cfg.php');
-require_once('common.php');
+require_once 'config.inc.php';
+require_once 'reports.cfg.php';
+require_once 'common.php';
 
 doDBConnect($db);
 $args = init_args($db);

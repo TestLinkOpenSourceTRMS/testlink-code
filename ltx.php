@@ -23,10 +23,10 @@
 ob_start();
 
 // some session and settings stuff from original index.php 
-require_once('lib/functions/configCheck.php');
+require_once 'lib/functions/configCheck.php';
 checkConfiguration();
-require_once('config.inc.php');
-require_once('common.php');
+require_once 'config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db, true);
 
 $smarty = new TLSmarty();

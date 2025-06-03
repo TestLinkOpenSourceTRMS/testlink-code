@@ -13,8 +13,8 @@
  *
  */
 
-require_once('config.inc.php');
-require_once('common.php');
+require_once 'config.inc.php';
+require_once 'common.php';
 
 // Init all plugins
 plugin_init_installed();
@@ -39,5 +39,5 @@ if (!is_file($plugin_page_qualified)) {
 }
 
 plugin_push_current($plugin_name);
-include($plugin_page_qualified);
+include $plugin_page_qualified;
 

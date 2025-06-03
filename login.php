@@ -11,12 +11,12 @@
  * @link        http://www.testlink.org
  * 
  **/
-require_once('lib/functions/configCheck.php');
+require_once 'lib/functions/configCheck.php';
 checkConfiguration();
-require_once('config.inc.php');
-require_once('common.php');
-require_once('oauth_api.php');
-require_once('doAuthorize.php');
+require_once 'config.inc.php';
+require_once 'common.php';
+require_once 'oauth_api.php';
+require_once 'doAuthorize.php';
 
 $templateCfg = templateConfiguration();
 $doRenderLoginScreen = false;
@@ -64,7 +64,7 @@ switch($args->action) {
     $oauth_params = getOAuthProviderCfg($args->oauth_name);
     if ($oauth_params != null) {
       $g2i = $args->oauth_name . '.php';
-      if (!include_once($g2i)) {
+      if (!include_once $g2i) {
         die("Oauth client doesn't exist");
       } else {
         $includeOK = true;

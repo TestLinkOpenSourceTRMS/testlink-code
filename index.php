@@ -10,10 +10,10 @@
  *
  *
 **/
-require_once('lib/functions/configCheck.php');
+require_once 'lib/functions/configCheck.php';
 checkConfiguration();
-require_once('config.inc.php');
-require_once('common.php');
+require_once 'config.inc.php';
+require_once 'common.php';
 doSessionStart();
 
 // will be very interesting understand why we do this

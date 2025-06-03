@@ -4,10 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
 **/
-require_once('config.inc.php');
-require_once('common.php');
-require_once('users.inc.php');
-require_once('email_api.php');
+require_once 'config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'email_api.php';
 $templateCfg = templateConfiguration();
 
 $args = init_args();

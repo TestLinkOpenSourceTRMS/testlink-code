@@ -8,8 +8,8 @@
 * manage drag and drop on test project tree
 *
 */
-require_once('../../config.inc.php');
-require_once('common.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 

@@ -27,8 +27,8 @@
 * @since 1.9.10
 *
 */
-require_once('../../config.inc.php');
-require_once('common.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 $root_node = isset($_REQUEST['root_node']) ? intval($_REQUEST['root_node']): null;

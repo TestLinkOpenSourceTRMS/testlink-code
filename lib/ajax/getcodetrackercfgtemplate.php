@@ -10,8 +10,8 @@
  * @author 	Uwe Kirst - uwe_kirst@mentor.com
  **/
 
-require_once('../../config.inc.php');
-require_once('common.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 $info = array('sucess' => true, 'cfg' => '');

@@ -14,8 +14,8 @@
 * if operation is allowed HAVE BEEN DONE (at least in theory)
 *        
 */
-require_once('../../config.inc.php');
-require_once('common.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 

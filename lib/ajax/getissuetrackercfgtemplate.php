@@ -15,8 +15,8 @@
  * 20120311 - franciscom - TICKET 4904: integrate with ITS on test project basis
  **/
 
-require_once('../../config.inc.php');
-require_once('common.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 $info = array('sucess' => true, 'cfg' => '');

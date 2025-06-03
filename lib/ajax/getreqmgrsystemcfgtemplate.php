@@ -15,8 +15,8 @@
  * @since 1.9.6
  **/
 
-require_once('../../config.inc.php');
-require_once('common.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 $info = array('sucess' => true, 'cfg' => '');

@@ -6,8 +6,8 @@
  * @author      Uwe Kirst
  *
 **/
-require_once(TL_ABS_PATH . "/third_party/stash-rest/RestRequest.php");
-require_once(TL_ABS_PATH . "/third_party/stash-rest/Stash.php");
+require_once TL_ABS_PATH . '/third_party/stash-rest/RestRequest.php';
+require_once TL_ABS_PATH . '/third_party/stash-rest/Stash.php';
 class stashrestInterface extends codeTrackerInterface
 {
   const NOPROJECTKEY = 'e18b741e13b2b1b09f2ac85615e37bae';

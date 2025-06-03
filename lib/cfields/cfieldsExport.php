@@ -12,9 +12,9 @@
  *
  *
  */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once '../../third_party/adodb_xml/class.ADODB_XML.php';
 
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();

@@ -9,9 +9,9 @@
  *
  */
 @ob_end_clean();
-require_once('../../config.inc.php');
-require_once('../functions/common.php');
-require_once('../functions/attachments.inc.php');
+require_once '../../config.inc.php';
+require_once '../functions/common.php';
+require_once '../functions/attachments.inc.php';
 
 // This way can be called without _SESSION, 
 // this is useful for reports
@@ -172,5 +172,5 @@ function init_args(&$dbHandler)
  */
 function checkRights(&$db,&$user)
 {
-  return (config_get("attachments")->enabled);
+  return config_get("attachments")->enabled;
 }

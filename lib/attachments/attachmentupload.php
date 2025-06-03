@@ -9,9 +9,9 @@
  * Multiple file upload via HTML5 attribute
 **/
 
-require_once('../../config.inc.php');
-require_once('../functions/common.php');
-require_once('../functions/attachments.inc.php');
+require_once '../../config.inc.php';
+require_once '../functions/common.php';
+require_once '../functions/attachments.inc.php';
 testlinkInitPage($db,false,false,"checkRights");
   
 $args = init_args();
@@ -100,5 +100,5 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-  return (config_get("attachments")->enabled);
+  return config_get("attachments")->enabled;
 }

@@ -474,7 +474,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         // Some APIs only provide TestSuiteID or TestCaseID, look up TestProjectID
         if ($tprojectid <= 0 && $tplanid == -1) {
             // Try using TestSuiteID to get TestProjectID
-            $tsuitid = intval( isset( $context[self::$testSuiteIDParamName] ) ? $context[self::$testSuiteIDParamName] : 0 );
+            $tsuiteid = intval( isset( $context[self::$testSuiteIDParamName] ) ? $context[self::$testSuiteIDParamName] : 0 );
             if($tsuiteid == 0 && isset( $this->args[self::$testSuiteIDParamName] )) {
                 $tsuiteid = intval( $this->args[self::$testSuiteIDParamName] );
             }
@@ -3554,7 +3554,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $opt = array(
                     'outputFormat' => 'mapAccessByID'
             );
-            $platformSet = (arrya)$this->tplanMgr->getPlatforms( $tplan_id, $opt );
+            $platformSet = (array)$this->tplanMgr->getPlatforms( $tplan_id, $opt );
             $hasPlatforms = (count( $platformSet ) > 0);
             $hasPlatformIDArgs = $this->_isParamPresent( self::$platformIDParamName );
 

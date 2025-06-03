@@ -155,7 +155,7 @@ class tlPerformanceCounter extends tlObjectWithDB
 	public function getDuration()
 	{
 		$current = $this->getmicrotime();
-		return ($current - $this->initialStart);
+		return $current - $this->initialStart;
 	}
 	
 	public function reset()

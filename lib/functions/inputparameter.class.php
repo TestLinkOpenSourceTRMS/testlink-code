@@ -532,7 +532,7 @@ class tlCheckBoxValidationInfo
 	 */
 	public function validate($value)
 	{
-	    return ($value === true || $value === false);
+	    return $value === true || $value === false;
 	}
 }
 ?>

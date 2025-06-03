@@ -19,31 +19,31 @@
  */
 
 /** core and parenthal classes */
-require_once('object.class.php');
-require_once('metastring.class.php');
+require_once 'object.class.php';
+require_once 'metastring.class.php';
 
 /** Testlink Plugin API helper methods, must be included before lang_api.php */
-require_once('plugin_api.php');
+require_once 'plugin_api.php';
 
 /** library for localization */
-require_once('lang_api.php');
+require_once 'lang_api.php';
 
 /** logging functions */
-require_once('logging.inc.php');
-require_once('logger.class.php');
-require_once('pagestatistics.class.php');
+require_once 'logging.inc.php';
+require_once 'logger.class.php';
+require_once 'pagestatistics.class.php';
 
 /** library of database wrapper */
-require_once('database.class.php');
+require_once 'database.class.php';
 
 /** user right checking */
-require_once('roles.inc.php');
+require_once 'roles.inc.php';
 
 /** Testlink Smarty class wrapper sets up the default smarty settings for testlink */
-require_once('tlsmarty.inc.php');
+require_once 'tlsmarty.inc.php';
 
 /** Initialize the Event System */
-require_once('event_api.php' );
+require_once 'event_api.php';
 
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');
@@ -52,19 +52,19 @@ spl_autoload_register('tlAutoload');
 /** TL_APICALL => TICKET 0007190 */
 if( !defined('TL_APICALL') )
 {
-  require_once("csrf.php");
+  require_once 'csrf.php';
 }  
 
 /** Input data validation */
-require_once("inputparameter.inc.php");
+require_once 'inputparameter.inc.php';
 
 /** @TODO use the next include only if it is used -> must be removed */
 // require_once("testproject.class.php"); 
-require_once("treeMenu.inc.php");
+require_once 'treeMenu.inc.php';
 
 
 // 20130526 checks need to be done in order to understand if this class is really needed
-require_once("exec_cfield_mgr.class.php");   
+require_once 'exec_cfield_mgr.class.php';   
 
 /**
  * Automatic loader for PHP classes
@@ -640,14 +640,14 @@ function config_get($config_id, $default=null) {
   $logInfo = array('msg' => "config option not available: {$config_id}", 'level' => 'WARNING');
   if(!$t_found) {
     $my = "g_" . $config_id;
-    if( ($t_found = isset($GLOBALS[$my])) )
+    if( $t_found = isset($GLOBALS[$my]) )
     {
       $t_value = $GLOBALS[$my];
     }
     else
     {
       $cfg = $GLOBALS['tlCfg'];
-      if( ($t_found = property_exists($cfg,$config_id)) )
+      if( $t_found = property_exists($cfg,$config_id) )
       {
         $t_value = $cfg->$config_id;
       }
@@ -713,7 +713,7 @@ function downloadContentsToFile($content,$fileName,$opt=null)
 function microtime_float()
 {
    list($usec, $sec) = explode(" ", microtime());
-   return ((float)$usec + (float)$sec);
+   return (float)$usec + (float)$sec;
 }
 
 
@@ -1388,7 +1388,7 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
          $dbHandler->prepare_string($apiKey) . "'";
  
   $rs = $dbHandler->get_recordset($sql);
-  return ($rs ? $rs[0] : null);
+  return $rs ? $rs[0] : null;
 }
 
 /**
@@ -1883,7 +1883,7 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
     'exec_edit_notes','exec_delete','exec_ro_access',
     'exec_testcases_assigned_to_me','exec_assign_testcases');
 
-  if( ($forceToNo = $argsObj->userIsBlindFolded) ) {
+  if( $forceToNo = $argsObj->userIsBlindFolded ) {
     $tr = array_merge($systemWideRights, $r2cTranslate);
     $grants = array_fill_keys(array_keys($tr), 'no');
 

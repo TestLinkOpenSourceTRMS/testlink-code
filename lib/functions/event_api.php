@@ -11,7 +11,7 @@
  *
  **/
 
-require_once('events_inc.php');
+require_once 'events_inc.php';
 
 /**
  * function event_declare

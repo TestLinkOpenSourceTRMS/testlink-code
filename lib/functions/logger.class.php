@@ -27,7 +27,7 @@
 /**
  * @package TestLink
  */
-require_once('email_api.php');
+require_once 'email_api.php';
 class tlLogger extends tlObject
 {
 

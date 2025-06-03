@@ -56,8 +56,8 @@
  **/
 
 /** include logic */
-require_once("object.class.php");
-require_once("inputparameter.class.php");
+require_once 'object.class.php';
+require_once 'inputparameter.class.php';
 
 
 /**

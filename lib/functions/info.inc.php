@@ -17,7 +17,7 @@
  */
 
 /** @uses email_api.php */
-require_once("../functions/email_api.php");
+require_once '../functions/email_api.php';
 
 
 /**

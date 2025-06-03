@@ -13,9 +13,9 @@
  *
  */
 
-require_once("users.inc.php");
-require_once("roles.inc.php");
-require_once("ldap_api.php");
+require_once 'users.inc.php';
+require_once 'roles.inc.php';
+require_once 'ldap_api.php';
 
 /** 
  * authorization function verifies login & password and set user session data 

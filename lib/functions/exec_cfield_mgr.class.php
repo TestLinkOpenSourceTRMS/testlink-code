@@ -128,7 +128,7 @@ function html_table_of_custom_field_inputs($htmlInputSize=0)
             //}
         }
       } // if( !is_null($cf) and count($cf) > 0 )
-      return($cf);
+      return $cf;
     }
 
     /*

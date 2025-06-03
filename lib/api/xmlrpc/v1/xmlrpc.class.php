@@ -25,11 +25,11 @@
  */
 define( "TL_APICALL", 'XML-RPC' );
 
-require_once("../../../../config.inc.php");
-require_once("common.php");
-require_once("xml-rpc/class-IXR.php");
-require_once("api.const.inc.php");
-require_once("APIErrors.php");
+require_once '../../../../config.inc.php';
+require_once 'common.php';
+require_once 'xml-rpc/class-IXR.php';
+require_once 'api.const.inc.php';
+require_once 'APIErrors.php';
 
 /**
  * The entry class for serving XML-RPC Requests

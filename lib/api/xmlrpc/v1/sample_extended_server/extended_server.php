@@ -12,7 +12,7 @@
  * @author rtessier
  * @package	TestlinkAPI
  */
-require_once("lib/api/xmlrpc.class.php");
+require_once 'lib/api/xmlrpc.class.php';
 
 class SampleXMLRPCServer extends TestlinkXMLRPCServer {
     public function __construct() {

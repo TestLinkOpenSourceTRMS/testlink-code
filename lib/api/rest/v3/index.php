@@ -4,7 +4,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Factory\AppFactory;
 
-require_once('../../../../config.inc.php');
+require_once '../../../../config.inc.php';
 require 'autoload.php';
 require 'RestApi.class.php';
 
@@ -49,7 +49,7 @@ if (is_dir($where)) {
   foreach ($itera as $fileinfo) {
     if ($fileinfo->isFile()) {
       $who = $fileinfo->getFilename();
-      require ($where . $who);
+      require $where . $who;
 
       // generate class name
       $className = str_replace('.class.php', '', $who);
@@ -72,7 +72,7 @@ if (is_dir($where)) {
   foreach ($itera as $fileinfo) {
     if ($fileinfo->isFile()) {
       $who = $fileinfo->getFilename();
-      $customRoutes = require ($where . $who);
+      $customRoutes = require $where . $who;
       $customRoutes($app);
     }
   }

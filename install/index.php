@@ -15,7 +15,7 @@
 if(!isset($tlCfg)) {
   $tlCfg = new stdClass();  
 } 
-require_once("../cfg/const.inc.php");
+require_once '../cfg/const.inc.php';
 
 session_start();
 $_SESSION['session_test'] = 1;

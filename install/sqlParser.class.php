@@ -109,7 +109,7 @@ class SqlParser {
 function only_good_mysql($v)
 {
   $comment_char='#';
-  return($this->only_good_sql($v, $comment_char));
+  return $this->only_good_sql($v, $comment_char);
 }
 
 
@@ -145,7 +145,7 @@ function only_good_sql($v, $comment_char='-')
       }
     }
     
-    return ($use_v);
+    return $use_v;
 } // Function ends
 
 

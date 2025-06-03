@@ -14,24 +14,24 @@
  *
  **/
 
-require_once("../config.inc.php");
-require_once( dirname(__FILE__). '/../lib/functions/database.class.php' );
-require_once("installUtils.php");
-require_once("sqlParser.class.php");
-require_once("../lib/functions/common.php");
-require_once("../lib/functions/object.class.php");
-require_once("../lib/functions/metastring.class.php");
+require_once '../config.inc.php';
+require_once  dirname(__FILE__). '/../lib/functions/database.class.php';
+require_once 'installUtils.php';
+require_once 'sqlParser.class.php';
+require_once '../lib/functions/common.php';
+require_once '../lib/functions/object.class.php';
+require_once '../lib/functions/metastring.class.php';
 
-require_once("../third_party/dBug/dBug.php");
+require_once '../third_party/dBug/dBug.php';
 
-require_once('Zend/Validate/Hostname.php');
+require_once 'Zend/Validate/Hostname.php';
 
 // Better to avoid use of logger during installation
 // because we do not have control on what kind of logger (db, file) to create.
 // This produce the situation:dog eats dog, i.e.:
 // I do not have db created, but an error rise, then logger try to write on events table
 // but this table do not still yet !!.
-require_once("../lib/functions/logger.class.php");
+require_once '../lib/functions/logger.class.php';
 
 if( !isset($_SESSION) ) { 
   session_start();
@@ -473,7 +473,7 @@ foreach($a_sql_schema as $sql_schema) {
 
 // Now data migration must be done if needed
 if( $migration_process != '' ) {
-  require_once($migration_functions_file);
+  require_once $migration_functions_file;
   $migration_process($db,$tables);
 }
 
@@ -641,7 +641,7 @@ function write_config_db($filename, $data)
   
   $ret['cfg_string'] = $configString;
   
-  return($ret);
+  return $ret;
 }
 
 

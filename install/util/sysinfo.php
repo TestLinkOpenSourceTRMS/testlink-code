@@ -15,9 +15,8 @@
  * @since 1.9.4
  */
 
-require_once('..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config.inc.php');
-require_once('..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . 
-			 DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'common.php');
+require_once '../../config.inc.php';
+require_once '../../lib/functions/common.php';
 $root = dirname(__FILE__);
 define('ROOT_PATH', $root);
 

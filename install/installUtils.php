@@ -76,7 +76,7 @@ function getTableList($db)
 {
     $my_ado = $db->get_dbmgr_object();
     $tables = $my_ado->MetaTables('TABLES',false,'db_version');
-    return($tables);
+    return $tables;
 }
 
 
@@ -195,7 +195,7 @@ function getUserList(&$db,$db_type)
        $users[] = trim($row['user']);
      }
    }
-   return($users);
+   return $users;
 }
 
 
@@ -335,7 +335,7 @@ if( !is_null($db) )
     $db->close();
 }
 
-return($msg);
+return $msg;
 }
 
 
@@ -373,7 +373,7 @@ function check_pear_modules()
   $final_msg = '</b><br />Checking if PEAR modules are installed:<b>';
     
   // SpreadSheet_Excel_Writer is needed for TestPlanResultsObj that does excel reporting
-  if(false == include_once('Spreadsheet/Excel/Writer.php'))
+  if(false == include_once 'Spreadsheet/Excel/Writer.php')
   {
     $final_msg .= '<span class="notok">Failed! - Spreadsheet_Excel_Writer PEAR Module is required.</span><br />See' .
       '<a href="http://pear.php.net/package/Spreadsheet_Excel_Writer">' .
@@ -603,7 +603,7 @@ function _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd) {
     $op->msg = 'ok - grant assignment';
   }     
 
-  return ($op); 
+  return $op; 
 }
 
 
@@ -631,7 +631,7 @@ if( $int_op->status_ok)
   $op->status_ok=$int_op->status_ok;
 }
 
-return($op);
+return $op;
 }  // function end
 
 
@@ -654,7 +654,7 @@ if (!@$db->exec_query($sql))
     $op->status_ok=false;  
     $op->msg = "ko - " . $db->error_msg();
 }
-return ($op); 
+return $op; 
 }
 
 
@@ -706,7 +706,7 @@ function _postgres_assign_grants(&$db,$db_host,$db_name,$login,$passwd)
 	    }
 	}
 	
-	return ($op); 
+	return $op; 
 }
 
 

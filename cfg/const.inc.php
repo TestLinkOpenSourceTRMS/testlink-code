@@ -59,7 +59,7 @@ define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
 clearstatcache();
 $tf = 'custom_const.inc.php';
 if ( file_exists($tf) ) {
-  require_once($tf);
+  require_once $tf;
 }
 
 

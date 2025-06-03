@@ -14,9 +14,9 @@
  * @internal revisions
  * @since 1.9.6
  **/
-require_once('..' . DIRECTORY_SEPARATOR . 'config.inc.php');
-require_once('..' . DIRECTORY_SEPARATOR . 'lib'. DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'common.php');
-require_once('..' . DIRECTORY_SEPARATOR . 'lib'. DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . 'configCheck.php');
+require_once '../config.inc.php';
+require_once '../lib/functions/common.php';
+require_once '../lib/functions/configCheck.php';
 
 if( !isset($_SESSION) )
 { 

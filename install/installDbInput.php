@@ -15,7 +15,7 @@
  * @since 1.9.15
  **/
 
-require_once("installUtils.php");
+require_once 'installUtils.php';
 
 if( !isset($_SESSION) )
 { 
@@ -87,7 +87,7 @@ include 'installHead.inc';
   </script>
 
   <form action="installNewDB.php" method="post" name="myForm" onsubmit="return validate()">
-  <?php echo ('<input type="hidden" id="isNew" name="isNew"  value="' . $_SESSION['isNew'] . '"/> '); ?>    
+  <?php echo '<input type="hidden" id="isNew" name="isNew"  value="' . $_SESSION['isNew'] . '"/> '; ?>    
 
 <?php if(!$_SESSION['isNew']){ ?>
   

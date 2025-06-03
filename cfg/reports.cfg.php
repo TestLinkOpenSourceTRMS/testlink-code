@@ -270,5 +270,5 @@ $tlCfg->reports_list[$report] = array(
 clearstatcache();
 $f2inc = TL_ABS_PATH . 'cfg/custom_reports.cfg.php';
 if ( file_exists($f2inc) ) {
-  require_once($f2inc);
+  require_once $f2inc;
 }

@@ -12,8 +12,8 @@
  * @uses        config.inc.php
  *
  */
-require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
-require_once("execTreeMenu.inc.php");
+require_once dirname(__FILE__). '/../../third_party/dBug/dBug.php';
+require_once 'execTreeMenu.inc.php';
 
 /** 
  * generate data for tree menu of Test Specification
@@ -2599,7 +2599,7 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
         // tree will be empty
         $node = null;
         $tcase_counters['testcase_count'] = 0;
-        return($tcase_counters);
+        return $tcase_counters;
       }
     }
     
@@ -2614,7 +2614,7 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
         // tree will be empty
         $node = null;
         $tcase_counters['testcase_count'] = 0;
-        return($tcase_counters);
+        return $tcase_counters;
       }
     }
     

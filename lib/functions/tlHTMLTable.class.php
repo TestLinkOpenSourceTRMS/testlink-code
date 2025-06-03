@@ -11,7 +11,7 @@
  *
  **/
 
-require_once('table.class.php');
+require_once 'table.class.php';
 
 /**
  * Helper class used to generate HTML-tables. 

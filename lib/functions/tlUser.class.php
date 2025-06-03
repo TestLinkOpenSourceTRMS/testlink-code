@@ -343,7 +343,7 @@ class tlUser extends tlDBObject {
           $tprojectRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
           $roleCache[$roleID] = $tprojectRole;
         } else {
-          $tprojectRole = clone($roleCache[$roleID]);
+          $tprojectRole = clone $roleCache[$roleID];
         }
 
         if ($tprojectRole) {
@@ -380,7 +380,7 @@ class tlUser extends tlDBObject {
           $tplanRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
           $roleCache[$roleID] = $tplanRole;
         } else {
-          $tplanRole = clone($roleCache[$roleID]);
+          $tplanRole = clone $roleCache[$roleID];
         }
 
         if ($tplanRole) {

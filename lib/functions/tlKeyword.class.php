@@ -12,11 +12,11 @@
  *
  **/
 
-require_once('object.class.php');
+require_once 'object.class.php';
 
 /** export/import */
-require_once('csv.inc.php');
-require_once('xml.inc.php');
+require_once 'csv.inc.php';
+require_once 'xml.inc.php';
 
 /**
  * Support for keywords management
@@ -356,7 +356,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
       $query .= " AND id <> " .$kwID;
     }  
     
-    if (($rs=$db->fetchFirstRow($query))) {
+    if ($rs=$db->fetchFirstRow($query)) {
       $op['status'] = self::E_NAMEALREADYEXISTS;
       $op['kwID'] = $rs['id'];
     }

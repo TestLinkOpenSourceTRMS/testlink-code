@@ -604,8 +604,8 @@ class tlReqMgrSystem extends tlObject
     }
     catch (Exception $e)
     {
-      echo('Probably there is some PHP Config issue regarding extension<b>');
-      echo($e->getMessage().'<pre>'.$e->getTraceAsString().'</pre>');   
+      echo 'Probably there is some PHP Config issue regarding extension<b>';
+      echo $e->getMessage().'<pre>'.$e->getTraceAsString().'</pre>';   
     }
   }
 

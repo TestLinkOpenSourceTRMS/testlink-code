@@ -12,7 +12,7 @@
  **/
 
 /** parenthal classes */
-require_once('object.class.php');
+require_once 'object.class.php';
 
 /**
  * Logic code for Inventory functionality

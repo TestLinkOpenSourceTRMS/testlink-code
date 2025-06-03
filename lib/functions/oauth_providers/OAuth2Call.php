@@ -8,10 +8,10 @@
  *
  */
 $where = explode('lib',__DIR__);
-require($where[0] . '/config.inc.php');
-require_once('common.php');
-require_once('oauth_api.php');
-require('autoload.php');
+require $where[0] . '/config.inc.php';
+require_once 'common.php';
+require_once 'oauth_api.php';
+require 'autoload.php';
 
 $oauth2Name = trim($_GET['oauth2']);
 

@@ -1,6 +1,6 @@
 <?php 
-require('../../config.inc.php');
-require('autoload.php');
+require '../../config.inc.php';
+require 'autoload.php';
 
 use League\OAuth2\Client\Provider\Google;
 session_start();

@@ -15,7 +15,7 @@
  */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
-require_once( dirname(__FILE__) . '/attachments.inc.php');
+require_once dirname(__FILE__) . '/attachments.inc.php';
 class requirement_mgr extends tlObjectWithAttachments {
   var $db;
   var $cfield_mgr;
@@ -174,7 +174,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   }
 
   $where_clause = " WHERE NH_REQV.parent_id ";
-  if( ($id_is_array=is_array($id)) ) {
+  if( $id_is_array=is_array($id) ) {
     $where_clause .= "IN (" . implode(",",$id) . ") ";
   } else {
     $where_clause .= " = {$id} ";
@@ -663,7 +663,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
         }  
       }  
 
-      if( ($kaboom = !is_null($target)) ) {
+      if( $kaboom = !is_null($target) ) {
         $where['this'] = " WHERE id IN (" . implode(',',$target) . ")";
       }  
 
@@ -1202,7 +1202,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
            " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
            " AND  req_coverage.req_id={$req_id}";
 
-    return ($this->db->get_recordset($sql));
+    return $this->db->get_recordset($sql);
   }
 
 
@@ -1596,7 +1596,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
                               array('quickAndDirty' => true));
 	    $reqID = $newReq['id'];
       $fk_id = $newReq['version_id'];  // for attachments
-      if( ($status_ok = ($newReq['status_ok'] == 1)) ){
+      if( $status_ok = ($newReq['status_ok'] == 1) ){
         $msgID = 'import_req_created';
       } else {
         $msgID = 'import_req_skipped_plain';
@@ -2583,7 +2583,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       {
           
         // is this relation type is configured?
-        if( ($relTypeAllowed = in_array($rel['relation_type'],$label_keys)) ) 
+        if( $relTypeAllowed = in_array($rel['relation_type'],$label_keys) ) 
         { 
             $relations['relations'][$key]['source_localized'] = $labels[$rel['relation_type']]['source'];
             $relations['relations'][$key]['destination_localized'] = $labels[$rel['relation_type']]['destination'];
@@ -2648,7 +2648,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
          " OR (source_id=$second_id AND destination_id=$first_id)) " . 
          " AND relation_type=$rel_type_id";
     $rs = $this->db->get_recordset($sql);
-      return($rs[0]['qty'] > 0);
+      return $rs[0]['qty'] > 0;
   }
   
   
@@ -2670,7 +2670,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
            " FROM {$this->tables['req_relations']} " .
            " WHERE source_id={$safeID} OR destination_id={$safeID} ";
     $rs = $this->db->get_recordset($sql);
-    return($rs[0]['qty']);
+    return $rs[0]['qty'];
   }
   
   

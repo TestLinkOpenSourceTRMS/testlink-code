@@ -15,9 +15,9 @@
  **/
 
 /** related functionality */
-require_once( dirname(__FILE__) . '/tree.class.php' );
-require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
-require_once( dirname(__FILE__) . '/attachments.inc.php' );
+require_once dirname(__FILE__) . '/tree.class.php';
+require_once dirname(__FILE__) . '/assignment_mgr.class.php';
+require_once dirname(__FILE__) . '/attachments.inc.php';
 
 /**
  * class to coordinate and manage Test Plans
@@ -349,7 +349,7 @@ class testplan extends tlObjectWithAttachments
         $result = $this->db->exec_query($sql);
       }
     }
-    return ($result ? 1 : 0);
+    return $result ? 1 : 0;
   }
 
 
@@ -408,7 +408,7 @@ class testplan extends tlObjectWithAttachments
     }  
 
     $rs = $this->db->get_recordset($sql);
-    return($rs);
+    return $rs;
   }
 
 
@@ -473,7 +473,7 @@ class testplan extends tlObjectWithAttachments
     }
 
     $rs = $this->db->get_recordset($sql);
-    return ($rs ? $rs[0] : null);
+    return $rs ? $rs[0] : null;
   }
 
 
@@ -1358,7 +1358,7 @@ class testplan extends tlObjectWithAttachments
       $map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id',$CUMULATIVE);
     }
     
-    return ($map_keywords);
+    return $map_keywords;
   } // end function
 
 
@@ -2515,7 +2515,7 @@ class testplan extends tlObjectWithAttachments
     // 20081122 - franciscom - humm!! need to look better IMHO this call is done to wrong function
     $cf_map=$this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,self::ENABLED,
     $show_on_execution,'testplan',$id);
-    return($cf_map);
+    return $cf_map;
   }
 
 
@@ -2548,7 +2548,7 @@ class testplan extends tlObjectWithAttachments
       "order by field_id";
     
     $field_map = $this->db->fetchColumnsIntoMap($sql,'field_id','label');
-    return($field_map);
+    return $field_map;
   }
 
   /*
@@ -2575,7 +2575,7 @@ class testplan extends tlObjectWithAttachments
     {
       $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
     }
-    return($cf_smarty);
+    return $cf_smarty;
   }
 
 
@@ -2651,7 +2651,7 @@ class testplan extends tlObjectWithAttachments
     {
       $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
     }
-    return($cf_smarty);
+    return $cf_smarty;
   } // function end
 
 
@@ -2756,7 +2756,7 @@ class testplan extends tlObjectWithAttachments
         $new_tp_tcs[$tc_id] = $tp_tcs[$tc_id];
       }
     }
-    return ($new_tp_tcs);
+    return $new_tp_tcs;
   }
 
 
@@ -2825,7 +2825,7 @@ class testplan extends tlObjectWithAttachments
         if(is_null($platformID) || $platformID == $platfID )
         { 
           $linkedItems = $this->get_linked_tcvid($id,$platfID,array('addEstimatedExecDuration' => true));  
-          if( (!is_null($linkedItems)) )
+          if( !is_null($linkedItems) )
           {
             $tcVersionIDSet[$platfID]= $linkedItems;
           }
@@ -2884,7 +2884,7 @@ class testplan extends tlObjectWithAttachments
     $cf_info = $this->cfield_mgr->get_by_name('CF_ESTIMATED_EXEC_TIME');
     
     // CF exists ?
-    if( ($status_ok=!is_null($cf_info)) )
+    if( $status_ok=!is_null($cf_info) )
     {
       $cfield_id=key($cf_info);
     }
@@ -2918,7 +2918,7 @@ class testplan extends tlObjectWithAttachments
           if(is_null($platformID) || $platformID == $platfID )
           { 
             $linkedItems = $this->get_linked_tcvid($id,$platfID);  
-            if( (!is_null($linkedItems)) )
+            if( !is_null($linkedItems) )
             {
               $tcVersionIDSet[$platfID]= array_keys($linkedItems);
             }
@@ -3038,7 +3038,7 @@ class testplan extends tlObjectWithAttachments
       $options = array('addExecInfo' => true);
       $executed = $this->getLTCVNewGeneration($context->tplan_id,$filters,$options); 
 
-      if( ($status_ok = !is_null($executed)) )
+      if( $status_ok = !is_null($executed) )
       {
         $tc2loop = array_keys($executed);
         foreach($tc2loop as $tcase_id)
@@ -3098,7 +3098,7 @@ class testplan extends tlObjectWithAttachments
     $cf_info = $this->cfield_mgr->get_by_name('CF_EXEC_TIME');
     
     // CF exists ?
-    if( ($status_ok=!is_null($cf_info)) )
+    if( $status_ok=!is_null($cf_info) )
     {
       $cfield_id=key($cf_info);
     }
@@ -3138,7 +3138,7 @@ class testplan extends tlObjectWithAttachments
         // $options = array('only_executed' => true, 'output' => 'mapOfMap');
         $options = array('addExecInfo' => true);
         $executed = $this->getLTCVNewGeneration($id,$filters,$options); 
-        if( ($status_ok = !is_null($executed)) )
+        if( $status_ok = !is_null($executed) )
         {
           $tc2loop = array_keys($executed);
           foreach($tc2loop as $tcase_id)
@@ -5437,7 +5437,7 @@ class testplan extends tlObjectWithAttachments
       unset($statusSetLocal[$dummy[$this->notRunStatusCode]]);
     }
     
-    if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
+    if( $get['otherStatus']=(count($statusSetLocal) > 0) )
     {
       tLog(__METHOD__ . ":: \$tplan_mgr->$getHitsStatusSetMethod", 'DEBUG');
       $hits['otherStatus'] = (array)$this->$getHitsStatusSetMethod($id,$statusSetLocal,$buildSet);  
@@ -5650,7 +5650,7 @@ class testplan extends tlObjectWithAttachments
       $hits['notRun'] = (array)$this->$getHitsNotRunMethod($id,$platformID,$buildSet);  
       unset($statusSetLocal[$dummy[$this->notRunStatusCode]]);
     }
-    if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
+    if( $get['otherStatus']=(count($statusSetLocal) > 0) )
     {
       $hits['otherStatus'] = (array)$this->$getHitsStatusSetMethod($id,$platformID,$statusSetLocal,$buildSet);  
     }
@@ -6174,7 +6174,7 @@ class testplan extends tlObjectWithAttachments
                      " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
                      $my['where']['where'];
 
-    return (is_null($union['not_run']) ? $union['exec'] : $union);
+    return is_null($union['not_run']) ? $union['exec'] : $union;
   }
 
 
@@ -7431,7 +7431,7 @@ class testplan extends tlObjectWithAttachments
            " WHERE api_key = '{$safe}'";
  
     $rs = $this->db->get_recordset($sql);
-    return ($rs ? $rs[0] : null);
+    return $rs ? $rs[0] : null;
   }
 
 
@@ -8599,7 +8599,7 @@ class build_mgr extends tlObject {
     }
 
     $rs = $this->db->get_recordset($sql);
-    return($rs);
+    return $rs;
   }
 
 
@@ -8660,7 +8660,7 @@ class build_mgr extends tlObject {
     {
       $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
     }
-    return($cf_smarty);
+    return $cf_smarty;
   }
 
 

@@ -9,8 +9,8 @@
  * Manager for requirement specification (requirement container)
  *
  */
-require_once( dirname(__FILE__) . '/attachments.inc.php' );
-require_once( dirname(__FILE__) . '/requirements.inc.php' );
+require_once dirname(__FILE__) . '/attachments.inc.php';
+require_once dirname(__FILE__) . '/requirements.inc.php';
 
 class requirement_spec_mgr extends tlObjectWithAttachments
 {
@@ -1928,7 +1928,7 @@ function get_requirement_child_by_id_req($id){
 					    	$parent_decode[$elem['id']]=$ret['id'];
 			      		$op['mappings']['req_spec'][$elem['id']] = $ret['id'];
 
-				      	if( ($op['status_ok'] = $ret['status_ok']) ) {
+				      	if( $op['status_ok'] = $ret['status_ok'] ) {
 				      	  // try to reduce memory usage
 				      		// $idCard = array('parent_id' => $elem['id'], 
                   //                 'tproject_id' => $tproject_id);

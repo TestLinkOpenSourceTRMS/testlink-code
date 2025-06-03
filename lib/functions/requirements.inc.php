@@ -123,7 +123,7 @@ function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID
   $unknown_code = lang_get('unknown_code');
   $reqMgr = new requirement_mgr($dbHandler);
   $arrImport = null;
-  if( ($loop2do=count($arrImportSource)) )
+  if( $loop2do=count($arrImportSource) )
   {
     $getOptions = array('output' => 'minimun');
     $messages = array('ok' => '', 'import_req_conflicts_other_branch' => '','import_req_exists_here' => '');
@@ -202,7 +202,7 @@ function getReqDocIDs(&$db,$srs_id)
     }
   }
 
-  return($result);
+  return $result;
 }
 
 
@@ -786,7 +786,7 @@ function check_syntax_xml($fileName)
   $ret=array();
   $ret['status_ok']=1;
   $ret['msg']='ok';
-  return($ret);
+  return $ret;
 }
 
 
@@ -795,7 +795,7 @@ function check_syntax_csv($fileName)
   $ret=array();
   $ret['status_ok']=1;
   $ret['msg']='ok';
-  return($ret);
+  return $ret;
 }
 
 // Must be implemented !!!
@@ -805,7 +805,7 @@ function check_syntax_csv_doors($fileName)
   $ret['status_ok']=1;
   $ret['msg']='ok';
 
-  return($ret);
+  return $ret;
 }
 
 /**

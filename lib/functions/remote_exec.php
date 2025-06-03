@@ -9,8 +9,8 @@
  * @internal revisions
  * 20110308 - franciscom - refactoring 
  */
-require_once("../../config.inc.php");
-require_once (TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'xml-rpc/class-IXR.php');
+require_once '../../config.inc.php';
+require_once TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'xml-rpc/class-IXR.php';
 
 /**
 * Initiate the execution of a testcase through XML Server RPCs.

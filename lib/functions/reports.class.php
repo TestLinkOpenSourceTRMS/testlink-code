@@ -18,7 +18,7 @@
  **/
 
 /** report specific configuration; navigator list definition */ 
-require_once('reports.cfg.php');
+require_once 'reports.cfg.php';
 
 
 /**

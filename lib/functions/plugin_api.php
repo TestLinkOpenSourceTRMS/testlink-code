@@ -20,8 +20,8 @@
 /**
  * requires TestlinkPlugin.class
  */
-require_once('tlPlugin.class.php');
-require_once('event_api.php');
+require_once 'tlPlugin.class.php';
+require_once 'event_api.php';
 
 # Cache variables #####
 $g_plugin_cache = array();
@@ -35,7 +35,7 @@ $g_plugin_current = array();
 function plugin_get_current()
 {
   global $g_plugin_current;
-  return (isset($g_plugin_current[0]) ? $g_plugin_current[0] : null);
+  return isset($g_plugin_current[0]) ? $g_plugin_current[0] : null;
 }
 
 /**
@@ -55,7 +55,7 @@ function plugin_push_current($p_basename)
 function plugin_pop_current()
 {
   global $g_plugin_current;
-  return (isset($g_plugin_current[0]) ? array_shift($g_plugin_current) : null);
+  return isset($g_plugin_current[0]) ? array_shift($g_plugin_current) : null;
 }
 
 /**
@@ -84,7 +84,7 @@ function plugin_file_path($filename, $folderpath = null, $basename = null)
   $t_file_path .= $basename . DIRECTORY_SEPARATOR;
   $t_file_path .= $folderpath . DIRECTORY_SEPARATOR . $filename;
 
-  return (is_file($t_file_path) ? $t_file_path : false);
+  return is_file($t_file_path) ? $t_file_path : false;
 }
 
 /**
@@ -296,7 +296,7 @@ function plugin_is_loaded($p_basename)
 {
   global $g_plugin_cache_init;
 
-  return (isset($g_plugin_cache_init[$p_basename]) && $g_plugin_cache_init[$p_basename]);
+  return isset($g_plugin_cache_init[$p_basename]) && $g_plugin_cache_init[$p_basename];
 }
 
 # ## Plugin management functions
@@ -314,7 +314,7 @@ function plugin_is_installed($p_basename)
          " WHERE basename='" . $dbHandler->prepare_string($p_basename) . "'";
 
   $t_result = $dbHandler->fetchFirstRow($sql);
-  return (0 < $t_result['count']);
+  return 0 < $t_result['count'];
 }
 
 /**
@@ -423,7 +423,7 @@ function plugin_include($p_basename)
   $t_included = false;
   if (is_file($t_plugin_file)) 
   {
-    include_once($t_plugin_file);
+    include_once $t_plugin_file;
     $t_included = true;
   }
 

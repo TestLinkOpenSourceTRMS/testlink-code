@@ -12,8 +12,8 @@
  * @link 		http://www.teamst.org/index.php
  *
  **/
-require('../../config.inc.php');
-require('../functions/common.php');
+require '../../config.inc.php';
+require '../functions/common.php';
 testlinkInitPage($db);
 
 $args = init_args();

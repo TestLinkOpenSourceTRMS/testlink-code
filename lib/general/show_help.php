@@ -12,8 +12,8 @@
  * rev:
  *     20071102 - franciscom - BUGID 1033
 **/
-require('../../config.inc.php');
-require_once("common.php");
+require '../../config.inc.php';
+require_once 'common.php';
 // start session, need to get right basehref
 testlinkInitPage($db);
 

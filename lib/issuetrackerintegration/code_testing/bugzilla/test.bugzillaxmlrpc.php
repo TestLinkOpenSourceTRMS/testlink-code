@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  */
-require_once('../../../../config.inc.php');
-require_once('common.php');
+require_once '../../../../config.inc.php';
+require_once 'common.php';
 
 $cfg =  "<issuetracker>\n" .
 		"<username>testlink.helpme@gmail.com</username>\n" .

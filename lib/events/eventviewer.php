@@ -8,10 +8,10 @@
  * @internal revisions
  *
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("users.inc.php");
-require_once('exttable.class.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'exttable.class.php';
 testlinkInitPage($db,false,false,"checkRights");
 $date_format_cfg = config_get('date_format');
 
@@ -272,5 +272,5 @@ function buildExtTable($gui,$show_icon,$charset)
     $table->toolbarExpandCollapseGroupsButton = true;
     $table->toolbarShowAllColumnsButton = true;
   }
-  return($table);
+  return $table;
 }

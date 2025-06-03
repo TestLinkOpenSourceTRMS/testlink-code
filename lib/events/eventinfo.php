@@ -8,8 +8,8 @@
  * @version $Revision: 1.12 $
  * @modified $Date: 2010/05/18 05:07:52 $ by $Author: amkhullar $
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 

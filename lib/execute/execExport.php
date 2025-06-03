@@ -14,9 +14,9 @@
  * @internal Revisions:
  * 20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
  **/
-require_once("../../config.inc.php");
-require_once("../functions/common.php");
-require_once("../functions/xml.inc.php");
+require_once '../../config.inc.php';
+require_once '../functions/common.php';
+require_once '../functions/xml.inc.php';
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 

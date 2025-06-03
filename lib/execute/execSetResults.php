@@ -24,19 +24,19 @@
  *
  *
 **/
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once('exec.inc.php');
-require_once("attachments.inc.php");
-require_once("specview.php");
-require_once("web_editor.php");
-require_once('event_api.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'exec.inc.php';
+require_once 'attachments.inc.php';
+require_once 'specview.php';
+require_once 'web_editor.php';
+require_once 'event_api.php';
 
 $cfg = getCfg();
-require_once(require_web_editor($cfg->editorCfg['type']));
+require_once require_web_editor($cfg->editorCfg['type']);
 
 if( $cfg->exec_cfg->enable_test_automation ) {
-  require_once('remote_exec.php');
+  require_once 'remote_exec.php';
 }
 
 // CRITIC:
@@ -707,7 +707,7 @@ function init_args(&$dbHandler,$cfgObj) {
   $bug_summary['minLengh'] = 1; 
   $bug_summary['maxLengh'] = 1; 
 
-  if( ($args->issue_tracker_enabled = $info['issue_tracker_enabled']) ) {
+  if( $args->issue_tracker_enabled = $info['issue_tracker_enabled'] ) {
     $it_mgr = new tlIssueTracker($dbHandler);
     $args->itsCfg = $it_mgr->getLinkedTo($args->tproject_id);
     $its = $it_mgr->getInterfaceObject($args->tproject_id);
@@ -726,7 +726,7 @@ function init_args(&$dbHandler,$cfgObj) {
   $args->ctsCfg = null;
   $cts = null;
 
-  if( ($args->codeTrackerEnabled = intval($info['code_tracker_enabled'])) ) {
+  if( $args->codeTrackerEnabled = intval($info['code_tracker_enabled']) ) {
     $ct_mgr = new tlCodeTracker($dbHandler);
     $args->ctsCfg = $ct_mgr->getLinkedTo($args->tproject_id);
     $cts = $ct_mgr->getInterfaceObject($args->tproject_id);

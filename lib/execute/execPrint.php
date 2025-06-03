@@ -11,10 +11,10 @@
  *
  */
 
-require_once("../../config.inc.php");
-require_once("../../cfg/reports.cfg.php"); 
-require_once("print.inc.php"); 
-require_once("common.php");
+require_once '../../config.inc.php';
+require_once '../../cfg/reports.cfg.php';
+require_once 'print.inc.php';
+require_once 'common.php';
 
 // This way can be called without _SESSION, this is useful for accessing
 // from external systems without login

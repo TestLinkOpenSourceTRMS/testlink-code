@@ -13,10 +13,10 @@
  *
  *
  **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("opt_transfer.php");
-require_once("web_editor.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'opt_transfer.php';
+require_once 'web_editor.php';
 
 $cfg = getCfg();
 $optionTransferName = 'ot';
@@ -29,7 +29,7 @@ $tsuite_mgr = new testsuite($db);
 
 
 $args = init_args($cfg,$optionTransferName,$tcase_mgr);
-require_once(require_web_editor($cfg->webEditorCfg['type']));
+require_once require_web_editor($cfg->webEditorCfg['type']);
 
 $templateCfg = templateConfiguration('tcEdit');
 

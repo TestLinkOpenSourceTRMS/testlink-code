@@ -13,9 +13,9 @@
  * rev: 20081109 - franciscom - BUGID 512
  *
  */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("specview.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'specview.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();

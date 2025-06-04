@@ -12,13 +12,13 @@
  * @uses        lib/functions/roles.inc.php
  *
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("users.inc.php");
-require_once("web_editor.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'web_editor.php';
 
 $editorCfg = getWebEditorCfg('role');
-require_once(require_web_editor($editorCfg['type']));
+require_once require_web_editor($editorCfg['type']);
 
 testlinkInitPage($db,false,false,"checkRights");
 init_global_rights_maps();

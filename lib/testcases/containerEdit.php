@@ -11,13 +11,13 @@
  * @link        http://www.testlink.org
  *
  */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("opt_transfer.php");
-require_once("web_editor.php");
-require_once('event_api.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'opt_transfer.php';
+require_once 'web_editor.php';
+require_once 'event_api.php';
 $editorCfg=getWebEditorCfg('design');
-require_once(require_web_editor($editorCfg['type']));
+require_once require_web_editor($editorCfg['type']);
 
 testlinkInitPage($db);
 $tree_mgr = new tree($db);
@@ -1240,7 +1240,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
             $tplanSet = array_keys($guiObj->exec_status_quo[$mainKey][$version_id]);
             foreach($tplanSet as $tplan_id)
             {
-              if( ($guiObj->display_platform[$mainKey] = !isset($guiObj->exec_status_quo[$mainKey][$version_id][$tplan_id][0])) )
+              if( $guiObj->display_platform[$mainKey] = !isset($guiObj->exec_status_quo[$mainKey][$version_id][$tplan_id][0]) )
               {
                 $stop = true;
                 break;

@@ -11,10 +11,10 @@
  * @link        http://www.testlink.org
  *
  */
-require_once('../../config.inc.php');
-require_once('users.inc.php');
-require_once('email_api.php');
-require_once('Zend/Validate/Hostname.php');
+require_once '../../config.inc.php';
+require_once 'users.inc.php';
+require_once 'email_api.php';
+require_once 'Zend/Validate/Hostname.php';
 
 testlinkInitPage($db,false,false,"checkRights");
 

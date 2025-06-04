@@ -11,10 +11,10 @@
  * @link        http://testlink.sourceforge.net/ 
  * 
  */
-require('../../config.inc.php');
-require_once('common.php');
-require_once('csv.inc.php');
-require_once('xml.inc.php');
+require '../../config.inc.php';
+require_once 'common.php';
+require_once 'csv.inc.php';
+require_once 'xml.inc.php';
 
 testlinkInitPage($db);
 
@@ -705,7 +705,7 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcIDCard,
 
     // Look for req doc id we get from file, inside Req Spec Set
     // we got from DB
-    if( ($doit=isset($reqSpecSet[$value['doc_id']])) ) {
+    if( $doit=isset($reqSpecSet[$value['doc_id']]) ) {
       if( !(isset($cachedReqSpec[$value['req_spec_title']])) ) {
         // $cachedReqSpec
         // key: Requirement Specification Title get from file

@@ -18,8 +18,8 @@
  *
  */
 
-require_once('../../config.inc.php');
-require_once('users.inc.php');
+require_once '../../config.inc.php';
+require_once 'users.inc.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $smarty = new TLSmarty();
@@ -257,7 +257,7 @@ function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$fe
         break;
     }
 
-    return ($yes_no == 'yes');
+    return $yes_no == 'yes';
 }
 
 

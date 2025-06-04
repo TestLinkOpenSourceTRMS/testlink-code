@@ -20,8 +20,8 @@
  *
  */
 
-require_once('../../config.inc.php');
-require_once('common.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 $smarty = new TLSmarty();
@@ -193,7 +193,7 @@ function init_args(&$dbHandler) {
   $args->cts = null;
 
   unset($tprojectMgr);
-  if( ($args->codeTrackerEnabled = intval($args->tcaseTestProject['code_tracker_enabled'])) ) {
+  if( $args->codeTrackerEnabled = intval($args->tcaseTestProject['code_tracker_enabled']) ) {
     $ct_mgr = new tlCodeTracker($dbHandler);
     $args->ctsCfg = $ct_mgr->getLinkedTo($args->tproject_id);
     $args->cts = $ct_mgr->getInterfaceObject($args->tproject_id);

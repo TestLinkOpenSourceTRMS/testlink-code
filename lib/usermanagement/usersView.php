@@ -13,9 +13,9 @@
  *
  * 
  */
-require_once("../../config.inc.php");            
-require_once('exttable.class.php');
-require_once("users.inc.php");
+require_once '../../config.inc.php';
+require_once 'exttable.class.php';
+require_once 'users.inc.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $smarty = new TLSmarty();

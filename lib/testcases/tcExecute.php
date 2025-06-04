@@ -21,13 +21,13 @@
  *
  * @modified $Date: 2010/09/27 14:06:04 $ by $Author: franciscom $
 */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("csv.inc.php");
-require_once("xml.inc.php");
-require_once("../../third_party/phpxmlrpc/lib/xmlrpc.inc");
-require_once("../../third_party/phpxmlrpc/lib/xmlrpcs.inc");
-require_once("../../third_party/phpxmlrpc/lib/xmlrpc_wrappers.inc");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'csv.inc.php';
+require_once 'xml.inc.php';
+require_once '../../third_party/phpxmlrpc/lib/xmlrpc.inc';
+require_once '../../third_party/phpxmlrpc/lib/xmlrpcs.inc';
+require_once '../../third_party/phpxmlrpc/lib/xmlrpc_wrappers.inc';
 testlinkInitPage($db);
 
 $args = init_args();

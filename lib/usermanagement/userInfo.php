@@ -13,8 +13,8 @@
  *
  * 
  */
-require_once('../../config.inc.php');
-require_once('users.inc.php');
+require_once '../../config.inc.php';
+require_once 'users.inc.php';
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();

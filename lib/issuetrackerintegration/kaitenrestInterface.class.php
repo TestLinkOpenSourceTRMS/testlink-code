@@ -7,7 +7,7 @@
  *
  *
 **/
-require_once(TL_ABS_PATH . "/third_party/kaiten-php-api/lib/kaiten-rest-api.php");
+require_once TL_ABS_PATH . '/third_party/kaiten-php-api/lib/kaiten-rest-api.php';
 
 class kaitenrestInterface extends issueTrackerInterface {
   private $APIClient;
@@ -231,7 +231,7 @@ class kaitenrestInterface extends issueTrackerInterface {
    * @return bool true if issue exists on BTS
    **/
   function checkBugIDExistence($issueID) {
-    if(($status_ok = $this->checkBugIDSyntax($issueID))) {
+    if($status_ok = $this->checkBugIDSyntax($issueID)) {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
     }

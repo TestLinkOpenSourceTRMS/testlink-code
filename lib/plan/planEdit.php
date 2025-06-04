@@ -12,13 +12,13 @@
  *
  **/
 
-require_once('../../config.inc.php');
-require_once("common.php");
-require_once("date_api.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'date_api.php';
 
-require_once("web_editor.php");
+require_once 'web_editor.php';
 $editorCfg = getWebEditorCfg('testplan');
-require_once(require_web_editor($editorCfg['type']));
+require_once require_web_editor($editorCfg['type']);
 
 testlinkInitPage($db,false,false);
 $templateCfg = templateConfiguration();

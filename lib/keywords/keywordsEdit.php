@@ -12,11 +12,11 @@
  * @link       http://www.testlink.org/
  *  
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("csv.inc.php");
-require_once("xml.inc.php");
-require_once("keywordsEnv.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'csv.inc.php';
+require_once 'xml.inc.php';
+require_once 'keywordsEnv.php';
 
 
 testlinkInitPage($db);

@@ -13,8 +13,8 @@
  * @since 1.9.15
  */
          
-require_once(dirname(__FILE__)."/../../config.inc.php");
-require_once("common.php");
+require_once dirname(__FILE__). '/../../config.inc.php';
+require_once 'common.php';
 
 // TODO understand the new model for rights check
 testlinkInitPage($db);

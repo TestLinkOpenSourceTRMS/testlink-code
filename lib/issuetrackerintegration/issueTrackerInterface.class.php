@@ -22,8 +22,8 @@
  *
  *
 **/
-require_once(TL_ABS_PATH . "/lib/functions/database.class.php");
-require_once(TL_ABS_PATH . "/lib/functions/lang_api.php");
+require_once TL_ABS_PATH . '/lib/functions/database.class.php';
+require_once TL_ABS_PATH . '/lib/functions/lang_api.php';
 
 abstract class issueTrackerInterface
 {
@@ -261,8 +261,7 @@ abstract class issueTrackerInterface
   function isConnected()
   {
   
-    return ($this->connected && 
-        ((!$this->interfaceViaDB ) || is_object($this->dbConnection)) ? 1 : 0);
+    return $this->connected && ((!$this->interfaceViaDB ) || is_object($this->dbConnection)) ? 1 : 0;
   }
 
   /**
@@ -582,7 +581,7 @@ abstract class issueTrackerInterface
    **/
   function checkBugIDExistence($issueID)
   {
-    if(($status_ok = $this->checkBugIDSyntax($issueID)))
+    if($status_ok = $this->checkBugIDSyntax($issueID))
     {
         $issue = $this->getIssue($issueID);
         $status_ok = !is_null($issue) && is_object($issue);

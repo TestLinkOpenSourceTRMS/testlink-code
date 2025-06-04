@@ -10,9 +10,9 @@
  * 
  *
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("opt_transfer.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'opt_transfer.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -80,7 +80,7 @@ switch($args->edit) {
       }
     }
 
-    if( ($loop2do = sizeof($tcs)) ) {
+    if( $loop2do = sizeof($tcs) ) {
       $gui->can_do = 1;
       
       $method = null;

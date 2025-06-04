@@ -27,7 +27,7 @@
 **/
 
 // use phpxmlrpc because support HTTPS, while incutio NO.
-require_once(TL_ABS_PATH . 'third_party/phpxmlrpc/lib/xmlrpc.inc');
+require_once TL_ABS_PATH . 'third_party/phpxmlrpc/lib/xmlrpc.inc';
 
 class tracxmlrpcInterface extends issueTrackerInterface
 {
@@ -260,7 +260,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
   function checkBugIDExistence($issueID)
   {
     $dBugLabel = array('label' => __METHOD__);
-    if(($status_ok = $this->checkBugIDSyntax($issueID)))
+    if($status_ok = $this->checkBugIDSyntax($issueID))
     {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);

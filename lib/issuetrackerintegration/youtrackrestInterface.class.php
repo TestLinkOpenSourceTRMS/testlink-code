@@ -22,7 +22,7 @@
  * @since 1.9.10
  * 
 **/
-require_once(TL_ABS_PATH . "/third_party/youtrackclient/src/youtrackclient.php");
+require_once TL_ABS_PATH . '/third_party/youtrackclient/src/youtrackclient.php';
 
 class youtrackrestInterface extends issueTrackerInterface
 {
@@ -241,7 +241,7 @@ class youtrackrestInterface extends issueTrackerInterface
      **/
     function checkBugIDExistence($issueID)
     {
-        if(($status_ok = $this->checkBugIDSyntax($issueID)))
+        if($status_ok = $this->checkBugIDSyntax($issueID))
         {
             $issue = $this->getIssue($issueID);
             $status_ok = (!is_null($issue) && is_object($issue));
@@ -281,7 +281,7 @@ class youtrackrestInterface extends issueTrackerInterface
   **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'project'));
+    return property_exists($this->cfg, 'project');
   }
 
 

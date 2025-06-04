@@ -423,8 +423,7 @@ class jirasoapInterface extends issueTrackerInterface
   **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'projectkey') && 
-            property_exists($this->cfg, 'issuetype'));
+    return property_exists($this->cfg, 'projectkey') && property_exists($this->cfg, 'issuetype');
   }
 
 

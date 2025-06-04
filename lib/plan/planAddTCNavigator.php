@@ -18,9 +18,9 @@
  *
  */
 
-require('../../config.inc.php');
-require_once("common.php");
-require_once("treeMenu.inc.php");
+require '../../config.inc.php';
+require_once 'common.php';
+require_once 'treeMenu.inc.php';
 
 testlinkInitPage($db);
 

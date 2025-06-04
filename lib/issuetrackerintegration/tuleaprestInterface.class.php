@@ -10,7 +10,7 @@
  *
  **/
 
-require_once(TL_ABS_PATH . "/third_party/tuleap-php-api/lib/tuleap-rest-api.php");
+require_once TL_ABS_PATH . '/third_party/tuleap-php-api/lib/tuleap-rest-api.php';
 
 class tuleaprestInterface extends issueTrackerInterface
 {
@@ -101,8 +101,7 @@ class tuleaprestInterface extends issueTrackerInterface
      * @return bool returns true if the param is an URL
      **/
     private function checkURLSyntax($url) {
-      return (filter_var($url, FILTER_VALIDATE_URL)
-              && stripos($url, "http") === 0);
+      return filter_var($url, FILTER_VALIDATE_URL) && stripos($url, "http") === 0;
     }
 
     /**
@@ -450,7 +449,7 @@ class tuleaprestInterface extends issueTrackerInterface
       **/
      function checkBugIDExistence($issueID)
      {
-         if(($status_ok = $this->checkBugIDSyntax($issueID)))
+         if($status_ok = $this->checkBugIDSyntax($issueID))
          {
              $issue = $this->getIssue($issueID);
              $status_ok = (!is_null($issue) && is_object($issue));
@@ -515,7 +514,7 @@ class tuleaprestInterface extends issueTrackerInterface
       **/
      function canCreateViaAPI()
      {
-         return ($this->trackerID !== '');
+         return $this->trackerID !== '';
      }
 
 

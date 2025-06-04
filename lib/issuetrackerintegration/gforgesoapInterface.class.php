@@ -230,7 +230,7 @@ class gforgesoapInterface extends issueTrackerInterface
      **/
     function checkBugIDExistence($issueID)
     {
-        if(($status_ok = $this->checkBugIDSyntax($issueID)))
+        if($status_ok = $this->checkBugIDSyntax($issueID))
         {
             $issue = $this->getIssue($issueID);
             $status_ok = !is_null($issue);
@@ -249,7 +249,7 @@ class gforgesoapInterface extends issueTrackerInterface
     {
     $this->interfaceViaDB = false;
     $op = $this->getClient(array('log' => true));
-    if( ($this->connected = $op['connected']) )
+    if( $this->connected = $op['connected'] )
     { 
       // OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
       // to do a simple call with user/password only to understand if we are really connected
@@ -326,7 +326,7 @@ class gforgesoapInterface extends issueTrackerInterface
         if (!is_null($date2parse))
         {
             $ret = date_parse($date2parse);
-            $ret = ((gmmktime(0, 0, 0, $ret['month'], $ret['day'], $ret['year'])));
+            $ret = (gmmktime(0, 0, 0, $ret['month'], $ret['day'], $ret['year']));
             $ret = $this->l18n['duedate'] . @gmstrftime("%d %b %Y",($ret));
         }
         return $ret ;

@@ -8,8 +8,8 @@
  *
  *
  */
-require_once("../../config.inc.php");
-require_once("common.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db,false,false);
 $date_format_cfg = config_get('date_format');
 

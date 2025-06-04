@@ -80,7 +80,7 @@ class mantissoapInterface extends issueTrackerInterface
   function connect()
   {
     $op = $this->getClient(array('log' => true));
-    if( ($this->connected = $op['connected']) )
+    if( $this->connected = $op['connected'] )
     { 
       // OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
       // to do a simple call with user/password only to understand if we are really connected
@@ -561,7 +561,7 @@ class mantissoapInterface extends issueTrackerInterface
    **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'project') && property_exists($this->cfg, 'category'));
+    return property_exists($this->cfg, 'project') && property_exists($this->cfg, 'category');
   }
 
   

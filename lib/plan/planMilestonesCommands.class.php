@@ -8,7 +8,7 @@
  * 
  * @internal revisions
  */
-require_once("testplan.class.php");  // needed because milestone_mgr is inside
+require_once 'testplan.class.php';  // needed because milestone_mgr is inside
 class planMilestonesCommands
 {
   private $db;

@@ -17,7 +17,7 @@
  * 20130805 - franciscom - canCreateViaAPI()
  *
 **/
-require_once(TL_ABS_PATH . "/third_party/fogbugz-php-api/lib/api.php");
+require_once TL_ABS_PATH . '/third_party/fogbugz-php-api/lib/api.php';
 class fogbugzrestInterface extends issueTrackerInterface
 {
   private $APIClient;
@@ -212,7 +212,7 @@ class fogbugzrestInterface extends issueTrackerInterface
    **/
   function checkBugIDExistence($issueID)
   {                                          
-      if(($status_ok = $this->checkBugIDSyntax($issueID)))
+      if($status_ok = $this->checkBugIDSyntax($issueID))
       {                         
           $issue = $this->getIssue($issueID);       
           $status_ok = !is_null($issue) && is_object($issue);
@@ -273,7 +273,7 @@ class fogbugzrestInterface extends issueTrackerInterface
   **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'project'));
+    return property_exists($this->cfg, 'project');
   }
 
 }

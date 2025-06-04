@@ -11,7 +11,7 @@
  * 20140531 - franciscom - contribution + refactoring adding new support methods
  * 
 **/
-require_once('Zend/Loader/Autoloader.php');
+require_once 'Zend/Loader/Autoloader.php';
 Zend_Loader_Autoloader::getInstance();
 
 class bugzillaxmlrpcInterface extends issueTrackerInterface
@@ -243,7 +243,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
    **/
   function checkBugIDExistence($issueID)
   {
-    if(($status_ok = $this->checkBugIDSyntax($issueID)))
+    if($status_ok = $this->checkBugIDSyntax($issueID))
     {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
@@ -435,7 +435,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'product') && property_exists($this->cfg, 'component'));
+    return property_exists($this->cfg, 'product') && property_exists($this->cfg, 'component');
   }
 
 

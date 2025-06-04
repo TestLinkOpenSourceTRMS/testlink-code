@@ -12,11 +12,11 @@
  * 
  **/
 
-require_once('../../config.inc.php');
-require_once("common.php");
-require_once('email_api.php');
-require_once("specview.php");
-require_once('Zend/Validate/EmailAddress.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'email_api.php';
+require_once 'specview.php';
+require_once 'Zend/Validate/EmailAddress.php';
 
 testlinkInitPage($db);
 

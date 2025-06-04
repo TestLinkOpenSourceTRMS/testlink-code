@@ -7,8 +7,7 @@
  *
  *
 **/
-require_once(TL_ABS_PATH . 
-  "third_party/mantis-rest-api/lib/mantis-rest-api.php");
+require_once TL_ABS_PATH . 'third_party/mantis-rest-api/lib/mantis-rest-api.php';
 
 class mantisrestInterface extends issueTrackerInterface {
   private $APIClient;
@@ -301,7 +300,7 @@ class mantisrestInterface extends issueTrackerInterface {
    * @return bool true if issue exists on BTS
    **/
   function checkBugIDExistence($issueID) {
-    if(($status_ok = $this->checkBugIDSyntax($issueID))) {
+    if($status_ok = $this->checkBugIDSyntax($issueID)) {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
     }

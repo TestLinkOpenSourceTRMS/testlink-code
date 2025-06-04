@@ -306,11 +306,11 @@ class tlRequirementFilterControl extends tlFilterControl
     {
       $selection = 1;
     } 
-    else if (isset($this->args->{$hidden_key})) 
+    elseif (isset($this->args->{$hidden_key})) 
     {
       $selection = 0;
     } 
-    else if (isset($_SESSION[$key])) 
+    elseif (isset($_SESSION[$key])) 
     {
       $selection = $_SESSION[$key];
     } 

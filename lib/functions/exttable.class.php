@@ -276,7 +276,7 @@ class tlExtTable extends tlTable
           $s .= ",filter: {type: '{$column['filter']}'}";
         }
       } 
-      else if (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) 
+      elseif (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) 
       {
         // do not define a filter in this case. Special filters are applied later
       } 
@@ -348,7 +348,7 @@ class tlExtTable extends tlTable
         isset($this->customBehaviour[$column['type']]['sort']) )
       {
         $s .= ", sortType: {$this->customBehaviour[$column['type']]['sort']}";
-      } else if (isset($column['sortType'])) {
+      } elseif (isset($column['sortType'])) {
         $s .= ", sortType: '{$column['sortType']}'";
       }
       
@@ -462,7 +462,7 @@ class tlExtTable extends tlTable
       if (!is_null($value)){
         if (is_int($value)) {
           $s .= ", {$setting}: {$value}";
-        } else if (is_bool($value)) {
+        } elseif (is_bool($value)) {
           $s .= ", {$setting}: " . ($value ? 'true' : 'false');
         } else {
           $s .= ", {$setting}: \"{$value}\"";

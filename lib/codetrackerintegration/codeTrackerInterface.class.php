@@ -302,7 +302,7 @@ abstract class codeTrackerInterface
     {
       $codeURL .= '?at=' . $commit_id;
     }
-    else if (!is_null($branch_name))
+    elseif (!is_null($branch_name))
     {
       $codeURL .= '?at=refs%2Fheads%2F' . $branch_name;
     }

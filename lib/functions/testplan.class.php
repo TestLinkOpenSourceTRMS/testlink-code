@@ -904,7 +904,7 @@ class testplan extends tlObjectWithAttachments
         $sql['filter'] = " AND TK.keyword_id IN (" . implode(',',$filter) . ")"; 
       }  
     }
-    else if($filter > 0) {
+    elseif($filter > 0) {
       $sql['filter'] = " AND TK.keyword_id = {$filter} ";
     }
     
@@ -932,7 +932,7 @@ class testplan extends tlObjectWithAttachments
     {
       $sql .= " AND (urgency * importance) >= " . $cfg->threshold['high'];
     }
-    else if($filter == LOW)
+    elseif($filter == LOW)
     {
       $sql .= " AND (urgency * importance) < " . $cfg->threshold['low'];
     }
@@ -968,7 +968,7 @@ class testplan extends tlObjectWithAttachments
       $sql .= " IS NULL "; 
       $join = ' LEFT OUTER ' . $join;
     } 
-    else if( in_array(TL_USER_SOMEBODY,$ff) )
+    elseif( in_array(TL_USER_SOMEBODY,$ff) )
     {
       $sql .= " IS NOT NULL "; 
     }
@@ -1090,7 +1090,7 @@ class testplan extends tlObjectWithAttachments
       {
           // ??? implement as in ?
       }
-      else if ($tcase_id > 0 )
+      elseif ($tcase_id > 0 )
       {
         $tc_id_filter = " AND NHA.parent_id = {$tcase_id} ";
       }
@@ -1335,7 +1335,7 @@ class testplan extends tlObjectWithAttachments
       {
         $keyword_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")"; 
       }
-      else if( $keyword_id > 0 )
+      elseif( $keyword_id > 0 )
       {
         $keyword_filter = " AND keyword_id = {$keyword_id} ";
       }
@@ -1377,7 +1377,7 @@ class testplan extends tlObjectWithAttachments
     if( is_array($keyword_id) ) {
         $kwFilter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")"; 
     }
-    else if( $keyword_id > 0 ) {
+    elseif( $keyword_id > 0 ) {
         $kwFilter = " AND keyword_id = {$keyword_id} ";
     }
 
@@ -1413,7 +1413,7 @@ class testplan extends tlObjectWithAttachments
     if (is_array($platform_id) ) {
       $platFilter = " AND platform_id IN (" . implode(',',$platform_id) . ")"; 
     }
-    else if( $platform_id > 0 ) {
+    elseif( $platform_id > 0 ) {
       $platFilter = " AND $platform_id = {$platform_id} ";
     }
 
@@ -2900,7 +2900,7 @@ class testplan extends tlObjectWithAttachments
       {
         $sql .= " SELECT SUM(value) ";
       } 
-      else if ( DB_TYPE == 'postgres' || DB_TYPE == 'mssql' )
+      elseif ( DB_TYPE == 'postgres' || DB_TYPE == 'mssql' )
       {
         $sql .= " SELECT SUM(CAST(value AS NUMERIC)) ";
       }       
@@ -3115,7 +3115,7 @@ class testplan extends tlObjectWithAttachments
       {
         $sql="SELECT SUM(value) ";
       } 
-      else if ( DB_TYPE == 'postgres' || DB_TYPE == 'mssql' )
+      elseif ( DB_TYPE == 'postgres' || DB_TYPE == 'mssql' )
       {
         $sql="SELECT SUM(CAST(value AS NUMERIC)) ";
       }        
@@ -3421,7 +3421,7 @@ class testplan extends tlObjectWithAttachments
         default:
         break;  
       }      
-    } else if( $my['options']['addIfNull'] ) {
+    } elseif( $my['options']['addIfNull'] ) {
       $platforms = array( 0 => '');
     }
     return $platforms; 
@@ -5008,9 +5008,9 @@ class testplan extends tlObjectWithAttachments
 
     if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus']) {
       $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
-    } else if($hitsFoundOn['notRun']) {
+    } elseif($hitsFoundOn['notRun']) {
       $items = array_keys($hits['notRun']);
-    } else if($hitsFoundOn['otherStatus']) {
+    } elseif($hitsFoundOn['otherStatus']) {
       $items = array_keys($hits['otherStatus']);
     }
 
@@ -5456,11 +5456,11 @@ class testplan extends tlObjectWithAttachments
         $items = array_keys($hits['notRun']) + array_keys($hits['otherStatus']);
       }
     } 
-    else if($get['notRun'] && $hitsFoundOn['notRun'])
+    elseif($get['notRun'] && $hitsFoundOn['notRun'])
     {
       $items = array_keys($hits['notRun']);
     }
-    else if($get['otherStatus'] && $hitsFoundOn['otherStatus'])
+    elseif($get['otherStatus'] && $hitsFoundOn['otherStatus'])
     {
       $items = array_keys($hits['otherStatus']);
     }
@@ -5694,11 +5694,11 @@ class testplan extends tlObjectWithAttachments
             // After using array_keys() we have numeric keys => we HAVE TO USE array_merge().
             $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
     } 
-    else if($hitsFoundOn['notRun'])
+    elseif($hitsFoundOn['notRun'])
     {
       $items = array_keys($hits['notRun']);
     }
-    else if($hitsFoundOn['otherStatus'])
+    elseif($hitsFoundOn['otherStatus'])
     {
       $items = array_keys($hits['otherStatus']);
     }
@@ -6273,7 +6273,7 @@ class testplan extends tlObjectWithAttachments
       if( is_array($ic['filters'][$dk]) ) {
         $ic['where'][$dk] = " AND NH_TCV.parent_id IN (" . implode(',',$ic['filters'][$dk]) . ")";            
       }
-      else if ($ic['filters'][$dk] > 0) {
+      elseif ($ic['filters'][$dk] > 0) {
         $ic['where'][$dk] = " AND NH_TCV.parent_id = " . intval($ic['filters'][$dk]);
       }
       else {
@@ -6985,7 +6985,7 @@ class testplan extends tlObjectWithAttachments
       $platformEXEC = " ";
 
     }  
-    else if ($my['options']['ignoreBuild'] && $my['options']['build_is_active']) 
+    elseif ($my['options']['ignoreBuild'] && $my['options']['build_is_active']) 
     {
       $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .
                 " MAX(EE.id) AS id " .
@@ -6999,7 +6999,7 @@ class testplan extends tlObjectWithAttachments
       $platformEXEC = " AND E.platform_id = TPTCV.platform_id ";
 
     }
-    else if ($my['options']['ignoreBuild']) 
+    elseif ($my['options']['ignoreBuild']) 
     {
       $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .
                 " MAX(EE.id) AS id " .

@@ -282,7 +282,7 @@ function importReqDataFromCSV($fileName)
         {
           $fieldValue = trim_and_limit($fieldValue,$fieldLength[$fieldKey]);
         }
-        else if(isset($fieldDefault[$fieldKey]))
+        elseif(isset($fieldDefault[$fieldKey]))
         {
           // Assign default value
           $checkKey = $fieldDefault[$fieldKey]['check'];
@@ -346,7 +346,7 @@ function getDocBookTableAsHtmlString($docTable,$parseCfg)
         $cellTag = array('open' => '<th>', 'close' => '</th>');
         $doIt = true;
       }
-      else if( $tbodyName == $parseCfg->table_body)
+      elseif( $tbodyName == $parseCfg->table_body)
       {                                           
         $cellTag = array('open' => '<td>', 'close' => '</td>');
         $doIt = true;
@@ -426,7 +426,7 @@ function importReqDataFromDocBook($fileName)
       {
         $title = (string)$child;
       } 
-      else if ($nodeName == $docbookCfg->ordered_list)
+      elseif ($nodeName == $docbookCfg->ordered_list)
       {
         $list = "";
         foreach( $child->children() as $item )
@@ -451,11 +451,11 @@ function importReqDataFromDocBook($fileName)
         }
         $description .= "<ul>" . $list . "</ul>";
       }
-      else if ($nodeName == $docbookCfg->table)
+      elseif ($nodeName == $docbookCfg->table)
       {
         $description .= getDocBookTableAsHtmlString($child,$docbookCfg);
       }
-      else if ($nodeName == $docbookCfg->paragraph)
+      elseif ($nodeName == $docbookCfg->paragraph)
       {
         $description .= "<p>" . (string)$child . "</p>";
       }
@@ -856,7 +856,7 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
       {
         $title[$key] = lang_get($cfg->$prop->value);
       }   
-      else if ($cfg->$prop->type == 'none') 
+      elseif ($cfg->$prop->type == 'none') 
       {
         $title[$key] = '';
       } 

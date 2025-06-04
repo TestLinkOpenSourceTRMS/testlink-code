@@ -812,7 +812,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       if (is_array($this->active_filters['filter_keywords'])) {
         $keyword_list = implode(',', $this->active_filters['filter_keywords']);
       } 
-      else if ($this->active_filters['filter_keywords']) 
+      elseif ($this->active_filters['filter_keywords']) 
       {
         $keyword_list = $this->active_filters['filter_keywords'];
       }     
@@ -1145,9 +1145,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // look where we can find the setting - POST, SESSION, config?
     if (isset($this->args->{$key})) {
       $selection = 1;
-    } else if (isset($this->args->{$hidden_key})) {
+    } elseif (isset($this->args->{$hidden_key})) {
       $selection = 0;
-    } else if (isset($_SESSION[$key])) {
+    } elseif (isset($_SESSION[$key])) {
       $selection = $_SESSION[$key];
     } else {
       $spec_cfg = config_get('spec_cfg');
@@ -1820,7 +1820,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     {
       $js_key_to_select = $this->configuration->filter_methods['status_code']['current_build'];
     } 
-    else if ($this->mode == 'plan_mode') 
+    elseif ($this->mode == 'plan_mode') 
     {
       $js_key_to_select = $this->configuration->filter_methods['status_code']['specific_build'];
     }
@@ -1942,7 +1942,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     if (!$selection || $this->args->reset_filters)  {
       if( !is_null($this->args->caller) && !$selection) {
         $selection = null;
-      } else if( count($cfx) > 0) {
+      } elseif( count($cfx) > 0) {
         $selection = $cfx;
         $this->do_filtering = true;
       } else {

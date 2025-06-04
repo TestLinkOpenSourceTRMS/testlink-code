@@ -341,9 +341,9 @@ function init_args(&$tproject_mgr) {
   $all_versions_hidden = isset($_REQUEST['all_versions_hidden']) ? true : false;
   if ($all_versions) {
     $selection = true;
-  } else if ($all_versions_hidden) {
+  } elseif ($all_versions_hidden) {
     $selection = false;
-  } else if (isset($_SESSION['all_versions'])) {
+  } elseif (isset($_SESSION['all_versions'])) {
     $selection = $_SESSION['all_versions'];
   } else {
     $selection = false;

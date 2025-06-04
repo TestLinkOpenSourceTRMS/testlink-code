@@ -2535,7 +2535,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $booleanValue = $value;
     if( is_bool($booleanValue) ) {
         $booleanValue = $booleanValue ? 1 : 0;
-    } else if( !is_numeric($booleanValue) || is_null($booleanValue)) {
+    } elseif( !is_numeric($booleanValue) || is_null($booleanValue)) {
       $booleanValue = 1;
     }
     $booleanValue = $booleanValue > 0 ? 1 : 0;
@@ -3733,23 +3733,23 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     {
       $user_feedback['import_status'] = lang_get('rel_add_error_src_id') ." [".$source_doc_id."].";
     }
-    else if ( is_null($destination_id ) ) 
+    elseif ( is_null($destination_id ) ) 
     {
       $user_feedback['import_status'] = lang_get('rel_add_error_dest_id') ." [".$destination_doc_id."].";
     }
-    else if ($source_id == $destination_id) 
+    elseif ($source_id == $destination_id) 
     {
       $user_feedback['import_status'] = lang_get('rel_add_error_self');
     }
-    else if  ( ($source['testproject_id'] != $tproject_id)  &&  ($destination['testproject_id'] != $tproject_id) )
+    elseif  ( ($source['testproject_id'] != $tproject_id)  &&  ($destination['testproject_id'] != $tproject_id) )
     {
       $user_feedback['import_status'] = lang_get('rel_add_not_in_project');
     }
-    else if (is_null($type_desc)) 
+    elseif (is_null($type_desc)) 
     {
       $user_feedback['import_status'] = lang_get('rel_add_invalid_type');
     }
-    else if ($this->check_if_relation_exists($source_id, $destination_id, $rel['type'])) 
+    elseif ($this->check_if_relation_exists($source_id, $destination_id, $rel['type'])) 
     {
       $user_feedback['import_status'] = sprintf(lang_get('rel_add_error_exists_already'), $type_desc);
     }

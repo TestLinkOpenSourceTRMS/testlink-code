@@ -91,7 +91,7 @@ if ($args->do_upload)
       $gui->resultMap = $pimport_fn($db,$tplan_mgr,$input_file,$context);
     }
   }
-  else if(is_null($gui->file_check))
+  elseif(is_null($gui->file_check))
   {
     $gui->file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
     $args->importType = null;
@@ -294,7 +294,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
             {
               $dummy_msg = sprintf($labels['link_without_platform_element'],$idx+1);        
             }
-            else if(!$linkWithPlatform)
+            elseif(!$linkWithPlatform)
             {
               $dummy_msg = sprintf($labels['link_without_required_platform'],$idx+1);       
             }
@@ -383,7 +383,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
                   {
                     $updateLink = true;
                   }
-                  else if ($platformID == 0 )
+                  elseif ($platformID == 0 )
                   {
                     // User request to add without platform, but platforms exist => SKIP
                     $msg[] = array('platform 0 missing messages',$labels['not_imported']);

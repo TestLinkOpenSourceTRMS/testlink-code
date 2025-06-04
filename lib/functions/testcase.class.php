@@ -2675,7 +2675,7 @@ class testcase extends tlObjectWithAttachments {
     if( ($accessByVersionID = is_null($id) && !is_null($version_id)) ) {
       $versionSQLOp = ' WHERE ';
     }
-    else if(is_array($id)) {
+    elseif(is_array($id)) {
       $tcid_list = implode(",",$id);
       $where_clause = " WHERE NHTCV.parent_id IN ({$tcid_list}) ";
     }
@@ -3410,7 +3410,7 @@ class testcase extends tlObjectWithAttachments {
               $keyword_filter ='';
           }
       }
-      else if( $keyword_id > 0 )
+      elseif( $keyword_id > 0 )
       {
           $keyword_filter = " AND keyword_id = {$keyword_id} ";
       }
@@ -7254,7 +7254,7 @@ class testcase extends tlObjectWithAttachments {
     {
       $goo->show_mode = 'editDisabled';
     }
-    else if( !is_null($goo->show_mode) && $goo->show_mode == 'editOnExec' )
+    elseif( !is_null($goo->show_mode) && $goo->show_mode == 'editOnExec' )
     {
       // refers to two javascript functions present in testlink_library.js
       // and logic used to refresh both frames when user call this
@@ -7469,7 +7469,7 @@ class testcase extends tlObjectWithAttachments {
 
                         $ghost .= $stx[0]['actions'] . $rightside;
                       }
-                    } else if ($dx['Preconditions']) {
+                    } elseif ($dx['Preconditions']) {
                       $withPrecond = $this->get_basic_info($xid,['number' => $vn],['preconditions']);
                       $isTestCaseGhost = false;
                       $deghosted = true;

@@ -1512,7 +1512,7 @@ class RestApi
           if($platform == 0) {
             $status_ok = false;
             $msg = 'Test plan has platforms, you need to provide one in order to execute';
-          } else if (!isset($platformSet[$platform])) {
+          } elseif (!isset($platformSet[$platform])) {
             $status_ok = false;
             $msg = '(platform,test plan) couple is not valid';
           }

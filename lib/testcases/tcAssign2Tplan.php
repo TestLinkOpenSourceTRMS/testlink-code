@@ -123,7 +123,7 @@ if( !is_null($tplanSet = $tproject_mgr->get_all_testplans($args->tproject_id,arr
         {
           $draw_checkbox = false;
         }
-        else if($target_version_number == $version)
+        elseif($target_version_number == $version)
         {
           $draw_checkbox = true;
         }

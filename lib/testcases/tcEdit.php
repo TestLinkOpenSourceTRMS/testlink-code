@@ -165,7 +165,7 @@ if($args->delete_tc_version) {
   if(intval($status_quo_map[$args->tcversion_id]['executed'])) {
     $msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');
   }
-  else if(intval($status_quo_map[$args->tcversion_id]['linked']))
+  elseif(intval($status_quo_map[$args->tcversion_id]['linked']))
   {
     $msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');
   }
@@ -184,7 +184,7 @@ if($args->delete_tc_version) {
   $smarty->assign('gui',$gui);
   $templateCfg = templateConfiguration('tcDelete');
   $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-} else if($args->move_copy_tc) {
+} elseif($args->move_copy_tc) {
   // need to get the testproject for the test case
   $tproject_id = $tcase_mgr->get_testproject($args->tcase_id);
   $the_tc_node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
@@ -216,7 +216,7 @@ if($args->delete_tc_version) {
   $templateCfg = templateConfiguration('tcMove');
   $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
-else if($args->do_move)
+elseif($args->do_move)
 {
   $result = $tree_mgr->change_parent($args->tcase_id,$args->new_container_id);
   $tree_mgr->change_child_order($args->new_container_id,$args->tcase_id,
@@ -224,7 +224,7 @@ else if($args->do_move)
 
   $gui->refreshTree = $args->refreshTree;
   $tsuite_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->old_container_id);
-} else if($args->do_copy || $args->do_copy_ghost_zone) {
+} elseif($args->do_copy || $args->do_copy_ghost_zone) {
   $args->stepAsGhost = $args->do_copy_ghost_zone;
   $user_feedback='';
   $msg = '';
@@ -274,15 +274,15 @@ else if($args->do_move)
   $tcase_mgr->show($smarty,$gui,$identity,$gui->grants);
 
 }
-else if($args->do_create_new_version) {
+elseif($args->do_create_new_version) {
   createNewVersion($smarty,$args,$gui,$tcase_mgr,$args->tcversion_id);
 }
-else if($args->do_create_new_version_from_latest) { 
+elseif($args->do_create_new_version_from_latest) { 
   $ltcv = $tcase_mgr->getLatestVersionID($args->tcase_id);
   createNewVersion($smarty,$args,$gui,$tcase_mgr,$ltcv);
 
 }
-else if($args->do_activate_this || $args->do_deactivate_this) {
+elseif($args->do_activate_this || $args->do_deactivate_this) {
   $commandMgr->setActiveAttr($args,$_REQUEST);
   exit();
 }
@@ -735,7 +735,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys) {
   
     if($initWebEditorFromTemplate) {
       $of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');  
-    } else if( $cleanUpWebEditor ) {
+    } elseif( $cleanUpWebEditor ) {
       $of->Value = '';
     }
     $smartyObj->assign($key, $of->CreateHTML($oWebEditor->cfg[$key]));

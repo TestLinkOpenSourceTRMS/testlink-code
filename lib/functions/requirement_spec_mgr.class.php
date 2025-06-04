@@ -1132,7 +1132,7 @@ function get_requirement_child_by_id_req($id){
             && $cNode['node_table'] == 'req_specs') {
   	    	$xmlData .= $this->exportReqSpecToXML($cNode['id'],
                               $tproject_id,$optForExport);
-  	    } else if ($cNode['node_table'] == 'requirements') {
+  	    } elseif ($cNode['node_table'] == 'requirements') {
           $xmlData .= $this->req_mgr->exportReqToXML($cNode['id'],$tproject_id,$optForExport['ATTACHMENTS']);
 
           $relations = $this->req_mgr->get_relations($cNode['id']);

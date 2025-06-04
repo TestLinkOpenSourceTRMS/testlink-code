@@ -135,7 +135,7 @@ function reportResult($server_url,$tcaseid=null, $tcaseexternalid=null,$tplanid,
   {
 	    $data["testcaseid"] = $tcaseid;
 	}
-	else if( !is_null($tcaseexternalid) )
+	elseif( !is_null($tcaseexternalid) )
 	{
 	    $data["testcaseexternalid"] = $tcaseexternalid;
 	}
@@ -144,7 +144,7 @@ function reportResult($server_url,$tcaseid=null, $tcaseexternalid=null,$tplanid,
 	{
 	    $data["buildid"] = $buildid;
 	}
-	else if ( !is_null($buildname) )
+	elseif ( !is_null($buildname) )
 	{
 	      $data["buildname"] = $buildname;
 	}

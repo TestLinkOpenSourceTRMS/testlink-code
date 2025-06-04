@@ -613,7 +613,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
       {
         $keyword_list = implode(',', $this->active_filters['filter_keywords']);
       } 
-      else if ($this->active_filters['filter_keywords']) 
+      elseif ($this->active_filters['filter_keywords']) 
       {
         $keyword_list = $this->active_filters['filter_keywords'];
       }     
@@ -775,9 +775,9 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     // look where we can find the setting - POST, SESSION, config?
     if (isset($this->args->{$key})) {
       $selection = 1;
-    } else if (isset($this->args->{$hidden_key})) {
+    } elseif (isset($this->args->{$hidden_key})) {
       $selection = 0;
-    } else if (isset($_SESSION[$key])) {
+    } elseif (isset($_SESSION[$key])) {
       $selection = $_SESSION[$key];
     } else {
       $spec_cfg = config_get('spec_cfg');
@@ -805,9 +805,9 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     // look where we can find the setting - POST, SESSION
     if (isset($this->args->{$key})) {
       $selection = 1;
-	} else if (isset($this->args->{$hidden_key})) {
+	} elseif (isset($this->args->{$hidden_key})) {
       $selection = 0;
-    } else if (isset($_SESSION[$key])) {
+    } elseif (isset($_SESSION[$key])) {
       $selection = $this->settings[$key];
     } else {
       $selection = 0;
@@ -1362,7 +1362,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     {
       $js_key_to_select = $this->configuration->filter_methods['status_code']['current_build'];
     } 
-    else if ($this->mode == 'plan_mode') 
+    elseif ($this->mode == 'plan_mode') 
     {
       $js_key_to_select = $this->configuration->filter_methods['status_code']['specific_build'];
     }
@@ -1484,7 +1484,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
       {
         $selection = null;
       }  
-      else if( count($cfx) > 0)
+      elseif( count($cfx) > 0)
       {
         $selection = $cfx;
         $this->do_filtering = true;

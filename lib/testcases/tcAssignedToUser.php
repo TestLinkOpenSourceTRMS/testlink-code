@@ -302,11 +302,11 @@ function init_args(&$dbHandler)
   {
 		$selection = true;
 	} 
-  else if ($show_closed_builds_hidden) 
+  elseif ($show_closed_builds_hidden) 
   {
 		$selection = false;
 	} 
-  else if (isset($_SESSION['show_closed_builds'])) 
+  elseif (isset($_SESSION['show_closed_builds'])) 
   {
 		$selection = intval($_SESSION['show_closed_builds']);
 	} 

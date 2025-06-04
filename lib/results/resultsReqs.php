@@ -541,7 +541,7 @@ function init_args(&$tproject_mgr, &$tplan_mgr, &$req_cfg)
   {
     $states_to_show = $_REQUEST['states_to_show'];
   } 
-  else if (isset($_SESSION['states_to_show'])) 
+  elseif (isset($_SESSION['states_to_show'])) 
   {
     $states_to_show = $_SESSION['states_to_show'];
   }
@@ -574,7 +574,7 @@ function init_args(&$tproject_mgr, &$tplan_mgr, &$req_cfg)
   {
     $platform = $_REQUEST['platform'];
   } 
-  else if ( isset($_SESSION['platform']) && isset($args->platforms[$_SESSION['platform']]) ) 
+  elseif ( isset($_SESSION['platform']) && isset($args->platforms[$_SESSION['platform']]) ) 
   {
     // ATTENTION: 
     // This can be ONLY done if: 
@@ -824,7 +824,7 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
     {
       $tcaseSet = $tplanMgr->getLTCVOnTestPlanPlatform($argsObj->tplan_id, $filters, $options);
     }  
-    else if ($allFilters || $filterOnly['build_id'])
+    elseif ($allFilters || $filterOnly['build_id'])
     {
       $tcaseSet = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $options);
     }  

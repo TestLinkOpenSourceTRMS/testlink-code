@@ -671,7 +671,7 @@ class database {
         {
           $items[$row[$column]][] = $row;
         }
-        else if($col2implode != '')
+        elseif($col2implode != '')
         {
           if(isset($items[$row[$column]]))
           {
@@ -825,7 +825,7 @@ class database {
       while($row = $this->fetch_array($result)) {
         if($cumulative) {
           $items[$row[$main_key]][$row[$sec_key]][] = $row;
-        } else if($col2implode !='') {
+        } elseif($col2implode !='') {
           if(isset($items[$row[$main_key]][$row[$sec_key]])) {
             $items[$row[$main_key]][$row[$sec_key]][$col2implode] .= 
               ',' . $row[$col2implode];

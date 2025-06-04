@@ -116,7 +116,7 @@ if ($args->tproject_id && checkRights($db,$args->user,$args->tproject_id)) {
         {
           $roleObj = $args->user->tplanRoles[$gui->tplans[$idk]['has_role']];
         }  
-        else if (!is_null($args->user->tprojectRoles) && 
+        elseif (!is_null($args->user->tprojectRoles) && 
                  isset($args->user->tprojectRoles[$args->tproject_id]) )
         {
           $roleObj = $args->user->tprojectRoles[$args->tproject_id];

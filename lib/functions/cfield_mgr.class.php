@@ -780,7 +780,7 @@ class cfield_mgr extends tlObject
       {
         $str_out .= $dynamic_call($p_field_def, $input_name, $cfValue);      
       }
-      else if( method_exists($this, $dynamic_call) )
+      elseif( method_exists($this, $dynamic_call) )
       {
         $str_out .= $this->$dynamic_call($p_field_def, $input_name, $cfValue);
       }
@@ -874,7 +874,7 @@ class cfield_mgr extends tlObject
           $sql .=  " WHERE field_id=" . intval($field_id) . " AND node_id=" . $safeNodeID;
           $this->db->exec_query($sql);
         }
-        else if ($rowCount == 0 && $value != "") {
+        elseif ($rowCount == 0 && $value != "") {
           # Remark got from Mantis code:
   		    # Always store the value, even if it's the dafault value
   		    # This is important, as the definitions might change but the
@@ -978,11 +978,11 @@ class cfield_mgr extends tlObject
         {
           $map[$key]['enabled_on_context'] = $lbl['context_design'];
         }  
-        else if($map[$key]['enable_on_execution'])
+        elseif($map[$key]['enable_on_execution'])
         {
           $map[$key]['enabled_on_context'] = $lbl['context_exec'];
         }  
-        else if($map[$key]['enable_on_testplan_design'])
+        elseif($map[$key]['enable_on_testplan_design'])
         {
           $map[$key]['enabled_on_context'] = $lbl['context_testplan_design'];
         }  
@@ -1657,7 +1657,7 @@ function name_is_unique($id,$name)
                             " AND CFEV.execution_id=" . intval($execution_id) . " " .
                             " AND CFEV.testplan_id=" . intval($testplan_id) . " ";
     }
-    else if(!is_null($execution_id))
+    elseif(!is_null($execution_id))
     {
       $access_key = 'execution_id';
       $fetchMethod='fetchMapRowsIntoMap';
@@ -1812,7 +1812,7 @@ function name_is_unique($id,$name)
           $sql = " UPDATE {$this->tables['cfield_execution_values']} " .
                  " SET value='{$safe_value}' " .   $where_clause;
     	    $this->db->exec_query($sql);      
-        } else if( $howMany == 0 && $value != "" ) {
+        } elseif( $howMany == 0 && $value != "" ) {
 
           # Remark got from Mantis code:
   		    # Always store the value, even if it's the default value
@@ -1823,7 +1823,7 @@ function name_is_unique($id,$name)
   			         " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
 		      $this->db->exec_query($sql);
         
-        } else if( $howMany > 0 && $value == "") {
+        } elseif( $howMany > 0 && $value == "") {
   			  $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " . $where_clause;
   			  $this->db->exec_query($sql);
   		  }
@@ -1993,7 +1993,7 @@ function name_is_unique($id,$name)
             if( function_exists($dynamic_call) ) {
               $cfield[$field_id]['cf_value'] = $dynamic_call($value);      
             }
-            else if( method_exists($this,$dynamic_call) ) {
+            elseif( method_exists($this,$dynamic_call) ) {
               $cfield[$field_id]['cf_value'] = $this->$dynamic_call($value);      
             }
             else {
@@ -2281,7 +2281,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 	      $this->db->exec_query($sql);
 	    }
 	    // BUGID 3989
-	    else if ($this->db->num_rows( $result ) == 0 && $value != "")
+	    elseif ($this->db->num_rows( $result ) == 0 && $value != "")
 	    {
 	      # Remark got from Mantis code:
 		    # Always store the value, even if it's the dafault value
@@ -2292,7 +2292,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 				   " VALUES	( {$field_id}, {$link_id}, '{$safe_value}' )";
 		    $this->db->exec_query($sql);
 	    // BUGID 3989
-        } else if ($this->db->num_rows( $result ) > 0 && $value == "") {
+        } elseif ($this->db->num_rows( $result ) > 0 && $value == "") {
   			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testplan_design_values']} " .
   				   " WHERE field_id={$field_id} AND	link_id={$link_id}";
   			$this->db->exec_query($sql);
@@ -2798,9 +2798,9 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
 			
 			if (isset($input_values[$cf_info['html_input_name']])) {
 				$value = $input_values[$cf_info['html_input_name']];
-			} else if (isset($input_values[$cf_info['id']])) {
+			} elseif (isset($input_values[$cf_info['id']])) {
         $value = $input_values[$cf_info['id']]['value'];
-      } else if (isset($cf_info['value'])) {
+      } elseif (isset($cf_info['value'])) {
 				$value = $cf_info['value'];
 			}
 	

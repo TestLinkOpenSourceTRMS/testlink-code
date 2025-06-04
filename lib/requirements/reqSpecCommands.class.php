@@ -604,7 +604,7 @@ class reqSpecCommands
           $request["req_spec_id"]=$cNode['id'];
           $this->doFreeze($argsObj,$request);
         }
-        else if ($cNode['node_table'] == 'requirements') 
+        elseif ($cNode['node_table'] == 'requirements') 
         {
           $req = $this->reqMgr->get_by_id($cNode['id'],requirement_mgr::LATEST_VERSION);
           $req_freeze_version = new stdClass();
@@ -749,7 +749,7 @@ class reqSpecCommands
                                               null, null,$userInput);
 
     }
-    else if( $diff['nochange'] || ( ($createRev = $diff['force'] && !$guiObj->askForLog) || $argsObj->do_save ) )
+    elseif( $diff['nochange'] || ( ($createRev = $diff['force'] && !$guiObj->askForLog) || $argsObj->do_save ) )
     {
         
       if( $argsObj->do_save == 1)
@@ -798,7 +798,7 @@ class reqSpecCommands
                                                 $argsObj->tproject_id);
       }
     }
-    else if( $diff['suggest'] )
+    elseif( $diff['suggest'] )
     {
       $guiObj->askForRevision = true;      
     }

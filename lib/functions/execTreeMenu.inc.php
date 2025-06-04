@@ -565,7 +565,7 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,
         $node = REMOVEME;
       }
     }
-    else if ($node_type == 'testsuite') {
+    elseif ($node_type == 'testsuite') {
       // Empty test suite
       $map_node_tccount[$node['id']] = array( 'testcount' => 0,'name' => $node['name']);
       

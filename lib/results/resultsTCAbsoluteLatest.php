@@ -523,7 +523,7 @@ function buildDataSet(&$db,&$args,&$gui,&$metrics,$labels,$forceFormat=null)
         if ($gui->options->testPriorityEnabled) {
           if ($rf['urg_imp'] >= $priorityCfg->threshold['high']) {            
             $rf['priority_level'] = HIGH;
-          } else if( $rf['urg_imp'] < $priorityCfg->threshold['low']) {
+          } elseif( $rf['urg_imp'] < $priorityCfg->threshold['low']) {
             $rf['priority_level'] = LOW;
           } else {
             $rf['priority_level'] = MEDIUM;

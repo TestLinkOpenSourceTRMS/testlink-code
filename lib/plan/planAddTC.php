@@ -571,7 +571,7 @@ function doReorder(&$argsObj,&$tplanMgr)
               $tcversion_id = $argsObj->tcversion_for_tcid[$tcid];
               //$mapo[$tcversion_id] = $argsObj->testcases2order[$tcid];
             }
-            else if( isset($argsObj->linkedVersion[$tcid]) && 
+            elseif( isset($argsObj->linkedVersion[$tcid]) && 
                      !isset($mapo[$argsObj->linkedVersion[$tcid]]))
             {
               $tcversion_id = $argsObj->linkedVersion[$tcid];

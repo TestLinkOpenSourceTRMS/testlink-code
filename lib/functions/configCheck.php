@@ -47,7 +47,7 @@ function get_home_url($opt)
   if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
     $t_protocol= $_SERVER['HTTP_X_FORWARDED_PROTO'];
   }    
-  else if ( !empty($_SERVER['HTTPS']) && (strtolower( $_SERVER['HTTPS']) != 'off') ) 
+  elseif ( !empty($_SERVER['HTTPS']) && (strtolower( $_SERVER['HTTPS']) != 'off') ) 
   {
     $t_protocol = 'https';
   }
@@ -73,15 +73,15 @@ function get_home_url($opt)
     $t_hosts = explode( ',', $_SERVER['HTTP_X_FORWARDED_HOST'] );
     $t_host = $t_hosts[0];
   }
-  else if ( isset( $_SERVER['HTTP_HOST'] ) ) 
+  elseif ( isset( $_SERVER['HTTP_HOST'] ) ) 
   {
     $t_host = $_SERVER['HTTP_HOST'];
   } 
-  else if ( isset( $_SERVER['SERVER_NAME'] ) ) 
+  elseif ( isset( $_SERVER['SERVER_NAME'] ) ) 
   {
     $t_host = $_SERVER['SERVER_NAME'] . $t_port;
   } 
-  else if ( isset( $_SERVER['SERVER_ADDR'] ) ) 
+  elseif ( isset( $_SERVER['SERVER_ADDR'] ) ) 
   {
     $t_host = $_SERVER['SERVER_ADDR'] . $t_port;
   } 
@@ -691,7 +691,7 @@ function check_timeout(&$errCounter)
     if ($gc_maxlifetime_min > 30) {
       $color = 'success';
       $res = 'OK';
-  } else if ($gc_maxlifetime_min > 10){
+  } elseif ($gc_maxlifetime_min > 10){
       $color = 'warning';
       $res = 'Short. Consider to extend.';
   } else {

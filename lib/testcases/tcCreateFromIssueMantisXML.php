@@ -82,7 +82,7 @@ if ($args->do_upload)
     $gui->resultMap = importIssueFromXML($db,$gui->dest,intval($args->container_id),
                                          intval($args->tproject_id),intval($args->userID),$opt);
   }
-  else if(is_null($gui->file_check))
+  elseif(is_null($gui->file_check))
   {
     
     tLog('Missing upload file','WARNING');

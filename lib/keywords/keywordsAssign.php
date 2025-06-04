@@ -73,7 +73,7 @@ switch($args->edit) {
     } else {
       if ($args->useFilteredSet) {
         $tcs = &$filteredTC;
-      } else if ($args->onlyDirectChildren) {
+      } elseif ($args->onlyDirectChildren) {
         $tcs = &$tsChildren;
       } else {
         $tcs = &$deepTC;

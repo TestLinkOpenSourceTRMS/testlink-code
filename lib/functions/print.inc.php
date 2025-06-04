@@ -1074,7 +1074,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
     if( $getByID['tcversion_id'] == testcase::ALL_VERSIONS ) {
       $msg .= " ALL VERSIONS "; 
-    } else if ( $getByID['tcversion_id'] == testcase::LATEST_VERSION ) {
+    } elseif ( $getByID['tcversion_id'] == testcase::LATEST_VERSION ) {
       $msg .= " LATEST VERSION ";     
     } else {
       $msg .= " tcversion id:" . $getByID['tcversion_id']; 

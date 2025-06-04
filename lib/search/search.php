@@ -123,7 +123,7 @@ if( !is_null($mapTC) ) {
   $options = array('output_format' => 'path_as_string');
   $gui->path_info = $treeMgr->get_full_path_verbose($tcase_set, $options);
   $gui->resultSet = $mapTC;
-} else if ($emptyTestProject) {
+} elseif ($emptyTestProject) {
   $gui->warning_msg = lang_get('empty_testproject');
 } else {
   $gui->warning_msg = lang_get('no_records_found');

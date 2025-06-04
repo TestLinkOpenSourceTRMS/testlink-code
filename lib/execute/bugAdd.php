@@ -42,7 +42,7 @@ if( ($args->user_action == 'create' || $args->user_action == 'doCreate') &&
 
   }
 }  
-else if($args->user_action == 'link' || $args->user_action == 'add_note') {
+elseif($args->user_action == 'link' || $args->user_action == 'add_note') {
   // Well do not think is very elegant to check for $args->bug_id != ""
   // to understand if user has pressed ADD Button
   if(!is_null($issueT) && $args->bug_id != "") {

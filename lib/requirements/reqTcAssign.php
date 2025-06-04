@@ -129,7 +129,7 @@ function init_args() {
     $args->idReqSpec = $args->idSRS;
     $_SESSION['currentSrsId'] = $args->idReqSpec;
   }
-  else if(isset($_SESSION['currentSrsId']) && intval($_SESSION['currentSrsId']) > 0) {
+  elseif(isset($_SESSION['currentSrsId']) && intval($_SESSION['currentSrsId']) > 0) {
     $args->idReqSpec = intval($_SESSION['currentSrsId']);
   }
 

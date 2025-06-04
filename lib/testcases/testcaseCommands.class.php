@@ -1241,7 +1241,7 @@ class testcaseCommands {
     if( property_exists($cred, 'tproject_id') ) {
       $idy->tproject_id = $cred->tproject_id;
     }
-    else if( property_exists($cred, 'testproject_id')) {
+    elseif( property_exists($cred, 'testproject_id')) {
       $idy->tproject_id = $cred->testproject_id;
     }  
     else {

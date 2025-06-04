@@ -405,11 +405,11 @@ function initEnv(&$dbHandler)
   {
     $selection = true;
   } 
-  else if ($args->show_only_active_hidden) 
+  elseif ($args->show_only_active_hidden) 
   {
     $selection = false;
   } 
-  else if (isset($_SESSION['show_only_active'])) 
+  elseif (isset($_SESSION['show_only_active'])) 
   {
     $selection = $_SESSION['show_only_active'];
   } 

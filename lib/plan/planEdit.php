@@ -340,7 +340,7 @@ switch($args->do_action)
               $roleObj = $args->user->getEffectiveRole($db,$args->tproject_id,$idk);
             }  
           }  
-          else if (!is_null($args->user->tprojectRoles) && 
+          elseif (!is_null($args->user->tprojectRoles) && 
                    isset($args->user->tprojectRoles[$args->tproject_id]) )
           {
             $roleObj = $args->user->tprojectRoles[$args->tproject_id];

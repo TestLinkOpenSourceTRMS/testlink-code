@@ -335,10 +335,10 @@ if(!is_null($linked_tcversions)) {
           processTestCase($nextItem,$gui,$args,$cfg,$lt,$tree_mgr,$tcase_mgr,$fileRepo);
         }
       }
-      else if($args->save_and_exit) {
+      elseif($args->save_and_exit) {
         $args->reload_caller = true;
       } 
-      else if ($args->saveStepsPartialExec)  {
+      elseif ($args->saveStepsPartialExec)  {
         $partialExec = array("notes" => $_REQUEST['step_notes'], 
                              "status" => $_REQUEST['step_status'] );
 
@@ -874,7 +874,7 @@ function get_ts_name_details(&$db,$tcase_id) {
   if( is_array($tcase_id) && count($tcase_id) > 0) {
     $in_list = implode(",",$tcase_id);
     $sql .= "AND NHA.id IN (" . $in_list . ")";
-  } else if(!is_null($tcase_id)) {
+  } elseif(!is_null($tcase_id)) {
     $sql .= "AND NHA.id={$tcase_id}";
   } else {
     $do_query = false;
@@ -2083,7 +2083,7 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     if( !is_null($identity) ) {
       $idCard = $identity;  
     }
-    else if(!is_null($argsObj->tc_id) && !is_array($argsObj->tc_id) ) {
+    elseif(!is_null($argsObj->tc_id) && !is_array($argsObj->tc_id) ) {
       $idCard = array('id' => $argsObj->tc_id, 'version_id' => $argsObj->version_id);
     }
    

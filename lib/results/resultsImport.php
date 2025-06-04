@@ -223,7 +223,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options) {
   
   if( !is_null($context->tprojectID) && intval($context->tprojectID) > 0) {
     $dummy = array($tproject_mgr->get_by_id($context->tprojectID,array('output' => 'existsByID')));
-  } else if( !is_null($context->tprojectName) ) {
+  } elseif( !is_null($context->tprojectName) ) {
     $dummy = $tproject_mgr->get_by_name($context->tprojectName,null,array('output' => 'existsByName'));
   }
 
@@ -249,7 +249,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options) {
     if( !is_null($dummy) ) {
       $dummy['id'] = $context->tplanID;  
     } 
-  } else if( !is_null($context->tplanName) ) {
+  } elseif( !is_null($context->tplanName) ) {
     $dummy = $tplan_mgr->get_by_name($context->tplanName,$context->tprojectID,array('output' => 'minimun'));
     if( !is_null($dummy) ) {
       $dummy = $dummy[0];
@@ -271,7 +271,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options) {
   $tplan_mgr->platform_mgr->setTestProjectID($context->tprojectID);
   if( !is_null($context->platformID) && intval($context->platformID) > 0 ) {
     $dummy = array($tplan_mgr->platform_mgr->getByID($context->platformID));
-  } else if( property_exists($context,'platformName') && !is_null($context->platformName) ) {
+  } elseif( property_exists($context,'platformName') && !is_null($context->platformName) ) {
     if( !is_null($xx = $tplan_mgr->platform_mgr->getID($context->platformName) ) ) {
       $dummy = array(0 => array('id' => $xx));
     }
@@ -286,7 +286,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options) {
   $dummy = null;
   if( !is_null($context->buildID) && intval($context->buildID) > 0 ) {
     $dummy = array($build_mgr->get_by_id($context->buildID,$optGB));
-  } else if( !is_null($context->buildName) ) {
+  } elseif( !is_null($context->buildName) ) {
     $dummy = $build_mgr->get_by_name($context->buildName,$optGB);
   }
 
@@ -334,7 +334,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options) {
       $info_on_case = $tplan_mgr->getLinkInfo($context->tplanID,$tcase_id,$context->platformID);
       if(is_null($info_on_case)) {
         $message=sprintf($l10n['import_results_tc_not_found'],$tcase_identity);
-      } else if (!$result_is_acceptable)  {
+      } elseif (!$result_is_acceptable)  {
         $message=sprintf($l10n['import_results_invalid_result'],$tcase_identity,$tcase_exec['result']);
       } else {
         $info_on_case = current($info_on_case);

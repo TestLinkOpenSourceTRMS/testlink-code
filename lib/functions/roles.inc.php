@@ -302,7 +302,7 @@ function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = nul
   {
     $users = tlUser::getByIDs($db,(array)$user_id);
   }
-  else if (is_null($users))
+  elseif (is_null($users))
   {
     $users = tlUser::getAll($db);
   }

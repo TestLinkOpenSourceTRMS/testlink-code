@@ -164,14 +164,14 @@ function init_args() {
   $k2c = array('ajaxcheck' => 'do','ajaxlogin' => 'do');
   if (isset($k2c[$pParams['action']]))  {
     $args->action = $pParams['action'];
-  } else if (!is_null($args->login)) {
+  } elseif (!is_null($args->login)) {
     $args->action = 'doLogin';
   // This 'if' branch may be removed in later versions. Kept for compatibility    
-  } else if (!is_null($pParams['oauth']) && $pParams['oauth']) {
+  } elseif (!is_null($pParams['oauth']) && $pParams['oauth']) {
     $args->action = 'oauth';
     $args->oauth_name = $pParams['oauth'];
     $args->oauth_code = $pParams['code'];
-  } else if (!is_null($pParams['state']) && !is_null($pParams['code'])) {
+  } elseif (!is_null($pParams['state']) && !is_null($pParams['code'])) {
    
     // We use state to undertand the provider when the redirect url
     // can not have query string, as happens with Microsoft

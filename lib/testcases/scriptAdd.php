@@ -58,7 +58,7 @@ if(!is_null($args->commits) && $args->user_action != 'projectSelected' && $args-
 {
   $gui->codeTrackerMetaData['commits'] = $args->commits;
 }
-else if(($args->user_action == 'branchSelected') ||
+elseif(($args->user_action == 'branchSelected') ||
     (!is_null($gui->branch_name) && ($args->user_action == 'expand' || $args->user_action == 'collapse')))
 {
   $gui->codeTrackerMetaData['commits'] = $cts->getCommitsForHTMLSelect($gui->project_key, $gui->repository_name,
@@ -69,7 +69,7 @@ if(!is_null($args->files) && ($args->user_action == 'expand' || $args->user_acti
 {
   $gui->codeTrackerMetaData['files'] = $args->files;
 }
-else if($args->user_action == 'repoSelected' || $args->user_action == 'branchSelected' ||
+elseif($args->user_action == 'repoSelected' || $args->user_action == 'branchSelected' ||
 $args->user_action == 'expand' || $args->user_action == 'collapse' || ($args->user_action == 'link' && !is_null($gui->repository_name)))
 {
   $gui->codeTrackerMetaData['files'] = $cts->getRepoContentForHTMLSelect($gui->project_key, $gui->repository_name, '', $gui->branch_name, $gui->commit_id);
@@ -86,7 +86,7 @@ if($args->user_action == 'expand')
     $tmpFileArray = &$tmpFileArray[$item][0];
   }
 }
-else if($args->user_action == 'collapse')
+elseif($args->user_action == 'collapse')
 {
   if(substr($args->collapse_item,-1) == "/")
   {

@@ -332,7 +332,7 @@ class reqCommands {
       $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, null, $request);
       
     }
-    else if( $diff['nochange'] || ( ($createRev = $diff['force'] && !$obj->prompt_for_log) || $argsObj->do_save ) )
+    elseif( $diff['nochange'] || ( ($createRev = $diff['force'] && !$obj->prompt_for_log) || $argsObj->do_save ) )
     {
       if( $argsObj->do_save == 1)
       {
@@ -369,7 +369,7 @@ class reqCommands {
                                                                          $argsObj->tproject_id);
       }
     }
-    else if( $diff['suggest'] )
+    elseif( $diff['suggest'] )
     {
       $obj->suggest_revision = true;      
     }

@@ -210,11 +210,11 @@ function init_args(&$dbHandler)
   {
   	$selection = true;
   } 
-  else if ($args->show_closed_builds_hidden) 
+  elseif ($args->show_closed_builds_hidden) 
   {
   	$selection = false;
   } 
-  else if (isset($_SESSION['reports_show_closed_builds'])) 
+  elseif (isset($_SESSION['reports_show_closed_builds'])) 
   {
   	$selection = $_SESSION['reports_show_closed_builds'];
   }

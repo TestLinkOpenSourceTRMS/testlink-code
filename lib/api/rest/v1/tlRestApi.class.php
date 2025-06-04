@@ -467,7 +467,7 @@ class tlRestApi
             $status_ok = false;
             $msg = 'Test plan has platforms, you need to provide one in order to execute';
           }
-          else if (!isset($platformSet[$ex->platformID]))
+          elseif (!isset($platformSet[$ex->platformID]))
           {
             $status_ok = false;
             $msg = '(platform,test plan) couple is not valid';

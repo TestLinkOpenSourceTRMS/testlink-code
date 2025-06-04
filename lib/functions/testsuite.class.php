@@ -1261,7 +1261,7 @@ class testsuite extends tlObjectWithAttachments
         $nTable = $cNode['node_table'];
         if ($doRecursion && $nTable == 'testsuites') {
           $xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],$tproject_id,$optExport);
-        } else if ($nTable == 'testcases') {
+        } elseif ($nTable == 'testcases') {
           if( is_null($tcase_mgr) ) {
             $tcase_mgr = new testcase($this->db);
           }

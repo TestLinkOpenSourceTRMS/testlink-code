@@ -920,7 +920,7 @@ class tlTestPlanMetrics extends testplan
 
             if ($urgImpVal >= $priorityCfg->threshold['high']) {
               $hitOn = HIGH;
-            } else if( $urgImpVal < $priorityCfg->threshold['low']) {
+            } elseif( $urgImpVal < $priorityCfg->threshold['low']) {
               $hitOn = LOW;
             } else {
               $hitOn = MEDIUM;
@@ -954,7 +954,7 @@ class tlTestPlanMetrics extends testplan
             if ($rs[$jdx]['urg_imp'] >= $priorityCfg->threshold['high']) {            
               $rs[$jdx]['priority_level'] = HIGH;
               $hitOn = HIGH;
-            } else if( $rs[$jdx]['urg_imp'] < $priorityCfg->threshold['low']) {
+            } elseif( $rs[$jdx]['urg_imp'] < $priorityCfg->threshold['low']) {
               $rs[$jdx]['priority_level'] = LOW;
               $hitOn = LOW;
             } else {
@@ -1717,7 +1717,7 @@ class tlTestPlanMetrics extends testplan
             // we do not use a function to improve performance
             if ($exec['urg_imp'] >= $priorityCfg->threshold['high']) {
               $exec['priority_level'] = HIGH;
-            } else if( $exec['urg_imp'] < $priorityCfg->threshold['low']) {
+            } elseif( $exec['urg_imp'] < $priorityCfg->threshold['low']) {
               $exec['priority_level'] = LOW;
             } else {
               $exec['priority_level'] = MEDIUM;
@@ -2805,7 +2805,7 @@ class tlTestPlanMetrics extends testplan
         {            
           $rs[$adx]['priority_level'] = HIGH;
         } 
-        else if( $rs[$adx]['urg_imp'] < $priorityCfg->threshold['low']) 
+        elseif( $rs[$adx]['urg_imp'] < $priorityCfg->threshold['low']) 
         {
           $rs[$adx]['priority_level'] = LOW;
         }        
@@ -3086,7 +3086,7 @@ class tlTestPlanMetrics extends testplan
           // we do not use a function to improve performance
           if ($rf['urg_imp'] >= $priorityCfg->threshold['high']) {
             $rf['priority_level'] = HIGH;
-          } else if($rf['urg_imp'] < $priorityCfg->threshold['low']) {
+          } elseif($rf['urg_imp'] < $priorityCfg->threshold['low']) {
             $rf['priority_level'] = LOW;
           } else {
             $rf['priority_level'] = MEDIUM;

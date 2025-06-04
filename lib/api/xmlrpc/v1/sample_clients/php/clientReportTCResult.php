@@ -108,7 +108,7 @@ function executeTestCase($server_url,$context,$exec,$debug=false)
   {
     $data["testcaseid"] = $context->testcaseid;
   }
-  else if( property_exists($context, 'testcaseexternalid') && !is_null($context->testcaseexternalid) )
+  elseif( property_exists($context, 'testcaseexternalid') && !is_null($context->testcaseexternalid) )
   {
     $data["testcaseexternalid"] = $context->testcaseexternalid;
   }
@@ -117,7 +117,7 @@ function executeTestCase($server_url,$context,$exec,$debug=false)
   {
     $data["buildid"] = $context->buildid;
   }
-  else if ( property_exists($context, 'buildname') && !is_null($context->buildname) )
+  elseif ( property_exists($context, 'buildname') && !is_null($context->buildname) )
   {
     $data["buildname"] = $context->buildname;
   }

@@ -124,7 +124,7 @@ abstract class tlTable
         }
         $this->columns[] = $column;
       }
-      else if (is_string($column)) {
+      elseif (is_string($column)) {
         $this->columns[] = array(
           'title' => $column,
           'col_id' => $this->titleToColumnName($column)

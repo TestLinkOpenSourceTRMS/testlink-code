@@ -727,7 +727,7 @@ function priority_to_level($priority) {
   
   if ($priority >= $urgencyImportance->threshold['high']) {
     return HIGH;
-  } else if ($priority < $urgencyImportance->threshold['low']) {
+  } elseif ($priority < $urgencyImportance->threshold['low']) {
     return LOW;
   } else {
     return MEDIUM;
@@ -1555,7 +1555,7 @@ function initUserEnv(&$dbH, $context, $opt=null) {
     $args->$pp = $vv;  
     if( isset($_REQUEST[$pp]) ) {
       $args->$pp = intval($_REQUEST[$pp]);
-    } else if (null != $context && property_exists($context, $pp)) {
+    } elseif (null != $context && property_exists($context, $pp)) {
       $args->$pp = intval($context->$pp);      
     }
   } 

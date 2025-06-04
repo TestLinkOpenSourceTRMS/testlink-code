@@ -271,7 +271,7 @@ if($gui->row_qty > 0)
     $gui->resultSet = $map;
   }
 }
-else if ($emptyTestProject) 
+elseif ($emptyTestProject) 
 {
   $gui->warning_msg = lang_get('empty_testproject');
 }

@@ -1605,7 +1605,7 @@ function setPublicStatus($id,$status)
         $the_level++;
         $level[$current['parent_id']]=$the_level;
       }
-      else if ($pivot['parent_id'] != $current['parent_id'])
+      elseif ($pivot['parent_id'] != $current['parent_id'])
       {
         $the_level = $level[$current['parent_id']];
       }
@@ -2228,7 +2228,7 @@ function DEPRECATED_get_keywords_tcases($testproject_id, $keyword_id=0, $keyword
             $keyword_filter ='';
         }    
     }
-    else if( $keyword_id > 0 )
+    elseif( $keyword_id > 0 )
     {
         $keyword_filter = " AND keyword_id = {$keyword_id} ";
     }
@@ -2281,7 +2281,7 @@ function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
         $kwFilter ='';
       }    
     }
-    else if( $keyword_id > 0 ) {
+    elseif( $keyword_id > 0 ) {
       $kwFilter = " AND keyword_id = {$keyword_id} ";
     }
     
@@ -2338,7 +2338,7 @@ function XXXgetPlatformsLatestTCV($tproject_id, $platform_id=0, $filterType='Or'
         $platFilter ='';
       }    
     }
-    else if( $platform_id > 0 ) {
+    elseif( $platform_id > 0 ) {
       $platFilter = " AND platform_id = {$platform_id} ";
     }
     
@@ -4094,7 +4094,7 @@ function getPlatformsLatestTCV($tproject_id, $platform_id=0) {
   if( is_array($platform_id) ) {
     $filter = " AND platform_id IN (" . implode(',',$platform_id) . ")";   
   }
-  else if( $platform_id > 0 ) {
+  elseif( $platform_id > 0 ) {
     $filter = " AND platform_id = {$platform_id} ";
   }
   

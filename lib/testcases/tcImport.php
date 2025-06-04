@@ -68,7 +68,7 @@ if ($args->do_upload) {
          intval($args->container_id),intval($args->tproject_id),intval($args->userID),
          $opt);
     }
-  } else if(is_null($gui->file_check)) {
+  } elseif(is_null($gui->file_check)) {
     
     tLog('Missing upload file','WARNING');
     $gui->file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
@@ -1109,7 +1109,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 
       unset($tsuite);
     }
-    else if($importIntoProject)
+    elseif($importIntoProject)
     {
       $tsuiteID = intval($tproject_id);
     }

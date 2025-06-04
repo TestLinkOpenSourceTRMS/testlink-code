@@ -944,7 +944,7 @@ function removeEmptyTestSuites(&$testSuiteSet,&$treeMgr,$pruneUnlinkedTcversions
       unset($testSuiteSet[$key]);
     }
 
-    else if ($pruneUnlinkedTcversions &&
+    elseif ($pruneUnlinkedTcversions &&
         (isset($value['testcase_qty']) && $value['testcase_qty'] > 0) )
     {
       // only linked tcversion must be returned, but this analisys must be done

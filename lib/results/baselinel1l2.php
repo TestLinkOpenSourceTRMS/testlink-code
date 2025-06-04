@@ -6,13 +6,10 @@
  * @filesource baselinel1l2.php
  * 
  */
-require('../../config.inc.php');
-
-// Must be included BEFORE common.php
-require_once('../../third_party/codeplex/PHPExcel.php');
-
-require_once('common.php');
-require_once('displayMgr.php');
+require '../../config.inc.php';
+require_once '../../third_party/codeplex/PHPExcel.php'; // Must be included BEFORE common.php
+require_once 'common.php';
+require_once 'displayMgr.php';
 
 $timerOn = microtime(true);
 $tplCfg = templateConfiguration();

@@ -6,9 +6,9 @@
  * @filesource	planView.php
  *
  */
-require_once('../../config.inc.php');
-require_once("common.php");
-require_once("date_api.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'date_api.php';
 
 testlinkInitPage($db,false,false);
 

@@ -9,14 +9,11 @@
 * Builds ARE IGNORED
 *
 */
-require('../../config.inc.php');
-
-// Must be included BEFORE common.php
-require_once('../../third_party/codeplex/PHPExcel.php');   
-
-require_once('common.php');
-require_once('displayMgr.php');
-require_once('exttable.class.php');
+require '../../config.inc.php';
+require_once '../../third_party/codeplex/PHPExcel.php'; // Must be included BEFORE common.php
+require_once 'common.php';
+require_once 'displayMgr.php';
+require_once 'exttable.class.php';
 
 $timerOn = microtime(true);   // will be used to compute elapsed time
 $templateCfg = templateConfiguration();
@@ -401,7 +398,7 @@ function createSpreadsheet($gui,$args,$media) {
   $objWriter->save($tmpfname);
   
   if ($args->getSpreadsheetBy == 'email') {
-    require_once('email_api.php');
+    require_once 'email_api.php';
 
     $ema = new stdClass();
     $ema->from_address = config_get('from_email');

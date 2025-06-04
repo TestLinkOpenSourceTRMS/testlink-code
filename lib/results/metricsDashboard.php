@@ -10,9 +10,9 @@
  *
  *
  **/
-require('../../config.inc.php');
-require_once('common.php');
-require_once('exttable.class.php');
+require '../../config.inc.php';
+require_once 'common.php';
+require_once 'exttable.class.php';
 $templateCfg = templateConfiguration();
 
 list($args,$gui) = initEnv($db);

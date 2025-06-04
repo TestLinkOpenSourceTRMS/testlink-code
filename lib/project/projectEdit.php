@@ -12,11 +12,11 @@
  *
  */
 
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once("web_editor.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'web_editor.php';
 $editorCfg = getWebEditorCfg('testproject');
-require_once(require_web_editor($editorCfg['type']));
+require_once require_web_editor($editorCfg['type']);
 
 testlinkInitPage($db,true,false,"checkRights");
 
@@ -115,7 +115,7 @@ switch($args->doAction) {
   case "setInactive":
   case 'enableRequirements':
   case 'disableRequirements':
-    if( ($addIssueTracker = $addCodeTracker = $addReqMgrSystem = is_null($template)) ) {
+    if( $addIssueTracker = $addCodeTracker = $addReqMgrSystem = is_null($template) ) {
       $template = 'projectView.tpl';
       // needed after addition of search function on test project view
       $gui->name = '';  
@@ -468,7 +468,7 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
       
       $tprojectMgr->setIssueTrackerEnabled($argsObj->tprojectID,$argsObj->issue_tracker_enabled);
       $itMgr = new tlIssueTracker($tprojectMgr->db);
-      if( ($doLink = $argsObj->issue_tracker_id > 0)  )
+      if( $doLink = $argsObj->issue_tracker_id > 0  )
       {
         $itMgr->link($argsObj->issue_tracker_id,$argsObj->tprojectID);
       }
@@ -483,7 +483,7 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 
       $tprojectMgr->setCodeTrackerEnabled($argsObj->tprojectID,$argsObj->code_tracker_enabled);
       $ctMgr = new tlCodeTracker($tprojectMgr->db);
-      if( ($doLink = $argsObj->code_tracker_id > 0)  )
+      if( $doLink = $argsObj->code_tracker_id > 0  )
       {
         $ctMgr->link($argsObj->code_tracker_id,$argsObj->tprojectID);
       }
@@ -498,7 +498,7 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 
       $tprojectMgr->setReqMgrIntegrationEnabled($argsObj->tprojectID,$argsObj->reqmgr_integration_enabled);
       $mgr = new tlReqMgrSystem($tprojectMgr->db);
-      if( ($doLink = $argsObj->reqmgrsystem_id > 0)  )
+      if( $doLink = $argsObj->reqmgrsystem_id > 0  )
       {
         $mgr->link($argsObj->reqmgrsystem_id,$argsObj->tprojectID);
       }

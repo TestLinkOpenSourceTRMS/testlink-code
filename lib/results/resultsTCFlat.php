@@ -11,10 +11,10 @@
 * @internal revisions
 * @since 1.9.15
 */
-require('../../config.inc.php');
-require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
-require_once('common.php');
-require_once('displayMgr.php');
+require '../../config.inc.php';
+require_once '../../third_party/codeplex/PHPExcel.php';   // Must be included BEFORE common.php
+require_once 'common.php';
+require_once 'displayMgr.php';
 
 $timerOn = microtime(true);   // will be used to compute elapsed time
 $templateCfg = templateConfiguration();

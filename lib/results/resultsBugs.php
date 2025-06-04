@@ -5,12 +5,12 @@
  *  
  * @filesource resultsBugs.php
  */
-require('../../config.inc.php');
-require_once('common.php');
-require_once("lang_api.php");
-require_once('displayMgr.php');
-require_once('exec.inc.php'); // used for bug string lookup
-require_once('exttable.class.php');
+require '../../config.inc.php';
+require_once 'common.php';
+require_once 'lang_api.php';
+require_once 'displayMgr.php';
+require_once 'exec.inc.php'; // used for bug string lookup
+require_once 'exttable.class.php';
 
 
 testlinkInitPage($db,true,false,"checkRights");

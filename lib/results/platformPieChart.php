@@ -13,10 +13,10 @@
  * @since 1.9.10
  *
 **/
-require_once('../../config.inc.php');
-require_once('common.php');
-include("../../third_party/pchart/pChart/pData.class");   
-include("../../third_party/pchart/pChart/pChart.class");   
+require_once '../../config.inc.php';
+require_once 'common.php';
+include '../../third_party/pchart/pChart/pData.class';
+include '../../third_party/pchart/pChart/pChart.class';
 
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['platformPieChart'];

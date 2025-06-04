@@ -9,10 +9,10 @@
  * fixes bug 1021
 **/
  
-require_once('../../config.inc.php');
-require_once('users.inc.php');
-require_once('testproject.class.php');
-require_once('configCheck.php');
+require_once '../../config.inc.php';
+require_once 'users.inc.php';
+require_once 'testproject.class.php';
+require_once 'configCheck.php';
 
 testlinkInitPage($db);
 $template_dir='project/';

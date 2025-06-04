@@ -7,8 +7,8 @@
  *
  * allows users to manage platforms. 
  */
-require_once("../../config.inc.php");
-require_once("common.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -48,6 +48,5 @@ function init_args() {
  *
  */
 function checkRights(&$db,&$user) {
-	return ($user->hasRightOnProj($db,'platform_management') || 
-          $user->hasRightOnProj($db,'platform_view'));
+	return $user->hasRightOnProj($db,'platform_management') || $user->hasRightOnProj($db,'platform_view');
 }

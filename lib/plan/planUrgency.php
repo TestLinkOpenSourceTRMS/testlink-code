@@ -12,8 +12,8 @@
  * 
  **/
  
-require('../../config.inc.php');
-require_once('common.php');
+require '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db,false,false);
 $args = init_args();
 

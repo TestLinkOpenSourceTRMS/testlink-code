@@ -21,11 +21,11 @@
  * 
  *                                                                    
  */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once('users.inc.php');
-require_once('displayMgr.php');
-require_once('exttable.class.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'displayMgr.php';
+require_once 'exttable.class.php';
 
 $smarty = new TLSmarty();
 $imgSet = $smarty->getImages();

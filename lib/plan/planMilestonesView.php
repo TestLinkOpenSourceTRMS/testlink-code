@@ -15,9 +15,9 @@
  * 
  **/
 
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("testplan.class.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'testplan.class.php';
 testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();

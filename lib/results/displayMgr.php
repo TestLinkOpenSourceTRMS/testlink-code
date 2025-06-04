@@ -6,8 +6,8 @@
  * 
  *
  */
-require_once('email_api.php');
-require_once('reports.cfg.php');
+require_once 'email_api.php';
+require_once 'reports.cfg.php';
 
 /**
  *

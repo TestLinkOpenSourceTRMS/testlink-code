@@ -11,12 +11,12 @@
  *
  */
          
-require_once(dirname(__FILE__)."/../../config.inc.php");
-require_once("common.php");
-require_once("treeMenu.inc.php");
-require_once('email_api.php');
-require_once("specview.php");
-require_once('Zend/Validate/EmailAddress.php');
+require_once dirname(__FILE__). '/../../config.inc.php';
+require_once 'common.php';
+require_once 'treeMenu.inc.php';
+require_once 'email_api.php';
+require_once 'specview.php';
+require_once 'Zend/Validate/EmailAddress.php';
 
 testlinkInitPage($db,false,false);
 
@@ -327,7 +327,7 @@ function init_args()
 
 
   $key = 'doRemoveAll';
-  if( ($args->$key = isset($_REQUEST[$key]) ? 1 : 0) )
+  if( $args->$key = isset($_REQUEST[$key]) ? 1 : 0 )
   {
     $args->doAction = $key;
   }  

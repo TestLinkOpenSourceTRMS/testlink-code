@@ -14,11 +14,11 @@
  *
  **/
 
-require('../../config.inc.php');
-require_once('common.php');
-require_once('csv.inc.php');
-require_once('xml.inc.php');
-require_once('exec.inc.php');
+require '../../config.inc.php';
+require_once 'common.php';
+require_once 'csv.inc.php';
+require_once 'xml.inc.php';
+require_once 'exec.inc.php';
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -110,7 +110,7 @@ function importResults(&$db,&$xml,$context) {
     
 
     foreach( $contextKeys as $xmlkey => $execElem) {
-      if( ($joker = $xml->$xmlkey) ) {
+      if( $joker = $xml->$xmlkey ) {
         // IMPORTANT NOTICE: name has precedence over id
         if( isset($joker['name']) ) {
           $executionContext->$execElem['name'] = (string) $joker['name'];
@@ -238,7 +238,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options) {
     }
   }
   
-  if( ($doIt = $checks['status_ok']) ) {
+  if( $doIt = $checks['status_ok'] ) {
     $context->tprojectID = $dummy[0]['id']; 
   }
     

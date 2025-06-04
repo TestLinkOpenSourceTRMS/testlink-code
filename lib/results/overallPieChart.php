@@ -14,11 +14,11 @@
  * @since 1.9.10
  *
 **/
-require_once('../../config.inc.php');
-require_once('common.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
 define('PCHART_PATH','../../third_party/pchart');
-include(PCHART_PATH . "/pChart/pData.class");   
-include(PCHART_PATH . "/pChart/pChart.class");   
+include PCHART_PATH . '/pChart/pData.class';
+include PCHART_PATH . '/pChart/pChart.class';
 
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['overallPieChart'];

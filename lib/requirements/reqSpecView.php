@@ -8,12 +8,12 @@
  * Screen to view existing requirements within a req. specification.
  *
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("users.inc.php");
-require_once('requirements.inc.php');
-require_once('attachments.inc.php');
-require_once("configCheck.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'requirements.inc.php';
+require_once 'attachments.inc.php';
+require_once 'configCheck.php';
 testlinkInitPage($db,false,false);
 
 $tplCfg = templateConfiguration();

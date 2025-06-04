@@ -12,16 +12,13 @@
  *
  * 
  */
-require('../../config.inc.php');
-
-// Must be included BEFORE common.php
-require_once('../../third_party/codeplex/PHPExcel.php');   
-
-require_once('common.php');
-require_once('displayMgr.php');
-require_once('users.inc.php');
-require_once('exttable.class.php');
-require_once('exec.inc.php'); // used for bug string lookup
+require '../../config.inc.php';
+require_once '../../third_party/codeplex/PHPExcel.php'; // Must be included BEFORE common.php
+require_once 'common.php';
+require_once 'displayMgr.php';
+require_once 'users.inc.php';
+require_once 'exttable.class.php';
+require_once 'exec.inc.php'; // used for bug string lookup
 
 // IMPORTANT NOTICE/WARNING about XLS generation
 // Seams that \n are not liked 
@@ -445,7 +442,7 @@ function createSpreadsheet($gui,$args,$media) {
   $objWriter->save($tmpfname);
 
   if($args->getSpreadsheetBy == 'email') {
-    require_once('email_api.php');
+    require_once 'email_api.php';
 
     $ema = new stdClass();
     $ema->from_address = config_get('from_email');

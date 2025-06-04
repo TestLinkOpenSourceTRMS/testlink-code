@@ -14,10 +14,10 @@
  * @since 1.9.16
  */
 
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once('requirements.inc.php');
-require_once('exttable.class.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'requirements.inc.php';
+require_once 'exttable.class.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -452,7 +452,7 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
     $hmc += isset($counters[$code]);
   }  
 
-  if( ($counters['total'] > 0) ) 
+  if( $counters['total'] > 0) 
   {
     list($evaluation,$doIt) = doNotRunAnalysis($hmc,$counters,$status_code['not_run']);
     if(!$doIt)
@@ -851,7 +851,7 @@ function doNotRunAnalysis($tcaseQty,$execStatusCounter,$notRunCode)
   }  
   else
   {
-    if(($execStatusCounter['totalTPTCV'] == $execStatusCounter[$notRunCode]))
+    if($execStatusCounter['totalTPTCV'] == $execStatusCounter[$notRunCode])
     {
       $evaluation = $notRunCode;
       $doIt = false;

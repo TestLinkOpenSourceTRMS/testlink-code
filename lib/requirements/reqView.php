@@ -6,11 +6,11 @@
  * @filesource	reqView.php
  *
  */
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once('attachments.inc.php');
-require_once('requirements.inc.php');
-require_once('users.inc.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'attachments.inc.php';
+require_once 'requirements.inc.php';
+require_once 'users.inc.php';
 testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();
@@ -94,7 +94,7 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
   // Everything OK, go ahead
   $tproject_id = $req_mgr->getTestProjectID($argsObj->requirement_id);
   $target_id = $argsObj->tproject_id; 
-  if( ($isAlien = ($tproject_id != $argsObj->tproject_id)) ) {
+  if( $isAlien = ($tproject_id != $argsObj->tproject_id) ) {
     $target_id = $tproject_id;
   } 
   

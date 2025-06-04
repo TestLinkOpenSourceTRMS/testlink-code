@@ -10,9 +10,9 @@
  * 
  * 
  **/
-require('../../config.inc.php');
-require_once('common.php');
-require_once('reports.class.php');
+require '../../config.inc.php';
+require_once 'common.php';
+require_once 'reports.class.php';
 testlinkInitPage($db,true,false,"checkRights");
 
 $smarty = new TLSmarty();

@@ -15,14 +15,14 @@
  *
  *
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("csv.inc.php");
-require_once("xml.inc.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'csv.inc.php';
+require_once 'xml.inc.php';
 
-require_once("web_editor.php");
+require_once 'web_editor.php';
 $editorCfg = getWebEditorCfg('build');
-require_once(require_web_editor($editorCfg['type']));
+require_once require_web_editor($editorCfg['type']);
 
 // Security checks are done, if failed => exit()
 list($args,$gui,$platform_mgr) = initEnv($db);

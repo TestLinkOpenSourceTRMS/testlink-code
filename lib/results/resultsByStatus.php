@@ -14,16 +14,13 @@
  *
  * 
  */
-require('../../config.inc.php');
-
-// Must be included BEFORE common.php
-require_once('../../third_party/codeplex/PHPExcel.php');   
-
-require_once('common.php');
-require_once('displayMgr.php');
-require_once('users.inc.php');
-require_once('exttable.class.php');
-require_once('exec.inc.php'); // used for bug string lookup
+require '../../config.inc.php';
+require_once '../../third_party/codeplex/PHPExcel.php'; // Must be included BEFORE common.php
+require_once 'common.php';
+require_once 'displayMgr.php';
+require_once 'users.inc.php';
+require_once 'exttable.class.php';
+require_once 'exec.inc.php'; // used for bug string lookup
 
 // IMPORTANT NOTICE/WARNING about XLS generation
 // Seams that \n are not liked 
@@ -809,7 +806,7 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
       }
       
       // May be same processing can be applied to execution otes
-      if(($ldx == 'bugString' && $gui->bugInterfaceOn)) {
+      if($ldx == 'bugString' && $gui->bugInterfaceOn) {
         // To manage new line
         // http://stackoverflow.com/questions/5960242/how-to-make-new-lines-in-a-cell-using-phpexcel
         // http://stackoverflow.com/questions/6054444/how-to-set-auto-height-in-phpexcel
@@ -830,7 +827,7 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
   $objWriter->save($tmpfname);
 
   if($args->getSpreadsheetBy == 'email') {
-    require_once('email_api.php');
+    require_once 'email_api.php';
     $ema = new stdClass();
     $ema->from_address = config_get('from_email');
     $ema->to_address = $args->user->emailAddress;;

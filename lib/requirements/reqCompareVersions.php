@@ -12,10 +12,10 @@
  * Compares selected requirements versions with each other.
  */
 
-require_once("../../config.inc.php");
-require_once("common.php");
-require('../../third_party/diff/diff.php');
-require('../../third_party/daisydiff/src/HTMLDiff.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require '../../third_party/diff/diff.php';
+require '../../third_party/daisydiff/src/HTMLDiff.php';
 
 $templateCfg = templateConfiguration();
 testlinkInitPage($db);
@@ -216,7 +216,7 @@ function getCFDiff($cfields,&$reqMgr)
         {
           foreach($key2convert as $fx)
           {
-            if( ($doIt = ($cmp[$cf_key][$fx] != null)) )
+            if( $doIt = ($cmp[$cf_key][$fx] != null) )
             {
               switch($type_code[$cfieldsLeft[$cf_key]['type']])
               {

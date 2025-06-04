@@ -14,9 +14,9 @@
  *	20120410 - franciscom - TICKET 4888: Unable to update test plan with last version of testcase
  *
  */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("specview.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'specview.php';
 testlinkInitPage($db,false,false);
 
 $tree_mgr = new tree($db);

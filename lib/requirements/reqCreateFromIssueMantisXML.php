@@ -40,9 +40,9 @@
  * @since 1.9.10
  *
  */
-require('../../config.inc.php');
-require_once('common.php');
-require_once('xml.inc.php');
+require '../../config.inc.php';
+require_once 'common.php';
+require_once 'xml.inc.php';
 
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
@@ -264,5 +264,5 @@ function getFromMantisIssueSimpleXMLObj($xmlObj)
  */
 function checkRights(&$db,&$user)
 {
-  return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+  return $user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req');
 }

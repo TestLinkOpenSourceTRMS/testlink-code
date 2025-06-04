@@ -7,10 +7,10 @@
  *
  *
  */
-require_once('../../config.inc.php');
+require_once '../../config.inc.php';
 define('PCHART_PATH','../../third_party/pchart');
-include_once(PCHART_PATH . "/pChart/pData.class");   
-include_once(PCHART_PATH . "/pChart/pChart.class");   
+include_once PCHART_PATH . '/pChart/pData.class';
+include_once PCHART_PATH . '/pChart/pChart.class';
 
 /*
   function: createChart

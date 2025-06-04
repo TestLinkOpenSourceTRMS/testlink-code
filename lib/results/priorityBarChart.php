@@ -1,9 +1,9 @@
 <?php
 //@TODO this file seems not to be in use
-include "../../third_party/charts/charts.php";
+include '../../third_party/charts/charts.php';
 
-require_once('../functions/results.class.php');
-require_once('../functions/testplan.class.php');
+require_once '../functions/results.class.php';
+require_once '../functions/testplan.class.php';
 
 testlinkInitPage($db);
 $tplan_mgr = new testplan($db);

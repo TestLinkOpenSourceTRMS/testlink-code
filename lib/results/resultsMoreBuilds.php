@@ -14,10 +14,10 @@
  * @since 1.9.4
  * 
  **/
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once('users.inc.php');
-require_once('displayMgr.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'displayMgr.php';
 
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
@@ -300,7 +300,7 @@ function helper2ISO($userInput)
 	$dummy = isset($userInput['end_Hour']) ? $userInput['end_Hour'] : "00";
 	$zy['endTime'] .= " " . $dummy . ":59:59";
 
-	return(array($zy['startTime'],$zy['endTime']));
+	return array($zy['startTime'],$zy['endTime']);
 }
 
 

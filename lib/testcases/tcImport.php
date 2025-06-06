@@ -514,7 +514,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 
     $hasAttachments=(isset($tc['attachments']) && !is_null($tc['attachments']));
     if($hasAttachments) {
-      $fk_id = $doCreate ? $ret['id'] : $internalid;
+      $fk_id = $doCreate ? $ret['tcversion_id'] : $internalid;
       if ($internalid == "" && $item_id>0) { 
         $internalid = $item_id;
       }
@@ -768,7 +768,7 @@ function processAttachments( &$dbHandler, $tcaseName, $xmlInternalID, $fk_Id, $t
 {  
 	static $duplicateAttachment;
 	$resultMsg=null;	
-	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy','attachments'));
+	$tables = tlObjectWithDB::getDBTables(array('tcversions','attachments'));
 	
 	foreach( $tcAtt as $ydx => $value )
 	{	
@@ -809,7 +809,7 @@ function processAttachments( &$dbHandler, $tcaseName, $xmlInternalID, $fk_Id, $t
 			$fileInfo['name'] = $value['name'];
 			$fileInfo['type'] = $value['file_type'];
 
-			$attachRepo->insertAttachment( $fk_Id, $tables['nodes_hierarchy'], $value['title'], $fileInfo);
+			$attachRepo->insertAttachment( $fk_Id, $tables['tcversions'], $value['title'], $fileInfo);
 		}
 	} //foreach
 	 
@@ -1063,7 +1063,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 			if ($tsuiteXMLID == "" && $info[0]['id']>0){ // testsuite id is optionnal in XML schema, id may has been retrieved from name during update
 				$tsuiteXMLID = $info[0]['id'];
 			}
-		  $msg = processAttachments( $dbHandler, $tsuite['name'], $tsuiteXMLID, $tsuite['id'], $attachments, $feedbackMsg );
+		  $msg = processAttachments( $dbHandler, $tsuite['name'], $tsuiteXMLID, $tsuite['tcversion_id'], $attachments, $feedbackMsg );
 		  if( !is_null($msg) )
 		  {
 			$resultMap = array_merge($resultMap,$msg);

@@ -1,15 +1,15 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	mainPage.php
- * 
+ *
  * Page has two functions: navigation and select Test Plan
  *
  * This file is the first page that the user sees when they log in.
  * Most of the code in it is html but there is some logic that displays
- * based upon the login. 
+ * based upon the login.
  * There is also some javascript that handles the form information.
  *
  **/
@@ -17,15 +17,13 @@
 require_once '../../config.inc.php';
 require_once 'common.php';
 
-testlinkInitPage($db,TRUE);
+testlinkInitPage($db,true);
 
 $smarty = new TLSmarty();
 $tproject_mgr = new testproject($db);
 $user = $_SESSION['currentUser'];
 
-$testprojectID = 
-isset($_SESSION['testprojectID']) 
-? intval($_SESSION['testprojectID']) : 0;
+$testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 
 if( isset($_REQUEST['testplan']) ) {
   $testplanID = $_REQUEST['testplan'];
@@ -51,39 +49,33 @@ $userID = $currentUser->dbID;
 $gui = new stdClass();
 $gui->grants = getGrants($db,$user,$testprojectID,$userIsBlindFolded);
 
-/*
-echo '<pre>';
-var_dump($gui->grants);
-echo '</pre>';
-*/
-
 $gui->hasTestCases = false;
 
-if($gui->grants['view_tc']) { 
+if($gui->grants['view_tc']) {
 	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
 }
 
 $gui->hasKeywords = false;
 if($gui->hasTestCases) {
   $gui->hasKeywords = $tproject_mgr->hasKeywords($testprojectID);
-}  
+}
 
 
 // ----- Test Plan Section --------------------------------
-/** 
+/**
  * @TODO - franciscom - we must understand if these two calls are really needed,
  * or is enough just call to getAccessibleTestPlans()
  */
 $filters = array('plan_status' => ACTIVE);
 $gui->num_active_tplans = $tproject_mgr->getActiveTestPlansCount($testprojectID);
 
-// get Test Plans available for the user 
+// get Test Plans available for the user
 $arrPlans = (array)$currentUser->getAccessibleTestPlans($db,$testprojectID);
 
 if($testplanID > 0) {
 	// if this test plan is present on $arrPlans
 	//	  OK we will set it on $arrPlans as selected one.
-	// else 
+	// else
 	//    need to set test plan on session
 	//
 	$index=0;
@@ -100,16 +92,16 @@ if($testplanID > 0) {
     // update test plan id
     $index = 0;
     $testplanID = $arrPlans[$index]['id'];
-  } 
+  }
 
-  setSessionTestPlan($arrPlans[$index]);         
+  setSessionTestPlan($arrPlans[$index]);
   $arrPlans[$index]['selected']=1;
 }
 
 $gui->testplanRole = null;
 if ($testplanID)  {
 
-  $rd = null; 
+  $rd = null;
   // Role can be configured or inherited
   if( isset($currentUser->tplanRoles[$testplanID]) ) {
     // Configured
@@ -119,7 +111,7 @@ if ($testplanID)  {
     if( config_get('testplan_role_inheritance_mode') == 'global' ) {
       $rd = $currentUser->globalRole->name;
     }
-  } 
+  }
 
   if( null != $rd ) {
     $gui->testplanRole = $tlCfg->gui->role_separator_open .$rd . $tlCfg->gui->role_separator_close;
@@ -145,7 +137,7 @@ foreach($rights2check as $key => $the_right) {
 $gui->grants['tproject_user_role_assignment'] = "no";
 if( $currentUser->hasRight($db,"testproject_user_role_assignment",$testprojectID,-1) == "yes" ||
     $currentUser->hasRight($db,"user_role_assignment",null,-1) == "yes" )
-{ 
+{
     $gui->grants['tproject_user_role_assignment'] = "yes";
 }
 
@@ -153,7 +145,7 @@ if( $currentUser->hasRight($db,"testproject_user_role_assignment",$testprojectID
 $gui->url = array('metrics_dashboard' => 'lib/results/metricsDashboard.php',
                   'testcase_assignments' => 'lib/testcases/tcAssignedToUser.php');
 $gui->launcher = 'lib/general/frmWorkArea.php';
-$gui->arrPlans = $arrPlans;                   
+$gui->arrPlans = $arrPlans;
 $gui->countPlans = count($gui->arrPlans);
 
 
@@ -164,22 +156,20 @@ $gui->docs = config_get('userDocOnDesktop') ? getUserDocumentation() : null;
 
 $secCfg = config_get('config_check_warning_frequence');
 $gui->securityNotes = '';
-if( (strcmp($secCfg, 'ALWAYS') == 0) || 
-      (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesOnMainPageDone'])) )
+if( (strcmp($secCfg, 'ALWAYS') == 0) || (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesOnMainPageDone'])) )
 {
   $_SESSION['getSecurityNotesOnMainPageDone'] = 1;
   $gui->securityNotes = getSecurityNotes($db);
-}  
+}
 
-$gui->opt_requirements = isset($_SESSION['testprojectOptions']->requirementsEnabled) ? 
-                         $_SESSION['testprojectOptions']->requirementsEnabled : null; 
+$gui->opt_requirements = isset($_SESSION['testprojectOptions']->requirementsEnabled) ? $_SESSION['testprojectOptions']->requirementsEnabled : null;
 
 
 $gui->plugins = array();
 foreach(array('EVENT_LEFTMENU_TOP',
               'EVENT_LEFTMENU_BOTTOM',
               'EVENT_RIGHTMENU_TOP',
-              'EVENT_RIGHTMENU_BOTTOM') as $menu_item) 
+              'EVENT_RIGHTMENU_BOTTOM') as $menu_item)
 {
   # to be compatible with PHP 5.4
   $menu_content = event_signal($menu_item);
@@ -194,32 +184,31 @@ $tpl = $tplKey . '.tpl';
 $tplCfg = config_get('tpl');
 if( null !== $tplCfg && isset($tplCfg[$tplKey]) ) {
   $tpl = $tplCfg->$tplKey;
-} 
+}
 
 $smarty->assign('gui',$gui);
 $smarty->display($tpl);
 
 
 /**
- * Get User Documentation 
+ * Get User Documentation
  * based on contribution by Eugenia Drosdezki
+ *
+ * @return NULL|string|boolean
  */
 function getUserDocumentation()
 {
   $target_dir = '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'docs';
   $documents = null;
     
-  if ($handle = opendir($target_dir)) 
+  if ($handle = opendir($target_dir))
   {
-    while (false !== ($file = readdir($handle))) 
+    while (false !== ($file = readdir($handle)))
     {
       clearstatcache();
-      if (($file != ".") && ($file != "..")) 
+      if (($file != ".") && ($file != "..") && is_file($target_dir . DIRECTORY_SEPARATOR . $file))
       {
-        if (is_file($target_dir . DIRECTORY_SEPARATOR . $file))
-        {
           $documents[] = $file;
-        }    
       }
     }
     closedir($handle);
@@ -228,7 +217,15 @@ function getUserDocumentation()
 }
 
 /**
+ * Get grants
  *
+ * Returns an array with the corresponding permissions and shares
+ *
+ * @param database $dbHandler
+ * @param tlUser $user
+ * @param int $tproject_id
+ * @param boolean $forceToNo
+ * @return array|number
  */
 function getGrants($dbHandler,$user,$tproject_id,$forceToNo=false)
 {
@@ -237,10 +234,10 @@ function getGrants($dbHandler,$user,$tproject_id,$forceToNo=false)
   //
   // key: more or less verbose
   // value: string present on rights table
-  $right2check = 
+  $right2check =
     array('project_edit' => 'mgt_modify_product',
-          'reqs_view' => "mgt_view_req", 
-          'monitor_req' => "monitor_requirement", 
+          'reqs_view' => "mgt_view_req",
+          'monitor_req' => "monitor_requirement",
           'req_tcase_link_management' => "req_tcase_link_management",
           'reqs_edit' => "mgt_modify_req",
           'keywords_view' => "mgt_view_key",
@@ -262,18 +259,18 @@ function getGrants($dbHandler,$user,$tproject_id,$forceToNo=false)
           'project_inventory_view' => 'project_inventory_view',
           'project_inventory_management' => 'project_inventory_management',
           'modify_tc' => 'mgt_modify_tc',
-          'exec_edit_notes' => 'exec_edit_notes', 
+          'exec_edit_notes' => 'exec_edit_notes',
           'exec_delete' => 'exec_delete',
           'testplan_unlink_executed_testcases' => 'testplan_unlink_executed_testcases',
           'testproject_delete_executed_testcases' => 'testproject_delete_executed_testcases',
           'exec_ro_access' => 'exec_ro_access');
  if ($forceToNo) {
     $grants = array_fill_keys(array_keys($right2check), 'no');
-    return $grants;      
- }  
+    return $grants;
+ }
   
   
- $grants['project_edit'] = $user->hasRight($dbHandler,$right2check['project_edit'],$tproject_id); 
+ $grants['project_edit'] = $user->hasRight($dbHandler,$right2check['project_edit'],$tproject_id);
 
   /** redirect admin to create testproject if not found */
   if ($grants['project_edit'] && !isset($_SESSION['testprojectID'])) {
@@ -283,7 +280,7 @@ function getGrants($dbHandler,$user,$tproject_id,$forceToNo=false)
   
 
   foreach($right2check as $humankey => $right) {
-    $grants[$humankey] = $user->hasRight($dbHandler,$right,$tproject_id); 
+    $grants[$humankey] = $user->hasRight($dbHandler,$right,$tproject_id);
   }
 
 
@@ -295,5 +292,5 @@ function getGrants($dbHandler,$user,$tproject_id,$forceToNo=false)
     }
   }
 
-  return $grants;  
+  return $grants;
 }

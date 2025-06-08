@@ -1,11 +1,11 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource buildView.php
  *
- *       
+ *
  *
  */
 require '../../config.inc.php';
@@ -24,18 +24,20 @@ $context->tplan_id = $gui->tplan_id;
 checkRights($db,$_SESSION['currentUser'],$context);
 
 /**
+ * initialize the environment
  *
+ * @param database $dbHandler
+ * @return StdClass
  */
 function initEnv(&$dbHandler)
 {
   $gui = new StdClass();
 
   $_REQUEST = strings_stripSlashes($_REQUEST);
-  $gui->tplan_id = isset($_REQUEST['tplan_id']) 
-                   ? intval($_REQUEST['tplan_id']) : 0;
+  $gui->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
   if( $gui->tplan_id == 0 ) {
     throw new Exception("Abort Test Plan ID == 0", 1);
-  }  
+  }
 
   $tplan_mgr = new testplan($dbHandler);
   $build_mgr = new build_mgr($dbHandler);
@@ -46,7 +48,7 @@ function initEnv(&$dbHandler)
     $gui->tplan_name = $info['name'];
   } else {
     throw new Exception("Invalid Test Plan ID", 1);
-  }  
+  }
  
   $gui->tproject_id = intval($info['parent_id']);
 
@@ -59,7 +61,7 @@ function initEnv(&$dbHandler)
     $availableCF = (array)$build_mgr->get_linked_cfields_at_design(current($gui->buildSet),$gui->tproject_id);
   }
   $hasCF = count($availableCF);
-  $gui->cfieldsColumns = null; 
+  $gui->cfieldsColumns = null;
   $gui->cfieldsType = null;
   $initCFCol = true;
 
@@ -70,9 +72,9 @@ function initEnv(&$dbHandler)
   // 2. look for TL_BUILDVIEW_HIDECOL_PPFX
   // 3. if found proceed
   // 4. else look for TL_BUILDVIEW_HIDECOL
-  //  
+  //
   $ppfx = $tplan_mgr->tproject_mgr->getTestCasePrefix($gui->tproject_id);
-  $suffixSet = ['_' . $ppfx, ''];     
+  $suffixSet = ['_' . $ppfx, ''];
   foreach($suffixSet as $suf) {
     $gopt['name'] = 'TL_BUILDVIEW_HIDECOL' . $suf;
     $col2hideCF = $tplan_mgr->cfield_mgr->get_linked_to_testproject($gui->tproject_id,null,$gopt);
@@ -81,17 +83,16 @@ function initEnv(&$dbHandler)
       $col2hideCF = current($col2hideCF);
       $col2hide = array_flip(explode('|',$col2hideCF['possible_values']));
       $col2hide[$gopt['name']] = '';
-      break; 
+      break;
     }
   }
   $localeDateFormat = config_get('locales_date_format');
   $localeDateFormat = $localeDateFormat[$_SESSION['currentUser']->locale];
 
   foreach($gui->buildSet as $elemBuild) {
-    // ---------------------------------------------------------------------------------------------  
     $idk = current($elemBuild);
     if ($hasCF) {
-      $cfields = (array)$build_mgr->getCustomFieldsValues($idk,$gui->tproject_id);        
+      $cfields = (array)$build_mgr->getCustomFieldsValues($idk,$gui->tproject_id);
       foreach ($cfields as $cfd) {
         if ($initCFCol) {
           if (!isset($col2hide[$cfd['name']])) {
@@ -102,11 +103,10 @@ function initEnv(&$dbHandler)
         $gui->buildSet[$idk][$cfd['label']] = ['value' => $cfd['value'], 'data-order' => $cfd['value']];
         if ($cfd['type'] == 'date') {
           $gui->buildSet[$idk][$cfd['label']]['data-order'] = locateDateToISO($cfd['value'], $localeDateFormat);
-        }          
-      }  
+        }
+      }
       $initCFCol = false;
     }
-    // ---------------------------------------------------------------------------------------------  
   }
 
 
@@ -115,7 +115,7 @@ function initEnv(&$dbHandler)
   $cfg = getWebEditorCfg('build');
   $gui->editorType = $cfg['type'];
   
-  return $gui;  
+  return $gui;
 }
 
 $smarty = new TLSmarty();
@@ -124,7 +124,11 @@ $smarty->display($tplCfg->template_dir . $tplCfg->default_template);
 
 
 /**
+ * checks the rights
  *
+ * @param database $db
+ * @param tlUser $user
+ * @param stdClass $context
  */
 function checkRights(&$db,&$user,&$context)
 {

@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* 
+*
 * @filesource dragdroptprojectnodes.php
 * @author 	  Francisco Mancardi
-* 
+*
 * manage drag and drop on test project tree
 *
 * Development Notes:
@@ -12,7 +12,7 @@
 * in javascript file with all function used to manage EXTJS tree.
 * This means that when this code is called ALL NEEDED CHECKS to understand
 * if operation is allowed HAVE BEEN DONE (at least in theory)
-*        
+*
 */
 require_once '../../config.inc.php';
 require_once 'common.php';
@@ -38,20 +38,22 @@ switch($args->doAction)
 }
 
 /**
+ * Initialize arguments
  *
+ * @return stdClass
  */
 function init_args() {
   $args=new stdClass();
   
   $key2loop=array('nodeid','newparentid','nodeorder');
   foreach($key2loop as $key) {
-    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : null;   
+    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : null;
   }
 
   $key2loop = array('doAction','top_or_bottom','nodelist');
   foreach($key2loop as $key) {
-    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;   
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;
   }
 
   return $args;
-}  
+}

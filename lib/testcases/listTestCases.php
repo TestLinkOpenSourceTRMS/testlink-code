@@ -33,11 +33,11 @@ $smarty->display($templateCfg->template_dir . 'tcTree.tpl');
 
 /**
  * Initialize object with information for graphical user interface.
- * 
+ *
  * @param tlTestCaseFilterControl $control
  * @return stdClass $gui
  */
-function initializeGui(&$dbHandler, &$control) 
+function initializeGui(&$dbHandler, &$control)
 {
   $gui = new stdClass();
   $gui->feature = $control->args->feature;

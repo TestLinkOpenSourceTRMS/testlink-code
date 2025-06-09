@@ -15,7 +15,6 @@ require_once TL_ABS_PATH . '/third_party/tuleap-php-api/lib/tuleap-rest-api.php'
 class tuleaprestInterface extends issueTrackerInterface
 {
     private $APIClient;
-
     private $trackerID;
     private $URIBase;
 
@@ -24,7 +23,7 @@ class tuleaprestInterface extends issueTrackerInterface
      * Construct and connect to BTS.
      * Can be overloaded in specialized class
      *
-     * @param str $type (see tlIssueTracker.class.php $systems property)
+     * @param string $type (see tlIssueTracker.class.php $systems property)
      **/
     function __construct($type,$config,$name)
     {
@@ -77,7 +76,6 @@ class tuleaprestInterface extends issueTrackerInterface
      * checks a tracker id for validity (a numeric value)
      *
      * @param string tracker ID
-     *
      * @return bool returns true if the tracker id has the right format
      **/
     private function checkTrackerIDSyntax($trackerID)
@@ -97,7 +95,6 @@ class tuleaprestInterface extends issueTrackerInterface
      * checks a URL for validity
      *
      * @param string URL
-     *
      * @return bool returns true if the param is an URL
      **/
     private function checkURLSyntax($url) {
@@ -106,7 +103,6 @@ class tuleaprestInterface extends issueTrackerInterface
 
     /**
      * useful for testing
-     *
      *
      **/
     function getAPIClient()
@@ -145,11 +141,13 @@ class tuleaprestInterface extends issueTrackerInterface
      **/
     public function getResolvedStatus()
     {
-        if (!$this->isConnected())
-             return null;
-
-        if ($this->trackerID == '')
+        if (!$this->isConnected()){
             return null;
+        }
+
+        if ($this->trackerID == ''){
+            return null;
+        }
 
         $ret = null;
         try {
@@ -162,16 +160,19 @@ class tuleaprestInterface extends issueTrackerInterface
                 //$ret = array();
                 // retrieve the field containing the status semantic
                 $status = $this->getField($tracker, $statusID);
-                if (! $status )
-                    throw new Exception('The field ' . $statusID . ' cannot be found in the tracker "'
-                                        . $tracker->label . '" (' . $tracker->id . ').');
+                if (! $status ) {
+                    throw new Exception('The field ' . $statusID . ' cannot be found in the tracker "' . $tracker->label . '" (' . $tracker->id . ').');
+                }
+                                        
                 // retrieve the labels of closed status
                 $ret['status'] = $this->getClosedLabels($status, $statusValuesID);
                 // check that all labels have been found
-                if ( count($ret['status']) != (count($status->values) - count($statusValuesID)) )
+                if ( count($ret['status']) != (count($status->values) - count($statusValuesID)) ) {
                     throw new Exception('Some labels was not found.');
-            } else
+                }
+            } else {
                 throw new Exception('The tracker ' . $this->trackerID . ' was not found.');
+            }
         } catch(Exception $e) {
             tLog($e->getMessage(),'ERROR');
             $ret = null;
@@ -192,10 +193,12 @@ class tuleaprestInterface extends issueTrackerInterface
         $i = count($tracker->fields);
         $field = null;
         while ($i > 0 && ! $field) {
-            if ($tracker->fields[$i - 1]->field_id == $fieldID)
+            if ($tracker->fields[$i - 1]->field_id == $fieldID) {
                 $field = $tracker->fields[$i - 1];
-            else
+            }
+            else {
                 $i -= 1;
+            }
         }
 
         return $field;
@@ -206,17 +209,18 @@ class tuleaprestInterface extends issueTrackerInterface
      *
      * @param object $statusField Tracker field containing the status semantic
      * @param array $valuesID List of opened values ID
-     *
      * @author Aurelien TISNE <aurelien.tisne@csgroup.eu>
      **/
     private function getClosedLabels($statusField, $openValuesID) {
-        if (! property_exists($statusField, "values"))
+        if (! property_exists($statusField, "values")) {
             return null;
+        }
 
         $ret = array();
         foreach($statusField->values as $value) {
-            if ( ! in_array($value->id, $openValuesID) )
+            if ( ! in_array($value->id, $openValuesID) ) {
                 $ret[] = $value->label;
+            }
         }
 
         return $ret;
@@ -226,7 +230,6 @@ class tuleaprestInterface extends issueTrackerInterface
      * checks id for validity
      *
      * @param string issueID
-     *
      * @return bool returns true if the bugid has the right format, false else
      **/
      function checkBugIDSyntax($issueID)
@@ -238,7 +241,6 @@ class tuleaprestInterface extends issueTrackerInterface
       * establishes connection to the bugtracking system
       *
       * @return bool
-      *
       **/
      function connect()
      {
@@ -281,7 +283,6 @@ class tuleaprestInterface extends issueTrackerInterface
 
      /**
       *
-      *
       **/
      function isConnected()
      {
@@ -305,7 +306,6 @@ class tuleaprestInterface extends issueTrackerInterface
 
      /**
       *
-      *
       **/
      function getIssue($issueID)
      {
@@ -320,7 +320,6 @@ class tuleaprestInterface extends issueTrackerInterface
              if( !is_null($issue) && is_object($issue) )
              {
                  $issue->IDHTMLString = "<b>{$issueID} : </b>";
-                 //$issue->statusCode = $issue->State;
                  $issue->statusVerbose = $issue->status;
                  $issue->statusHTMLString = $this->buildStatusHTMLString($issue->status);
                  $issue->summaryHTMLString = $issue->title;
@@ -342,7 +341,6 @@ class tuleaprestInterface extends issueTrackerInterface
       * Returns status for issueID
       *
       * @param string issueID
-      *
       * @return boolean
       **/
      function getIssueStatusCode($issueID)
@@ -355,9 +353,7 @@ class tuleaprestInterface extends issueTrackerInterface
       * Returns status in a readable form (HTML context) for the bug with the given id
       *
       * @param string issueID
-      *
       * @return string
-      *
       **/
      function getIssueStatusVerbose($issueID)
      {
@@ -410,7 +406,6 @@ class tuleaprestInterface extends issueTrackerInterface
       * user configuration, but that can be considered standard.
       * If they are MISSING we will use 'these carved on the stone values'
       * in order to simplify configuration.
-      *
       *
       **/
      function completeCfg()
@@ -491,8 +486,9 @@ class tuleaprestInterface extends issueTrackerInterface
       */
      public function addNote($bugId, $noteText, $opt=null)
      {
-         if (!$this->isConnected())
+         if (!$this->isConnected()) {
              return null;
+         }
 
          try{
              $noteText = "Reporter: " . $opt->reporter . " <" . $opt->reporter_email . ">\n" . $noteText;

@@ -1,9 +1,9 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource	kaitenrestInterface.class.php
- * @author 
+ * @author
  *
  *
 **/
@@ -17,13 +17,13 @@ class kaitenrestInterface extends issueTrackerInterface {
     '3' => 'deleted'
   ];
 
-  public $defaultResolvedStatus;
+  private $defaultResolvedStatus;
 
 
 	/**
 	 * Construct and connect to BTS.
 	 *
-	 * @param str $type (see tlIssueTracker.class.php $systems property)
+	 * @param string $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
 	function __construct($type,$config,$name) {
@@ -41,7 +41,7 @@ class kaitenrestInterface extends issueTrackerInterface {
     $this->canSetReporter = true;
     if( !$this->setCfg($config) ) {
       return false;
-    }  
+    }
 
     $this->completeCfg();
 	  $this->setResolvedStatusCfg();
@@ -52,23 +52,22 @@ class kaitenrestInterface extends issueTrackerInterface {
 	 *
 	 **/
 	function completeCfg() {
-		$this->cfg->uribase = trim($this->cfg->uribase,"/"); 
+		$this->cfg->uribase = trim($this->cfg->uribase,"/");
     if(!property_exists($this->cfg, 'uricreate') ) {
-      $this->cfg->uricreate = $this->cfg->uribase; 
+      $this->cfg->uricreate = $this->cfg->uribase;
     }
 
     if( property_exists($this->cfg,'options') ) {
       $option = get_object_vars($this->cfg->options);
       foreach ($option as $name => $elem) {
         $name = (string)$name;
-        $this->options[$name] = (string)$elem;     
+        $this->options[$name] = (string)$elem;
       }
-    } 
+    }
   }
 
 	/**
-   * useful for testing 
-   *
+   * useful for testing
    *
    **/
 	function getAPIClient() {
@@ -89,8 +88,7 @@ class kaitenrestInterface extends issueTrackerInterface {
   /**
    * establishes connection to the bugtracking system
    *
-   * @return bool 
-   *
+   * @return bool
    **/
   function connect() {
     $processCatch = false;
@@ -105,8 +103,8 @@ class kaitenrestInterface extends issueTrackerInterface {
         'boardId' => (string)trim($this->cfg->boardid),
         'options' => $this->options ];
 
-      $tlContext = [ 'proxy' => config_get('proxy'), 
-                     'cfg' => ['setcardowneremail' => 
+      $tlContext = [ 'proxy' => config_get('proxy'),
+                     'cfg' => ['setcardowneremail' =>
                                  $this->cfg->setcardowneremail] ];
       $tlContext['cfg'] = (object)$tlContext['cfg'];
 
@@ -128,7 +126,7 @@ class kaitenrestInterface extends issueTrackerInterface {
   	if($processCatch) {
   		$logDetails = '';
   		foreach(['uribase'] as $v) {
-  			$logDetails .= "$v={$this->cfg->$v} / "; 
+  			$logDetails .= "$v={$this->cfg->$v} / ";
   		}
   		$logDetails = trim($logDetails,'/ ');
   		$this->connected = false;
@@ -137,7 +135,6 @@ class kaitenrestInterface extends issueTrackerInterface {
   }
 
   /**
-   * 
    *
    **/
 	function isConnected() {
@@ -145,7 +142,6 @@ class kaitenrestInterface extends issueTrackerInterface {
 	}
 
   /**
-   * 
    *
    **/
   function buildViewBugURL($issueID) {
@@ -153,7 +149,6 @@ class kaitenrestInterface extends issueTrackerInterface {
   }
 
   /**
-   * 
    *
    **/
 	public function getIssue($issueID) {
@@ -180,8 +175,8 @@ class kaitenrestInterface extends issueTrackerInterface {
     catch(Exception $e) {
       tLog(__METHOD__ . '/' . $e->getMessage(),'ERROR');
       $issue = null;
-    }	
-    return $issue;		
+    }
+    return $issue;
 	}
 
 
@@ -189,8 +184,7 @@ class kaitenrestInterface extends issueTrackerInterface {
 	 * Returns status for issueID
 	 *
 	 * @param string issueID
-	 *
-	 * @return 
+	 * @return
 	 **/
 	function getIssueStatusCode($issueID) {
 		$issue = $this->getIssue($issueID);
@@ -201,9 +195,7 @@ class kaitenrestInterface extends issueTrackerInterface {
 	 * Returns status in a readable form (HTML context) for the bug with the given id
 	 *
 	 * @param string issueID
-	 * 
-	 * @return string 
-	 *
+	 * @return string
 	 **/
 	function getIssueStatusVerbose($issueID) {
     $state = $this->getIssueStatusCode($issueID);
@@ -216,9 +208,7 @@ class kaitenrestInterface extends issueTrackerInterface {
 	/**
 	 *
 	 * @param string issueID
-	 * 
-	 * @return string 
-	 *
+	 * @return string
 	 **/
 	function getIssueSummaryHTMLString($issueID) {
     $issue = $this->getIssue($issueID);
@@ -250,7 +240,7 @@ class kaitenrestInterface extends issueTrackerInterface {
     $matches = array('dl2tl' => 0, 'dl2tlpv' => 0);
 
     foreach($pik as $ky => $vy ) {
-      preg_match('/^' . $vy . '(.+)$/imu', $info, $matches[$ky]);    
+      preg_match('/^' . $vy . '(.+)$/imu', $info, $matches[$ky]);
       if( count($matches[$ky]) > 1 ) {
         $result['links'][] = [
           'descr' => $vy,
@@ -284,14 +274,14 @@ class kaitenrestInterface extends issueTrackerInterface {
       if (!empty($opt)) {
         $tags = [
           ['name' => $opt->execContext['testplan_name']],
-          ['name' => $opt->execContext['build_name']] 
+          ['name' => $opt->execContext['build_name']]
         ];
       }
       if (null !== $tags) {
         $this->APIClient->addTags($op->id,$tags);
       }
 
-      $ret = ['status_ok' => true, 'id' => (string)$op->id, 
+      $ret = ['status_ok' => true, 'id' => (string)$op->id,
               'msg' => sprintf(lang_get('kaiten_bug_created'),
               $summary, (string)$op->board_id)];
     }
@@ -328,7 +318,7 @@ class kaitenrestInterface extends issueTrackerInterface {
            "<uribase>https://company.kaiten.io</uribase>\n" .
            "<boardid>BOARD IDENTIFICATOR</boardid>\n" .
            "<!-- TestLink Optional parameters --> \n" .
-           "<setcardowneremail>0</setcardowneremail>\n" .          
+           "<setcardowneremail>0</setcardowneremail>\n" .
            "<!-- Optional parameters (see API documentation on https://kaiten.io): -->\n" .
            "<options>\n" .
            "<columnid></columnid>\n" .

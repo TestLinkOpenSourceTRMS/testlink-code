@@ -1,35 +1,34 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource  jiradbInterface.class.php
  * @since 1.9.6
  *
  * @internal revision
  * @since 1.9.10
- * 
 **/
 class jiradbInterface extends issueTrackerInterface
 {
-  var $defaultResolvedStatus;
-  var $dbSchema;
-  var $support;
+  private $defaultResolvedStatus;
+  private $dbSchema;
+  private $support;
 
   /**
    * Construct and connect to BTS.
    *
-   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param string $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
   function __construct($type,$config,$name)
   {
     // connect() to DATABASE is done here
-    parent::__construct($type,$config,$name);  
+    parent::__construct($type,$config,$name);
 
     if( !$this->isConnected() )
     {
       return false;
-    }  
+    }
 
 
     $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
@@ -55,13 +54,13 @@ class jiradbInterface extends issueTrackerInterface
     {
       // throw new Exception("jiraversion is MANDATORY - Unable to continue");
       $msg = " - Issuetracker $this->name - jiraversion is MANDATORY - Unable to continue";
-      tLog(__METHOD__ . $msg, 'ERROR');  
+      tLog(__METHOD__ . $msg, 'ERROR');
       return false;
     }
     else
     {
       $this->completeCfg();
-    }  
+    }
 
 
     $this->defaultResolvedStatus = $this->support->initDefaultResolvedStatus($this->statusDomain);
@@ -82,7 +81,7 @@ class jiradbInterface extends issueTrackerInterface
     if($this->cfg->majorVersionNumber <= 0)
     {
       throw new Exception("Version has to be MAJOR.MINOR" . ' - got : ' . $sz , 1);
-    }  
+    }
   }
 
 
@@ -104,7 +103,7 @@ class jiradbInterface extends issueTrackerInterface
     // TICKET 6028: Integration with Jira 6.1 broken. - Due to JIRA schema changes
     \Kint::dump($this->dbConnection);
     if(intval($this->cfg->majorVersionNumber) >= 6)
-    {  
+    {
       $dummy = explode("-",$issueID);
       $addFields = ",ISSUES.project, ISSUES.issuenum, PROJECT.originalkey, PROJECT.id ";
       $addJoin = " JOIN {$this->dbSchema->project} PROJECT ON ISSUES.project = PROJECT.id ";
@@ -116,7 +115,7 @@ class jiradbInterface extends issueTrackerInterface
       $addFields = ",ISSUES.pkey ";
       $addJoin = '';
       $where = " WHERE ISSUES.pkey='{$this->dbConnection->prepare_string($issueID)}'";
-    } 
+    }
 
     $sql = "/* $debugMsg */ " .
            " SELECT ISSUES.ID AS id, ISSUES.summary,ISSUES.issuestatus AS status_code, " .
@@ -137,22 +136,22 @@ class jiradbInterface extends issueTrackerInterface
     }
     
     $issue = null;
-    if( !is_null($rs) ) 
+    if( !is_null($rs) )
     {
       $issueOnDB = current($rs);
       $issue = new stdClass();
       $issue->IDHTMLString = "<b>{$issueID} : </b>";
 
       $issue->summary = $issueOnDB['summary'];
-      $issue->statusCode = $issueOnDB['status_code']; 
-      $issue->statusVerbose = $issueOnDB['status_verbose']; 
+      $issue->statusCode = $issueOnDB['status_code'];
+      $issue->statusVerbose = $issueOnDB['status_verbose'];
 
       $issue->statusHTMLString = $this->support->buildStatusHTMLString($issue->statusVerbose);
       $issue->summaryHTMLString = $this->support->buildSummaryHTMLString($issue);
 
-      $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+      $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]);
     }
-    return $issue;  
+    return $issue;
   }
 
   /**

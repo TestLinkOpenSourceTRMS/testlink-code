@@ -16,7 +16,7 @@ class jiraCommons
   protected $l18n;
   protected $labels = array('duedate' => 'its_duedate_with_separator');
   
-  var $defaultResolvedStatus;
+  private $defaultResolvedStatus;
   var $guiCfg;
   
 

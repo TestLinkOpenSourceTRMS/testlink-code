@@ -35,16 +35,14 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * Initialize arguments
+ * Get input from user and return it in some sort of namespace
  *
  * @return stdClass $args object returns the arguments for the page
  */
 function init_args() {
   $args = new stdClass();
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-  
   $args->currentUser = $_SESSION['currentUser'];
-  
   $args->user_feedback = array('type' => '', 'message' => '');
   
   // only way I've found in order to give feedback for delete
@@ -61,11 +59,11 @@ function init_args() {
 }
 
 /**
- * Check the rights
+ * Checks the user rights for accessing the page
  *
- * @param database $db
+ * @param database $db resource the database connection handle
  * @param tlUser $user the current active user
- * @return boolean
+ * @return boolean returns true if the page can be accessed
  */
 function checkRights(&$db,&$user) {
   return $user->hasRight($db,"issuetracker_view") || $user->hasRight($db,"issuetracker_management");

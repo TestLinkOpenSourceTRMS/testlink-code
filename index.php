@@ -71,9 +71,9 @@ $tplEngine->display('main.tpl');
 
 
 /**
- * initEnv
+ * Initializes the environment
  *
- * @return stdClass[]
+ * @return stdClass[] object returns the arguments for the page
  */
 function initEnv() {
   $iParams = array("reqURI" => array(tlInputParameter::STRING_N,0,4000));

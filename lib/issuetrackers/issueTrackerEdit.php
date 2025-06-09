@@ -96,7 +96,7 @@ function initScript(&$dbHandler) {
 }
 
 /**
- * Initializes the arguments
+ * Get input from user and return it in some sort of namespace
  *
  * @param array $whiteList
  * @return stdClass object returns the arguments for the page
@@ -164,7 +164,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$commandMgr) {
 
 
 /**
- * Check the rights
+ * Checks the user rights for accessing the page
  *
  * @param database $db resource the database connection handle
  * @param tlUser $user the current active user

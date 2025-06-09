@@ -35,10 +35,10 @@ function getGrants(&$db,&$userObj)
 }
 
 /**
- * Initialize arguments
+ * Get input from user and return it in some sort of namespace
  *
  * @param database $dbH
- * @return stdClass
+ * @return stdClass object returns the arguments for the page
  */
 function init_args(&$dbH)
 {

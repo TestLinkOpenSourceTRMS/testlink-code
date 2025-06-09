@@ -32,9 +32,9 @@ if ($_SESSION['currentUser']->hasRight($db,"project_inventory_management")) {
 echo json_encode($data);
 
 /**
- * Initialize arguments
+ * Get input from user and return it in some sort of namespace
  *
- * @return stdClass
+ * @return stdClass object returns the arguments for the page
  */
 function init_args()
 {

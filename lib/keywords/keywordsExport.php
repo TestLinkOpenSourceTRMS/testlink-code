@@ -1,11 +1,11 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  keywordsExport.php
  * @package     TestLink
- * @copyright   2005,2019 TestLink community 
+ * @copyright   2005,2019 TestLink community
  * @link        http://www.testlink.org/
  *
  */
@@ -31,7 +31,10 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
- *
+ * Get input from user and return it in some sort of namespace
+ * 
+ * @param database $dbHandler
+ * @return stdClass object returns the arguments for the page
  */
 function init_args(&$dbHandler) {
   $ipcfg = array("doAction" => array("GET",tlInputParameter::STRING_N,0,50),
@@ -40,14 +43,14 @@ function init_args(&$dbHandler) {
                  "exportType" => array("POST", tlInputParameter::STRING_N,0,255));
 
   $args = new stdClass();
-  $pps = I_PARAMS($ipcfg,$args);
+  I_PARAMS($ipcfg,$args);
 
   if( $args->tproject_id <= 0 ) {
     throw new Exception("Error Invalid Test Project ID", 1);
   }
   
   // Check rights before doing anything else
-  // Abort if rights are not enough 
+  // Abort if rights are not enough
   $args->user = $_SESSION['currentUser'];
   $env['tproject_id'] = $args->tproject_id;
   $env['tplan_id'] = 0;
@@ -65,15 +68,14 @@ function init_args(&$dbHandler) {
 }
 
 
-/*
-  function: do_export
-            generate export file
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ * do_export
+ *  generate export file
+ *
+ * @param database $db
+ * @param TLSmarty $smarty
+ * @param stdClass $args
+ */
 function do_export(&$db,&$smarty,&$args) {
   $pfn = null;
   $pfx = null;
@@ -107,7 +109,10 @@ function do_export(&$db,&$smarty,&$args) {
 }
 
 /**
+ * Initialisiert die GUI
  *
+ * @param stdClass $argsObj
+ * @return stdClass
  */
 function initializeGui(&$argsObj) {
   $kw = new tlKeyword();
@@ -121,11 +126,14 @@ function initializeGui(&$argsObj) {
   $gui->actionUrl = "lib/keywords/keywordsExport.php?doAction=do_export&tproject_id={$gui->tproject_id}";
   $gui->cancelUrl = "lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id}";
   return $gui;
-} 
+}
 
 
 /**
+ * Export keywords to CSV
  *
+ * @param array $kwSet
+ * @return string in csv format
  */
 function exportKeywordsToCSV($kwSet) {
   $keys = array( "keyword","notes","tcv_qty" );

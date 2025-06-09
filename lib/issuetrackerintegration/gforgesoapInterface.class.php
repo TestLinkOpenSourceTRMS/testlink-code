@@ -1,14 +1,14 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource  gforgesoapInterface.class.php
  * @author Francisco Mancardi
  *
  *
  * @internal IMPORTANT NOTICE
- *       we use issueID on methods signature, to make clear that this ID 
- *       is HOW issue in identified on Issue Tracker System, 
+ *       we use issueID on methods signature, to make clear that this ID
+ *       is HOW issue in identified on Issue Tracker System,
  *       not how is identified internally at DB level on TestLink
  *
  * @internal revisions
@@ -29,7 +29,7 @@ class gforgesoapInterface extends issueTrackerInterface
   /**
    * Construct and connect to BTS.
    *
-   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param string $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
   function __construct($type,$config,$name)
@@ -39,7 +39,7 @@ class gforgesoapInterface extends issueTrackerInterface
     if( !$this->setCfg($config) )
     {
       return false;
-    }  
+    }
     
     $this->completeCfg();
     $this->connect();
@@ -49,9 +49,8 @@ class gforgesoapInterface extends issueTrackerInterface
    *
    * check for configuration attributes than can be provided on
    * user configuration, but that can be considered standard.
-   * If they are MISSING we will use 'these carved on the stone values' 
+   * If they are MISSING we will use 'these carved on the stone values'
    * in order to simplify configuration.
-   *
    *
    **/
   function completeCfg()
@@ -70,7 +69,7 @@ class gforgesoapInterface extends issueTrackerInterface
       if( !property_exists($this->cfg,'uricreate') )
       {
         $this->cfg->uricreate = $base . 'gf/';
-    }     
+    }
   }
 
 
@@ -81,12 +80,10 @@ class gforgesoapInterface extends issueTrackerInterface
 
 
   /**
-   * status code (integer) for issueID 
+   * status code (integer) for issueID
    *
-   * 
    * @param string issueID
-   *
-   * @return 
+   * @return
    **/
   public function getIssueStatusCode($issueID)
   {
@@ -99,9 +96,7 @@ class gforgesoapInterface extends issueTrackerInterface
    * Returns status in a readable form (HTML context) for the bug with the given id
    *
    * @param string issueID
-   * 
-   * @return string 
-   *
+   * @return string
    **/
   function getIssueStatusVerbose($issueID)
   {
@@ -113,7 +108,6 @@ class gforgesoapInterface extends issueTrackerInterface
   /**
    *
    * @param string issueID
-   * 
    * @return string returns the bug summary if bug is found, else null
    **/
     function getIssueSummary($issueID)
@@ -123,10 +117,8 @@ class gforgesoapInterface extends issueTrackerInterface
     }
   
     /**
-     * @internal precondition: TestLink has to be connected to BTS 
-     *
-   * @param string issueID
-     *
+     * @internal precondition: TestLink has to be connected to BTS
+     * @param string issueID
      **/
     function getIssue($issueID)
     {
@@ -144,10 +136,10 @@ class gforgesoapInterface extends issueTrackerInterface
               $dataID[] = $efd->tracker_extra_field_data_id;
             }
             
-            $extraFields = $this->APIClient->getTrackerExtraFieldArray($this->authToken, 
+            $extraFields = $this->APIClient->getTrackerExtraFieldArray($this->authToken,
                                                 $issue->tracker_id, $target);
                                                 
-            new dBug($extraFields);     
+            new dBug($extraFields);
       $idx=0;
       foreach($extraFields as $ef)
       {
@@ -162,27 +154,13 @@ class gforgesoapInterface extends issueTrackerInterface
       }
             new dBug($statusObj);
             
-            $zz = $this->APIClient->getTrackerExtraField($this->authToken, 
-                                          $issue->tracker_id, 
+            $zz = $this->APIClient->getTrackerExtraField($this->authToken,
+                                          $issue->tracker_id,
                                           $statusObj->tracker_extra_field_id);
 
       new dBug($zz);
-            
-            //$yy = $this->APIClient->getTrackerExtraFieldElementArray($this->authToken, 
-            //                                    $issue->tracker_id, (array)$statusObj->tracker_extra_field_id);
-
-            // new dBug($yy);
-            // echo $statusObj->tracker_extra_field_data_id;
-            // $yy = $this->APIClient->getTrackerExtraFieldData($this->authToken,$issue->tracker_item_id,87191);
-      //                         // $statusObj->tracker_extra_field_data_id);
 
       echo $this->authToken . '<br>';
-      // echo '$issue->tracker_item_id:' . $issue->tracker_item_id . '<br>';
-      // echo '$statusObj->tracker_extra_field_data_id:' . $statusObj->tracker_extra_field_data_id  . '<br>';
-      //echo '$statusObj->tracker_extra_field_id:' . $statusObj->tracker_extra_field_id  . '<br>';
-      //echo '<br>';
-            //$yy = $this->APIClient->getTrackerExtraFieldDatas($this->authToken,$issue->tracker_item_id,
-      //                         $statusObj->tracker_extra_field_id);
 
       // tracker_item_id:8305
       // tracker_extra_field_id:55108
@@ -214,8 +192,7 @@ class gforgesoapInterface extends issueTrackerInterface
     /**
      * checks id for validity
      *
-   * @param string issueID
-     *
+     * @param string issueID
      * @return bool returns true if the bugid has the right format, false else
      **/
     function checkBugIDSyntax($issueID)
@@ -224,8 +201,8 @@ class gforgesoapInterface extends issueTrackerInterface
     }
 
     /**
-   * @param string issueID
      *
+     * @param string issueID
      * @return bool true if issue exists on BTS
      **/
     function checkBugIDExistence($issueID)
@@ -243,15 +220,14 @@ class gforgesoapInterface extends issueTrackerInterface
      *
      * @return bool returns true if the soap connection was established and the
      * wsdl could be downloaded, false else
-     *
      **/
     function connect()
     {
     $this->interfaceViaDB = false;
     $op = $this->getClient(array('log' => true));
     if( $this->connected = $op['connected'] )
-    { 
-      // OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
+    {
+      // OK, we have got WSDL => server is up and we can do SOAP calls, but now we need
       // to do a simple call with user/password only to understand if we are really connected
       try
       {
@@ -270,7 +246,6 @@ class gforgesoapInterface extends issueTrackerInterface
     }
 
     /**
-     * 
      *
      **/
   function isConnected()
@@ -280,7 +255,6 @@ class gforgesoapInterface extends issueTrackerInterface
 
 
     /**
-     * 
      *
      **/
   function getClient($opt=null)
@@ -293,7 +267,7 @@ class gforgesoapInterface extends issueTrackerInterface
     try
     {
       // IMPORTANT NOTICE
-      // $this->cfg is a simpleXML object, then is ABSOLUTELY CRITICAL 
+      // $this->cfg is a simpleXML object, then is ABSOLUTELY CRITICAL
       // DO CAST any member before using it.
       // If we do following call WITHOUT (string) CAST, SoapClient() fails
       // complaining '... wsdl has to be an STRING or null ...'
@@ -308,10 +282,10 @@ class gforgesoapInterface extends issueTrackerInterface
       if($my['opt']['log'])
       {
         tLog("SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
-      } 
+      }
     }
     return $res;
-  } 
+  }
 
 
 
@@ -380,7 +354,7 @@ class gforgesoapInterface extends issueTrackerInterface
     $summary = $issue->summary;
         $strDueDate = $this->helperParseDate($issue->duedate);
         if( !is_null($strDueDate) )
-        { 
+        {
           $summary .= "<b> [$strDueDate] </b> ";
         }
         return $summary;
@@ -393,28 +367,5 @@ class gforgesoapInterface extends issueTrackerInterface
     $ret['msg'] = $ret['status'] ? 'OK' : 'You need to enable SOAP extension';
     return $ret;
   }
-
-
-/*    
-getTrackerItem() 
-
-$issue (object)
-tracker_id      371
-tracker_item_id   7091
-status_id       0
-priority      3
-submitted_by    14030
-open_date       2011-03-31 03:00:00
-close_date      2011-04-07 03:00:00
-summary       Add support for Gforge6
-details       Add support for Gforge As 6.0 (hierarchical tracker items)
-last_modified_date  2011-05-26 20:31:40
-last_modified_by  14030
-sort_order      0
-parent_id       0
-has_subitems    [empty string]
-subitems_count    0    
-*/
-    
 }
 ?>

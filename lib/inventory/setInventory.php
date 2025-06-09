@@ -1,13 +1,13 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Add or modify a device in inventory list
- * 
+ *
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 2009,2019 TestLink community  
+ * @copyright 2009,2019 TestLink community
  *
  **/
 
@@ -16,7 +16,7 @@ require_once 'common.php';
 testlinkInitPage($db);
 
 $data['userfeedback'] = lang_get('inventory_msg_no_action');
-$data['success'] = FALSE;
+$data['success'] = false;
 $args = init_args();
 
 if ($_SESSION['currentUser']->hasRight($db,"project_inventory_management")) {
@@ -35,13 +35,14 @@ else {
 echo json_encode($data);
 
 /**
+ * Initializes the arguments
  *
+ * @return stdClass
  */
 function init_args()
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
-	$iParams = 
-	  array("machineID" => array(tlInputParameter::INT_N),
+	$iParams = array("machineID" => array(tlInputParameter::INT_N),
 					"machineOwner" => array(tlInputParameter::INT_N),
 			    "machineName" => array(tlInputParameter::STRING_N,0,255),
 			    "machineIp" => array(tlInputParameter::STRING_N,0,50),

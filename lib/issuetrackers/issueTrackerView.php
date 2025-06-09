@@ -7,7 +7,7 @@
  *
  * @author   francisco.mancardi@gmail.com
  * @internal revisions
- * 
+ *
  *
 **/
 require_once dirname(__FILE__) . '/../../config.inc.php';
@@ -25,7 +25,7 @@ $gui->canManage = $args->currentUser->hasRight($db,"issuetracker_management");
 $gui->user_feedback = $args->user_feedback;
 
 if($args->id > 0) {
-  $gui->items[$args->id]['connection_status'] = $issueTrackerMgr->checkConnection($args->id) ? 'ok' : 'ko'; 
+  $gui->items[$args->id]['connection_status'] = $issueTrackerMgr->checkConnection($args->id) ? 'ok' : 'ko';
 }
 
 $smarty = new TLSmarty();
@@ -35,13 +35,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * @return object returns the arguments for the page
+ * Initialize arguments
+ *
+ * @return stdClass $args object returns the arguments for the page
  */
 function init_args() {
   $args = new stdClass();
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   
-  $args->currentUser = $_SESSION['currentUser']; 
+  $args->currentUser = $_SESSION['currentUser'];
   
   $args->user_feedback = array('type' => '', 'message' => '');
   
@@ -59,7 +61,11 @@ function init_args() {
 }
 
 /**
+ * Check the rights
  *
+ * @param database $db
+ * @param tlUser $user the current active user
+ * @return boolean
  */
 function checkRights(&$db,&$user) {
   return $user->hasRight($db,"issuetracker_view") || $user->hasRight($db,"issuetracker_management");

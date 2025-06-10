@@ -1,15 +1,15 @@
-<?php 
+<?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Collect DB input data
  * every HTML input defined, will create an entry on $_SESSION array  automagically.
- * 
+ *
  * @filesource  installDbInput.php
  * @package   TestLink
  * @author    Martin Havlat
- * @copyright   2009,2016 TestLink community 
+ * @copyright   2009,2016 TestLink community
  *
  * @internal revisions
  * @since 1.9.15
@@ -18,12 +18,12 @@
 require_once 'installUtils.php';
 
 if( !isset($_SESSION) )
-{ 
+{
   session_start();
 }
 
 $msg='';
-$inst_phase = 'dbaccess';  // global variable -> absolutely wrong use as usual, used on installHead.inc 
+$inst_phase = 'dbaccess';  // global variable -> absolutely wrong use as usual, used on installHead.inc
 include 'installHead.inc';
 ?>
 <div class="tlStory">
@@ -64,7 +64,7 @@ include 'installHead.inc';
         return false;
       }
 
-      if(f.tableprefix.value != "") 
+      if(f.tableprefix.value != "")
       {
         if( f.tableprefix.value.search(/^[A-Za-z0-9_]*$/) == -1)
         {
@@ -87,7 +87,7 @@ include 'installHead.inc';
   </script>
 
   <form action="installNewDB.php" method="post" name="myForm" onsubmit="return validate()">
-  <?php echo '<input type="hidden" id="isNew" name="isNew"  value="' . $_SESSION['isNew'] . '"/> '; ?>    
+  <?php echo '<input type="hidden" id="isNew" name="isNew"  value="' . $_SESSION['isNew'] . '"/> '; ?>
 
 <?php if(!$_SESSION['isNew']){ ?>
   
@@ -108,7 +108,7 @@ include 'installHead.inc';
       <label for="databasetype">I have the back-up</label>
     </div>
         <input type="checkbox" id="backupdone" name="backupdone" />
-  </p> 
+  </p>
 <?php } ?>
 
         
@@ -123,32 +123,36 @@ include 'installHead.inc';
       <option value="mysql" selected>MySQL/MariaDB (5.6+ / 10.+)</option>
       <option value="postgres" >Postgres (9.1 and later)</option>
       <option value="mssql" >Microsoft SQL Server 2008 and later (Experimental)</option>
-    </select> 
+    </select>
     </p>
     <p>
       <div class="labelHolder">
         <label for="databasehost">Database host</label>
       </div>
-      <input type="text" id="databasehost" name="databasehost" 
-                        value="localhost" style="width:200px" />
+      <input type="text" id="databasehost" name="databasehost" value="localhost" style="width:200px" />
     </p>
     <p>
       <div class="tlBox">Note: In the case that you DB connection dosn't use <b>STANDARD PORT</b> for ,
     you need to add '<b>:port_number</b>', at the end Database host parameter.
-    Example: you use MySQL running on port 6606, on server matrix 
+    Example: you use MySQL running on port 6606, on server matrix
     then Database host will be <i>matrix:6606</i>
     </div>
-    </p>      
-    <p>Enter the name of the TestLink database <?php if(!$_SESSION['isNew'])echo " for upgrade."; else
-      echo ". The installer will attempt to create it if not exists."?></br>
+    </p>
+    <p>Enter the name of the TestLink database <?php
+    if(!$_SESSION['isNew'])
+    {
+        echo " for upgrade.";
+    } else {
+        echo ". The installer will attempt to create it if not exists.";
+    }
+    ?></br>
     <div class="labelHolder"><label for="databasename">Database name</label></div>
-    <input type="text" id="databasename" name="databasename"  maxlength="50" 
-                 style="width:200px" value="testlink">
+    <input type="text" id="databasename" name="databasename"  maxlength="50" style="width:200px" value="testlink">
     </p>
     <?php if($_SESSION['isNew']){ ?>
     <p>
         <div class="tlBox">Disallowed characters in Database Name:<br />
-      The database name can contains any character that is allowed in 
+      The database name can contains any character that is allowed in
       a directory name, except '/', '\', or '.'.
     </div>
     </p>
@@ -163,10 +167,10 @@ include 'installHead.inc';
     <div class="tlBox">
       Note: This parameter should be empty for the most of cases.<br />
       <b>Using a Database shared with other applications:</b>
-      Testlink can be installed (using this installer) on a existing database 
+      Testlink can be installed (using this installer) on a existing database
       used by another application, using a table prefix.<br />
-      Warning! PART OF INSTALLATION PROCESS CONSISTS 
-      on dropping all TestLink tables present on the database/schema (if any TestLink table exists). 
+      Warning! PART OF INSTALLATION PROCESS CONSISTS
+      on dropping all TestLink tables present on the database/schema (if any TestLink table exists).
       Backup your Database Before installing and load after this process.
     </div>
     </p>
@@ -199,23 +203,24 @@ include 'installHead.inc';
     </p>
     <p>
     <div class="tlBox">
-      This user will have permission only to work on TestLink database and will be 
+      This user will have permission only to work on TestLink database and will be
       stored in TestLink configuration.<br />
           All TestLink requests to the Database will be done with this user.
     </div>
     </p>
         
     <p>
-      <?php if($_SESSION['isNew'])echo 'After successfull installation You will' .
-            ' have the following login for TestLink Administrator:<br />' .
-                'login name: admin <br /> password  : admin';
+      <?php 
+      if ($_SESSION['isNew']) {
+          echo 'After successfull installation You will' . ' have the following login for TestLink Administrator:<br />' . 'login name: admin <br /> password  : admin';
+      }
       ?>
     </p>
     <p>
       <input type="submit" id="setup" value="Process TestLink Setup!">
     </p>
         
-  </form> 
+  </form>
 
 </div>
 <?php include 'installFooter.inc'; ?>

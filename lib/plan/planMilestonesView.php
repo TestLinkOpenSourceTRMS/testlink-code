@@ -3,16 +3,16 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
- * Define urgency of a Test Suite. 
+ *
+ * Define urgency of a Test Suite.
  * It requires "prioritization" feature enabled.
  *
  * @package 	 TestLink
  * @author     Francisco Mancardi
- * @copyright  2003-2020, TestLink community 
+ * @copyright  2003-2020, TestLink community
  * @filesoruce planMilestonesView.php
  * @link 		   http://www.testlink.org
- * 
+ *
  **/
 
 require_once '../../config.inc.php';
@@ -38,11 +38,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*
-  function: 
+  function:
 
   args :
   
-  returns: 
+  returns:
 
 */
 function init_args()
@@ -81,7 +81,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
   {
     $metrics = new tlTestPlanMetrics($dbHandler);
     $gui->itemsLive = $metrics->getMilestonesMetrics($argsObj->tplan_id,$gui->items);
-  }  
+  }
 
 	
 	$gui->grants = new stdClass();

@@ -3,7 +3,7 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
+ *
  * Allows import in XML format of test plan links to:
  * Test Cases
  * Platforms
@@ -13,9 +13,9 @@
  * @filesource  planImport.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2003-2014, TestLink community 
+ * @copyright   2003-2014, TestLink community
  * @link        http://testlink.sourceforge.net/
- * 
+ *
  * @internal revisions
  *
  **/
@@ -44,7 +44,7 @@ $gui->import_title = lang_get('title_import_testplan_links');
 // This check is done againg, also on importTestPlanLinksFromXML(), just to avoid surprises
 $tproject_mgr = new testproject($db);
 $dummy = $tproject_mgr->get_by_id($args->tproject_id);
-$tprojectHasTC = $tproject_mgr->count_testcases($args->tproject_id) > 0; 
+$tprojectHasTC = $tproject_mgr->count_testcases($args->tproject_id) > 0;
 if(!$tprojectHasTC)
 {
   $gui->resultMap[] = array('',sprintf(lang_get('tproject_has_zero_testcases'),$dummy['name']));
@@ -60,7 +60,7 @@ if ($args->do_upload)
   $doIt = false;
   $gui->file_check = null;
   if (($source != 'none') && ($source != ''))
-  { 
+  {
     // ATTENTION:
     // MAX_FILE_SIZE hidden input is defined on form, but anyway we do not get error at least using
     // Firefox and Chrome.
@@ -71,7 +71,7 @@ if ($args->do_upload)
     }
   }
   if($doIt)
-  { 
+  {
     $gui->file_check['status_ok'] = 1;
     if (move_uploaded_file($source, $input_file))
     {
@@ -91,7 +91,7 @@ if ($args->do_upload)
       $gui->resultMap = $pimport_fn($db,$tplan_mgr,$input_file,$context);
     }
   }
-  else if(is_null($gui->file_check))
+  elseif(is_null($gui->file_check))
   {
     $gui->file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
     $args->importType = null;
@@ -102,7 +102,7 @@ $gui->testprojectName = $_SESSION['testprojectName'];
 $gui->importTypes = $tplan_mgr->get_import_file_types();
 
 $smarty = new TLSmarty();
-$smarty->assign('gui',$gui);  
+$smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
@@ -129,7 +129,7 @@ function init_args()
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
-  $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
+  $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null;
   $args->do_upload = isset($_REQUEST['uploadFile']) ? 1 : 0;
     
   $args->userID = intval($_SESSION['userID']);
@@ -190,9 +190,9 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
   //       ...
   //       </link>
   //     </executables>
-  //   </testplan>   
+  //   </testplan>
   // </xml>
-  $msg = array(); 
+  $msg = array();
   $labels = init_labels(array('link_without_required_platform' => null, 'ok' => null,
                               'link_without_platform_element' => null,
                               'no_platforms_on_tproject' => null, 'tcase_link_updated' => null,
@@ -211,30 +211,30 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
   $tprojectInfo = $tprojectMgr->get_by_id($contextObj->tproject_id);
   $tcasePrefix = $tprojectInfo['prefix'] . config_get('testcase_cfg')->glue_character;
   
-  $tprojectHasTC = $tprojectMgr->count_testcases($contextObj->tproject_id) > 0; 
+  $tprojectHasTC = $tprojectMgr->count_testcases($contextObj->tproject_id) > 0;
   if(!$tprojectHasTC)
   {
     $msg[] = array(sprintf($labels['tproject_has_zero_testcases'],$tprojectInfo['name']),$labels['not_imported']);
-    return $msg;  // >>>-----> Bye
+    return $msg;
   }
   
   $xml = @simplexml_load_file_wrapper($targetFile);
   if($xml !== FALSE)
   {
     $tcaseMgr = new testcase($dbHandler);
-    $tcaseSet = array(); 
+    $tcaseSet = array();
     $tprojectMgr->get_all_testcases_id($contextObj->tproject_id,$tcaseSet,array('output' => 'external_id'));
     $tcaseSet = array_flip($tcaseSet);
 
     // Test Plan name will not be used
     // <testplan>  <name></name>
     //
-    // Platform definition info will not be used 
+    // Platform definition info will not be used
     //
     // I will try to link the platforms if are defined
     $status_ok = true;
     if (property_exists($xml,'platforms')) {
-      $platformMgr = new tlPlatform($dbHandler,$contextObj->tproject_id); 
+      $platformMgr = new tlPlatform($dbHandler,$contextObj->tproject_id);
       $platformUniverse = $platformMgr->getAllAsMap();
       if (is_null($platformUniverse)) {
         $status_ok = false;
@@ -243,7 +243,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
         $platformUniverse = array_flip($platformUniverse);
         $op = processPlatforms($platformMgr,$tplanMgr,$platformUniverse,$xml->platforms,
                      $labels,$contextObj->tplan_id);
-        $status_ok = $op['status_ok']; 
+        $status_ok = $op['status_ok'];
         $msg = $op['msg'];
       }
     }
@@ -257,7 +257,6 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
       $xmlLinks = $xml->executables->children();
       $loops2do = count($xmlLinks);
 
-      // new dBug($platformSet);
       $tplanDesignCfg = config_get('tplanDesign');
       
       for($idx = 0; $idx < $loops2do; $idx++)
@@ -268,16 +267,14 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
         $linkWithPlatform = false;
         $status_ok = false;
         $dummy_msg = null;
-        $import_status = $labels['ok'];;
+        $import_status = $labels['ok'];
 
-        if( ($platformElementExists = property_exists($xmlLinks[$idx],'platform')) )
+        if( $platformElementExists = property_exists($xmlLinks[$idx],'platform') )
         {
           $targetName = trim((string)$xmlLinks[$idx]->platform->name);
           $linkWithPlatform = ($targetName != '');
         }
 
-        // echo "\$targetHasPlatforms:$targetHasPlatforms<br>";
-        // echo "\$linkWithPlatform:$linkWithPlatform<br>";
         if($targetHasPlatforms)
         {
           // each link need to have platform or will not be imported
@@ -292,41 +289,40 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
             $import_status = $labels['not_imported'];
             if( !$platformElementExists )
             {
-              $dummy_msg = sprintf($labels['link_without_platform_element'],$idx+1);        
+              $dummy_msg = sprintf($labels['link_without_platform_element'],$idx+1);
             }
-            else if(!$linkWithPlatform)
+            elseif(!$linkWithPlatform)
             {
-              $dummy_msg = sprintf($labels['link_without_required_platform'],$idx+1);       
+              $dummy_msg = sprintf($labels['link_without_required_platform'],$idx+1);
             }
             else
             {
               $dummy_msg = sprintf($labels['platform_not_linked'],$idx+1,$targetName,$contextObj->tplan_name);
             }
-          } 
+          }
         }
         else
         {
           if( $linkWithPlatform )
           {
             $import_status = $labels['not_imported'];
-            $dummy_msg = sprintf($labels['link_with_platform_not_needed'],$idx+1);        
+            $dummy_msg = sprintf($labels['link_with_platform_not_needed'],$idx+1);
           }
           else
           {
             $platformID = 0;
-            $status_ok = true;  
+            $status_ok = true;
           }
-        }       
+        }
         if( !is_null($dummy_msg) )
         {
           $msg[] = array($dummy_msg,$import_status);
         }
         
-        // echo '$status_ok' . $status_ok . ' ' . __LINE__ . '<br>' ;
         if( $status_ok )
         {
           $createLink = false;
-          $updateLink = false;  
+          $updateLink = false;
           
           // Link passed ok check on platform
           // Now we need to understand if requested Test case is present on Test Project
@@ -350,7 +346,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
               $lvFilters = array('tplan_id' => $contextObj->tplan_id);
               $linkedVersions = $tcaseMgr->get_linked_versions($dummy[0]['id'],$lvFilters);
               $updateLink = false;
-              $doUpdateFeedBack = true;  
+              $doUpdateFeedBack = true;
               
               if( !($createLink = is_null($linkedVersions)) )
               {
@@ -359,17 +355,16 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
                 {
                   // need to check if tc version status allows link to test plan
                   $createLink = !isset($tplanDesignCfg->hideTestCaseWithStatusIn[$dummy[0]['status']]);
-                  if($createLink == FALSE)
+                  if(!$createLink)
                   {
                     // see const.inc.php
-                    $rogue = 'testCaseStatus_' . 
-                             $tplanDesignCfg->hideTestCaseWithStatusIn[$dummy[0]['status']];
+                    $rogue = 'testCaseStatus_' . $tplanDesignCfg->hideTestCaseWithStatusIn[$dummy[0]['status']];
                   
                     $dummy_msg = sprintf($labels['cant_link_to_tplan_feedback'], $externalID, $version);
                                         
                     $msg[] = array($dummy_msg,
                                    sprintf($labels['tcversion_status_forbidden'],lang_get($rogue)));
-                  }  
+                  }
                 }
                 else
                 {
@@ -383,7 +378,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
                   {
                     $updateLink = true;
                   }
-                  else if ($platformID == 0 )
+                  elseif ($platformID == 0 )
                   {
                     // User request to add without platform, but platforms exist => SKIP
                     $msg[] = array('platform 0 missing messages',$labels['not_imported']);
@@ -399,17 +394,16 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
               if( $createLink )
               {
                 $createLink = !isset($tplanDesignCfg->hideTestCaseWithStatusIn[$dummy[0]['status']]);
-                if($createLink == FALSE)
+                if(!$createLink)
                 {
                   // see const.inc.php
-                  $rogue = 'testCaseStatus_' . 
-                           $tplanDesignCfg->hideTestCaseWithStatusIn[$dummy[0]['status']];
+                  $rogue = 'testCaseStatus_' . $tplanDesignCfg->hideTestCaseWithStatusIn[$dummy[0]['status']];
                 
                   $dummy_msg = sprintf($labels['cant_link_to_tplan_feedback'], $externalID, $version);
                                         
                   $msg[] = array($dummy_msg,
                                  sprintf($labels['tcversion_status_forbidden'],lang_get($rogue)));
-                }  
+                }
               }
 
               if( $createLink )
@@ -437,10 +431,9 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
                 
                 if( $doUpdateFeedBack )
                 {
-                  $dummy_msg = sprintf($labels['tcase_link_updated'],$tcasePrefix . $externalID . ' ' . 
-                          $tcaseName,$version);
+                  $dummy_msg = sprintf($labels['tcase_link_updated'],$tcasePrefix . $externalID . ' ' . $tcaseName,$version);
                   $msg[] = array($dummy_msg,$labels['ok']);
-                } 
+                }
               }
             }
             else
@@ -452,15 +445,8 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
           {
             $msg[] = array(sprintf($labels['tcase_doesnot_exist'],$externalID,$tprojectInfo['name']));
           }
-          //$tcaseMgr->get_by_external
-              
-          // echo '<pre><xmp>';
-          // var_dump($xmlLinks[$idx]->testcase);
-          // echo 'TCBAME' . (string)$xmlLinks[$idx]->testcase->name;     
-          // echo '</xmp></pre>';
         }
-      
-      } 
+      }
     }
   }
   return $msg;
@@ -483,7 +469,6 @@ function processPlatforms(&$platMgr,&$tplanMgr,$universe,$xmlSubset,$lbl,$tplanI
     if( isset($universe[$targetName]) )
     {
       $status_ok = $status_ok && true;
-      // $msg_ok[] = array(sprintf($lbl['platform_linked'],$targetName),$lbl['ok']);
       $idSet[$universe[$targetName]] = $targetName;
     }
     else
@@ -496,7 +481,7 @@ function processPlatforms(&$platMgr,&$tplanMgr,$universe,$xmlSubset,$lbl,$tplanI
   if( $status_ok )
   {
 
-    // Now Link only if Platform is not already linked to test plan 
+    // Now Link only if Platform is not already linked to test plan
     $currentPlatformSet = $tplanMgr->getPlatforms($tplanID,array('outputFormat' => 'mapAccessByID'));
     foreach($idSet as $platformID => $platformName)
     {
@@ -504,7 +489,7 @@ function processPlatforms(&$platMgr,&$tplanMgr,$universe,$xmlSubset,$lbl,$tplanI
       {
         $platMgr->linkToTestplan($platformID, $tplanID);
         $msg_ok[] = array(sprintf($lbl['platform_linked'],$platformName),$lbl['ok']);
-      } 
+      }
     }
     $ret['msg'] = $msg_ok;
   }

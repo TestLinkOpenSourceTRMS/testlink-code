@@ -6,7 +6,7 @@
 // @internal notes:
 // Original work from: Etomite Installer SNUFFKIN/ Alex 2004
 // Improved using code from MySQL Eventum
-// 
+//
 //
 
 class SqlParser {
@@ -15,9 +15,9 @@ class SqlParser {
 
 	var $db_conn;
 	var $db_type;
-  var $db_table_prefix;
+	var $db_table_prefix;
 
-	function __construct(&$db_conn,$db_type,$db_table_prefix='') 
+	function __construct(&$db_conn,$db_type,$db_table_prefix='')
 	{
 		$this->db_conn = $db_conn;
 		$this->db_type = $db_type;
@@ -26,18 +26,17 @@ class SqlParser {
 
 
   /*
-    function: 
+    function:
 
     args :
     
-    returns: 
+    returns:
   */
-  function process($filename) 
+  function process($filename)
   {
     $new_value=null;
 
-    // -----------------------------------------------------------------
-    // part of this logic has been copied from the setup of EVENTUM 
+    // part of this logic has been copied from the setup of EVENTUM
     $contents = file($filename);
     $do_replace = trim($this->db_table_prefix) != '';
     
@@ -54,7 +53,7 @@ class SqlParser {
           
       case 'postgres':
         $target['sequence'] = "SELECT setval('";
-        $do_additional_replace=true; 
+        $do_additional_replace=true;
         $cfil = array_filter($contents,array($this,"only_good_sql"));
       break;
         
@@ -64,13 +63,12 @@ class SqlParser {
     }
 
     $r2d2 = implode("", $cfil);
-    // echo "<pre>debug 20090715 - \ - " . __FUNCTION__ . " --- "; print_r($r2d2); echo "</pre>";
 
     if( $do_replace)
     {
       $r2d2 = str_replace('/*prefix*/',$this->db_table_prefix,$r2d2);
 
-      // just to solve problem with sequence on PostGres when creating 
+      // just to solve problem with sequence on PostGres when creating
       // start up data (need to find a better way)
       if($do_additional_replace)
       {
@@ -78,7 +76,7 @@ class SqlParser {
         {
         	if( !is_null($value) )
           {
-        	  $new_value[$key] = $value . $this->db_table_prefix ;         
+        	  $new_value[$key] = $value . $this->db_table_prefix ;
         	  $r2d2 = str_replace($value,$new_value[$key],$r2d2);
         	}
         }
@@ -87,22 +85,22 @@ class SqlParser {
    
     $num = 0;
     $sql_array = explode(";", $r2d2);
-    foreach($sql_array as $sql_do) 
+    foreach($sql_array as $sql_do)
     {
       // Needed becuase explode() adds \r\n
-      $sql_dodo =  trim(trim($sql_do, "\r\n "));			
+      $sql_dodo =  trim(trim($sql_do, "\r\n "));
 
       if( strlen($sql_dodo) > 0 )
       {
   			$num = $num + 1;
   			$status_ok=$this->db_conn->exec_query($sql_dodo);
   			if(!$status_ok)
-  			{ 
+  			{
   				$this->sql_errors[] = array("error" => $this->db_conn->error_msg(), "sql" => $sql_dodo);
   				$this->install_failed = true;
   			}
       }
-	}  // foreach
+	}
 }
 
 
@@ -124,15 +122,15 @@ function only_good_sql($v, $comment_char='-')
     $pos = strpos($v_c, $findme);
     
     
-    if ($pos === false) 
+    if ($pos === false)
     {
        $use_v = true;
-    } 
-    else 
+    }
+    else
     {
       if ($pos == 0 )
       {
-       $use_v = false;	
+       $use_v = false;
       }
     }
     
@@ -146,7 +144,7 @@ function only_good_sql($v, $comment_char='-')
     }
     
     return $use_v;
-} // Function ends
+}
 
 
-} // class end
+}

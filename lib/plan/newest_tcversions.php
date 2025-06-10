@@ -1,11 +1,11 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.15 2010/05/06 20:30:26 franciscom Exp $ 
- * 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * @version $Id: newest_tcversions.php,v 1.15 2010/05/06 20:30:26 franciscom Exp $
  *
  *
- */         
+ *
+ */
 require '../../config.inc.php';
 require_once 'common.php';
 
@@ -14,10 +14,10 @@ testlinkInitPage($db,false,false);
 $templateCfg = templateConfiguration();
 
 $testcase_cfg = config_get('testcase_cfg');
-$tree_mgr = new tree($db); 
-$tsuite_mgr = new testsuite($db); 
-$tplan_mgr = new testplan($db); 
-$tcase_mgr = new testcase($db); 
+$tree_mgr = new tree($db);
+$tsuite_mgr = new testsuite($db);
+$tplan_mgr = new testplan($db);
+$tcase_mgr = new testcase($db);
 
 
 $args = init_args();
@@ -28,9 +28,7 @@ checkRights($db,$_SESSION['currentUser'],$context);
 
 
 $gui = new stdClass();
-$gui->can_manage_testplans = 
-  $_SESSION['currentUser']
-    ->hasRight($db,"mgt_testplan_create",$context->tproject_id);
+$gui->can_manage_testplans = $_SESSION['currentUser']->hasRight($db,"mgt_testplan_create",$context->tproject_id);
 $gui->tplans = array();
 $gui->show_details = 0;
 $gui->user_feedback = '';
@@ -66,12 +64,12 @@ if($qty_linked)
     }
     else
     {
-        $gui->user_feedback = lang_get('no_newest_version_of_linked_tcversions');  
+        $gui->user_feedback = lang_get('no_newest_version_of_linked_tcversions');
     }
-} 
+}
 else
 {
-    $gui->user_feedback = lang_get('no_linked_tcversions');  
+    $gui->user_feedback = lang_get('no_linked_tcversions');
 }
 
 $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$args->tproject_id);
@@ -106,10 +104,10 @@ function init_args()
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
     $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
     
-    // Can be a list (string with , (comma) has item separator), 
+    // Can be a list (string with , (comma) has item separator),
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
 
-    return $args;  
+    return $args;
 }
 
 

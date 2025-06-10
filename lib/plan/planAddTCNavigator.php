@@ -57,7 +57,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @param tlTestCaseFilterControl $control
  * @return object $gui
  */
-function initializeGui($control) 
+function initializeGui($control)
 {
 
   $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -72,9 +72,9 @@ function initializeGui($control)
   $gui->loadRightPaneAddTC = isset($_REQUEST['loadRightPaneAddTC']) ? $_REQUEST['loadRightPaneAddTC'] : true;
   if( isset($_SESSION['loadRightPaneAddTC'][$control->form_token]) )
   {
-    $gui->loadRightPaneAddTC = false;  
-    unset($_SESSION['loadRightPaneAddTC'][$control->form_token]);  
-  }  
+    $gui->loadRightPaneAddTC = false;
+    unset($_SESSION['loadRightPaneAddTC'][$control->form_token]);
+  }
 
   $gui->menuUrl = 'lib/plan/planAddTC.php';
 

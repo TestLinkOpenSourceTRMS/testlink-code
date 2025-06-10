@@ -1,16 +1,16 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
- * create or update TestLink database 
- * 
+ * create or update TestLink database
+ *
  * @filesource  installNewDB.php
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2008,2021 TestLink community
  * @copyright   inspired by Etomite Content Management System
- *              2003, 2004 Alexander Andrew Butter 
+ *              2003, 2004 Alexander Andrew Butter
  *
  **/
 
@@ -33,7 +33,7 @@ require_once 'Zend/Validate/Hostname.php';
 // but this table do not still yet !!.
 require_once '../lib/functions/logger.class.php';
 
-if( !isset($_SESSION) ) { 
+if( !isset($_SESSION) ) {
   session_start();
 }
 
@@ -114,7 +114,7 @@ $tl_db_passwd = trim($_SESSION['tl_loginpassword']);
 
 
 // will limit length to avoi some kind of injection
-// Choice: 32 
+// Choice: 32
 // Allows only certan kind of letters, numbers, minus, underscore
 $tl_db_login = trim($_SESSION['tl_loginname']);
 $tl_db_login = substr(preg_replace($san,'',$tl_db_login),0,32);
@@ -159,7 +159,7 @@ $the_title = $_SESSION['title'];
        
      ul li { margin-top: 7px; }
         </style>
-</head> 
+</head>
 
 <body>
 <table border="0" cellpadding="0" cellspacing="0" class="mainTable">
@@ -211,7 +211,7 @@ switch($db_type) {
 
 $db = new database($dbDriverName);
 define('NO_DSN',FALSE);
-@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
+@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass);
 
 if( $conn_result['status'] == 0 )  {
   echo '<span class="notok">Failed!</span><p />Please check the database login details and try again.';
@@ -234,7 +234,7 @@ $db=null;
 // Connect to the Database (if Succesful -> database exists)
 $db = new database($dbDriverName);
 
-@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass,$db_name); 
+@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass,$db_name);
 
 if( $conn_result['status'] == 0 ) {
   $db->close();
@@ -242,15 +242,15 @@ if( $conn_result['status'] == 0 ) {
   
   if( $upgrade ) {
     echo "Can't Upgrade";
-    close_html_and_exit();     
+    close_html_and_exit();
     
     $errors += 1;
   }
   else {
     echo "Will attempt to create:";
     $create = true;
-  } 
-} 
+  }
+}
 else {
   echo "<br />Connecting to database `" . $db_name . "`:";
   echo "<span class='ok'>OK!</span>";
@@ -273,14 +273,14 @@ if($create) {
   //
   // Identifier            : Database
   // Maximum Length (bytes): 64
-  // Allowed Characters    : Any character that is allowed in a directory name, except '/', '\', or '.'  
-  // 
-  // An identifier may be quoted or unquoted. 
-  // If an identifier is a reserved word or contains special characters, you must quote it whenever you refer to it. 
-  // For a list of reserved words, see Section 9.6, �Treatment of Reserved Words in MySQL�. 
-  // Special characters are those outside the set of alphanumeric characters from the current character set, 
-  // '_', and '$'. 
-  // The identifier quote character is the backtick ('`'): 
+  // Allowed Characters    : Any character that is allowed in a directory name, except '/', '\', or '.'
+  //
+  // An identifier may be quoted or unquoted.
+  // If an identifier is a reserved word or contains special characters, you must quote it whenever you refer to it.
+  // For a list of reserved words, see Section 9.6, �Treatment of Reserved Words in MySQL�.
+  // Special characters are those outside the set of alphanumeric characters from the current character set,
+  // '_', and '$'.
+  // The identifier quote character is the backtick ('`'):
   //
   //
   // Postgres uses as identifier quote character " (double quotes):
@@ -293,10 +293,10 @@ if($create) {
     
     echo "<p> TestLink setup could not create the database, " .
     "and no existing database with the same name was found. <br />" .
-    "Please create a database by different way (e.g. from command line)," . 
+    "Please create a database by different way (e.g. from command line)," .
     " or with different DB root account. Run setup again then.";
-    close_html_and_exit();     
-  } 
+    close_html_and_exit();
+  }
   else {
     echo "<span class='ok'>OK!</span>";
   }
@@ -315,8 +315,8 @@ if ($upgrade) {
       $update_pwd=1;
       echo "<p>You are trying to upgrade from a pre-release of TestLink 1.5" .
       "<br />this kind of upgrade is supported by this script. Use upgrade to supported version " .
-      "at first.</p>";  
-      close_html_and_exit();          
+      "at first.</p>";
+      close_html_and_exit();
     }
   }
   // -------------------------------------------------------------
@@ -328,12 +328,12 @@ if ($upgrade) {
   if( count($the_version_table) == 0 ) {
     echo "<p>You are trying to upgrade from a pre-release of TestLink 1.7" .
     "<br />this kind of upgrade is supported by this script. Use upgrade to supported version " .
-    "at first.</p>";  
-    close_html_and_exit();          
+    "at first.</p>";
+    close_html_and_exit();
   }
   else {
     $migration_functions_file = '';
-    $migration_process = ''; 
+    $migration_process = '';
 
     // try to know what db version is installed
     // check if we need to use prefix but for some reason tlObjectWithDB::getDBTables
@@ -344,10 +344,10 @@ if ($upgrade) {
       $dbVersionTable = $db_table_prefix . $dbVersionTable;
     }
     $sql = "SELECT * FROM {$dbVersionTable} ORDER BY upgrade_ts DESC";
-    $res = $db->exec_query($sql);  
+    $res = $db->exec_query($sql);
     if (!$res) {
       echo "Database ERROR:" . $db->error_msg();
-      exit(); 
+      exit();
     }
     
     $myrow = $db->fetch_array($res);
@@ -357,7 +357,7 @@ if ($upgrade) {
       case 'DB 1.2':
         $a_sql_upd_dir[] = "sql/alter_tables/1.9/{$db_type}/DB.1.3/step1/";
         $a_sql_data_dir[] = "sql/alter_tables/1.9/{$db_type}/DB.1.3/stepZ/";
-        $migration_process = 'migrate_18_to_19'; 
+        $migration_process = 'migrate_18_to_19';
         $migration_functions_file = './migration/migrate_18/migrate_18_to_19.php';
         break;
         
@@ -366,7 +366,7 @@ if ($upgrade) {
         echo " this MANUALLY using a SQL client and scripts you will find on ";
         echo " directory install/sql/alter_tables/1.9.1 ";
         echo "<br /></p>";
-        close_html_and_exit();          
+        close_html_and_exit();
         break;
 
       case 'DB 1.4':
@@ -374,13 +374,13 @@ if ($upgrade) {
         echo " this MANUALLY using a SQL client and scripts you will find on ";
         echo " directory install/sql/alter_tables/1.9.4 ";
         echo "<br /></p>";
-        close_html_and_exit();          
+        close_html_and_exit();
         break;
 
       case 'DB 1.5':
         echo "<p>Your DB Schema {$schema_version} is the last available, then you don't need to do any upgrade.";
         echo "<br />Script is finished.</p>";
-        close_html_and_exit();          
+        close_html_and_exit();
         break;
         
       default:
@@ -393,8 +393,8 @@ if ($upgrade) {
           echo "<p class='notok'>This script doesn't recognize your schema version: " . $schema_version . "</p>";
         }
         echo "<p>Upgrade is not possible. Check your input data (Go back in page history).</p>";
-        close_html_and_exit();          
-        break;  
+        close_html_and_exit();
+        break;
     }
   }
   
@@ -409,18 +409,18 @@ if ($upgrade) {
 // Added support for different types of architecture/installations:
 // webserver and dbserver on same machines      => user will be created as user
 // webserver and dbserver on DIFFERENT machines => user must be created as user@webserver
-//  
+//
 // if @ in tl_db_login (username) -> get the hostname using splitting, and use it
-//                                   during user creation on db. 
+//                                   during user creation on db.
 $db->close();
 $db=null;
 $user_host = explode('@',$tl_db_login);
-$msg = create_user_for_db($dbDriverName,$db_name, $db_server, 
-                          $db_admin_name, $db_admin_pass, 
+$msg = create_user_for_db($dbDriverName,$db_name, $db_server,
+                          $db_admin_name, $db_admin_pass,
                           $tl_db_login, $tl_db_passwd);
   
 echo "<br /><b>Creating Testlink DB user `" . $user_host[0] . "`</b>:";
-if ( strpos($msg,'ok -') === FALSE ) {
+if ( strpos($msg,'ok -') === false ) {
   echo "<span class='notok'>Failed!</span></b> - Could not create user: $tl_db_login!";
   $errors += 1;
 }
@@ -431,9 +431,9 @@ else {
 
 // ------------------------------------------------------------------------
 // Schema Operations (CREATE, ALTER, ecc).
-// Important: 
+// Important:
 //           Postgres: do it as tl_login NOT as db_admin
-//           MySQL   : do it as db_admin NOT as tl_login 
+//           MySQL   : do it as db_admin NOT as tl_login
 if( !is_null($db) ) {
   $db->close();
   $db=null;
@@ -442,15 +442,15 @@ if( !is_null($db) ) {
 $db = new database($dbDriverName);
 switch($db_type) {
     case 'mssql':
-    @$conn_result = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, $db_name); 
+    @$conn_result = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, $db_name);
     break;
 
     case 'mysql':
-    @$conn_result = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, $db_name); 
+    @$conn_result = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, $db_name);
     break;
         
     case 'postgres':
-    @$conn_result = $db->connect(NO_DSN, $db_server, $tl_db_login, $tl_db_passwd, $db_name); 
+    @$conn_result = $db->connect(NO_DSN, $db_server, $tl_db_login, $tl_db_passwd, $db_name);
     break;
 }
 
@@ -458,7 +458,7 @@ switch($db_type) {
 if( $install && $conn_result['status'] != 0 ) {
   drop_views($db,$db_table_prefix,$db_type);
   drop_tables($db,$db_table_prefix,$db_type);
-}  
+}
 
 
 // -------------------------------------------------------------------------------
@@ -486,7 +486,7 @@ if ( count($a_sql_data) > 0 ) {
         $sqlParser->process($sql_file);
       }
     }
-  }  
+  }
 }
 
 
@@ -502,7 +502,7 @@ if ($update_pwd) {
 }
 
 
-if($sqlParser->install_failed==true) 
+if($sqlParser->install_failed==true)
 {
   echo "<span class='notok'>Failed!</span></b> - {$inst_type_verbose} failed!";
   $errors += 1;
@@ -513,9 +513,9 @@ if($sqlParser->install_failed==true)
   '</i> during the execution of SQL statement <span class="mono">' .
   strip_tags($sqlParser->sql_errors[count($sqlParser->sql_errors)-1]["sql"]). "</span>";
   
-  close_html_and_exit();     
-} 
-else 
+  close_html_and_exit();
+}
+else
 {
   echo "<span class='ok'>OK!</span>";
 }
@@ -546,9 +546,9 @@ if(strcasecmp('ko', $yy['status']) == 0) {
   
   echo "Once that's been done, you can log into TestLink by pointing your browser at your TestLink site.";
   
-  close_html_and_exit();     
-} 
-else 
+  close_html_and_exit();
+}
+else
 {
   echo "<span class='ok'>OK!</span>";
 }
@@ -558,11 +558,11 @@ manual_operations($db_type);
 
 important_reminder();
 
-// When testlink is updated do not show login data admin/admin 
+// When testlink is updated do not show login data admin/admin
 // as they might not exist
 $successfull_message = '</b><p /><br><div><span class="headers">' . "{$inst_type_verbose} was successful!" . '</span><br>' .
                      'You can now log in to <a href="../index.php"> Testlink';
-if($create) 
+if($create)
 {
   $successfull_message .= ' (using login name:admin / password:admin - Please Click Me!)';
 }
@@ -582,11 +582,7 @@ close_html_and_exit();
 function manual_operations($dbType) {
 
   echo '<h1>IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE</h1>';
-
   echo '<span class="headers">';
-  //echo 'IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE';
-  //echo '</span>';
-
   echo '<br><span class="headers">';
   echo '<h1>YOU NEED TO RUN MANUALLY Following Script on your DB CLIENT Application</h1>';
   echo '</span><br>';
@@ -606,7 +602,7 @@ function write_config_db($filename, $data)
   
   if (count($user_host) > 1 )
   {
-    $db_login = $user_host[0];    
+    $db_login = $user_host[0];
   }
   
   $db_passwd = $data['db_passwd'];
@@ -627,17 +623,17 @@ function write_config_db($filename, $data)
   // example:
   // http://ellislab.com/codeigniter/user-guide/general/styleguide.html#php_closing_tag
   
-  if (@!$handle = fopen($filename, 'w')) 
+  if (@!$handle = fopen($filename, 'w'))
   {
     $ret['status'] = 'ko';
   }
   
   // Write $somecontent to our opened file.
-  if (@fwrite($handle, $configString) === FALSE) 
+  if (@fwrite($handle, $configString) === FALSE)
   {
     $ret['status'] = 'ko';
   }
-  @fclose($handle); 
+  @fclose($handle);
   
   $ret['cfg_string'] = $configString;
   
@@ -654,7 +650,7 @@ function drop_tables(&$dbHandler,$dbTablePrefix,$dbType)
   
   // tables present on target db
   $my_ado=$dbHandler->get_dbmgr_object();
-  $tablesOnDB =$my_ado->MetaTables('TABLES');  
+  $tablesOnDB =$my_ado->MetaTables('TABLES');
   if( count($tablesOnDB) > 0 && isset($tablesOnDB[0]))
   {
     echo "<br /><b>Dropping all TL existent tables:</b><br />";
@@ -668,7 +664,7 @@ function drop_tables(&$dbHandler,$dbTablePrefix,$dbType)
         $sql="DROP TABLE $targetTable";
         $sql .= (($dbType != 'mssql') && ($dbType != 'sqlsrv')) ? " CASCADE " : ' ';
         $dbHandler->exec_query($sql);
-      }   
+      }
     }
     echo "<span class='ok'>Done!</span>";
   }
@@ -680,7 +676,7 @@ function drop_views(&$dbHandler,$dbItemPrefix,$dbType)
   
   // views present on target db
   $my_ado = $dbHandler->get_dbmgr_object();
-  $itemsOnDB =$my_ado->MetaTables('VIEWS');  
+  $itemsOnDB =$my_ado->MetaTables('VIEWS');
   if( count($itemsOnDB) > 0 && isset($itemsOnDB[0]))
   {
     echo "<br /><b>Dropping all TL existent views:</b><br />";
@@ -694,7 +690,7 @@ function drop_views(&$dbHandler,$dbItemPrefix,$dbType)
         $sql="DROP VIEW $target";
         $sql .= (($dbType != 'mssql') && ($dbType != 'sqlsrv')) ? " CASCADE " : ' ';
         $dbHandler->exec_query($sql);
-      }   
+      }
     }
     echo "<span class='ok'>Done!</span>";
   }

@@ -1,11 +1,11 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @package		TestLink
- * @copyright	2005-2020, TestLink community 
- * 
+ * @copyright	2005-2020, TestLink community
+ *
  */
 
 require_once dirname(__FILE__). '/../../config.inc.php';
@@ -62,24 +62,23 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
+ * Get input from user and return it in some sort of namespace
  *
+ * @return stdClass object returns the arguments for the page
  */
 function init_args() {
-	
 	$args = new stdClass();
 	
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	
-	$args->build_id = isset($_REQUEST['build_id']) ? 
-	                  intval($_REQUEST['build_id']) : 0;
+	$args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
 	$args->confirmed = isset($_REQUEST['confirmed']) && $_REQUEST['confirmed'] == 'yes' ? true : false;
 	
 	$args->user_id = $_SESSION['userID'];
 	$args->testproject_id = intval($_SESSION['testprojectID']);
 	$args->testproject_name = $_SESSION['testprojectName'];
 	
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
-	                     $_SESSION['setting_refresh_tree_on_action'] : false;
+	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? $_SESSION['setting_refresh_tree_on_action'] : false;
 	
 	return $args;
 }

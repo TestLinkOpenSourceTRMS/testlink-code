@@ -58,7 +58,7 @@ switch ($args->doAction)
 $out = null;
 $gui->show_details = 0;
 $gui->operationType = 'standard';
-$gui->hasItems = 0;        	
+$gui->hasItems = 0;
 
 switch($args->level)
 {
@@ -109,14 +109,13 @@ $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-/*
-  function: init_args
 
-  args :
-  
-  returns: 
-
-*/
+/**
+ * Get input from user and return it in some sort of namespace
+ *
+ * @param testplan $tplanMgr
+ * @return stdClass object with some REQUEST and SESSION values as members
+ */
 function init_args(&$tplanMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -144,14 +143,14 @@ function init_args(&$tplanMgr)
 	                ? $_SESSION[$mode][$form_token] : null;
 	
 	$args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
-	if($args->tplan_id == 0) 
+	if($args->tplan_id == 0)
 	{
 		$args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
 		$args->tplan_name = $_SESSION['testplanName'];
-	} 
-	else 
+	}
+	else
 	{
-		$tpi = $tplanMgr->get_by_id($args->tplan_id);  
+		$tpi = $tplanMgr->get_by_id($args->tplan_id);
 		$args->tplan_name = $tpi['name'];
 	}
 
@@ -160,10 +159,10 @@ function init_args(&$tplanMgr)
     
     $args->keyword_id = 0;
 	$fk = 'filter_keywords';
-	if (isset($session_data[$fk])) 
+	if (isset($session_data[$fk]))
 	{
 		$args->keyword_id = $session_data[$fk];
-		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) 
+		if (is_array($args->keyword_id) && count($args->keyword_id) == 1)
 		{
 			$args->keyword_id = $args->keyword_id[0];
 		}
@@ -171,7 +170,7 @@ function init_args(&$tplanMgr)
 	
 	$args->keywordsFilterType = null;
 	$ft = 'filter_keywords_filter_type';
-	if (isset($session_data[$ft])) 
+	if (isset($session_data[$ft]))
 	{
 		$args->keywordsFilterType = $session_data[$ft];
 	}
@@ -201,7 +200,7 @@ function doUpdate(&$dbObj,&$argsObj)
 			foreach($tables as $table2update)
 			{
 				$sql = "/* $debugMsg */ UPDATE $table2update " .
-				       " SET tcversion_id={$newtcversion} " . 
+				       " SET tcversion_id={$newtcversion} " .
 				       " WHERE tcversion_id={$tcversionID} " .
 				       " AND testplan_id={$argsObj->tplan_id}";
 				$dbObj->exec_query($sql);
@@ -218,7 +217,7 @@ function doUpdate(&$dbObj,&$argsObj)
 
   args :
   
-  returns: 
+  returns:
 
 */
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
@@ -233,18 +232,18 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->user_feedback = '';
     $gui->testPlanName = $argsObj->tplan_name;
     $gui->items = null;
-    $gui->has_tc = 1;  
+    $gui->has_tc = 1;
     
     return $gui;
 }
 
 
 /*
-  function: processTestSuite 
+  function: processTestSuite
 
   args :
   
-  returns: 
+  returns:
 
 */
 function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr)
@@ -270,7 +269,7 @@ function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
   $linkedItems = $tplanMgr->get_linked_items_id($argsObj->tplan_id);
   if( is_null($linkedItems) )
   {
-     return lang_get('no_testcase_available');  
+     return lang_get('no_testcase_available');
   }
   
   $items=$tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
@@ -306,22 +305,14 @@ function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
             $dbObj->exec_query($sql);
          }
       }
-  } 
-  if( $qty == 0 )
-  {
-      $msg=lang_get('all_versions_where_latest');  
-  }  
-  else
-  {
-      $msg=sprintf(lang_get('num_of_updated'),$qty);
   }
+  $qty == 0 ? $msg=lang_get('all_versions_where_latest') : $msg=sprintf(lang_get('num_of_updated'),$qty);
 
   return $msg;
 }
 
 
 /**
- * 
  *
  */
 function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$treeMgr)
@@ -346,7 +337,6 @@ function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tree
 }
 
 /**
- * 
  *
  * @internal revisions:
  */
@@ -354,8 +344,7 @@ function processTestPlan(&$dbHandler,&$argsObj,&$tplanMgr)
 {
 	$set2update = array('items' => null, 'msg' => '');
 	$check = $tplanMgr->getLinkedCount($argsObj->tplan_id);
-	$set2update['msg'] = $check == 0 ? lang_get('testplan_seems_empty') : 
-									   lang_get('no_newest_version_of_linked_tcversions');
+	$set2update['msg'] = $check == 0 ? lang_get('testplan_seems_empty') : lang_get('no_newest_version_of_linked_tcversions');
 	
     $set2update['items'] = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
     if( count($set2update['items']) > 0 )
@@ -372,7 +361,7 @@ function processTestPlan(&$dbHandler,&$argsObj,&$tplanMgr)
 				$path[]='';
 				$set2update['items'][$tcase_id]['path']=implode(' / ',$path);
 			}
-		} 
+		}
     }
     return $set2update;
 }
@@ -403,10 +392,10 @@ function tideUpForGUI(&$output)
     				if($status)
     				{
     					$active++;
-    				}	
+    				}
     			}
 
-				$itemSet[$tcaseID]['updateTarget'] = $itemSet[$tcaseID]['tcversions'];				
+				$itemSet[$tcaseID]['updateTarget'] = $itemSet[$tcaseID]['tcversions'];
 				$lnItem = $itemSet[$tcaseID]['linked_version_id'];
 				$itemSet[$tcaseID]['canUpdateVersion'] = ($active != 0);
 				if($active == 1)
@@ -414,7 +403,7 @@ function tideUpForGUI(&$output)
 					// linked_version_id
 					if( $lnItem == key($itemSet[$tcaseID]['tcversions']) )
 					{
-						$itemSet[$tcaseID]['canUpdateVersion'] = FALSE;
+						$itemSet[$tcaseID]['canUpdateVersion'] = false;
 					}
 				}
 				if( !is_null($lnItem) && isset($itemSet[$tcaseID]['tcversions'][$lnItem]) )
@@ -424,11 +413,11 @@ function tideUpForGUI(&$output)
 					{
 						$itemSet[$tcaseID]['updateTarget'] = null;
 					}
-				}	
+				}
     		}
     	}
     
-    } 
+    }
 }
 
 /**

@@ -27,7 +27,7 @@ $tcase_mgr = new testcase($db);
 $templateCfg = templateConfiguration();
 
 $args = init_args($tplan_mgr);
-$gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+$gui = initializeGui($args,$tcase_mgr);
 
 $context = new stdClass();
 $context->tproject_id = $args->tproject_id;
@@ -63,7 +63,7 @@ $gui->hasItems = 0;
 switch($args->level)
 {
 	case 'testcase':
-	    $out = processTestCase($db,$args,$keywordsFilter,$tplan_mgr,$tree_mgr);
+	    $out = processTestCase($db,$args,$tplan_mgr,$tree_mgr);
 		break;
 
 	case 'testsuite':
@@ -178,14 +178,13 @@ function init_args(&$tplanMgr)
     return $args;
 }
 
-/*
-  function: doUpdate
-
-  args:
-
-  returns: message
-
-*/
+/**
+ * doUpdate
+ *
+ * @param database $dbObj
+ * @param stdClass $argsObj
+ * @return string
+ */
 function doUpdate(&$dbObj,&$argsObj)
 {
 	$debugMsg = 'File:' . __FILE__ . ' - Function: ' . __FUNCTION__;
@@ -212,15 +211,14 @@ function doUpdate(&$dbObj,&$argsObj)
 }
 
 
-/*
-  function: initializeGui
-
-  args :
-  
-  returns:
-
-*/
-function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
+/**
+ * Initializes the GUI
+ *
+ * @param stdClass $argsObj
+ * @param testcase $tcaseMgr
+ * @return stdClass
+ */
+function initializeGui($argsObj,&$tcaseMgr)
 {
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
@@ -238,14 +236,16 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 }
 
 
-/*
-  function: processTestSuite
-
-  args :
-  
-  returns:
-
-*/
+/**
+ * processTestSuite
+ *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param $keywordsFilter
+ * @param testplan $tplanMgr
+ * @param testcase $tcaseMgr
+ * @return array
+ */
 function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr)
 {
 	// hmm  need to document why we use ONLY $keywordsFilter
@@ -255,14 +255,14 @@ function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tca
 }
 
 
-/*
-  function: doUpdateAllToLatest
-
-  args:
-
-  returns: message
-
-*/
+/**
+ * doUpdateAllToLatest
+ *
+ * @param database $dbObj
+ * @param stdClass $argsObj
+ * @param testplan $tplanMgr
+ * @return array
+ */
 function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
 {
   $qty=0;
@@ -314,8 +314,13 @@ function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
 
 /**
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param testplan $tplanMgr
+ * @param tree $treeMgr
+ * @return array|array[]|number[]
  */
-function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$treeMgr)
+function processTestCase(&$dbHandler,&$argsObj,&$tplanMgr,&$treeMgr)
 {
     $xx = $tplanMgr->getLinkInfo($argsObj->tplan_id,$argsObj->id,null,
     							 array('output' => 'tcase_info', 'collapse' => true));
@@ -338,19 +343,20 @@ function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tree
 
 /**
  *
+ * @param stdClass $argsObj
+ * @param testplan $tplanMgr
+ * @return string|NULL[]|string[]
  * @internal revisions:
  */
-function processTestPlan(&$dbHandler,&$argsObj,&$tplanMgr)
+function processTestPlan(&$argsObj,&$tplanMgr)
 {
 	$set2update = array('items' => null, 'msg' => '');
 	$check = $tplanMgr->getLinkedCount($argsObj->tplan_id);
 	$set2update['msg'] = $check == 0 ? lang_get('testplan_seems_empty') : lang_get('no_newest_version_of_linked_tcversions');
 	
     $set2update['items'] = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
-    if( count($set2update['items']) > 0 )
+    if( !empty($set2update['items']) && !is_null($set2update['items']))
     {
-		if( !is_null($set2update['items']) && count($set2update['items']) > 0 )
-		{
 			$set2update['msg'] = '';
 			$itemSet=array_keys($set2update['items']);
 			$path_info=$tplanMgr->tree_manager->get_full_path_verbose($itemSet);
@@ -361,12 +367,15 @@ function processTestPlan(&$dbHandler,&$argsObj,&$tplanMgr)
 				$path[]='';
 				$set2update['items'][$tcase_id]['path']=implode(' / ',$path);
 			}
-		}
     }
     return $set2update;
 }
 
 
+/**
+ *
+ * @param array $output
+ */
 function tideUpForGUI(&$output)
 {
     // We are going to loop over test suites
@@ -374,7 +383,7 @@ function tideUpForGUI(&$output)
     for($idx=0; $idx < $loop2do; $idx++)
     {
     	$itemSet = &$output['spec_view'][$idx]['testcases'];
-    	if( count($itemSet) > 0)
+    	if( !empty($itemSet))
     	{
     		$key2loop = array_keys($itemSet);
     		foreach($key2loop as $tcaseID)
@@ -386,7 +395,6 @@ function tideUpForGUI(&$output)
     			// if we have ZERO ACTIVE VERSIONS
     			//
     			$active = 0;
-    			$total = count($itemSet[$tcaseID]['tcversions_active_status']);
     			foreach($itemSet[$tcaseID]['tcversions_active_status'] as $status)
     			{
     				if($status)
@@ -398,13 +406,9 @@ function tideUpForGUI(&$output)
 				$itemSet[$tcaseID]['updateTarget'] = $itemSet[$tcaseID]['tcversions'];
 				$lnItem = $itemSet[$tcaseID]['linked_version_id'];
 				$itemSet[$tcaseID]['canUpdateVersion'] = ($active != 0);
-				if($active == 1)
+				if($active == 1 && $lnItem == key($itemSet[$tcaseID]['tcversions']) )
 				{
-					// linked_version_id
-					if( $lnItem == key($itemSet[$tcaseID]['tcversions']) )
-					{
-						$itemSet[$tcaseID]['canUpdateVersion'] = false;
-					}
+				    $itemSet[$tcaseID]['canUpdateVersion'] = false;
 				}
 				if( !is_null($lnItem) && isset($itemSet[$tcaseID]['tcversions'][$lnItem]) )
 				{
@@ -416,12 +420,15 @@ function tideUpForGUI(&$output)
 				}
     		}
     	}
-    
     }
 }
 
 /**
+ * Checks the user rights for accessing the page
  *
+ * @param database $db
+ * @param tlUser $user
+ * @param stdClass $context
  */
 function checkRights(&$db,&$user,&$context)
 {

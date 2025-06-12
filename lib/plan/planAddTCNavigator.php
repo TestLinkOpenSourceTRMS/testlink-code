@@ -54,6 +54,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
  * Initialize gui object for use in templates.
+ *
  * @param tlTestCaseFilterControl $control
  * @return object $gui
  */

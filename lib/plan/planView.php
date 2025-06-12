@@ -73,11 +73,9 @@ if ($args->tproject_id && checkRights($db,$args->user,$args->tproject_id)) {
       if ($hasCF) {
         $cfields = (array)$tplan_mgr->getCustomFieldsValues($idk,$gui->tproject_id);
         foreach ($cfields as $cfd) {
-          if ($initCFCol) {
-            if (!isset($col2hide[$cfd['name']])) {
+          if ($initCFCol && !isset($col2hide[$cfd['name']])) {
               $gui->cfieldsColumns[] = $cfd['label'];
               $gui->cfieldsType[] = $cfd['type'];
-            }
           }
           $gui->tplans[$idk][$cfd['label']] = ['value' => $cfd['value'], 'data-order' => $cfd['value']];
 
@@ -137,7 +135,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
  * Get input from user and return it in some sort of namespace
- * 
+ *
  * @return stdClass object with some REQUEST and SESSION values as members
  */
 function init_args()
@@ -150,6 +148,12 @@ function init_args()
     return $args;
 }
 
+/**
+ *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @return stdClass
+ */
 function initializeGui(&$dbHandler,$argsObj)
 {
   $gui = new stdClass();
@@ -167,8 +171,11 @@ function initializeGui(&$dbHandler,$argsObj)
 
 
 /**
- * checkRights
  *
+ * @param database $db
+ * @param tlUser $user
+ * @param int $tproject_id
+ * @return boolean
  */
 function checkRights(&$db,&$user,$tproject_id)
 {

@@ -28,8 +28,8 @@ $tproject_mgr = new testproject($db);
 $smarty = new TLSmarty();
 $do_display=false;
 $template = null;
-$args = init_args($_REQUEST);
-$gui = initializeGui($db,$args,$editorCfg,$tproject_mgr);
+$args = initArgs($_REQUEST);
+$gui = initializeGui($db,$args,$editorCfg);
 
 if (!$args->tproject_id) {
   $smarty->assign('title', lang_get('fatal_page_title'));
@@ -44,7 +44,6 @@ if (!checkRights($db,$args->user,$args->tproject_id)) {
   $smarty->display('workAreaSimple.tpl');
   exit();
 }
-
 
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
@@ -368,7 +367,7 @@ if($do_display)
  * @param array $request_hash hash the $_REQUEST
  * @return stdClass object with html values tranformed and other generated variables.
  */
-function init_args($request_hash)
+function initArgs($request_hash)
 {
   $session_hash = $_SESSION;
   $args = new stdClass();
@@ -422,8 +421,12 @@ function init_args($request_hash)
 }
 
 /**
- * checkRights
+ * Checks the user rights for accessing the page
  *
+ * @param database $db
+ * @param tlUser $user
+ * @param int $tproject_id
+ * @return boolean
  */
 function checkRights(&$db,&$user,$tproject_id)
 {
@@ -431,10 +434,14 @@ function checkRights(&$db,&$user,$tproject_id)
 }
 
 /**
- * initializeGui
+ * Initializes the GUI
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param array $editorCfg
+ * @return stdClass
  */
-function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
+function initializeGui(&$dbHandler,&$argsObj,&$editorCfg)
 {
     $tplan_mgr = new testplan($dbHandler);
     
@@ -473,6 +480,11 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
 
 /**
  *
+ * @param testplan $itemMgr
+ * @param stdClass $guiObj
+ * @param ckeditorInterface $ofObj
+ * @param int $itemID
+ * @param boolean $updateAttachments
  */
 function getItemData(&$itemMgr,&$guiObj,&$ofObj,$itemID,$updateAttachments=false)
 {

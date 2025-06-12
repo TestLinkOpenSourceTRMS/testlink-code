@@ -46,6 +46,7 @@ switch($args->item_level) {
   case 'testsuite':
   case 'req':
   case 'req_spec':
+  case 'testproject':
     $do_display = 1;
   break;
 
@@ -54,11 +55,8 @@ switch($args->item_level) {
     $do_display_coverage = 1;
   break;
   
-  case 'testproject':
-	  redirect($_SESSION['basehref'] . 
-      "lib/results/printDocOptions.php?activity=$args->activity");
-    exit();
-  break;
+  default:
+      break;
 }
 
 

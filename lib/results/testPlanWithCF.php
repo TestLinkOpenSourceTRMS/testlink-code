@@ -79,7 +79,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
             }
         }
     }
-    if(($gui->row_qty = count($cf_map)) > 0 )
+    if($gui->row_qty = !empty($cf_map) )
     {
         $gui->warning_msg = '';
         $gui->resultSet = $result;
@@ -88,27 +88,32 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	}
 }
 
-$table = buildExtTable($gui,$tcase_mgr, $tplan_mgr, $args->tplan_id,$labels, $imgSet['edit_icon']);
+$table = buildExtTable($gui, $tcase_mgr, $labels, $imgSet['edit_icon']);
 
-if (!is_null($table)) 
+if (!is_null($table))
 {
 	$gui->tableSet[] = $table;
 }
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+
 /**
- * 
  *
+ * @param stdClass $gui
+ * @param testcase $tcase_mgr
+ * @param array $labels
+ * @param string $edit_icon
+ * @return NULL|tlExtTable
  */
-function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $labels, $edit_icon)
+function buildExtTable($gui, $tcase_mgr, $labels, $edit_icon)
 {
 	
 	$charset = config_get('charset');
 	$title_sep = config_get('gui_title_separator_1');
 	
 	$table = null;
-	if(count($gui->resultSet) > 0) 
+	if(!empty($gui->resultSet))
 	{
 		$columns = array();
 		$columns[] = array('title_key' => 'test_suite');
@@ -139,7 +144,7 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $labels, $edit_ico
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$item['tcase_id']});\">" .
 						 "<img title=\"{$labels['design']}\" src=\"{$edit_icon}\" /></a> ";
 
-			$rowData[] = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $edit_link . $name;;
+			$rowData[] = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $edit_link . $name;
 			$hasValue = false;
 			foreach ($item['cfields'] as $cf_value)
 			{
@@ -147,7 +152,7 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $labels, $edit_ico
 				$hasValue = $cf_value ? true : false;
 			}
 			
-			if ($hasValue) 
+			if ($hasValue)
 			{
 				$matrixData[] = $rowData;
 			}
@@ -165,16 +170,15 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $labels, $edit_ico
 		$table->toolbarExpandCollapseGroupsButton = true;
 		$table->toolbarShowAllColumnsButton = true;
 	}
-	return($table);
+	
+	return $table;
 }
 
-/*
- function:
 
- args :
-
- returns:
-
+/**
+ *
+ * @param testplan $tplan_mgr
+ * @return stdClass
  */
 function init_args(&$tplan_mgr)
 {
@@ -182,7 +186,7 @@ function init_args(&$tplan_mgr)
 					 "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
+	R_PARAMS($iParams,$args);
 	
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
@@ -201,6 +205,13 @@ function init_args(&$tplan_mgr)
     return $args;
 }
 
+
+/**
+ *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRightOnProj($db,'testplan_metrics');

@@ -318,8 +318,6 @@ function init_checkboxes(&$args) {
   // Important Notice:
   // If you want to add or remove elements in this array, you must also update
   // $printingOptions in printDocument.php and tree_getPrintPreferences() in testlink_library.js
-  
-  $execCfg = config_get('exec_cfg');
 
   $optCfg = new printDocOptions();
 

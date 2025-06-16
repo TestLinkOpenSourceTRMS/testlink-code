@@ -417,7 +417,7 @@ function doSessionSetUp(&$dbHandler,&$userObj) {
 
   $ckObj = new stdClass();
   $ckObj->name = config_get('auth_cookie');
-  $ckObj->value = $user->getSecurityCookie();
+  $ckObj->value = $userObj->getSecurityCookie();
   $ckObj->expire = $expireOnBrowserClose = false;
   tlSetCookie($ckObj);
 
@@ -437,7 +437,7 @@ function doSessionSetUp(&$dbHandler,&$userObj) {
           
     $g_tlLogger->endTransaction();
     $g_tlLogger->startTransaction();
-    setUserSessionFromObj($dbHandler,$userObj);
+    setUserSession($dbHandler,$userObj->login,$userObj->dbID,$userObj->globalRoleID,$userObj->emailAddress,$userObj->locale,null);
 
     $ret['status'] = tl::OK;
   }

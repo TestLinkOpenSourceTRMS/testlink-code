@@ -60,11 +60,12 @@ $gui->userFeedback = $op->userFeedback;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-// $smarty->assign('highlight',$gui->highlight);
 renderGui($smarty,$args,$templateCfg);
+
 
 /**
  *
+ * @return stdClass
  */
 function init_args()
 {
@@ -77,7 +78,7 @@ function init_args()
                    "grant" => array("POST",tlInputParameter::ARRAY_STRING_N));
 
   $args = new stdClass();
-  $pParams = I_PARAMS($iParams,$args);
+  I_PARAMS($iParams,$args);
   $args->basehref = $_SESSION['basehref'];
   $args->user = $_SESSION['currentUser'];
 
@@ -86,6 +87,10 @@ function init_args()
 
 /**
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param string $operation
+ * @return stdClass
  */
 function doOperation(&$dbHandler,$argsObj,$operation)
 {
@@ -96,7 +101,6 @@ function doOperation(&$dbHandler,$argsObj,$operation)
 
   switch($operation)
   {
-
     case 'doCreate':
     case 'doUpdate':
       $rights = implode("','",array_keys($argsObj->grant));
@@ -145,6 +149,12 @@ function doOperation(&$dbHandler,$argsObj,$operation)
 }
 
 
+/**
+ *
+ * @param TLSmarty $smartyObj
+ * @param stdClass $argsObj
+ * @param stdClass $templateCfg
+ */
 function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 {
     $doRender = false;
@@ -173,7 +183,7 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
       case "duplicate":
         header("Location: rolesView.php");
         exit();
-      break;   
+      break;
     }
 
     if($doRender)
@@ -183,14 +193,10 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 }
 
 
-/*
-  function: getRightsCfg
-
-  args : -
-
-  returns: object
-  
-*/
+/**
+ *
+ * @return stdClass
+ */
 function getRightsCfg()
 {
   $cfg = new stdClass();
@@ -211,6 +217,12 @@ function getRightsCfg()
 }
 
 
+/**
+ *
+ * @param stdClass $argsObj
+ * @param string $editorType
+ * @return stdClass
+ */
 function initialize_gui(&$argsObj,$editorType)
 {
     $gui = new stdClass();
@@ -226,6 +238,7 @@ function initialize_gui(&$argsObj,$editorType)
 
 /**
  *
+ * @return stdClass
  */
 function initialize_op()
 {
@@ -238,6 +251,12 @@ function initialize_op()
 
 /**
  *
+ * @param database $dbHandler
+ * @param stdClass $guiObj
+ * @param stdClass $argsObj
+ * @param tlRole $roleObj
+ * @param ckeditorInterface $webEditorObj
+ * @return stdClass
  */
 function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
 {
@@ -246,7 +265,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
                                   'duplicate' => 'duplicate');
 
   $actionCfg['highlight'] = array('create' => 'create_role', 'edit' => 'edit_role',
-                                  'doCreate' => 'create_role', 
+                                  'doCreate' => 'create_role',
                                   'doUpdate' => 'edit_role',
                                   'duplicate' => 'create_role');
 
@@ -260,7 +279,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
   $guiObj->grants->mgt_view_events = $argsObj->user->hasRight($db,"mgt_view_events");
   $guiObj->rightsCfg = getRightsCfg();
   
-  $guiObj->disabledAttr = $guiObj->roleCanBeEdited ? ' ' : ' disabled="disabled" '; 
+  $guiObj->disabledAttr = $guiObj->roleCanBeEdited ? ' ' : ' disabled="disabled" ';
 
   // Create status for all checkboxes and set to unchecked
   foreach ($guiObj->rightsCfg as $grantDetails) {
@@ -289,6 +308,12 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
   return $guiObj;
 }
 
+
+/**
+ *
+ * @param boolean $s
+ * @return string
+ */
 function generateUniqueName($s)
 {
   // sorry for the magic, but anyway user has to edit role to provide desired name
@@ -299,6 +324,7 @@ function generateUniqueName($s)
 
 /**
  *
+ * @return array
  */
 function initLabels()
 {
@@ -307,6 +333,13 @@ function initLabels()
   return $labels;
 }
 
+
+/**
+ *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
+ */
 function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,"role_management");

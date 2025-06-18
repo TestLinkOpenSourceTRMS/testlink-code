@@ -159,7 +159,7 @@ class PHPExcel_Calculation_FormulaParser
 
         // Check if the formula has a valid starting =
         $formulaLength = strlen($this->formula);
-        if ($formulaLength < 2 || $this->formula{0} != '=') {
+        if ($formulaLength < 2 || $this->formula[0] != '=') {
             return;
         }
 

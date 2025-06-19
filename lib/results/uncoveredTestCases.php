@@ -1,15 +1,15 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
- *  
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
  * @filesource $RCSfile: uncoveredTestCases.php,v $
  * @version $Revision: 1.8 $
  * @modified $Date: 2009/09/28 08:44:20 $ by $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
- * 
+ *
  * For a test project, list test cases that has no requirement assigned
- * 
+ *
  * rev: 20081109 - franciscom - BUGID 512
  *
  */
@@ -42,16 +42,17 @@ if($gui->has_reqspec)
     $reqSpecMgr = new requirement_spec_mgr($db);
     foreach($reqSpec as $reqSpecID => $name)
     {
-   		if($gui->has_requirements = ($reqSpecMgr->get_requirements_count($reqSpecID) > 0))
-        	break;
+        if($gui->has_requirements = ($reqSpecMgr->get_requirements_count($reqSpecID) > 0)) {
+            break;
+        }
     }
     unset($reqSpecMgr);
-}    
+}
 if($gui->has_requirements)
-{    
+{
     // get all test cases id (active/inactive) in test project
-    $tcasesID = null; 
-    $tproject_mgr->get_all_testcases_id($args->tproject_id,$tcasesID);  
+    $tcasesID = null;
+    $tproject_mgr->get_all_testcases_id($args->tproject_id,$tcasesID);
     
     if(!is_null($tcasesID) && count($tcasesID) > 0)
     {
@@ -69,7 +70,7 @@ if($gui->has_requirements)
 }
 
 
-if($gui->has_tc = (!is_null($uncovered) && count($uncovered) > 0) )
+if($gui->has_tc = (!is_null($uncovered) && !empty($uncovered)) )
 {
     // Get external  ID
     $testSet = array_keys($uncovered);
@@ -77,7 +78,7 @@ if($gui->has_tc = (!is_null($uncovered) && count($uncovered) > 0) )
     $debugMsg = 'File: ' . basename(__FILE__) . ' - Line: ' . __LINE__ . ' - ';
     $sql = "/* $debugMsg */ " .
          " SELECT distinct NHA.id AS tc_id, TCV.tc_external_id " .
-         " FROM {$tables['nodes_hierarchy']} NHA, " . 
+         " FROM {$tables['nodes_hierarchy']} NHA, " .
          " {$tables['nodes_hierarchy']} NHB, " .
          " {$tables['tcversions']} TCV, {$tables['node_types']} NT " .
          " WHERE NHA.node_type_id=NT.id AND NHA.id=NHB.parent_id AND NHB.id=TCV.id " .
@@ -85,10 +86,8 @@ if($gui->has_tc = (!is_null($uncovered) && count($uncovered) > 0) )
     $external_id = $db->fetchRowsIntoMap($sql,'tc_id');
     foreach($external_id as $key => $value)
     {
-        $uncovered[$key]['external_id'] = $value['tc_external_id'];  
+        $uncovered[$key]['external_id'] = $value['tc_external_id'];
     }
-  	// $out = gen_spec_view($db,'uncoveredtestcases',$args->tproject_id,$args->tproject_id,null,
-    //                    $uncovered,null,null,$testSet,1,0,0);
     $opt = array('write_button_only_if_linked' => 1);
     $filters = array('testcases' => $testSet);
     $out = gen_spec_view($db,'uncoveredtestcases',$args->tproject_id,$args->tproject_id,null,
@@ -107,6 +106,10 @@ $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
+/**
+ *
+ * @return stdClass
+ */
 function init_args()
 {
 	$args = new stdClass();
@@ -116,6 +119,13 @@ function init_args()
     return $args;
 }
 
+
+/**
+ *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_metrics');

@@ -410,7 +410,7 @@ function createSpreadsheet($gui,$args) {
     $lbl['title_test_case_title']
   ];
 
-  if( count($gui->platforms) > 0 )
+  if( !empty($gui->platforms) )
   {
     $dataHeader[] = $lbl['platform'];
   }

@@ -150,7 +150,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  * initialize user input
  *
- * @param resource dbHandler
+ * @param database dbHandler
  * @return array $args array with user input information
  */
 function init_args(&$dbHandler)
@@ -313,7 +313,7 @@ function minutes2HHMMSS($minutes)
  *
  * @param database $db
  * @param tlUser $user
- * @param  $context
+ * @param stdClass $context
  * @return string
  */
 function checkRights(&$db,&$user,$context = null)

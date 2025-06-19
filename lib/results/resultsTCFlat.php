@@ -23,7 +23,7 @@ $smarty = new TLSmarty;
 $args = init_args($db);
 
 $metricsMgr = new tlTestPlanMetrics($db);
-$tplan_mgr  = &$metricsMgr; // displayMemUsage('START' . __FILE__);
+$tplan_mgr  = &$metricsMgr;
 
 list($gui,$labels,$cfg) = initializeGui($db,$args,$smarty->getImages(),$tplan_mgr);
 $args->cfg = $cfg;
@@ -72,7 +72,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   {
     buildSpreadsheetData($db,$args,$gui,$execStatus,$labels);
   }
-  createSpreadsheet($gui,$args);
+  createSpreadsheet($gui);
   $args->format = FORMAT_XLS;
 } else {
   // We need to ask user to do a choice
@@ -166,7 +166,7 @@ displayReport($templateCfg->template_dir . $tpl, $smarty, $args->format, $mailCf
  *
  * @param database $db
  * @param tlUser $user
- * @param  $context
+ * @param stdClass $context
  * @return string
  */
 function checkRights(&$db,&$user,$context = null)
@@ -286,7 +286,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
  * @param stdClass $gui
  * @param stdClass $args
  */
-function createSpreadsheet($gui,$args)
+function createSpreadsheet($gui)
 {
 
   $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,

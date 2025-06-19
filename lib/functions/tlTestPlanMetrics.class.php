@@ -30,8 +30,8 @@ class tlTestPlanMetrics extends testplan
   /** @var object class references passed in by constructor */
   private $tplanMgr = null;
   private $testPlanID = -1;
-  private  $tprojectID = -1;
-  private  $testCasePrefix='';
+  private $tprojectID = -1;
+  private $testCasePrefix='';
 
   private $priorityLevelsCfg='';
   private $map_tc_status;

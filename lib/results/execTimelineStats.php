@@ -1,12 +1,12 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
+ *
  * @filesource execTimelineStats.php
- * 
+ *
  */
-require '../../config.inc.php';
+require_once '../../config.inc.php';
 require_once '../../third_party/codeplex/PHPExcel.php'; // Must be included BEFORE common.php
 require_once 'common.php';
 require_once 'displayMgr.php';
@@ -43,25 +43,22 @@ if ($stats != null) {
   if( !is_null($gui->statistics->exec) ) {
     switch ($group) {
       case 'day':
-       $gui->columnsDefinition->exec = 
-             array(lang_get('qty'),lang_get('yyyy_mm_dd'));
-      break;  
+       $gui->columnsDefinition->exec = array(lang_get('qty'),lang_get('yyyy_mm_dd'));
+      break;
 
       case 'month':
-       $gui->columnsDefinition->exec = 
-             array(lang_get('qty'),lang_get('yyyy_mm'));
-      break;  
+       $gui->columnsDefinition->exec = array(lang_get('qty'),lang_get('yyyy_mm'));
+      break;
 
       case 'day_hour':
-       $gui->columnsDefinition->exec = 
-             array(lang_get('qty'),lang_get('yyyy_mm_dd'),lang_get('hh'));
-      break;  
-    } 
+       $gui->columnsDefinition->exec = array(lang_get('qty'),lang_get('yyyy_mm_dd'),lang_get('hh'));
+      break;
+    }
 
     if ($statsBy[$group]['workforce']) {
       $gui->columnsDefinition->exec[] = lang_get('testers_qty');
     }
-  }    
+  }
 }
 
 if( $args->spreadsheet ) {
@@ -75,16 +72,17 @@ displayReport($tplCfg->tpl, $smarty, $args->format,$mailCfg);
 
 
 /**
- * 
  *
+ * @param stdClass $guiObj
+ * @return stdClass
  */
 function buildMailCfg(&$guiObj) {
 	$labels = array('testplan' => lang_get('testplan'), 'testproject' => lang_get('testproject'));
 	$cfg = new stdClass();
-	$cfg->cc = ''; 
-	$cfg->subject = $guiObj->title . ' : ' . 
-                  $labels['testproject'] . ' : ' . 
-                  $guiObj->tproject_name . 
+	$cfg->cc = '';
+	$cfg->subject = $guiObj->title . ' : ' .
+                  $labels['testproject'] . ' : ' .
+                  $guiObj->tproject_name .
 	                ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
 	                 
 	return $cfg;
@@ -92,8 +90,12 @@ function buildMailCfg(&$guiObj) {
 
 /**
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param tlTestPlanMetrics $tplanMgr
+ * @return stdClass|stdClass[]|testproject[]
  */
-function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) 
+function initializeGui(&$dbHandler,$argsObj,&$tplanMgr)
 {
  
   $gui = new stdClass();
@@ -101,7 +103,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr)
  
   if ($argsObj->accessType == 'gui') {
     list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
-  } 
+  }
 
   $gui->apikey = $argsObj->apikey;
   $gui->accessType = $argsObj->accessType;
@@ -118,7 +120,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr)
   $gui->statistics->testers = null;
   $gui->statistics->milestones = null;
   $gui->statistics->overalBuildStatus = null;
-  $gui->elapsed_time = 0; 
+  $gui->elapsed_time = 0;
   $gui->displayBuildMetrics = false;
   $gui->buildMetricsFeedback = lang_get('buildMetricsFeedback');
 
@@ -137,13 +139,13 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr)
   }
 
   $gui->basehref = $_SESSION['basehref'];
-  $gui->actionSendMail = $gui->basehref . 
-          "lib/results/execTimelineStats.php?format=" . 
+  $gui->actionSendMail = $gui->basehref .
+          "lib/results/execTimelineStats.php?format=" .
           FORMAT_MAIL_HTML . "&tplan_id={$gui->tplan_id}" .
           "&tproject_id={$gui->tproject_id}";
 
-  $gui->actionSpreadsheet = $gui->basehref . 
-          "lib/results/execTimelineStats.php?format=" . 
+  $gui->actionSpreadsheet = $gui->basehref .
+          "lib/results/execTimelineStats.php?format=" .
           FORMAT_XLS . "&tplan_id={$gui->tplan_id}&spreadsheet=1".
           "&tproject_id={$gui->tproject_id}";
 
@@ -155,9 +157,11 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr)
 
 /**
  *
- *
+ * @param stdClass $gui
+ * @param stdClass $args
+ * @param tlTestPlanMetrics $tplanMgr
  */
-function createSpreadsheet($gui,$args,&$tplanMgr) 
+function createSpreadsheet($gui,$args,&$tplanMgr)
 {
   $lbl = initLblSpreadsheet();
   $cellRange = setCellRangeSpreadsheet();
@@ -193,14 +197,14 @@ function createSpreadsheet($gui,$args,&$tplanMgr)
   $startingRow++;
   $cellArea = "A{$startingRow}:";
   foreach($dataHeader as $zdx => $field) {
-    $cellID = $cellRange[$zdx] . $startingRow; 
+    $cellID = $cellRange[$zdx] . $startingRow;
     $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
     $cellAreaEnd = $cellRange[$zdx];
   }
   $cellArea .= "{$cellAreaEnd}{$startingRow}";
   $objPHPExcel->getActiveSheet()
               ->getStyle($cellArea)
-              ->applyFromArray($style['DataHeader']);  
+              ->applyFromArray($style['DataHeader']);
 
   $startingRow++;
 
@@ -208,23 +212,23 @@ function createSpreadsheet($gui,$args,&$tplanMgr)
   foreach ($gui->statistics->exec as $timestamp => $elem) {
     $ldx = 0;
     foreach ($elem as $field) {
-      $cellID = $cellRange[$ldx++] . $startingRow; 
+      $cellID = $cellRange[$ldx++] . $startingRow;
       $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
-    }   
+    }
     $startingRow++;
   }
   $startingRow++;
 
   // Just to add some final empty row
-  $cellID = $cellRange[0] . $startingRow; 
+  $cellID = $cellRange[0] . $startingRow;
   $field = '';
-  $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);          
+  $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
 
   // Final step
   $tmpfname = tempnam(config_get('temp_dir'),"TL_ExecTimelineStats.tmp");
   $objPHPExcel->setActiveSheetIndex(0);
-  $xlsType = 'Excel5';                               
-  $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, $xlsType);  
+  $xlsType = 'Excel5';
+  $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, $xlsType);
   $objWriter->save($tmpfname);
   
   downloadXls($tmpfname,$xlsType,$gui,'TL_ExecTimelineStats_');
@@ -233,6 +237,11 @@ function createSpreadsheet($gui,$args,&$tplanMgr)
 
 /**
  *
+ * @param unknown $oj
+ * @param unknown $style
+ * @param unknown $lbl
+ * @param stdClass $gui
+ * @return array
  */
 function xlsStepOne(&$oj,$style,&$lbl,&$gui) {
   $dummy = '';
@@ -241,7 +250,7 @@ function xlsStepOne(&$oj,$style,&$lbl,&$gui) {
                        array($lbl['generated_by_TestLink_on'],
                        localize_dateOrTimeStamp(null,$dummy,'timestamp_format',time())));
 
-  $cellArea = "A1:"; 
+  $cellArea = "A1:";
   foreach($lines2write as $zdx => $fields) {
     $cdx = $zdx+1;
     $oj->setActiveSheetIndex(0)
@@ -252,70 +261,71 @@ function xlsStepOne(&$oj,$style,&$lbl,&$gui) {
   $cellArea .= "A{$cdx}";
   $oj->getActiveSheet()
      ->getStyle($cellArea)
-     ->applyFromArray($style['ReportContext']); 
+     ->applyFromArray($style['ReportContext']);
 
   return $lines2write;
-}  
+}
+
 
 /**
  *
+ * @return array
  */
 function initLblSpreadsheet() {
   $lbl = init_labels(
-           array('qty' => null,'yyyy_mm_dd' => null, 
+           array('qty' => null,'yyyy_mm_dd' => null,
                  'qty_of_executions' => null,
-                 'yyyy_mm' => null, 'hh' => null, 
+                 'yyyy_mm' => null, 'hh' => null,
                  'platform' => null,
-                 'testplan' => null, 
+                 'testplan' => null,
                  'testproject' => null,
                  'generated_by_TestLink_on' => null));
   return $lbl;
-} 
+}
 
 /**
  *
- */  
+ * @return array
+ */
 function initStyleSpreadsheet() {
   $style = array();
   $style['ReportContext'] = array('font' => array('bold' => true));
-  $style['DataHeader'] = 
-    array('font' => array('bold' => true),
-          'borders' => 
-             array('outline' => 
+  $style['DataHeader'] = array('font' => array('bold' => true),
+          'borders' =>
+             array('outline' =>
               array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
-          'vertical' => 
+          'vertical' =>
               array('style' => PHPExcel_Style_Border::BORDER_THIN)),
           'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID,
           'startcolor' => array( 'argb' => 'FF9999FF'))
     );
 
-  $style['rowA'] = 
-    array('borders' => 
+  $style['rowA'] = array('borders' =>
             array(
-              'outline' => 
+              'outline' =>
                array('style' => PHPExcel_Style_Border::BORDER_THIN),
-              'vertical' => 
+              'vertical' =>
                array('style' => PHPExcel_Style_Border::BORDER_THIN)),
           'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID,
           'startcolor' => array( 'argb' => 'FFFFFFFF'))
     );
 
-  $style['rowB'] = 
-    array('borders' => 
+  $style['rowB'] = array('borders' =>
             array(
-              'outline' => 
+              'outline' =>
                array('style' => PHPExcel_Style_Border::BORDER_THIN),
-              'vertical' => 
+              'vertical' =>
                array('style' => PHPExcel_Style_Border::BORDER_THIN)),
           'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID,
           'startcolor' => array( 'argb' => 'DCDCDCDC'))
     );
 
   return $style;
-}  
+}
 
 /**
  *
+ * @return string|array
  */
 function setCellRangeSpreadsheet() {
   $cr = range('A','Z');
@@ -326,18 +336,22 @@ function setCellRangeSpreadsheet() {
     }
   }
   return $cr;
-}  
+}
 
 
 
 /**
  *
+ * @param database $db
+ * @param tlUser $user
+ * @param stdClass $context
+ * @return string
  */
 function checkRights(&$db,&$user,$context = null) {
   if(is_null($context)) {
     $context = new stdClass();
     $context->tproject_id = $context->tplan_id = null;
-    $context->getAccessAttr = false; 
+    $context->getAccessAttr = false;
   }
 
   $check = $user->hasRightOnProj($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);

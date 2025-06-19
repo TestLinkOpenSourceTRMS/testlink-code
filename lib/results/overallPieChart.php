@@ -82,8 +82,10 @@ $Test->Stroke();
 
 
 /**
- * 
  *
+ * @param database $db
+ * @param tlUser $user
+ * @return unknown
  */
 function checkRights(&$db,&$user)
 {
@@ -92,8 +94,9 @@ function checkRights(&$db,&$user)
 
 
 /**
- * 
  *
+ * @param database $dbHandler
+ * @return stdClass
  */
 function init_args(&$dbHandler)
 {

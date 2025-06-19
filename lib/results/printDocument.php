@@ -725,9 +725,13 @@ function timeStatistics($items,$context,$decode,$tplanMgr) {
 }
 
 
-
-/*
+/**
  * rights check function for testlinkInitPage()
+ *
+ * @param database $db
+ * @param tlUser $user
+ * @param stdClass $context
+ * @return unknown
  */
 function checkRights(&$db,&$user,$context = null)
 {

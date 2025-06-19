@@ -96,6 +96,12 @@ $Test->drawPieLegend($pChartCfg->legendX,$pChartCfg->legendY,$graph->data,$graph
 $Test->Stroke();
 
 
+/**
+ * 
+ * @param database $db
+ * @param tlUser $user
+ * @return unknown
+ */
 function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,'testplan_metrics');
@@ -103,8 +109,9 @@ function checkRights(&$db,&$user)
 
 
 /**
- * 
  *
+ * @param database $dbHandler
+ * @return stdClass
  */
 function init_args(&$dbHandler)
 {

@@ -466,6 +466,9 @@ function getCSVColumnsDefinition() {
 
 /**
  *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
  */
 function checkRights(&$db,&$user) {
   return $user->hasRight($db,'testplan_metrics');

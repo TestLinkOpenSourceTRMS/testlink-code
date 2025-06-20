@@ -104,7 +104,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @param testcase $tcase_mgr
  * @param array $labels
  * @param string $edit_icon
- * @return NULL|tlExtTable
+ * @return tlExtTable
  */
 function buildExtTable($gui, $tcase_mgr, $labels, $edit_icon)
 {

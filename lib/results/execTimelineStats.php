@@ -14,8 +14,7 @@ require_once 'displayMgr.php';
 $timerOn = microtime(true);
 $tplCfg = templateConfiguration();
 
-testlinkInitPage($db,'init_project' == 'dont_init_project',
-                     'doNotCheckSession' == 'doNotCheckSession');
+testlinkInitPage($db,'init_project' == 'dont_init_project', true);
 
 list($tplan_mgr,$args) = initArgsForReports($db);
 if( null == $tplan_mgr ) {
@@ -237,9 +236,9 @@ function createSpreadsheet($gui,$args,&$tplanMgr)
 
 /**
  *
- * @param unknown $oj
- * @param unknown $style
- * @param unknown $lbl
+ * @param PHPExcel $oj
+ * @param array $style
+ * @param array $lbl
  * @param stdClass $gui
  * @return array
  */

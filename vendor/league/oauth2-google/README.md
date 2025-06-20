@@ -24,6 +24,7 @@ The following versions of PHP are supported.
 * PHP 7.1
 * PHP 7.2
 * PHP 7.3
+* PHP 7.4
 
 This package uses [OpenID Connect][openid-connect] to authenticate users with
 Google accounts.
@@ -50,7 +51,11 @@ composer require league/oauth2-google
 ### Authorization Code Flow
 
 ```php
+require __DIR__ . '/vendor/autoload.php';
+
 use League\OAuth2\Client\Provider\Google;
+
+session_start(); // Remove if session.auto_start=1 in php.ini
 
 $provider = new Google([
     'clientId'     => '{google-client-id}',

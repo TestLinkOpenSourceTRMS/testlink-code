@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Slim\Interfaces;
 
+/** @api */
 interface Psr17FactoryProviderInterface
 {
     /**
@@ -18,13 +19,9 @@ interface Psr17FactoryProviderInterface
     public static function getFactories(): array;
 
     /**
-     * @var string[]
+     * @param string[] $factories
      */
     public static function setFactories(array $factories): void;
 
-    /**
-     * @param string $factory
-     * @return void
-     */
     public static function addFactory(string $factory): void;
 }

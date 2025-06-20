@@ -15,13 +15,13 @@
         }
     ],
     "require": {
-        "php": "^7.1",
-        "psr/http-message": "^1.0",
+        "php": "^7.1 || ^8.0",
+        "psr/http-message": "^1.0 || ^2.0",
         "psr/http-factory": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.0",
-        "nyholm/psr7": "^1.0",
+        "phpunit/phpunit": "^7.0 || ^8.5 || ^9.3",
+        "nyholm/psr7": "^1.3",
         "nyholm/nsa": "^1.1"
     },
     "autoload": {

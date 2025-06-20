@@ -74,6 +74,7 @@ function ADODB_SetDatabaseAdapter(&$db, $index=false)
 }
 
 
+#[\AllowDynamicProperties]
 class ADODB_Active_Record {
 	static $_changeNames = true; // dynamically pluralize table names
 
@@ -501,7 +502,8 @@ class ADODB_Active_Record {
 			}
 			break;
 		default:
-			foreach($cols as $name => $fldobj) {
+			foreach($cols as $fldobj) {
+				$name = $fldobj->name;
 
 				if ($ADODB_ACTIVE_DEFVALS && isset($fldobj->default_value)) {
 					$this->$name = $fldobj->default_value;
@@ -1054,10 +1056,10 @@ class ADODB_Active_Record {
 		$valarr = array();
 		$neworig = array();
 		$pairs = array();
-		$i = -1;
+		$i = 0;
 		$cnt = 0;
 		foreach($table->flds as $name=>$fld) {
-			$i += 1;
+			$orig = $this->_original[$i++] ?? null;
 			$val = $this->$name;
 			$neworig[] = $val;
 
@@ -1077,11 +1079,7 @@ class ADODB_Active_Record {
 				}
 			}
 
-			if (isset($this->_original[$i]) && strcmp($val,$this->_original[$i]) == 0) {
-				continue;
-			}
-
-			if (is_null($this->_original[$i]) && is_null($val)) {
+			if ($val === $orig) {
 				continue;
 			}
 

@@ -26,7 +26,7 @@ class ADODB_postgres64 extends ADOConnection{
 	var $databaseType = 'postgres64';
 	var $dataProvider = 'postgres';
 	var $hasInsertID = true;
-	/** @var bool|resource */
+	/** @var PgSql\Connection|resource|false */
 	var $_resultid = false;
 	var $concat_operator='||';
 	var $metaDatabasesSQL = "select datname from pg_database where datname not in ('template0','template1') order by 1";
@@ -84,6 +84,9 @@ class ADODB_postgres64 extends ADOConnection{
 	/** @var int $_pnum Number of the last assigned query parameter {@see param()} */
 	var $_pnum = 0;
 
+	var $version;
+	var $_nestedSQL = false;
+
 	// The last (fmtTimeStamp is not entirely correct:
 	// PostgreSQL also has support for time zones,
 	// and writes these time in this format: "2001-03-01 18:59:26+02".
@@ -110,13 +113,12 @@ class ADODB_postgres64 extends ADOConnection{
 			}
 
 			$version = pg_version($this->_connectionID);
+			// If PHP has been compiled with PostgreSQL 7.3 or lower, then
+			// server_version is not set so we use pg_parameter_status() instead.
+			$version_server = $version['server'] ?? pg_parameter_status($this->_connectionID, 'server_version');
+
 			$this->version = array(
-				// If PHP has been compiled with PostgreSQL 7.3 or lower, then
-				// server version is not set so we use pg_parameter_status()
-				// which includes logic to obtain values server_version
-				'version' => isset($version['server'])
-					? $version['server']
-					: pg_parameter_status($this->_connectionID, 'server_version'),
+				'version' => $this->_findvers($version_server),
 				'client' => $version['client'],
 				'description' => null,
 			);
@@ -133,10 +135,20 @@ class ADODB_postgres64 extends ADOConnection{
 		return " coalesce($field, $ifNull) ";
 	}
 
-	// get the last id - never tested
-	function pg_insert_id($tablename,$fieldname)
+	/**
+	 * Get the last inserted id.
+	 *
+	 * @param string $tablename
+	 * @param string $fieldname
+	 * @return int|false
+	 *
+	 * @noinspection PhpUnused
+	 * @deprecated 5.22.9 Use {@see insert_ID()} method instead.
+	 */
+	function pg_insert_id($tablename, $fieldname)
 	{
-		$result=pg_query($this->_connectionID, 'SELECT last_value FROM '. $tablename .'_'. $fieldname .'_seq');
+		$sequence = pg_escape_identifier($this->_connectionID, $tablename .'_'. $fieldname .'_seq');
+		$result = pg_query($this->_connectionID, 'SELECT last_value FROM '. $sequence);
 		if ($result) {
 			$arr = @pg_fetch_row($result,0);
 			pg_free_result($result);
@@ -155,7 +167,7 @@ class ADODB_postgres64 extends ADOConnection{
 	 */
 	protected function _insertID($table = '', $column = '')
 	{
-		if (!is_resource($this->_resultid) || get_resource_type($this->_resultid) !== 'pgsql result') return false;
+		if ($this->_resultid === false) return false;
 		$oid = pg_last_oid($this->_resultid);
 		// to really return the id, we need the table and column-name, else we can only return the oid != id
 		return empty($table) || empty($column) ? $oid : $this->GetOne("SELECT $column FROM $table WHERE oid=".(int)$oid);
@@ -163,7 +175,7 @@ class ADODB_postgres64 extends ADOConnection{
 
 	function _affectedrows()
 	{
-		if (!is_resource($this->_resultid) || get_resource_type($this->_resultid) !== 'pgsql result') return false;
+		if ($this->_resultid === false) return false;
 		return pg_affected_rows($this->_resultid);
 	}
 
@@ -255,7 +267,9 @@ class ADODB_postgres64 extends ADOConnection{
 		if ($this->_connectionID) {
 			return "'" . pg_escape_string($this->_connectionID, $s) . "'";
 		} else {
-			return "'" . pg_escape_string($s) . "'";
+			// Fall back to emulated escaping when there is no database connection.
+			// Avoids errors when using setSessionVariables() in the load balancer.
+			return parent::qStr( $s );
 		}
 	}
 
@@ -656,14 +670,16 @@ class ADODB_postgres64 extends ADOConnection{
 			return $false;
 		}
 
+		// Get column names indexed by attnum so we can lookup the index key
 		$col_names = $this->MetaColumnNames($table,true,true);
-		// 3rd param is use attnum,
-		// see https://sourceforge.net/p/adodb/bugs/45/
 		$indexes = array();
 		while ($row = $rs->FetchRow()) {
 			$columns = array();
 			foreach (explode(' ', $row[2]) as $col) {
-				$columns[] = $col_names[$col];
+				// When index attribute (pg_index.indkey) is an expression, $col == 0
+				// @see https://www.postgresql.org/docs/current/catalog-pg-index.html
+				// so there is no matching column name - set it to null (see #940).
+				$columns[] = $col_names[$col] ?? null;
 			}
 
 			$indexes[$row[0]] = array(
@@ -752,8 +768,7 @@ class ADODB_postgres64 extends ADOConnection{
 		# PHP does not handle 'hex' properly ('x74657374' is returned as 't657374')
 		# https://bugs.php.net/bug.php?id=59831 states this is in fact not a bug,
 		# so we manually set bytea_output
-		if (!empty($this->connection->noBlobs)
-			&& version_compare($info['version'], '9.0', '>=')
+		if (version_compare($info['version'], '9.0', '>=')
 			&& version_compare($info['client'], '9.2', '<')
 		) {
 			$this->Execute('set bytea_output=escape');
@@ -778,7 +793,6 @@ class ADODB_postgres64 extends ADOConnection{
 	}
 
 
-	// returns queryID or false
 	function _query($sql,$inputarr=false)
 	{
 		$this->_pnum = 0;
@@ -844,7 +858,7 @@ class ADODB_postgres64 extends ADOConnection{
 		}
 		// check if no data returned, then no need to create real recordset
 		if ($rez && pg_num_fields($rez) <= 0) {
-			if (is_resource($this->_resultid) && get_resource_type($this->_resultid) === 'pgsql result') {
+			if ($this->_resultid !== false) {
 				pg_free_result($this->_resultid);
 			}
 			$this->_resultid = $rez;
@@ -1075,9 +1089,7 @@ class ADORecordSet_postgres64 extends ADORecordSet{
 
 	function _close()
 	{
-		if (!is_resource($this->_queryID)
-			|| get_resource_type($this->_queryID) != 'pgsql result'
-		) {
+		if ($this->_queryID === false || $this->_queryID == self::DUMMY_QUERY_ID) {
 			return true;
 		}
 		return pg_free_result($this->_queryID);

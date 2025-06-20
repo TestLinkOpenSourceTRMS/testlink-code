@@ -11,6 +11,7 @@
 namespace Omines\OAuth2\Client\Provider;
 
 use Gitlab\Client;
+use Gitlab\HttpClient\Builder;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 
@@ -18,22 +19,23 @@ use League\OAuth2\Client\Token\AccessToken;
  * GitlabResourceOwner.
  *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
+ *
+ * @phpstan-type ResourceOwner array{id: int, is_admin: bool, name: string, username: string, email: string, avatar_url: string, web_url: string, state: string, external: bool}
  */
 class GitlabResourceOwner implements ResourceOwnerInterface
 {
-    const PATH_API = '/api/v4/';
+    public const PATH_API = '/api/v4/';
 
-    /** @var array */
-    private $data;
+    /** @var ResourceOwner */
+    private array $data;
 
-    /** @var string */
-    private $domain;
-
-    /** @var AccessToken */
-    private $token;
+    private string $domain;
+    private AccessToken $token;
 
     /**
      * Creates new resource owner.
+     *
+     * @param ResourceOwner $response
      */
     public function __construct(array $response, AccessToken $token)
     {
@@ -43,12 +45,10 @@ class GitlabResourceOwner implements ResourceOwnerInterface
 
     /**
      * Returns the identifier of the authorized resource owner.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
-        return (int) $this->get('id');
+        return (int) ($this->data['id'] ?? 0);
     }
 
     /**
@@ -56,31 +56,26 @@ class GitlabResourceOwner implements ResourceOwnerInterface
      *
      * Requires optional Gitlab API client to be installed.
      *
-     * @return Client
+     * @infection-ignore-all Cannot be tested for infection due to external dependency
      */
-    public function getApiClient()
+    public function getApiClient(Builder $builder = null): Client
     {
         if (!class_exists('\\Gitlab\\Client')) {
             throw new \LogicException(__METHOD__ . ' requires package m4tthumphrey/php-gitlab-api to be installed and autoloaded'); // @codeCoverageIgnore
         }
-        $client = \Gitlab\Client::create(rtrim($this->domain, '/') . self::PATH_API);
+        $client = new Client($builder);
+        $client->setUrl(rtrim($this->domain, '/') . self::PATH_API);
+        $client->authenticate($this->token->getToken(), Client::AUTH_OAUTH_TOKEN);
 
-        return $client->authenticate($this->token->getToken(), Client::AUTH_OAUTH_TOKEN);
+        return $client;
     }
 
-    /**
-     * @return string
-     */
-    public function getDomain()
+    public function getDomain(): string
     {
         return $this->domain;
     }
 
-    /**
-     * @param  string $domain
-     * @return $this
-     */
-    public function setDomain($domain)
+    public function setDomain(string $domain): self
     {
         $this->domain = $domain;
 
@@ -89,109 +84,80 @@ class GitlabResourceOwner implements ResourceOwnerInterface
 
     /**
      * The full name of the owner.
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
-        return $this->get('name');
+        return $this->data['name'];
     }
 
     /**
      * Username of the owner.
-     *
-     * @return string
      */
-    public function getUsername()
+    public function getUsername(): string
     {
-        return $this->get('username');
+        return $this->data['username'];
     }
 
     /**
      * Email address of the owner.
-     *
-     * @return string
      */
-    public function getEmail()
+    public function getEmail(): string
     {
-        return $this->get('email');
+        return $this->data['email'];
     }
 
     /**
      * URL to the user's avatar.
-     *
-     * @return string|null
      */
-    public function getAvatarUrl()
+    public function getAvatarUrl(): ?string
     {
-        return $this->get('avatar_url');
+        return $this->data['avatar_url'];
     }
 
     /**
      * URL to the user's profile page.
-     *
-     * @return string
      */
-    public function getProfileUrl()
+    public function getProfileUrl(): ?string
     {
-        return $this->get('web_url');
+        return $this->data['web_url'];
     }
 
-    /**
-     * @return AccessToken
-     */
-    public function getToken()
+    public function getToken(): AccessToken
     {
         return $this->token;
     }
 
     /**
      * Whether the user is active.
-     *
-     * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
-        return 'active' === $this->get('state');
+        return 'active' === ($this->data['state'] ?? null);
     }
 
     /**
      * Whether the user is an admin.
-     *
-     * @return bool
      */
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        return (bool) $this->get('is_admin', false);
+        return $this->data['is_admin'] ?? false;
     }
 
     /**
      * Whether the user is external.
-     *
-     * @return bool
      */
-    public function isExternal()
+    public function isExternal(): bool
     {
-        return (bool) $this->get('external', true);
+        return $this->data['external'] ?? true;
     }
 
     /**
      * Return all of the owner details available as an array.
      *
-     * @return array
+     * @return ResourceOwner
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->data;
-    }
-
-    /**
-     * @param  string     $key
-     * @param  mixed|null $default
-     * @return mixed|null
-     */
-    protected function get($key, $default = null)
-    {
-        return isset($this->data[$key]) ? $this->data[$key] : $default;
     }
 }

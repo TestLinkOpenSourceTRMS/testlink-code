@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slim Framework (https://slimframework.com)
  *
@@ -14,6 +15,14 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 use Slim\Psr7\Stream;
+use ValueError;
+
+use function fopen;
+use function fwrite;
+use function is_resource;
+use function restore_error_handler;
+use function rewind;
+use function set_error_handler;
 
 class StreamFactory implements StreamFactoryInterface
 {
@@ -42,27 +51,23 @@ class StreamFactory implements StreamFactoryInterface
     public function createStreamFromFile(
         string $filename,
         string $mode = 'r',
-        StreamInterface $cache = null
+        ?StreamInterface $cache = null
     ): StreamInterface {
-        // When fopen fails, PHP normally raises a warning. Add an error
-        // handler to check for errors and throw an exception instead.
-        $exc = null;
+        set_error_handler(
+            static function (int $errno, string $errstr) use ($filename, $mode): void {
+                throw new RuntimeException(
+                    "Unable to open $filename using mode $mode: $errstr",
+                    $errno
+                );
+            }
+        );
 
-        set_error_handler(function (int $errno, string $errstr) use ($filename, $mode, &$exc) {
-            $exc = new RuntimeException(sprintf(
-                'Unable to open %s using mode %s: %s',
-                $filename,
-                $mode,
-                $errstr
-            ));
-        });
-
-        $resource = fopen($filename, $mode);
-        restore_error_handler();
-
-        if ($exc) {
-            /** @var $exc RuntimeException */
-            throw $exc;
+        try {
+            $resource = fopen($filename, $mode);
+        } catch (ValueError $exception) {
+            throw new RuntimeException("Unable to open $filename using mode $mode: " . $exception->getMessage());
+        } finally {
+            restore_error_handler();
         }
 
         if (!is_resource($resource)) {
@@ -77,7 +82,7 @@ class StreamFactory implements StreamFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createStreamFromResource($resource, StreamInterface $cache = null): StreamInterface
+    public function createStreamFromResource($resource, ?StreamInterface $cache = null): StreamInterface
     {
         if (!is_resource($resource)) {
             throw new InvalidArgumentException(

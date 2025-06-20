@@ -31,7 +31,7 @@ interface ServerRequestCreatorInterface
      * @param array                                $headers typically the output of getallheaders() or similar structure
      * @param array                                $cookie  typically $_COOKIE or similar structure
      * @param array                                $get     typically $_GET or similar structure
-     * @param array                                $post    typically $_POST or similar structure
+     * @param array|null                           $post    typically $_POST or similar structure, represents parsed request body
      * @param array                                $files   typically $_FILES or similar structure
      * @param StreamInterface|resource|string|null $body    Typically stdIn
      *
@@ -42,7 +42,7 @@ interface ServerRequestCreatorInterface
         array $headers = [],
         array $cookie = [],
         array $get = [],
-        array $post = [],
+        ?array $post = null,
         array $files = [],
         $body = null
     ): ServerRequestInterface;
@@ -51,8 +51,6 @@ interface ServerRequestCreatorInterface
      * Get parsed headers from ($_SERVER) array.
      *
      * @param array $server typically $_SERVER or similar structure
-     *
-     * @return array
      */
     public static function getHeadersFromServer(array $server): array;
 }

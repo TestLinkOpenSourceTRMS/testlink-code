@@ -1,17 +1,14 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-diactoros for the canonical source repository
- * @copyright https://github.com/laminas/laminas-diactoros/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-diactoros/blob/master/LICENSE.md New BSD License
- */
-
 declare(strict_types=1);
 
 namespace Laminas\Diactoros;
 
+use GdImage;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
+use Stringable;
+use Throwable;
 
 use function array_key_exists;
 use function fclose;
@@ -23,35 +20,35 @@ use function fstat;
 use function ftell;
 use function fwrite;
 use function get_resource_type;
+use function in_array;
 use function is_int;
 use function is_resource;
 use function is_string;
-use function restore_error_handler;
-use function set_error_handler;
+use function sprintf;
 use function stream_get_contents;
 use function stream_get_meta_data;
 use function strstr;
 
-use const E_WARNING;
 use const SEEK_SET;
 
 /**
  * Implementation of PSR HTTP streams
  */
-class Stream implements StreamInterface
+class Stream implements StreamInterface, Stringable
 {
     /**
-     * @var resource|null
+     * A list of allowed stream resource types that are allowed to instantiate a Stream
      */
+    private const ALLOWED_STREAM_RESOURCE_TYPES = ['gd', 'stream'];
+
+    /** @var resource|null */
     protected $resource;
 
-    /**
-     * @var string|resource
-     */
+    /** @var string|object|resource|null */
     protected $stream;
 
     /**
-     * @param string|resource $stream
+     * @param string|object|resource $stream
      * @param string $mode Mode with which to open stream
      * @throws Exception\InvalidArgumentException
      */
@@ -63,7 +60,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString() : string
+    public function __toString(): string
     {
         if (! $this->isReadable()) {
             return '';
@@ -75,7 +72,7 @@ class Stream implements StreamInterface
             }
 
             return $this->getContents();
-        } catch (RuntimeException $e) {
+        } catch (RuntimeException) {
             return '';
         }
     }
@@ -83,7 +80,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function close() : void
+    public function close(): void
     {
         if (! $this->resource) {
             return;
@@ -98,7 +95,7 @@ class Stream implements StreamInterface
      */
     public function detach()
     {
-        $resource = $this->resource;
+        $resource       = $this->resource;
         $this->resource = null;
         return $resource;
     }
@@ -106,13 +103,11 @@ class Stream implements StreamInterface
     /**
      * Attach a new stream/resource to the instance.
      *
-     * @param string|resource $resource
-     * @param string $mode
-     * @throws Exception\InvalidArgumentException for stream identifier that cannot be
-     *     cast to a resource
-     * @throws Exception\InvalidArgumentException for non-resource stream
+     * @param string|object|resource $resource
+     * @throws Exception\InvalidArgumentException For stream identifier that cannot be cast to a resource.
+     * @throws Exception\InvalidArgumentException For non-resource stream.
      */
-    public function attach($resource, string $mode = 'r') : void
+    public function attach($resource, string $mode = 'r'): void
     {
         $this->setStream($resource, $mode);
     }
@@ -120,7 +115,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function getSize() : ?int
+    public function getSize(): ?int
     {
         if (null === $this->resource) {
             return null;
@@ -137,7 +132,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function tell() : int
+    public function tell(): int
     {
         if (! $this->resource) {
             throw Exception\UntellableStreamException::dueToMissingResource();
@@ -154,7 +149,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function eof() : bool
+    public function eof(): bool
     {
         if (! $this->resource) {
             return true;
@@ -166,7 +161,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isSeekable() : bool
+    public function isSeekable(): bool
     {
         if (! $this->resource) {
             return false;
@@ -179,7 +174,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function seek($offset, $whence = SEEK_SET) : void
+    public function seek($offset, $whence = SEEK_SET): void
     {
         if (! $this->resource) {
             throw Exception\UnseekableStreamException::dueToMissingResource();
@@ -199,7 +194,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function rewind() : void
+    public function rewind(): void
     {
         $this->seek(0);
     }
@@ -207,7 +202,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isWritable() : bool
+    public function isWritable(): bool
     {
         if (! $this->resource) {
             return false;
@@ -216,19 +211,17 @@ class Stream implements StreamInterface
         $meta = stream_get_meta_data($this->resource);
         $mode = $meta['mode'];
 
-        return (
-            strstr($mode, 'x')
+        return strstr($mode, 'x')
             || strstr($mode, 'w')
             || strstr($mode, 'c')
             || strstr($mode, 'a')
-            || strstr($mode, '+')
-        );
+            || strstr($mode, '+');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function write($string) : int
+    public function write($string): int
     {
         if (! $this->resource) {
             throw Exception\UnwritableStreamException::dueToMissingResource();
@@ -250,7 +243,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isReadable() : bool
+    public function isReadable(): bool
     {
         if (! $this->resource) {
             return false;
@@ -259,13 +252,13 @@ class Stream implements StreamInterface
         $meta = stream_get_meta_data($this->resource);
         $mode = $meta['mode'];
 
-        return (strstr($mode, 'r') || strstr($mode, '+'));
+        return strstr($mode, 'r') || strstr($mode, '+');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function read($length) : string
+    public function read($length): string
     {
         if (! $this->resource) {
             throw Exception\UnreadableStreamException::dueToMissingResource();
@@ -287,7 +280,7 @@ class Stream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function getContents() : string
+    public function getContents(): string
     {
         if (! $this->isReadable()) {
             throw Exception\UnreadableStreamException::dueToConfiguration();
@@ -320,32 +313,27 @@ class Stream implements StreamInterface
     /**
      * Set the internal stream resource.
      *
-     * @param string|resource $stream String stream target or stream resource.
+     * @param string|object|resource $stream String stream target or stream resource.
      * @param string $mode Resource mode for stream target.
-     * @throws Exception\InvalidArgumentException for invalid streams or resources.
+     * @throws Exception\InvalidArgumentException For invalid streams or resources.
      */
-    private function setStream($stream, string $mode = 'r') : void
+    private function setStream($stream, string $mode = 'r'): void
     {
-        $error    = null;
         $resource = $stream;
 
         if (is_string($stream)) {
-            set_error_handler(function ($e) use (&$error) {
-                if ($e !== E_WARNING) {
-                    return;
-                }
-
-                $error = $e;
-            });
-            $resource = fopen($stream, $mode);
-            restore_error_handler();
+            try {
+                $resource = fopen($stream, $mode);
+            } catch (Throwable $error) {
+                throw new Exception\RuntimeException(
+                    sprintf('Invalid stream reference provided: %s', $error->getMessage()),
+                    0,
+                    $error
+                );
+            }
         }
 
-        if ($error) {
-            throw new Exception\InvalidArgumentException('Invalid stream reference provided');
-        }
-
-        if (! is_resource($resource) || 'stream' !== get_resource_type($resource)) {
+        if (! $this->isValidStreamResourceType($resource)) {
             throw new Exception\InvalidArgumentException(
                 'Invalid stream provided; must be a string stream identifier or stream resource'
             );
@@ -356,5 +344,24 @@ class Stream implements StreamInterface
         }
 
         $this->resource = $resource;
+    }
+
+    /**
+     * Determine if a resource is one of the resource types allowed to instantiate a Stream
+     *
+     * @param mixed $resource Stream resource.
+     * @psalm-assert-if-true resource $resource
+     */
+    private function isValidStreamResourceType(mixed $resource): bool
+    {
+        if (is_resource($resource)) {
+            return in_array(get_resource_type($resource), self::ALLOWED_STREAM_RESOURCE_TYPES, true);
+        }
+
+        if ($resource instanceof GdImage) {
+            return true;
+        }
+
+        return false;
     }
 }

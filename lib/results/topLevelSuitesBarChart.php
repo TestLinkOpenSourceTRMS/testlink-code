@@ -1,7 +1,7 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	topLevelSuitesBarChart.php
  *
@@ -12,9 +12,15 @@
  *
  *
  */
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once('charts.inc.php');
+require_once '../../config.inc.php';
+
+require_once __DIR__ . '/../../vendor/autoload.php'; // Autoload files using Composer autoload
+use pChart\pData;
+use pChart\pChart;
+use pChart\pCache;
+
+require_once 'common.php';
+require_once 'charts.inc.php';
 
 $cfg = new stdClass();
 $cfg->scale = new stdClass();
@@ -39,18 +45,16 @@ if( property_exists($args,'debug') )
 createChart($info,$cfg);
 
 
-/*
-  function: getDataAndScale
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @return stdClass
+ */
 function getDataAndScale(&$dbHandler,$argsObj)
 {
-  $obj = new stdClass(); 
-  $totals = null; 
+  $obj = new stdClass();
+  $totals = null;
   $resultsCfg = config_get('results');
 	$metricsMgr = new tlTestPlanMetrics($dbHandler);
 
@@ -63,8 +67,8 @@ function getDataAndScale(&$dbHandler,$argsObj)
   	new dBug($dummy->info);
   }
      
-  if($obj->canDraw) 
-  {    
+  if($obj->canDraw)
+  {
     //// Process to enable alphabetical order
 		$item_descr = array_flip($dataSet);
     ksort($item_descr);
@@ -76,17 +80,16 @@ function getDataAndScale(&$dbHandler,$argsObj)
 	      $rmap = $dummy->info[$tsuite_id]['details'];
 	     	foreach($rmap as $key => $value)
 	     	{
-	     		$totals[$key][]=$value['qty'];  
+	     		$totals[$key][]=$value['qty'];
 	     	}
      	}
      	else
      	{
      		// make things work, but create log this is not ok
-     		tlog(__FILE__ . '::' . __FUNCTION__ . 'Missing item: name/id:' . 
-     		     "$name/$tsuite_id", 'DEBUG');
+     		tlog(__FILE__ . '::' . __FUNCTION__ . 'Missing item: name/id:' . "$name/$tsuite_id", 'DEBUG');
      	}
     }
-  }   
+  }
     
   $obj->xAxis = new stdClass();
   $obj->xAxis->values = $items;
@@ -98,9 +101,9 @@ function getDataAndScale(&$dbHandler,$argsObj)
     $obj->chart_data[] = $values;
     $obj->series_label[] = lang_get($resultsCfg['status_label'][$status]);
  	  if( isset($resultsCfg['charts']['status_colour'][$status]) )
-    {	
+    {
 			$obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
-    }	
+    }
   }
  
   return $obj;
@@ -108,11 +111,13 @@ function getDataAndScale(&$dbHandler,$argsObj)
 
 /**
  *
+ * @param database $dbHandler
+ * @return stdClass
  */
 function init_args(&$dbHandler)
 {
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,0,64),
-                   "tproject_id" => array(tlInputParameter::INT_N), 
+                   "tproject_id" => array(tlInputParameter::INT_N),
                    "tplan_id" => array(tlInputParameter::INT_N));
 
   $args = new stdClass();
@@ -138,12 +143,11 @@ function init_args(&$dbHandler)
       $cerbero->method = null;
       $cerbero->args->getAccessAttr = false;
       setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
-    }  
+    }
   }
   else
   {
-    testlinkInitPage($dbHandler,false,false,"checkRights");  
-    // $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+    testlinkInitPage($dbHandler,false,false,"checkRights");
   }
 
 	if( isset($_REQUEST['debug']) )
@@ -153,8 +157,12 @@ function init_args(&$dbHandler)
 	return $args;
 }
 
+
 /**
  *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
  */
 function checkRights(&$db,&$user)
 {

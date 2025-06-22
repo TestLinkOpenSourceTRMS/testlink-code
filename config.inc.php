@@ -269,7 +269,7 @@ $tlCfg->testcase_cfg->import->wordwrap->expected_results = 0;
 /**
  * fonts set used to draw charts
  **/
-$tlCfg->charts_font_path = TL_ABS_PATH . "third_party/pchart/Fonts/tahoma.ttf";
+$tlCfg->charts_font_path = TL_ABS_PATH . "vendor/wp-statistics/pchart/src/Fonts/tahoma.ttf";
 /**
  * font size used to draw charts
  **/

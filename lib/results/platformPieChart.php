@@ -1,7 +1,7 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  platformPieChart.php
  * @package     TestLink
@@ -15,8 +15,11 @@
 **/
 require_once '../../config.inc.php';
 require_once 'common.php';
-include '../../third_party/pchart/pChart/pData.class';
-include '../../third_party/pchart/pChart/pChart.class';
+
+require_once __DIR__ . '/../../vendor/autoload.php'; // Autoload files using Composer autoload
+use pChart\pData;
+use pChart\pChart;
+use pChart\pCache;
 
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['platformPieChart'];
@@ -55,25 +58,25 @@ foreach($totals as $key => $value)
     if( isset($resultsCfg['charts']['status_colour'][$key]) )
     {
       $series_color[] = $resultsCfg['charts']['status_colour'][$key];
-    }  
+    }
 }
 
-// Dataset definition    
-$DataSet = new pData;   
-$DataSet->AddPoint($values,"Serie1");   
-$DataSet->AddPoint($labels,"Serie8");   
-$DataSet->AddAllSeries();   
-$DataSet->SetAbsciseLabelSerie("Serie8");   
+// Dataset definition
+$DataSet = new pData;
+$DataSet->AddPoint($values,"Serie1");
+$DataSet->AddPoint($labels,"Serie8");
+$DataSet->AddAllSeries();
+$DataSet->SetAbsciseLabelSerie("Serie8");
 
 // Initialise the graph
-$pChartCfg = new stdClass(); 
-$pChartCfg->XSize = $chart_cfg['XSize'];
-$pChartCfg->YSize = $chart_cfg['YSize'];                    
+$pChartCfg = new stdClass();
+$pChartCfg->XSize = $chart_cfg['XSize']+200;
+$pChartCfg->YSize = $chart_cfg['YSize'];
 $pChartCfg->radius = $chart_cfg['radius'];
-$pChartCfg->legendX = $chart_cfg['legendX'];                    
+$pChartCfg->legendX = $chart_cfg['legendX'];
 $pChartCfg->legendY = $chart_cfg['legendY'];
 
-$pChartCfg->centerX = intval($pChartCfg->XSize/2);                    
+$pChartCfg->centerX = intval($pChartCfg->XSize/2);
 $pChartCfg->centerY = intval($pChartCfg->YSize/2);
 
 $graph = new stdClass();
@@ -84,20 +87,20 @@ $Test = new pChart($pChartCfg->XSize,$pChartCfg->YSize);
 foreach($series_color as $key => $hexrgb)
 {
   $rgb = str_split($hexrgb,2);
-  $Test->setColorPalette($key,hexdec($rgb[0]),hexdec($rgb[1]),hexdec($rgb[2]));  
+  $Test->setColorPalette($key,hexdec($rgb[0]),hexdec($rgb[1]),hexdec($rgb[2]));
 }
  
-// Draw the pie chart   
+// Draw the pie chart
 $Test->setFontProperties(config_get('charts_font_path'),config_get('charts_font_size'));
 $Test->AntialiasQuality = 0;
 $Test->drawBasicPieGraph($graph->data,$graph->description,
-                         $pChartCfg->centerX,$pChartCfg->centerY,$pChartCfg->radius,PIE_PERCENTAGE,255,255,218);   
-$Test->drawPieLegend($pChartCfg->legendX,$pChartCfg->legendY,$graph->data,$graph->description,250,250,250);                                
+                         $pChartCfg->centerX,$pChartCfg->centerY,$pChartCfg->radius,PIE_PERCENTAGE,255,255,218);
+$Test->drawPieLegend($pChartCfg->legendX,$pChartCfg->legendY,$graph->data,$graph->description,250,250,250);
 $Test->Stroke();
 
 
 /**
- * 
+ *
  * @param database $db
  * @param tlUser $user
  * @return unknown
@@ -115,14 +118,9 @@ function checkRights(&$db,&$user)
  */
 function init_args(&$dbHandler)
 {
-  //  $_REQUEST = strings_stripSlashes($_REQUEST);
-  //  $args = new stdClass();
-  //  $args->tplan_id = $_REQUEST['tplan_id'];
-  //  $args->tproject_id = $_SESSION['testprojectID'];
-  //  $args->platform_id = $_REQUEST['platform_id'];
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,0,64),
-                   "platform_id" => array(tlInputParameter::INT_N), 
-                   "tproject_id" => array(tlInputParameter::INT_N), 
+                   "platform_id" => array(tlInputParameter::INT_N),
+                   "tproject_id" => array(tlInputParameter::INT_N),
                    "tplan_id" => array(tlInputParameter::INT_N));
 
   $args = new stdClass();
@@ -148,11 +146,11 @@ function init_args(&$dbHandler)
       $cerbero->method = null;
       $cerbero->args->getAccessAttr = false;
       setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
-    }  
+    }
   }
   else
   {
-    testlinkInitPage($dbHandler,true,false,"checkRights");  
+    testlinkInitPage($dbHandler,true,false,"checkRights");
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
   

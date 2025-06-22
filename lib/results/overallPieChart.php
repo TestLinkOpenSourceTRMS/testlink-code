@@ -16,9 +16,11 @@
 **/
 require_once '../../config.inc.php';
 require_once 'common.php';
-define('PCHART_PATH','../../third_party/pchart');
-include_once PCHART_PATH . '/pChart/pData.class';
-include_once PCHART_PATH . '/pChart/pChart.class';
+
+require_once __DIR__ . '/../../vendor/autoload.php'; // Autoload files using Composer autoload
+use pChart\pData;
+use pChart\pChart;
+use pChart\pCache;
 
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['overallPieChart'];
@@ -51,7 +53,7 @@ $DataSet->SetAbsciseLabelSerie("Serie8");
 
 // Initialise the graph
 $pChartCfg = new stdClass();
-$pChartCfg->XSize = $chart_cfg['XSize'];
+$pChartCfg->XSize = $chart_cfg['XSize']+200;
 $pChartCfg->YSize = $chart_cfg['YSize'];
 $pChartCfg->radius = $chart_cfg['radius'];
 $pChartCfg->legendX = $chart_cfg['legendX'];

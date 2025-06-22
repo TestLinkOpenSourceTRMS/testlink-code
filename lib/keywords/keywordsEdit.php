@@ -1,22 +1,22 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource: keywordsEdit.php
  *
- * Allows users to create/edit keywords. 
+ * Allows users to create/edit keywords.
  *
  * @package    TestLink
- * @copyright  2005,2023 TestLink community 
+ * @copyright  2005,2023 TestLink community
  * @link       http://www.testlink.org/
- *  
+ *
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("csv.inc.php");
-require_once("xml.inc.php");
-require_once("keywordsEnv.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'csv.inc.php';
+require_once 'xml.inc.php';
+require_once 'keywordsEnv.php';
 
 
 testlinkInitPage($db);
@@ -50,9 +50,7 @@ switch ($action) {
 if($op->status == 1) {
   $tpl = $op->template;
 } else {
-  $tpl = (property_exists($op,'template') 
-          && null != $op->template) ? $op->template :
-         $tplCfg->default_template;
+  $tpl = (property_exists($op,'template') && null != $op->template) ? $op->template : $tplCfg->default_template;
   $gui->user_feedback = getKeywordErrorMessage($op->status);
 }
 
@@ -63,21 +61,21 @@ if ($tpl != $tplCfg->default_template) {
   $kwe = getKeywordsEnv($db,$args->user,$args->tproject_id);
   foreach($kwe as $prop => $val) {
     $gui->$prop = $val;
-  }  
-  $setUpDialog = $gui->openByOther;  
+  }
+  $setUpDialog = $gui->openByOther;
 } else {
-  $setUpDialog = $gui->directAccess;  
+  $setUpDialog = $gui->directAccess;
   $gui->submitCode="return dialog_onSubmit($gui->dialogName)";
 }
 
 if ($setUpDialog) {
   $gui->dialogName = 'kw_dialog';
   $gui->bodyOnLoad = "dialog_onLoad($gui->dialogName)";
-  $gui->bodyOnUnload = "dialog_onUnload($gui->dialogName)";  
+  $gui->bodyOnUnload = "dialog_onUnload($gui->dialogName)";
 
   if( $gui->directAccess ) {
     $gui->submitCode = "return dialog_onSubmit($gui->dialogName)";
-  }  
+  }
 }
 
 $tplEngine->assign('gui',$gui);
@@ -85,15 +83,16 @@ $tplEngine->display($tplCfg->template_dir . $tpl);
 
 
 /**
- * @return object returns the arguments for the page
+ * Initializes the environment
+ *
+ * @param database $dbHandler
+ * @return stdClass object returns the arguments for the page
  */
 function initEnv(&$dbHandler) {
-  $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
   $source = sizeof($_POST) ? "POST" : "GET";
   
-  $ipcfg = 
-    array( "doAction" => array($source,tlInputParameter::STRING_N,0,50),
+  $ipcfg = array( "doAction" => array($source,tlInputParameter::STRING_N,0,50),
            "id" => array($source, tlInputParameter::INT_N),
            "keyword" => array($source, tlInputParameter::STRING_N,0,100),
            "notes" => array($source, tlInputParameter::STRING_N),
@@ -120,7 +119,7 @@ function initEnv(&$dbHandler) {
   }
 
   // Check rights before doing anything else
-  // Abort if rights are not enough 
+  // Abort if rights are not enough
   $args->user = $_SESSION['currentUser'];
   $env['tproject_id'] = $args->tproject_id;
   $env['tplan_id'] = 0;
@@ -136,15 +135,19 @@ function initEnv(&$dbHandler) {
 
   $treeMgr = new tree($dbHandler);
   $dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
-  $args->tproject_name = $dummy['name'];  
+  $args->tproject_name = $dummy['name'];
 
   return $args;
 }
 
-/*
- *  initialize variables to launch user interface (smarty template)
- *  to get information to accomplish create task.
-*/
+/**
+ * initialize variables to launch user interface (smarty template)
+ * to get information to accomplish create task.
+ * 
+ * @param stdClass $argsObj
+ * @param stdClass $guiObj
+ * @return stdClass
+ */
 function create(&$argsObj,&$guiObj) {
   $guiObj->submit_button_action = 'do_create';
   $guiObj->submit_button_label = lang_get('btn_save');
@@ -157,10 +160,13 @@ function create(&$argsObj,&$guiObj) {
   return $ret;
 }
 
-/*
- *  initialize variables to launch user interface (smarty template)
- *  to get information to accomplish edit task.
-*/
+/**
+ * 
+ * @param stdClass $argsObj
+ * @param stdClass $guiObj
+ * @param testproject $tproject_mgr
+ * @return stdClass
+ */
 function edit(&$argsObj,&$guiObj,&$tproject_mgr) {
   $guiObj->submit_button_action = 'do_update';
   $guiObj->submit_button_label = lang_get('btn_save');
@@ -181,8 +187,13 @@ function edit(&$argsObj,&$guiObj,&$tproject_mgr) {
   return $ret;
 }
 
-/*
+/**
  * Creates the keyword
+ * 
+ * @param stdClass $args
+ * @param stdClass $guiObj
+ * @param testproject $tproject_mgr
+ * @return stdClass
  */
 function do_create(&$args,&$guiObj,&$tproject_mgr) {
   $guiObj->submit_button_action = 'do_create';
@@ -197,8 +208,13 @@ function do_create(&$args,&$guiObj,&$tproject_mgr) {
   return $ret;
 }
 
-/*
+/**
  * Updates the keyword
+ * 
+ * @param stdClass $argsObj
+ * @param stdClass $guiObj
+ * @param testproject $tproject_mgr
+ * @return stdClass
  */
 function do_update(&$argsObj,&$guiObj,&$tproject_mgr) {
   $guiObj->submit_button_action = 'do_update';
@@ -218,8 +234,13 @@ function do_update(&$argsObj,&$guiObj,&$tproject_mgr) {
   return $ret;
 }
 
-/*
- * Deletes the keyword 
+/**
+ * Deletes the keyword
+ * 
+ * @param stdClass $args
+ * @param stdClass $guiObj
+ * @param testproject $tproject_mgr
+ * @return stdClass
  */
 function do_delete(&$args,&$guiObj,&$tproject_mgr) {
   $guiObj->submit_button_action = 'do_update';
@@ -237,10 +258,14 @@ function do_delete(&$args,&$guiObj,&$tproject_mgr) {
   return $ret;
 }
 
-/*
- *  initialize variables to launch user interface (smarty template)
- *  to get information to accomplish create and link task.
-*/
+/**
+ * initialize variables to launch user interface (smarty template)
+ * to get information to accomplish create and link task.
+ * 
+ * @param stdClass $argsObj
+ * @param stdClass $guiObj
+ * @return stdClass
+ */
 function cfl(&$argsObj,&$guiObj) {
   $guiObj->submit_button_action = 'do_cfl';
   $guiObj->submit_button_label = lang_get('btn_create_and_link');
@@ -253,8 +278,13 @@ function cfl(&$argsObj,&$guiObj) {
   return $ret;
 }
 
-/*
+/**
  * Creates & Link the keyword
+ * 
+ * @param stdClass $args
+ * @param stdClass $guiObj
+ * @param testproject $tproject_mgr
+ * @return stdClass
  */
 function do_cfl(&$args,&$guiObj,&$tproject_mgr) {
   $guiObj->submit_button_action = 'do_cfl';
@@ -282,13 +312,16 @@ function do_cfl(&$args,&$guiObj,&$tproject_mgr) {
 
 
 /**
+ * Get the error message
  *
+ * @param string $code the local language
+ * @return string of the error message
  */
 function getKeywordErrorMessage($code) {
 
   switch($code) {
     case tlKeyword::E_NAMENOTALLOWED:
-      $msg = lang_get('keywords_char_not_allowed'); 
+      $msg = lang_get('keywords_char_not_allowed');
     break;
 
     case tlKeyword::E_NAMELENGTH:
@@ -296,7 +329,7 @@ function getKeywordErrorMessage($code) {
     break;
 
     case tlKeyword::E_DBERROR:
-    case ERROR: 
+    case ERROR:
       $msg = lang_get('kw_update_fails');
     break;
 
@@ -306,7 +339,7 @@ function getKeywordErrorMessage($code) {
 
     default:
       $msg = 'ok';
-    break;  
+    break;
   }
   return $msg;
 }
@@ -328,8 +361,7 @@ function initializeGui(&$dbH,&$args) {
   // Needed by the smarty template to be launched
   $kr = array('canManage' => "mgt_modify_key", 'canAssign' => "keyword_assignment");
   foreach( $kr as $vk => $rk ) {
-    $gui->$vk = 
-      $args->user->hasRight($dbH,$rk,$args->tproject_id);
+    $gui->$vk = $args->user->hasRight($dbH,$rk,$args->tproject_id);
   }
 
   $gui->tproject_id = $args->tproject_id;
@@ -340,9 +372,7 @@ function initializeGui(&$dbH,&$args) {
   $gui->keyword = $args->keyword;
   $gui->keywordID = $args->keyword_id;
 
-  $gui->editUrl = $_SESSION['basehref'] . 
-                  "lib/keywords/keywordsEdit.php?" .
-                  "tproject_id={$gui->tproject_id}"; 
+  $gui->editUrl = $_SESSION['basehref'] . "lib/keywords/keywordsEdit.php?" . "tproject_id={$gui->tproject_id}";
 
   return $gui;
 }

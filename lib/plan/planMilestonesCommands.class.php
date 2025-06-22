@@ -1,14 +1,14 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
- *  
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
  * @filesource planMilestonesCommands.class.php
  * @author Francisco Mancardi
- * 
+ *
  * @internal revisions
  */
-require_once("testplan.class.php");  // needed because milestone_mgr is inside
+require_once 'testplan.class.php';  // needed because milestone_mgr is inside
 class planMilestonesCommands
 {
   private $db;
@@ -35,7 +35,7 @@ class planMilestonesCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
   function create(&$argsObj)
@@ -45,13 +45,13 @@ class planMilestonesCommands
     $guiObj->action_descr = lang_get('create_milestone');
     $guiObj->template = $this->defaultTemplate;
     $guiObj->submit_button_label = $this->submit_button_label;
-    $guiObj->milestone = array('id' => 0, 'name' => '', 'target_date' => '', 
+    $guiObj->milestone = array('id' => 0, 'name' => '', 'target_date' => '',
                                'start_date' => '',
-                               'high_percentage' => '', 'medium_percentage' => '', 
-                               'low_percentage' => '', 
+                               'high_percentage' => '', 'medium_percentage' => '',
+                               'low_percentage' => '',
                                'testplan_id' => $argsObj->tplan_id,
                                'testplan_name' => $argsObj->tplan_name,);
-    return $guiObj; 
+    return $guiObj;
   }
 
   /*
@@ -59,7 +59,7 @@ class planMilestonesCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
   function edit(&$argsObj)
@@ -75,11 +75,11 @@ class planMilestonesCommands
     $guiObj->milestone['target_date'] = localize_dateOrTimeStamp(null, $dummy, 'date_format',$guiObj->milestone['target_date']);
       
     // as start date is optional it can be "0000-00-00" (default timestamp)
-    if ($guiObj->milestone['start_date'] != "0000-00-00") 
+    if ($guiObj->milestone['start_date'] != "0000-00-00")
     {
       $guiObj->milestone['start_date'] = localize_dateOrTimeStamp(null, $dummy, 'date_format',$guiObj->milestone['start_date']);
-    } 
-    else 
+    }
+    else
     {
       $guiObj->milestone['start_date'] = "";
     }
@@ -88,7 +88,7 @@ class planMilestonesCommands
     $guiObj->action_descr = sprintf(lang_get('edit_milestone'),$guiObj->milestone['name']);
     $guiObj->template = $this->defaultTemplate;
     $guiObj->submit_button_label = $this->submit_button_label;
-    return $guiObj; 
+    return $guiObj;
   }
 
 
@@ -97,7 +97,7 @@ class planMilestonesCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
   function doCreate(&$argsObj,$basehref)
@@ -122,14 +122,14 @@ class planMilestonesCommands
         // are the dates valid?
         if ($op_ok) {
           // start date is optional
-          $op_ok = is_valid_date($argsObj->target_date_original, $date_format_cfg) && 
-                   ($argsObj->start_date_original == '' || is_valid_date($argsObj->start_date_original, $date_format_cfg));
+          $op_ok = is_valid_date($argsObj->target_date_original, $date_format_cfg) &&
+          ($argsObj->start_date_original == '' || is_valid_date($argsObj->start_date_original, $date_format_cfg));
           if (!$op_ok) {
             $guiObj->user_feedback = sprintf(lang_get('warning_invalid_date'));
           }
         }
         
-        // check target date 
+        // check target date
     if($op_ok)
     {
           $timestamp=array();
@@ -162,13 +162,7 @@ class planMilestonesCommands
       if (!isset($argsObj->start_date)) {
         $argsObj->start_date = "";
       }
-      /*
-          $argsObj->id = $this->milestone_mgr->create($argsObj->tplan_id,$argsObj->name,
-                                                      $argsObj->target_date,$argsObj->start_date,
-                                                      $argsObj->low_priority_tcases,
-                                                      $argsObj->medium_priority_tcases,
-                                                      $argsObj->high_priority_tcases);
-          */
+      
             $argsObj->low_priority = $argsObj->low_priority_tcases;
           $argsObj->medium_priority = $argsObj->medium_priority_tcases;
           $argsObj->high_priority = $argsObj->high_priority_tcases;
@@ -183,8 +177,8 @@ class planMilestonesCommands
             $guiObj->user_feedback = sprintf(lang_get('milestone_created'), $argsObj->name);
               $guiObj->template = $basehref . $this->viewAction;
           }
-    }    
-    return $guiObj; 
+    }
+    return $guiObj;
   }
 
 
@@ -193,7 +187,7 @@ class planMilestonesCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
   function doUpdate(&$argsObj,$basehref)

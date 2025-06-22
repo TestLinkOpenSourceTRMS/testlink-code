@@ -1,15 +1,15 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource: keywordsView.php
  *
- * Display list of available keywords. 
+ * Display list of available keywords.
  */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("keywordsEnv.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'keywordsEnv.php';
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -20,7 +20,10 @@ $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
- * @return object returns the arguments for the page
+ * Get input from user and return it in some sort of namespace
+ *
+ * @param database $dbHandler
+ * @return stdClass object returns the arguments for the page
  */
 function init_args(&$dbHandler) {
   $args = new stdClass();
@@ -32,7 +35,7 @@ function init_args(&$dbHandler) {
   }
 
   // Check rights before doing anything else
-  // Abort if rights are not enough 
+  // Abort if rights are not enough
   $user = $_SESSION['currentUser'];
   $env['tproject_id'] = $tproject_id;
   $env['tplan_id'] = 0;
@@ -47,18 +50,17 @@ function init_args(&$dbHandler) {
   $args->tproject_id = $tproject_id;
 
   $args->dialogName = '';
-  $args->bodyOnLoad = $args->bodyOnUnload = '';       
+  $args->bodyOnLoad = $args->bodyOnUnload = '';
   if(isset($_REQUEST['openByKWInc'])) {
     $args->openByOther = 1;
   } else {
     // Probably useless
-    $args->openByOther = 
-      isset($_REQUEST['openByOther']) ? intval($_REQUEST['openByOther']) : 0;
+    $args->openByOther = isset($_REQUEST['openByOther']) ? intval($_REQUEST['openByOther']) : 0;
     if( $args->openByOther ) {
       $args->dialogName = 'kw_dialog';
       $args->bodyOnLoad = "dialog_onLoad($args->dialogName)";
-      $args->bodyOnUnload = "dialog_onUnload($args->dialogName)";  
-    }    
+      $args->bodyOnUnload = "dialog_onUnload($args->dialogName)";
+    }
   }
 
   return $args;

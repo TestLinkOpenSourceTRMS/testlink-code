@@ -1,24 +1,24 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Manages test plans
  *
  * @package   TestLink
- * @copyright 2007-2020, TestLink community 
+ * @copyright 2007-2020, TestLink community
  * @version   planEdit.php
  * @link      http://www.testlink.org/
  *
  **/
 
-require_once('../../config.inc.php');
-require_once("common.php");
-require_once("date_api.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'date_api.php';
 
-require_once("web_editor.php");
+require_once 'web_editor.php';
 $editorCfg = getWebEditorCfg('testplan');
-require_once(require_web_editor($editorCfg['type']));
+require_once require_web_editor($editorCfg['type']);
 
 testlinkInitPage($db,false,false);
 $templateCfg = templateConfiguration();
@@ -28,15 +28,15 @@ $tproject_mgr = new testproject($db);
 $smarty = new TLSmarty();
 $do_display=false;
 $template = null;
-$args = init_args($_REQUEST);
-$gui = initializeGui($db,$args,$editorCfg,$tproject_mgr);
+$args = initArgs($_REQUEST);
+$gui = initializeGui($db,$args,$editorCfg);
 
 if (!$args->tproject_id) {
   $smarty->assign('title', lang_get('fatal_page_title'));
   $smarty->assign('content', lang_get('error_no_testprojects_present'));
   $smarty->display('workAreaSimple.tpl');
   exit();
-} 
+}
 
 if (!checkRights($db,$args->user,$args->tproject_id)) {
   $smarty->assign('title', lang_get('fatal_page_title'));
@@ -44,7 +44,6 @@ if (!checkRights($db,$args->user,$args->tproject_id)) {
   $smarty->display('workAreaSimple.tpl');
   exit();
 }
-
 
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
@@ -56,8 +55,7 @@ if($args->do_action == "do_create" || $args->do_action == "do_update")
 {
   $gui->testplan_name = $args->testplan_name;
   $name_exists = $tproject_mgr->check_tplan_name_existence($args->tproject_id,$args->testplan_name);
-  $name_id_rel_ok = (isset($gui->tplans[$args->tplan_id]) && 
-                     $gui->tplans[$args->tplan_id]['name'] == $args->testplan_name);
+  $name_id_rel_ok = (isset($gui->tplans[$args->tplan_id]) && $gui->tplans[$args->tplan_id]['name'] == $args->testplan_name);
 }
 
 // interface changes to be able to do not loose CF values if some problem arise on User Interface
@@ -110,8 +108,7 @@ switch($args->do_action)
       if(!$tplan_mgr->update($args->tplan_id,$args->testplan_name,$args->notes,
                              $args->active,$args->is_public))
       {
-        $gui->user_feedback = lang_get('update_tp_failed1'). $gui->testplan_name . 
-                              lang_get('update_tp_failed2').": " . $db->error_msg() . "<br />";
+        $gui->user_feedback = lang_get('update_tp_failed1'). $gui->testplan_name . lang_get('update_tp_failed2').": " . $db->error_msg() . "<br />";
       }
       else
       {
@@ -134,9 +131,9 @@ switch($args->do_action)
           // does user have an SPECIFIC role on TestPlan ?
           // if answer is yes => do nothing
           if(!tlUser::hasRoleOnTestPlan($db,$args->user_id,$args->tplan_id))
-          {  
+          {
             $tplan_mgr->addUserRole($args->user_id,$args->tplan_id,$tprojectEffectiveRole->dbID);
-          }  
+          }
         }
       }
     }
@@ -181,7 +178,7 @@ switch($args->do_action)
         $template = null;
         $gui->user_feedback ='';
 
-        // Operations Order is CRITIC  
+        // Operations Order is CRITIC
         if($args->copy)
         {
           $options = array('items2copy' => $args->copy_options,'copy_assigned_to' => $args->copy_assigned_to,
@@ -194,13 +191,12 @@ switch($args->do_action)
         {
           // does user have an SPECIFIC role on TestPlan ?
           // if answer is yes => do nothing
-          if(!tlUser::hasRoleOnTestPlan($db,$args->user_id,$new_tplan_id))
-          {  
+          if (!tlUser::hasRoleOnTestPlan($db,$args->user_id,$new_tplan_id))
+          {
             $effectiveRole = $args->user->getEffectiveRole($db,$args->tproject_id,null);
             $tplan_mgr->addUserRole($args->user_id,$new_tplan_id,$effectiveRole->dbID);
-          }  
+          }
         }
-        // End critic block
 
       }
     }
@@ -211,7 +207,6 @@ switch($args->do_action)
     
     if(!$status_ok)
     {
-      // $gui->tplan_id=$new_tplan_id;
       $gui->tproject_name=$args->tproject_name;
       $gui->notes=$of->CreateHTML();
     }
@@ -253,10 +248,9 @@ switch($args->do_action)
 
       $rightSet = array('testplan_user_role_assignment');
 
-      // --------------------------------------------------------------------------------------------------
       $availableCF = (array)$tplan_mgr->get_linked_cfields_at_design(current($tplanSet),$gui->tproject_id);
       $hasCF = count($availableCF);
-      $gui->cfieldsColumns = null; 
+      $gui->cfieldsColumns = null;
       $initCFCol = true;
       
       $localeDateFormat = config_get('locales_date_format');
@@ -270,9 +264,9 @@ switch($args->do_action)
       // 2. look for TL_TPLANVIEW_HIDECOL_PPFX
       // 3. if found proceed
       // 4. else look for TL_TPLANVIEW_HIDECOL
-      //  
+      //
       $ppfx = $tproject_mgr->getTestCasePrefix($gui->tproject_id);
-      $suffixSet = ['_' . $ppfx, ''];     
+      $suffixSet = ['_' . $ppfx, ''];
       foreach($suffixSet as $suf) {
         $gopt['name'] = 'TL_TPLANVIEW_HIDECOL' . $suf;
         $col2hideCF = $tplan_mgr->cfield_mgr->get_linked_to_testproject($gui->tproject_id,null,$gopt);
@@ -281,33 +275,26 @@ switch($args->do_action)
           $col2hideCF = current($col2hideCF);
           $col2hide = array_flip(explode('|',$col2hideCF['possible_values']));
           $col2hide[$gopt['name']] = '';
-          break; 
+          break;
         }
       }
-
-      // --------------------------------------------------------------------------------------------------
  
       foreach($tplanSet as $idk) {
-        // ---------------------------------------------------------------------------------------------  
         if ($hasCF) {
-          $cfields = (array)$tplan_mgr->getCustomFieldsValues($idk,$gui->tproject_id);        
+          $cfields = (array)$tplan_mgr->getCustomFieldsValues($idk,$gui->tproject_id);
           foreach ($cfields as $cfd) {
-            if ($initCFCol) {
-              if (!isset($col2hide[$cfd['name']])) {
+            if ($initCFCol &&!isset($col2hide[$cfd['name']])) {
                 $gui->cfieldsColumns[] = $cfd['label'];
                 $gui->cfieldsType[] = $cfd['type'];
-              }
             }
             $gui->tplans[$idk][$cfd['label']] = ['value' => $cfd['value'], 'data-order' => $cfd['value']];
 
             if ($cfd['type'] == 'date') {
               $gui->tplans[$idk][$cfd['label']]['data-order'] = locateDateToISO($cfd['value'], $localeDateFormat);
-            }          
-          } 
+            }
+          }
           $initCFCol = false;
         }
-        // ---------------------------------------------------------------------------------------------  
-
 
 
         $gui->tplans[$idk]['tcase_qty'] = isset($dummy[$idk]['qty']) ? intval($dummy[$idk]['qty']) : 0;
@@ -322,7 +309,7 @@ switch($args->do_action)
         foreach($rightSet as $target)
         {
           // DEV NOTE - CRITIC
-          // I've made a theorically good performance choice to 
+          // I've made a theorically good performance choice to
           // assign to $roleObj a reference to different roleObj
           // UNFORTUNATELLY this choice was responsible to destroy point object
           // since second LOOP
@@ -330,7 +317,7 @@ switch($args->do_action)
           if($gui->tplans[$idk]['has_role'] > 0)
           {
             if( isset($args->user->tplanRoles[ $gui->tplans[$idk]['has_role'] ]) )
-            { 
+            {
               $roleObj = $args->user->tplanRoles[ $gui->tplans[$idk]['has_role'] ];
             }
             else
@@ -338,21 +325,20 @@ switch($args->do_action)
               // Need To review this comment
               // session cache has not still updated => get from DB ?
               $roleObj = $args->user->getEffectiveRole($db,$args->tproject_id,$idk);
-            }  
-          }  
-          else if (!is_null($args->user->tprojectRoles) && 
-                   isset($args->user->tprojectRoles[$args->tproject_id]) )
+            }
+          }
+          elseif (!is_null($args->user->tprojectRoles) && isset($args->user->tprojectRoles[$args->tproject_id]) )
           {
             $roleObj = $args->user->tprojectRoles[$args->tproject_id];
-          }  
+          }
 
           if(is_null($roleObj))
           {
             $roleObj = $args->user->globalRole;
-          }  
-          $gui->tplans[$idk]['rights'][$target] = $roleObj->hasRight($target);  
-        }  
-      }   
+          }
+          $gui->tplans[$idk]['rights'][$target] = $roleObj->hasRight($target);
+        }
+      }
     }
     break;
 
@@ -373,19 +359,15 @@ if($do_display)
 }
 
 
-/*
+/**
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION
  * super-global hashes.
- * Important: changes in HTML input elements on the Smarty template
- *            must be reflected here.
+ * Important: changes in HTML input elements on the Smarty template must be reflected here.
  *
- *
- * @parameter hash request_hash the $_REQUEST
- * @return    object with html values tranformed and other
- *                   generated variables.
- *
+ * @param array $request_hash hash the $_REQUEST
+ * @return stdClass object with html values tranformed and other generated variables.
  */
-function init_args($request_hash)
+function initArgs($request_hash)
 {
   $session_hash = $_SESSION;
   $args = new stdClass();
@@ -409,11 +391,11 @@ function init_args($request_hash)
     $args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
   }
   $args->source_tplanid = $args->copy_from_tplan_id;
-  $args->copy = ($args->copy_from_tplan_id > 0) ? TRUE : FALSE;
+  $args->copy = ($args->copy_from_tplan_id > 0) ? true : false;
 
   $args->copy_options=array();
   $boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0,
-                        'copy_milestones' => 0, 'copy_user_roles' => 0, 
+                        'copy_milestones' => 0, 'copy_user_roles' => 0,
                         'copy_builds' => 0, 'copy_platforms_links' => 0,
                         'copy_attachments' => 0);
 
@@ -430,7 +412,7 @@ function init_args($request_hash)
   $args->user = $session_hash['currentUser'];
 
 
-  // all has to be refactored this way  
+  // all has to be refactored this way
   $iParams = array("file_id" => array(tlInputParameter::INT_N),
                    "fileTitle" => array(tlInputParameter::STRING_N,0,100));
   R_PARAMS($iParams,$args);
@@ -439,8 +421,12 @@ function init_args($request_hash)
 }
 
 /**
- * checkRights
+ * Checks the user rights for accessing the page
  *
+ * @param database $db
+ * @param tlUser $user
+ * @param int $tproject_id
+ * @return boolean
  */
 function checkRights(&$db,&$user,$tproject_id)
 {
@@ -448,15 +434,19 @@ function checkRights(&$db,&$user,$tproject_id)
 }
 
 /**
- * initializeGui
+ * Initializes the GUI
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param array $editorCfg
+ * @return stdClass
  */
-function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
+function initializeGui(&$dbHandler,&$argsObj,&$editorCfg)
 {
     $tplan_mgr = new testplan($dbHandler);
     
     $guiObj = new stdClass();
-    $guiObj->tproject_id = $argsObj->tproject_id; 
+    $guiObj->tproject_id = $argsObj->tproject_id;
     $guiObj->editorType = $editorCfg['type'];
     $guiObj->tplans = $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,
                                                              null,array('output' =>'mapfull','active' => null));
@@ -468,9 +458,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     $guiObj->is_active = 0;
     $guiObj->is_public = 0;
     $guiObj->cfields = '';
-    $guiObj->user_feedback = '';               
+    $guiObj->user_feedback = '';
     
-    $guiObj->grants = new stdClass();  
+    $guiObj->grants = new stdClass();
     $guiObj->grants->testplan_create = $argsObj->user->hasRight($dbHandler,"mgt_testplan_create",$argsObj->tproject_id);
     $guiObj->grants->mgt_view_events = $argsObj->user->hasRight($dbHandler,"mgt_view_events");
     $guiObj->notes = '';
@@ -490,6 +480,11 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
 
 /**
  *
+ * @param testplan $itemMgr
+ * @param stdClass $guiObj
+ * @param ckeditorInterface $ofObj
+ * @param int $itemID
+ * @param boolean $updateAttachments
  */
 function getItemData(&$itemMgr,&$guiObj,&$ofObj,$itemID,$updateAttachments=false)
 {
@@ -504,7 +499,7 @@ function getItemData(&$itemMgr,&$guiObj,&$ofObj,$itemID,$updateAttachments=false
     $guiObj->tplan_id = $itemID;
 
     if($updateAttachments)
-    {  
+    {
       $guiObj->attachments[$guiObj->tplan_id] = getAttachmentInfosFrom($itemMgr,$guiObj->tplan_id);
     }
   }

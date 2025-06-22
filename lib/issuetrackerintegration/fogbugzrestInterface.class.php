@@ -1,23 +1,23 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource  fogbugzrestInterface.class.php
  * @author Francisco Mancardi
  *
  * @internal IMPORTANT NOTICE
- * we use issueID on methods signature, to make clear that this ID 
- * is HOW issue in identified on Issue Tracker System, 
+ * we use issueID on methods signature, to make clear that this ID
+ * is HOW issue in identified on Issue Tracker System,
  * not how is identified internally at DB level on TestLink
  *
- * Third Party Code: https://github.com/chadhutchins/fogbugz-php-api  
+ * Third Party Code: https://github.com/chadhutchins/fogbugz-php-api
  *
  * @internal revisions
  * @since 1.9.8
  * 20130805 - franciscom - canCreateViaAPI()
  *
 **/
-require_once(TL_ABS_PATH . "/third_party/fogbugz-php-api/lib/api.php");
+require_once TL_ABS_PATH . '/third_party/fogbugz-php-api/lib/api.php';
 class fogbugzrestInterface extends issueTrackerInterface
 {
   private $APIClient;
@@ -25,7 +25,7 @@ class fogbugzrestInterface extends issueTrackerInterface
   /**
    * Construct and connect to BTS.
    *
-   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param string $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
   function __construct($type,$config,$name)
@@ -37,7 +37,7 @@ class fogbugzrestInterface extends issueTrackerInterface
     if( !$this->setCfg($config) )
     {
       return false;
-    }  
+    }
     $this->completeCfg();
     $this->connect();
   }
@@ -47,9 +47,9 @@ class fogbugzrestInterface extends issueTrackerInterface
    *
    * check for configuration attributes than can be provided on
    * user configuration, but that can be considered standard.
-   * If they are MISSING we will use 'these carved on the stone values' 
+   * If they are MISSING we will use 'these carved on the stone values'
    * in order to simplify configuration.
-   * 
+   *
    *
    **/
   function completeCfg()
@@ -67,7 +67,7 @@ class fogbugzrestInterface extends issueTrackerInterface
   }
 
   /**
-   * useful for testing 
+   * useful for testing
    *
    *
    **/
@@ -91,7 +91,7 @@ class fogbugzrestInterface extends issueTrackerInterface
  /**
   * establishes connection to the bugtracking system
   *
-  * @return bool 
+  * @return bool
   *
   **/
   function connect()
@@ -111,7 +111,7 @@ class fogbugzrestInterface extends issueTrackerInterface
       $logDetails = '';
       foreach(array('uribase','username','password') as $v)
       {
-        $logDetails .= "$v={$this->cfg->$v} / "; 
+        $logDetails .= "$v={$this->cfg->$v} / ";
       }
       $logDetails = trim($logDetails,'/ ');
       $this->connected = false;
@@ -120,7 +120,6 @@ class fogbugzrestInterface extends issueTrackerInterface
   }
 
   /**
-   * 
    *
    **/
   function isConnected()
@@ -130,13 +129,12 @@ class fogbugzrestInterface extends issueTrackerInterface
 
 
   /**
-   * 
    *
    **/
   public function getIssue($issueID)
   {
     if (!$this->isConnected())
-    {              
+    {
       $msg = __METHOD__ . ' Not Connected ';
       tLog($msg,'ERROR');
       return false;
@@ -145,7 +143,7 @@ class fogbugzrestInterface extends issueTrackerInterface
     try
     {
       $target = array('q' => intval($issueID), 'cols' => 'sTitle,sStatus');
-      $xml = $this->APIClient->search($target); 
+      $xml = $this->APIClient->search($target);
       if( !is_null($xml) && is_object($xml) )
       {
         $issue = new stdClass();
@@ -161,8 +159,8 @@ class fogbugzrestInterface extends issueTrackerInterface
       $msg = __METHOD__ . '/' . $e->getMessage();
       tLog($msg,'ERROR');
       $issue = null;
-    } 
-    return $issue;    
+    }
+    return $issue;
   }
 
 
@@ -170,8 +168,7 @@ class fogbugzrestInterface extends issueTrackerInterface
    * Returns status for issueID
    *
    * @param string issueID
-   *
-   * @return 
+   * @return
    **/
   function getIssueStatusCode($issueID)
   {
@@ -183,8 +180,7 @@ class fogbugzrestInterface extends issueTrackerInterface
    * Returns status in a readable form (HTML context) for the bug with the given id
    *
    * @param string issueID
-   * 
-   * @return string 
+   * @return string
    *
    **/
   function getIssueStatusVerbose($issueID)
@@ -195,8 +191,7 @@ class fogbugzrestInterface extends issueTrackerInterface
   /**
    *
    * @param string issueID
-   * 
-   * @return string 
+   * @return string
    *
    **/
   function getIssueSummaryHTMLString($issueID)
@@ -207,14 +202,13 @@ class fogbugzrestInterface extends issueTrackerInterface
 
   /**
    * @param string issueID
-   *
    * @return bool true if issue exists on BTS
    **/
   function checkBugIDExistence($issueID)
-  {                                          
-      if(($status_ok = $this->checkBugIDSyntax($issueID)))
-      {                         
-          $issue = $this->getIssue($issueID);       
+  {
+      if($status_ok = $this->checkBugIDSyntax($issueID))
+      {
+          $issue = $this->getIssue($issueID);
           $status_ok = !is_null($issue) && is_object($issue);
       }
       return $status_ok;
@@ -223,19 +217,19 @@ class fogbugzrestInterface extends issueTrackerInterface
 
   /**
    *
-   */ 
+   */
   public function addIssue($summary,$description)
   {
     try
     {
-      $projectName = (string)$this->cfg->project; 
+      $projectName = (string)$this->cfg->project;
       $issue = array('sProject' => htmlentities($projectName),
                      'sTitle' => htmlentities($summary),
                      'sEvent' => htmlentities($description));
 
       // just for the record APIClient->NAME OF FogBugz command
       $op = $this->APIClient->new($issue);
-      $ret = array('status_ok' => true, 'id' => (string)$op->case['ixBug'], 
+      $ret = array('status_ok' => true, 'id' => (string)$op->case['ixBug'],
                    'msg' => sprintf(lang_get('fogbugz_bug_created'),$summary,$projectName));
     }
     catch (Exception $e)
@@ -245,7 +239,7 @@ class fogbugzrestInterface extends issueTrackerInterface
       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
     }
     return $ret;
-  }  
+  }
 
 
 
@@ -273,7 +267,7 @@ class fogbugzrestInterface extends issueTrackerInterface
   **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'project'));
+    return property_exists($this->cfg, 'project');
   }
 
 }

@@ -14,8 +14,8 @@
  */ 
 
 /** uses get_bugs_for_exec() */
-require_once("exec.inc.php");
-require_once("lang_api.php");
+require_once 'exec.inc.php';
+require_once 'lang_api.php';
 
 
 /**
@@ -1934,10 +1934,10 @@ function initRenderTestCaseCfg($options) {
   $config['exec_cfg'] = config_get('exec_cfg');
 
   $config['tableColspan'] = 4;
-  if( (isset($options['step_exec_notes']) &&  $options['step_exec_notes']) ) {
+  if( isset($options['step_exec_notes']) &&  $options['step_exec_notes'] ) {
     $config['tableColspan']++;
   } 
-  if( (isset($options['step_exec_status']) &&  $options['step_exec_status']) ) {
+  if( isset($options['step_exec_status']) &&  $options['step_exec_status'] ) {
     $config['tableColspan']++;
   } 
  

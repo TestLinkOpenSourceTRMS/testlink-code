@@ -8,11 +8,11 @@
  * @internal revisions
  *
 **/
-require_once('../../../../config.inc.php');
-require_once('common.php');
+require_once '../../../../config.inc.php';
+require_once 'common.php';
 
 $g_interface_bugs = 'MANTISSOAP';
-require_once('../int_bugtracking.php');
+require_once '../int_bugtracking.php';
 
 define('BUG_TRACK_USERNAME', 'testlink.helpme');
 define('BUG_TRACK_PASSWORD', 'testlink.helpme');

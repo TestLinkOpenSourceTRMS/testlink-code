@@ -13,7 +13,7 @@
  * 
  **/
 
-require_once('table.class.php');
+require_once 'table.class.php';
 
 /**
  * Helper class used for EXT-JS tables. 

@@ -1,13 +1,13 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource  youtrackrestInterface.class.php
  * @author Francisco Mancardi
  *
  * @internal IMPORTANT NOTICE
- * we use issueID on methods signature, to make clear that this ID 
- * is HOW issue in identified on Issue Tracker System, 
+ * we use issueID on methods signature, to make clear that this ID
+ * is HOW issue in identified on Issue Tracker System,
  * not how is identified internally at DB level on TestLink
  *
  * @internal IMPORTANT NOTICE
@@ -15,14 +15,14 @@
  *    https://github.com/jan0sch/YouTrack-Client-PHP-Library
  *    to improve/fix things that were not clear on jetbrains contribution.
  *
- * 2. http://curl.haxx.se/libcurl/php/examples/callbacks.html 
+ * 2. http://curl.haxx.se/libcurl/php/examples/callbacks.html
  *    provided very useful simple curl php usage examples
  *
  * @internal revisions
  * @since 1.9.10
- * 
+ *
 **/
-require_once(TL_ABS_PATH . "/third_party/youtrackclient/src/youtrackclient.php");
+require_once TL_ABS_PATH . '/third_party/youtrackclient/src/youtrackclient.php';
 
 class youtrackrestInterface extends issueTrackerInterface
 {
@@ -35,7 +35,7 @@ class youtrackrestInterface extends issueTrackerInterface
    * Construct and connect to BTS.
    * Can be overloaded in specialized class
    *
-   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param string $type (see tlIssueTracker.class.php $systems property)
    **/
   function __construct($type,$config,$name)
   {
@@ -44,15 +44,14 @@ class youtrackrestInterface extends issueTrackerInterface
     $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
     $this->connected = false;
     if( $this->setCfg($config) )
-    {  
+    {
       $this->completeCfg();
       $this->connect();
-    }  
+    }
   }
 
   /**
-   * useful for testing 
-   *
+   * useful for testing
    *
    **/
   function getAPIClient()
@@ -75,14 +74,13 @@ class youtrackrestInterface extends issueTrackerInterface
     /**
      * establishes connection to the bugtracking system
      *
-     * @return bool 
-     *
+     * @return bool
      **/
     function connect()
     {
       try
       {
-        $this->APIClient = new \YouTrack\Connection($this->cfg->uribase, 
+        $this->APIClient = new \YouTrack\Connection($this->cfg->uribase,
                                                     $this->cfg->username, $this->cfg->password);
         $this->connected = true;
       }
@@ -94,7 +92,6 @@ class youtrackrestInterface extends issueTrackerInterface
     }
 
     /**
-     * 
      *
      **/
   function isConnected()
@@ -104,7 +101,6 @@ class youtrackrestInterface extends issueTrackerInterface
 
 
     /**
-     * 
      *
      **/
   function getIssue($issueID)
@@ -116,7 +112,7 @@ class youtrackrestInterface extends issueTrackerInterface
     
     try
     {
-      $issue = $this->APIClient->get_issue($issueID);   
+      $issue = $this->APIClient->get_issue($issueID);
       if( !is_null($issue) && is_object($issue) )
       {
         $issue->IDHTMLString = "<b>{$issueID} : </b>";
@@ -131,8 +127,8 @@ class youtrackrestInterface extends issueTrackerInterface
     {
       tLog($yte->getMessage(),'ERROR');
       $issue = null;
-    } 
-    return $issue;    
+    }
+    return $issue;
   }
 
 
@@ -140,8 +136,7 @@ class youtrackrestInterface extends issueTrackerInterface
    * Returns status for issueID
    *
    * @param string issueID
-   *
-   * @return 
+   * @return
    **/
   function getIssueStatusCode($issueID)
   {
@@ -153,9 +148,7 @@ class youtrackrestInterface extends issueTrackerInterface
    * Returns status in a readable form (HTML context) for the bug with the given id
    *
    * @param string issueID
-   * 
-   * @return string 
-   *
+   * @return string
    **/
   function getIssueStatusVerbose($issueID)
   {
@@ -199,9 +192,8 @@ class youtrackrestInterface extends issueTrackerInterface
    *
    * check for configuration attributes than can be provided on
    * user configuration, but that can be considered standard.
-   * If they are MISSING we will use 'these carved on the stone values' 
+   * If they are MISSING we will use 'these carved on the stone values'
    * in order to simplify configuration.
-   *
    *
    **/
   function completeCfg()
@@ -221,14 +213,14 @@ class youtrackrestInterface extends issueTrackerInterface
     }
     
     $this->issueTemplate = array();
-    $this->issueDefaults = array('assignee' => '', 'priority' => '', 'type' => '', 
-                                 'subsystem' => '', 'state' => '', 'affectsversion' => '', 
+    $this->issueDefaults = array('assignee' => '', 'priority' => '', 'type' => '',
+                                 'subsystem' => '', 'state' => '', 'affectsversion' => '',
                                  'fixedversion' => '', 'fixedinbuild' => '');
     foreach($this->issueDefaults as $prop => $default)
     {
       $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
       $this->issueTemplate[$prop] = $this->cfg->$prop;
-    }   
+    }
 
     
           
@@ -241,7 +233,7 @@ class youtrackrestInterface extends issueTrackerInterface
      **/
     function checkBugIDExistence($issueID)
     {
-        if(($status_ok = $this->checkBugIDSyntax($issueID)))
+        if($status_ok = $this->checkBugIDSyntax($issueID))
         {
             $issue = $this->getIssue($issueID);
             $status_ok = (!is_null($issue) && is_object($issue));
@@ -257,13 +249,13 @@ class youtrackrestInterface extends issueTrackerInterface
     try
     {
       $issue = $this->issueTemplate;
-      $op = $this->APIClient->create_issue((string)$this->cfg->project, $issue['assignee'], 
-                                           $summary, $description, $issue['priority'], 
-                                           $issue['type'], $issue['subsystem'], $issue['state'], 
-                                           $issue['affectsversion'], 
+      $op = $this->APIClient->create_issue((string)$this->cfg->project, $issue['assignee'],
+                                           $summary, $description, $issue['priority'],
+                                           $issue['type'], $issue['subsystem'], $issue['state'],
+                                           $issue['affectsversion'],
                                            $issue['fixedversion'], $issue['fixedinbuild']);
       
-      $ret = array('status_ok' => true, 'id' => (string)$op->id, 
+      $ret = array('status_ok' => true, 'id' => (string)$op->id,
                    'msg' => sprintf(lang_get('youtrack_bug_created'),$summary,(string)$this->cfg->project));
     }
     catch (Exception $e)
@@ -281,7 +273,7 @@ class youtrackrestInterface extends issueTrackerInterface
   **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'project'));
+    return property_exists($this->cfg, 'project');
   }
 
 

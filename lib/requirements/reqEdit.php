@@ -10,18 +10,18 @@
  *
  *
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("users.inc.php");
-require_once('requirements.inc.php');
-require_once('attachments.inc.php');
-require_once("csv.inc.php");
-require_once("xml.inc.php");
-require_once("configCheck.php");
-require_once("web_editor.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'requirements.inc.php';
+require_once 'attachments.inc.php';
+require_once 'csv.inc.php';
+require_once 'xml.inc.php';
+require_once 'configCheck.php';
+require_once 'web_editor.php';
 
 $editorCfg = getWebEditorCfg('requirement');
-require_once(require_web_editor($editorCfg['type']));
+require_once require_web_editor($editorCfg['type']);
 
 testlinkInitPage($db,false,false);
 

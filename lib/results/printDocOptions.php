@@ -1,22 +1,22 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- *  
+ *
  * @filesource printDocOptions.php
  * @author     Martin Havlat
- * 
+ *
  *  Settings for generated documents
- *  - Structure of a document 
- *  - It builds the javascript tree that allow the user select a required part 
+ *  - Structure of a document
+ *  - It builds the javascript tree that allow the user select a required part
  *    Test specification/ Test plan.
  *
  *
  */
-require_once("../../config.inc.php");
-require_once("../../cfg/reports.cfg.php");
-require_once("common.php");
-require_once("treeMenu.inc.php");
+require_once '../../config.inc.php';
+require_once '../../cfg/reports.cfg.php';
+require_once 'common.php';
+require_once 'treeMenu.inc.php';
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -54,10 +54,10 @@ switch($args->doc_type)  {
               "&type=testreport_onbuild";
 
         foreach( $gui->buildInfoSet as $bid => $nunu ) {
-          $gui->buildRptLinkSet[$bid] = $dl . "&build_id=$bid";         
-        }       
+          $gui->buildRptLinkSet[$bid] = $dl . "&build_id=$bid";
+        }
       }
-    } 
+    }
 
     $additionalInfo = new stdClass();
     $additionalInfo->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
@@ -80,7 +80,7 @@ switch($args->doc_type)  {
         $opt_etree->showTestCaseExecStatus = false;
         $opt_etree->nodeHelpText = array();
         $opt_etree->nodeHelpText['testproject'] = lang_get('gen_test_plan_design_report');
-        $opt_etree->nodeHelpText['testsuite'] = $opt_etree->nodeHelpText['testproject'];                                                  
+        $opt_etree->nodeHelpText['testsuite'] = $opt_etree->nodeHelpText['testproject'];
         
         $opt_etree->actionJS['testproject'] = 'TPLAN_PTP';
         $opt_etree->actionJS['testsuite'] = 'TPLAN_PTS';
@@ -93,8 +93,7 @@ switch($args->doc_type)  {
 
     $filters = null;
     $treeContents = null;
-    list($treeContents, $testcases_to_show) = 
-      testPlanTree($db,$rightPaneAction,$args->tproject_id,
+    list($treeContents, $testcases_to_show) = testPlanTree($db,$rightPaneAction,$args->tproject_id,
                    $args->tproject_name,$args->tplan_id,
                    $testplan_name,$filters,$opt_etree);
 
@@ -108,7 +107,7 @@ switch($args->doc_type)  {
     if($gui->ajaxTree->children == ''){
       $gui->ajaxTree->children = '{}';  // generate valid JSON
       $gui->ajaxTree->root_node->href = '';
-    }  
+    }
   break;
 
   default:
@@ -133,15 +132,17 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * get user input and create an object with properties representing this inputs.
- * @return stdClass object 
+ * Get user input and create an object with properties representing this inputs.
+ *
+ * @param database $dbHandler
+ * @return stdClass object
  */
 function init_args(&$dbHandler) {
   $args = new stdClass();
   $iParams = array("tplan_id" => array(tlInputParameter::INT_N),
                    "format" => array(tlInputParameter::INT_N,999),
                    "type" => array(tlInputParameter::STRING_N,0,100),
-                   "activity" => array(tlInputParameter::STRING_N,1,10));  
+                   "activity" => array(tlInputParameter::STRING_N,1,10));
   
   $l18n = array();
   $l18n['addTC'] = lang_get('navigator_add_remove_tcase_to_tplan');
@@ -160,7 +161,7 @@ function init_args(&$dbHandler) {
   $args->type = is_null($args->type) ? DOC_TEST_PLAN_DESIGN : $args->type;
   $args->doc_type = $args->type;
 
-  // Changes to call this page also in add/remove test cases feature  
+  // Changes to call this page also in add/remove test cases feature
   $args->showOptions = true;
   $args->showHelpIcon = true;
   $args->tplan_info = null;
@@ -171,9 +172,9 @@ function init_args(&$dbHandler) {
     $args->showHelpIcon = false;
     $args->tplan_id = intval(isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0);
 
-  }  
+  }
   
-  if($args->tplan_id > 0) {  
+  if($args->tplan_id > 0) {
     $tplan_mgr = new testplan($dbHandler);
     $args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
     $args->mainTitle = $l18n['test_plan'] . ': ' . $args->tplan_info['name'];
@@ -187,17 +188,17 @@ function init_args(&$dbHandler) {
  * Initialize gui (stdClass) object that will be used as argument
  * in call to Template Engine.
  *
- * @param class pointer args: object containing User Input and some session values
+ * @param database $db
+ * @param stdClass $args object containing User Input and some session values
  *    TBD structure
- * 
+ *
  * ?     tprojectMgr: test project manager object.
  * ?     treeDragDropEnabled: true/false. Controls Tree drag and drop behaivor.
- * 
+ *
  * @return stdClass TBD structure
- */ 
+ */
 function initializeGui(&$db,$args) {
   $tcaseCfg = config_get('testcase_cfg');
-  $reqCfg = config_get('req_cfg');
         
   $gui = new stdClass();
   $gui->showOptionsCheckBoxes = $gui->showOptions = $args->showOptions;
@@ -205,16 +206,16 @@ function initializeGui(&$db,$args) {
   $gui->showHelpIcon = $args->showHelpIcon;
 
   $gui->mainTitle = '';
-  $gui->outputFormat = array(FORMAT_HTML => lang_get('format_html'), 
+  $gui->outputFormat = array(FORMAT_HTML => lang_get('format_html'),
                              FORMAT_MSWORD => lang_get('format_pseudo_msword'));
 
   $gui->outputOptions = init_checkboxes($args);
-  if($gui->showOptions == false) {
+  if(!$gui->showOptions) {
     $loop2do = count($gui->outputOptions);
     for($idx = 0; $idx < $loop2do; $idx++) {
       $gui->outputOptions[$idx]['checked'] = 'y';
-    }  
-  }  
+    }
+  }
 
   $tprojectMgr = new testproject($db);
   $tcasePrefix = $tprojectMgr->getTestCasePrefix($args->tproject_id);
@@ -288,39 +289,35 @@ function initializeGui(&$db,$args) {
   }
 
   // Do not move
-  if($args->mainTitle == '') {  
+  if($args->mainTitle == '') {
     $gui->mainTitle .=  ' - ' . lang_get('doc_opt_title');
   } else {
-    $gui->mainTitle = $args->mainTitle; 
-  } 
+    $gui->mainTitle = $args->mainTitle;
+  }
 
-  $gui->getArguments = "&type=" . $args->doc_type; 
+  $gui->getArguments = "&type=" . $args->doc_type;
   if ($addTestPlanID) {
     $gui->getArguments .= '&docTestPlanId=' . $args->tplan_id;
   }
-  return $gui;  
+  return $gui;
 }
 
 /**
  * Initializes the checkbox options.
- * Made this a function to simplify handling of differences 
+ * Made this a function to simplify handling of differences
  * between printing for requirements and testcases and to make code more readable.
- * 
+ *
  * ATTENTION if you add somethin here, you need also to work on javascript function
  * tree_getPrintPreferences()
  *
  * @author Andreas Simon
- * 
  * @param stdClass $args reference to user input parameters
- * 
  * @return array $cbSet
  */
 function init_checkboxes(&$args) {
   // Important Notice:
   // If you want to add or remove elements in this array, you must also update
   // $printingOptions in printDocument.php and tree_getPrintPreferences() in testlink_library.js
-  
-  $execCfg = config_get('exec_cfg');
 
   $optCfg = new printDocOptions();
 
@@ -338,15 +335,14 @@ function init_checkboxes(&$args) {
     break;
   }
 
-  if( $args->doc_type == DOC_TEST_PLAN_EXECUTION || 
-      $args->doc_type == DOC_TEST_PLAN_EXECUTION_ON_BUILD ) {
+  if( $args->doc_type == DOC_TEST_PLAN_EXECUTION || $args->doc_type == DOC_TEST_PLAN_EXECUTION_ON_BUILD ) {
     $cbSet = array_merge($cbSet,$optCfg->getExecOpt());
-  }  
+  }
 
   foreach ($cbSet as $key => $elem)  {
     $cbSet[$key]['description'] = lang_get($elem['description']);
     if( !isset($cbSet[$key]['checked']) ) {
-      $cbSet[$key]['checked'] = 'n'; 
+      $cbSet[$key]['checked'] = 'n';
     }
   }
 

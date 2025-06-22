@@ -2,18 +2,18 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
+ *
  *
  * @filesource  planUrgency.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2003-2020, TestLink community 
+ * @copyright   2003-2020, TestLink community
  * @link        http://www.testlink.org
- * 
+ *
  **/
  
-require('../../config.inc.php');
-require_once('common.php');
+require '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db,false,false);
 $args = init_args();
 
@@ -26,7 +26,7 @@ checkRights($db,$_SESSION['currentUser'],$context);
 
 if ($args->show_help) {
   show_instructions('test_urgency');
-  exit();  
+  exit();
 }
 
 $templateCfg = templateConfiguration();
@@ -35,7 +35,7 @@ $gui = initializeGui($args,$tplan_mgr->tree_manager);
 
 if ($args->urgency != OFF || isset($args->urgency_tc)){
   $gui->user_feedback = doProcess($args,$tplan_mgr);
-}  
+}
 
 
 // get the current urgency for child test cases
@@ -48,12 +48,12 @@ $context->platform_id = $args->platform_id;
 $gui->listTestCases = $tplan_mgr->getSuiteUrgency($context,array('build4testers' => $args->build4testers),
                                                   array('testcases' => $args->testCaseSet));
 
-foreach($gui->listTestCases as $tcversion_id => $tcaseSet) 
+foreach($gui->listTestCases as $tcversion_id => $tcaseSet)
 {
   foreach($tcaseSet as $idx => $tcase)
   {
     $gui->listTestCases[$tcversion_id][$idx]['priority'] = priority_to_level($tcase['priority']);
-  }  
+  }
 }
 
 $smarty = new TLSmarty();
@@ -84,15 +84,15 @@ function init_args()
 
   // Sets urgency for suite
  
-  if (isset($_REQUEST['high_urgency'])) {  
+  if (isset($_REQUEST['high_urgency'])) {
     $args->urgency = HIGH;
-  } elseif (isset($_REQUEST['medium_urgency'])) {  
+  } elseif (isset($_REQUEST['medium_urgency'])) {
     $args->urgency = MEDIUM;
-  } elseif (isset($_REQUEST['low_urgency'])) {  
+  } elseif (isset($_REQUEST['low_urgency'])) {
     $args->urgency = LOW;
   } else {
     $args->urgency = OFF;
-  }  
+  }
 
   // Sets urgency for every single tc
   if (isset($_REQUEST['urgency']))  {
@@ -103,8 +103,7 @@ function init_args()
   // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
   $args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
   $mode = 'plan_mode';
-  $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->treeFormToken]) ? 
-                  $_SESSION[$mode][$args->treeFormToken] : null;
+  $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->treeFormToken]) ? $_SESSION[$mode][$args->treeFormToken] : null;
 
 
   $args->testCaseSet = $session_data['testcases_to_show'];
@@ -129,7 +128,7 @@ function initializeGui(&$argsObj,&$treeMgr)
   $guiObj->tplan_name = $argsObj->tplan_name;
   $guiObj->formToken = $argsObj->treeFormToken;
   return $guiObj;
-} 
+}
 
 
 /**
@@ -149,7 +148,7 @@ function doProcess(&$argsObj,&$tplanMgr)
   // Set urgency for individual testcases
   if (isset($argsObj->urgency_tc)) {
     foreach ($argsObj->urgency_tc as $id => $urgency)  {
-      $tplanMgr->setTestUrgency($argsObj->tplan_id, 
+      $tplanMgr->setTestUrgency($argsObj->tplan_id,
                                 intval($id), intval($urgency));
     }
   }

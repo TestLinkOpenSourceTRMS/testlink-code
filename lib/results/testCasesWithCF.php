@@ -9,13 +9,13 @@
  * For a test plan, list test cases with Execution Custom Field Data
  *
  */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once('exttable.class.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'exttable.class.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $smarty = new TLSmarty();
-$imgSet = $smarty->getImages(); 
+$imgSet = $smarty->getImages();
 
 $templateCfg = templateConfiguration();
 $charset = config_get('charset');
@@ -95,7 +95,7 @@ if( $args->doIt )
 		
 		foreach ($item['cfields'] as $cf_value)
 		{
-			$rowData[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf_value, ENT_QUOTES, $charset));;
+			$rowData[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf_value, ENT_QUOTES, $charset));
 			if ($cf_value) {
 				$hasValue = true;
 			}
@@ -105,7 +105,7 @@ if( $args->doIt )
 		}
 	}
 
-	if (count($matrixData) > 0) 
+	if (!empty($matrixData))
 	{
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
@@ -119,8 +119,8 @@ if( $args->doIt )
 		$table->toolbarShowAllColumnsButton = true;
 
 		$gui->tableSet = array($table);
-	} 
-	else 
+	}
+	else
 	{
 		$gui->warning_msg = $labels['no_linked_tc_cf'];
 	}
@@ -173,7 +173,12 @@ function init_args(&$dbHandler)
 }
 
 
-
+/**
+ *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @return stdClass
+ */
 function initializeGui(&$dbHandler,&$argsObj)
 {
 	$guiObj = new stdClass();
@@ -199,13 +204,16 @@ function initializeGui(&$dbHandler,&$argsObj)
             $guiObj->status_code_labels[$code] = lang_get($resultsCfg['status_label'][$verbose]);
         }
     }
-	return $guiObj; 
+	return $guiObj;
 }
 
 
 /**
- * 
- * 
+ *
+ * @param database $dbHandler
+ * @param stdClass $guiObj
+ * @param int $tproject_id
+ * @param int $tplan_id
  */
 function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
 {
@@ -217,7 +225,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
     $guiObj->cfields = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,null,'name');
     
     // this way on caller can be used on array operations, without warnings
-    $guiObj->cfields = (array)$guiObj->cfields;  
+    $guiObj->cfields = (array)$guiObj->cfields;
     if( count($guiObj->cfields) > 0 )
     {
     	foreach($guiObj->cfields as $key => $values)
@@ -255,7 +263,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
         }
     }
 
-    if(($guiObj->row_qty=count($cf_map)) == 0 )
+    if(!empty($cf_map) && ($guiObj->row_qty=count($cf_map)) == 0 )
     {
         $guiObj->warning_msg = lang_get('no_linked_tc_cf');
     }
@@ -265,6 +273,10 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
 /**
  * get Columns definition for table to display
  *
+ * @param boolean $showPlatforms
+ * @param array $customFields
+ * @param array $platforms
+ * @return array
  */
 function getColumnsDefinition($showPlatforms,$customFields,$platforms)
 {
@@ -293,10 +305,10 @@ function getColumnsDefinition($showPlatforms,$customFields,$platforms)
 		// 20130324 - need to understand if col_id is really needed
 		//
 		$dummy = array('title' => $cfield['label'], 'col_id' => 'id_cf_' . $cfield['id']);
-		if($cfield['name'] == 'CF_EXEC_TIME') 
+		if($cfield['name'] == 'CF_EXEC_TIME')
 		{
 			$dummy['width'] = 20;
-		} 
+		}
 		else
 		{
 			$dummy['type'] = 'text';
@@ -308,6 +320,12 @@ function getColumnsDefinition($showPlatforms,$customFields,$platforms)
 }
 
 
+/**
+ *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRightOnProj($db,'testplan_metrics');

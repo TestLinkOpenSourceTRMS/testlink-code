@@ -1,29 +1,28 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource  githubrestInterface.class.php
- * @author delcroip <delcroip@gmail:com> 
- * file derived from GITlab integration done by jlguardi <jlguardi@gmail.com> 
+ * @author delcroip <delcroip@gmail:com>
+ * file derived from GITlab integration done by jlguardi <jlguardi@gmail.com>
  *
  * @internal revisions
  * @since 1.9.20-fixed
  *
 **/
-require_once(TL_ABS_PATH . "/third_party/github-php-api/lib/github-rest-api.php");
+require_once TL_ABS_PATH . '/third_party/github-php-api/lib/github-rest-api.php';
 class githubrestInterface extends issueTrackerInterface
 {
   private $APIClient;
   private $issueDefaults;
-  private $issueOtherAttr = null; // see 
+  private $issueOtherAttr = null;
   private $translate = null;
-
-  var $defaultResolvedStatus;
+  private $defaultResolvedStatus;
 
   /**
    * Construct and connect to BTS.
    *
-   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param string $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
   function __construct($type,$config,$name)
@@ -39,10 +38,10 @@ class githubrestInterface extends issueTrackerInterface
     if( !$this->setCfg($config) )
     {
       return false;
-    }  
+    }
 
     // http://www.github.org/issues/6843
-    // "Target version" is the new display name for this property, 
+    // "Target version" is the new display name for this property,
     // but it's still named fixed_version internally and thus in the API.
     // $issueXmlObj->addChild('fixed_version_id', (string)2);
     $this->translate['targetversion'] = 'fixed_version_id';
@@ -57,9 +56,8 @@ class githubrestInterface extends issueTrackerInterface
    *
    * check for configuration attributes than can be provided on
    * user configuration, but that can be considered standard.
-   * If they are MISSING we will use 'these carved on the stone values' 
+   * If they are MISSING we will use 'these carved on the stone values'
    * in order to simplify configuration.
-   * 
    *
    **/
   function completeCfg()
@@ -68,42 +66,42 @@ class githubrestInterface extends issueTrackerInterface
     if( property_exists($this->cfg,'attributes') )
     {
       $attr = get_object_vars($this->cfg->attributes);
-      foreach ($attr as $name => $elem) 
+      foreach ($attr as $name => $elem)
       {
         $name = (string)$name;
         if( is_object($elem) )
         {
            $elem = get_object_vars($elem);
            $cc = current($elem);
-           $kk = key($elem); 
+           $kk = key($elem);
            foreach($cc as $value)
            {
-              $this->issueOtherAttr[$name][] = array($kk => (string)$value); 
+              $this->issueOtherAttr[$name][] = array($kk => (string)$value);
            }
-        } 
+        }
         else
         {
-          $this->issueOtherAttr[$name] = (string)$elem;     
-        } 
+          $this->issueOtherAttr[$name] = (string)$elem;
+        }
       }
-    }     
+    }
     
-    // All attributes that I do not consider mandatory 
+    // All attributes that I do not consider mandatory
     // are managed through the issueAdditionalAttributes
     //
     // On Redmine 1 seems to be standard for Issues/Bugs
-    $this->issueDefaults = array('trackerid' => 1); 
+    $this->issueDefaults = array('trackerid' => 1);
     foreach($this->issueDefaults as $prop => $default)
     {
       if(!isset($this->issueAttr[$prop]))
       {
         $this->issueAttr[$prop] = $default;
-      } 
-    }   
+      }
+    }
     
   }
   /**
-   * useful for testing 
+   * useful for testing
    *
    *
    **/
@@ -116,7 +114,6 @@ class githubrestInterface extends issueTrackerInterface
    * checks id for validity
    *
    * @param string issueID
-   *
    * @return bool returns true if the bugid has the right format, false else
    **/
   function checkBugIDSyntax($issueID)
@@ -127,8 +124,7 @@ class githubrestInterface extends issueTrackerInterface
   /**
    * establishes connection to the bugtracking system
    *
-   * @return bool 
-   *
+   * @return bool
    **/
   function connect()
   {
@@ -171,7 +167,7 @@ class githubrestInterface extends issueTrackerInterface
       $logDetails = '';
       foreach(array('url', 'user', 'apikey', 'owner', 'repo') as $v)
       {
-        $logDetails .= "$v={$this->cfg->$v} / "; 
+        $logDetails .= "$v={$this->cfg->$v} / ";
       }
       $logDetails = trim($logDetails,'/ ');
       $this->connected = false;
@@ -180,7 +176,6 @@ class githubrestInterface extends issueTrackerInterface
   }
 
   /**
-   * 
    *
    **/
   function isConnected()
@@ -199,7 +194,6 @@ class githubrestInterface extends issueTrackerInterface
   }
   
   /**
-   * 
    *
    **/
   public function getIssue($issueID)
@@ -224,7 +218,7 @@ class githubrestInterface extends issueTrackerInterface
         $issue->statusCode = (string)$jsonObj->state;
         $issue->statusVerbose = (string)$jsonObj->state;
         $issue->statusHTMLString = "[$issue->statusVerbose] ";
-        $issue->summaryHTMLString = (string)$jsonObj->title.":</br>".(string)$jsonObj->body; 
+        $issue->summaryHTMLString = (string)$jsonObj->title.":</br>".(string)$jsonObj->body;
         $issue->summary =  (string)$jsonObj->title.":\n".(string)$jsonObj->body;
         $Notes = $this->APIClient->getNotes((int)$issueID);
         if(is_array($Notes) && count($Notes)>0){
@@ -233,15 +227,15 @@ class githubrestInterface extends issueTrackerInterface
             $issue->summary .= "\n[Note $key]: $note->body";
           }
         }
-        $issue->isResolved = $this->state == 'closed'; 
+        $issue->isResolved = $this->state == 'closed';
       }
     }
     catch(Exception $e)
     {
       tLog(__METHOD__ . '/' . $e->getMessage(),'ERROR');
       $issue = null;
-    } 
-    return $issue;    
+    }
+    return $issue;
   }
 
 
@@ -249,8 +243,7 @@ class githubrestInterface extends issueTrackerInterface
    * Returns status for issueID
    *
    * @param string issueID
-   *
-   * @return 
+   * @return
    **/
   function getIssueStatusCode($issueID)
   {
@@ -262,9 +255,7 @@ class githubrestInterface extends issueTrackerInterface
    * Returns status in a readable form (HTML context) for the bug with the given id
    *
    * @param string issueID
-   * 
-   * @return string 
-   *
+   * @return string
    **/
   function getIssueStatusVerbose($issueID)
   {
@@ -274,9 +265,7 @@ class githubrestInterface extends issueTrackerInterface
   /**
    *
    * @param string issueID
-   * 
-   * @return string 
-   *
+   * @return string
    **/
   function getIssueSummaryHTMLString($issueID)
   {
@@ -286,12 +275,11 @@ class githubrestInterface extends issueTrackerInterface
 
   /**
    * @param string issueID
-   *
    * @return bool true if issue exists on BTS
    **/
   function checkBugIDExistence($issueID)
   {
-    if(($status_ok = $this->checkBugIDSyntax($issueID)))
+    if($status_ok = $this->checkBugIDSyntax($issueID))
     {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
@@ -307,7 +295,7 @@ class githubrestInterface extends issueTrackerInterface
       if(is_null($op)){
         throw new Exception("Error creating issue", 1);
       }
-      $ret = array('status_ok' => true, 'id' => (string)$op->number, 
+      $ret = array('status_ok' => true, 'id' => (string)$op->number,
                    'msg' => sprintf(lang_get('github_bug_created'),
                     $summary, $this->APIClient->repo));
      }
@@ -318,7 +306,7 @@ class githubrestInterface extends issueTrackerInterface
        $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
      }
      return $ret;
-  }  
+  }
 
 
   /**
@@ -330,7 +318,7 @@ class githubrestInterface extends issueTrackerInterface
     if(is_null($op)){
       throw new Exception("Error setting note", 1);
     }
-    $ret = array('status_ok' => true, 'id' => (string)$op->id, 
+    $ret = array('status_ok' => true, 'id' => (string)$op->id,
                    'msg' => sprintf(lang_get('github_bug_comment'),$op->body, $this->APIClient->repo));
     return $ret;
   }
@@ -340,8 +328,6 @@ class githubrestInterface extends issueTrackerInterface
 
   /**
    *
-   * 
-   *    
    **/
   public static function getCfgTemplate()
   {

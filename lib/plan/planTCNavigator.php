@@ -16,11 +16,11 @@
  *
  **/
 
-require('../../config.inc.php');
-require_once("common.php");
-require_once("users.inc.php");
-require_once("treeMenu.inc.php");
-require_once('exec.inc.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'treeMenu.inc.php';
+require_once 'exec.inc.php';
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -43,13 +43,13 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * @param unknown_type $dbHandler
- * @param unknown_type $control
+ * @param database $dbHandler
+ * @param tlTestCaseFilterControl $control
  * @return stdClass
- * 
+ *
  * @internal revisions:
  */
-function initializeGui(&$dbHandler, &$control, &$assignmentMgr) 
+function initializeGui(&$dbHandler, &$control, &$assignmentMgr)
 {
 
   $gui = new stdClass();
@@ -60,7 +60,7 @@ function initializeGui(&$dbHandler, &$control, &$assignmentMgr)
   $gui->additional_string = '';
   
   // configure target URLs and clickable buttons
-  switch($control->args->feature) 
+  switch($control->args->feature)
   {
     case 'planUpdateTC':
       $gui->menuUrl = "lib/plan/planUpdateTC.php";

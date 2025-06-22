@@ -22,8 +22,8 @@
  * 20100323 - asimon - added searching for req relation types (BUGID 1748)
  */
 
-require_once("../../config.inc.php");
-require_once("../functions/common.php");
+require_once '../../config.inc.php';
+require_once '../functions/common.php';
 testlinkInitPage($db);
 
 

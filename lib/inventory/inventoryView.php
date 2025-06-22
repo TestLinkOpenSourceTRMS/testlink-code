@@ -1,18 +1,18 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
- * View project inventory 
- * 
+ * View project inventory
+ *
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 2009,2019 TestLink community 
+ * @copyright 2009,2019 TestLink community
  *
  **/
 
-require_once('../../config.inc.php');
-require_once("common.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();

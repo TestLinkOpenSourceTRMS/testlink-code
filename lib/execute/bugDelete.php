@@ -8,9 +8,9 @@
  * @since 1.9.16
  *
 **/
-require_once('../../config.inc.php');
-require_once('../functions/common.php');
-require_once('exec.inc.php');
+require_once '../../config.inc.php';
+require_once '../functions/common.php';
+require_once 'exec.inc.php';
 
 testlinkInitPage($db,false,false,"checkRights");
 

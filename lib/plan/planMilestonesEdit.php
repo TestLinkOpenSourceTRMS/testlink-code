@@ -8,8 +8,8 @@
  *
  *
  */
-require_once("../../config.inc.php");
-require_once("common.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db,false,false);
 $date_format_cfg = config_get('date_format');
 
@@ -36,11 +36,11 @@ renderGui($args,$gui,$op,$templateCfg);
 
 
 /*
-  function: 
+  function:
 
   args :
   
-  returns: 
+  returns:
 
 */
 function init_args(&$dbHandler,$dateFormat)
@@ -72,7 +72,7 @@ function init_args(&$dbHandler,$dateFormat)
   	$key2loop = array('low_priority_tcases','medium_priority_tcases','high_priority_tcases');
   	foreach($key2loop as $key)
   	{
-  	    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;     
+  	    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;
   	}
 
 	$args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
@@ -117,11 +117,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
     // This is useful when you use same template (example xxEdit.tpl), for create and edit.
     // When template is used for create -> operation: doCreate.
     // When template is used for edit -> operation: doUpdate.
-    //              
+    //
     // used to set value of: $guiObj->operation
     //
     $actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
-                           'doDelete' => '', 'doCreate' => 'doCreate', 
+                           'doDelete' => '', 'doCreate' => 'doCreate',
                            'doUpdate' => 'doUpdate');
      
     $renderType = 'none';
@@ -146,11 +146,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
             $pos = strpos($tpl, '.php');
            	if($pos === false)
            	{
-                $tpl = $tplDir . $tpl;      
+                $tpl = $tplDir . $tpl;
             }
             else
             {
-                $renderType = 'redirect';  
+                $renderType = 'redirect';
             }
             break;
     }
@@ -160,7 +160,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
         case 'template':
         	$smartyObj->assign('gui',$guiObj);
 		    $smartyObj->display($tpl);
-        break;  
+        break;
  
         case 'redirect':
 		      header("Location: {$tpl}");

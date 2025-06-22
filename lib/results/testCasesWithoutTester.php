@@ -1,19 +1,19 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
- *  
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
  * @filesource testCasesWithoutTester.php
- * 
+ *
  * For a test plan, list test cases that HAS NOT BEEN RUN AND HAS NO TESTER ASSIGNED
  *
  * @internal revisions
  * @since 1.9.12
  *
  */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once('exttable.class.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'exttable.class.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -50,7 +50,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
     // Collect all tcases id and get all test suite paths
     $targetSet = array();
 
-    foreach ($metrics as &$item) 
+    foreach ($metrics as &$item)
     {
       $targetSet[] = $item['tcase_id'];
     }
@@ -65,7 +65,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
       $row = array();
       $row[] = join(" / ", $path_info[$item['tcase_id']]);
       
-      $row[] = "<!-- " . sprintf("%010d", $item['external_id']) . " -->" . 
+      $row[] = "<!-- " . sprintf("%010d", $item['external_id']) . " -->" .
                sprintf($links['full'],$item['tcase_id'],$item['tcase_id']) .
                $item['full_external_id'] . ': ' . $item['name'];
       
@@ -96,16 +96,20 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * 
  *
+ * @param unknown $data
+ * @param unknown $tproject_id
+ * @param unknown $show_platforms
+ * @param unknown $priorityMgmtEnabled
+ * @return tlExtTable
  */
-function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled) 
+function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
 {
   $key2search = array('testsuite','testcase','platform','priority','summary');
   foreach($key2search as $key)
   {
     $labels[$key] = lang_get($key);
-  }        
+  }
   $columns[] = array('title_key' => 'testsuite', 'width' => 20);
   
   $columns[] = array('title_key' => 'testcase', 'width' => 25);
@@ -126,7 +130,7 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
   $matrix->setSortByColumnName($labels['testcase']);
   $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
   
-  if($priorityMgmtEnabled) 
+  if($priorityMgmtEnabled)
   {
     $matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer', 'filter' => 'Priority'));
     $matrix->setSortByColumnName($labels['priority']);
@@ -134,14 +138,12 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
   return $matrix;
 }
 
-/*
-  function: 
 
-  args :
-  
-  returns: 
-
-*/
+  /**
+ *
+ * @param testplan $tplan_mgr
+ * @return stdClass
+ */
 function init_args(&$tplan_mgr)
 {
   $iParams = array("format" => array(tlInputParameter::INT_N),
@@ -162,7 +164,7 @@ function init_args(&$tplan_mgr)
   if($args->tplan_id > 0)
   {
     $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-    $args->tplan_name = $tplan_info['name'];  
+    $args->tplan_name = $tplan_info['name'];
     $args->show_platforms = $tplan_mgr->hasLinkedPlatforms($args->tplan_id);
   }
  
@@ -171,7 +173,9 @@ function init_args(&$tplan_mgr)
 
 /**
  *
- *
+ * @param unknown $lbl
+ * @param unknown $img
+ * @return string[]
  */
 function featureLinks($lbl,$img)
 {
@@ -193,6 +197,9 @@ function featureLinks($lbl,$img)
 
 /**
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @return stdClass
  */
 function initializeGui(&$dbHandler,&$argsObj)
 {
@@ -216,8 +223,12 @@ function initializeGui(&$dbHandler,&$argsObj)
 }
 
 
-
-
+/**
+ *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
+ */
 function checkRights(&$db,&$user)
 {
   return $user->hasRightOnProj($db,'testplan_metrics');

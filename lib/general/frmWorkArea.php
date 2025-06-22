@@ -1,24 +1,24 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  frmWorkArea.php
  * @author      Martin Havlat
- * 
+ *
  *
 **/
-require_once('../../config.inc.php');
-require_once("common.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 $args = init_args();
 
 // Important Notes for Developers
 //
-// if key found in this map, at User Interface level, screen will be divided 
+// if key found in this map, at User Interface level, screen will be divided
 // vertically in two frames.
-// Normally on left will exists a tree menu. 
+// Normally on left will exists a tree menu.
 // On right frame an html named $key.html will be launched.
 // Example:
 // if key = printTc, an html page printTc.html must exists on help directory
@@ -32,7 +32,7 @@ $req_cfg = config_get('req_cfg');
 // more info here
 // array(0) => left pane
 // array(1) => right pane
-$aa_tfp = array( 
+$aa_tfp = array(
      'editTc' => array('lib/testcases/listTestCases.php?feature=edit_tc',
                        'lib/testcases/archiveData.php?edit=testproject&id='),
 
@@ -46,10 +46,10 @@ $aa_tfp = array(
      'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
      'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
      'planAddTC'    => array('lib/plan/planAddTCNavigator.php?loadRightPaneAddTC=0',
-                             'lib/results/printDocOptions.php?activity=addTC'),
+                             'lib/results/planAddTC.php?activity=addTC'),
      'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
      'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
-     'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
+     'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',
      'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
      'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
      'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
@@ -89,15 +89,15 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
         $txcfg = config_get('tree_filter_cfg');
         $cfg = $txcfg->testcases->plan_mode;
         $hasToBe['active'] = $cfg->setting_build_inactive_out ? true : null;
-        $hasToBe['open'] = $cfg->setting_build_close_out ? true : null;        
+        $hasToBe['open'] = $cfg->setting_build_close_out ? true : null;
         $featureHint = lang_get('href_tc_exec_assignment');
       break;
 
       default:
         $hasToBe['active'] = null;
-        $hasToBe['open'] = null; 
+        $hasToBe['open'] = null;
         $featureHint = lang_get('href_rep_and_metrics');
-      break;  
+      break;
     }
 
 
@@ -110,7 +110,7 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
       $tplanIDCard->id = intval($args->tplan_id);
       $dummy = $tplanMgr->tree_manager->get_node_hierarchy_info($tplanIDCard->id);
       $tplanIDCard->name = $dummy['name'];
-    } 
+    }
 
     $ctx = new stdClass();
     $ctx->tplanIDCard = $tplanIDCard;
@@ -122,7 +122,7 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
   {
     redirect('../plan/planView.php');
     exit();
-  }   
+  }
 }
 
 /// 1. get path from global var
@@ -139,20 +139,19 @@ if( is_array($aa_tfp[$showFeature]) ) {
   
   if($rightPane[strlen($rightPane)-1] == '=') {
     $rightPane .= intval($_SESSION['testprojectID']);
-  }  
+  }
   
   if($showFeature == 'executeTest') {
     $leftPane .= $args->tplan_id;
   }
-  // new dBug($leftPane);
 
 } else {
   $leftPane = $aa_tfp[$showFeature];
   $rightPane = 'lib/general/staticPage.php?key=' . $showFeature;
-} 
+}
 
 if( intval($args->tproject_id) > 0 || intval($args->tplan_id) > 0)
-{  
+{
   $leftPane .= (strpos($leftPane,"?") === false) ? "?" : "&";
   $leftPane .= "tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
 
@@ -172,7 +171,7 @@ if(isset($full_screen[$showFeature])) {
 }
 
 
-/** 
+/**
  *  validate that some build exists (for Test Plan related features).
  *  If no valid build is found give feedback to user and exit.
  *
@@ -180,7 +179,7 @@ if(isset($full_screen[$showFeature])) {
  *  to create link feature
  *
  *
- * 
+ *
  *
  **/
 function validateBuildAvailability(&$db,&$tplanMgr,$context,$attrFilter)
@@ -189,23 +188,23 @@ function validateBuildAvailability(&$db,&$tplanMgr,$context,$attrFilter)
   $tpName = $context->tplanIDCard->name;
   
   if (!$tplanMgr->getNumberOfBuilds($tpID, $attrFilter['active'], $attrFilter['open']))
-  {            
+  {
     $msx = [];
     if($attrFilter['active'])
     {
       $msx[] = lang_get('active');
-    }  
+    }
     
     if($attrFilter['open'])
     {
       $msx[] = lang_get('open');
-    }  
+    }
     
     $mzx = '';
     if(count($msx) > 0)
     {
       $mzx = "(" . implode(' & ',$msx) . ")";
-    }  
+    }
 
 
     $message = "<p>" . $context->featureTitle .
@@ -215,12 +214,12 @@ function validateBuildAvailability(&$db,&$tplanMgr,$context,$attrFilter)
     $link_to_op = '';
     $hint_text = '';
     if(has_rights($db,"testplan_create_build") == 'yes')
-    { 
-      // final url will be composed adding to $basehref 
+    {
+      // final url will be composed adding to $basehref
       // (one TL variable available on smarty templates) to $link_to_op
       $link_to_op = "lib/plan/buildEdit.php?do_action=create&tplan_id=$tpID";
       $hint_text = lang_get('create_a_build');
-    }  
+    }
     else
     {
       $message .= '</p><p>' . lang_get('no_build_warning_part2') . '</p>';

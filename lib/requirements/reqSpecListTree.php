@@ -9,10 +9,10 @@
  *
  */
 
-require_once('../../config.inc.php');
-require_once("common.php");
-require_once("treeMenu.inc.php");
-require_once('requirements.inc.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'treeMenu.inc.php';
+require_once 'requirements.inc.php';
 testlinkInitPage($db,false,false);
 
 $templateCfg = templateConfiguration();

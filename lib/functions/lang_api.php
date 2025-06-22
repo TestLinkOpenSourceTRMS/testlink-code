@@ -232,33 +232,33 @@ function lang_load( $p_lang, $p_dir = null ) {
   $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
   
   if( !is_null( $p_dir ) && is_file( $p_dir . 'strings.txt' )) {
-	require( $p_dir . 'strings.txt' );
+	require $p_dir . 'strings.txt';
   }
   
   if (file_exists($lang_resource_path) && is_readable($lang_resource_path))
   {
-    require($lang_resource_path);
+    require $lang_resource_path;
   }
   else
   {
-    require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt');
+    require $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt';
   }
     
   $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'description.php';
   if (file_exists($lang_resource_path))
   {
-    require($lang_resource_path );
+    require $lang_resource_path;
   }
   else
   {
-    require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php');
+    require $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php';
   }
     
   // Allow overriding strings declared in the language file.
   // custom_strings_inc.php can use $g_active_language
   $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'custom_strings.txt';
   if (file_exists( $lang_resource_path ) ) {
-       require_once( $lang_resource_path );
+       require_once $lang_resource_path ;
   }
 
   $t_vars = get_defined_vars();

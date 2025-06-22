@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource  mantisdbInterface.class.php
  * @since 1.9.4
@@ -19,8 +19,7 @@ class mantisdbInterface extends issueTrackerInterface
                                80 => 'resolved',
                                90 => 'closed');
                               
-  private $status_color = 
-            array('new'          => '#ffa0a0', # red,
+  private $status_color = array('new'          => '#ffa0a0', # red,
                   'feedback'     => '#ff50a8', # purple
                   'acknowledged' => '#ffd850', # orange
                   'confirmed'    => '#ffffb0', # yellow
@@ -28,13 +27,13 @@ class mantisdbInterface extends issueTrackerInterface
                   'resolved'     => '#cceedd', # buish-green
                   'closed'       => '#e8e8e8'); # light gray
 
-  var $defaultResolvedStatus;
+  private $defaultResolvedStatus;
 
 
   /**
    * Construct and connect to BTS.
    *
-   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param string $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
   function __construct($type,$config,$name)
@@ -44,19 +43,18 @@ class mantisdbInterface extends issueTrackerInterface
     if( !$this->isConnected() )
     {
       return false;
-    } 
+    }
 
     $this->interfaceViaDB = true;
     $this->defaultResolvedStatus = array();
-    $this->defaultResolvedStatus[] = array('code' => 80, 
+    $this->defaultResolvedStatus[] = array('code' => 80,
                                            'verbose' => 'resolved');
-    $this->defaultResolvedStatus[] = array('code' => 90, 
+    $this->defaultResolvedStatus[] = array('code' => 90,
                                            'verbose' => 'closed');
     
     $this->setResolvedStatusCfg();
     
-    $this->methodOpt['buildViewBugLink'] = 
-      array('addSummary' => true, 'colorByStatus' => true);
+    $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
     
     $this->guiCfg = array('use_decoration' => true);
     if( property_exists($this->cfg, 'statuscfg') ) {
@@ -66,11 +64,10 @@ class mantisdbInterface extends issueTrackerInterface
 
   
   /**
-   * Return the URL to the bugtracking page for viewing 
-   * the bug with the given id. 
+   * Return the URL to the bugtracking page for viewing
+   * the bug with the given id.
    *
    * @param int id the bug id
-   * 
    * @return string returns a complete URL to view the bug
    **/
   function buildViewBugURL($id)
@@ -93,7 +90,7 @@ class mantisdbInterface extends issueTrackerInterface
     
     $rs = $this->dbConnection->fetchRowsIntoMap($sql,'id');
     $issue = null;
-    if( !is_null($rs) ) 
+    if( !is_null($rs) )
     {
       $issueOnMantisDB = current($rs);
       $issue = new stdClass();
@@ -101,8 +98,8 @@ class mantisdbInterface extends issueTrackerInterface
       $issue->summaryHTMLString = $issueOnMantisDB['summary'];
 	  $issue->id = $issueOnMantisDB['id'];
       $issue->summary = $issueOnMantisDB['summary'];
-      $issue->statusCode = $issueOnMantisDB['status']; 
-      $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+      $issue->statusCode = $issueOnMantisDB['status'];
+      $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]);
 
       if( isset($this->code_status[$issue->statusCode]) )
       {
@@ -115,21 +112,20 @@ class mantisdbInterface extends issueTrackerInterface
         $msg = sprintf($msg,$issueOnMantisDB['status']);
         logWarningEvent($msg,"MANTIS INTEGRATION");
         $issue->statusVerbose = 'custom_undefined_on_tl';
-      } 
+      }
 
       $issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
-      $issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? 
-      $this->status_color[$issue->statusVerbose] : 'white';
+      $issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? $this->status_color[$issue->statusVerbose] : 'white';
       
     }
-    return $issue;  
+    return $issue;
   }
 
 
   
   /**
    * Returns the status of the bug with the given id
-   * this function is not directly called by TestLink. 
+   * this function is not directly called by TestLink.
    *
    * @return string returns the status of the given bug (if found in the db), or false else
    **/
@@ -146,20 +142,20 @@ class mantisdbInterface extends issueTrackerInterface
  
     /**
    * checks is bug id is present on BTS
-   * 
-   * @return integer returns 1 if the bug with the given id exists 
+   *
+   * @return integer returns 1 if the bug with the given id exists
    **/
   function checkBugIDExistence($id)
   {
-    $status_ok = 0; 
+    $status_ok = 0;
     $query = "SELECT status FROM mantis_bug_table WHERE id='" . $id ."'";
     $result = $this->dbConnection->exec_query($query);
     if ($result && ($this->dbConnection->num_rows($result) == 1))
     {
-      $status_ok = 1;    
+      $status_ok = 1;
     }
     return $status_ok;
-  } 
+  }
   
   /**
    * checks id for validity
@@ -182,7 +178,7 @@ class mantisdbInterface extends issueTrackerInterface
     $str = '';
     if ($statusVerbose !== false)
     {
-      // status values depends on your mantis configuration at config_inc.php in $g_status_enum_string, 
+      // status values depends on your mantis configuration at config_inc.php in $g_status_enum_string,
       // below is the default:
       //'10:new,20:feedback,30:acknowledged,40:confirmed,50:assigned,80:resolved,90:closed'
       // With this replace if user configure status on mantis with blank we do not have problems
@@ -191,7 +187,7 @@ class mantisdbInterface extends issueTrackerInterface
       $str = lang_get('issue_status_' . $tlStatus);
       if($this->guiCfg['use_decoration'])
       {
-        $str = "[" . $str . "] "; 
+        $str = "[" . $str . "] ";
       }
     }
     return $str;
@@ -226,13 +222,12 @@ class mantisdbInterface extends issueTrackerInterface
                 "<status><code>50</code><verbose>assigned</verbose><color>#c8c8ff</color></status>\n" .
                 "<status><code>80</code><verbose>resolved</verbose><color>#cceedd</color></status>\n" .
                 "<status><code>90</code><verbose>closed</verbose><color>#e8e8e8</color></status>\n" .
-                "</statuscfg>\n" . 
+                "</statuscfg>\n" .
                 "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
                 "<resolvedstatus>\n" .
                 "<status><code>80</code><verbose>resolved</verbose></status>\n" .
                 "<status><code>90</code><verbose>closed</verbose></status>\n" .
                 "</resolvedstatus>\n" .
-                "</issuetracker>\n";
                 "</issuetracker>\n";
     return $template;
   }

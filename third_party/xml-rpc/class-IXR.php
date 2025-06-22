@@ -335,9 +335,11 @@ EOD;
         }
         $method = $this->callbacks[$methodname];
         // Perform the callback and send the response
-        if (count($args) == 1) {
+        if (!empty($args)) {
+            if (count($args) == 1) {
             // If only one paramater just send that instead of the whole array
             $args = $args[0];
+            }
         }
         // Are we dealing with a function or a method?
         if (substr($method, 0, 5) == 'this:') {

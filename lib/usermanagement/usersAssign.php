@@ -7,9 +7,9 @@
  *
  * Development note:
  * - Assign Test plans user roles do not allow Test Project selection,
- *   then to change Test Project user need to use main 
- *   Test Project Combo, or to select a 
- * 
+ *   then to change Test Project user need to use main
+ *   Test Project Combo, or to select a
+ *
  * @package 	  TestLink
  * @copyright   2005-2019, TestLink community
  * @filesource  usersAssign.php
@@ -18,8 +18,8 @@
  *
  */
 
-require_once('../../config.inc.php');
-require_once('users.inc.php');
+require_once '../../config.inc.php';
+require_once 'users.inc.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $smarty = new TLSmarty();
@@ -71,8 +71,8 @@ switch($args->featureType) {
     if( $tprojectMgr->getPublicAttr($args->testprojectID) )
     {
       $accessKey = 'public';
-    }  
-    $gui->tprojectAccessTypeImg = '<img src="' . $imgSet[$accessKey] . 
+    }
+    $gui->tprojectAccessTypeImg = '<img src="' . $imgSet[$accessKey] .
                                   '" title="' . lang_get('access_' . $accessKey) . '" >';
   break;
 }
@@ -86,7 +86,7 @@ if ($args->featureID && $args->doUpdate && $featureMgr) {
     }
 }
 // ------------------------------------------------------------------
-// Important: 
+// Important:
 // Must be done here after having done update, to get current information
 $gui->users = tlUser::getAll($db,"WHERE active=1",null,null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 checkSessionValid($db);
@@ -125,11 +125,11 @@ if(is_null($gui->features) || count($gui->features) == 0) {
   if( isset($gui->features[$gui->featureID]) ) {
     $accessKey = $gui->features[$gui->featureID]['is_public'] ? 'public' : 'private';
     $gui->accessTypeImg = '<img src="' . $imgSet[$accessKey] . '" title="' . lang_get('access_' . $accessKey) . '" >';
-  }  
+  }
   $gui->accessTypeImg = '<img src="' . $imgSet[$accessKey] . '" title="' . lang_get('access_' . $accessKey) . '" >';
 }
 
-$gui->hintImg = '<img src="' . $imgSet['heads_up'] . '" title="' . 
+$gui->hintImg = '<img src="' . $imgSet['heads_up'] . '" title="' .
                 lang_get('system_design_blocks_global_admin_change') . '" >';
 
 $smarty->assign('gui',$gui);
@@ -137,8 +137,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * 
  *
+ * @param testproject $tprojMgr
+ * @return stdClass
  */
 function init_args(&$tprojMgr) {
 	$iParams = array(
@@ -177,7 +178,7 @@ function init_args(&$tprojMgr) {
   }
 
 
-  $prjInfo = $tprojMgr->get_by_id($args->testprojectID,array('output' => 'name')); 
+  $prjInfo = $tprojMgr->get_by_id($args->testprojectID,array('output' => 'name'));
 
   $args->testprojectName = $prjInfo['name'];
  
@@ -189,9 +190,12 @@ function init_args(&$tprojMgr) {
 
 
 /**
- * checks runned when tyring to run this page, 
+ * checks runned when tyring to run this page,
  * to be sure user has rights to use it.
  *
+ * @param database $db
+ * @param tlUser $user
+ * @return boolean
  */
 function checkRights(&$db,&$user) {
 	$result = false;
@@ -217,15 +221,15 @@ function checkRights(&$db,&$user) {
   
   foreach($answers as $key => $value) {
     $answers->$key = $value == "yes" ? true : false;
-    $result = $result | $answers->$key; 
+    $result = $result | $answers->$key;
   }
 	
 	if(!$result && ($args->featureType == 'testproject')) {
 	  $feature2check = $args->featureID;
 	  if($args->featureID == 0 || is_null($args->featureID)) {
-	    $feature2check = $args->testprojectID; 
-	  } 
-    if($user->hasRight($db,"testproject_user_role_assignment",$feature2check,-1) == "yes") 	    
+	    $feature2check = $args->testprojectID;
+	  }
+    if($user->hasRight($db,"testproject_user_role_assignment",$feature2check,-1) == "yes")
     {
       $result = true;
     }
@@ -237,6 +241,12 @@ function checkRights(&$db,&$user) {
 /**
  * checkRightsForUpdate
  *
+ * @param database $dbHandler
+ * @param tlUser $user
+ * @param int $testprojectID
+ * @param testproject $featureType
+ * @param int $featureID
+ * @return boolean
  */
 function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$featureID)
 {
@@ -246,7 +256,7 @@ function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$fe
         case 'testproject':
             if($user->hasRight($dbHandler,"user_role_assignment",$featureID) == "yes" ||
                 $user->hasRight($dbHandler,"testproject_user_role_assignment",$featureID,-1,true) == "yes")
-            {         
+            {
                 $yes_no = "yes";
             }
         break;
@@ -257,13 +267,18 @@ function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$fe
         break;
     }
 
-    return ($yes_no == 'yes');
+    return $yes_no == 'yes';
 }
 
 
 /**
  * getTestProjectEffectiveRoles
  *
+ * @param database $dbHandler
+ * @param testproject $objMgr
+ * @param stdClass $argsObj
+ * @param array $users
+ * @return array
  */
 function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users) {
   $features = null;
@@ -281,22 +296,21 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users) {
   $idSet = $key2loop = array_keys($testprojects);
   $rolesCache = null;
   foreach($idSet as $tk) {
-    // $rolesCache[$testprojects[$tk]['effective_role']][] = $tk;  
-    if(!isset($rolesCache[$testprojects[$tk]['effective_role']])) {
+      if(!isset($rolesCache[$testprojects[$tk]['effective_role']])) {
       $rolesCache[$testprojects[$tk]['effective_role']] = new tlRole($testprojects[$tk]['effective_role']);
       $rolesCache[$testprojects[$tk]['effective_role']]->readFromDB($dbHandler);
-    }  
-  }  
+    }
+  }
 
   foreach($key2loop as $idx) {
     $answer = $rolesCache[$testprojects[$idx]['effective_role']]->hasRight("user_role_assignment");
-    if($answer == false) {
-      $answer = $rolesCache[$testprojects[$idx]['effective_role']]->hasRight("testproject_user_role_assignment");  
-    }  
+    if(!$answer) {
+      $answer = $rolesCache[$testprojects[$idx]['effective_role']]->hasRight("testproject_user_role_assignment");
+    }
 
-    if($answer == true) {
+    if($answer) {
       $features[$idx] = $testprojects[$idx];
-    } 
+    }
   }
 
 	// If have no a test project ID, try to figure out which test project to show
@@ -304,10 +318,10 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users) {
 	if (!$argsObj->featureID) {
 		if ($argsObj->testprojectID) {
 			$argsObj->featureID = $argsObj->testprojectID;
-		} else if (sizeof($features)) {
+		} elseif (sizeof($features)) {
 		  $xx = current($features);
 			$argsObj->featureID = $xx['id'];
-		}	
+		}
 	}
 	
 	// get private/public status for feature2check
@@ -324,7 +338,7 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users) {
 		$user->readTestProjectRoles($dbHandler,$argsObj->featureID);
 	}
 	$effectiveRoles = get_tproject_effective_role($dbHandler,
-    array('id' => $argsObj->featureID, 
+    array('id' => $argsObj->featureID,
 	       'is_public' => $featureIsPublic),null,$users);
 
 	return array($effectiveRoles,$features,$argsObj->featureID);
@@ -335,6 +349,12 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users) {
 /**
  * getTestPlanEffectiveRoles
  *
+ * @param database $dbHandler
+ * @param testplan $tplanMgr
+ * @param testproject $tprojectMgr
+ * @param stdClass $argsObj
+ * @param array $users
+ * @return array
  */
 function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj,&$users) {
   $features = array();
@@ -351,7 +371,7 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
     // to maintain old logic
     $activeKeys = array_keys($activeTestplans);
     $myKeys = array_keys((array)$myAccessibleSet);
-    $key2remove = $key2remove_diff = array_diff($activeKeys,$myKeys);
+    $key2remove = array_diff($activeKeys,$myKeys);
      if( !is_null($key2remove) ) {
       foreach($key2remove as $target) {
         unset($activeTestplans[$target]);
@@ -368,11 +388,11 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
       foreach($key2loop as $idx) {
         if($argsObj->user->hasRight($dbHandler,"testplan_user_role_assignment",null,$activeTestplans[$idx]['id']) == "yes") {
           $features[$idx] = $activeTestplans[$idx];
-        } 
+        }
       }
     }
       
-    // if nothing special was selected, 
+    // if nothing special was selected,
     // use the one in the session or the first
     if (!$argsObj->featureID) {
       if (sizeof($features)) {
@@ -381,13 +401,13 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
           foreach($key2loop as $idx) {
             if ($argsObj->testplanID == $features[$idx]['id']) {
               $argsObj->featureID = $argsObj->testplanID;
-            } 
+            }
           }
         }
         if (!$argsObj->featureID) {
           $xx = current($features);
           $argsObj->featureID = $xx['id'];
-        } 
+        }
       }
     }
 
@@ -408,6 +428,12 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 /**
  * getTestPlanEffectiveRoles
  *
+ * @param database $dbHandler
+ * @param testplan $tplanMgr
+ * @param testproject $tprojectMgr
+ * @param stdClass $argsObj
+ * @param array $users
+ * @return array
  */
 function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj,&$users)
 {
@@ -421,16 +447,12 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 	{
   	$myAccessibleSet = $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->testprojectID,null,
 	                                                            array('output' =>'map'));
-	                                                            
 
-    //echo __LINE__;
-    //echo __FUNCTION__;
-    //new dBug($myAccessibleSet);
    
     // we want to change map key, from testplan id to a sequential index to maintain old logic
     $activeKeys = array_keys($activeTestplans);
     $myKeys = array_keys((array)$myAccessibleSet);
-	  $key2remove = $key2remove_diff = array_diff($activeKeys,$myKeys);
+	  $key2remove = array_diff($activeKeys,$myKeys);
     if( !is_null($key2remove) )
     {
       foreach($key2remove as $target)
@@ -438,12 +460,8 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
         unset($activeTestplans[$target]);
       }
     }
-    
-	  // $activeTestplans = array_values($activeTestplans);
-    //new dBug($activeTestplans);  
-    	  
     // 2013-04-01
-    // now is not clear why this logic is right  
+    // now is not clear why this logic is right
     //
     // analisys has to go from detail (test plan) to general
     // Step 1 - check if user has specific role on test plan
@@ -452,7 +470,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
     //          that contains the test project
     // Step 3 - If Step 2 fails
     //          check Global Role.
-    // 
+    //
 
 		if($argsObj->user->hasRight($dbHandler,"mgt_users"))
 		{
@@ -471,7 +489,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 				                            $activeTestplans[$idx]['id']) == "yes")
 				{
 					$features[$idx] = $activeTestplans[$idx];
-				}	
+				}
 			}
 		}
     	
@@ -490,14 +508,14 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 						if ($argsObj->testplanID == $features[$idx]['id'])
 						{
 							$argsObj->featureID = $argsObj->testplanID;
-						}	
+						}
 					}
 				}
 				if (!$argsObj->featureID)
 				{
 				  $xx = current($features);
 					$argsObj->featureID = $xx['id'];
-				}	
+				}
 			}
 		}
 
@@ -519,18 +537,16 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
     foreach($key2loop as $idx)
     {
       $answer = $rolesCache[$testprojects[$idx]['effective_role']]->hasRight("user_role_assignment");
-      //echo 'Question is: user_role_assignment - ANSWER IS:' . $answer . '<br>';
     
-      if($answer == false)
+      if(!$answer)
       {
-        $answer = $rolesCache[$testprojects[$idx]['effective_role']]->hasRight("testproject_user_role_assignment");  
-        // echo 'Question is: testproject_user_role_assignment - ANSWER IS:' . $answer . '<br>';
-      }  
+        $answer = $rolesCache[$testprojects[$idx]['effective_role']]->hasRight("testproject_user_role_assignment");
+      }
 
-      if($answer == true)
+      if($answer)
       {
         $features[$idx] = $testprojects[$idx];
-      } 
+      }
 
 
         // Humm!!, think we need to check testplan_user_role_assignment and not "testplan_planning"
@@ -538,7 +554,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
                                     $activeTestplans[$idx]['id']) == "yes")
         {
           $features[$idx] = $activeTestplans[$idx];
-        } 
+        }
     }
 
 
@@ -549,6 +565,12 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 }
 
 
+/**
+ *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param testproject $featureMgr
+ */
 function doUpdate(&$dbHandler,&$argsObj,&$featureMgr)
 {
 	$featureMgr->deleteUserRoles($argsObj->featureID,
@@ -558,10 +580,17 @@ function doUpdate(&$dbHandler,&$argsObj,&$featureMgr)
 		if ($role_id)
 		{
 			$featureMgr->addUserRole($user_id,$argsObj->featureID,$role_id);
-		}	
+		}
 	}
 }
 
+
+/**
+ *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @return stdClass
+ */
 function initializeGui(&$dbHandler,$argsObj)
 {
   $gui = new stdClass();
@@ -579,7 +608,7 @@ function initializeGui(&$dbHandler,$argsObj)
   $gui->tprojectAccessTypeImg = '';
 
   $guiCfg = config_get('gui');
-  if($guiCfg->usersAssignGlobalRoleColoring == ENABLED) 
+  if($guiCfg->usersAssignGlobalRoleColoring == ENABLED)
   {
   	$gui->role_colour = tlRole::getRoleColourCfg($dbHandler);
   }
@@ -588,6 +617,7 @@ function initializeGui(&$dbHandler,$argsObj)
 
 /**
  *
+ * array
  */
 function initLabels()
 {

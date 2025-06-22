@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource	jirarestInterface.class.php
  * @author      Francisco Mancardi
@@ -10,23 +10,21 @@
  *
  *
 **/
-require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/RestRequest.php");
-require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/Jira.php");
+require_once TL_ABS_PATH . '/third_party/fayp-jira-rest/RestRequest.php';
+require_once TL_ABS_PATH . '/third_party/fayp-jira-rest/Jira.php';
 class jirarestInterface extends issueTrackerInterface
 {
   const NOPROJECTKEY = 'e18b741e13b2b1b09f2ac85615e37bae';
   private $APIClient;
-  private $issueDefaults;
   private $issueAttr = null;
   private $jiraCfg;
-
-  var $defaultResolvedStatus;
-  var $support;
+  private $defaultResolvedStatus;
+  private $support;
 
 	/**
 	 * Construct and connect to BTS.
 	 *
-	 * @param str $type (see tlIssueTracker.class.php $systems property)
+	 * @param string $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
 	function __construct($type,$config,$name)
@@ -36,12 +34,11 @@ class jirarestInterface extends issueTrackerInterface
     $this->support = new jiraCommons();
     $this->support->guiCfg = array('use_decoration' => true);
 
-    // This is the right way to overwrite ONLY 
-    // the keys we want, and preserve the default 
+    // This is the right way to overwrite ONLY
+    // the keys we want, and preserve the default
     // configuration present in the issueTrackerInterface class
-	  $this->methodOpt['buildViewBugLink'] = 
-      array_merge($this->methodOpt['buildViewBugLink'], 
-                  array('addSummary' => true, 
+	  $this->methodOpt['buildViewBugLink'] = array_merge($this->methodOpt['buildViewBugLink'],
+                  array('addSummary' => true,
                         'colorByStatus' => false)
                   );
 
@@ -51,10 +48,10 @@ class jirarestInterface extends issueTrackerInterface
       $this->guiCfg = array('use_decoration' => true);
 
       if( $this->isConnected())
-      {  
-        $this->setResolvedStatusCfg();  
-      }  
-    } 
+      {
+        $this->setResolvedStatusCfg();
+      }
+    }
 	}
 
   /**
@@ -69,9 +66,8 @@ class jirarestInterface extends issueTrackerInterface
 	 *
 	 * check for configuration attributes than can be provided on
 	 * user configuration, but that can be considered standard.
-	 * If they are MISSING we will use 'these carved on the stone values' 
+	 * If they are MISSING we will use 'these carved on the stone values'
 	 * in order	to simplify configuration.
-	 * 
 	 *
 	 **/
 	function completeCfg()
@@ -95,9 +91,8 @@ class jirarestInterface extends issueTrackerInterface
 
     if( property_exists($this->cfg,'attributes') )
     {
-      // echo __FUNCTION__ . "::Debug::Step#$step Going To Add attributes <br>";$step++;
       $this->processAttributes();
-    }    
+    }
 
     if( !property_exists($this->cfg,'userinteraction') ) {
       $this->cfg->userinteraction = 0;
@@ -109,8 +104,7 @@ class jirarestInterface extends issueTrackerInterface
 	}
 
 	/**
-     * useful for testing 
-     *
+     * useful for testing
      *
      **/
 	function getAPIClient()
@@ -133,8 +127,7 @@ class jirarestInterface extends issueTrackerInterface
   /**
    * establishes connection to the bugtracking system
    *
-   * @return bool 
-   *
+   * @return bool
    **/
   function connect()
   {
@@ -147,11 +140,9 @@ class jirarestInterface extends issueTrackerInterface
                    'host' => (string)trim($this->cfg->uriapi));
   	  
       $this->jiraCfg['proxy'] = config_get('proxy');
-      if( !is_null($this->jiraCfg['proxy']) ) {
-        if( is_null($this->jiraCfg['proxy']->host) ) {
+      if( !is_null($this->jiraCfg['proxy']) && is_null($this->jiraCfg['proxy']->host) ) {
           $this->jiraCfg['proxy'] = null;
-        }  
-      }  
+      }
 
       $this->APIClient = new JiraApi\Jira($this->jiraCfg);
 
@@ -167,9 +158,8 @@ class jirarestInterface extends issueTrackerInterface
           $this->statusDomain[$statusName] = $statusID;
         }
 
-        $this->defaultResolvedStatus = 
-          $this->support->initDefaultResolvedStatus($this->statusDomain);
-      }  
+        $this->defaultResolvedStatus = $this->support->initDefaultResolvedStatus($this->statusDomain);
+      }
     } catch(Exception $e) {
       $this->connected = false;
       tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
@@ -177,7 +167,6 @@ class jirarestInterface extends issueTrackerInterface
   }
 
   /**
-   * 
    *
    **/
 	function isConnected()
@@ -187,7 +176,6 @@ class jirarestInterface extends issueTrackerInterface
 
 
   /**
-   * 
    *
    **/
 	public function getIssue($issueID)
@@ -216,7 +204,7 @@ class jirarestInterface extends issueTrackerInterface
         $issue->IDHTMLString = "<b>{$issueID} : </b>";
         $issue->statusHTMLString = $this->support->buildStatusHTMLString($issue->statusVerbose);
         $issue->summaryHTMLString = $this->support->buildSummaryHTMLString($issue);
-        $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+        $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]);
 
 
         /*
@@ -233,12 +221,12 @@ class jirarestInterface extends issueTrackerInterface
         */
       } else {
         $issue = null;
-      }  
+      }
 		} catch(Exception $e) {
       tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
       $issue = null;
-		}	
-		return $issue;		
+		}
+		return $issue;
 	}
 
 
@@ -246,8 +234,7 @@ class jirarestInterface extends issueTrackerInterface
 	 * Returns status for issueID
 	 *
 	 * @param string issueID
-	 *
-	 * @return 
+	 * @return
 	 **/
 	function getIssueStatusCode($issueID)
 	{
@@ -259,9 +246,7 @@ class jirarestInterface extends issueTrackerInterface
 	 * Returns status in a readable form (HTML context) for the bug with the given id
 	 *
 	 * @param string issueID
-	 * 
-	 * @return string 
-	 *
+	 * @return string
 	 **/
 	function getIssueStatusVerbose($issueID)
 	{
@@ -271,9 +256,7 @@ class jirarestInterface extends issueTrackerInterface
 	/**
 	 *
 	 * @param string issueID
-	 * 
-	 * @return string 
-	 *
+	 * @return string
 	 **/
 	function getIssueSummaryHTMLString($issueID)
 	{
@@ -288,33 +271,13 @@ class jirarestInterface extends issueTrackerInterface
    **/
   function checkBugIDExistence($issueID)
   {
-    if(($status_ok = $this->checkBugIDSyntax($issueID)))
+    if($status_ok = $this->checkBugIDSyntax($issueID))
     {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
     }
     return $status_ok;
   }
-
-/*
-{
-    "fields": {
-       "project":
-       {
-          "key": "TEST"
-       },
-       "summary": "REST ye merry gentlemen.",
-       "description": "Creating of an issue using project keys and issue type names using the REST API",
-       "issuetype": {
-          "name": "Bug"
-       }
-       "priority": {
-        "id": 4
-       }
-
-   }
-}
-*/
 
   /**
    *
@@ -340,21 +303,20 @@ class jirarestInterface extends issueTrackerInterface
   {
     try {
       $issue = array('fields' =>
-                     array('project' => 
-                            array('key' => (string)$this->cfg->projectkey),
+                     array('project' =>
+                         array('key' => (string)$this->cfg->projectkey),
                            'summary' => $summary,
                            'description' => $description,
                            'issuetype' => 1 /*Bug*/));
 
       if ( property_exists($this->cfg,'issuetype') ) {
-        $issue['fields']['issuetype'] = array('id' => 
-                                              (int)$this->cfg->issuetype);
+        $issue['fields']['issuetype'] = array('id' => (int)$this->cfg->issuetype);
       }
 
       $prio = null;
       if(property_exists($this->cfg, 'issuepriority')) {
         $prio = $this->cfg->issuepriority;
-      }  
+      }
       if( !is_null($opt) && property_exists($opt, 'issuePriority') ) {
         $prio = $opt->issuePriority;
       }
@@ -362,7 +324,7 @@ class jirarestInterface extends issueTrackerInterface
         // CRITIC: if not casted to string, you will get following error from JIRA
         // "Could not find valid 'id' or 'name' in priority object."
         $issue['fields']['priority'] = array('id' => (string)$prio);
-      }    
+      }
   
 
       if(!is_null($this->issueAttr)) {
@@ -376,7 +338,7 @@ class jirarestInterface extends issueTrackerInterface
           $issue['fields']['components'] = array();
           foreach( $opt->artifactComponent as $vv) {
             $issue['fields']['components'][] = array('id' => (string)$vv);
-          }  
+          }
         }
 
         if (property_exists($opt, 'artifactVersion')) {
@@ -384,17 +346,15 @@ class jirarestInterface extends issueTrackerInterface
           $issue['fields']['versions'] = array();
           foreach ( $opt->artifactVersion as $vv) {
             $issue['fields']['versions'][] = array('id' => (string)$vv);
-          }  
+          }
         }
 
 
         if (property_exists($opt, 'reporter')) {
 
           // After Atlassian GDRP Changes
-          // $issue['fields']['reporter'] = 
-          //  array('name' => (string)$opt->reporter);
-          $issue['fields']['reporter'] = 
-            array('id' => (string)$opt->reporter);
+          // $issue['fields']['reporter'] = array('name' => (string)$opt->reporter);
+          $issue['fields']['reporter'] = array('id' => (string)$opt->reporter);
         }
 
         if (property_exists($opt, 'issueType')) {
@@ -406,31 +366,31 @@ class jirarestInterface extends issueTrackerInterface
         // @20200531 - documentation is needed
         // accepted Pull Request #231
         /*
-        $matches = preg_grep("/(?:\/.*\/{1,})(.*) - Execution/", 
+        $matches = preg_grep("/(?:\/.*\/{1,})(.*) - Execution/",
                              (array)$summary);
         if (count($matches) > 0 && isset($matches[1])) {
           $issue['fields']['customfield_10311'] = $matches[1];
         }
         */
-      }  
+      }
 
       $op = $this->APIClient->createIssue($issue);
       $ret = array('status_ok' => false, 'id' => null, 'msg' => 'ko');
       if(!is_null($op))
-      {  
+      {
         if(isset($op->errors))
         {
           $ret['msg'] = __FUNCTION__ . ":Failure:JIRA Message:\n";
-          foreach ($op->errors as $pk => $pv) 
+          foreach ($op->errors as $pk => $pv)
           {
             $ret['msg'] .= "$pk => $pv\n";
           }
         }
         else
-        {        
-          $ret = array('status_ok' => true, 'id' => $op->key, 
+        {
+          $ret = array('status_ok' => true, 'id' => $op->key,
                        'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['fields']['project']['key']));
-        }  
+        }
       }
     }
     catch (Exception $e)
@@ -440,29 +400,29 @@ class jirarestInterface extends issueTrackerInterface
       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
     }
     return $ret;
-  }  
+  }
 
   /**
    * on JIRA notes is called comment
-   * 
+   *
    */
   public function addNote($issueID,$noteText,$opt=null)
   {
-    try 
+    try
     {
       $op = $this->APIClient->addComment($noteText,$issueID);
       $ret = array('status_ok' => false, 'id' => null, 'msg' => 'ko');
       if(!is_null($op))
-      {  
+      {
         if(isset($op->errors))
         {
           $ret['msg'] = $op->errors;
         }
         else
-        {        
-          $ret = array('status_ok' => true, 'id' => $op->key, 
+        {
+          $ret = array('status_ok' => true, 'id' => $op->key,
                        'msg' => sprintf(lang_get('jira_comment_added'),$issueID));
-        }  
+        }
       }
     }
     catch (Exception $e)
@@ -470,7 +430,7 @@ class jirarestInterface extends issueTrackerInterface
       $msg = "Add JIRA Issue Comment (REST) FAILURE => " . $e->getMessage();
       tLog($msg, 'WARNING');
       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
-    }    
+    }
     return $ret;
   }
   
@@ -517,7 +477,7 @@ class jirarestInterface extends issueTrackerInterface
     catch(Exception $e)
     {
       tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
-    }    
+    }
     return $items;
   }
 
@@ -533,7 +493,7 @@ class jirarestInterface extends issueTrackerInterface
     catch(Exception $e)
     {
       tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
-    }         
+    }
   }
 
 
@@ -549,7 +509,7 @@ class jirarestInterface extends issueTrackerInterface
     catch(Exception $e)
     {
       tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
-    }         
+    }
   }
 
 
@@ -569,7 +529,7 @@ class jirarestInterface extends issueTrackerInterface
   public function getPrioritiesForHTMLSelect()
   {
     return array('items' => $this->objectAttrToIDName($this->getPriorities()),
-                 'isMultiSelect' => false); 
+                 'isMultiSelect' => false);
   }
 
   /**
@@ -585,8 +545,8 @@ class jirarestInterface extends issueTrackerInterface
     }
     else
     {
-      $input = null; 
-    }  
+      $input = null;
+    }
     return $input;
   }
 
@@ -600,18 +560,17 @@ class jirarestInterface extends issueTrackerInterface
     if(!is_null($items))
     {
       $input['items'] = $this->objectAttrToIDName($items);
-    }  
+    }
     else
     {
-      $input = null; 
-    }  
+      $input = null;
+    }
     return $input;
   }
 
  
   /**
    *
-   * 
    */
   private function objectAttrToIDName($attrSet)
   {
@@ -621,10 +580,10 @@ class jirarestInterface extends issueTrackerInterface
       $ic = count($attrSet);
       for($idx=0; $idx < $ic; $idx++)
       {
-        $ret[$attrSet[$idx]->id] = $attrSet[$idx]->name; 
-      }  
-    }  
-    return $ret;    
+        $ret[$attrSet[$idx]->id] = $attrSet[$idx]->name;
+      }
+    }
+    return $ret;
   }
   
 
@@ -647,28 +606,28 @@ class jirarestInterface extends issueTrackerInterface
            "<uriview>https://testlink.atlassian.net/browse/</uriview>\n" .
            "<userinteraction>1/0</userinteraction>\n" .
            "<!-- 1: User will be able to manage following attributes from GUI -->\n" .
-           "<!-- Issue Type, Issue Priority, Affects Versions, Components -->\n" .    
+           "<!-- Issue Type, Issue Priority, Affects Versions, Components -->\n" .
            "<!-- 0: values for attributes will be taken FROM this config XML from GUI -->\n" .
-           "\n" .       
+           "\n" .
            "<!-- Configure This if you want be able TO CREATE ISSUES -->\n" .
            "<projectkey>JIRA PROJECT KEY</projectkey>\n" .
            "<issuetype>JIRA ISSUE TYPE ID</issuetype>\n" .
            "<issuepriority>JIRA ISSUE PRIORITY ID</issuepriority>\n" .
-           "<!-- \n" . 
-           "  <attributes>\n" . 
-           "    <customFieldValues>\n" . 
-           "      <customField>\n" . 
+           "<!-- \n" .
+           "  <attributes>\n" .
+           "    <customFieldValues>\n" .
+           "      <customField>\n" .
            "        <customfieldId>customfield_10800</customfieldId>\n" .
            "        <type>NumberField</type>" .
            "        <values><value>111</value></values>\n" .
-           "      </customField>\n" . 
+           "      </customField>\n" .
            "\n" .
-           "      <customField>\n" . 
+           "      <customField>\n" .
            "        <customfieldId>customfield_10900</customfieldId>\n" .
            "        <type>MultiSelect</type>" .
            "        <values><value>Yamaha Factory Racing</value>\n" .
            "                <value>Ducati</value></values>\n" .
-           "      </customField>\n" . 
+           "      </customField>\n" .
            "\n" .
            "    </customFieldValues>\n" .
            "  </attributes>\n" .
@@ -686,17 +645,17 @@ class jirarestInterface extends issueTrackerInterface
   {
     $status_ok = false;
 
-    // The VERY Mandatory KEY   
+    // The VERY Mandatory KEY
     if( property_exists($this->cfg, 'projectkey') )
     {
       $pk = trim((string)($this->cfg->projectkey));
       $status_ok = ($pk !== '');
-    } 
+    }
    
     if($status_ok && $this->cfg->userinteraction == 0)
     {
-      $status_ok = property_exists($this->cfg, 'issuetype'); 
-    }  
+      $status_ok = property_exists($this->cfg, 'issuetype');
+    }
 
     return $status_ok;
   }
@@ -707,7 +666,7 @@ class jirarestInterface extends issueTrackerInterface
   function processAttributes()
   {
     $attr = get_object_vars($this->cfg->attributes);
-    foreach ($attr as $name => $elem) 
+    foreach ($attr as $name => $elem)
     {
       $name = (string)$name;
       switch($name)
@@ -726,7 +685,7 @@ class jirarestInterface extends issueTrackerInterface
   *            jira-rest-api-example-create-issue#
   *            JIRARESTAPIExample-CreateIssue-Exampleofcreatinganissueusingcustomfields)
   *
-  * ---------------------------------------------------------  
+  * ---------------------------------------------------------
   * Single Value (simple) Group:
   * ---------------------------------------------------------
   *
@@ -742,13 +701,13 @@ class jirarestInterface extends issueTrackerInterface
   * NumberField
   * "customfield_10010": 42.07
   *
-  * ---------------------------------------------------------  
+  * ---------------------------------------------------------
   * Pair Value (simple) Group:
   * ---------------------------------------------------------
   *
   * RadioButtons
   * "customfield_10012": { "value": "red" }
-  *  
+  *
   * SelectList
   * "customfield_10013": { "value": "red" }
   *
@@ -765,30 +724,27 @@ class jirarestInterface extends issueTrackerInterface
   * ---------------------------------------------------------
   *
   * MultiGroupPicker (access key -> name)
-  * "customfield_10007": [{ "name": "admins" }, { "name": "jira-dev" }, 
+  * "customfield_10007": [{ "name": "admins" }, { "name": "jira-dev" },
   *                       { "name": "jira-users" }]
   *
   * MultiUserPicker (access key -> name)
   * "customfield_10009": [ {"name": "jsmith" }, {"name": "bjones" }, {"name": "tdurden" }]
-  * 
+  *
   * MultiSelect (access key -> value)
   * "customfield_10008": [ {"value": "red" }, {"value": "blue" }, {"value": "green" }]
   *
   *
-
-  *
-  * 
   **/
   function getCustomFieldsAttribute($name,$objCFSet)
   {
     $cfSet = get_object_vars($objCFSet);
-    $cfSet = $cfSet['customField'];    
+    $cfSet = $cfSet['customField'];
 
     foreach ($cfSet as $cf)
     {
-      $cf = (array)$cf;    
-      $cfJIRAID = $cf['customfieldId']; 
-      $valueSet = (array)$cf['values'];        
+      $cf = (array)$cf;
+      $cfJIRAID = $cf['customfieldId'];
+      $valueSet = (array)$cf['values'];
       $loop2do = count($valueSet);
 
       $dummy = null;
@@ -834,16 +790,16 @@ class jirarestInterface extends issueTrackerInterface
           }
         break;
 
-        case 'multiselect': 
+        case 'multiselect':
           // access key -> value)
           for($vdx=0; $vdx <= $loop2do; $vdx++)
           {
             $dummy[] = array('value' => (string)$valueSet['value'][$vdx]);
           }
         break;
-      }      
-      $this->issueAttr[$cfJIRAID] = $dummy; 
-    } 
+      }
+      $this->issueAttr[$cfJIRAID] = $dummy;
+    }
   }
 
   /**
@@ -860,18 +816,18 @@ class jirarestInterface extends issueTrackerInterface
       {
         $status_ok = false;
         $msg = __CLASS__ . ' - Empty configuration: <projectKey>';
-      }  
-    }  
+      }
+    }
     else
     {
       // this is oK if user only wants to LINK issues
       $this->cfg->projectkey = self::NOPROJECTKEY;
-    }  
+    }
 
     if(!$status_ok)
     {
       tLog(__METHOD__ . ' / ' . $msg , 'ERROR');
-    }  
+    }
     return $status_ok;
   }
 
@@ -895,7 +851,7 @@ class jirarestInterface extends issueTrackerInterface
     $this->resolvedStatus = new stdClass();
     $this->resolvedStatus->byCode = array();
     if(!is_null($statusCfg['status']))
-    {  
+    {
       foreach($statusCfg['status'] as $cfx)
       {
         $e = (array)$cfx;

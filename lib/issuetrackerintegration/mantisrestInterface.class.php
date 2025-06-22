@@ -1,14 +1,13 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource	mantisrestInterface.class.php
- * @author 
+ * @author
  *
  *
 **/
-require_once(TL_ABS_PATH . 
-  "third_party/mantis-rest-api/lib/mantis-rest-api.php");
+require_once TL_ABS_PATH . 'third_party/mantis-rest-api/lib/mantis-rest-api.php';
 
 class mantisrestInterface extends issueTrackerInterface {
   private $APIClient;
@@ -23,13 +22,13 @@ class mantisrestInterface extends issueTrackerInterface {
                                 'resolved'     => '#cceedd', # buish-green
                                 'closed'       => '#e8e8e8'); # light gray
 
-  public $defaultResolvedStatus;
+  private $defaultResolvedStatus;
 
 
 	/**
 	 * Construct and connect to BTS.
 	 *
-	 * @param str $type (see tlIssueTracker.class.php $systems property)
+	 * @param string $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
 	function __construct($type,$config,$name) {
@@ -37,7 +36,7 @@ class mantisrestInterface extends issueTrackerInterface {
 	  $this->interfaceViaDB = false;
 	  $this->methodOpt['buildViewBugLink'] = [
       'addSummary' => true,
-      'addReporter' => true, 
+      'addReporter' => true,
       'addHandler' => true,
       'colorByStatus' => false
     ];
@@ -45,11 +44,11 @@ class mantisrestInterface extends issueTrackerInterface {
 
     $this->defaultResolvedStatus = [
       [
-        'code' => 80, 
+        'code' => 80,
        'verbose' => 'resolved'
       ],
       [
-        'code' => 90, 
+        'code' => 90,
         'verbose' => 'closed'
       ]
     ];
@@ -57,7 +56,7 @@ class mantisrestInterface extends issueTrackerInterface {
     $this->canSetReporter = true;
     if( !$this->setCfg($config) ) {
       return false;
-    }  
+    }
 
     $this->completeCfg();
 	  $this->setResolvedStatusCfg();
@@ -68,9 +67,9 @@ class mantisrestInterface extends issueTrackerInterface {
 	 *
 	 **/
 	function completeCfg() {
-		$this->cfg->uribase = trim($this->cfg->uribase,"/"); 
+		$this->cfg->uribase = trim($this->cfg->uribase,"/");
     if(!property_exists($this->cfg, 'uricreate') ) {
-      $this->cfg->uricreate = $this->cfg->uribase; 
+      $this->cfg->uricreate = $this->cfg->uribase;
     }
 
     if (!property_exists($this->cfg,'uriview')) {
@@ -81,9 +80,9 @@ class mantisrestInterface extends issueTrackerInterface {
       $option = get_object_vars($this->cfg->options);
       foreach ($option as $name => $elem) {
         $name = (string)$name;
-        $this->options[$name] = (string)$elem;     
+        $this->options[$name] = (string)$elem;
       }
-    } 
+    }
 
     if( !property_exists($this->cfg,'userinteraction') ) {
       $this->cfg->userinteraction = 0;
@@ -95,10 +94,9 @@ class mantisrestInterface extends issueTrackerInterface {
   }
 
 	/**
-   * useful for testing 
-   *
-   *
-   **/
+	 * useful for testing
+	 *
+	 **/
 	function getAPIClient() {
 		return $this->APIClient;
 	}
@@ -117,8 +115,7 @@ class mantisrestInterface extends issueTrackerInterface {
   /**
    * establishes connection to the bugtracking system
    *
-   * @return bool 
-   *
+   * @return bool
    **/
   function connect() {
     $processCatch = false;
@@ -151,7 +148,7 @@ class mantisrestInterface extends issueTrackerInterface {
   	if($processCatch) {
   		$logDetails = '';
   		foreach(['uribase'] as $v) {
-  			$logDetails .= "$v={$this->cfg->$v} / "; 
+  			$logDetails .= "$v={$this->cfg->$v} / ";
   		}
   		$logDetails = trim($logDetails,'/ ');
   		$this->connected = false;
@@ -160,7 +157,6 @@ class mantisrestInterface extends issueTrackerInterface {
   }
 
   /**
-   * 
    *
    **/
 	function isConnected() {
@@ -168,11 +164,10 @@ class mantisrestInterface extends issueTrackerInterface {
 	}
 
  /**
-   * Return the URL to the bugtracking page for viewing 
-   * the bug with the given id. 
+   * Return the URL to the bugtracking page for viewing
+   * the bug with the given id.
    *
    * @param int id the bug id
-   * 
    * @return string returns a complete URL to view the bug
    **/
   function buildViewBugURL($id)
@@ -181,7 +176,6 @@ class mantisrestInterface extends issueTrackerInterface {
   }
  
   /**
-   * 
    *
    **/
 	public function getIssue($issueID) {
@@ -201,7 +195,7 @@ class mantisrestInterface extends issueTrackerInterface {
   
         if (property_exists($jsonObj,'exception')) {
           $issue->summary = (string)$jsonObj->reason;
-          $issue->summaryHTMLString = $issue->summary;          
+          $issue->summaryHTMLString = $issue->summary;
           return $issue;
         }
 
@@ -234,7 +228,7 @@ class mantisrestInterface extends issueTrackerInterface {
           'version' => 'version',
           'fixed_in_version' => 'fixedInVersion',
           'target_version' => 'targetVersion'
-        ];  
+        ];
 
         foreach ($cond as $prop => $wtg) {
           $ip = $trans[$prop];
@@ -250,8 +244,8 @@ class mantisrestInterface extends issueTrackerInterface {
     catch(Exception $e) {
       tLog(__METHOD__ . '/' . $e->getMessage(),'ERROR');
       $issue = null;
-    }	
-    return $issue;		
+    }
+    return $issue;
 	}
 
 
@@ -259,8 +253,7 @@ class mantisrestInterface extends issueTrackerInterface {
 	 * Returns status for issueID
 	 *
 	 * @param string issueID
-	 *
-	 * @return 
+	 * @return
 	 **/
 	function getIssueStatusCode($issueID) {
 		$issue = $this->getIssue($issueID);
@@ -271,8 +264,7 @@ class mantisrestInterface extends issueTrackerInterface {
 	 * Returns status in a readable form (HTML context) for the bug with the given id
 	 *
 	 * @param string issueID
-	 * 
-	 * @return string 
+	 * @return string
 	 *
 	 **/
 	function getIssueStatusVerbose($issueID) {
@@ -286,9 +278,7 @@ class mantisrestInterface extends issueTrackerInterface {
 	/**
 	 *
 	 * @param string issueID
-	 * 
-	 * @return string 
-	 *
+	 * @return string
 	 **/
 	function getIssueSummaryHTMLString($issueID) {
     $issue = $this->getIssue($issueID);
@@ -296,12 +286,11 @@ class mantisrestInterface extends issueTrackerInterface {
 	}
 
   /**
-	 * @param string issueID
-   *
+   * @param string issueID
    * @return bool true if issue exists on BTS
    **/
   function checkBugIDExistence($issueID) {
-    if(($status_ok = $this->checkBugIDSyntax($issueID))) {
+    if($status_ok = $this->checkBugIDSyntax($issueID)) {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
     }
@@ -324,7 +313,7 @@ class mantisrestInterface extends issueTrackerInterface {
         $this->APIClient->addExternalLinks($op->id,$more['links']);
       }
   
-      $ret = ['status_ok' => true, 'id' => (string)$op->id, 
+      $ret = ['status_ok' => true, 'id' => (string)$op->id,
               'msg' => sprintf(lang_get('mantis_bug_created'),
               $summary, (string)$op->board_id)];
     }
@@ -347,7 +336,7 @@ class mantisrestInterface extends issueTrackerInterface {
     if(is_null($op)){
       throw new Exception("Error setting note", 1);
     }
-    $ret = ['status_ok' => true, 'id' => (string)$op->iid, 
+    $ret = ['status_ok' => true, 'id' => (string)$op->iid,
             'msg' => sprintf(lang_get('mantis_bug_comment'),
                        $op->body, $this->APIClient->projectId)];
     return $ret;
@@ -368,7 +357,7 @@ class mantisrestInterface extends issueTrackerInterface {
       if(is_null($op)){
         throw new Exception("Error creating link", 1);
       }
-      $ret = ['status_ok' => true, 'id' => (string)$op->id, 
+      $ret = ['status_ok' => true, 'id' => (string)$op->id,
               'msg' => 'ok'];
       $msg = "Create Mantis Link Via REST OK => TICKET:" . $issueID . ' >> link: ' . json_encode($link);
       tLog($msg, 'WARNING');
@@ -396,7 +385,7 @@ class mantisrestInterface extends issueTrackerInterface {
       if(is_null($op)){
         throw new Exception("Error removing link", 1);
       }
-      $ret = ['status_ok' => true, 'id' => (string)$op->id, 
+      $ret = ['status_ok' => true, 'id' => (string)$op->id,
               'msg' => 'ok'];
     }
     catch (Exception $e) {
@@ -423,9 +412,6 @@ class mantisrestInterface extends issueTrackerInterface {
   public function addExecLink($issueID,$link) {
     try {
       $op = $this->APIClient->addExecLink($issueID,$link);
-      /* if(is_null($op)){
-        throw new Exception("Error creating exec link", 1);
-      }*/
       $ret = ['status_ok' => true, 'msg' => 'ok'];
     }
     catch (Exception $e) {

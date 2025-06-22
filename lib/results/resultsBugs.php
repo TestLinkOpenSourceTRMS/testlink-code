@@ -1,16 +1,16 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
- *  
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
  * @filesource resultsBugs.php
  */
-require('../../config.inc.php');
-require_once('common.php');
-require_once("lang_api.php");
-require_once('displayMgr.php');
-require_once('exec.inc.php'); // used for bug string lookup
-require_once('exttable.class.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'lang_api.php';
+require_once 'displayMgr.php';
+require_once 'exec.inc.php'; // used for bug string lookup
+require_once 'exttable.class.php';
 
 
 testlinkInitPage($db,true,false,"checkRights");
@@ -21,7 +21,7 @@ $gui->tableSet = null;
 $templateCfg = templateConfiguration();
 $args = init_args();
 
-// get issue tracker config and object to manage TestLink - BTS integration 
+// get issue tracker config and object to manage TestLink - BTS integration
 $its = null;
 $tproject_mgr = new testproject($db);
 $info = $tproject_mgr->get_by_id($args->tproject_id);
@@ -30,7 +30,7 @@ if( $info['issue_tracker_enabled']) {
   $it_mgr = new tlIssueTracker($db);
   $its = $it_mgr->getInterfaceObject($args->tproject_id);
   unset($it_mgr);
-} 
+}
 
 $smarty = new TLSmarty;
 $img = $smarty->getImages();
@@ -45,10 +45,6 @@ $tproject_mgr = new testproject($db);
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 unset($tproject_mgr);
-
-// $filters = array();
-// $options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
-// $execSet = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
 
 switch($args->verboseType)
 {
@@ -71,7 +67,7 @@ $testcase_bugs = array();
 $mine = array();
 
 $l18n = init_labels(array('execution_history' => null,'design' => null,'no_linked_bugs' => null));
-foreach ($execSet as $execution) 
+foreach ($execSet as $execution)
 {
   $tc_id = $execution['tc_id'];
   $mine[] = $execution['exec_id'];
@@ -80,7 +76,7 @@ foreach ($execSet as $execution)
   if ($bug_urls)
   {
     // First bug found for this tc
-    if (!isset($testcase_bugs[$tc_id])) 
+    if (!isset($testcase_bugs[$tc_id]))
     {
       // This is ONLY PARENT TEST SUITE !!!
       $suiteName = $execution['tsuite_name'];
@@ -112,7 +108,7 @@ foreach ($testcase_bugs as &$row)
 }
 $arrData = array_values($testcase_bugs);
 
-if(count($arrData) > 0) 
+if(count($arrData) > 0)
 {
   // Create column headers
   $columns = getColumnsDefinition();
@@ -120,7 +116,7 @@ if(count($arrData) > 0)
   // Extract the relevant data and build a matrix
   $matrixData = array();
   
-  foreach($arrData as $bugs) 
+  foreach($arrData as $bugs)
   {
     $rowData = array();
     $rowData[] = $bugs[0];
@@ -142,8 +138,8 @@ if(count($arrData) > 0)
   $table->toolbarShowAllColumnsButton = true;
   
   $gui->tableSet = array($table);
-} 
-else 
+}
+else
 {
   $gui->warning_msg = $l18n['no_linked_bugs'];
 }
@@ -170,11 +166,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
  * Get links to bugs related to execution.
- * @param $db
- * @param $execID execution id
- * @param $openBugsArray array to count open bugs
- * @param $resolvedBugsArray array to count resolved bugs
- *
+ * @param database $db
+ * @param integer $execID execution id
+ * @param array $openBugsArray array to count open bugs
+ * @param array $resolvedBugsArray array to count resolved bugs
  * @return array List of links to related bugs
  */
 function buildBugString(&$db,$execID,&$bugInterface,&$openBugsArray,&$resolvedBugsArray)
@@ -192,8 +187,8 @@ function buildBugString(&$db,$execID,&$bugInterface,&$openBugsArray,&$resolvedBu
           if(!in_array($bugID, $resolvedBugsArray))
           {
             $resolvedBugsArray[] = $bugID;
-          } 
-        } 
+          }
+        }
         else
         {
           if(!in_array($bugID, $openBugsArray))
@@ -211,6 +206,7 @@ function buildBugString(&$db,$execID,&$bugInterface,&$openBugsArray,&$resolvedBu
 /**
  * get Columns definition for table to display
  *
+ * @return array
  */
 function getColumnsDefinition()
 {
@@ -224,14 +220,10 @@ function getColumnsDefinition()
 }
 
 
-/*
-  function: init_args()
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ *
+ * @return stdClass
+ */
 function init_args()
 {
   $iParams = array("format" => array(tlInputParameter::INT_N),
@@ -239,7 +231,7 @@ function init_args()
                    "type" => array(tlInputParameter::INT_N) );
 
   $args = new stdClass();
-  $pParams = R_PARAMS($iParams,$args);
+  R_PARAMS($iParams,$args);
   
   $args->tproject_id = intval($_SESSION['testprojectID']);
   $args->user = $_SESSION['currentUser'];
@@ -247,14 +239,14 @@ function init_args()
   switch($args->type)
   {
     case 1:
-      $args->verboseType = 'all';   
+      $args->verboseType = 'all';
       $args->title = lang_get('link_report_total_bugs_all_exec');
       $args->hint = lang_get('link_report_total_bugs_all_exec');
     break;
 
     default:
     case 0:
-      $args->verboseType = 'latest';  
+      $args->verboseType = 'latest';
       $args->title = lang_get('link_report_total_bugs');
       $args->hint = '';
     break;
@@ -262,6 +254,12 @@ function init_args()
   return $args;
 }
 
+/**
+ *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
+ */
 function checkRights(&$db,&$user)
 {
   return $user->hasRightOnProj($db,'testplan_metrics');

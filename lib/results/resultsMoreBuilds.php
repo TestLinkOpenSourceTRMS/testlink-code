@@ -1,23 +1,23 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Called from resultsMoreBuildsGUI.php to do the effective job.
- * 
+ *
  * @filesource	resultsMoreBuilds.php
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
- * @copyright 	2009,2012 TestLink community 
+ * @copyright 	2009,2012 TestLink community
  *
  * @internal revisions
  * @since 1.9.4
- * 
+ *
  **/
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once('users.inc.php');
-require_once('displayMgr.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'displayMgr.php';
 
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
@@ -35,18 +35,17 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 
 /**
  * initialize Gui
+ *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param string $dateFormat
+ * @return stdClass
  */
 function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 {
 	
 	new dBug($argsObj);
 	
-/*		$my['filters'] = array('exec_ts_from' => null, 'exec_ts_to' => null,
-							   'assigned_to' => null, 'tester_id' => null,
-							   'keywords' => null, 'builds' => null,
-							   'plaforms' => null, 'top_level_tsuites' => null);
-	
-*/	
     $reports_cfg = config_get('reportsCfg');
     $tplan_mgr = new tlTestPlanMetrics($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
@@ -77,9 +76,6 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
    
 	// convert starttime to iso format for database usage
 	list($gui->startTime,$gui->endTime) = helper2ISO($_REQUEST);
-	
-	//die();
-
 	   
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');
@@ -98,10 +94,10 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 	foreach($argsObj->testsuitesSelected as $dmy)
 	{
 		$gui->testsuitesSelected[$dmy] = $everest[$dmy]['name'];
-	} 
+	}
 
     $filters['builds'] = null;
-    if (sizeof($argsObj->buildsSelected)) 
+    if (sizeof($argsObj->buildsSelected))
     {
     	$filters['builds'] = implode(",", $argsObj->buildsSelected);
     }
@@ -113,51 +109,16 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
     }
 
     // statusForClass is used for results.class.php
-    // lastStatus is used to be displayed 
+    // lastStatus is used to be displayed
     $statusForClass = 'a';
     
-    // amitkhullar - added this parameter to get the latest results. 
+    // amitkhullar - added this parameter to get the latest results.
 	$latest_resultset = $argsObj->display->latest_results;
 	
     $assignee = $argsObj->ownerSelected > 0 ? $argsObj->ownerSelected : TL_USER_ANYBODY;
     $tester = $argsObj->executorSelected > 0 ? $argsObj->executorSelected : TL_USER_ANYBODY  ;
-    
-    
-    
-    
-    //$rs = $tplan_mgr->queryMetrics($gui->tplan_id,$filters);
-    //new dBug($rs);
-	// die();
-    
-    //$re = new newResults($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
-    //                  	 $testsuiteIds, $buildsToQuery,
-    //                     $argsObj->platformsSelected, $statusForClass,
-    //                     $latest_resultset, $argsObj->keywordSelected,
-    //                     $assignee, $gui->startTime,
-    //                     $gui->endTime, $tester,
-    //                     $argsObj->search_notes_string, null);
-    //                  
-    //$gui->suiteList = $re->getSuiteList();  // test executions results
-    //// Filter test cases on selected platforms
-    //foreach ($gui->suiteList as $suiteid => $tcases) 
-    //{
-    //    $filtered = array();
-    //    foreach ($tcases as $index => $tcase) {
-    //        if ($tcase['platform_id'] == 0 ||
-    //            $argsObj->platformsSelected[0] == ALL_PLATFORMS ||
-    //            array_search($tcase['platform_id'], $argsObj->platformsSelected) !== false) {
-    //            array_push($filtered, $tcase);
-    //        }
-    //    }
-    //    unset($gui->suiteList[$suiteid]);
-    //    $gui->suiteList[$suiteid] = $filtered;
-    //}
-    //$gui->flatArray = $re->getFlatArray();
-    //$gui->mapOfSuiteSummary =  $re->getAggregateMap();
-    //
 
-
-	// Prepare User Feedback    
+	// Prepare User Feedback
     $gui->totals = new stdClass();
     $gui->totals->items = 0;
     $gui->totals->labels = array();
@@ -165,15 +126,15 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
     foreach($gui->totals->items as $key => $value)
     {
         $l18n = $key == 'total' ? 'th_total_cases' : $gui->resultsCfg['status_label'][$key];
-        $gui->totals->labels[$key] = lang_get($l18n);  
+        $gui->totals->labels[$key] = lang_get($l18n);
     }
 
-    $gui->keywords = new stdClass();             
+    $gui->keywords = new stdClass();
     $gui->keywords->items[0] = $gui->str_option_any;  // Sorry MAGIC 0
     if(!is_null($tplan_keywords_map = $tplan_mgr->get_keywords_map($gui->tplan_id)))
     {
-        $gui->keywords->items += $tplan_keywords_map; 
-    }    
+        $gui->keywords->items += $tplan_keywords_map;
+    }
     $gui->keywords->qty = count($gui->keywords->items);
     $gui->keywordSelected = $gui->keywords->items[$argsObj->keywordSelected];
     
@@ -181,7 +142,7 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
     $gui->users = getUsersForHtmlOptions($dbHandler,ALL_USERS_FILTER,
                                          array(TL_USER_ANYBODY => $gui->str_option_any));
 
-    $gui->ownerSelected = $gui->users[$argsObj->ownerSelected];      
+    $gui->ownerSelected = $gui->users[$argsObj->ownerSelected];
     $gui->executorSelected = $gui->users[$argsObj->executorSelected];
     $gui->buildsSelected = $argsObj->buildsSelected;
     $gui->platformsSelected = $argsObj->platformsSelected;
@@ -206,7 +167,7 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
     	$verbose = $gui->resultsCfg['code_status'][$status_code];
 		$gui->displayResults[$status_code] = true;
 		$lastStatus_localized[] = lang_get($gui->resultsCfg['status_label'][$verbose]);
-    }	
+    }
     $gui->lastStatus = $lastStatus_localized;
     
     return $gui;
@@ -246,7 +207,7 @@ function init_args()
     
     $args->display = new stdClass();
     $args->display->suite_summaries = $pParams["display_suite_summaries"];
-    $args->display->totals = $pParams["display_totals"];    
+    $args->display->totals = $pParams["display_totals"];
     $args->display->query_params = $pParams["display_query_params"];
     $args->display->test_cases = $pParams["display_test_cases"];
     $args->display->latest_results = $pParams["display_latest_results"];
@@ -260,54 +221,63 @@ function init_args()
     $args->testsuitesSelected = $pParams["testsuite"] ? $pParams["testsuite"] : array();
     $args->search_notes_string = $pParams['search_notes_string'];
 
-    return $args;  
+    return $args;
 }
 
 
 /**
- * 
  *
+ * @param stdClass $guiObj
+ * @return stdClass
  */
 function buildMailCfg(&$guiObj)
 {
 	$labels = init_labels(array('testplan' => null, 'testproject' => null));
 	$cfg = new stdClass();
-	$cfg->cc = ''; 
-	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . 
+	$cfg->cc = '';
+	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' .
 					$guiObj->tproject_name . ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
 	return $cfg;
 }
 
+
+/**
+ *
+ * @param string $userInput
+ * @return array
+ */
 function helper2ISO($userInput)
-{                   
+{
 	$dateFormatMask = config_get('date_format');
 	$zy = array();
 	$key2loop = array('selected_start_date' => 'startTime','selected_end_date' => 'endTime');
 	foreach($key2loop as $target => $prop)
 	{
-	    if (isset($userInput[$target]) && $userInput[$target] != '') 
+	    if (isset($userInput[$target]) && $userInput[$target] != '')
 	    {
 			$dummy = split_localized_date($userInput[$target], $dateFormatMask);
-			if($dummy != null) 
+			if($dummy != null)
 			{
 				$zy[$prop] = $dummy['year'] . "-" . $dummy['month'] . "-" . $dummy['day'];
 			}
 		}
-	}                      
+	}
 	
 	$dummy = isset($userInput['start_Hour']) ? $userInput['start_Hour'] : "00";
 	$zy['startTime'] .= " " . $dummy . ":00:00";
 	$dummy = isset($userInput['end_Hour']) ? $userInput['end_Hour'] : "00";
 	$zy['endTime'] .= " " . $dummy . ":59:59";
 
-	return(array($zy['startTime'],$zy['endTime']));
+	return array($zy['startTime'],$zy['endTime']);
 }
 
 
 
 /**
- * 
  *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
  */
 function checkRights(&$db,&$user)
 {

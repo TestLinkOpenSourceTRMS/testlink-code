@@ -13,7 +13,7 @@
  *
  */
 
-require_once('plugin_api.php');
+require_once 'plugin_api.php';
 
 /**
  * Base class for TestLink Plugins

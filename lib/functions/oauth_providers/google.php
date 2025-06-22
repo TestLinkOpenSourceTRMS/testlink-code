@@ -11,7 +11,7 @@
  */
 //$where = explode('lib',__DIR__);
 //require($where[0] . '/config.inc.php');
-require('autoload.php');
+require 'autoload.php';
 
 /**
  *

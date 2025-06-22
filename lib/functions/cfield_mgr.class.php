@@ -14,8 +14,8 @@
 **/
 
 /** load conversion functions */
-require_once(dirname(__FILE__) . '/date_api.php');
-require_once(dirname(__FILE__) . '/string_api.php');
+require_once dirname(__FILE__) . '/date_api.php';
+require_once dirname(__FILE__) . '/string_api.php';
 
 // Copied from mantis, allow load of user custom implementations
 // some sort of poor's man plugin
@@ -24,7 +24,7 @@ if( count($cf_files) > 0 )
 {
   foreach($cf_files as $inc)
   {
-    require_once($inc);  
+    require_once $inc;  
   }   
 }
 
@@ -254,7 +254,7 @@ class cfield_mgr extends tlObject
 
 	function get_application_areas()
 	{
-    return($this->application_areas);
+    return $this->application_areas;
   }
 
   /**
@@ -275,7 +275,7 @@ class cfield_mgr extends tlObject
 	 */
 	function get_available_types()
 	{
-		return($this->custom_field_types);
+		return $this->custom_field_types;
 	}
 
 	/** 
@@ -309,7 +309,7 @@ class cfield_mgr extends tlObject
 	{
 		$mgmt_cfg=array();
 		$mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->enable_on_cfg[$ui_mode]);
-		return($mgmt_cfg);
+		return $mgmt_cfg;
 	}
 
 
@@ -317,7 +317,7 @@ class cfield_mgr extends tlObject
 	{
 		$mgmt_cfg=array();
 		$mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->show_on_cfg[$ui_mode]);
-		return($mgmt_cfg);
+		return $mgmt_cfg;
 	}
 
 
@@ -367,7 +367,7 @@ class cfield_mgr extends tlObject
       $cf_type_id=$custom_field_types_id[$verbose_cf_type];
       $pv_cfg[$cf_type_id]=$use_on_ui;
     }
-    return($pv_cfg);
+    return $pv_cfg;
   }
 
   /**
@@ -793,7 +793,7 @@ class cfield_mgr extends tlObject
 
 
   	}
-  	return ($str_out);
+  	return $str_out;
 	} //function end
 
 
@@ -1240,7 +1240,7 @@ class cfield_mgr extends tlObject
 	  	     " FROM {$this->tables['custom_fields']}  CF, {$this->tables['cfield_node_types']} CFNT" .
 	  	     " WHERE CF.id=CFNT.field_id " .
            " AND CF.id IN (" . implode(',',(array)$id) . ")";
-    return($this->db->fetchRowsIntoMap($sql,'id'));
+    return $this->db->fetchRowsIntoMap($sql,'id');
 	}
 
   /*
@@ -1262,7 +1262,7 @@ class cfield_mgr extends tlObject
 	  	     " WHERE NT.id=CFNT.node_type_id " .
 	  	     " CFNt.field_id=" . $this->db->prepare_int($id);
 
-    return($this->db->fetchRowsIntoMap($sql,'field_id'));
+    return $this->db->fetchRowsIntoMap($sql,'field_id');
 	}
 
 
@@ -1497,7 +1497,7 @@ class cfield_mgr extends tlObject
 	       "SELECT field_id FROM {$this->tables['cfield_execution_values']} " .
 	       "WHERE  field_id={$id} ";
 	  $result=$this->db->exec_query($sql);
-	  return($this->db->num_rows( $result ) > 0 ? 1 : 0);
+	  return $this->db->num_rows( $result ) > 0 ? 1 : 0;
 	} //function end
 
 
@@ -1517,7 +1517,7 @@ function name_is_unique($id,$name)
     {
        $status=1;
     }
-    return($status);
+    return $status;
 } //function end
 
 
@@ -2925,7 +2925,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
       }  
     } 
 
-    return($this->db->fetchRowsIntoMap($sql,'id'));
+    return $this->db->fetchRowsIntoMap($sql,'id');
   }
 
  /**

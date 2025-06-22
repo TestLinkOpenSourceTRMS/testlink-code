@@ -703,12 +703,12 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   }
 
   // more specif analisys
-  if( ($useFilter['status']=($filters['status'][0] > 0)) ) {
+  if( $useFilter['status']=($filters['status'][0] > 0) ) {
     $applyFilters = true;
     $filtersByValue['status'] = array_flip((array)$filters['status']);
   }
   
-  if( ($useFilter['importance']=($filters['importance'][0] > 0)) ) {
+  if( $useFilter['importance']=($filters['importance'][0] > 0) ) {
     $applyFilters = true;
     $filtersByValue['importance'] = array_flip((array)$filters['importance']);
   }  
@@ -728,7 +728,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     $filters['keyword_id'] = array($filters['keyword_id']);
   }
 
-  if(($useFilter['keyword_id']=$filters['keyword_id'][0] > 0)) {
+  if($useFilter['keyword_id']=$filters['keyword_id'][0] > 0) {
     $applyFilters = true;
     switch ($specViewType) {
       case 'testplan':
@@ -745,7 +745,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   }  
 
   $tcpl_map = null;
-  if(($useFilter['platforms']=$filters['platform_id'][0] > 0)) {
+  if($useFilter['platforms']=$filters['platform_id'][0] > 0) {
     $applyFilters = true;
     switch ($specViewType) {
       case 'testplan':
@@ -769,7 +769,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     // first step: generate list of TEST CASE NODES
     $itemSet = null ;
     foreach($key2loop as $key) {
-      if( ($test_spec[$key]['node_type_id'] == $filters['tcase_node_type_id']) ) {
+      if( $test_spec[$key]['node_type_id'] == $filters['tcase_node_type_id'] ) {
         $itemSet[$test_spec[$key]['id']] = $key; 
       }
     }

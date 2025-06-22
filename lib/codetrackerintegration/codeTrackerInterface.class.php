@@ -25,8 +25,8 @@
  *
  *
 **/
-require_once(TL_ABS_PATH . "/lib/functions/database.class.php");
-require_once(TL_ABS_PATH . "/lib/functions/lang_api.php");
+require_once TL_ABS_PATH . '/lib/functions/database.class.php';
+require_once TL_ABS_PATH . 'lib/functions/lang_api.php';
 
 abstract class codeTrackerInterface
 {
@@ -216,8 +216,7 @@ abstract class codeTrackerInterface
   function isConnected()
   {
   
-    return ($this->connected && 
-        ((!$this->interfaceViaDB ) || is_object($this->dbConnection)) ? 1 : 0);
+    return ($this->connected && ((!$this->interfaceViaDB ) || is_object($this->dbConnection)) ? 1 : 0);
   }
 
   /**

@@ -97,7 +97,7 @@ function get_home_url($opt)
 
   $t_url  = $t_protocol . '://' . $t_host . $t_path.'/';
   
-  return ($t_url);
+  return $t_url;
   }
 }
 
@@ -536,7 +536,7 @@ function check_php_settings(&$errCounter)
   { 
     $final_msg .= "<td><span class='tab-success'>OK</span></td></tr>\n";
   }
-  return ($final_msg);
+  return $final_msg;
 }
 
 
@@ -670,7 +670,7 @@ function check_session(&$errCounter) {
   }
 
   $out .= "<td><span class='tab-$color'>$msg</span></td></tr>\n";
-  return ($out);
+  return $out;
 }  //function end
 
 
@@ -911,7 +911,7 @@ function check_dir_permissions(&$errCounter)
      }
   }
 
-  return($final_msg);
+  return $final_msg;
 }
 
 

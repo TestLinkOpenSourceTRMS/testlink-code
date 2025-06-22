@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource	bugzillaxmlrpcInterface.class.php
  * @author Francisco Mancardi
@@ -9,9 +9,9 @@
  * @internal revisions
  * @since 1.9.11
  * 20140531 - franciscom - contribution + refactoring adding new support methods
- * 
+ *
 **/
-require_once('Zend/Loader/Autoloader.php');
+require_once 'Zend/Loader/Autoloader.php';
 Zend_Loader_Autoloader::getInstance();
 
 class bugzillaxmlrpcInterface extends issueTrackerInterface
@@ -22,7 +22,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   /**
    * Construct and connect to BTS.
    *
-   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param string $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
   function __construct($type,$config,$name)
@@ -35,13 +35,13 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     if( !$this->setCfg($config) )
     {
       return false;
-    } 
+    }
 
     $this->completeCfg();
     $this->connect();
     
     // For bugzilla status code is not important.
-    // Design Choice make it equal to verbose. Important bugzilla uses UPPERCASE 
+    // Design Choice make it equal to verbose. Important bugzilla uses UPPERCASE
     $this->defaultResolvedStatus = array();
     $this->defaultResolvedStatus[] = array('code' => 'RESOLVED', 'verbose' => 'RESOLVED');
     $this->defaultResolvedStatus[] = array('code' => 'VERIFIED', 'verbose' => 'VERIFIED');
@@ -55,9 +55,9 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
    *
    * check for configuration attributes than can be provided on
    * user configuration, but that can be considered standard.
-   * If they are MISSING we will use 'these carved on the stone values' 
+   * If they are MISSING we will use 'these carved on the stone values'
    * in order	to simplify configuration.
-   * 
+   *
    *
    **/
   function completeCfg()
@@ -87,7 +87,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   }
 
   /**
-   * useful for testing 
+   * useful for testing
    *
    *
    **/
@@ -100,7 +100,6 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
    * checks id for validity
    *
    * @param string issueID
-   *
    * @return bool returns true if the bugid has the right format, false else
    **/
   function checkBugIDSyntax($issueID)
@@ -111,7 +110,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   /**
    * establishes connection to the bugtracking system
    *
-   * @return bool 
+   * @return bool
    *
    **/
   function connect()
@@ -129,7 +128,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
       $logDetails = '';
       foreach(array('uribase','apikey') as $v)
       {
-        $logDetails .= "$v={$this->cfg->$v} / "; 
+        $logDetails .= "$v={$this->cfg->$v} / ";
       }
       $logDetails = trim($logDetails,'/ ');
       $this->connected = false;
@@ -138,7 +137,6 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   }
 
  /**
-  * 
   *
   **/
 	function isConnected()
@@ -148,7 +146,6 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 
 
  /**
-  * 
   *
   **/
 	public function getIssue($issueID)
@@ -156,13 +153,13 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 		$issue = null;
 
     $resp = array();
-    $login = $this->login();		
+    $login = $this->login();
     $resp = array_merge($resp,(array)$login['response']);
 
 
 		$method = 'Bug.get';
 		$args = array(array('ids' => array(intval($issueID)), 'permissive' => true));
-		if (isset($login['userToken'])) 
+		if (isset($login['userToken']))
     {
 			$args[0]['Bugzilla_token'] = $login['userToken'];
 		}
@@ -179,7 +176,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
       $issue->id = $issueID;
 		  $issue->IDHTMLString = "<b>{$issueID} : </b>";
 			$issue->statusCode = $issue->statusVerbose = $resp['Bug.get']['bugs'][0]['status'];
-      $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+      $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]);
 
 			$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
 			$issue->summary = $issue->summaryHTMLString = $resp['Bug.get']['bugs'][0]['summary'];
@@ -196,8 +193,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 	 * Returns status for issueID
 	 *
 	 * @param string issueID
-	 *
-	 * @return 
+	 * @return
 	 **/
 	function getIssueStatusCode($issueID)
 	{
@@ -209,8 +205,8 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 	 * Returns status in a readable form (HTML context) for the bug with the given id
 	 *
 	 * @param string issueID
-	 * 
-	 * @return string 
+	 *
+	 * @return string
 	 *
 	 **/
 	function getIssueStatusVerbose($issueID)
@@ -221,8 +217,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 	/**
 	 *
 	 * @param string issueID
-	 * 
-	 * @return string 
+	 * @return string
 	 *
 	 **/
 	function getIssueSummaryHTMLString($issueID)
@@ -231,19 +226,19 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     $str = $issue->summaryHTMLString;
 		if($this->guiCfg['use_decoration'])
 		{
-			$str = "[" . $str . "] ";	
+			$str = "[" . $str . "] ";
 		}
     return $str;
 	}
 
   /**
-	 * @param string issueID
-   *
+   * 
+   * @param string issueID
    * @return bool true if issue exists on BTS
    **/
   function checkBugIDExistence($issueID)
   {
-    if(($status_ok = $this->checkBugIDSyntax($issueID)))
+    if($status_ok = $this->checkBugIDSyntax($issueID))
     {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
@@ -253,12 +248,10 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 
 
   /**
-   * 
    *
    **/
 	function createAPIClient()
 	{
-		// echo __METHOD__ .'<br>';
 		try
 		{
 			$this->APIClient = new Zend_XmlRpc_Client((string)$this->cfg->urixmlrpc);
@@ -271,7 +264,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 			$this->connected = false;
             tLog(__METHOD__ .  $e->getMessage(), 'ERROR');
 		}
-	}	
+	}
 
 
 
@@ -287,7 +280,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
                 "<password>PASSWORD</password>\n" .
                 "<uribase>http://bugzilla.mozilla.org/</uribase>\n" .
                 "<!-- In order to create issues from TestLink, you need to provide this MANDATORY info -->\n".
-                "<product>BUGZILLA PRODUCT</product>\n" .					
+                "<product>BUGZILLA PRODUCT</product>\n" .
                 "<component>BUGZILLA PRODUCT</component>\n" .
                 "<!-- This can be adjusted according Bugzilla installation. -->\n".
                 "<!-- COMMENTED SECTION \n" .
@@ -308,12 +301,12 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     $issue = null;
 
     $resp = array();
-    $login = $this->login();    
+    $login = $this->login();
     $resp = array_merge($resp,(array)$login['response']);
 
     $method = 'Product.get_accessible_products';
     $args = array(array());
-    if (isset($login['userToken'])) 
+    if (isset($login['userToken']))
     {
       $args[0]['Bugzilla_token'] = $login['userToken'];
     }
@@ -332,12 +325,12 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   {
     $issue = null;
     $resp = array();
-    $login = $this->login();    
+    $login = $this->login();
     $resp = array_merge($resp,(array)$login['response']);
     
     $method = 'Product.get';
     $args = array(array('ids' => array(intval($id))));
-    if (isset($login['userToken'])) 
+    if (isset($login['userToken']))
     {
       $args[0]['Bugzilla_token'] = $login['userToken'];
     }
@@ -346,7 +339,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     $op = $this->logout($login['userToken']);
     $resp = array_merge($resp,(array)$op['response']);
 
-    return $itemSet; 	  
+    return $itemSet;
   }
 
     // good info from:
@@ -356,40 +349,40 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     //
     // Returns
     // A hash with one element, id. This is the id of the newly-filed bug.
-    // 
+    //
     // Errors
-    // 
+    //
     // 51 (Invalid Object)
     //     The component you specified is not valid for this Product.
-    // 
+    //
     // 103 (Invalid Alias)
     //     The alias you specified is invalid for some reason. See the error message for more details.
     //
     // 104 (Invalid Field)
-    //     One of the drop-down fields has an invalid value, or a value entered in a text field is too long. 
+    //     One of the drop-down fields has an invalid value, or a value entered in a text field is too long.
     //     The error message will have more detail.
     //
     // 105 (Invalid Component)
     //     You didn't specify a component.
     //
     // 106 (Invalid Product)
-    //     Either you didn't specify a product, this product doesn't exist, or you don't have permission 
+    //     Either you didn't specify a product, this product doesn't exist, or you don't have permission
     //     to enter bugs in this product.
     //
     // 107 (Invalid Summary)
     //     You didn't specify a summary for the bug.
     //
     // 504 (Invalid User)
-    //     Either the QA Contact, Assignee, or CC lists have some invalid user in them. 
+    //     Either the QA Contact, Assignee, or CC lists have some invalid user in them.
     //     The error message will have more details.
-    // 
+    //
     
     
   function addIssue($summary,$description)
   {
     $issue = null;
     $resp = array();
-    $login = $this->login();    
+    $login = $this->login();
     $resp = array_merge($resp,(array)$login['response']);
     
     $method = 'Bug.create';
@@ -405,21 +398,21 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     }
     
     $args = array($issue);
-    if (isset($login['userToken'])) 
+    if (isset($login['userToken']))
     {
       $args[0]['Bugzilla_token'] = $login['userToken'];
     }
 
     
     $op = $this->APIClient->call($method,$args);
-    if( ($op['status_ok'] = ($op['id'] > 0)) )
+    if( $op['status_ok'] = ($op['id'] > 0) )
     {
       $op['msg'] = sprintf(lang_get('bugzilla_bug_created'),$summary,$issue['product']);
     }
     else
     {
       $msg = "Create BUGZILLA Ticket FAILURE ";
-      $op= array('status_ok' => false, 'id' => -1, 
+      $op= array('status_ok' => false, 'id' => -1,
                  'msg' => $msg . ' - serialized issue:' . serialize($issue));
       tLog($msg, 'WARNING');
     }
@@ -435,7 +428,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'product') && property_exists($this->cfg, 'component'));
+    return property_exists($this->cfg, 'product') && property_exists($this->cfg, 'component');
   }
 
 
@@ -445,13 +438,13 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   **/
   private function login()
   {
-    $args = array(array('login' => (string)$this->cfg->username, 
+    $args = array(array('login' => (string)$this->cfg->username,
                         'password' => (string)$this->cfg->password,'remember' => 1));
     $ret = array();
     $ret['response']['User.login'] = $this->APIClient->call('User.login', $args);
     $ret['userToken'] = $ret['response']['User.login']['token'];
     return $ret;
-  }  
+  }
 
 
  /**
@@ -460,7 +453,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   private function logout($userToken=null)
   {
     $args = array(array());
-    if( !is_null($userToken) ) 
+    if( !is_null($userToken) )
     {
       $args[0]['Bugzilla_token'] = $userToken;
     }

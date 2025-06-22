@@ -8,11 +8,11 @@
  * Allows users to export requirements.
  *
 **/
-require_once("../../config.inc.php");
-require_once("csv.inc.php");
-require_once("xml.inc.php");
-require_once("common.php");
-require_once("requirements.inc.php");
+require_once '../../config.inc.php';
+require_once 'csv.inc.php';
+require_once 'xml.inc.php';
+require_once 'common.php';
+require_once 'requirements.inc.php';
 
 testlinkInitPage($db,false,false);
 $tplCfg = templateConfiguration();

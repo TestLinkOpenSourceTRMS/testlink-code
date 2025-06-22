@@ -12,10 +12,10 @@
  * @since 1.9.4
  * 
  **/
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once('exec.inc.php');
-require_once('users.inc.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'exec.inc.php';
+require_once 'users.inc.php';
 testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -51,14 +51,12 @@ function get_status_for_reports_html_options()
 }
 
 
-/*
-  function: initializeGui
-
-  args :
-
-  returns: 
-
-*/
+/**
+ * 
+ * @param database $dbHandler
+ * @param unknown $args
+ * @return stdClass
+ */
 function initializeGui(&$dbHandler,$args)
 {
 
@@ -133,14 +131,17 @@ function initializeGui(&$dbHandler,$args)
 }
 
 
-
+/**
+ * 
+ * @return stdClass
+ */
 function init_args()
 {
 	$iParams = array("format" => array(tlInputParameter::INT_N),
 					 "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
+	R_PARAMS($iParams,$args);
 
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
@@ -148,6 +149,13 @@ function init_args()
     return $args;
 }
 
+
+/**
+ * 
+ * @param database $db
+ * @param tlUser $user
+ * @return string
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_metrics');

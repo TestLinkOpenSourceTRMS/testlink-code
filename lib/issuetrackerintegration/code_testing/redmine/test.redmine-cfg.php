@@ -9,8 +9,8 @@
 // $username = 'tl';
 // $password = 'redmine2012';
 
-require_once('../../../../config.inc.php');
-require_once('common.php');
+require_once '../../../../config.inc.php';
+require_once 'common.php';
 
 $it_mgr = new tlIssueTracker($db);
 $itt = $it_mgr->getTypes();

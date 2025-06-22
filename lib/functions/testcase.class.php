@@ -12,11 +12,11 @@
  */
 
 /** related functionality */
-require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
-require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
-require_once( dirname(__FILE__) . '/attachments.inc.php' );
-require_once( dirname(__FILE__) . '/users.inc.php' );
-require_once( dirname(__FILE__) . '/event_api.php');
+require_once dirname(__FILE__) . '/requirement_mgr.class.php';
+require_once dirname(__FILE__) . '/assignment_mgr.class.php';
+require_once dirname(__FILE__) . '/attachments.inc.php';
+require_once dirname(__FILE__) . '/users.inc.php';
+require_once dirname(__FILE__) . '/event_api.php';
 
 /** list of supported format for Test case import/export */
 $g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import'));
@@ -2615,7 +2615,7 @@ class testcase extends tlObjectWithAttachments {
     }
 
 
-    return($recordset ? $recordset : null);
+    return $recordset ? $recordset : null;
   }
 
 
@@ -2890,7 +2890,7 @@ class testcase extends tlObjectWithAttachments {
       }
     }
 
-    return ($recordset ? $recordset : null);
+    return $recordset ? $recordset : null;
   }
 
 
@@ -3426,7 +3426,7 @@ class testcase extends tlObjectWithAttachments {
       // $map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id');
       $map_keywords = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','keyword_id');
 
-      return($map_keywords);
+      return $map_keywords;
   } //end function
 
 
@@ -3935,7 +3935,7 @@ class testcase extends tlObjectWithAttachments {
 
 
     $recordset = $this->db->fetchArrayRowsIntoMap($sql,'id');
-    return($recordset ? $recordset : null);
+    return $recordset ? $recordset : null;
   }
 
 
@@ -4210,7 +4210,7 @@ class testcase extends tlObjectWithAttachments {
       }
     }
 
-    return($recordset ? $recordset : null);
+    return $recordset ? $recordset : null;
   }
 
 
@@ -6435,7 +6435,7 @@ class testcase extends tlObjectWithAttachments {
        " ORDER BY execution_id {$my['options']['exec_id_order']} ";
 
     $recordset = $this->db->fetchArrayRowsIntoMap($sql,'id');
-    return($recordset ? $recordset : null);
+    return $recordset ? $recordset : null;
   }
 
 
@@ -6501,7 +6501,7 @@ class testcase extends tlObjectWithAttachments {
            $where_clause;
 
     $recordset = $this->db->fetchRowsIntoMap($sql,'platform_id');
-    return($recordset ? $recordset : null);
+    return $recordset ? $recordset : null;
   }
 
 
@@ -7088,7 +7088,7 @@ class testcase extends tlObjectWithAttachments {
            " LEFT OUTER JOIN {$this->tables['platforms']} PLATF ON PLATF.id = E.platform_id  " .
            " WHERE E.id = " . intval($execID) . " AND E.tcversion_id = " . intval($tcversionID);
     $rs = $this->db->get_recordset($sql);
-    return ($rs ? $rs : null);
+    return $rs ? $rs : null;
   }
 
 
@@ -7945,7 +7945,7 @@ class testcase extends tlObjectWithAttachments {
            " AND relation_type=" . intval($rel_type_id);
 
     $rs = $this->db->get_recordset($sql);
-    return($rs[0]['qty'] > 0);
+    return $rs[0]['qty'] > 0;
   }
 
   /**
@@ -7963,7 +7963,7 @@ class testcase extends tlObjectWithAttachments {
            " FROM {$this->tables['testcase_relations']} " .
            " WHERE source_id=$safeID OR destination_id=$safeID ";
     $rs = $this->db->get_recordset($sql);
-    return($rs[0]['qty']);
+    return $rs[0]['qty'];
   }
 
   /**
@@ -8531,7 +8531,7 @@ class testcase extends tlObjectWithAttachments {
     {
       $script_list = null;
     }
-    return($script_list);
+    return $script_list;
   }
 
 
@@ -9278,7 +9278,7 @@ class testcase extends tlObjectWithAttachments {
 
     $rs = current($this->db->get_recordset($sql));
             
-    return ($rs['executed'] != 0);
+    return $rs['executed'] != 0;
   }
 
 
@@ -9527,7 +9527,7 @@ class testcase extends tlObjectWithAttachments {
 
     $rs = (array)$this->db->get_recordset($sql);
 
-    return (count($rs) > 0);
+    return count($rs) > 0;
   }
 
 
@@ -9784,7 +9784,7 @@ class testcase extends tlObjectWithAttachments {
    */
   function getPlatformsAsXMLString($id,$version_id)
   {
-    require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
+    require_once '../../third_party/adodb_xml/class.ADODB_XML.php';
 
 
     $sql = "SELECT TCPL.platform_id,PL.name,PL.notes,

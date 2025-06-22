@@ -12,7 +12,7 @@
  * @link        http://www.testlink.org
  *
  */
-require_once("common.php");
+require_once 'common.php';
 
 
 /**

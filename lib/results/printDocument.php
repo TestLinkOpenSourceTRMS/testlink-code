@@ -14,11 +14,11 @@
  *
  *
  */
-require_once('../../config.inc.php');
-require('../../cfg/reports.cfg.php');
-require_once('common.php');
-require_once('print.inc.php');
-require_once('displayMgr.php');
+require_once '../../config.inc.php';
+require '../../cfg/reports.cfg.php';
+require_once 'common.php';
+require_once 'print.inc.php';
+require_once 'displayMgr.php';
 
 $treeForPlatform = null;
 $docText = '';					
@@ -157,7 +157,7 @@ $topText .= renderFirstPage($doc_info);
 renderTOC($printingOptions);  // @TODO check if is really useful
 
 $tocPrefix = null;
-if( ($showPlatforms = !isset($treeForPlatform[0]) ? true : false) ) {
+if( $showPlatforms = !isset($treeForPlatform[0]) ? true : false ) {
   $tocPrefix = 0;
 }
 
@@ -725,9 +725,13 @@ function timeStatistics($items,$context,$decode,$tplanMgr) {
 }
 
 
-
-/*
+/**
  * rights check function for testlinkInitPage()
+ *
+ * @param database $db
+ * @param tlUser $user
+ * @param stdClass $context
+ * @return unknown
  */
 function checkRights(&$db,&$user,$context = null)
 {

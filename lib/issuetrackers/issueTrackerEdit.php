@@ -1,14 +1,14 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  issueTrackerEdit.php
  * @author  francisco.mancardi@gmail.com
- * 
+ *
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
@@ -20,25 +20,25 @@ if(method_exists($commandMgr,$pFn)) {
   $op = $commandMgr->$pFn($args,$_REQUEST);
 }
 
-renderGui($db,$args,$gui,$op,$templateCfg);
+renderGui($args,$gui,$op,$templateCfg);
 
 
 /**
  */
-function renderGui(&$dbHandler,&$argsObj,$guiObj,$opObj,$templateCfg) {
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg) {
   $smartyObj = new TLSmarty();
   $renderType = 'none';
   
   // key: gui action
   // value: next gui action (used to set value of action button on gui)
   $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                           'doDelete' => '', 'doCreate' => 'doCreate', 
+                           'doDelete' => '', 'doCreate' => 'doCreate',
                            'doUpdate' => 'doUpdate',
                            'checkConnection' => 'doCreate');
 
   if($argsObj->id > 0) {
-    $actionOperation['checkConnection'] = 'doUpdate'; 
-  }  
+    $actionOperation['checkConnection'] = 'doUpdate';
+  }
 
   // Get rendering type and set variable for template
   switch($argsObj->doAction) {
@@ -59,7 +59,7 @@ function renderGui(&$dbHandler,&$argsObj,$guiObj,$opObj,$templateCfg) {
         $pos = strpos($tpl, '.php');
         if($pos === false) {
           $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
-            $tpl = $tplDir . $tpl;      
+            $tpl = $tplDir . $tpl;
           $renderType = 'template';
         }
     break;
@@ -70,7 +70,7 @@ function renderGui(&$dbHandler,&$argsObj,$guiObj,$opObj,$templateCfg) {
       case 'template':
         $smartyObj->assign('gui',$guiObj);
         $smartyObj->display($tpl);
-      break;  
+      break;
 
       case 'redirect':
         header("Location: {$tpl}");
@@ -83,7 +83,10 @@ function renderGui(&$dbHandler,&$argsObj,$guiObj,$opObj,$templateCfg) {
 }
 
 /**
- * 
+ * Initializes the script
+ *
+ * @param database $dbHandler
+ * @return issueTrackerCommands[]|stdClass[]|issueTrackerCommands[]
  */
 function initScript(&$dbHandler) {
   $mgr = new issueTrackerCommands($dbHandler);
@@ -93,7 +96,10 @@ function initScript(&$dbHandler) {
 }
 
 /**
- * @return object returns the arguments for the page
+ * Get input from user and return it in some sort of namespace
+ *
+ * @param array $whiteList
+ * @return stdClass object returns the arguments for the page
  */
 function init_args($whiteList) {
   $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -109,15 +115,13 @@ function init_args($whiteList) {
 
   // sanitize via whitelist
   foreach($whiteList as $inputKey => $allowedValues) {
-    if( property_exists($args,$inputKey) ) {
-      if( !isset($allowedValues[$args->$inputKey]) ) {
+    if( property_exists($args,$inputKey) && !isset($allowedValues[$args->$inputKey]) ) {
         $msg = "Input parameter $inputKey - white list validation failure - " .
                "Value:" . $args->$inputKey . " - " .
-               "File: " . basename(__FILE__) . " - Function: " . __FUNCTION__ ; 
+               "File: " . basename(__FILE__) . " - Function: " . __FUNCTION__ ;
         tLog($msg,'ERROR');
         throw new Exception($msg);
       }
-    }
   }
 
   $args->currentUser = $_SESSION['currentUser'];
@@ -127,8 +131,12 @@ function init_args($whiteList) {
 
 
 /**
- * 
+ * Initializes the GUI
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param issueTrackerCommands $commandMgr
+ * @return stdClass
  */
 function initializeGui(&$dbHandler,&$argsObj,&$commandMgr) {
   $gui = new stdClass();
@@ -156,9 +164,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$commandMgr) {
 
 
 /**
- * @param $db resource the database connection handle
- * @param $user the current active user
- * 
+ * Checks the user rights for accessing the page
+ *
+ * @param database $db resource the database connection handle
+ * @param tlUser $user the current active user
  * @return boolean returns true if the page can be accessed
  */
 function checkRights(&$db,&$user) {

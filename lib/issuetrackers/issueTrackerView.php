@@ -7,11 +7,11 @@
  *
  * @author   francisco.mancardi@gmail.com
  * @internal revisions
- * 
+ *
  *
 **/
-require_once(dirname(__FILE__) . "/../../config.inc.php");
-require_once("common.php");
+require_once dirname(__FILE__) . '/../../config.inc.php';
+require_once 'common.php';
 
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
@@ -25,7 +25,7 @@ $gui->canManage = $args->currentUser->hasRight($db,"issuetracker_management");
 $gui->user_feedback = $args->user_feedback;
 
 if($args->id > 0) {
-  $gui->items[$args->id]['connection_status'] = $issueTrackerMgr->checkConnection($args->id) ? 'ok' : 'ko'; 
+  $gui->items[$args->id]['connection_status'] = $issueTrackerMgr->checkConnection($args->id) ? 'ok' : 'ko';
 }
 
 $smarty = new TLSmarty();
@@ -35,14 +35,14 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * @return object returns the arguments for the page
+ * Get input from user and return it in some sort of namespace
+ *
+ * @return stdClass $args object returns the arguments for the page
  */
 function init_args() {
   $args = new stdClass();
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-  
-  $args->currentUser = $_SESSION['currentUser']; 
-  
+  $args->currentUser = $_SESSION['currentUser'];
   $args->user_feedback = array('type' => '', 'message' => '');
   
   // only way I've found in order to give feedback for delete
@@ -59,7 +59,11 @@ function init_args() {
 }
 
 /**
+ * Checks the user rights for accessing the page
  *
+ * @param database $db resource the database connection handle
+ * @param tlUser $user the current active user
+ * @return boolean returns true if the page can be accessed
  */
 function checkRights(&$db,&$user) {
   return $user->hasRight($db,"issuetracker_view") || $user->hasRight($db,"issuetracker_management");

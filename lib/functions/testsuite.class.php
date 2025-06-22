@@ -12,9 +12,9 @@
  */
 
 /** include support for attachments */
-require_once( dirname(__FILE__) . '/attachments.inc.php');
-require_once( dirname(__FILE__) . '/files.inc.php');
-require_once( dirname(__FILE__) . '/event_api.php');
+require_once dirname(__FILE__) . '/attachments.inc.php';
+require_once dirname(__FILE__) . '/files.inc.php';
+require_once dirname(__FILE__) . '/event_api.php';
 
 /**
  * Test Suite CRUD functionality
@@ -444,7 +444,7 @@ class testsuite extends tlObjectWithAttachments
            " WHERE testsuites.id = nodes_hierarchy.id";
            
     $recordset = $this->db->get_recordset($sql);
-    return($recordset);
+    return $recordset;
   }
   
   
@@ -1102,7 +1102,7 @@ class testsuite extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $status = 1;
     $kw = $this->getKeywords($id,$kw_id);
-    if( ($doLink = !sizeof($kw)) )
+    if( $doLink = !sizeof($kw) )
     {
       $sql = "/* $debugMsg */ INSERT INTO {$this->tables['object_keywords']} " .
              " (fk_id,fk_table,keyword_id) VALUES ($id,'nodes_hierarchy',$kw_id)";
@@ -1126,7 +1126,7 @@ class testsuite extends tlObjectWithAttachments
     for($idx = 0; $idx < $num_kws; $idx++) {
       $status = $status && $this->addKeyword($id,$kw_ids[$idx]);
     }
-    return($status);
+    return $status;
   }
   
   
@@ -1357,7 +1357,7 @@ class testsuite extends tlObjectWithAttachments
   
     $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,
                                     $filters,'testsuite',$id);
-    return($cf_map);
+    return $cf_map;
   }
   
   
@@ -1386,7 +1386,7 @@ class testsuite extends tlObjectWithAttachments
     {
       $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
         }
-      return($cf_smarty);
+      return $cf_smarty;
   }
   
   
@@ -1460,7 +1460,7 @@ class testsuite extends tlObjectWithAttachments
     {
        $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
     }
-      return($cf_smarty);
+      return $cf_smarty;
   } // function end
 
 
@@ -2082,7 +2082,7 @@ class testsuite extends tlObjectWithAttachments
              AND KW.keyword = {$safeKW}";
     $rs = (array)$this->db->get_recordset($sql);
 
-    return (count($rs) == 1);
+    return count($rs) == 1;
   } 
 
 

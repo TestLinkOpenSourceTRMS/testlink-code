@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource	jirasoapInterface.class.php
  * @author Francisco Mancardi
@@ -8,8 +8,8 @@
  *
  *
  * @internal IMPORTANT NOTICE
- *           we use issueID on methods signature, to make clear that this ID 
- *			     is HOW issue in identified on Issue Tracker System, 
+ *           we use issueID on methods signature, to make clear that this ID
+ *			     is HOW issue in identified on Issue Tracker System,
  *			     not how is identified internally at DB	level on TestLink
  *
  * @internal revisions
@@ -18,24 +18,22 @@
 **/
 class jirasoapInterface extends issueTrackerInterface
 {
-
-  protected $APIClient;
+    protected $APIClient;
 	protected $authToken;
-  protected $statusDomain = array();
+	protected $statusDomain = array();
 	protected $l18n;
 	protected $labels = array('duedate' => 'its_duedate_with_separator');
 	
 	private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
-  private $issueDefaults;
-  private $issueAttr = null;
-
-	var $defaultResolvedStatus;
-	var $support;
+	private $issueDefaults;
+	private $issueAttr = null;
+	private $defaultResolvedStatus;
+	private $support;
 
 	/**
 	 * Construct and connect to BTS.
 	 *
-	 * @param str $type (see tlIssueTracker.class.php $systems property)
+	 * @param string $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
 	function __construct($type,$config,$name)
@@ -55,8 +53,8 @@ class jirasoapInterface extends issueTrackerInterface
         {
           $this->soapOpt['proxy_' . $fi] = $proxyCfg->$fi;
         }
-      }  
-    } 
+      }
+    }
 
 	  $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
     if( $this->setCfg($config) )
@@ -67,9 +65,9 @@ class jirasoapInterface extends issueTrackerInterface
 
       // Attention has to be done AFTER CONNECT OK, because we need info setted there
       if( $this->isConnected())
-      {  
-        $this->setResolvedStatusCfg();  
-      }  
+      {
+        $this->setResolvedStatusCfg();
+      }
     }
 	}
 
@@ -77,7 +75,7 @@ class jirasoapInterface extends issueTrackerInterface
 	 *
 	 * check for configuration attributes than can be provided on
 	 * user configuration, but that can be considered standard.
-	 * If they are MISSING we will use 'these carved on the stone values' 
+	 * If they are MISSING we will use 'these carved on the stone values'
 	 * in order	to simplify configuration.
 	 *
 	 *
@@ -103,14 +101,13 @@ class jirasoapInterface extends issueTrackerInterface
 	  {
       //DEBUG-echo __FUNCTION__ . "::Debug::Step#$step Going To Add uricreate <br>";$step++;
 	    $this->cfg->uricreate = $base . 'secure/CreateIssue!default.jspa';
-		}	    
+		}
 
 
     if( property_exists($this->cfg,'attributes') )
     {
-      // echo __FUNCTION__ . "::Debug::Step#$step Going To Add attributes <br>";$step++;
       $this->processAttributes();
-    }     
+    }
 
     $this->issueDefaults = array('issuetype' => 1);
     foreach($this->issueDefaults as $prop => $default)
@@ -118,8 +115,7 @@ class jirasoapInterface extends issueTrackerInterface
       if(!isset($this->issueAttr[$prop]))
       {
         $this->issueAttr[$prop] = $default;
-      }  
-      // $this->cfg->$prop = (string)(property_exists($this->cfg,$prop) ? $this->cfg->$prop : $default);
+      }
     }
 
     if( !property_exists($this->cfg,'userinteraction') ) {
@@ -134,7 +130,7 @@ class jirasoapInterface extends issueTrackerInterface
 
 	
   /**
-   * @internal precondition: TestLink has to be connected to Jira 
+   * @internal precondition: TestLink has to be connected to Jira
    *
 	 * @param string issueID
    *
@@ -155,10 +151,10 @@ class jirasoapInterface extends issueTrackerInterface
 	      $issue->statusVerbose = array_search($issue->statusCode, $this->statusDomain);
 			  $issue->statusHTMLString = $this->support->buildStatusHTMLString($issue->statusVerbose);
 	    	$issue->summaryHTMLString = $this->support->buildSummaryHTMLString($issue);
-	    	$issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+	    	$issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]);
 
 	    }
-    } 
+    }
     catch (Exception $e)
     {
    	  tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
@@ -193,11 +189,10 @@ class jirasoapInterface extends issueTrackerInterface
   {
     $this->interfaceViaDB = false;
     $op = $this->getClient(array('log' => true));
-    // echo '<br>OP<br>';var_dump($op);
 
-    if( ($this->connected = $op['connected']) )
-    { 
-    	// OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
+    if( $this->connected = $op['connected'] )
+    {
+    	// OK, we have got WSDL => server is up and we can do SOAP calls, but now we need
     	// to do a simple call with user/password only to understand if we are really connected
     	try
     	{
@@ -215,8 +210,7 @@ class jirasoapInterface extends issueTrackerInterface
     	catch (SoapFault $f)
     	{
     		$this->connected = false;
-        $msg = __CLASS__ . " - SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})";
-        // echo $msg;
+    		$msg = __CLASS__ . " - SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})";
     		tLog($msg,"ERROR");
     	}
     }
@@ -224,7 +218,6 @@ class jirasoapInterface extends issueTrackerInterface
   }
   
   /**
-   * 
    *
    **/
 	function isConnected()
@@ -234,7 +227,6 @@ class jirasoapInterface extends issueTrackerInterface
 
 
   /**
-   * 
    *
    **/
 	function getClient($opt=null)
@@ -247,7 +239,7 @@ class jirasoapInterface extends issueTrackerInterface
 		try
 		{
 			// IMPORTANT NOTICE
-			// $this->cfg is a simpleXML object, then is ABSOLUTELY CRITICAL 
+			// $this->cfg is a simpleXML object, then is ABSOLUTELY CRITICAL
 			// DO CAST any member before using it.
 			// If we do following call WITHOUT (string) CAST, SoapClient() fails
 			// complaining '... wsdl has to be an STRING or null ...'
@@ -264,10 +256,10 @@ class jirasoapInterface extends issueTrackerInterface
 			if($my['opt']['log'])
 			{
 				tLog("SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
-			}	
+			}
 		}
 		return $res;
-	}	
+	}
 
   /**
    *
@@ -288,16 +280,16 @@ class jirasoapInterface extends issueTrackerInterface
                 "<issuetype>JIRA ISSUE TYPE</issuetype>\n" .
                 "<!-- Configure This if you need to provide other attributes -->\n" .
                 "<!-- \n" .
-                "<attributes>\n" . 
+                "<attributes>\n" .
                 "  <components><id>10100</id><id>10101</id></components>\n" .
                 "  <affectsVersions> \n" .
                 "     <version><id>10000</id><archived></archived><released></released></version> -->\n" .
-                "  </affectsVersions> --> \n" .  
-                "  <customFieldValues>\n" . 
+                "  </affectsVersions> --> \n" .
+                "  <customFieldValues>\n" .
                 "    <customField>\n" .
                 "      <customfieldId>customfield_10800</customfieldId>\n" .
                 "      <values><value>111</value></values>\n" .
-                "    </customField>\n" .  
+                "    </customField>\n" .
                 "    <customField>\n" .
                 "      <customfieldId>customfield_10900</customfieldId>\n" .
                 "      <values><value>Yamaha Factory Racing</value><value>Ducati</value></values>\n" .
@@ -350,12 +342,12 @@ class jirasoapInterface extends issueTrackerInterface
       if(!is_null($this->issueAttr))
       {
         $issue = array_merge($issue,$this->issueAttr);
-      }  
+      }
 
       //DEBUG-echo 'This Will Be Sent to JIRA<br>';echo '<pre>';var_dump($issue);echo '</pre>';
       
       $op = $this->APIClient->createIssue($this->authToken, $issue);
-      $ret = array('status_ok' => true, 'id' => $op->key, 
+      $ret = array('status_ok' => true, 'id' => $op->key,
                    'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['project']));
     }
     catch (Exception $e)
@@ -365,7 +357,7 @@ class jirasoapInterface extends issueTrackerInterface
       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
     }
     return $ret;
-	}  
+	}
 
 
   /**
@@ -387,7 +379,7 @@ class jirasoapInterface extends issueTrackerInterface
     $this->resolvedStatus = new stdClass();
     $this->resolvedStatus->byCode = array();
     if(!is_null($statusCfg['status']))
-    {  
+    {
       foreach($statusCfg['status'] as $cfx)
       {
         $e = (array)$cfx;
@@ -406,7 +398,7 @@ class jirasoapInterface extends issueTrackerInterface
     {
 
       $op = $this->APIClient->createIssue($this->authToken, $issue);
-      $ret = array('status_ok' => true, 'id' => $op->key, 
+      $ret = array('status_ok' => true, 'id' => $op->key,
                    'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['project']));
     }
     catch (Exception $e)
@@ -416,15 +408,14 @@ class jirasoapInterface extends issueTrackerInterface
       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
     }
     return $ret;
-  }  
+  }
 
  /**
   *
   **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'projectkey') && 
-            property_exists($this->cfg, 'issuetype'));
+    return property_exists($this->cfg, 'projectkey') && property_exists($this->cfg, 'issuetype');
   }
 
 
@@ -435,7 +426,7 @@ class jirasoapInterface extends issueTrackerInterface
   function processAttributes()
   {
     $attr = get_object_vars($this->cfg->attributes);
-    foreach ($attr as $name => $elem) 
+    foreach ($attr as $name => $elem)
     {
       $name = (string)$name;
       switch($name)
@@ -450,7 +441,7 @@ class jirasoapInterface extends issueTrackerInterface
 
         default:
           $this->getRelaxedAttribute($name,$elem);
-        break;  
+        break;
       }
     }
   }
@@ -465,16 +456,16 @@ class jirasoapInterface extends issueTrackerInterface
     {
       $ovars = get_object_vars($elem);
       $cc = (array)current($ovars);
-      $kk = key($ovars); 
+      $kk = key($ovars);
       foreach($cc as $value)
       {
-        $this->issueAttr[$name][] = array($kk => (string)$value); 
+        $this->issueAttr[$name][] = array($kk => (string)$value);
       }
-    } 
+    }
     else
     {
-      $this->issueAttr[$name] = (string)$elem;     
-    } 
+      $this->issueAttr[$name] = (string)$elem;
+    }
   }
 
  /**
@@ -487,7 +478,7 @@ class jirasoapInterface extends issueTrackerInterface
     // According to JIRA Documentation and some hands on examples
     // customfieldId, key, values => has to be sent as an array
     //
-    $elem = get_object_vars($objCFSet);  
+    $elem = get_object_vars($objCFSet);
     $elem = $elem['customField'];
 
     // Because how XML works, when we have ONLY one CF we do not get an array,
@@ -495,19 +486,19 @@ class jirasoapInterface extends issueTrackerInterface
     // This forces us to do this kind of processing => cast always to an array,
     // but paying special attention to complex elements.
     // Remember we get data from simpleXML processing
-    // 
+    //
     if(is_object($elem))
     {
       $elem = array($elem);
-    } 
+    }
 
-    foreach ($elem as $item) 
+    foreach ($elem as $item)
     {
       // dev notes
       // key attribute is not managed yet
       // may be trim on each $item->values->value will  be good
       $this->issueAttr[$name][] = array('customfieldId' => trim((string)$item->customfieldId),
-                                        'values' => (array)$item->values->value); 
+                                        'values' => (array)$item->values->value);
     }
   }
 
@@ -525,13 +516,13 @@ class jirasoapInterface extends issueTrackerInterface
   *     <archived></archived>
   *     <released></released>
   *   </version>
-  * </affectsVersions>  
+  * </affectsVersions>
   *
   *
   **/
   function getAffectsVersionsAttribute($name,$objItemSet)
   {
-    $elem = get_object_vars($objItemSet);  
+    $elem = get_object_vars($objItemSet);
     $elem = $elem['version'];
 
     // Because how XML works, when we have ONLY one CF we do not get an array,
@@ -539,17 +530,17 @@ class jirasoapInterface extends issueTrackerInterface
     // This forces us to do this kind of processing => cast always to an array,
     // but paying special attention to complex elements.
     // Remember we get data from simpleXML processing
-    // 
+    //
     if(is_object($elem))
     {
       $elem = array($elem);
-    } 
+    }
 
-    foreach ($elem as $item) 
+    foreach ($elem as $item)
     {
       $this->issueAttr[$name][] = array('id' => trim((string)$item->id),
                                         'archived' => trim((string)$item->archived),
-                                        'released' => trim((string)$item->released)); 
+                                        'released' => trim((string)$item->released));
     }
   }
 }

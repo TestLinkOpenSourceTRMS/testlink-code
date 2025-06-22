@@ -1,6 +1,6 @@
 <?php
-/** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+/**
+* TestLink Open Source Project - http://testlink.sourceforge.net/
 *
 * @author	Andreas Simon
 *
@@ -11,11 +11,11 @@
 *
 */
 
-require('../../config.inc.php');
-require_once('common.php');
-require_once('results.class.php');
-require_once('displayMgr.php');
-require_once('exttable.class.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'results.class.php';
+require_once 'displayMgr.php';
+require_once 'exttable.class.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -46,8 +46,6 @@ $getOpt = array('outputFormat' => 'map');
 $gui->platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
 $platforms_active = !is_null($gui->platforms);
 
-// $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
-
 $gui->buildInfoSet = $tplan_mgr->get_builds($args->tplan_id, 1); // only active builds
 if ($gui->buildInfoSet)
 {
@@ -74,22 +72,22 @@ $gui->tableSet = array();
 
 $cols = array_flip(array('tsuite', 'link', 'priority'));
 
-if ($lastResultMap != null && $platforms_active) 
+if ($lastResultMap != null && $platforms_active)
 {
 	$versionTag = lang_get('tcversion_indicator');
-	foreach ($lastResultMap as $suiteId => $tsuite)  
+	foreach ($lastResultMap as $suiteId => $tsuite)
 	{
-		foreach ($tsuite as $testCaseId => $platform) 
+		foreach ($tsuite as $testCaseId => $platform)
 		{
 
 			$any_result_found = false;
 			$rowArray = null;
 			$gui->number_of_testcases ++;
 
-			foreach($platform as $platformId => $tcase) 
+			foreach($platform as $platformId => $tcase)
 			{
 
-				if (!$any_result_found) 
+				if (!$any_result_found)
 				{
 					$suiteName = $tcase['suiteName'];
 					$name = $tcase['name'];
@@ -141,29 +139,29 @@ if ($lastResultMap != null && $platforms_active)
 						}
 					}
 				}
-        	} // end of inner foreach()
+        	}
 
 			if (!$any_result_found) {
 				$gui->matrix[] = $rowArray;
 				$gui->number_of_not_run_testcases++;
 			}
-        }	
+        }
     }
 }
 
 // create and show the table only if we have data to display
-if ($gui->number_of_not_run_testcases) 
+if ($gui->number_of_not_run_testcases)
 {
 	$gui->tableSet[] = buildMatrix($gui->matrix, $args->format);
 }
 
-if ($platforms_active) 
+if ($platforms_active)
 {
 	$gui->status_message = sprintf(lang_get('not_run_any_platform_status_msg'),
                                                     $gui->number_of_testcases,
                                                     $gui->number_of_not_run_testcases);
-} 
-else 
+}
+else
 {
 	$gui->warning_msg = lang_get('not_run_any_platform_no_platforms');
 }
@@ -174,8 +172,8 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 
 
 /**
- * 
  *
+ * @return stdClass
  */
 function init_args()
 {
@@ -191,8 +189,10 @@ function init_args()
 }
 
 /**
- * 
  *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
  */
 function checkRights(&$db,&$user)
 {
@@ -202,11 +202,9 @@ function checkRights(&$db,&$user)
 /**
  * Builds ext-js rich table or static HTML table to display matrix results
  *
- * @param $dataSet
- * @param $format
+ * @param unknown $dataSet
+ * @param unknown $format
  * @return tlExtTable|tlHTMLTable
- *
- *
  */
 function buildMatrix($dataSet, $format)
 {
@@ -218,7 +216,7 @@ function buildMatrix($dataSet, $format)
 		$columns[] = array('title_key' => 'priority', 'type' => 'priority', 'width' => 40);
 	}
 
-	if ($format == FORMAT_HTML) 
+	if ($format == FORMAT_HTML)
 	{
 		
 		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_tc');
@@ -240,8 +238,8 @@ function buildMatrix($dataSet, $format)
 		$matrix->toolbarExpandCollapseGroupsButton = true;
 		$matrix->toolbarShowAllColumnsButton = true;
 
-	} 
-	else 
+	}
+	else
 	{
 		$matrix = new tlHTMLTable($columns, $dataSet, 'tl_table_results_tc');
 	}
@@ -250,15 +248,16 @@ function buildMatrix($dataSet, $format)
 
 
 /**
- * 
  *
+ * @param stdClass $guiObj
+ * @return stdClass
  */
 function buildMailCfg(&$guiObj)
 {
 	$labels = array('testplan' => lang_get('testplan'), 'testproject' => lang_get('testproject'));
 	$cfg = new stdClass();
-	$cfg->cc = ''; 
-	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . $guiObj->tproject_name . 
+	$cfg->cc = '';
+	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . $guiObj->tproject_name .
 	                ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
 	                 
 	return $cfg;

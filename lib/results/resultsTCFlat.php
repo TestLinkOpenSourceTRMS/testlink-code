@@ -1,20 +1,20 @@
 <?php
-/** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+/**
+* TestLink Open Source Project - http://testlink.sourceforge.net/
 *
 * @filesource   resultsTCFlat.php
 * @author       Francisco Mancardi <francisco.mancardi@gmail.com>
-* 
+*
 * Test Results on simple spreadsheet format
 *
 *
 * @internal revisions
 * @since 1.9.15
 */
-require('../../config.inc.php');
-require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
-require_once('common.php');
-require_once('displayMgr.php');
+require_once '../../config.inc.php';
+require_once '../../third_party/codeplex/PHPExcel.php';   // Must be included BEFORE common.php
+require_once 'common.php';
+require_once 'displayMgr.php';
 
 $timerOn = microtime(true);   // will be used to compute elapsed time
 $templateCfg = templateConfiguration();
@@ -23,11 +23,11 @@ $smarty = new TLSmarty;
 $args = init_args($db);
 
 $metricsMgr = new tlTestPlanMetrics($db);
-$tplan_mgr  = &$metricsMgr; // displayMemUsage('START' . __FILE__);
+$tplan_mgr  = &$metricsMgr;
 
 list($gui,$labels,$cfg) = initializeGui($db,$args,$smarty->getImages(),$tplan_mgr);
 $args->cfg = $cfg;
-$mailCfg = buildMailCfg($gui); 
+$mailCfg = buildMailCfg($gui);
 
 
 // We have faced a performance block due to an environment with
@@ -39,8 +39,7 @@ $mailCfg = buildMailCfg($gui);
 // ACTIVE Build Qty > 20 => Ask user to select builds he/she wants to use
 // Cell Qty = (ACTIVE Build Qty x Test Cases on Test plan) > 2000 => said user I'm sorry
 //
-if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || 
-     $args->do_action == 'result')
+if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_action == 'result')
 {
   setUpBuilds($args,$gui);
 
@@ -56,7 +55,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) ||
 
 
   $metrics = $execStatus['metrics'];
-  $latestExecution = $execStatus['latestExec']; 
+  $latestExecution = $execStatus['latestExec'];
 
   // Every Test suite a row on matrix to display will be created
   // One matrix will be created for every platform that has testcases
@@ -73,19 +72,19 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) ||
   {
     buildSpreadsheetData($db,$args,$gui,$execStatus,$labels);
   }
-  createSpreadsheet($gui,$args);
+  createSpreadsheet($gui);
   $args->format = FORMAT_XLS;
 } else {
   // We need to ask user to do a choice
   $tpl = 'resultsTCFlatLauncher.tpl';
   $gui->pageTitle = $labels['test_result_flat_filters'];
   if($gui->matrixCfg->buildQtyLimit > 0)
-  {  
+  {
     $gui->userFeedback = $labels['too_much_data'] . '<br>' .
                          sprintf($labels['too_much_builds'],$gui->activeBuildsQty,$gui->matrixCfg->buildQtyLimit);
   }
   $args->format = FORMAT_HTML;
-}  
+}
 
 
 $timerOff = microtime(true);
@@ -95,13 +94,14 @@ $smarty->assign('gui',$gui);
 displayReport($templateCfg->template_dir . $tpl, $smarty, $args->format, $mailCfg);
 
 /**
- * 
  *
+ * @param database $dbHandler
+ * @return stdClass
  */
-function init_args(&$dbHandler)
+ function init_args(&$dbHandler)
 {
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
-                   "tproject_id" => array(tlInputParameter::INT_N), 
+                   "tproject_id" => array(tlInputParameter::INT_N),
                    "tplan_id" => array(tlInputParameter::INT_N),
                    "do_action" => array(tlInputParameter::STRING_N,5,10),
                    "build_set" => array(tlInputParameter::ARRAY_INT),
@@ -115,7 +115,6 @@ function init_args(&$dbHandler)
   $args->addOpAccess = true;
   if( !is_null($args->apikey) )
   {
-    //var_dump($args);
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
@@ -133,11 +132,11 @@ function init_args(&$dbHandler)
       $args->addOpAccess = false;
       $cerbero->method = null;
       setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
-    }  
+    }
   }
   else
   {
-    testlinkInitPage($dbHandler,false,false,"checkRights");  
+    testlinkInitPage($dbHandler,false,false,"checkRights");
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
 
@@ -151,13 +150,12 @@ function init_args(&$dbHandler)
   {
     case FORMAT_XLS:
       if($args->buildListForExcel != '')
-      {  
+      {
         $args->build_set = explode(',',$args->buildListForExcel);
-      }  
+      }
     break;
-  }  
+  }
   
-
   $args->user = $_SESSION['currentUser'];
   $args->basehref = $_SESSION['basehref'];
   
@@ -165,8 +163,11 @@ function init_args(&$dbHandler)
 }
 
 /**
- * 
  *
+ * @param database $db
+ * @param tlUser $user
+ * @param stdClass $context
+ * @return string
  */
 function checkRights(&$db,&$user,$context = null)
 {
@@ -174,7 +175,7 @@ function checkRights(&$db,&$user,$context = null)
   {
     $context = new stdClass();
     $context->tproject_id = $context->tplan_id = null;
-    $context->getAccessAttr = false; 
+    $context->getAccessAttr = false;
   }
 
   $check = $user->hasRightOnProj($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
@@ -182,27 +183,31 @@ function checkRights(&$db,&$user,$context = null)
 }
 
 /**
- * 
  *
+ * @param stdClass $guiObj
+ * @return stdClass
  */
 function buildMailCfg(&$guiObj)
 {
   $labels = array('testplan' => lang_get('testplan'), 'testproject' => lang_get('testproject'));
   $cfg = new stdClass();
-  $cfg->cc = ''; 
-  $cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . $guiObj->tproject_name . 
+  $cfg->cc = '';
+  $cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . $guiObj->tproject_name .
                   ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
                    
   return $cfg;
 }
 
 /**
- * 
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param array $imgSet
+ * @param tlTestPlanMetrics $tplanMgr
+ * @return array
  */
 function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
 {
-  
   $cfg = array('results' => config_get('results'), 'urgency' => config_get('urgency'),
                'tcase' => config_get('testcase_cfg'));
 
@@ -214,27 +219,23 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
 
   $guiObj->platforms = (array)$tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
   $guiObj->show_platforms = (count($guiObj->platforms) > 0);
-
   $guiObj->img = new stdClass();
   $guiObj->img->exec = $imgSet['exec_icon'];
   $guiObj->img->edit = $imgSet['edit_icon'];
   $guiObj->img->history = $imgSet['history_small'];
-
   $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->tplan_id = $argsObj->tplan_id;
-
   $guiObj->apikey = $argsObj->apikey;
-
 
   $tproject_mgr = new testproject($dbHandler);
   $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
-  $argsObj->prefix = $tproject_info['prefix']; 
+  $argsObj->prefix = $tproject_info['prefix'];
   $argsObj->tcPrefix = $tproject_info['prefix'] . $cfg['tcase']->glue_character;
   $argsObj->tprojectOpt = $tproject_info['opt'];
 
   $guiObj->options = new stdClass();
   $guiObj->options->testPriorityEnabled = $tproject_info['opt']->testPriorityEnabled;
-  unset($tproject_mgr); 
+  unset($tproject_mgr);
 
   $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
   $guiObj->tplan_name = $tplan_info['name'];
@@ -251,7 +252,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
 
   $guiObj->matrixCfg  = config_get('resultMatrixReport');
   $guiObj->buildInfoSet = $tplanMgr->get_builds($argsObj->tplan_id, testplan::ACTIVE_BUILDS,null,
-                                                array('orderBy' => $guiObj->matrixCfg->buildOrderByClause)); 
+                                                array('orderBy' => $guiObj->matrixCfg->buildOrderByClause));
   $guiObj->activeBuildsQty = count($guiObj->buildInfoSet);
 
 
@@ -260,7 +261,6 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   {
     $guiObj->buildInfoSet = array_reverse($guiObj->buildInfoSet);
   }
-  // -------------------------------------------------------------------------------
 
 
   foreach($cfg['results']['code_status'] as $code => $verbose)
@@ -273,19 +273,20 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   }
 
   $xxx = config_get('urgency');
-  foreach ($xxx['code_label'] as $code => $label) 
+  foreach ($xxx['code_label'] as $code => $label)
   {
     $cfg['priority'][$code] = lang_get($label);
-  } 
+  }
  
   return array($guiObj,$l18n,$cfg);
 }
 
 /**
  *
- *
+ * @param stdClass $gui
+ * @param stdClass $args
  */
-function createSpreadsheet($gui,$args)
+function createSpreadsheet($gui)
 {
 
   $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,
@@ -296,14 +297,12 @@ function createSpreadsheet($gui,$args)
                            'assigned_to' => null,'tcexec_latest_exec_result' => null,
                            'version' => null,'execution_type' => null));
 
-  $buildIDSet = $args->builds->idSet;
-
-  // contribution to have more than 26 columns   
+  // contribution to have more than 26 columns
   $cellRange = range('A','Z');
   $cellRangeLen = count($cellRange);
   for($idx = 0; $idx < $cellRangeLen; $idx++)
   {
-    for($jdx = 0; $jdx < $cellRangeLen; $jdx++) 
+    for($jdx = 0; $jdx < $cellRangeLen; $jdx++)
     {
       $cellRange[] = $cellRange[$idx] . $cellRange[$jdx];
     }
@@ -323,7 +322,7 @@ function createSpreadsheet($gui,$args)
                        localize_dateOrTimeStamp(null,$dummy,'timestamp_format',time())));
 
   $objPHPExcel = new PHPExcel();
-  $cellArea = "A1:"; 
+  $cellArea = "A1:";
   foreach($lines2write as $zdx => $fields)
   {
     $cdx = $zdx+1;
@@ -331,20 +330,20 @@ function createSpreadsheet($gui,$args)
                 ->setCellValue("B{$cdx}", end($fields));
   }
   $cellArea .= "A{$cdx}";
-  $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleReportContext);	
+  $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleReportContext);
 
 
   // Step 2
   // data is organized with following columns $dataHeader[]
   // Test suite
   // Test case
-  // Test case version (for humans) 
+  // Test case version (for humans)
   // [Platform]  => if any exists
   //
   // Priority   ===>  Just discovered that we have choosen to make this column
   //                  displayabled or not according test project configuration
   //                  IMHO has no sense work without priority
-  // 
+  //
   // Build
   // Assigned To
   // Exec result
@@ -356,18 +355,18 @@ function createSpreadsheet($gui,$args)
   //
   // ?? Exec result on ON LATEST CREATED Build
   // ?? Latest Execution result (Hmm need to explain better)
-  // 
+  //
   $dataHeader = array($lbl['title_test_suite_name'],
                       $lbl['title_test_case_title'],
                       $lbl['version']);
 
-  if( $showPlatforms = !is_null($gui->platforms) )
+  if( !is_null($gui->platforms) )
   {
     $dataHeader[] = $lbl['platform'];
   }
 
   if($gui->options->testPriorityEnabled)
-  {  
+  {
     $dataHeader[] = $lbl['priority'];
   }
 
@@ -385,13 +384,13 @@ function createSpreadsheet($gui,$args)
   $cellArea = "A{$startingRow}:";
   foreach($dataHeader as $zdx => $field)
   {
-    $cellID = $cellRange[$zdx] . $startingRow; 
+    $cellID = $cellRange[$zdx] . $startingRow;
     $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
     $cellAreaEnd = $cellRange[$zdx];
   }
 
   $cellArea .= "{$cellAreaEnd}{$startingRow}";
-  $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleDataHeader);	
+  $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleDataHeader);
   
   $startingRow++;
   
@@ -401,7 +400,7 @@ function createSpreadsheet($gui,$args)
   {
 		foreach($gui->matrix[$idx] as $ldx => $field)
 		{
-			$cellID = $cellRange[$ldx] . $startingRow; 
+			$cellID = $cellRange[$ldx] . $startingRow;
 			$objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
 		}
 		$startingRow++;
@@ -412,12 +411,12 @@ function createSpreadsheet($gui,$args)
   // Final step
   $objPHPExcel->setActiveSheetIndex(0);
   $settings = array();
-  $settings['Excel2007'] = array('ext' => '.xlsx', 
+  $settings['Excel2007'] = array('ext' => '.xlsx',
                                  'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  $settings['Excel5'] = array('ext' => '.xls', 
+  $settings['Excel5'] = array('ext' => '.xls',
                               'Content-Type' => 'application/vnd.ms-excel');
   
-  $xlsType = 'Excel5';                               
+  $xlsType = 'Excel5';
   $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, $xlsType);
   
   $tmpfname = tempnam(config_get('temp_dir'),"resultsTCFlat.tmp");
@@ -433,9 +432,11 @@ function createSpreadsheet($gui,$args)
 
 /**
  *
+ * @param stdClass $args
+ * @param stdClass $gui
  */
 function setUpBuilds(&$args,&$gui)
-{ 
+{
   $args->builds = new stdClass();
 
   if( is_null($args->build_set) )
@@ -448,12 +449,12 @@ function setUpBuilds(&$args,&$gui)
     {
       $args->builds->idSet = array_keys($gui->buildInfoSet);
     }
-  }  
+  }
   else
   {
     $args->builds->idSet = array_keys(array_flip($args->build_set));
     $gui->filterApplied = true;
-    $gui->buildListForExcel = implode(',',$args->builds->idSet); 
+    $gui->buildListForExcel = implode(',',$args->builds->idSet);
   }
 
   $args->builds->latest = new stdClass();
@@ -464,20 +465,24 @@ function setUpBuilds(&$args,&$gui)
 
 /**
  *
- *
+ * @param database $db
+ * @param stdClass $args
+ * @param stdClass $gui
+ * @param array $exec
+ * @param array $labels
  */
 function buildSpreadsheetData(&$db,&$args,&$gui,&$exec,$labels)
 {
   $userSet = getUsersForHtmlOptions($db,null,null,null,null,
                                     array('userDisplayFormat' => '%first% %last%'));
 
-  $det = array(TESTCASE_EXECUTION_TYPE_MANUAL => 
+  $det = array(TESTCASE_EXECUTION_TYPE_MANUAL =>
                $labels['execution_type_manual'],
-               TESTCASE_EXECUTION_TYPE_AUTO => 
+               TESTCASE_EXECUTION_TYPE_AUTO =>
                $labels['execution_type_auto']);
 
   $metrics = $exec['metrics'];
-  $latestExecution = $exec['latestExec'];
+  
   $cols = $args->cols;
 
 /*
@@ -496,12 +501,10 @@ execution_ts  2015-05-23 16:38:22
 execution_duration  NULL
 user_id 1       => NEED TO DECODE
 urg_imp 4       => NEED TO DECODE
-execution_type => NEED TO DECODE 
+execution_type => NEED TO DECODE
 */
 
   $loop2do = count($metrics);
-
-  $uk2 = array('user_id','tester_id');
 
   for($ix=0; $ix < $loop2do; $ix++)
   {
@@ -509,15 +512,14 @@ execution_type => NEED TO DECODE
 
     $rows[$cols['tsuite']] = $metrics[$ix]['suiteName'];
     $eid = $args->tcPrefix . $metrics[$ix]['external_id'];
-    $rows[$cols['tcase']] = 
-      htmlspecialchars("{$eid}:{$metrics[$ix]['name']}",ENT_QUOTES);
+    $rows[$cols['tcase']] = htmlspecialchars("{$eid}:{$metrics[$ix]['name']}",ENT_QUOTES);
 
     $rows[$cols['version']] = $metrics[$ix]['version'];
     if ($gui->show_platforms) {
       $rows[$cols['platform']] = $gui->platforms[$metrics[$ix]['platform_id']];
     }
 
-    if($gui->options->testPriorityEnabled) 
+    if($gui->options->testPriorityEnabled)
     {
       $rows[$cols['priority']] = $args->cfg['priority'][$metrics[$ix]['priority_level']];
     }
@@ -529,10 +531,8 @@ execution_type => NEED TO DECODE
     if(isset($userSet,$metrics[$ix]['user_id']))
     {
       $u = $userSet[$metrics[$ix]['user_id']];
-    }    
+    }
     $rows[] = $u;
-  
-    // $rows[] = $args->cfg['results']['code_status'][$metrics[$ix]['status']];
     $rows[] = $labels[$metrics[$ix]['status']];
     $rows[] = $metrics[$ix]['execution_ts'];
 
@@ -540,16 +540,12 @@ execution_type => NEED TO DECODE
     if(isset($userSet,$metrics[$ix]['tester_id']))
     {
       $u = $userSet[$metrics[$ix]['tester_id']];
-    }    
+    }
     $rows[] = $u;
-
     $rows[] = $metrics[$ix]['execution_notes'];
     $rows[] = $metrics[$ix]['execution_duration'];
-     
-    $rows[] = 
-      isset($det[$metrics[$ix]['exec_type']]) ?
-      $det[$metrics[$ix]['exec_type']] : 'not configured';
+    $rows[] = isset($det[$metrics[$ix]['exec_type']]) ? $det[$metrics[$ix]['exec_type']] : 'not configured';
 
     $gui->matrix[] = $rows;
-  }  
+  }
 }

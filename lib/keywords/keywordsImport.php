@@ -1,20 +1,20 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Scope: Import keywords page
  *
  * @filesource  keywordsImport.php
  * @package     TestLink
- * @copyright   2005,2020 TestLink community 
+ * @copyright   2005,2020 TestLink community
  * @link        http://www.testlink.org/
  *
  */
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once('csv.inc.php');
-require_once('xml.inc.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'csv.inc.php';
+require_once 'xml.inc.php';
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -24,7 +24,7 @@ $gui = initializeGui($args);
 
 if (!$gui->msg && $args->UploadFile) {
 
-  if(($args->source != 'none') && ($args->source != '')) { 
+  if(($args->source != 'none') && ($args->source != '')) {
     if (move_uploaded_file($args->source, $args->dest)) {
       $pfn = null;
       switch($args->importType) {
@@ -40,33 +40,34 @@ if (!$gui->msg && $args->UploadFile) {
       if ($pfn) {
         $tproject = new testproject($db);
         $result = $tproject->$pfn($args->tproject_id,$args->dest);
-        if ($result != tl::OK) {  
-          $gui->msg = lang_get('wrong_keywords_file'); 
+        if ($result != tl::OK) {
+          $gui->msg = lang_get('wrong_keywords_file');
         } else {
           header("Location: keywordsView.php?tproject_id={$gui->tproject_id}");
-          exit();   
+          exit();
         }
       }
       @unlink($args->dest);
     }
-  } else {  
+  } else {
     $gui->msg = lang_get('please_choose_keywords_file');
   }
 }
       
 $smarty = new TLSmarty();
-$smarty->assign('gui',$gui);  
+$smarty->assign('gui',$gui);
 $smarty->display($templateCfg->tpl);
 
 /**
+ * Get input from user and return it in some sort of namespace
+ *
  * @return object returns the arguments for the page
  */
 function init_args(&$dbHandler)
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $ipcfg = 
-    array("UploadFile" => array(tlInputParameter::STRING_N,0,1),
+  $ipcfg = array("UploadFile" => array(tlInputParameter::STRING_N,0,1),
           "importType" => array(tlInputParameter::STRING_N,0,100),
           "tproject_id" => array(tlInputParameter::INT_N));
 
@@ -78,7 +79,7 @@ function init_args(&$dbHandler)
   }
 
   // Check rights before doing anything else
-  // Abort if rights are not enough 
+  // Abort if rights are not enough
   $user = $_SESSION['currentUser'];
   $env['tproject_id'] = $args->tproject_id;
   $env['tplan_id'] = 0;
@@ -93,7 +94,7 @@ function init_args(&$dbHandler)
                               array('output' => 'name'));
   $args->tproject_name = $dm['name'];
 
-  $args->UploadFile = ($args->UploadFile != "") ? 1 : 0; 
+  $args->UploadFile = ($args->UploadFile != "") ? 1 : 0;
   $args->fInfo = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
   $args->source = isset($args->fInfo['tmp_name']) ? $args->fInfo['tmp_name'] : null;
 
@@ -112,9 +113,7 @@ function init_args(&$dbHandler)
   $args->importTypes = $tlkw->getSupportedSerializationInterfaces();
   $args->keywordFormatStrings = $tlkw->getSupportedSerializationFormatDescriptions();
 
-  $args->dest = TL_TEMP_PATH . session_id() . 
-                "-importkeywords." . 
-                $args->importTypes[$args->importType];
+  $args->dest = TL_TEMP_PATH . session_id() . "-importkeywords." . $args->importTypes[$args->importType];
 
   return $args;
 }
@@ -134,15 +133,11 @@ function initializeGui(&$argsObj)
   $gui->msg = getFileUploadErrorMessage($argsObj->fInfo);
 
   $gui->importTypes = $argsObj->importTypes;
-  $gui->keywordFormatStrings = $argsObj->keywordFormatStrings;;
+  $gui->keywordFormatStrings = $argsObj->keywordFormatStrings;
 
   $fslimit = config_get('import_file_max_size_bytes');
-  $gui->fileSizeLimitMsg = 
-    sprintf(lang_get('max_file_size_is'), $fslimit/1024 . ' KB ');
+  $gui->fileSizeLimitMsg = sprintf(lang_get('max_file_size_is'), $fslimit/1024 . ' KB ');
   $gui->importLimit = $fslimit;
-
-
-
 
   return $gui;
 }

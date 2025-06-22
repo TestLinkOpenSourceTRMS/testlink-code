@@ -2,7 +2,7 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
+ *
  * Allows export in XML format of test plan in different way using $args->exportContent
  *
  * 'linkedItem' just linked elements
@@ -10,25 +10,25 @@
  *   linked test cases (minimal information)
  *
  * 'tree'
- *   complete plan contents: 
- *   to be defined  
+ *   complete plan contents:
+ *   to be defined
  *
- * '4results'  
+ * '4results'
  * generates file format that can be used to import results
- * 
+ *
  * @filesource  planExport.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2003-2014, TestLink community 
+ * @copyright   2003-2014, TestLink community
  * @link        http://www.testlink.org/
- * 
+ *
  * @internal revisions
  * @since 1.9.12
  *
  **/
-require_once("../../config.inc.php");
-require_once("../functions/common.php");
-require_once("../functions/xml.inc.php");
+require_once '../../config.inc.php';
+require_once '../functions/common.php';
+require_once '../functions/xml.inc.php';
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
@@ -81,7 +81,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
   args:
   
-  returns: 
+  returns:
 
 */
 function init_args()
@@ -117,7 +117,7 @@ function init_args()
 
   // replace blank on name with _
   if( !is_null($args->export_filename) )
-  { 
+  {
     $args->export_filename = str_replace(' ','_',$args->export_filename);
   }
     
@@ -142,10 +142,9 @@ function init_args()
   $args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
   $args->testCaseSet = null;
   if($args->treeFormToken >0)
-  {  
+  {
     $mode = 'execution_mode';
-    $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->treeFormToken]) ? 
-                    $_SESSION[$mode][$args->treeFormToken] : null;
+    $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->treeFormToken]) ? $_SESSION[$mode][$args->treeFormToken] : null;
 
     $args->testCaseSet = $session_data['testcases_to_show'];
   }
@@ -154,7 +153,6 @@ function init_args()
 
 
 /**
- * 
  *
  */
 function initializeGui(&$argsObj,&$tplanMgr)
@@ -183,14 +181,14 @@ function initializeGui(&$argsObj,&$tplanMgr)
   // TICKET 4996: Ignores change of XML export file name
   $guiObj->export_filename = $argsObj->export_filename;
   if( trim($argsObj->export_filename) == '' )
-  { 
+  {
     $guiObj->export_filename = $argsObj->exportContent . '_' . str_replace(' ','_',$info['name']) . $add2name . '.xml';
   }
   
   $guiObj->exportTypes = array('XML' => 'XML');
   $guiObj->page_title = lang_get('export_test_plan');
   $guiObj->object_name = $info['name'];
-  $guiObj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : ''; 
+  $guiObj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : '';
 
   $guiObj->tplan_id = intval($argsObj->tplan_id);
   $guiObj->tproject_id = intval($argsObj->tproject_id);

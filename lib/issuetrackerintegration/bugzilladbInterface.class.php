@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource  bugzilladbInterface.class.php
  * @author Francisco Mancardi
@@ -16,16 +16,16 @@ class bugzilladbInterface extends issueTrackerInterface
   /**
    * Construct and connect to BTS.
    *
-   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param string $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
   function __construct($type,$config,$name)
   {
-    parent::__construct($type,$config,$name); 
+    parent::__construct($type,$config,$name);
     if( $this->connected )
-    { 
+    {
       // For bugzilla status code is not important.
-      // Design Choice make it equal to verbose. Important bugzilla uses UPPERCASE 
+      // Design Choice make it equal to verbose. Important bugzilla uses UPPERCASE
       $this->defaultResolvedStatus = array();
       $this->defaultResolvedStatus[] = array('code' => 'RESOLVED', 'verbose' => 'RESOLVED');
       $this->defaultResolvedStatus[] = array('code' => 'VERIFIED', 'verbose' => 'VERIFIED');
@@ -55,7 +55,7 @@ class bugzilladbInterface extends issueTrackerInterface
     $rs = $this->dbConnection->fetchRowsIntoMap($sql,'id');
     $issue = null;
 
-    if( !is_null($rs) ) 
+    if( !is_null($rs) )
     {
       $issue = new stdClass();
 
@@ -63,23 +63,22 @@ class bugzilladbInterface extends issueTrackerInterface
       $issue->summary = $rs[$id]['summary']; // useful on spreadsheet export
       
       $issue->IDHTMLString = "<b>{$id} : </b>";
-      $issue->statusCode = $issue->statusVerbose = $rs[$id]['status']; 
+      $issue->statusCode = $issue->statusVerbose = $rs[$id]['status'];
       $issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
-      $issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? 
-      $this->status_color[$issue->statusVerbose] : 'white';
+      $issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? $this->status_color[$issue->statusVerbose] : 'white';
   
       $issue->summaryHTMLString = $rs[$id]['summary'];
-      $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+      $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]);
       
       
     }
-    return $issue;  
+    return $issue;
   }
 
 
   /**
    * Returns the status of the bug with the given id
-   * this function is not directly called by TestLink. 
+   * this function is not directly called by TestLink.
    *
    * @return string returns the status of the given bug (if found in the db), or null else
    **/
@@ -97,23 +96,22 @@ class bugzilladbInterface extends issueTrackerInterface
   
   /**
    * checks is bug id is present on BTS
-   * 
-   * @return integer returns 1 if the bug with the given id exists 
+   *
+   * @return integer returns 1 if the bug with the given id exists
    **/
   function checkBugIDExistence($id)
   {
-    $status_ok = 0; 
+    $status_ok = 0;
     $issue = $this->getIssue($id);
     
-    return !is_null($issue) ? 1 : 0; 
-  } 
+    return !is_null($issue) ? 1 : 0;
+  }
 
 
     /**
      * checks id for validity
      *
-   * @param string issueID
-     *
+     * @param string issueID
      * @return bool returns true if the bugid has the right format, false else
      **/
     function checkBugIDSyntax($issueID)

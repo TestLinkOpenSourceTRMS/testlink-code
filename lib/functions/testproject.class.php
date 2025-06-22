@@ -11,8 +11,8 @@
  **/
 
 /** related functions */ 
-require_once('attachments.inc.php');
-require_once('event_api.php');
+require_once 'attachments.inc.php';
+require_once 'event_api.php';
 
 /**
  * class is responsible to get project related data and CRUD test project
@@ -236,7 +236,7 @@ function update($id, $name, $color, $notes,$options,$active=null,
   }
 
   tLog($log_msg,$log_level);
-  return ($status_ok);
+  return $status_ok;
 }
 
 /**
@@ -1038,7 +1038,7 @@ function count_testcases($id)
     $ret=null;
     $sql = "/* $debugMsg */ SELECT prefix FROM {$this->object_table} WHERE id = {$id}";
     $ret = $this->db->fetchOneValue($sql);
-    return ($ret);
+    return $ret;
   }
 
 
@@ -1314,7 +1314,7 @@ function setPublicStatus($id,$status)
            " WHERE testproject_id = " . intval($id);
     $rs = $this->db->get_recordset($sql);
 
-    return ((is_null($rs) || $rs[0]['qty'] == 0) ? false : true);
+    return (is_null($rs) || $rs[0]['qty'] == 0) ? false : true;
   }
 
 
@@ -2243,7 +2243,7 @@ function DEPRECATED_get_keywords_tcases($testproject_id, $keyword_id=0, $keyword
 
     $map_keywords = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','keyword_id');
 
-    return($map_keywords);
+    return $map_keywords;
 } //end function
 
 
@@ -2508,7 +2508,7 @@ function get_first_level_test_suites($tproject_id,$mode='simple',$opt=null)
     }
     break;
   }
-  return($fl);
+  return $fl;
 }
 
 
@@ -2656,7 +2656,7 @@ function get_linked_custom_fields($id,$node_type=null,$access_key='id')
        $additional_join .
        " ORDER BY CFTP.display_order";
   $map = $this->db->fetchRowsIntoMap($sql,$access_key);
-  return($map);
+  return $map;
 }
 
 
@@ -3350,7 +3350,7 @@ function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyw
   if( $getWithOutKeywords || $keyword_filter_type == 'NotLinked') {  
 
     $this->get_all_testcases_id($tproject_id,$tcaseSet);
-    if( ($hasTCases = count($tcaseSet) > 0) ) {
+    if( $hasTCases = count($tcaseSet) > 0 ) {
       $delTT = true;
       $tt = 'temp_tcset_' . $tproject_id . md5(microtime());
       $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS 
@@ -4130,7 +4130,7 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
   $getWithOutPlatforms = in_array(-1,$platSet); 
   if( $getWithOutPlatforms ) {  
     $this->get_all_testcases_id($tproject_id,$tcaseSet);
-    if( ($hasTCases = count($tcaseSet) > 0) ) {
+    if( $hasTCases = count($tcaseSet) > 0 ) {
       $delTT = true;
       $tt = 'temp_tcset_' . $tproject_id . md5(microtime());
       $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS 

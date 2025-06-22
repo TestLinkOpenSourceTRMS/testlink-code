@@ -1,6 +1,6 @@
 <?php
-require('../../config.inc.php');
-require('autoload.php');
+require '../../config.inc.php';
+require 'autoload.php';
 
 // Application: TestLeague 
 $redu = 'http://fman.hopto.org/lib/experiments/gitlab.php';

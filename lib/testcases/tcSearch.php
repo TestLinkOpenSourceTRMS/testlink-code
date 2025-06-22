@@ -14,9 +14,9 @@
  * @link        http://www.testlink.org/
  *
  **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once('exttable.class.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'exttable.class.php';
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -348,7 +348,7 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)  {
     $table->addCustomBehaviour('text', array('render' => 'columnWrap'));
     $table->storeTableState = false;
   }
-  return($table);
+  return $table;
 }
 
 

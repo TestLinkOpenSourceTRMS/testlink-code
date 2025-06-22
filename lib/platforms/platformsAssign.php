@@ -13,9 +13,9 @@
  *
  *
  **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("opt_transfer.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'opt_transfer.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -54,7 +54,7 @@ if (isset($args->tplan_id)) {
 
   $qtyLinked2Unknown = isset($qtyByPlatform[0]['qty']) ? $qtyByPlatform[0]['qty'] : 0;
  
-  if( ($fix_needed = ($qtyLinked2Unknown > 0)) ) {
+  if( $fix_needed = ($qtyLinked2Unknown > 0) ) {
     $gui->warning = lang_get('unknown_platform');
   }
   $opt_cfg->global_lbl = '';

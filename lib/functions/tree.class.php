@@ -158,7 +158,7 @@ class tree extends tlObject
     }
 
     $this->db->exec_query($sql);
-    return ($this->db->insert_id($this->object_table));
+    return $this->db->insert_id($this->object_table);
    }
 
   /*
@@ -256,7 +256,7 @@ class tree extends tlObject
     $nodes = array();
     $this->_get_subtree_list($node_id,$nodes,$node_type_id);
     $node_list = is_null($output) ? implode(',',$nodes) : $nodes;
-    return($node_list);
+    return $node_list;
   }
   
   
@@ -601,7 +601,7 @@ class tree extends tlObject
       
     if( $this->db->num_rows($result) == 0 )
     {
-      return(null);   
+      return null;   
     }
       
     $xdx = 0;  
@@ -730,7 +730,7 @@ class tree extends tlObject
     $sql .= " GROUP BY parent_id ";
     $rs = (array)$this->db->get_recordset($sql);
       
-    return (count($rs) > 0 ? $rs[0]['max_order']: 0);     
+    return count($rs) > 0 ? $rs[0]['max_order']: 0;     
   }
   
   

@@ -10,13 +10,13 @@
  *
  *
  */
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once("web_editor.php");
-require_once('exec.inc.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'web_editor.php';
+require_once 'exec.inc.php';
 
 $webeditorCfg = getWebEditorCfg('execution');
-require_once(require_web_editor($webeditorCfg['type']));
+require_once require_web_editor($webeditorCfg['type']);
 
 
 testlinkInitPage($db);

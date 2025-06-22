@@ -7,8 +7,8 @@
  * 
  *  @internal revisions
  */
-require_once('../../../config.inc.php');
-require_once('common.php');
+require_once '../../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 $item_id = isset($_REQUEST['item_id']) ? intval($_REQUEST['item_id']): null;

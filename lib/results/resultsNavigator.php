@@ -1,18 +1,18 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Scope: Launcher for Test Results and Metrics.
  *
  * @filesource	resultsNavigator.php
  * @author      Martin Havlat <havlat@users.sourceforge.net>
- * 
- * 
+ *
+ *
  **/
-require('../../config.inc.php');
-require_once('common.php');
-require_once('reports.class.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'reports.class.php';
 testlinkInitPage($db,true,false,"checkRights");
 
 $smarty = new TLSmarty();
@@ -30,7 +30,7 @@ tLog('TC in TP count = ' . $tc4tp_count);
 if( $tc4tp_count == 0) {
   // Test plan without test cases
   $gui->do_report['status_ok'] = 0;
-  $gui->do_report['msg'] = lang_get('report_tplan_has_no_tcases');       
+  $gui->do_report['msg'] = lang_get('report_tplan_has_no_tcases');
 }
 
 // Build qty
@@ -39,7 +39,7 @@ tLog('Active Builds count = ' . $build_count);
 if( $build_count == 0) {
   // Test plan without builds can have execution data
   $gui->do_report['status_ok'] = 0;
-  $gui->do_report['msg'] = lang_get('report_tplan_has_no_build');       
+  $gui->do_report['msg'] = lang_get('report_tplan_has_no_build');
 }
 
 // -----------------------------------------------------------------------------
@@ -57,8 +57,7 @@ if($gui->do_report['status_ok']) {
 
   $context->apikey = $dmy['api_key'];
   $context->imgSet = $smarty->getImages();
-  $gui->menuItems = 
-    $reports_mgr->get_list_reports($context,$gui->btsEnabled,$args->optReqs, 
+  $gui->menuItems = $reports_mgr->get_list_reports($context,$gui->btsEnabled,$args->optReqs,
                                    $tlCfg->reports_formats[$args->format]);
 }
 
@@ -70,8 +69,8 @@ $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
- * 
  *
+ * @return stdClass
  */
 function init_args() {
   $iParams = array("format" => array(tlInputParameter::INT_N),
@@ -92,14 +91,12 @@ function init_args() {
   $_SESSION['resultsNavigator_testplanID'] = $args->tplan_id;
   $_SESSION['resultsNavigator_format'] = $args->format;
   
-  $args->tproject_id = 
-    isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
   $args->userID = $_SESSION['userID'];
   $args->user = $_SESSION['currentUser'];
   $args->optReqs = $_SESSION['testprojectOptions']->requirementsEnabled;
-  $args->checked_show_inactive_tplans = 
-    $args->show_inactive_tplans ? 'checked="checked"' : 0;
+  $args->checked_show_inactive_tplans = $args->show_inactive_tplans ? 'checked="checked"' : 0;
   $args->show_only_active_tplans = !$args->show_inactive_tplans;
     
   return $args;
@@ -107,6 +104,9 @@ function init_args() {
 
 /**
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @return stdClass
  */
 function initializeGui(&$dbHandler,$argsObj) {
   $gui = new stdClass();
@@ -122,8 +122,7 @@ function initializeGui(&$dbHandler,$argsObj) {
 
   // get Accessible Test Plans for combobox
   $activeAttr = $argsObj->show_only_active_tplans ? 1 : null;
-  $gui->tplans = 
-    $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,null,
+  $gui->tplans = $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,null,
                                            array('output' =>'combo', 'active' => $activeAttr));
   
   return $gui;
@@ -132,8 +131,10 @@ function initializeGui(&$dbHandler,$argsObj) {
 
 
 /**
- * 
  *
+ * @param database $db
+ * @param tlUser $user
+ * @return boolean
  */
 function checkRights(&$db,&$user) {
   return $user->hasRightOnProj($db,'testplan_metrics');

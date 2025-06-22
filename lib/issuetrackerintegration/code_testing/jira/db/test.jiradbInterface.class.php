@@ -8,8 +8,8 @@
  * @internal revisions
  *
 **/
-require_once('../../../../config.inc.php');
-require_once('common.php');
+require_once '../../../../config.inc.php';
+require_once 'common.php';
 
 $it_mgr = new tlIssueTracker($db);
 $itt = $it_mgr->getTypes();
@@ -61,7 +61,7 @@ if( $its->isConnected() )
   
   echo 'Get Issue Summary<br>';
   
-	echo($its->getIssueSummary('DEMO-2'));
+	echo $its->getIssueSummary('DEMO-2');
   echo '<br>';
   
 	// echo($its->getIssueSummary('ZOFF-8'));

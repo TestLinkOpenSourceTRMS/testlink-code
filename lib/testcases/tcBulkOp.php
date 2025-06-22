@@ -10,9 +10,9 @@
  * @since 1.9.14
  * 
  */
-require_once("../../config.inc.php");
-require_once("../functions/common.php");
-require_once("../functions/xml.inc.php");
+require_once '../../config.inc.php';
+require_once '../functions/common.php';
+require_once '../functions/xml.inc.php';
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 

@@ -14,9 +14,9 @@
  * @since 1.9.7
  *
  */
-require('../../config.inc.php');
-require_once('common.php');
-require_once('xml.inc.php');
+require '../../config.inc.php';
+require_once 'common.php';
+require_once 'xml.inc.php';
 
 testlinkInitPage($db);
 
@@ -629,7 +629,7 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
     {
       $cachedReqSpec=array();
       $doit=false;
-      if( ($doit=isset($reqSpecSet[$value['doc_id']])) )
+      if( $doit=isset($reqSpecSet[$value['doc_id']]) )
       {
           if( !(isset($cachedReqSpec[$value['req_spec_title']])) )
           {

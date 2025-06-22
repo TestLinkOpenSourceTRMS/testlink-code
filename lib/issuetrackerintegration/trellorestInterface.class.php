@@ -1,30 +1,30 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource	trellorestInterface.class.php
- * @author 
+ * @author
  *
  *
 **/
-require_once(TL_ABS_PATH . "/third_party/trello-php-api/lib/trello-rest-api.php");
+require_once TL_ABS_PATH . '/third_party/trello-php-api/lib/trello-rest-api.php';
 
 class trellorestInterface extends issueTrackerInterface {
   private $APIClient;
   private $options = [];
-  public $defaultResolvedStatus;
+  private $defaultResolvedStatus;
 
   // for trello we allow /
-  var $forbidden_chars = '/[!|�%&()=?]/';
+  private $forbidden_chars = '/[!|�%&()=?]/';
 
 
 	/**
 	 * Construct and connect to BTS.
 	 *
-	 * @param str $type (see tlIssueTracker.class.php $systems property)
+	 * @param string $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
-	function __construct($type,$config,$name) 
+	function __construct($type,$config,$name)
   {
     $this->name = $name;
 	  $this->interfaceViaDB = false;
@@ -43,7 +43,7 @@ class trellorestInterface extends issueTrackerInterface {
     // @20201207 $this->canSetReporter = true;
     if( !$this->setCfg($config) ) {
       return false;
-    }  
+    }
 
     $this->completeCfg();
 	  $this->setResolvedStatusCfg();
@@ -53,22 +53,22 @@ class trellorestInterface extends issueTrackerInterface {
 	/**
 	 *
 	 **/
-	function completeCfg() 
+	function completeCfg()
   {
-    $this->cfg->implements = __CLASS__; 
+    $this->cfg->implements = __CLASS__;
 
-		$this->cfg->uribase = trim($this->cfg->uribase,"/"); 
+		$this->cfg->uribase = trim($this->cfg->uribase,"/");
     if(!property_exists($this->cfg, 'uricreate') ) {
-      $this->cfg->uricreate = $this->cfg->uribase; 
+      $this->cfg->uricreate = $this->cfg->uribase;
     }
 
     if( property_exists($this->cfg,'options') ) {
       $option = get_object_vars($this->cfg->options);
       foreach ($option as $name => $elem) {
         $name = (string)$name;
-        $this->options[$name] = (string)$elem;     
+        $this->options[$name] = (string)$elem;
       }
-    } 
+    }
 
     if( !property_exists($this->cfg,'userinteraction') ) {
       $this->cfg->userinteraction = 0;
@@ -80,18 +80,17 @@ class trellorestInterface extends issueTrackerInterface {
   }
 
 	/**
-   * useful for testing 
-   *
+   * useful for testing
    *
    **/
-	function getAPIClient() 
+	function getAPIClient()
   {
 		return $this->APIClient;
 	}
 
 
   /**
-   * 
+   *
    * Two formats allowed
    *   https://trello.com/c/XZZftZ8A/12-backlog01-yy
    *   XZZftZ8A
@@ -101,7 +100,7 @@ class trellorestInterface extends issueTrackerInterface {
   {
     $norm = $issueID;
     $pieces = explode('/',$issueID);
-    $piecesQty = count($pieces); 
+    $piecesQty = count($pieces);
     if ( $piecesQty > 1) {
       // MAGIC
       // 0 -> https:
@@ -124,7 +123,7 @@ class trellorestInterface extends issueTrackerInterface {
    *
    * @return bool returns true if the bugid has the right format, false else
    **/
-  function checkBugIDSyntax($issueID) 
+  function checkBugIDSyntax($issueID)
   {
     // Two formats allowed
     // https://trello.com/c/XZZftZ8A/12-backlog01-yy
@@ -135,8 +134,7 @@ class trellorestInterface extends issueTrackerInterface {
   /**
    * establishes connection to the bugtracking system
    *
-   * @return bool 
-   *
+   * @return bool
    **/
   function connect() {
     $processCatch = false;
@@ -171,7 +169,7 @@ class trellorestInterface extends issueTrackerInterface {
   	if($processCatch) {
   		$logDetails = '';
   		foreach(['uribase'] as $v) {
-  			$logDetails .= "$v={$this->cfg->$v} / "; 
+  			$logDetails .= "$v={$this->cfg->$v} / ";
   		}
   		$logDetails = trim($logDetails,'/ ');
   		$this->connected = false;
@@ -180,19 +178,17 @@ class trellorestInterface extends issueTrackerInterface {
   }
 
   /**
-   * 
    *
    **/
-	function isConnected() 
+	function isConnected()
   {
 		return $this->connected;
 	}
 
   /**
-   * 
    *
    **/
-  function buildViewBugURL($issueID) 
+  function buildViewBugURL($issueID)
   {
     return $this->APIClient->getIssueURL($issueID);
   }
@@ -201,10 +197,9 @@ class trellorestInterface extends issueTrackerInterface {
    * Returns status for issueID
    *
    * @param string issueID
-   *
-   * @return 
+   * @return
    **/
-  function getIssueStatusCode($issueID) 
+  function getIssueStatusCode($issueID)
   {
     $issue = $this->getIssue($issueID);
     return !is_null($issue) ? $issue->statusCode : false;
@@ -214,11 +209,9 @@ class trellorestInterface extends issueTrackerInterface {
    * Returns status in a readable form (HTML context) for the bug with the given id
    *
    * @param string issueID
-   * 
-   * @return string 
-   *
+   * @return string
    **/
-  function getIssueStatusVerbose($issueID) 
+  function getIssueStatusVerbose($issueID)
   {
     $issue = $this->getIssue($issueID);
     return !is_null($issue) ? $issue->statusVerbose : false;
@@ -227,11 +220,9 @@ class trellorestInterface extends issueTrackerInterface {
   /**
    *
    * @param string issueID
-   * 
-   * @return string 
-   *
+   * @return string
    **/
-  function getIssueSummaryHTMLString($issueID) 
+  function getIssueSummaryHTMLString($issueID)
   {
     $issue = $this->getIssue($issueID);
     return $issue->summaryHTMLString;
@@ -239,12 +230,11 @@ class trellorestInterface extends issueTrackerInterface {
 
   /**
    * @param string issueID
-   *
    * @return bool true if issue exists on BTS
    **/
-  function checkBugIDExistence($issueID) 
+  function checkBugIDExistence($issueID)
   {
-    if(($status_ok = $this->checkBugIDSyntax($issueID))) {
+    if($status_ok = $this->checkBugIDSyntax($issueID)) {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
     }
@@ -254,10 +244,9 @@ class trellorestInterface extends issueTrackerInterface {
 
 
   /**
-   * 
    *
    **/
-	public function getIssue($issueID) 
+	public function getIssue($issueID)
   {
     if (!$this->isConnected()) {
       tLog(__METHOD__ . '/Not Connected ', 'ERROR');
@@ -281,7 +270,7 @@ class trellorestInterface extends issueTrackerInterface {
         $issue->statusHTMLString = "[{$issue->statusVerbose}]";
 
         $verbose = (string)$jsonObj->name; // . " {{$jsonObj->dateLastActivity}}";
-        $issue->summary = $issue->summaryHTMLString = $verbose; 
+        $issue->summary = $issue->summaryHTMLString = $verbose;
     
         $issue->isResolved = false;
       }
@@ -289,15 +278,15 @@ class trellorestInterface extends issueTrackerInterface {
     catch(Exception $e) {
       tLog(__METHOD__ . '/' . $e->getMessage(),'ERROR');
       $issue = null;
-    }	
-    return $issue;		
+    }
+    return $issue;
 	}
 
 
   /**
    *
    **/
-	public static function getCfgTemplate() 
+	public static function getCfgTemplate()
   {
     $tpl = "<!-- Template " . __CLASS__ . " -->\n" .
            "<issuetracker>\n" .

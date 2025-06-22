@@ -1,11 +1,11 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2016, TestLink community 
+ * @copyright   2005-2016, TestLink community
  * @filesource  buildCopyExecTaskAssignment.php
  * @link        http://www.testlink.org
  *
@@ -13,8 +13,8 @@
  * @since 1.9.15
  */
          
-require_once(dirname(__FILE__)."/../../config.inc.php");
-require_once("common.php");
+require_once dirname(__FILE__). '/../../config.inc.php';
+require_once 'common.php';
 
 // TODO understand the new model for rights check
 testlinkInitPage($db);
@@ -60,7 +60,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  *
  */
-function init_args(&$buildMgr) 
+function init_args(&$buildMgr)
 {
   $args = new stdClass();
   
@@ -70,7 +70,7 @@ function init_args(&$buildMgr)
   foreach($k2g as $key)
   {
     $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;
-  }  
+  }
 
   $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
   switch( $args->doAction )
@@ -87,7 +87,7 @@ function init_args(&$buildMgr)
   if( $args->build_id <= 0 )
   {
     throw new Exception("Error Processing Request - Target build is not set", 1);
-  }  
+  }
 
   // Get test plan id from build
   $bi = $buildMgr->get_by_id($args->build_id);
@@ -113,7 +113,7 @@ function init_args(&$buildMgr)
 /**
  *
  */
-function init_gui(&$dbHandler, &$argsObj, &$tplanMgr) 
+function init_gui(&$dbHandler, &$argsObj, &$tplanMgr)
 {
   $gui = new stdClass();
   
@@ -125,7 +125,7 @@ function init_gui(&$dbHandler, &$argsObj, &$tplanMgr)
   if( is_null($gui->source_build->items) )
   {
     $gui->message = lang_get('no_builds_available_for_tester_copy');
-  }  
+  }
 
   $gui->draw_tc_unassign_button = false;
   $gui->refreshTree = false;
@@ -144,7 +144,7 @@ function init_gui(&$dbHandler, &$argsObj, &$tplanMgr)
  * user wants to copy the user assignments.
  * @internal revisions
  */
-function getBuildDomainForGUI(&$tplanMgr, &$argsObj) 
+function getBuildDomainForGUI(&$tplanMgr, &$argsObj)
 {
 
   $htmlMenu = array('items' => null, 'selected' => null, 'build_count' => 0, 'testers' => null);
@@ -155,13 +155,13 @@ function getBuildDomainForGUI(&$tplanMgr, &$argsObj)
   // get the number of existing execution assignments with each build
   if( !is_null($htmlMenu['items']) )
   {
-    $lblCount = lang_get('assignments'); 
+    $lblCount = lang_get('assignments');
     $htmlMenu['build_count'] = count($htmlMenu['items']);
-    foreach ($htmlMenu['items'] as $key => $name) 
+    foreach ($htmlMenu['items'] as $key => $name)
     {
       $count = $tplanMgr->assignment_mgr->get_count_of_assignments_for_build_id($key);
-      $htmlMenu['items'][$key] = $name . " ($lblCount" . $count . ")"; 
-      $htmlMenu['testers'][$key] = $count; 
+      $htmlMenu['items'][$key] = $name . " ($lblCount" . $count . ")";
+      $htmlMenu['testers'][$key] = $count;
     }
     
     // if no build has been chosen yet, select the newest build by default
@@ -169,11 +169,11 @@ function getBuildDomainForGUI(&$tplanMgr, &$argsObj)
     if( !$argsObj->source_build_id )
     {
       $htmlMenu['selected'] = key($htmlMenu['items']);
-    } 
-  }   
+    }
+  }
   
   return $htmlMenu;
-} 
+}
 
 /**
  *

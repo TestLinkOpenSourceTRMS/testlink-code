@@ -14,11 +14,11 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Load Composer's autoloader
-require( 'autoload.php' );
+require 'autoload.php';
 
-require_once( 'lang_api.php' );
-require_once( 'common.php');
-require_once( 'string_api.php');
+require_once 'lang_api.php';
+require_once 'common.php';
+require_once 'string_api.php';
 
 
 /** @var mixed reusable object of class SMTP */

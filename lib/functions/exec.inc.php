@@ -14,8 +14,8 @@
  *
  **/
 
-require_once('common.php');
-require_once('attachments.inc.php');
+require_once 'common.php';
+require_once 'attachments.inc.php';
 
 
 /** 
@@ -742,7 +742,7 @@ function addIssue($dbHandler,$argsObj,$itsObj,$opt=null) {
   $rs = $itsObj->addIssue($issueText->summary, $issueText->description,$opt); 
   
   $ret['msg'] = $rs['msg'];
-  if( ($ret['status_ok'] = $rs['status_ok']) ) {                   
+  if( $ret['status_ok'] = $rs['status_ok'] ) {                   
     if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id'],$argsObj->tcstep_id)){
       logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
     }
@@ -892,7 +892,7 @@ function generateIssueText($dbHandler,$argsObj,$itsObj,$opt=null) {
 
     while($doIt) {
       $mx = strpos($ret->description,$target['value']);
-      if( ($doIt = !($mx === FALSE)) ) {
+      if( $doIt = !($mx === FALSE) ) {
         $offset = $mx+$target['len'];
         $cx = strpos($ret->description,'%%',$offset);
         if($cx === FALSE) {

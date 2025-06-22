@@ -14,10 +14,10 @@
  * @internal revisions
  */
 
-require_once("../../config.inc.php");
-require_once("common.php");
-require('../../third_party/diff/diff.php');
-require('../../third_party/daisydiff/src/HTMLDiff.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require '../../third_party/diff/diff.php';
+require '../../third_party/daisydiff/src/HTMLDiff.php';
 
 $templateCfg = templateConfiguration();
 testlinkInitPage($db);

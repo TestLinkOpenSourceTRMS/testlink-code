@@ -13,8 +13,8 @@
  **/
 
 /** core functions */
-require_once('common.php');
-require_once( dirname(__FILE__) . '/files.inc.php' );
+require_once 'common.php';
+require_once  dirname(__FILE__) . '/files.inc.php' ;
 
 /**
  * Get infos about the attachments of a given object

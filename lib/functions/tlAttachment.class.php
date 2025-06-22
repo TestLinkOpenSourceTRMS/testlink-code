@@ -11,7 +11,7 @@
  *
  */
 /** parenthal class */
-require_once( 'object.class.php' );
+require_once 'object.class.php';
 
 /**
  * An attachment helper class used to manage the storage of the attachment's meta information

@@ -46,15 +46,15 @@
 ob_start();
 
 // some session and settings stuff from original index.php 
-require_once('lib/functions/configCheck.php');
+require_once 'lib/functions/configCheck.php';
 checkConfiguration();
-require_once('config.inc.php');
-require_once('common.php');
-require_once('attachments.inc.php');
-require_once('requirements.inc.php');
-require_once('testcase.class.php');
-require_once('testproject.class.php');
-require_once('users.inc.php');
+require_once 'config.inc.php';
+require_once 'common.php';
+require_once 'attachments.inc.php';
+require_once 'requirements.inc.php';
+require_once 'testcase.class.php';
+require_once 'testproject.class.php';
+require_once 'users.inc.php';
 testlinkInitPage($db, true);
 
 $smarty = new TLSmarty();
@@ -136,7 +136,7 @@ else
   {
     $tproject = new testproject($db);
     $tproject_data = $tproject->get_by_prefix($args->tprojectPrefix);
-    if(($op['status_ok'] = !is_null($tproject_data))) 
+    if($op['status_ok'] = !is_null($tproject_data)) 
     {
       $tproject->setSessionProject($tproject_data['id']);
       $op['status_ok'] = isset($itemCode[$args->item]);
@@ -189,7 +189,7 @@ function checkTestProject(&$db,&$user,&$args)
   $tproject_mgr = new testproject($db);
   $item_info = $tproject_mgr->get_by_prefix($args->tprojectPrefix);
 
-  if(($op['status_ok'] = !is_null($item_info)))
+  if($op['status_ok'] = !is_null($item_info))
   {
     $args->tproject_id = intval($item_info['id']);
     switch($args->item)

@@ -15,9 +15,9 @@
  * rev : 20080811 - franciscom
  *
 */
-require_once('../../../config.inc.php');
-require_once('common.php');
-require_once('tree.class.php');
+require_once '../../../config.inc.php';
+require_once 'common.php';
+require_once 'tree.class.php';
 
 testlinkInitPage($db);
 $object_item="Custom Field Manager";

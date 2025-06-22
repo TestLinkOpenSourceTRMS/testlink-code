@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource  mantissoapInterface.class.php
  * @author Francisco Mancardi
@@ -21,16 +21,15 @@ class mantissoapInterface extends issueTrackerInterface
   
   
   private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
-  
-  var $defaultResolvedStatus;
+  private $defaultResolvedStatus;
 
   // field is nvarchar(128) at least on 1.2.14
-  var $summaryLengthLimit = 120;
+  private $summaryLengthLimit = 120;
 
   /**
    * Construct and connect to BTS.
    *
-   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param string $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
   function __construct($type,$config,$name)
@@ -38,8 +37,7 @@ class mantissoapInterface extends issueTrackerInterface
     $this->name = $name;
     $this->interfaceViaDB = false;
 
-    $this->methodOpt['buildViewBugLink'] = 
-      array('addSummary' => true, 'colorByStatus' => true,
+    $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true,
             'addReporter' => true, 'addHandler' => true);
     
     $this->defaultResolvedStatus = array();
@@ -52,16 +50,15 @@ class mantissoapInterface extends issueTrackerInterface
       $this->setResolvedStatusCfg();
       $this->connect();
       $this->guiCfg = array('use_decoration' => true);
-    }  
+    }
   }
 
   
   /**
-   * Return the URL to the bugtracking page for viewing 
-   * the bug with the given id. 
+   * Return the URL to the bugtracking page for viewing
+   * the bug with the given id.
    *
    * @param int id the bug id
-   * 
    * @return string returns a complete URL to view the bug
    **/
   function buildViewBugURL($id)
@@ -80,9 +77,9 @@ class mantissoapInterface extends issueTrackerInterface
   function connect()
   {
     $op = $this->getClient(array('log' => true));
-    if( ($this->connected = $op['connected']) )
-    { 
-      // OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
+    if( $this->connected = $op['connected'] )
+    {
+      // OK, we have got WSDL => server is up and we can do SOAP calls, but now we need
       // to do a simple call with user/password only to understand if we are really connected
       try {
         $x = $op['client']->mc_enum_status($this->cfg->username,$this->cfg->password);
@@ -96,7 +93,6 @@ class mantissoapInterface extends issueTrackerInterface
 
 
     /**
-     * 
      *
      **/
   function getClient($opt=null)
@@ -109,7 +105,7 @@ class mantissoapInterface extends issueTrackerInterface
     try
     {
       // IMPORTANT NOTICE
-      // $this->cfg is a simpleXML object, then is ABSOLUTELY CRITICAL 
+      // $this->cfg is a simpleXML object, then is ABSOLUTELY CRITICAL
       // DO CAST any member before using it.
       // If we do following call WITHOUT (string) CAST, SoapClient() fails
       // complaining '... wsdl has to be an STRING or null ...'
@@ -128,15 +124,15 @@ class mantissoapInterface extends issueTrackerInterface
       if($my['opt']['log'])
       {
         tLog("SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
-      } 
+      }
     }
     return $res;
-  } 
+  }
   
   /**
    * checks is bug id is present on BTS
-   * 
-   * @return integer returns 1 if the bug with the given id exists 
+   *
+   * @return integer returns 1 if the bug with the given id exists
    **/
   function checkBugIDExistence($id)
   {
@@ -164,11 +160,11 @@ class mantissoapInterface extends issueTrackerInterface
     {
       $status_ok = $client->mc_issue_exists($safe->username,$safe->password,$safe->id) ? 1 : 0;
     }
-    catch (SoapFault $f) 
+    catch (SoapFault $f)
     {
       // from http://www.w3schools.com/soap/soap_fault.asp
       // VersionMismatch  -   Found an invalid namespace for the SOAP Envelope element
-      // MustUnderstand   -   An immediate child element of the Header element, 
+      // MustUnderstand   -   An immediate child element of the Header element,
       //            with the mustUnderstand attribute set to "1", was not understood
       // Client       - The message was incorrectly formed or contained incorrect information
       // Server       - There was a problem with the server so the message ...
@@ -180,10 +176,7 @@ class mantissoapInterface extends issueTrackerInterface
 
 
   /**
-   * 
-   * 
    *
-   * 
    **/
   function getIssue($id)
   {
@@ -213,27 +206,26 @@ class mantissoapInterface extends issueTrackerInterface
       if($client->mc_issue_exists($safe->username,$safe->password,$safe->id))
       {
         $issue = $client->mc_issue_get($safe->username,$safe->password,$safe->id);
-        if( !is_null($issue) && is_object($issue) ) {       
+        if( !is_null($issue) && is_object($issue) ) {
           $issue->IDHTMLString = "<b>{$id} : </b>";
-          $issue->statusCode = $issue->status->id; 
-          $issue->statusVerbose = $issue->status->name; 
+          $issue->statusCode = $issue->status->id;
+          $issue->statusVerbose = $issue->status->name;
           $issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
-          $issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? 
-          $this->status_color[$issue->statusVerbose] : 'white';
+          $issue->statusColor = isset($this->status_color[$issue->statusVerbose]) ? $this->status_color[$issue->statusVerbose] : 'white';
 
           $issue->summaryHTMLString = $issue->summary;
           $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]);
 
           $issue->reportedBy = (string)$issue->reporter->name;
-          $issue->handledBy = (string)$issue->handler->name;    
+          $issue->handledBy = (string)$issue->handler->name;
         }
       }
     }
-    catch (SoapFault $f) 
+    catch (SoapFault $f)
     {
       // from http://www.w3schools.com/soap/soap_fault.asp
       // VersionMismatch  -   Found an invalid namespace for the SOAP Envelope element
-      // MustUnderstand   -   An immediate child element of the Header element, 
+      // MustUnderstand   -   An immediate child element of the Header element,
       //            with the mustUnderstand attribute set to "1", was not understood
       // Client       - The message was incorrectly formed or contained incorrect information
       // Server       - There was a problem with the server so the message ...
@@ -245,10 +237,7 @@ class mantissoapInterface extends issueTrackerInterface
 
 
   /**
-   * 
-   * 
    *
-   * 
    **/
   function isConnected()
   {
@@ -257,10 +246,7 @@ class mantissoapInterface extends issueTrackerInterface
 
 
   /**
-   * 
-   * 
    *
-   * 
    **/
   public static function getCfgTemplate()
   {
@@ -292,7 +278,7 @@ class mantissoapInterface extends issueTrackerInterface
    *
    * check for configuration attributes than can be provided on
    * user configuration, but that can be considered standard.
-   * If they are MISSING we will use 'these carved on the stone values' 
+   * If they are MISSING we will use 'these carved on the stone values'
    * in order to simplify configuration.
    *
    *
@@ -313,7 +299,7 @@ class mantissoapInterface extends issueTrackerInterface
     if( !property_exists($this->cfg,'uricreate') )
     {
       $this->cfg->uricreate = $base;
-    }     
+    }
   }
 
     /**
@@ -339,7 +325,7 @@ class mantissoapInterface extends issueTrackerInterface
     $str = '';
     if ($statusVerbose !== false)
     {
-      // status values depends on your mantis configuration at config_inc.php in $g_status_enum_string, 
+      // status values depends on your mantis configuration at config_inc.php in $g_status_enum_string,
       // below is the default:
       //'10:new,20:feedback,30:acknowledged,40:confirmed,50:assigned,80:resolved,90:closed'
       // With this replace if user configure status on mantis with blank we do not have problems
@@ -348,7 +334,7 @@ class mantissoapInterface extends issueTrackerInterface
       $str = lang_get('issue_status_' . $tlStatus);
       if($this->guiCfg['use_decoration'])
       {
-        $str = "[" . $str . "] "; 
+        $str = "[" . $str . "] ";
       }
     }
     return $str;
@@ -403,14 +389,13 @@ class mantissoapInterface extends issueTrackerInterface
    *    array('id'            =>   array( 'name' => 'id',               'type' => 'xsd:integer',     'minOccurs' => '0' ),
    *          'view_state'    =>   array( 'name' => 'view_state',       'type' => 'tns:ObjectRef',   'minOccurs' => '0' ),
    *          'last_updated'  =>   array( 'name' => 'last_updated', 'type' => 'xsd:dateTime',    'minOccurs' => '0' ),
-   *          'project'   =>   array( 'name' => 'project',      'type' => 'tns:ObjectRef',   'minOccurs' => '0' ),   
+   *          'project'   =>   array( 'name' => 'project',      'type' => 'tns:ObjectRef',   'minOccurs' => '0' ),
    *
    *
    * ### ObjectRef
    * $l_oServer->wsdl->addComplexType('ObjectRef','complexType','struct','all','',
    * array('id'    =>   array( 'name' => 'id',       'type' => 'xsd:integer',     'minOccurs' => '0'),
    *       'name'  =>   array( 'name' => 'name', 'type' => 'xsd:string',  'minOccurs' => '0')
-   *  
    */
   public function addIssue($summary,$description,$opt=null)
   {
@@ -451,11 +436,11 @@ class mantissoapInterface extends issueTrackerInterface
         if(property_exists($opt, 'reporter'))
         {
           $issue['reporter'] = array('name' => $opt->reporter);
-        }  
-      }  
+        }
+      }
 
 
-      // because issue id on TestLink is considered a string, 
+      // because issue id on TestLink is considered a string,
       // in order to make work ORDER BY, I will format it adding 0 to left as done on Mantis GUI
       // example: 6845 => 0006845
       $ret['id'] = $client->mc_issue_add($safe->username,$safe->password,$issue);
@@ -520,13 +505,12 @@ class mantissoapInterface extends issueTrackerInterface
       if(!is_null($opt)) {
         if(property_exists($opt, 'reporter')) {
           $issueNoteData['reporter'] = array('name' => $opt->reporter);
-        }  
-      }  
+        }
+      }
 
       try {
-        $ret['note_id'] = 
-          $client->mc_issue_note_add($safe->username,$safe->password,
-                                     $safe->issueID,$issueNoteData);        
+        $ret['note_id'] = $client->mc_issue_note_add($safe->username,$safe->password,
+                                     $safe->issueID,$issueNoteData);
       } catch (SoapFault $f) {
         // "User id missing";
         // Have found no way to check code, then will check message
@@ -535,17 +519,14 @@ class mantissoapInterface extends issueTrackerInterface
 
         switch( $faultMsg ) {
           case "User id missing":
-            $ret['msg'] = 
-              "Cannot create note, using TestLink logged user: " .
-              $issueNoteData['reporter']['name'];
+            $ret['msg'] = "Cannot create note, using TestLink logged user: " . $issueNoteData['reporter']['name'];
           break;
 
           default:
-            $ret['msg'] = 
-              "Cannot create note, MantisBT message: $faultMsg";
+            $ret['msg'] = "Cannot create note, MantisBT message: $faultMsg";
           break;
-        } 
-      }  
+        }
+      }
     }
     else {
       $ret['msg'] = "issue $safe->issueID does not exist";
@@ -561,7 +542,7 @@ class mantissoapInterface extends issueTrackerInterface
    **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'project') && property_exists($this->cfg, 'category'));
+    return property_exists($this->cfg, 'project') && property_exists($this->cfg, 'category');
   }
 
   

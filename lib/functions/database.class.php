@@ -33,7 +33,7 @@
  */
 $ADODB_COUNTRECS = TRUE;
 
-require_once( dirname(__FILE__). '/logging.inc.php' );
+require_once dirname(__FILE__). '/logging.inc.php';
 
 /**
  * TestLink wrapper for ADODB component
@@ -58,7 +58,7 @@ class database {
   function microtime_float() 
   {
     list( $usec, $sec ) = explode( " ", microtime() );
-    return ( (float)$usec + (float)$sec );
+    return (float)$usec + (float)$sec;
   }
   
   function setLogEnabled($value)
@@ -121,7 +121,7 @@ class database {
   // access to the ADODB object
   function get_dbmgr_object()
   {
-    return($this->db);
+    return $this->db;
   }
 
   
@@ -145,7 +145,7 @@ class database {
       $result['status'] = 0;
       $result['dbms_msg']=$this->error();
     }
-    return ($result);
+    return $result;
   }
 
 
@@ -373,7 +373,7 @@ class database {
       $row = $this->db->fetch_array( $result );
 
       if ( $row['Field'] == $c_field ) {
-        return ( $row['Key'] == $c_key );
+        return $row['Key'] == $c_key;
       }
     }
     return false;
@@ -389,7 +389,7 @@ class database {
       
     $t_escaped = $this->db->qstr( $p_string, false );
     // from second char(1) to one before last(-1)
-    return(substr($t_escaped,1,-1));
+    return substr($t_escaped,1,-1);
   }
 
 
@@ -647,7 +647,7 @@ class database {
       // -----------------------------------------------
       // Error management Code         
       $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
-      if( ($empty_column = (trim($column)=='') ) )
+      if( $empty_column = (trim($column)=='')  )
       {
         $errorMsg .= 'empty column - SQL:' . $sql;
         trigger_error($errorMsg,E_USER_NOTICE);
@@ -871,7 +871,7 @@ class database {
         $sql = "CREATE DATABASE `" . $this->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
       break;
     }
-    return ($sql);
+    return $sql;
   }
 
 
@@ -1008,7 +1008,7 @@ class database {
     if ($result)
     {
       $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
-      if( ($empty_column = (trim($column)=='') ) )
+      if( $empty_column = (trim($column)=='')  )
       {
         $errorMsg .= 'empty column - SQL:' . $sql;
         trigger_error($errorMsg,E_USER_NOTICE);

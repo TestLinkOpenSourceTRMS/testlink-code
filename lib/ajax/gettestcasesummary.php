@@ -9,8 +9,8 @@
 *
 * @internal revisions
 */
-require_once('../../config.inc.php');
-require_once('common.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 // take care of proper escaping when magic_quotes_gpc is enabled

@@ -8,10 +8,10 @@
  * @internal revisions
  *
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("users.inc.php");
-require_once('exttable.class.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'exttable.class.php';
 testlinkInitPage($db,false,false,"checkRights");
 $date_format_cfg = config_get('date_format');
 
@@ -25,7 +25,7 @@ $charset = config_get('charset');
 switch($args->doAction)
 {
   case 'clear':
-    // Ability to delete events from selected class from event logs 
+    // Ability to delete events from selected class from event logs
     $g_tlLogger->deleteEventsFor($args->logLevel);
     if( is_null($args->logLevel) )
     {
@@ -36,7 +36,7 @@ switch($args->doAction)
       $logLevelVerbose = null;
       foreach( $args->logLevel as $code )
       {
-        $logLevelVerbose[] = $gui->logLevels[$code];  
+        $logLevelVerbose[] = $gui->logLevels[$code];
       }
       $logLevelVerbose = implode(',',$logLevelVerbose);
       logAuditEvent(TLS("audit_events_with_level_deleted",$args->currentUser->login,$logLevelVerbose),"DELETE",null,"events");
@@ -60,15 +60,15 @@ $gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $arg
                                          $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
                                          $filters->endTime,$filters->users);
 
-if (count($gui->events) > 0) 
+if (count($gui->events) > 0)
 {
   $table = buildExtTable($gui, $show_icon, $charset);
-  if (!is_null($table)) 
+  if (!is_null($table))
   {
     $gui->tableSet[] = $table;
   }
-} 
-else 
+}
+else
 {
   $gui->warning_msg = lang_get("no_events");
 }
@@ -78,7 +78,7 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
- * 
+ *
  * @return object returns the arguments of the page
  */
 function init_args()
@@ -99,13 +99,13 @@ function init_args()
 
 /**
  * Checks the user rights for viewing the page
- * 
- * @param $db resource the database connection handle
- * @param $user tlUser the object of the current user
+ *
+ * @param database $db resource the database connection handle
+ * @param tlUser $user the object of the current user
  *
  * @return boolean return true if the page can be viewed, false if not
  */
-function checkRights(&$db,&$user,$action)
+function checkRights(&$db,&$user)
 {
   $checkStatus = $user->hasRight($db,"mgt_view_events");
   if( !$checkStatus )
@@ -122,8 +122,10 @@ function checkRights(&$db,&$user,$action)
 
 
 /**
- * 
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @return stdClass
  */
 function initializeGui(&$dbHandler,&$argsObj)
 {
@@ -158,8 +160,10 @@ function initializeGui(&$dbHandler,&$argsObj)
 
 
 /**
- * 
  *
+ * @param stdClass $argsObj
+ * @param string $dateFormat
+ * @return stdClass
  */
 function getFilters(&$argsObj=null,$dateFormat=null)
 {
@@ -174,7 +178,7 @@ function getFilters(&$argsObj=null,$dateFormat=null)
     {
       $date_array = split_localized_date($argsObj->startDate, $dateFormat);
       if ($date_array != null) {
-        // convert localized date to date that strtotime understands -> en_US: m/d/Y: 
+        // convert localized date to date that strtotime understands -> en_US: m/d/Y:
         $filters->startTime = strToTime($date_array['month'] . "/" . $date_array['day']. "/" .$date_array['year']);
       }
       if ($filters->startTime == "")
@@ -189,8 +193,7 @@ function getFilters(&$argsObj=null,$dateFormat=null)
       if ($date_array != null) {
         // convert localized date to date that strtotime understands -> en_US: m/d/Y:
         // end time must end at selected day at 23:59:59
-        $filters->endTime = strToTime($date_array['month'] . "/" . $date_array['day']. "/" . 
-                                      $date_array['year'] . ", 23:59:59");
+        $filters->endTime = strToTime($date_array['month'] . "/" . $date_array['day']. "/" . $date_array['year'] . ", 23:59:59");
       }
       if (!$filters->endTime)
       {
@@ -204,7 +207,7 @@ function getFilters(&$argsObj=null,$dateFormat=null)
         if (!$filters->users)
         {
         $filters->users = null;
-      } 
+      }
     }
   }
   
@@ -212,13 +215,16 @@ function getFilters(&$argsObj=null,$dateFormat=null)
 }
 
 /**
- * 
  *
+ * @param stdClass $gui
+ * @param string $show_icon
+ * @param string $charset
+ * @return tlExtTable
  */
 function buildExtTable($gui,$show_icon,$charset)
 {
   $table = null;
-  if(count($gui->events) > 0) 
+  if(!empty($gui->events))
   {
     $columns = array();
     $columns[] = array('title_key' => 'th_timestamp', 'width' => 15);
@@ -232,12 +238,10 @@ function buildExtTable($gui,$show_icon,$charset)
 
     foreach ($gui->events as $event_key => $event)
     {
-      $transactionID = $event->transactionID;
-      
       $rowData = array();
 
       // necessary as localize_dateOrTimeStamp expects 2nd parameter to pass by reference
-      $dummy = null; 
+      $dummy = null;
       // use html comment to sort properly by timestamp
       $rowData[] = "<!--{$event->timestamp}-->" .
                    localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',$event->timestamp);
@@ -251,7 +255,7 @@ function buildExtTable($gui,$show_icon,$charset)
       }
       $description = htmlentities($event->description, ENT_QUOTES, $charset);
       $rowData[] = "<!--" . $description . "-->" .
-                   "<a onClick=\"showEventDetails({$event->dbID});\" style=\"cursor: hand; cursor: pointer;\">" . 
+                   "<a onClick=\"showEventDetails({$event->dbID});\" style=\"cursor: hand; cursor: pointer;\">" .
                    "<img title=\"" . lang_get("show_eventdetails") ."\" src=\"{$show_icon}\" /> </a>" .
                    $description;
                    
@@ -272,5 +276,5 @@ function buildExtTable($gui,$show_icon,$charset)
     $table->toolbarExpandCollapseGroupsButton = true;
     $table->toolbarShowAllColumnsButton = true;
   }
-  return($table);
+  return $table;
 }

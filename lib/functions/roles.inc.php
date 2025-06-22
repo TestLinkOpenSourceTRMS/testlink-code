@@ -14,7 +14,7 @@
  */
 
 /** localization support */ 
-require_once( dirname(__FILE__). '/lang_api.php' );
+require_once dirname(__FILE__). '/lang_api.php';
 
 // 
 // This can seems weird but we have this problem:

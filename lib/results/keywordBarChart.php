@@ -1,6 +1,6 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource  keywordBarChart.php
  *
  * @author  Francisco Mancardi
@@ -10,9 +10,9 @@
  * @since 1.9.10
  *
  */
-require_once('../../config.inc.php');
-require_once('common.php');
-require_once('charts.inc.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'charts.inc.php';
 
 $cfg = new stdClass();
 $cfg->scale = new stdClass();
@@ -34,29 +34,27 @@ $info = getDataAndScale($db,$args);
 createChart($info,$cfg);
 
 
-/*
-  function: getDataAndScale
-
-  args: dbHandler
-  
-  returns: object
-
-*/
+/**
+ *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @return stdClass
+ */
 function getDataAndScale(&$dbHandler,$argsObj)
 {
   $resultsCfg = config_get('results');
-  $obj = new stdClass(); 
+  $obj = new stdClass();
   $items = array();
-  $totals = null; 
+  $totals = null;
 
   $metricsMgr = new tlTestPlanMetrics($dbHandler);
   $dummy = $metricsMgr->getStatusTotalsByKeywordForRender($argsObj->tplan_id);
   
   $obj->canDraw = false;
-  if( !is_null($dummy) )    
+  if( !is_null($dummy) )
   {
     $dataSet = $dummy->info;
-    $obj->canDraw = !is_null($dataSet) && (count($dataSet) > 0);
+    $obj->canDraw = !is_null($dataSet) && (!empty($dataSet));
   }
   
   if($obj->canDraw)
@@ -65,7 +63,7 @@ function getDataAndScale(&$dbHandler,$argsObj)
     foreach($dataSet as $keyword_id => $elem)
     {
       $item_descr[$elem['name']] = $keyword_id;
-    }  
+    }
     ksort($item_descr);
       
     foreach($item_descr as $name => $keyword_id)
@@ -73,10 +71,10 @@ function getDataAndScale(&$dbHandler,$argsObj)
       $items[] = htmlspecialchars($name);
       foreach($dataSet[$keyword_id]['details'] as $status => $value)
       {
-        $totals[$status][] = $value['qty'];  
-      }    
+        $totals[$status][] = $value['qty'];
+      }
     }
-  } 
+  }
   
   $obj->xAxis = new stdClass();
   $obj->xAxis->values = $items;
@@ -100,9 +98,9 @@ function getDataAndScale(&$dbHandler,$argsObj)
       $obj->chart_data[] = $values;
       $obj->series_label[] = lang_get($resultsCfg['status_label'][$status]);
       if( isset($resultsCfg['charts']['status_colour'][$status]) )
-      { 
+      {
         $obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
-      } 
+      }
     }
   }
       
@@ -111,11 +109,13 @@ function getDataAndScale(&$dbHandler,$argsObj)
 
 /**
  *
+ * @param database $dbHandler
+ * @return stdClass
  */
 function init_args(&$dbHandler)
 {
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,0,64),
-                   "tproject_id" => array(tlInputParameter::INT_N), 
+                   "tproject_id" => array(tlInputParameter::INT_N),
                    "tplan_id" => array(tlInputParameter::INT_N));
 
   $args = new stdClass();
@@ -141,11 +141,11 @@ function init_args(&$dbHandler)
       $cerbero->method = null;
       $cerbero->args->getAccessAttr = false;
       setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
-    }  
+    }
   }
   else
   {
-    testlinkInitPage($dbHandler,false,false,"checkRights");  
+    testlinkInitPage($dbHandler,false,false,"checkRights");
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
 
@@ -158,6 +158,9 @@ function init_args(&$dbHandler)
 
 /**
  *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
  */
 function checkRights(&$db,&$user)
 {

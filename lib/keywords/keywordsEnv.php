@@ -1,11 +1,11 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource: keywordsView.php
  *
- * utilities functions 
+ * utilities functions
  */
 
 /**
@@ -33,7 +33,7 @@ function getKeywordsEnv(&$dbHandler,&$user,$tproject_id,$opt=null) {
       $kws[] = $kwo->dbID;
       if( $more ) {
         $kwNames[$kwo->dbID] = $kwo->name;
-        $kwNotes[$kwo->dbID] = $kwo->notes;        
+        $kwNotes[$kwo->dbID] = $kwo->notes;
       }
     }
 
@@ -42,20 +42,18 @@ function getKeywordsEnv(&$dbHandler,&$user,$tproject_id,$opt=null) {
     if( $more && count($kwEnv->kwOnTCV) > 0) {
       foreach($kwEnv->kwOnTCV as $kk => $dummy) {
         $kwEnv->kwOnTCV[$kk]['keyword'] = $kwNames[$kk];
-        $kwEnv->kwOnTCV[$kk]['notes'] = $kwNotes[$kk];        
+        $kwEnv->kwOnTCV[$kk]['notes'] = $kwNotes[$kk];
       }
     }
 
     $kwCfg = config_get('keywords');
 
     if( $kwCfg->onDeleteCheckExecutedTCVersions ) {
-      $kwEnv->kwExecStatus = 
-        $tproject->getKeywordsExecStatus($kws,$tproject_id);        
+      $kwEnv->kwExecStatus = $tproject->getKeywordsExecStatus($kws,$tproject_id);
     }
 
     if( $kwCfg->onDeleteCheckFrozenTCVersions ) {
-      $kwEnv->kwFreshStatus = 
-        $tproject->getKeywordsFreezeStatus($kws,$tproject_id);  
+      $kwEnv->kwFreshStatus = $tproject->getKeywordsFreezeStatus($kws,$tproject_id);
     }
 
   }
@@ -64,6 +62,6 @@ function getKeywordsEnv(&$dbHandler,&$user,$tproject_id,$opt=null) {
   $kwEnv->canAssign = $user->hasRight($dbHandler,"keyword_assignment",$tproject_id);
 
   $kwEnv->editUrl = $_SESSION['basehref'] . "lib/keywords/keywordsEdit.php?" .
-                   "tproject_id={$tproject_id}"; 
+                   "tproject_id={$tproject_id}";
   return $kwEnv;
 }

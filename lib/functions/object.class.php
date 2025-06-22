@@ -41,7 +41,7 @@ abstract class tl
 };
 
 
-require_once('int_serialization.php');
+require_once 'int_serialization.php';
 
 /**
  * Base class for all managed TestLink objects, all tl-managed objects should extend this base class

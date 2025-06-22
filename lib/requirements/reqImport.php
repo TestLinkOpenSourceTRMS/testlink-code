@@ -11,11 +11,11 @@
  *
  *
  */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once('requirements.inc.php');
-require_once('xml.inc.php');
-require_once('csv.inc.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'requirements.inc.php';
+require_once 'xml.inc.php';
+require_once 'csv.inc.php';
 
 testlinkInitPage($db,false,false);
 
@@ -306,7 +306,7 @@ function doReqImportOther(&$reqMgr,$fileName,$importContext,$importOptions)
   if( !is_null($impSet) )
   { 
     $reqSet = $impSet['info'];
-    if( ($loop2do=count($reqSet)) )
+    if( $loop2do=count($reqSet) )
     {
       for($kdx=0; $kdx < $loop2do; $kdx++)
       {   

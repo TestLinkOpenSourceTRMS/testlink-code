@@ -523,7 +523,7 @@ class testcaseCommands {
         $tplanSet = array_keys($guiObj->exec_status_quo[$version_id]);
         foreach($tplanSet as $tplan_id)
         {
-          if( ($guiObj->display_platform = !isset($guiObj->exec_status_quo[$version_id][$tplan_id][0])) )
+          if( $guiObj->display_platform = !isset($guiObj->exec_status_quo[$version_id][$tplan_id][0]) )
           {
             $stop = true;
             break;

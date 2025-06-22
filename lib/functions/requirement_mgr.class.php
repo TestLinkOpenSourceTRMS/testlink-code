@@ -6,7 +6,7 @@
  * @package     TestLink
  * @filesource  requirement_mgr.class.php
  * @author      Francisco Mancardi <francisco.mancardi@gmail.com>
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2020, TestLink community
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
@@ -15,7 +15,7 @@
  */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
-require_once( dirname(__FILE__) . '/attachments.inc.php');
+require_once dirname(__FILE__) . '/attachments.inc.php';
 class requirement_mgr extends tlObjectWithAttachments {
   var $db;
   var $cfield_mgr;
@@ -174,7 +174,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   }
 
   $where_clause = " WHERE NH_REQV.parent_id ";
-  if( ($id_is_array=is_array($id)) ) {
+  if( $id_is_array=is_array($id) ) {
     $where_clause .= "IN (" . implode(",",$id) . ") ";
   } else {
     $where_clause .= " = {$id} ";
@@ -197,15 +197,15 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   // added -1 AS revision_id to make some process easier 
   switch($my['options']['outputLevel']) {
     case 'minimal':
-      $outf = " /* $debugMsg */ 
+      $outf = " /* $debugMsg */
                 SELECT REQ.id,REQ.req_doc_id,REQV.id AS version_id,
-                NH_REQ.name AS title "; 
+                NH_REQ.name AS title ";
     break;
 
     case 'std':
     default:
-      $outf = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
-              " REQV.scope,REQV.status,REQV.type,REQV.active," . 
+      $outf = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," .
+              " REQV.scope,REQV.status,REQV.type,REQV.active," .
               " REQV.is_open,REQV.is_open AS reqver_is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
               " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
               " REQV.modification_ts,REQV.revision, -1 AS revision_id, " .
@@ -214,12 +214,12 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     break;
   }
 
-  // added -1 AS revision_id to make some process easier 
+  // added -1 AS revision_id to make some process easier
   $sql = $outf .
          " FROM {$this->object_table} REQ " .
          " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
          " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id ".
-         " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
+         " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .
          " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
          " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
          $where_clause . $filter_clause . $my['options']['order_by'];
@@ -244,7 +244,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     //           
     // if $id was a list then this will return something USELESS
     //           
-    if( !$id_is_array ) {         
+    if( !$id_is_array ) {
       $recordset = array($this->db->fetchFirstRow($sql));
     } else {
       // Write to event viewer ???
@@ -256,7 +256,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   $rs = null;
   if(!is_null($recordset) && $my['options']['renderImageInline']) {
     $k2l = array_keys($recordset);
-    foreach($k2l as $akx) { 
+    foreach($k2l as $akx) {
       $this->renderImageAttachments($id,$recordset[$akx]);
     } 
     reset($recordset);
@@ -545,7 +545,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     $doIt = true;
     $kaboom = false;
 
-    if(is_array($id)) {    
+    if(is_array($id)) {
       $id_list = implode(',',$id);
       $where['coverage'] = " WHERE req_id IN ({$id_list})";
       $where['this'] = " WHERE id IN ({$id_list})";
@@ -558,7 +558,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       $where['iam_parent'] = " WHERE parent_id = " . $safeID;
     }
 
-    $set2del = null;    
+    $set2del = null;
     
     // if we are trying to delete ONE SPECIFIC VERSION
     // of ONE REQ, and is the ONLY VERSION on DB
@@ -571,8 +571,8 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       // From GUI if only one version exists,
       // the operation available is DELETE REQ,
       // not delete version
-      $sql = "SELECT COUNT(0) AS VQTY, parent_id FROM " . 
-             " {$this->tables['nodes_hierarchy']} " . 
+      $sql = "SELECT COUNT(0) AS VQTY, parent_id FROM " .
+             " {$this->tables['nodes_hierarchy']} " .
              $where['iam_parent'] . ' GROUP BY parent_id';
 
       $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
@@ -595,7 +595,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       }  
     }  
 
-    // When deleting only one version, we need to check 
+    // When deleting only one version, we need to check
     // if we need to delete  requirement also.
     $children[] = $version_id;
     if( $version_id == self::ALL_VERSIONS) {
@@ -619,7 +619,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       $children = array_keys($children_rs); 
 
       // delete dependencies with test specification
-      $sql = "DELETE FROM {$this->tables['req_coverage']} " . 
+      $sql = "DELETE FROM {$this->tables['req_coverage']} " .
              $where['coverage'];
       $result = $this->db->exec_query($sql);
 
@@ -650,10 +650,10 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     if( $doIt ) {
       // As usual working with MySQL makes easier to be lazy and forget that
       // agregate functions need GROUP BY 
-      // How many versions are there? 
+      // How many versions are there?
       // we will delete req also for all with COUNT(0) == 1
-      $sql = "SELECT COUNT(0) AS VQTY, parent_id " . 
-             " FROM {$this->tables['nodes_hierarchy']} " . 
+      $sql = "SELECT COUNT(0) AS VQTY, parent_id " .
+             " FROM {$this->tables['nodes_hierarchy']} " .
              $where['iam_parent'] . ' GROUP BY parent_id';
 
       $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
@@ -663,7 +663,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
         }  
       }  
 
-      if( ($kaboom = !is_null($target)) ) {
+      if( $kaboom = !is_null($target) ) {
         $where['this'] = " WHERE id IN (" . implode(',',$target) . ")";
       }  
 
@@ -675,7 +675,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 
       // Going to work on REVISIONS
       $implosion = implode(',',$children);
-      $sql = "/* $debugMsg */ " . 
+      $sql = "/* $debugMsg */ " .
              " SELECT id from {$this->tables['nodes_hierarchy']} " .
              " WHERE parent_id IN ( {$implosion} ) " .
              " AND node_type_id=" .
@@ -689,9 +689,9 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
                                 WHERE parent_id IN ( {$implosion} ) ";
         $result = $this->db->exec_query($sql);
               
-        $sql = "/* $debugMsg */ 
-               DELETE FROM {$this->tables['nodes_hierarchy']} 
-               WHERE parent_id IN ( {$implosion} ) 
+        $sql = "/* $debugMsg */
+               DELETE FROM {$this->tables['nodes_hierarchy']}
+               WHERE parent_id IN ( {$implosion} )
                AND node_type_id=" . $this->node_types_descr_id['requirement_revision'];
         $result = $this->db->exec_query($sql);
       }
@@ -732,7 +732,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 
 /** collect coverage of Requirement
  * @param string $req_id ID of req.
- * @return assoc_array list of test cases [id, title]
+ * @return array list of test cases [id, title]
  *
  * Notice regarding platforms:
  * When doing Requirements Based Reports, we analize report situation
@@ -1085,7 +1085,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
   /*
     function: assign_to_tcase
               assign requirement(s) to test case
-              Will use always latest ACTIVE Versions 
+              Will use always latest ACTIVE Versions
 
     args: req_id: can be an array of requirement id
           testcase_id
@@ -1105,7 +1105,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
     $output = 0;
     $now = $this->db->db_now();
     if ($testcase_id && $req_id) {
-      // Get Latest Active Test Case Version 
+      // Get Latest Active Test Case Version
       $tcv = current($tcMgr->get_last_active_version($testcase_id));
       if ($tcv == null) {
         return $output;
@@ -1131,32 +1131,31 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
       $in_clause = implode(",",$reqLatestVersionIDSet);
 
       //
-      $sql = " /* $debugMsg */ " . 
-             " SELECT req_id,testcase_id,req_version_id,tcversion_id " . 
+      $sql = " /* $debugMsg */ " .
+             " SELECT req_id,testcase_id,req_version_id,tcversion_id " .
              " FROM {$this->tables['req_coverage']} " .
-             " WHERE req_version_id IN ({$in_clause}) " . 
+             " WHERE req_version_id IN ({$in_clause}) " .
              " AND tcversion_id = {$ltcv}";
 
       $coverage = $this->db->fetchRowsIntoMap($sql,'req_version_id');
               
-      // Useful for audit 
+      // Useful for audit
       $tcInfo = $this->tree_mgr->get_node_hierarchy_info($testcase_id);
 
       $loop2do = count($reqLatestVersionIDSet);
       for($idx=0; $idx < $loop2do; $idx++) {
-        if( is_null($coverage) || 
-            !isset($coverage[$reqLatestVersionIDSet[$idx]]) ) {
+        if( is_null($coverage) || !isset($coverage[$reqLatestVersionIDSet[$idx]]) ) {
           $sql = " INSERT INTO {$this->tables['req_coverage']} " .
                  " (req_id,testcase_id,req_version_id, tcversion_id," .
                  " author_id,creation_ts) " .
                  " VALUES ({$reqIDSet[$idx]},{$testcase_id}," .
-                 " $reqLatestVersionIDSet[$idx],{$ltcv},"  . 
+                 " $reqLatestVersionIDSet[$idx],{$ltcv},"  .
                  " {$author_id},{$now})";
           $result = $this->db->exec_query($sql);
           if ($this->db->affected_rows() == 1) {
             $output = 1;
 
-            // For audit 
+            // For audit
             $reqInfo = $this->tree_mgr->get_node_hierarchy_info($reqIDSet[$idx]);
             if($tcInfo && $reqInfo) {
               logAuditEvent(TLS("audit_reqv_assigned_tcv",
@@ -1202,7 +1201,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
            " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
            " AND  req_coverage.req_id={$req_id}";
 
-    return ($this->db->get_recordset($sql));
+    return $this->db->get_recordset($sql);
   }
 
 
@@ -1296,7 +1295,7 @@ function set_order($map_id_order)
  *
  * @param  int $id requirement id
  * @param  int $tproject_id: optional default null.
- *         useful to get custom fields 
+ *         useful to get custom fields
  *         (when this feature will be developed).
  *
  * @return  string with XML code
@@ -1329,7 +1328,7 @@ function exportReqToXML($id,$tproject_id=null, $inc_attachments=false)
                       ->getAttachmentInfosFor(
                         $req_version_id,
                         $this->attachmentTableName,'id');
-	// get all attachments content and encode it in base64	  
+	// get all attachments content and encode it in base64
 	if ($attachSet) {
 		foreach ($attachSet as $attachmentInfo) {
 			$aID = $attachmentInfo["id"];
@@ -1347,7 +1346,7 @@ function exportReqToXML($id,$tproject_id=null, $inc_attachments=false)
 			}
 		}
 	  
-		if( !is_null($attachments) && count($attachments) > 0 )
+		if( !empty($attachments) )
 		{
 			$attchRootElem = "<attachments>\n{{XMLCODE}}\t\t</attachments>\n";
 			$attchElemTemplate = "\t\t\t<attachment>\n" .
@@ -1426,7 +1425,7 @@ function xmlToMapRequirement($xml_item)
 	  $dummy['attachments'][$attach_id]['file_type'] = (string)$attachment->file_type;
 	  $dummy['attachments'][$attach_id]['title'] = (string)$attachment->title;
 	  $dummy['attachments'][$attach_id]['date_added'] = (string)$attachment->date_added;
-	  $dummy['attachments'][$attach_id]['content'] = (string)$attachment->content;  
+	  $dummy['attachments'][$attach_id]['content'] = (string)$attachment->content;
 	}
   }
   return $dummy;
@@ -1483,7 +1482,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   static $doProcessCF = false;
   static $debugMsg;
   static $getByAttributeOpt;
-  static $getLastChildInfoOpt;  
+  static $getLastChildInfoOpt;
   
   if(is_null($linkedCF) ) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -1498,20 +1497,20 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     $messages['cfield'] = lang_get('cf_value_not_imported_missing_cf_on_testproject');
 
     $labels = array('import_req_created' => '',
-                    'import_req_skipped' =>'', 
-                    'import_req_updated' => '', 
-                    'frozen_req_unable_to_import' => '', 'requirement' => '', 
+                    'import_req_skipped' =>'',
+                    'import_req_updated' => '',
+                    'frozen_req_unable_to_import' => '', 'requirement' => '',
                     'import_req_new_version_created' => '',
                     'import_req_update_last_version_failed' => '',
-                    'import_req_new_version_failed' => '', 
+                    'import_req_new_version_failed' => '',
                     'import_req_skipped_plain' => '',
-                    'req_title_lenght_exceeded' => '', 
+                    'req_title_lenght_exceeded' => '',
                     'req_docid_lenght_exceeded' => '');
     foreach($labels as $key => $dummy) {
       $labels[$key] = lang_get($key);
     }  
     $getByAttributeOpt = array('output' => 'id');
-    $getLastChildInfoOpt = array('child_type' => 'version', 
+    $getLastChildInfoOpt = array('child_type' => 'version',
       'output' => ' CHILD.is_open, CHILD.id ');
   }  
   
@@ -1525,13 +1524,12 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   $copy_req = null;
   $getOptions = array('output' => 'minimun');
   $has_filters = !is_null($filters);
-  $my['options'] = array( 'hitCriteria' => 'docid' , 
+  $my['options'] = array( 'hitCriteria' => 'docid' ,
     'actionOnHit' => "update", 'skipFrozenReq' => true);
   $my['options'] = array_merge($my['options'], (array)$options);
 
-  // Check data than can create issue when writting 
+  // Check data than can create issue when writting
   // to DB due to lenght
-  // 
   $req['title'] = trim($req['title']);
   $req['docid'] = trim($req['docid']);
 
@@ -1540,21 +1538,21 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   if( mb_strlen($req['title'], $tlCfg->charset) > $fieldSize->req_title ) {
      $checkLengthOK = false;
      $what2add = $labels['req_title_lenght_exceeded'] . '/';
-  }  
+  }
 
   if( mb_strlen($req['docid'], $tlCfg->charset) > $fieldSize->req_docid ) {
      $checkLengthOK = false;
      $what2add .= $labels['req_docid_lenght_exceeded'];
-  }  
+  }
 
-  if( $checkLengthOK == FALSE ) {
+  if( !$checkLengthOK ) {
     $msgID = 'import_req_skipped_plain';
     $user_feedback[] = array('doc_id' => $req['docid'],
-                             'title' => $req['title'], 
+                             'title' => $req['title'],
                              'import_status' => sprintf($labels[$msgID],$what2add));
 
     return $user_feedback;
-  }  
+  }
 
   // Check:
   // If item with SAME DOCID exists inside container
@@ -1568,7 +1566,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   // $getOptions = array('output' => 'minimun');
   $msgID = 'import_req_skipped';
 
-  $target = array('key' => $my['options']['hitCriteria'], 
+  $target = array('key' => $my['options']['hitCriteria'],
                   'value' => $req[$my['options']['hitCriteria']]);
 
   // IMPORTANT NOTICE
@@ -1596,14 +1594,14 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
                               array('quickAndDirty' => true));
 	    $reqID = $newReq['id'];
       $fk_id = $newReq['version_id'];  // for attachments
-      if( ($status_ok = ($newReq['status_ok'] == 1)) ){
+      if( $status_ok = ($newReq['status_ok'] == 1) ){
         $msgID = 'import_req_created';
       } else {
         $msgID = 'import_req_skipped_plain';
         $result['msg'] = $newReq['msg'];  // done to use what2add logic far below
       }
     } else {
-      // Can not have req with same req doc id 
+      // Can not have req with same req doc id
       // on another branch => BLOCK
       // What to do if is Frozen ??? -> now ignore and update anyway
       $msgID = 'import_req_skipped';
@@ -1675,23 +1673,22 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   $what2add = is_null($result) ? $req['docid'] : $req['docid'] . ':' . $result['msg'];
   
   $user_feedback[] = array('doc_id' => $req['docid'],
-    'title' => $req['title'], 
+    'title' => $req['title'],
     'import_status' => sprintf($labels[$msgID],$what2add));
 
   $hasAttachments = array_key_exists('attachments',$req);
   // process attachements for creation and update
   if ($status_ok && $hasAttachments) {
-	  $addAttachResp = $this->processAttachments( 
+	  $addAttachResp = $this->processAttachments(
       $importMode, $fk_id, $req['attachments'], $feedbackMsg );
   }
 
   // display only problems during attachments import
   if( isset($addAttachResp) && !is_null($addAttachResp) ) {
   	foreach($addAttachResp as $att_name) {
-  	  $user_feedback[] = 
-        array('doc_id' => $req['docid'],
+  	  $user_feedback[] = array('doc_id' => $req['docid'],
               'title' => $req['title'],
-  						'import_status' => 
+  						'import_status' =>
                 sprintf(lang_get('import_req_attachment_skipped'),$att_name));
   	}
   }
@@ -1703,8 +1700,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     foreach( $req['custom_fields'] as $cfname => $cfvalue) {
       $cfname = trim($cfname);
       if( isset($linkedCF[$cfname]) ) {
-        $cf2insert[$linkedCF[$cfname]['id']] = 
-          array('type_id' => $linkedCF[$cfname]['type'],
+        $cf2insert[$linkedCF[$cfname]['id']] = array('type_id' => $linkedCF[$cfname]['type'],
                 'cf_value' => $cfvalue);         
       } else {
         if (!isset($missingCfMsg[$cfname])) {
@@ -1712,7 +1708,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
             $cfname,$labels['requirement']);
         }
         $user_feedback[] = array('doc_id' => $req['docid'],
-                                 'title' => $req['title'], 
+                                 'title' => $req['title'],
                                  'import_status' => $missingCfMsg[$cfname]);
       }
     }  
@@ -1729,9 +1725,9 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	 *
 	 * Analyze attachments info related to requirement to define if the the attachment has to be added.
 	 * attachments are ignored only if a attachment with the same ID is already linked to the target requirement.
-	 * 
+	 *
 	 * return an array of all attachments names of IDs already linked to target requirement (to display warning messages).
-	 * 
+	 *
 	 */
 
 	function processAttachments($importMode, $srs_id, $attachments, $feedbackMsg )
@@ -1745,7 +1741,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 			if($importMode == 'update'){
 				// try to bypass the importation of already known attachments.
 				// Check in database if the attachment with the same ID is linked to the rspec with the same internal ID
-				// The couple attachment ID + InternalID is used as a kind of signature to avoid duplicates. 
+				// The couple attachment ID + InternalID is used as a kind of signature to avoid duplicates.
 				// If signature is not precise enough, could add the use of attachment timestamp (date_added in XML file).
 				$sql = " SELECT ATT.id from {$tables['attachments']} ATT " .
 					" WHERE ATT.id='{$this->db->prepare_string($attachment[id])}' " .
@@ -1757,11 +1753,11 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 				}
 			}
 			if($addAttachment){
-				$attachRepo = tlAttachmentRepository::create($this->db);				
-				$fileInfo = $attachRepo->createAttachmentTempFile( $attachment['content'] );	
+				$attachRepo = tlAttachmentRepository::create($this->db);
+				$fileInfo = $attachRepo->createAttachmentTempFile( $attachment['content'] );
 				$fileInfo['name'] = $attachment['name'];
 				$fileInfo['type'] = $attachment['file_type'];
-				$attachRepo->insertAttachment( $srs_id, 
+				$attachRepo->insertAttachment( $srs_id,
           $tables['req_versions'], $attachment['title'], $fileInfo);
 			}
 		}
@@ -1781,7 +1777,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
   args: id: requirement id
         $child_id: requirement version id or requirement revision id
-        [parent_id]: this information is vital, 
+        [parent_id]: this information is vital,
                      to get the linked custom fields.
                      null -> use requirement_id as starting point.
                      !is_null -> use this value as testproject id
@@ -1943,9 +1939,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
  /**
   * customFieldValuesAsXML
   *
-  * @param $id: requirement spec id
-  * @param $tproject_id: test project id
-  *
+  * @param int $id: requirement spec id
+  * @param int $version_id
+  * @param int $tproject_id: test project id
+  * @return array
   *
   */
  function customFieldValuesAsXML($id,$version_id,$tproject_id)
@@ -2046,7 +2043,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    * @param integer $id: requirement ID
    * @param integer $parent_id: target req spec id (where we want to copy)
    * @param integer $user_id: who is requesting copy
-   * @param integer $tproject_id: FOR SOURCE ($id), optional, 
+   * @param integer $tproject_id: FOR SOURCE ($id), optional,
    *                              is null will be computed here
    * @param array $options: map
    *
@@ -2073,7 +2070,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     // NEED INLINE REFACTORING
     $item_versions = $this->get_by_id($id);
     if($item_versions) {
-      if($my['options']['caller'] == 'copy_testproject') { 
+      if($my['options']['caller'] == 'copy_testproject') {
         $target_doc = $item_versions[0]['req_doc_id']; 
         $title = $item_versions[0]['title'];
       } else {
@@ -2103,22 +2100,21 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
                                       $req_version['expected_coverage']);
 
           // need to explain how this mappings are used outside this method
-          // first thing that can see here, we are mixing req id and 
+          // first thing that can see here, we are mixing req id and
           // req version id on same hash.
           // 
           $new_item['mappings']['req_version'][$req_version['version_id']] = $op['id'];
 
           // 2018
-          $new_item['mappings']['req_tree'][$id][$req_version['version_id']] = 
-            $op['id'];
+          $new_item['mappings']['req_tree'][$id][$req_version['version_id']] = $op['id'];
 
 
-          // here we have made a mistake, that help to show that 
+          // here we have made a mistake, that help to show that
           // we have some memory issue
           // with copy_cfields().
           // ALWAYS when we have tproject_id we have to use it!!!
           //
-          $this->copy_cfields(array('id' => $req_version['id'], 
+          $this->copy_cfields(array('id' => $req_version['id'],
                                     'version_id' =>  $req_version['version_id']),
                         array('id' => $new_item['id'], 'version_id' => $op['id']),
                         $tproject_id);
@@ -2135,13 +2131,13 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
           if( $copyReqVTCVLinks ) {
             $lnk = $this->getGoodForReqVersion($req_version['version_id']);
             if( !is_null($lnk) ) {
-              $reqAndVer = array('id' => $new_item['id'], 
+              $reqAndVer = array('id' => $new_item['id'],
                                  'version_id' => $op['id']);
               foreach($lnk as $links) {
                 foreach($links as $value) {
                   $tcAndVer = array('id' => $value['testcase_id'],
                                     'version_id' => $value['tcversion_id']);
-                  $this->assignReqVerToTCVer($reqAndVer,$tcAndVer,$user_id);       
+                  $this->assignReqVerToTCVer($reqAndVer,$tcAndVer,$user_id);
                 }
               }
             }
@@ -2327,7 +2323,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   
     $my['opt'] = array('reqVersionID' => null,'log_msg' => null, 
-                       'notify' => false, 
+                       'notify' => false,
                        'freezeSourceVersion' => true);
 
     $my['opt'] = array_merge($my['opt'],(array)$opt);
@@ -2361,7 +2357,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $sourceVersionID = is_null($reqVersionID) ? $sourceVersionInfo['id'] : $reqVersionID;
 
     // Update Link Status To  Test Case Versions for Source Version
-    // is done on copy_version()    
+    // is done on copy_version()
     $this->copy_version($id,$sourceVersionID,$version_id,$newVersionNumber,$user_id);
     
     // need to update log message in new created version
@@ -2411,7 +2407,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
           $fields = ' REQV.*';
         break;
       }
-      $sql = "/* $debugMsg */ SELECT {$fields} " . 
+      $sql = "/* $debugMsg */ SELECT {$fields} " .
              " FROM {$this->tables['req_versions']} REQV," .
              " {$this->tables['nodes_hierarchy']} NH ".
              " WHERE version = {$max_version} AND NH.id = REQV.id AND NH.parent_id = {$id}";
@@ -2482,8 +2478,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 
     $signature = array('user_id' => $user_id, 'when' => $now);
 
-    if( $freezeLinkOnNewReqVersion ) { 
-      $this->updateTCVLinkStatus($from_version_id,LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION);      
+    if( $freezeLinkOnNewReqVersion ) {
+      $this->updateTCVLinkStatus($from_version_id,LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION);
     }
 
   }
@@ -2496,13 +2492,13 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */ ';
 
     $commonWhere = " WHERE req_version_id = " . intval($reqVersionID) .
-                   " AND link_status = " . LINK_TC_REQ_OPEN; 
+                   " AND link_status = " . LINK_TC_REQ_OPEN;
 
     $sql = " $debugMsg UPDATE {$this->tables['tcversions']}
              SET is_open = 0
              WHERE id IN (
-                 SELECT tcversion_id 
-                 FROM {$this->tables['req_coverage']} 
+                 SELECT tcversion_id
+                 FROM {$this->tables['req_coverage']}
                  $commonWhere
              ) AND is_open = 1";
 
@@ -2535,7 +2531,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $booleanValue = $value;
     if( is_bool($booleanValue) ) {
         $booleanValue = $booleanValue ? 1 : 0;
-    } else if( !is_numeric($booleanValue) || is_null($booleanValue)) {
+    } elseif( !is_numeric($booleanValue) || is_null($booleanValue)) {
       $booleanValue = 1;
     }
     $booleanValue = $booleanValue > 0 ? 1 : 0;
@@ -2583,7 +2579,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       {
           
         // is this relation type is configured?
-        if( ($relTypeAllowed = in_array($rel['relation_type'],$label_keys)) ) 
+        if( $relTypeAllowed = in_array($rel['relation_type'],$label_keys) ) 
         { 
             $relations['relations'][$key]['source_localized'] = $labels[$rel['relation_type']]['source'];
             $relations['relations'][$key]['destination_localized'] = $labels[$rel['relation_type']]['destination'];
@@ -2648,7 +2644,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
          " OR (source_id=$second_id AND destination_id=$first_id)) " . 
          " AND relation_type=$rel_type_id";
     $rs = $this->db->get_recordset($sql);
-      return($rs[0]['qty'] > 0);
+      return $rs[0]['qty'] > 0;
   }
   
   
@@ -2670,7 +2666,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
            " FROM {$this->tables['req_relations']} " .
            " WHERE source_id={$safeID} OR destination_id={$safeID} ";
     $rs = $this->db->get_recordset($sql);
-    return($rs[0]['qty']);
+    return $rs[0]['qty'];
   }
   
   
@@ -2987,7 +2983,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       $nullTS = $this->db->db_null_timestamp();
       if (!is_null($nullTS)) {
         $sql .= ",modification_ts = {$nullTS} ";
-      }  
+      }
       
       $sql .=  " WHERE id = {$parent_id} ";
       $this->db->exec_query($sql);
@@ -3123,8 +3119,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
           $key4date = 'creation_ts';
           $key4user = 'author_id';
           $nullTS = $this->db->db_null_timestamp();
-          if( ($rs[$ap]['modification_ts'] != $nullTS) 
-               && !is_null($rs[$ap]['modification_ts']) 
+          if( ($rs[$ap]['modification_ts'] != $nullTS)
+               && !is_null($rs[$ap]['modification_ts'])
                && !is_null($rs[$ap]['modifier_id'])) {
             $key4date = 'modification_ts';
             $key4user = 'modifier_id';
@@ -3204,7 +3200,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $sql = " /* $debugMsg */ " .
            " SELECT REQV.id AS req_version_id,REQ.id,REQ.srs_id,
              REQ.req_doc_id,REQRV.scope,REQRV.status,REQRV.type,
-             REQRV.active," . 
+             REQRV.active," .
            " REQRV.is_open,REQRV.author_id,REQV.version,REQRV.parent_id AS version_id," .
            " REQRV.expected_coverage,REQRV.creation_ts,REQRV.modifier_id," .
            " REQRV.modification_ts,REQRV.revision, REQRV.id AS revision_id," .
@@ -3253,7 +3249,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 
     $sql =   "/* $debugMsg */";
     
-    if( isset($revision_access['number']) ) {  
+    if( isset($revision_access['number']) ) {
       $rev_number = intval($revision_access['number']);
 
       // we have to tables to search on
@@ -3288,7 +3284,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
             " ON REQRV.parent_id = REQV.id " . 
             " WHERE NH_REQV.id = {$version_id} AND REQRV.revision = {$rev_number} ) ";
     
-    }  else {  
+    }  else {
       // revision_id is present ONLY on req revisions table, then we do not need UNION
        $sql .=  " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version, " .
                 "     REQRV.creation_ts, REQRV.author_id, " .
@@ -3310,7 +3306,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     
     if(!is_null($rs) && $my['opt']['renderImageInline']) {
       $k2l = array_keys($rs);
-      foreach($k2l as $akx) { 
+      foreach($k2l as $akx) {
         $this->renderImageAttachments($rs[$akx]['req_id'],$rs[$akx]);
       } 
       reset($rs);
@@ -3437,14 +3433,15 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   }
 
 
-    /**
-   * @param  $context map with following keys
-   *             tproject_id => REQUIRED
+   /**
+   *
+   * @param array $context with following keys
+   *            tproject_id => REQUIRED
    *            tplan_id => OPTIONAL
-   *            platform_id => OPTIONAL, will be used ONLY 
-   *                         if tplan_id is provided.
-    *
-    */
+   *            platform_id => OPTIONAL, will be used ONLY if tplan_id is provided.
+   * @param unknown $opt
+   * @return array
+   */
   function getAllByContext($context,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -3490,7 +3487,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $sfVersion = intval($req_version_id);
 
     $url = "lib/requirements/reqEdit.php" .
-           "?doAction=fileUpload&requirement_id=" . $sfReqID . 
+           "?doAction=fileUpload&requirement_id=" . $sfReqID .
            "&req_id=" . $sfReqID ."&req_version_id=" . $sfVersion;
 
     return $url;
@@ -3502,9 +3499,9 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    */
   function getDeleteAttachmentRelativeURL($req_id,$req_version_id) {
     $url = "lib/requirements/reqEdit.php?doAction=deleteFile" .
-           "&requirement_id=" . intval($req_id) . 
+           "&requirement_id=" . intval($req_id) .
            "&req_version_id=" . intval($req_version_id) .
-           "&file_id=" ; 
+           "&file_id=" ;
     return $url;
   }
 
@@ -3542,7 +3539,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       // FRL : interproject linking support
       $tproject_mgr = new testproject($this->db);
       $reqs = $this->get_by_id($relation['source_id'],requirement_mgr::LATEST_VERSION);
-      if ( ! is_null ( $reqs ) && count($reqs) > 0 )
+      if ( !empty($reqs) )
       {
         $source_docid = $reqs[0]['req_doc_id'];
         if ($check_for_req_project)
@@ -3556,7 +3553,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       }
   
       $reqs = $this->get_by_id($relation['destination_id'],requirement_mgr::LATEST_VERSION);
-      if( !is_null($reqs) && count($reqs) > 0 )
+      if( !empty($reqs) )
       {
         $destination_docid = $reqs[0]['req_doc_id'];
         if ($check_for_req_project)
@@ -3733,23 +3730,23 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     {
       $user_feedback['import_status'] = lang_get('rel_add_error_src_id') ." [".$source_doc_id."].";
     }
-    else if ( is_null($destination_id ) ) 
+    elseif ( is_null($destination_id ) ) 
     {
       $user_feedback['import_status'] = lang_get('rel_add_error_dest_id') ." [".$destination_doc_id."].";
     }
-    else if ($source_id == $destination_id) 
+    elseif ($source_id == $destination_id) 
     {
       $user_feedback['import_status'] = lang_get('rel_add_error_self');
     }
-    else if  ( ($source['testproject_id'] != $tproject_id)  &&  ($destination['testproject_id'] != $tproject_id) )
+    elseif  ( ($source['testproject_id'] != $tproject_id)  &&  ($destination['testproject_id'] != $tproject_id) )
     {
       $user_feedback['import_status'] = lang_get('rel_add_not_in_project');
     }
-    else if (is_null($type_desc)) 
+    elseif (is_null($type_desc)) 
     {
       $user_feedback['import_status'] = lang_get('rel_add_invalid_type');
     }
-    else if ($this->check_if_relation_exists($source_id, $destination_id, $rel['type'])) 
+    elseif ($this->check_if_relation_exists($source_id, $destination_id, $rel['type'])) 
     {
       $user_feedback['import_status'] = sprintf(lang_get('rel_add_error_exists_already'), $type_desc);
     }
@@ -4256,7 +4253,7 @@ function getCoverageCounter($id) {
              " WHERE RQM.user_id = {$safe['user_id']} " .
              " AND RQM.testproject_id = {$safe['tproject_id']} " .
              " AND NH_REQ.parent_id = " . intval($my['opt']['reqSpecID']);
-    } 
+    }
 
     try
     {
@@ -4404,7 +4401,7 @@ function getCoverageCounter($id) {
         $xmail['cc'] = '';
         $xmail['attachment'] = null;
         $xmail['exit_on_error'] = false;
-        $xmail['htmlFormat'] = true; 
+        $xmail['htmlFormat'] = true;
 
       
        $rmx = @email_send($from,$ue["email"],
@@ -4488,14 +4485,14 @@ function getCoverageCounter($id) {
              " UPDATE {$this->tables['req_coverage']} " .
              " SET link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION . "," .
              "     is_active=0 " .
-             " WHERE req_version_id=" . $safeF; 
+             " WHERE req_version_id=" . $safeF;
       $this->db->exec_query($sql);
     }
 
     // Create coverage for NEW Version
     $sql = "/* $debugMsg */ " .
            " INSERT INTO {$this->tables['req_coverage']} " .
-           " (testcase_id,tcversion_id,req_id," . 
+           " (testcase_id,tcversion_id,req_id," .
            "  req_version_id,author_id,creation_ts) " .
 
            " SELECT testcase_id,tcversion_id,req_id, " .
@@ -4522,7 +4519,7 @@ function getCoverageCounter($id) {
            " UPDATE {$this->tables['req_coverage']} " .
            " SET link_status = " . $reason  . "," .
            "     is_active=0 " .
-           " WHERE req_version_id=" . $safeF; 
+           " WHERE req_version_id=" . $safeF;
     $this->db->exec_query($sql);
 
   }
@@ -4536,10 +4533,10 @@ function getCoverageCounter($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     $idList = implode(",", (array)$idSet);
-    $sql = " /* $debugMsg */ 
-             SELECT REQ.id AS req_id, NHREQVER.id AS req_version_id 
-             FROM {$this->object_table} REQ 
-             JOIN {$this->tables['nodes_hierarchy']} NHREQVER 
+    $sql = " /* $debugMsg */
+             SELECT REQ.id AS req_id, NHREQVER.id AS req_version_id
+             FROM {$this->object_table} REQ
+             JOIN {$this->tables['nodes_hierarchy']} NHREQVER
              ON NHREQVER.parent_id = REQ.id ";
     $sql .= " WHERE REQ.id IN ($idList)";
 
@@ -4553,12 +4550,12 @@ function getCoverageCounter($id) {
  /**
   *
   */
-  function getActiveForTCVersion($tcversion_id, $srs_id = 'all') {                         
+  function getActiveForTCVersion($tcversion_id, $srs_id = 'all') {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    $sql = " /* $debugMsg */ " . 
+    $sql = " /* $debugMsg */ " .
            " SELECT REQ.id,REQ.id AS req_id,REQ.req_doc_id,NHREQ.name AS title, RCOV.is_active," .
-           " NHRS.name AS req_spec_title,RCOV.testcase_id," . 
+           " NHRS.name AS req_spec_title,RCOV.testcase_id," .
            " REQV.id AS req_version_id, REQV.version " .
            " FROM {$this->object_table} REQ " .
            " JOIN {$this->tables['req_specs']} RSPEC " .
@@ -4574,7 +4571,7 @@ function getCoverageCounter($id) {
 
     $idList = implode(",",(array)$tcversion_id);
     
-    $sql .= " WHERE RCOV.tcversion_id IN (" . $idList . ")" . 
+    $sql .= " WHERE RCOV.tcversion_id IN (" . $idList . ")" .
             " AND RCOV.is_active=1 ";
 
     // if only for one specification is required
@@ -4587,21 +4584,21 @@ function getCoverageCounter($id) {
     }
     else {
       return $this->db->get_recordset($sql);
-    }  
+    }
   }
 
  /**
   * what is meaning of Good?
-  * 
+  *
   */
-  function getGoodForTCVersion($tcversion_id) {                         
+  function getGoodForTCVersion($tcversion_id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    $sql = " /* $debugMsg */ " . 
+    $sql = " /* $debugMsg */ " .
            " SELECT REQ.id,REQ.id AS req_id,REQ.req_doc_id,
              NHREQ.name AS title, RCOV.is_active,
              RCOV.testcase_id,RCOV.tcversion_id,
-             NHRS.name AS req_spec_title," . 
+             NHRS.name AS req_spec_title," .
            " REQV.id AS req_version_id, REQV.version " .
 
            " FROM {$this->object_table} REQ " .
@@ -4626,7 +4623,7 @@ function getCoverageCounter($id) {
     }
     else {
       return $this->db->get_recordset($sql);
-    }  
+    }
   }
 
  /**
@@ -4638,13 +4635,13 @@ function getCoverageCounter($id) {
 
     $safe_id = intval($req_version_id);
 
-    $sql = " /* $debugMsg */ " . 
-           " SELECT NH_TC.id, NH_TC.id AS tcase_id,NH_TC.name,NH_TC.name AS tcase_name," . 
+    $sql = " /* $debugMsg */ " .
+           " SELECT NH_TC.id, NH_TC.id AS tcase_id,NH_TC.name,NH_TC.name AS tcase_name," .
            " TCV.tc_external_id,TCV.version,TCV.id AS tcversion_id, " .
            " /* Seems to be compatible with MySQL,MSSQL,POSTGRES */ " .
-           " (CASE WHEN RC.link_status = " . LINK_TC_REQ_CLOSED_BY_EXEC . 
+           " (CASE WHEN RC.link_status = " . LINK_TC_REQ_CLOSED_BY_EXEC .
            "       THEN 0 ELSE is_active END) AS can_be_deleted, " .
-           " (CASE WHEN RC.link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_TCVERSION . 
+           " (CASE WHEN RC.link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_TCVERSION .
            "       THEN 1 ELSE 0 END) AS is_obsolete " .
            " FROM {$this->tables['nodes_hierarchy']} NH_TC " .
            " JOIN {$this->tables['nodes_hierarchy']} NH_TCV " .
@@ -4662,7 +4659,7 @@ function getCoverageCounter($id) {
    */
   function delReqVersionTCVersionLink($bond,$caller=null) {
 
-    $safeID = array( 'req' => intval($bond['req']), 
+    $safeID = array( 'req' => intval($bond['req']),
                      'tc' => intval($bond['tc']) );
     $output = 0;
     $sql = " DELETE FROM {$this->tables['req_coverage']} " .
@@ -4674,21 +4671,21 @@ function getCoverageCounter($id) {
     if ($result && $this->db->affected_rows() == 1) {
       
       // Going to audit
-      $sql = "SELECT NHP.name,NHC.id " . 
+      $sql = "SELECT NHP.name,NHC.id " .
              " FROM {$this->tables['nodes_hierarchy']} NHP " .
              " JOIN {$this->tables['nodes_hierarchy']} NHC " .
              " ON NHP.id = NHC.parent_id " .
-             " WHERE NHC.id IN(" . 
+             " WHERE NHC.id IN(" .
              $safeID['req'] . "," . $safeID['tc'] . ")";
 
       $mx = $this->db->fetchRowsIntoMap($sql,'id');
   
-      $sql = " SELECT TCV.version " . 
+      $sql = " SELECT TCV.version " .
              " FROM {$this->tables['tcversions']} TCV " .
              " WHERE TCV.id = " . $safeID['tc'];
       $tcv = current($this->db->fetchRowsIntoMap($sql,'version'));
 
-      $sql = " SELECT RQV.version  " . 
+      $sql = " SELECT RQV.version  " .
              " FROM {$this->tables['req_versions']} RQV " .
              " WHERE RQV.id = " . $safeID['req'];
       $rqv = current($this->db->fetchRowsIntoMap($sql,'version'));
@@ -4747,12 +4744,12 @@ function getCoverageCounter($id) {
   function getLatestReqVersionCoverageCounterSet($itemSet) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = "/* $debugMsg */ " . 
+    $sql = "/* $debugMsg */ " .
              " SELECT RCOV.req_id, COUNT(0) AS qty " .
              " FROM {$this->tables['req_coverage']} RCOV " .
              " JOIN {$this->views['latest_req_version_id']} LRQV " .
              " ON LRQV.req_version_id = RCOV.req_version_id " .
-             " WHERE LRQV.req_version_id IN (" . 
+             " WHERE LRQV.req_version_id IN (" .
                implode(',', $itemSet) . ")" .
              " AND is_active = 1" .
              " GROUP BY RCOV.req_id ";
@@ -4764,7 +4761,7 @@ function getCoverageCounter($id) {
   /*
     function: bulkAssignLatestREQVTCV
               assign N requirements to M test cases
-              Do not write audit info              
+              Do not write audit info
 
     args: req_id: can be an array
           testcase_id: can be an array
@@ -4778,14 +4775,14 @@ function getCoverageCounter($id) {
 
     $insertCounter=0;  // just for debug
     
-    $reqSet = (array)$req_id;  
-    $tcaseSet = (array)$testcase_id;  
+    $reqSet = (array)$req_id;
+    $tcaseSet = (array)$testcase_id;
 
     $inReqID = implode(",",$reqSet);
     $inTCaseID = implode(",",$tcaseSet);
     
     // Get coverage for this set of requirements and testcase
-    // to be used to understand if insert if needed    
+    // to be used to understand if insert if needed
     $sql = " /* $debugMsg */
              SELECT RCOV.req_id,RCOV.testcase_id,
                     RCOV.req_version_id,RCOV.tcversion_id
@@ -4794,24 +4791,24 @@ function getCoverageCounter($id) {
              ON LRQV.req_version_id = RCOV.req_version_id
              JOIN {$this->views['latest_tcase_version_id']} LTCV
              ON LTCV.tcversion_id = RCOV.tcversion_id
-             WHERE LRQV.req_id IN ({$inReqID}) 
+             WHERE LRQV.req_id IN ({$inReqID})
              AND LTCV.testcase_id IN ({$inTCaseID}) ";
 
     // $coverage = $this->db->get_recordset($sql);
     $coverage = (array) $this->db->fetchMapRowsIntoMap($sql,
                               'req_version_id','tcversion_id');
-    $sql = " /* $debugMsg */ 
+    $sql = " /* $debugMsg */
              SELECT * FROM {$this->views['latest_tcase_version_id']}
              WHERE testcase_id IN ({$inTCaseID}) ";
     $ltcvSet = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
 
-    $sql = " /* $debugMsg */ 
+    $sql = " /* $debugMsg */
              SELECT * FROM {$this->views['latest_req_version_id']}
              WHERE req_id IN ({$inReqID}) ";
     $lrqvSet = $this->db->fetchRowsIntoMap($sql,'req_version_id');
 
     $now = $this->db->db_now();
-    $ins = " INSERT INTO {$this->tables['req_coverage']} 
+    $ins = " INSERT INTO {$this->tables['req_coverage']}
              (req_id,testcase_id,req_version_id,
               tcversion_id,author_id,creation_ts) ";
     
@@ -4824,10 +4821,10 @@ function getCoverageCounter($id) {
          $values[] = " ({$req['req_id']},{$tc['testcase_id']},
                         $req_version_id,$tcversion_id,
                         {$author_id},{$now}) ";
-        }                
+        }
       }
 
-      if( count($values) > 0 ) {
+      if( !empty($values) ) {
         $sql .= " VALUES " . implode(',',$values);
         $this->db->exec_query($sql);
       }
@@ -4848,8 +4845,8 @@ function getCoverageCounter($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $now = $this->db->db_now();
-    $sql = " /* $debugMsg */ 
-             INSERT INTO {$this->tables['req_coverage']} 
+    $sql = " /* $debugMsg */
+             INSERT INTO {$this->tables['req_coverage']}
              (req_id,testcase_id,req_version_id, tcversion_id,
               author_id,creation_ts)
              VALUES ({$reqIdentity['id']},{$tcIdentity['id']},
@@ -4864,22 +4861,22 @@ function getCoverageCounter($id) {
 
  /**
   * what is meaning of Good?
-  * 
+  *
   */
-  function getGoodForReqVersion($reqVersionID, $opt=null) {                         
+  function getGoodForReqVersion($reqVersionID, $opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     $options = array('verbose' => false, 'tproject_id' => null);
     $options = array_merge($options,(array)$opt);
     
-    $sql = " /* $debugMsg */ " . 
+    $sql = " /* $debugMsg */ " .
            " SELECT REQ.id,REQ.id AS req_id,REQ.req_doc_id,
              NHREQ.name AS title, RCOV.is_active,
              RCOV.testcase_id,RCOV.tcversion_id,
-             NHRS.name AS req_spec_title," . 
+             NHRS.name AS req_spec_title," .
            " REQV.id AS req_version_id, REQV.version ";
 
-    $addJoin = '';       
+    $addJoin = '';
     if($options['verbose']) {
       $addFP = " TCV.tc_external_id AS external_id";
       if( ($tprj = intval($options['tproject_id'])) > 0 ) {
@@ -4889,29 +4886,29 @@ function getCoverageCounter($id) {
         
         if( count($dummy) == 1 ) {
           $prefix = $dummy[0]['prefix'];
-        }          
+        }
         $glue = config_get('testcase_cfg');
         $glue = $glue->glue_character;
         $addFP = " CONCAT('$prefix','$glue',TCV.tc_external_id) AS tc_external_id ";
-      }            
+      }
 
       $sql .= ",NH_TC.name AS testcase_name,$addFP";
       $addJoin = " JOIN {$this->tables['nodes_hierarchy']} NH_TC
                    ON NH_TC.id = RCOV.testcase_id
                    JOIN {$this->tables['tcversions']} TCV
-                   ON TCV.id = RCOV.tcversion_id ";          
+                   ON TCV.id = RCOV.tcversion_id ";
     }
 
-    $sql .= " FROM {$this->object_table} REQ 
-              JOIN {$this->tables['req_specs']} RSPEC 
-              ON REQ.srs_id = RSPEC.id 
-              JOIN {$this->tables['req_coverage']} RCOV 
-              ON RCOV.req_id = REQ.id 
-              JOIN {$this->tables['nodes_hierarchy']} NHRS 
-              ON NHRS.id=RSPEC.id 
-              JOIN {$this->tables['nodes_hierarchy']} NHREQ 
-              ON NHREQ.id=REQ.id 
-              JOIN {$this->tables['req_versions']} REQV 
+    $sql .= " FROM {$this->object_table} REQ
+              JOIN {$this->tables['req_specs']} RSPEC
+              ON REQ.srs_id = RSPEC.id
+              JOIN {$this->tables['req_coverage']} RCOV
+              ON RCOV.req_id = REQ.id
+              JOIN {$this->tables['nodes_hierarchy']} NHRS
+              ON NHRS.id=RSPEC.id
+              JOIN {$this->tables['nodes_hierarchy']} NHREQ
+              ON NHREQ.id=REQ.id
+              JOIN {$this->tables['req_versions']} REQV
               ON RCOV.req_version_id=REQV.id $addJoin ";
 
 

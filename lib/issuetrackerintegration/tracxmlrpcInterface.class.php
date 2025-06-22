@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource  tracxmlrpcInterface.class.php
  * @author      Francisco Mancardi
@@ -11,7 +11,7 @@
  *
  * [Trac Settings]
  * The XmlRpcPlugin plugin should be installed in your Trac.
- * 
+ *
  * In addition, you should add the permission of 'TICKET_VIEW' and 'XML_RPC'
  * to the user 'anonymous' in Trac.
  *
@@ -20,14 +20,14 @@
  * #trac-admin /var/local/lib/trac/hg-helloworld
  * Trac [/var/local/lib/trac/hg-helloworld] permission add anonymous XML_RPC
  * Trac [/var/local/lib/trac/hg-helloworld] permission list anonymous
- *  
+ *
  *
  * @internal revisions
  * @since 1.9.10
 **/
 
 // use phpxmlrpc because support HTTPS, while incutio NO.
-require_once(TL_ABS_PATH . 'third_party/phpxmlrpc/lib/xmlrpc.inc');
+require_once TL_ABS_PATH . 'third_party/phpxmlrpc/lib/xmlrpc.inc';
 
 class tracxmlrpcInterface extends issueTrackerInterface
 {
@@ -40,7 +40,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
   /**
    * Construct and connect to BTS.
    *
-   * @param str $type (see tlIssueTracker.class.php $systems property)
+   * @param string $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
   function __construct($type,$config,$name)
@@ -51,7 +51,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
     if( !$this->setCfg($config) )
     {
       return false;
-    }  
+    }
 
     $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
     
@@ -71,9 +71,8 @@ class tracxmlrpcInterface extends issueTrackerInterface
    *
    * check for configuration attributes than can be provided on
    * user configuration, but that can be considered standard.
-   * If they are MISSING we will use 'these carved on the stone values' 
+   * If they are MISSING we will use 'these carved on the stone values'
    * in order to simplify configuration.
-   * 
    *
    **/
   function completeCfg()
@@ -92,12 +91,11 @@ class tracxmlrpcInterface extends issueTrackerInterface
     if( !property_exists($this->cfg,'uricreate') )
     {
       $this->cfg->uricreate = $base . 'newticket/';
-    }     
+    }
   }
 
   /**
-   * useful for testing 
-   *
+   * useful for testing
    *
    **/
   function getAPIClient()
@@ -120,12 +118,10 @@ class tracxmlrpcInterface extends issueTrackerInterface
   /**
    * establishes connection to the bugtracking system
    *
-   * @return bool 
-   *
+   * @return bool
    **/
   function connect()
   {
-    // echo __METHOD__ . '<br><br>';
     try
     {
       // CRITIC NOTICE for developers
@@ -133,9 +129,6 @@ class tracxmlrpcInterface extends issueTrackerInterface
       // to cast properties BEFORE using it.
       $this->createAPIClient();
       $this->connected = true;
-          
-      //var_dump($this->APIClient);
-      //echo '<br><br><b>END</b> ' . __METHOD__ . '<br><br>';
       
     }
     catch(Exception $e)
@@ -143,7 +136,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
       $logDetails = '';
       foreach(array('uribase','apikey') as $v)
       {
-        $logDetails .= "$v={$this->cfg->$v} / "; 
+        $logDetails .= "$v={$this->cfg->$v} / ";
       }
       $logDetails = trim($logDetails,'/ ');
       $this->connected = false;
@@ -152,7 +145,6 @@ class tracxmlrpcInterface extends issueTrackerInterface
   }
 
   /**
-   * 
    *
    **/
   function isConnected()
@@ -162,15 +154,14 @@ class tracxmlrpcInterface extends issueTrackerInterface
 
 
   /**
-   * 
    *
    **/
   public function getIssue($issueID)
   {
-    // array ticket.get(int id) Fetch a ticket. 
-    // Returns [id, time_created, time_changed, attributes]. 
+    // array ticket.get(int id) Fetch a ticket.
+    // Returns [id, time_created, time_changed, attributes].
     // attributes is following map (@20120826)
-    //    
+    //
     // ------------------------------------------
     // key          | value
     // ------------------------------------------
@@ -186,7 +177,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
     // milestone  | [empty string]
     // owner    | somebody
     // type     | defect
-    //  
+    //
     
     $resp = $this->sendCmd('ticket.get', $issueID);
     if( $resp == false )
@@ -212,8 +203,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
    * Returns status for issueID
    *
    * @param string issueID
-   *
-   * @return 
+   * @return
    **/
   function getIssueStatusCode($issueID)
   {
@@ -225,9 +215,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
    * Returns status in a readable form (HTML context) for the bug with the given id
    *
    * @param string issueID
-   * 
-   * @return string 
-   *
+   * @return string
    **/
   function getIssueStatusVerbose($issueID)
   {
@@ -237,9 +225,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
   /**
    *
    * @param string issueID
-   * 
-   * @return string 
-   *
+   * @return string
    **/
   function getIssueSummaryHTMLString($issueID)
   {
@@ -247,30 +233,28 @@ class tracxmlrpcInterface extends issueTrackerInterface
     $str = $issue->summaryHTMLString;
     if($this->guiCfg['use_decoration'])
     {
-      $str = "[" . $str . "] "; 
+      $str = "[" . $str . "] ";
     }
     return $str;
   }
 
   /**
    * @param string issueID
-   *
    * @return bool true if issue exists on BTS
    **/
   function checkBugIDExistence($issueID)
   {
     $dBugLabel = array('label' => __METHOD__);
-    if(($status_ok = $this->checkBugIDSyntax($issueID)))
+    if($status_ok = $this->checkBugIDSyntax($issueID))
     {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
     }
-    return $status_ok;  
+    return $status_ok;
   }
 
 
     /**
-     * 
      *
      **/
   function createAPIClient()
@@ -283,7 +267,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
       // Set the credentials to use to log in.
       $this->APIClient->setCredentials($this->cfg->username, $this->cfg->password);
 
-      // Disable certificate checking. Don't need to check it. 
+      // Disable certificate checking. Don't need to check it.
       $this->APIClient->verifyhost = false;
       $this->APIClient->verifypeer = false;
       
@@ -293,7 +277,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
       $this->connected = false;
       tLog(__METHOD__ .  $e->getMessage(), 'ERROR');
     }
-  } 
+  }
 
 
   /**
@@ -307,11 +291,11 @@ class tracxmlrpcInterface extends issueTrackerInterface
       
     // Send request with timeout disabled
     $response = $this->APIClient->send($msg, 0);
-    if (!$response->errno) 
+    if (!$response->errno)
     {
       $response = php_xmlrpc_decode($response->val);
-    } 
-    else 
+    }
+    else
     {
       tLog(__METHOD__ . (serialize($response)), 'ERROR');
       $response = false;
@@ -334,7 +318,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
            "<username>USERNAME</username>\n" .
            "<password>PASSWORD</password>\n" .
            "<uribase>'http://<YourTracServer>/<YourTracProjectName</uribase>\n" .
-           "</issuetracker>\n";          
+           "</issuetracker>\n";
     return $tpl;
   }
 

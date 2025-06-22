@@ -8,9 +8,9 @@
  * @internal revisions
  * @since 1.9.15
  */
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("exttable.class.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'exttable.class.php';
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -378,7 +378,7 @@ function getColumnsDefinition($dbHandler,$tplan_id,$optionalColumns)
   $colDef[] = array('title_key' => 'testcase', 'width' => 130);
 
   $platforms = $tplan_mgr->getPlatforms($tplan_id,array('outputFormat' => 'map'));
-  if( ($show_plat = !is_null($platforms)) )
+  if( $show_plat = !is_null($platforms) )
   {
     $colDef[] = array('title_key' => 'platform', 'width' => 50, 'filter' => 'list', 'filterOptions' => $platforms);
   }

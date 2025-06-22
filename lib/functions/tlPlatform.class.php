@@ -393,7 +393,7 @@ class tlPlatform extends tlObjectWithDB
          " FROM {$this->tables['testplan_platforms']} " .
          " WHERE testplan_id = {$testplan_id}";
     $num_tplans = $this->db->fetchOneValue($sql);
-    return ($num_tplans > 0);
+    return $num_tplans > 0;
   }
 
   /**
@@ -551,7 +551,7 @@ class tlPlatform extends tlObjectWithDB
       break;
     }
     $sql .= " GROUP BY TPROJ.id ";
-    return ($this->db->fetchRowsIntoMap($sql,'tproject_id'));        
+    return $this->db->fetchRowsIntoMap($sql,'tproject_id');        
   }
 
   public function belongsToTestProject($id,$tproject_id = null)

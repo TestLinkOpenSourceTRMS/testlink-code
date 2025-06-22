@@ -734,7 +734,7 @@ class searchCommands
     $filterSpecial = null;
     $filterSpecial['tricky'] = " 1=0 ";
 
-    if( ($doIt = $args->ts_summary && $canUseTarget) ) {
+    if( $doIt = $args->ts_summary && $canUseTarget ) {
       $filterSpecial['ts_summary'] = ' OR ( ';
       $filterSpecial['ts_summary'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       
@@ -745,7 +745,7 @@ class searchCommands
       $filterSpecial['ts_summary'] .= ')';
     }  
 
-    if( ($doIt = $args->ts_title && $canUseTarget) ) {
+    if( $doIt = $args->ts_title && $canUseTarget ) {
       $filterSpecial['ts_title'] = ' OR ( ';
       $filterSpecial['ts_title'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
 

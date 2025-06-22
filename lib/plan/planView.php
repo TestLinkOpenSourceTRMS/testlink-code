@@ -1,14 +1,14 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	planView.php
  *
  */
-require_once('../../config.inc.php');
-require_once("common.php");
-require_once("date_api.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'date_api.php';
 
 testlinkInitPage($db,false,false);
 
@@ -38,7 +38,7 @@ if ($args->tproject_id && checkRights($db,$args->user,$args->tproject_id)) {
     // To create the CF columns we need to get the linked CF
     $availableCF = (array)$tplan_mgr->get_linked_cfields_at_design(current($tplanSet),$gui->tproject_id);
     $hasCF = count($availableCF);
-    $gui->cfieldsColumns = null; 
+    $gui->cfieldsColumns = null;
     $gui->cfieldsType = null;
     $initCFCol = true;
     
@@ -49,9 +49,9 @@ if ($args->tproject_id && checkRights($db,$args->user,$args->tproject_id)) {
     // 2. look for TL_TPLANVIEW_HIDECOL_PPFX
     // 3. if found proceed
     // 4. else look for TL_TPLANVIEW_HIDECOL
-    //  
+    //
     $ppfx = $tproject_mgr->getTestCasePrefix($gui->tproject_id);
-    $suffixSet = ['_' . $ppfx, ''];     
+    $suffixSet = ['_' . $ppfx, ''];
     foreach($suffixSet as $suf) {
       $gopt['name'] = 'TL_TPLANVIEW_HIDECOL' . $suf;
       $col2hideCF = $tplan_mgr->cfield_mgr->get_linked_to_testproject($gui->tproject_id,null,$gopt);
@@ -60,7 +60,7 @@ if ($args->tproject_id && checkRights($db,$args->user,$args->tproject_id)) {
         $col2hideCF = current($col2hideCF);
         $col2hide = array_flip(explode('|',$col2hideCF['possible_values']));
         $col2hide[$gopt['name']] = '';
-        break; 
+        break;
       }
     }
 
@@ -70,27 +70,22 @@ if ($args->tproject_id && checkRights($db,$args->user,$args->tproject_id)) {
     $localeDateFormat = $localeDateFormat[$args->user->locale];
     
     foreach($tplanSet as $idk) {
-      // ---------------------------------------------------------------------------------------------  
       if ($hasCF) {
-        $cfields = (array)$tplan_mgr->getCustomFieldsValues($idk,$gui->tproject_id);        
+        $cfields = (array)$tplan_mgr->getCustomFieldsValues($idk,$gui->tproject_id);
         foreach ($cfields as $cfd) {
-          if ($initCFCol) {
-            if (!isset($col2hide[$cfd['name']])) {
+          if ($initCFCol && !isset($col2hide[$cfd['name']])) {
               $gui->cfieldsColumns[] = $cfd['label'];
               $gui->cfieldsType[] = $cfd['type'];
-            }
           }
           $gui->tplans[$idk][$cfd['label']] = ['value' => $cfd['value'], 'data-order' => $cfd['value']];
 
           if ($cfd['type'] == 'date') {
             $gui->tplans[$idk][$cfd['label']]['data-order'] = locateDateToISO($cfd['value'], $localeDateFormat);
-          }          
-        }  
+          }
+        }
         $initCFCol = false;
       }
-      // ---------------------------------------------------------------------------------------------  
 
-      //echo '<pre>';var_dump($gui->tplans);echo "</pre>";
       $gui->tplans[$idk]['tcase_qty'] = isset($dummy[$idk]['qty']) ? intval($dummy[$idk]['qty']) : 0;
 
 
@@ -107,7 +102,7 @@ if ($args->tproject_id && checkRights($db,$args->user,$args->tproject_id)) {
       foreach($rightSet as $target)
       {
         // DEV NOTE - CRITIC
-        // I've made a theorically good performance choice to 
+        // I've made a theorically good performance choice to
         // assign to $roleObj a reference to different roleObj
         // UNFORTUNATELLY this choice was responsible to destroy point object
         // since second LOOP
@@ -115,23 +110,22 @@ if ($args->tproject_id && checkRights($db,$args->user,$args->tproject_id)) {
         if($gui->tplans[$idk]['has_role'] > 0)
         {
           $roleObj = $args->user->tplanRoles[$gui->tplans[$idk]['has_role']];
-        }  
-        else if (!is_null($args->user->tprojectRoles) && 
-                 isset($args->user->tprojectRoles[$args->tproject_id]) )
+        }
+        elseif (!is_null($args->user->tprojectRoles) && isset($args->user->tprojectRoles[$args->tproject_id]) )
         {
           $roleObj = $args->user->tprojectRoles[$args->tproject_id];
-        }  
+        }
 
         if(is_null($roleObj))
         {
           $roleObj = $args->user->globalRole;
-        }  
-        $gui->tplans[$idk]['rights'][$target] = $roleObj->hasRight($target);  
-      }  
-    }    
-    unset($tplan_mgr);  
+        }
+        $gui->tplans[$idk]['rights'][$target] = $roleObj->hasRight($target);
+      }
+    }
+    unset($tplan_mgr);
   }
-  unset($tproject_mgr);  
+  unset($tproject_mgr);
 }
 
 $smarty = new TLSmarty();
@@ -140,8 +134,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * init_args
+ * Get input from user and return it in some sort of namespace
  *
+ * @return stdClass object with some REQUEST and SESSION values as members
  */
 function init_args()
 {
@@ -153,6 +148,12 @@ function init_args()
     return $args;
 }
 
+/**
+ *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @return stdClass
+ */
 function initializeGui(&$dbHandler,$argsObj)
 {
   $gui = new stdClass();
@@ -161,8 +162,7 @@ function initializeGui(&$dbHandler,$argsObj)
   $gui->user_feedback = '';
   $gui->grants = new stdClass();
   $gui->grants->testplan_create = $argsObj->user->hasRight($dbHandler,"mgt_testplan_create",$argsObj->tproject_id);
-  $gui->main_descr = lang_get('testplan_title_tp_management'). " - " . 
-                     lang_get('testproject') . ' ' . $argsObj->tproject_name;
+  $gui->main_descr = lang_get('testplan_title_tp_management'). " - " . lang_get('testproject') . ' ' . $argsObj->tproject_name;
   $cfg = getWebEditorCfg('testplan');
   $gui->editorType = $cfg['type'];
   
@@ -171,8 +171,11 @@ function initializeGui(&$dbHandler,$argsObj)
 
 
 /**
- * checkRights
  *
+ * @param database $db
+ * @param tlUser $user
+ * @param int $tproject_id
+ * @return boolean
  */
 function checkRights(&$db,&$user,$tproject_id)
 {

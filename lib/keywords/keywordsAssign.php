@@ -1,18 +1,18 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  keywordsAssign.php
  * @package     TestLink
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2020, TestLink community
  * @link        http://www.testlink.org/
- * 
+ *
  *
 **/
-require_once("../../config.inc.php");
-require_once("common.php");
-require_once("opt_transfer.php");
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'opt_transfer.php';
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -36,7 +36,7 @@ $tcase_mgr = new testcase($db);
 $result = null;
 
 // Important Development Notice
-// option transfer do the magic on GUI, 
+// option transfer do the magic on GUI,
 // analizing content of from->map and to->map, is able to populate
 // each side as expected.
 //
@@ -61,9 +61,9 @@ switch($args->edit) {
       $tsChildren = $tsuite_mgr->get_children_testcases($args->id,'only_id');
     } else {
       if($args->useFilteredSet) {
-        $filteredTC = $args->tcaseSet;    
+        $filteredTC = $args->tcaseSet;
       } else {
-        $deepTC = $tsuite_mgr->get_testcases_deep($args->id,'only_id');      
+        $deepTC = $tsuite_mgr->get_testcases_deep($args->id,'only_id');
       }
     }
 
@@ -73,30 +73,30 @@ switch($args->edit) {
     } else {
       if ($args->useFilteredSet) {
         $tcs = &$filteredTC;
-      } else if ($args->onlyDirectChildren) {
+      } elseif ($args->onlyDirectChildren) {
         $tcs = &$tsChildren;
       } else {
         $tcs = &$deepTC;
       }
     }
 
-    if( ($loop2do = sizeof($tcs)) ) {
+    if( $loop2do = sizeof($tcs) ) {
       $gui->can_do = 1;
       
       $method = null;
       if ($args->assignToTestSuite && null != $args->keywordArray) {
-        $method = 'addKeywords'; 
+        $method = 'addKeywords';
       }
 
       if ($args->removeFromTestSuite && null != $args->keywordArray) {
-        $method = 'deleteKeywords'; 
+        $method = 'deleteKeywords';
       }
 
       if ($args->removeAllFromTestSuite) {
-        $method = 'deleteKeywords'; 
+        $method = 'deleteKeywords';
       }
 
-      if (null != $method) {  
+      if (null != $method) {
         $result = 'ok';
         $glOpt = array('output' => 'thin', 'active' => 1);
      
@@ -106,8 +106,7 @@ switch($args->edit) {
           $statusQuo = current($tcase_mgr->get_versions_status_quo($tcs[$idx],$latestActiveVersionID));
          
           $hasBeenExecuted = intval($statusQuo['executed']) > 0;
-          if( $gui->canAddRemoveKWFromExecuted || 
-              $hasBeenExecuted == false ) {
+          if( $gui->canAddRemoveKWFromExecuted || !$hasBeenExecuted ) {
               $tcase_mgr->$method($tcs[$idx],$latestActiveVersionID,$args->keywordArray);
           }
         }
@@ -121,8 +120,7 @@ switch($args->edit) {
     $gui->can_do = 1;
     
     $tcName = $tcase_mgr->getName($args->id);
-    $gui->keyword_assignment_subtitle = lang_get('test_case') . TITLE_SEP . 
-                                        $tcName;
+    $gui->keyword_assignment_subtitle = lang_get('test_case') . TITLE_SEP . $tcName;
 
     // Now we work only on latest active version.
     // We also need to check if has been executed
@@ -133,19 +131,17 @@ switch($args->edit) {
     $statusQuo = current($tcase_mgr->get_versions_status_quo($args->id,$latestActiveVersionID));
     $gui->hasBeenExecuted = intval($statusQuo['executed']) > 0;
 
-    if ($gui->canAddRemoveKWFromExecuted || !$gui->hasBeenExecuted) {      
+    if ($gui->canAddRemoveKWFromExecuted || !$gui->hasBeenExecuted) {
       $kwQty = !is_null($args->keywordArray) ? count($args->keywordArray) : 0;
       if ($args->assignToTestCase && $kwQty >0) {
         $result = 'ok';
         $tcase_mgr->setKeywords($args->id,$latestActiveVersionID,$args->keywordArray);
-        $doRecall = !is_null($args->keywordArray);  
+        $doRecall = !is_null($args->keywordArray);
       }
     }
 
     $opt_cfg->to->lbl = lang_get('assigned_kword');
-    $opt_cfg->to->map = $doRecall ? 
-      $tcase_mgr->get_keywords_map($args->id,$latestActiveVersionID,
-                                   array('orderByClause' =>" ORDER BY keyword ASC ")) : null;
+    $opt_cfg->to->map = $doRecall ? $tcase_mgr->get_keywords_map($args->id,$latestActiveVersionID, array('orderByClause' =>" ORDER BY keyword ASC ")) : null;
   break;
 }
 
@@ -160,8 +156,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
+ * Get input from user and return it in some sort of namespace
  *
- */ 
+ * @param stdClass $opt_cfg
+ * @return stdClass object returns the arguments for the page
+ */
 function init_args(&$opt_cfg) {
   $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
   
@@ -197,14 +196,12 @@ function init_args(&$opt_cfg) {
                      
 
   $args->form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-  $args->tcaseSet = isset($_SESSION['edit_mode']) 
-    && isset($_SESSION['edit_mode'][$args->form_token]['testcases_to_show']) ? 
-    $_SESSION['edit_mode'][$args->form_token]['testcases_to_show'] : null;
+  $args->tcaseSet = isset($_SESSION['edit_mode']) && isset($_SESSION['edit_mode'][$args->form_token]['testcases_to_show']) ? $_SESSION['edit_mode'][$args->form_token]['testcases_to_show'] : null;
   
 
   $args->keywordArray = null;
   $args->keywordList = $pParams[$rl_html_name];
-  if ($args->keywordList != "") { 
+  if ($args->keywordList != "") {
     $args->keywordArray = explode(",",$args->keywordList);
   }
 
@@ -213,7 +210,10 @@ function init_args(&$opt_cfg) {
 }
 
 /**
+ * Initializes the GUI
  *
+ * @param stdClass $argsObj
+ * @return stdClass
  */
 function initializeGui(&$argsObj) {
   $guiObj = new stdClass();
@@ -225,15 +225,20 @@ function initializeGui(&$argsObj) {
   $guiObj->level = $argsObj->edit;
   $guiObj->keyword_assignment_subtitle = null;
 
-  $guiObj->canAddRemoveKWFromExecuted = 
-    $argsObj->user->hasRightOnProj($db,
+  $guiObj->canAddRemoveKWFromExecuted = $argsObj->user->hasRightOnProj($db,
     'testproject_add_remove_keywords_executed_tcversions') ||
     $argsObj->user->hasRightOnProj($db,'testproject_edit_executed_testcases');
 
   return $guiObj;
 }
 
-
+/**
+ * Checks the user rights for accessing the page
+ *
+ * @param database $db resource the database connection handle
+ * @param tlUser $user the current active user
+ * @return boolean returns true if the page can be accessed
+ */
 function checkRights(&$db,&$user) {
   return $user->hasRightOnProj($db,'keyword_assignment');
 }

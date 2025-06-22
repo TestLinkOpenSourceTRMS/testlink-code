@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * Filename $RCSfile: show_help.php,v $
  *
@@ -12,8 +12,8 @@
  * rev:
  *     20071102 - franciscom - BUGID 1033
 **/
-require('../../config.inc.php');
-require_once("common.php");
+require '../../config.inc.php';
+require_once 'common.php';
 // start session, need to get right basehref
 testlinkInitPage($db);
 
@@ -24,9 +24,14 @@ $smarty = new TLSmarty();
 $td = TL_ABS_PATH . TL_HELP_RPATH . $args->locale;
 $smarty->template_dir = $td;
 
-$smarty->clear_compiled_tpl($args->help . ".html"); 
+$smarty->clear_compiled_tpl($args->help . ".html");
 $smarty->display($args->help . ".html");
 
+/**
+ * Initializes the arguments
+ *
+ * @return stdClass
+ */
 function init_args()
 {
 	$iParams = array(
@@ -34,7 +39,7 @@ function init_args()
 		"locale" => array(tlInputParameter::STRING_N,0,10),
 	);
 	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
+	R_PARAMS($iParams,$args);
 	
 	return $args;
 }

@@ -55,7 +55,7 @@ function unset_session($key)
 }
 
 /**
- * Gets a value from session by its key. If the session cannot be found, it 
+ * Gets a value from session by its key. If the session cannot be found, it
  * return false.
  *
  * @param unknown_type $key
@@ -75,7 +75,7 @@ function get_from_session($key)
  */
 function csrfguard_generate_token($unique_form_name)
 {
-  if (function_exists("hash_algos") and in_array("sha512",hash_algos()))
+  if (function_exists("hash_algos") && in_array("sha512",hash_algos()))
   {
     $token=hash("sha512",mt_rand(0,mt_getrandmax()));
   }
@@ -127,7 +127,7 @@ function csrfguard_validate_token($unique_form_name,$token_value)
 }
 
 /**
- * Replaces via regex the content of a HTML form, adding extra hidden fields 
+ * Replaces via regex the content of a HTML form, adding extra hidden fields
  * for CSRF security.
  * <p>
  * In case you would like to skip this, you can add a <em>nocsrf</em> field.
@@ -142,7 +142,7 @@ function csrfguard_replace_forms($form_data_html)
   {
     foreach ($matches as $m)
     {
-      if (strpos($m[1],"nocsrf")!==false) 
+      if (strpos($m[1],"nocsrf")!==false)
       {
         continue;
       }
@@ -150,8 +150,8 @@ function csrfguard_replace_forms($form_data_html)
       $token= csrfguard_generate_token($name);
 
       // because you can have multiple forms in a HTML page
-      // is not possible to add a fixed ID. 
-      // 
+      // is not possible to add a fixed ID.
+      //
       $form_data_html=str_replace($m[0],
                       "<form{$m[1]}>
                        <input type='hidden' name='CSRFName' value='{$name}' />
@@ -162,7 +162,7 @@ function csrfguard_replace_forms($form_data_html)
 }
 
 /**
- * Applies CSRF filter on Smarty template content. Can be 
+ * Applies CSRF filter on Smarty template content. Can be
  * used as a output filter.
  *
  * @param string $source
@@ -174,7 +174,7 @@ function smarty_csrf_filter($source, $smarty) {
 }
 
 /**
- * Validates the CSRF tokens found in $_POST variable. Raoses user 
+ * Validates the CSRF tokens found in $_POST variable. Raoses user
  * errors if the token is not found or invalid.
  *
  * @return true if validated correctly, otherwise false
@@ -185,8 +185,6 @@ function csrfguard_start()
   {
     if (!isset($_POST['CSRFName']))
     {
-      //trigger_error("No CSRFName found, probable invalid request.",E_USER_ERROR);
-      //return false;
       redirect($_SESSION['basehref'] . 'error.php?code=1');
       exit();
     }
@@ -197,8 +195,6 @@ function csrfguard_start()
 
     if (!$good || !csrfguard_validate_token($name, $token))
     {
-      //trigger_error("Invalid CSRF token.",E_USER_ERROR);
-      //return false;
       redirect($_SESSION['basehref'] . 'error.php?code=2');
       exit();
     }
@@ -207,6 +203,5 @@ function csrfguard_start()
 
 // this way is runned always
 // Need to understand if this is needed
-//  
 doSessionStart(false);
 // csrfguard_start();

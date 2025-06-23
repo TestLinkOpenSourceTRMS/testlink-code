@@ -1,7 +1,7 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource ckeditor.class.php
  *
@@ -40,4 +40,4 @@ class ckeditorInterface {
 		return $Html ;
 	}
 
-} // class end
+}

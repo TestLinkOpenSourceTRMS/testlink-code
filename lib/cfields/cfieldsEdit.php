@@ -91,7 +91,7 @@ if(isset($gui->cfield['type'])) {
 // enable on 'execution' implies show on 'execution' then has nosense to display show_on combo
 if($args->do_action == 'edit' && $gui->cfield['enable_on_execution'] ) {
   $cfieldCfg->cf_show_on['execution']['style']=' style="display:none;" ';
-} 
+}
 
 $gui->cfieldCfg = $cfieldCfg;
 
@@ -101,8 +101,12 @@ $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('user_action',$args->do_action);
 renderGui($smarty,$args,$gui,$cfield_mgr,$templateCfg);
 
+
 /**
  *
+ * @param stdClass $args
+ * @param cfield_mgr $cfield_mgr
+ * @return stdClass
  */
 function getCFCfg(&$args,&$cfield_mgr) {
   $cfg = new stdClass();
@@ -125,6 +129,8 @@ function getCFCfg(&$args,&$cfield_mgr) {
 
 /**
  *
+ * @param cfield_mgr $cfield_mgr
+ * @return stdClass
  */
 function initializeGui(&$cfield_mgr) {
   $gui = $cfield_mgr->initViewGUI();
@@ -132,27 +138,23 @@ function initializeGui(&$cfield_mgr) {
 }
 
 
-
-/*
-  function: request2cf
-            scan a hash looking for a keys with 'cf_' prefix,
-            because this keys represents fields of Custom Fields
-            tables.
-            Is used to get values filled by user on a HTML form.
-            This requirement dictated how html inputs must be named.
-            If notation is not followed logic will fail.
-
-  args: hash
-
-  returns: hash only with related to custom fields, where
-           (keys,values) are the original with 'cf_' prefix, but
-           in this new hash prefix on key is removed.
-           
-  rev: 
-      20090524 - franciscom - changes due to User Interface changes
-      20080811 - franciscom - added new values on missing_keys         
-
-*/
+/**
+ * scan a hash looking for a keys with 'cf_' prefix,
+ *          because this keys represents fields of Custom Fields
+ *          tables.
+ *          Is used to get values filled by user on a HTML form.
+ *          This requirement dictated how html inputs must be named.
+ *          If notation is not followed logic will fail.
+ *
+ * @param array $hash
+ * @return array hash only with related to custom fields, where
+ *         (keys,values) are the original with 'cf_' prefix, but
+ *         in this new hash prefix on key is removed.
+ *@internal
+ * rev:
+ * 20090524 - franciscom - changes due to User Interface changes
+ * 20080811 - franciscom - added new values on missing_keys
+ */
 function request2cf($hash)
 {
     // design and execution has sense for node types regarding testing
@@ -190,18 +192,17 @@ function request2cf($hash)
 		if(!isset($cf[$key]))
 		{
 			$cf[$key] = $value;
-		}	
+		}
 	}
 
     // After logic refactoring
     // if ENABLE_ON_[area] == 1
     //    DISPLAY_ON_[area] = 1
     //
-    // 
-    // IMPORTANT/CRITIC: 
+    // IMPORTANT/CRITIC:
     // this KEY MUST BE ALIGNED WITH name on User Inteface
     // then if is changed on UI must be changed HERE
-    $setter=array('design' => 0, 'execution' => 0, 'testplan_design' => 0);    
+    $setter=array('design' => 0, 'execution' => 0, 'testplan_design' => 0);
     switch($cf['enable_on'])
     {
         case 'design':
@@ -212,7 +213,7 @@ function request2cf($hash)
 
         default:
         $setter['design']=1;
-        break;    
+        break;
     }
     
     foreach($setter as $key => $value)
@@ -220,20 +221,17 @@ function request2cf($hash)
         $cf['enable_on_' . $key] = $value;
         if( $cf['enable_on_' . $key] )
         {
-            $cf['show_on_' . $key] = 1;    
-        }          
+            $cf['show_on_' . $key] = 1;
+        }
     }
 	return $cf;
 }
 
-/*
-  function:
 
-  args:
-
-  returns:
-
-*/
+/**
+ *
+ * @return stdClass
+ */
 function init_args()
 {
     $_REQUEST=strings_stripSlashes($_REQUEST);
@@ -246,18 +244,17 @@ function init_args()
     if( $args->tproject_id == 0 )
     {
       $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-    }  
+    }
     return $args;
 }
 
-/*
-  function: edit
 
-  args:
-
-  returns:
-
-*/
+/**
+ *
+ * @param stdClass $argsObj
+ * @param cfield_mgr $cfieldMgr
+ * @return stdClass
+ */
 function edit(&$argsObj,&$cfieldMgr)
 {
   $op = new stdClass();
@@ -278,21 +275,20 @@ function edit(&$argsObj,&$cfieldMgr)
 		$op->cf_is_used = $cfieldMgr->is_used($argsObj->cfield_id);
 		
 		$op->operation_descr = lang_get('title_cfield_edit') . TITLE_SEP_TYPE3 . $op->cf['name'];
-		$op->linked_tprojects = $cfieldMgr->get_linked_testprojects($argsObj->cfield_id); 
+		$op->linked_tprojects = $cfieldMgr->get_linked_testprojects($argsObj->cfield_id);
  		$op->cf_is_linked = !is_null($op->linked_tprojects) && count($op->linked_tprojects) > 0;
 	}
   return $op;
 }
 
 
-/*
-  function: doCreate
-
-  args:
-
-  returns:
-
-*/
+/**
+ *
+ * @param array $hash_request
+ * @param cfield_mgr $cfieldMgr
+ * @param stdClass $argsObj
+ * @return stdClass
+ */
 function doCreate(&$hash_request,&$cfieldMgr,&$argsObj)
 {
   $op = new stdClass();
@@ -323,7 +319,7 @@ function doCreate(&$hash_request,&$cfieldMgr,&$argsObj)
       if($hash_request['do_action'] == 'do_add_and_assign')
       {
         $cfieldMgr->link_to_testproject($argsObj->tproject_id,array($ret['id']));
-      }  
+      }
     }
   }
   else
@@ -336,14 +332,14 @@ function doCreate(&$hash_request,&$cfieldMgr,&$argsObj)
 
 
 
-/*
-  function: doUpdate
-
-  args:
-
-  returns:
-
-*/
+/**
+ * Updates a custom field
+ *
+ * @param array $hash_request
+ * @param stdClass $argsObj
+ * @param cfield_mgr $cfieldMgr
+ * @return stdClass
+ */
 function doUpdate(&$hash_request,&$argsObj,&$cfieldMgr)
 {
   $op = new stdClass();
@@ -374,22 +370,19 @@ function doUpdate(&$hash_request,&$argsObj,&$cfieldMgr)
 		}
 	}
 	else
-  {  
+  {
 		$op->user_feedback = lang_get("cf_name_exists");
 	}
 	return $op;
 }
 
 
-
-/*
-  function: doDelete
-
-  args:
-
-  returns:
-
-*/
+/**
+ *
+ * @param stdClass $argsObj
+ * @param cfield_mgr $cfieldMgr
+ * @return stdClass
+ */
 function doDelete(&$argsObj,&$cfieldMgr)
 {
     $op = new stdClass();
@@ -405,19 +398,17 @@ function doDelete(&$argsObj,&$cfieldMgr)
 	  	if ($cfieldMgr->delete($argsObj->cfield_id))
 	  	{
 	  		logAuditEvent(TLS("audit_cfield_deleted",$cf['name']),"DELETE",$argsObj->cfield_id,"custom_fields");
-	  	}	
+	  	}
 	  }
 	  return $op;
 }
 
 
-/*
-  function: cfieldCfgInit
-
-  args :
-
-  returns: object with configuration options
-*/
+/**
+ *
+ * @param cfield_mgr $cfieldMgr
+ * @return stdClass object with configuration options
+ */
 function cfieldCfgInit($cfieldMgr)
 {
     $cfg = new stdClass();
@@ -448,16 +439,14 @@ function cfieldCfgInit($cfieldMgr)
 }
 
 
-/*
-  function: renderGui
-            set environment and render (if needed) smarty template
-
-  args: 
-
-  returns: - 
-  
-
-*/
+/**
+ *
+ * @param TLSmarty $smartyObj
+ * @param stdClass $argsObj
+ * @param stdClass $guiObj
+ * @param cfield_mgr $cfieldMgr
+ * @param stdClass $templateCfg
+ */
 function renderGui(&$smartyObj,&$argsObj,&$guiObj,&$cfieldMgr,$templateCfg)
 {
   $doRender=false;
@@ -487,6 +476,13 @@ function renderGui(&$smartyObj,&$argsObj,&$guiObj,&$cfieldMgr,$templateCfg)
   }
 }
 
+
+/**
+ *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,"cfield_management");

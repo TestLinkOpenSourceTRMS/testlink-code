@@ -1,13 +1,13 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * functions related to attachments
  *
  * @package     TestLink
  * @filesource  attachments.inc.php
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2020, TestLink community
  * @link        http://www.testlink.org
  *
  **/
@@ -18,7 +18,7 @@ require_once  dirname(__FILE__) . '/files.inc.php' ;
 
 /**
  * Get infos about the attachments of a given object
- * 
+ *
  * @param object $attachmentRepository [ref] the attachment Repository
  * @param int $fkid the id of the object (attachments.fk_id);
  * @param string $fkTableName the name of the table $fkid refers to (attachments.fk_table)
@@ -39,7 +39,7 @@ function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$storeList
 
 /**
  * Get infos about the attachments of a given object
- * 
+ *
  * @param tlObjectWithAttachments $object The object whose attachment should be fetched
  * @param int $fkid the id of the object (attachments.fk_id);
  * @param bool $storeListInSession if true, the attachment list will be stored within the session
@@ -59,7 +59,7 @@ function getAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$count
 
 /**
  * Stores the attachment infos into the session for referencing it later
- * 
+ *
  * @param array $attachmentInfos infos about attachment
  * @param $counter counter for the attachments in the session
  */
@@ -68,30 +68,30 @@ function storeAttachmentsInSession($attachmentInfos,$counter = 0)
   if (!$attachmentInfos)
   {
     $attachmentInfos = array();
-  }  
+  }
     
   if (!isset($_SESSION['s_lastAttachmentInfos']) || !$_SESSION['s_lastAttachmentInfos'])
   {
     $_SESSION['s_lastAttachmentInfos'] = array();
-  } 
+  }
     
-  if ($counter == 0) 
+  if ($counter == 0)
   {
     $_SESSION['s_lastAttachmentInfos'] = $attachmentInfos;
-  }  
+  }
   else
   {
     $_SESSION['s_lastAttachmentInfos'] = array_merge($_SESSION['s_lastAttachmentInfos'],$attachmentInfos);
-  }  
+  }
     
 }
 
 /**
  * Checks the id of an attachment and the corresponding attachment info for validity
- * 
+ *
  * @param resource $db [ref] the database connection
  * @param integer $id the database identifier of the attachment
- * @param $attachmentInfo 
+ * @param $attachmentInfo
  * @return boolean return true if the id is valid, false else
  */
 function checkAttachmentID(&$db,$id,$attachmentInfo)
@@ -110,7 +110,7 @@ function checkAttachmentID(&$db,$id,$attachmentInfo)
       }
     }
   }
-  return $isValid;  
+  return $isValid;
 }
 
 
@@ -118,7 +118,7 @@ function checkAttachmentID(&$db,$id,$attachmentInfo)
  *
  */
 function fileUploadManagement(&$dbHandler,$id,$title,$table)
-{  
+{
   $uploadOp = new stdClass();
   $uploadOp->statusOK = false;
   $uploadOp->statusCode = 0;
@@ -141,7 +141,7 @@ function fileUploadManagement(&$dbHandler,$id,$title,$table)
       }
     } else {
       $uploadOp->msg = getFileUploadErrorMessage($fInfo);
-    } 
+    }
   }
   return $uploadOp;
 }
@@ -158,10 +158,8 @@ function deleteAttachment(&$dbHandler,$fileID,$checkOnSession=true) {
       $doIt = checkAttachmentID($dbHandler,$fileID,$info);
     }
 
-    if( $doIt ) {  
-      if($repo->deleteAttachment($fileID,$info)) {
+    if( $doIt && $repo->deleteAttachment($fileID,$info)) {
         logAuditEvent(TLS("audit_attachment_deleted",$info['title']),"DELETE",$fileID,"attachments");
-      } 
     }
   }
   return $info;

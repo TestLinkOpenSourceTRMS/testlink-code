@@ -27,10 +27,8 @@ $gui->refresh_tree = 'no';
 
 
 $gui->grants = new stdClass();
-$gui->grants->modify = 
-  $uo->hasRight($db,'mgt_modify_req',$context->tproject_id);
-$gui->grants->ro = 
-  $uo->hasRight($db,'mgt_view_req',$context->tproject_id);
+$gui->grants->modify = $uo->hasRight($db,'mgt_modify_req',$context->tproject_id);
+$gui->grants->ro = $uo->hasRight($db,'mgt_view_req',$context->tproject_id);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -39,7 +37,7 @@ $smarty->display('requirements/project_req_spec_mgmt.tpl');
 /**
  *
  */
-function checkRights(&$db, &$user, $context) 
+function checkRights(&$db, &$user, $context)
 {
   $context->rightsOr = ["mgt_view_req","mgt_modify_req"];
   $context->rightsAnd = [];

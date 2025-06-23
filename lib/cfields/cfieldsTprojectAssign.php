@@ -26,8 +26,8 @@ switch ($args->doAction) {
   break;
 
   case 'doReorder':
-    // To make user's life simpler, we work on all linked CF 
-    // and not only on selected. 
+    // To make user's life simpler, we work on all linked CF
+    // and not only on selected.
     $cfield_mgr->set_display_order($args->tproject_id,$args->display_order);
     if( !is_null($args->location) ) {
       $cfield_mgr->setDisplayLocation($args->tproject_id,$args->location);
@@ -35,8 +35,8 @@ switch ($args->doAction) {
   break;
 
   case 'doBooleanMgmt':
-    // To make user's life simpler, we work on all linked CF 
-    // and not only on selected. 
+    // To make user's life simpler, we work on all linked CF
+    // and not only on selected.
     $args->attrBefore = $cfield_mgr->getBooleanAttributes($args->tproject_id);
     doActiveMgmt($cfield_mgr,$args);
     doRequiredMgmt($cfield_mgr,$args);
@@ -60,6 +60,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  * create object with all user inputs
  *
+ * @param database $dbHandler
+ * @return stdClass
  */
 function init_args(&$dbHandler)
 {
@@ -79,7 +81,7 @@ function init_args(&$dbHandler)
 
   if( is_null($args->checkedCF) ) {
     $args->checkedCF = array();
-  }  
+  }
 
   getTproj($dbHandler,$args);
 
@@ -89,18 +91,18 @@ function init_args(&$dbHandler)
 
 /**
  *
+ * @param database $dbH
+ * @param stdClass $args
  */
 function getTproj(&$dbH,&$args)
-{  
+{
   $args->tproject_name = '';
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? 
-                         intval($_REQUEST['tproject_id']) : 0;
+  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   
   if( $args->tproject_id == 0 )
   {
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? 
-                           intval($_SESSION['testprojectID']) : 0;
-  }  
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+  }
 
   if( $args->tproject_id > 0 )
   {
@@ -110,13 +112,17 @@ function getTproj(&$dbH,&$args)
     if(is_null($dummy))
     {
       throw new Exception("Unable to get Test Project ID");
-    }  
+    }
     $args->tproject_name = $dummy['name'];
   }
 }
 
+
 /**
  *
+ * @param stdClass $args
+ * @param cfield_mgr $cfield_mgr
+ * @return stdClass
  */
 function initializeGui(&$args,&$cfield_mgr)
 {
@@ -136,31 +142,35 @@ function initializeGui(&$args,&$cfield_mgr)
   foreach($allowed_nodes as $verbose_type => $type_id)
   {
     $gui->cf_allowed_nodes[$type_id] = lang_get($verbose_type);
-  }  
+  }
 
   return $gui;
 }
 
+
 /**
  *
- *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
  */
 function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,"cfield_management");
 }
 
+
 /**
- * @parame map of maps with locations of CF
+ * @param array $locations map of maps with locations of CF
  *         key: item type: 'testcase','testsuite', etc
- *
+ * @return NULL
  */
 function createLocationsMenu($locations)
 {
   $menuContents = null;
   $items = $locations['testcase'];
   foreach($items as $code => $key4label) {
-    $menuContents[$code] = lang_get($key4label); 
+    $menuContents[$code] = lang_get($key4label);
   }
   return $menuContents;
 }
@@ -168,6 +178,8 @@ function createLocationsMenu($locations)
 
 /**
  *
+ * @param cfield_mgr $cfieldMgr
+ * @param stdClass $argsObj
  */
 function doRequiredMgmt(&$cfieldMgr,$argsObj)
 {
@@ -184,6 +196,8 @@ function doRequiredMgmt(&$cfieldMgr,$argsObj)
 
 /**
  *
+ * @param cfield_mgr $cfieldMgr
+ * @param stdClass $argsObj
  */
 function doActiveMgmt(&$cfieldMgr,$argsObj)
 {
@@ -199,9 +213,11 @@ function doActiveMgmt(&$cfieldMgr,$argsObj)
 
 /**
  *
+ * @param cfield_mgr $cfieldMgr
+ * @param stdClass $argsObj
  */
 function doMonitorableMgmt(&$cfieldMgr,$argsObj)
-{  
+{
   $cfg = array();
   $cfg['attrKey'] = 'monitorable';
   $cfg['dbField'] = 'monitorable';
@@ -214,13 +230,15 @@ function doMonitorableMgmt(&$cfieldMgr,$argsObj)
 
 /**
  *
- *
+ * @param cfield_mgr $cfieldMgr
+ * @param stdClass $argsObj
+ * @param array $cfg
  */
 function doSimpleBooleanMgmt(&$cfieldMgr,$argsObj,$cfg)
-{ 
+{
 
   // This way user does not need to check cf for this operations
-  // Think makes life easier   
+  // Think makes life easier
   $serviceInput = $cfg['ha'];
   $cfSet = array_keys($argsObj->$serviceInput);
 
@@ -244,15 +262,15 @@ function doSimpleBooleanMgmt(&$cfieldMgr,$argsObj,$cfg)
         if($argsObj->attrBefore[$id][$cfg['dbField']] == 0)
         {
           $on[] = $id;
-        }  
+        }
       }
       else
       {
         if($argsObj->attrBefore[$id][$cfg['dbField']] == 1)
         {
           $off[] = $id;
-        }  
-      } 
+        }
+      }
     }
 
     if(!is_null($on))
@@ -263,8 +281,7 @@ function doSimpleBooleanMgmt(&$cfieldMgr,$argsObj,$cfg)
     if(!is_null($off))
     {
       $cfieldMgr->$m2c($argsObj->tproject_id,$off,0);
-    } 
+    }
   }
 
-} 
- 
+}

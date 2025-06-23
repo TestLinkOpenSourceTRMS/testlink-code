@@ -828,7 +828,7 @@ function getFileUploadErrorMessage($fInfo,$tlInfo=null)
     }
   }
 
-  if (null == $msg && null != $tlInfo && $tlInfo->statusOK == false) {
+  if (null == $msg && null != $tlInfo && !$tlInfo->statusOK) {
     $msg = lang_get('FILE_UPLOAD_' . $tlInfo->statusCode);
     if( property_exists($tlInfo,'msg') ) {
       $msg = $tlInfo->msg;
@@ -856,7 +856,9 @@ function show_instructions($key, $refreshTree=0)
 
 
 /**
- * @TODO: franciscom - 20091003 - document return value
+ *
+ * @param unknown $template2get
+ * @return stdClass with the template configuration
  */
 function templateConfiguration($template2get=null)
 {
@@ -894,7 +896,7 @@ function isValidISODateTime($ISODateTime)
    
    $matches=null;
    $status_ok=false;
-   if (preg_match("/^(\d{4})-(\d{2})-(\d{2}) ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $ISODateTime, $matches))
+   if (preg_match("/^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/", $ISODateTime, $matches))
    {
        $status_ok=checkdate($matches[$dateParts['MONTH']],$matches[$dateParts['DAY']],$matches[$dateParts['YEAR']]);
    }
@@ -1656,8 +1658,6 @@ function initUserEnv(&$dbH, $context, $opt=null) {
 
   getActions($gui,$_SESSION['basehref']);
 
-  // if( $gui->current_tproject_id == null || trim($gui->current_tproject_id) == '' ) { }
-
   $gui->logo = $_SESSION['basehref'] . TL_THEME_IMG_DIR .
                config_get('logo_navbar');
         
@@ -2097,7 +2097,7 @@ function pageAccessCheck(&$db, &$user, $context)
     }
   }
 
-  if ($checkAnd == false && $checkOr == false) {
+  if (!$checkAnd && !$checkOr) {
     $script = basename($_SERVER['PHP_SELF']);
     $action = 'Access Req Feature';
     $msg = TLS("audit_security_user_right_missing",

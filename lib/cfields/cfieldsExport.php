@@ -1,13 +1,13 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- *  
+ *
  * Custom Fields definition export management
  *
  * @package   TestLink
  * @author    Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2020, TestLink community 
+ * @copyright   2005-2020, TestLink community
  * @uses    config.inc.php
  *
  *
@@ -25,7 +25,7 @@ $gui = new stdClass();
 $gui->page_title = lang_get('export_cfields');
 $gui->do_it = 1;
 $gui->nothing_todo_msg = '';
-$gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : ''; 
+$gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : '';
 $gui->export_filename = is_null($args->export_filename) ? 'customFields.xml' : $args->export_filename;
 $gui->exportTypes = array('XML' => 'XML');
 
@@ -33,10 +33,10 @@ switch( $args->doAction )
 {
     case 'doExport':
       doExport($db,$gui->export_filename);
-      break;  
+      break;
     
     default:
-      break;  
+      break;
 }
 
 $smarty = new TLSmarty();
@@ -44,23 +44,18 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-/*
-  function: init_args()
-
-  args:
-  
-  returns: 
-
-*/
+/**
+ *
+ * @return stdClass
+ */
 function init_args()
 {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $iParams = 
-    array("doAction" 
+  $iParams = array("doAction"
              => array(tlInputParameter::STRING_N,0,50),
-           "export_filename" 
+           "export_filename"
               => array(tlInputParameter::STRING_N,0,100));
 
   R_PARAMS($iParams,$args);
@@ -73,16 +68,11 @@ function init_args()
 }
 
 
-
-/*
-  function: doExport()
-
-  args: dbHandler
-        filename: where to export
-  
-  returns: -
-
-*/
+/**
+ *
+ * @param database $dbHandler
+ * @param string $filename
+ */
 function doExport(&$dbHandler,$filename)
 {
   $tables = tlObjectWithDB::getDBTables(array('custom_fields','cfield_node_types'));
@@ -106,6 +96,13 @@ function doExport(&$dbHandler,$filename)
   exit();
 }
 
+
+/**
+ *
+ * @param database $db
+ * @param tlUser $user
+ * @return string
+ */
 function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,"cfield_view");

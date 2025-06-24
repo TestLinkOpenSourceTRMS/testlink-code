@@ -1,7 +1,7 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: opt_transfer.php,v $
  *
@@ -29,7 +29,7 @@ function opt_transf_cfg(&$opt_cfg, $right_list, $js_ot_name = 'ot')
 		{
 			$a_right = $opt_cfg->to->map;
 		}
-	} 
+	}
 	else
 	{
 		$a_k = explode(",",trim($right_list));
@@ -63,7 +63,7 @@ function keywords_opt_transf_cfg(&$opt_cfg, $right_list)
 	if( is_null($opt_cfg->from))
 	{
 		$opt_cfg->from = new stdClass();
-	}	
+	}
 	$opt_cfg->from->name = "from_select_box";
 	$opt_cfg->from->id_field = 'id';
 	$opt_cfg->from->desc_field = 'keyword';
@@ -76,7 +76,7 @@ function keywords_opt_transf_cfg(&$opt_cfg, $right_list)
 	if( is_null($opt_cfg->to))
 	{
 		$opt_cfg->to = new stdClass();
-	}	
+	}
 	$opt_cfg->to->name = "to_select_box";
 	$opt_cfg->to->show_id_in_desc = true;
 	$opt_cfg->to->id_field = 'id';
@@ -87,7 +87,7 @@ function keywords_opt_transf_cfg(&$opt_cfg, $right_list)
 	$opt_cfg->to->show_id_in_desc = true;
 	$opt_cfg->to->js_events->ondblclick = "";
 
-	opt_transf_cfg($opt_cfg, $right_list,$opt_cfg->js_ot_name);  
+	opt_transf_cfg($opt_cfg, $right_list,$opt_cfg->js_ot_name);
 }
 
 function opt_transf_empty_cfg()
@@ -136,7 +136,7 @@ function opt_transf_empty_cfg()
 }
 
 /**
- * 
+ *
  *
  */
 function item_opt_transf_cfg(&$opt_cfg, $right_list)
@@ -168,5 +168,5 @@ function item_opt_transf_cfg(&$opt_cfg, $right_list)
 	$opt_cfg->to->show_id_in_desc = true;
 	$opt_cfg->to->js_events->ondblclick = "";
 
-	opt_transf_cfg($opt_cfg, $right_list,$opt_cfg->js_ot_name);  
+	opt_transf_cfg($opt_cfg, $right_list,$opt_cfg->js_ot_name);
 }

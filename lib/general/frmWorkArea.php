@@ -46,7 +46,7 @@ $aa_tfp = array(
      'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
      'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
      'planAddTC'    => array('lib/plan/planAddTCNavigator.php?loadRightPaneAddTC=0',
-                             'lib/results/planAddTC.php?activity=addTC'),
+                             'lib/plan/planAddTC.php?activity=addTC'),
      'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
      'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
      'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',
@@ -66,7 +66,7 @@ $_SESSION['currentSrsId'] = null;
 
 /** feature to display */
 $showFeature = $args->feature;
-if (isset($aa_tfp[$showFeature]) === FALSE) {
+if (isset($aa_tfp[$showFeature]) === false) {
   // argument is wrong
   tLog("Wrong page argument feature = ".$showFeature, 'ERROR');
   exit();
@@ -201,7 +201,7 @@ function validateBuildAvailability(&$db,&$tplanMgr,$context,$attrFilter)
     }
     
     $mzx = '';
-    if(count($msx) > 0)
+    if(!empty($msx))
     {
       $mzx = "(" . implode(' & ',$msx) . ")";
     }

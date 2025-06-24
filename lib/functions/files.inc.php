@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2009, TestLink community 
+ * @copyright 	2005-2009, TestLink community
  * @version    	CVS: $Id: files.inc.php,v 1.7 2009/07/09 19:02:55 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
@@ -77,8 +77,9 @@ function gzip_compress_file($srcName, $dstName)
 {
 	$success = false;
 	$data = getFileContents($srcName);
-	if ($data != "")
-		$success = gzip_writeToFile($dstName,$data);
+	if ($data != "") {
+	    $success = gzip_writeToFile($dstName,$data);
+	}
 	return $success;
 }
 

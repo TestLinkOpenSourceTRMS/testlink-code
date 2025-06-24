@@ -2,11 +2,11 @@
 /**
  * @filesource  logging.inc.php
  * @package     TestLink
- * @copyright   2009,2013 TestLink community 
+ * @copyright   2009,2013 TestLink community
  *
  *
  * Log messages from the levels ERROR or INFO will be recorded on ???.
- * DEBUG messages will be ignored. 
+ * DEBUG messages will be ignored.
  * They take the form:
  *
  * tLog("testing level ERROR", 'ERROR');
@@ -20,7 +20,7 @@
  *
  *
  * @internal revisions
- * 20130816 - franciscom - added management of L18N (Localization) logs, instead of use WARNING for this kind of logs. 
+ * 20130816 - franciscom - added management of L18N (Localization) logs, instead of use WARNING for this kind of logs.
  *
  */
  
@@ -28,7 +28,7 @@
   This function fires audit events
 
   @param string $message the message which describes the event in a human readable way (best a tlMetaString) is used
-  @param string $eventCode 
+  @param string $eventCode
   @param int $objectID the id of the object to which the event refers to
   @param string $objectType the type of the object the event refers to (this should be the name of the database table the objet is stored
 
@@ -43,7 +43,7 @@ function logAuditEvent($message,$eventCode = null,$objectID = null,$objectType =
 
 /**
  *
- * 
+ *
  */
 function logWarningEvent($message,$activityCode = null,$objectID = null,$objectType = null)
 {

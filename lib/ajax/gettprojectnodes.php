@@ -50,7 +50,7 @@ echo json_encode($nodes);
  * @param database $dbHandler
  * @param int $root_node
  * @param int $parent
- * @param  $filter_node
+ * @param string $filter_node
  * @param string $tcprefix
  * @param number $show_tcases
  * @param string $operation

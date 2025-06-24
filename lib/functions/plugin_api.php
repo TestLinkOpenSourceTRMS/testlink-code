@@ -104,25 +104,24 @@ function plugin_config_get($option, $default = null, $project = TL_ANY_PROJECT)
 
   doDBConnect($dbHandler);
   $tables = tlObjectWithDB::getDBTables(array('plugins_configuration'));
-  $target = $tables['plugins_configuration'];
-
+ 
   $basename = plugin_get_current();
   $full_option = 'plugin_' . $basename . '_' . $option;
   $full_option = $dbHandler->prepare_string($full_option);
 
   $sql = "/* $debugMsg */ " .
-         " SELECT config_value FROM " . $tables['plugins_configuration'] . 
+         " SELECT config_value FROM " . $tables['plugins_configuration'] .
          " where config_key = '" . $full_option . "' AND  testproject_id = ";
 
   $value = $dbHandler->fetchOneValue($sql . intval($project));
 
-  if (is_null($value) && $project != TL_ANY_PROJECT) 
+  if (is_null($value) && $project != TL_ANY_PROJECT)
   {
     // Check if its in the Global Project
     $value = $dbHandler->fetchOneValue($sql . TL_ANY_PROJECT);
   }
 
-  if (is_null($value)) 
+  if (is_null($value))
   {
     // Fetch from the Global list, and if not, fetch from default value
     global $g_plugin_config_cache;
@@ -148,50 +147,50 @@ function plugin_config_set($option, $value, $project = TL_ANY_PROJECT)
   $basename = plugin_get_current();
   $full_option = 'plugin_' . $basename . '_' . $option;
 
-  if (is_array($value) || is_object($value)) 
+  if (is_array($value) || is_object($value))
   {
     $config_type = CONFIG_TYPE_COMPLEX;
     $value = serialize($value);
-  } 
-  else if (is_float($value)) 
+  }
+  elseif (is_float($value))
   {
     $config_type = CONFIG_TYPE_FLOAT;
     $value = (float)$value;
-  } 
-  else if (is_int($value) || is_numeric($value)) 
+  }
+  elseif (is_int($value) || is_numeric($value))
   {
     $config_type = CONFIG_TYPE_INT;
     $value = $dbHandler->prepare_int($value);
-  } 
-  else 
+  }
+  else
   {
     $config_type = CONFIG_TYPE_STRING;
   }
 
  
-  $safe_id = intval($project); 
+  $safe_id = intval($project);
   $sql = " SELECT COUNT(*) from $plugin_config_table " .
          " WHERE config_key = '" . $dbHandler->prepare_string($full_option) . "' " .
          " AND testproject_id = {$safe_id} ";
   $rows_exist = $dbHandler->fetchOneValue($sql);
 
-  if ($rows_exist > 0) 
+  if ($rows_exist > 0)
   {
     // Update the existing record
     $sql = " UPDATE $plugin_config_table " .
            " SET config_value = '" . $dbHandler->prepare_string($value) . "'," .
-           " config_type = " . $config_type . 
+           " config_type = " . $config_type .
            " WHERE config_key = '" . $dbHandler->prepare_string($full_option) . "' " .
            " AND testproject_id = {$safe_id} ";
-  } 
-  else 
+  }
+  else
   {
     // Insert new config value
     $sql = " INSERT INTO $plugin_config_table " .
            " (config_key, config_type, config_value, testproject_id, author_id) " .
            " VALUES (" .
-           "'" . $dbHandler->prepare_string($full_option) . "', " . 
-           $config_type . "," . 
+           "'" . $dbHandler->prepare_string($full_option) . "', " .
+           $config_type . "," .
            "'" . $dbHandler->prepare_string($value) . "', " .
            $safe_id . ", " . $_SESSION['currentUser']->dbID . ")";
   }
@@ -205,7 +204,7 @@ function plugin_config_set($option, $value, $project = TL_ANY_PROJECT)
 function plugin_config_defaults($options)
 {
   global $g_plugin_config_cache;
-  if (!is_array($options)) 
+  if (!is_array($options))
   {
     return;
   }
@@ -213,7 +212,7 @@ function plugin_config_defaults($options)
   $basename = plugin_get_current();
   $option_base = 'plugin_' . $basename . '_';
 
-  foreach ($options as $option => $value) 
+  foreach ($options as $option => $value)
   {
     $full_option = $option_base . $option;
     $g_plugin_config_cache[$full_option] = $value;
@@ -229,7 +228,7 @@ function plugin_config_defaults($options)
  */
 function plugin_lang_get($p_name, $p_basename = null)
 {
-  if (!is_null($p_basename)) 
+  if (!is_null($p_basename))
   {
     plugin_push_current($p_basename);
   }
@@ -238,7 +237,7 @@ function plugin_lang_get($p_name, $p_basename = null)
   $t_name = 'plugin_' . $t_basename . '_' . $p_name;
   $t_string = lang_get($t_name);
 
-  if (!is_null($p_basename)) 
+  if (!is_null($p_basename))
   {
     plugin_pop_current();
   }
@@ -262,22 +261,22 @@ function plugin_event_hook($p_name, $p_callback)
  */
 function plugin_event_hook_many($p_hooks)
 {
-  if (!is_array($p_hooks)) 
+  if (!is_array($p_hooks))
   {
     return;
   }
 
   $t_basename = plugin_get_current();
 
-  foreach ($p_hooks as $t_event => $t_callbacks) 
+  foreach ($p_hooks as $t_event => $t_callbacks)
   {
-    if (!is_array($t_callbacks)) 
+    if (!is_array($t_callbacks))
     {
       event_hook($t_event, $t_callbacks, $t_basename);
       continue;
     }
 
-    foreach ($t_callbacks as $t_callback) 
+    foreach ($t_callbacks as $t_callback)
     {
       event_hook($t_event, $t_callback, $t_basename);
     }
@@ -310,7 +309,7 @@ function plugin_is_installed($p_basename)
   doDBConnect($dbHandler);
   $tables = tlObjectWithDB::getDBTables(array('plugins'));
 
-  $sql = " SELECT COUNT(*) count FROM {$tables['plugins']} " . 
+  $sql = " SELECT COUNT(*) count FROM {$tables['plugins']} " .
          " WHERE basename='" . $dbHandler->prepare_string($p_basename) . "'";
 
   $t_result = $dbHandler->fetchFirstRow($sql);
@@ -325,7 +324,7 @@ function plugin_install($p_plugin)
 {
   $debugMsg = "Function: " . __FUNCTION__;
 
-  if (plugin_is_installed($p_plugin->basename)) 
+  if (plugin_is_installed($p_plugin->basename))
   {
     trigger_error('Plugin ' . $p_plugin->basename . ' already installed', E_USER_WARNING);
     return null;
@@ -341,7 +340,7 @@ function plugin_install($p_plugin)
 
   doDBConnect($dbHandler);
   $tables = tlObjectWithDB::getDBTables(array('plugins'));
-  $sql = "/* $debugMsg */ INSERT INTO {$tables['plugins']} (basename,enabled) " . 
+  $sql = "/* $debugMsg */ INSERT INTO {$tables['plugins']} (basename,enabled) " .
          " VALUES ('" . $dbHandler->prepare_string($p_plugin->basename) . "',1)";
   $dbHandler->exec_query($sql);
 
@@ -389,19 +388,19 @@ function plugin_find_all()
 {
   $t_plugin_path = TL_PLUGIN_PATH;
 
-  if ($t_dir = opendir($t_plugin_path)) 
+  if ($t_dir = opendir($t_plugin_path))
   {
-    while (($t_file = readdir($t_dir)) !== false) 
+    while (($t_file = readdir($t_dir)) !== false)
     {
-      if ('.' == $t_file || '..' == $t_file) 
+      if ('.' == $t_file || '..' == $t_file)
       {
         continue;
       }
-      if (is_dir($t_plugin_path . $t_file)) 
+      if (is_dir($t_plugin_path . $t_file))
       {
         $t_plugin = plugin_register($t_file, true);
 
-        if (!is_null($t_plugin)) 
+        if (!is_null($t_plugin))
         {
           $t_plugins[$t_file] = $t_plugin;
         }
@@ -421,7 +420,7 @@ function plugin_include($p_basename)
   $t_plugin_file = TL_PLUGIN_PATH . $p_basename . DIRECTORY_SEPARATOR . $p_basename . '.php';
 
   $t_included = false;
-  if (is_file($t_plugin_file)) 
+  if (is_file($t_plugin_file))
   {
     include_once $t_plugin_file;
     $t_included = true;
@@ -439,21 +438,21 @@ function plugin_register($p_basename, $p_return = false)
 {
   global $g_plugin_cache;
 
-  if (!isset($g_plugin_cache[$p_basename])) 
+  if (!isset($g_plugin_cache[$p_basename]))
   {
     $t_classname = $p_basename . 'Plugin';
 
     # Include the plugin script if the class is not already declared.
-    if (!class_exists($t_classname)) 
+    if (!class_exists($t_classname))
     {
-      if (!plugin_include($p_basename)) 
+      if (!plugin_include($p_basename))
       {
         return null;
       }
     }
 
     # Make sure the class exists and that it's of the right type.
-    if (class_exists($t_classname) && is_subclass_of($t_classname, 'TestlinkPlugin')) 
+    if (class_exists($t_classname) && is_subclass_of($t_classname, 'TestlinkPlugin'))
     {
       plugin_push_current($p_basename);
 
@@ -463,16 +462,16 @@ function plugin_register($p_basename, $p_return = false)
       plugin_pop_current();
 
       # Final check on the class
-      if (is_null($t_plugin->name) || is_null($t_plugin->version)) 
+      if (is_null($t_plugin->name) || is_null($t_plugin->version))
       {
         return null;
       }
 
-      if ($p_return) 
+      if ($p_return)
       {
         return $t_plugin;
-      } 
-      else 
+      }
+      else
       {
         $g_plugin_cache[$p_basename] = $t_plugin;
       }
@@ -493,7 +492,7 @@ function plugin_register_installed()
          " SELECT basename FROM {$tables['plugins']} WHERE enabled=1 ";
 
   $t_result = $dbHandler->exec_query($sql);
-  while ($t_row = $dbHandler->fetch_array($t_result)) 
+  while ($t_row = $dbHandler->fetch_array($t_result))
   {
     $t_basename = $t_row['basename'];
     plugin_register($t_basename);
@@ -515,7 +514,7 @@ function plugin_init_installed()
 
   $t_plugins = array_keys($g_plugin_cache);
 
-  foreach ($t_plugins as $t_basename) 
+  foreach ($t_plugins as $t_basename)
   {
     plugin_init($t_basename);
   }
@@ -532,7 +531,7 @@ function plugin_init($p_basename)
   global $g_plugin_cache, $g_plugin_cache_init;
 
   $ret = false;
-  if (isset($g_plugin_cache[$p_basename])) 
+  if (isset($g_plugin_cache[$p_basename]))
   {
     $t_plugin = $g_plugin_cache[$p_basename];
 
@@ -544,7 +543,7 @@ function plugin_init($p_basename)
 
     plugin_pop_current();
     $ret = true;
-  } 
+  }
   return $ret;
 }
 

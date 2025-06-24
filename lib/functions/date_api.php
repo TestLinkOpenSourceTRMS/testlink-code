@@ -1,31 +1,31 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
+ *
  * Date API
  *
  * @package     TestLink
  * @author      franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright   2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2014, TestLink community
  * @filesource  date_api.php
  * @link        http://www.testlink.org/
  *
  * @internal revisions
  * @since 1.9.10
- *       
+ *
  */
  
 /**
  * create html code for months combo-box
  * @param integer $p_month (optional) selected month
- * @return array 
+ * @return array
  * @todo havlatm: do we use it? Remove?
  */
-function create_month_option_list( $p_month = 0 ) 
+function create_month_option_list( $p_month = 0 )
 {
-  $month_option=''; 
+  $month_option='';
   for ($i=1; $i<=12; $i++) {
     $month_name = date( 'F', mktime(0,0,0,$i,1,2000) );
     if ( $i == $p_month ) {
@@ -38,9 +38,9 @@ function create_month_option_list( $p_month = 0 )
 }
 
   
-function create_numeric_month_option_list( $p_month = 0 ) 
+function create_numeric_month_option_list( $p_month = 0 )
 {
-  $month_option=''; 
+  $month_option='';
   for ($i=1; $i<=12; $i++) {
     if ($i == $p_month) {
       $month_option .= "<option value=\"$i\" selected=\"selected\"> $i </option>" ;
@@ -52,7 +52,7 @@ function create_numeric_month_option_list( $p_month = 0 )
 }
 
 
-function create_day_option_list( $p_day = 0 ) 
+function create_day_option_list( $p_day = 0 )
 {
   $day_option = '';
   for ($i=1; $i<=31; $i++) {
@@ -66,7 +66,7 @@ function create_day_option_list( $p_day = 0 )
 }
   
 
-function create_year_option_list( $p_year = 0 ) 
+function create_year_option_list( $p_year = 0 )
 {
   $year_option = '';
   $current_year = date( "Y" );
@@ -85,8 +85,8 @@ function create_year_option_list( $p_year = 0 )
 // Added contribution (done on mantis) to manage datetime
 /** used in cfield_mgr.class.php */
 function create_date_selection_set($p_name, $p_format, $p_date=0, $options=null)
-{ 
-  $opt= array('default_disable' =>false, 'allow_blank' => false, 
+{
+  $opt= array('default_disable' =>false, 'allow_blank' => false,
               'show_on_filters' => false, 'required' => '');
   
   $opt = array_merge($opt, (array)$options);
@@ -101,11 +101,11 @@ function create_date_selection_set($p_name, $p_format, $p_date=0, $options=null)
   
   $str_out='';
   $t_chars = preg_split('//', $p_format, -1, PREG_SPLIT_NO_EMPTY) ;
-  if ( $p_date != 0 ) 
+  if ( $p_date != 0 )
   {
     $t_date = preg_split('/-| |:/', date('Y-m-d H:i:s', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
-  } 
-  else 
+  }
+  else
   {
     $t_date = array(-1, -1, -1, -1, -1, -1);
   }
@@ -113,11 +113,11 @@ function create_date_selection_set($p_name, $p_format, $p_date=0, $options=null)
   $t_disable = '' ;
   $t_blank_line_date = '' ;
   $t_blank_line_time = '' ;
-  if( $opt['default_disable'] == true ) 
+  if( $opt['default_disable'] )
   {
     $t_disable = 'disabled' ;
   }
-  if( $opt['allow_blank'] == true ) 
+  if( $opt['allow_blank'] )
   {
     $t_blank_line_date = "<option value=\"0\"></option>" ;
     $t_blank_line_time = "<option value=\"-1\"></option>" ;
@@ -134,14 +134,14 @@ function create_date_selection_set($p_name, $p_format, $p_date=0, $options=null)
     $time = 0;
   }
   else
-  {  
+  {
     $time = mktime(0, 0, 0, $m, $d, $y);
   }
   
   $formatted_date = $time != 0 ? strftime($date_format, $time) : '';
   
   $str_out .= '<input type="text" name="' . $p_name.'_input" size="10" id="' . $p_name.'_input" ' .
-              'value="' . $formatted_date . 
+              'value="' . $formatted_date .
               '" onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); READONLY/>' .
               '<img title="' . lang_get('show_calender') . '" src="' . TL_THEME_IMG_DIR . '/calendar.gif" ' .
               'onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); > ' .
@@ -154,30 +154,30 @@ function create_date_selection_set($p_name, $p_format, $p_date=0, $options=null)
   
 
   // Here we work with the TIME PART, that exists only when we require TIMESTAMP
-  foreach( $t_chars as $t_char ) 
+  foreach( $t_chars as $t_char )
   {
     $common = $opt['required'] . " $t_disable>" ;
-    if (strcasecmp( $t_char, "H") == 0) 
+    if (strcasecmp( $t_char, "H") == 0)
     {
-      $mask = '<select name="%s_hour" id="%s_hour" ';    
+      $mask = '<select name="%s_hour" id="%s_hour" ';
       $str_out .= sprintf($mask,$p_name,$p_name) . $common . $t_blank_line_time ;
-      $str_out .= create_range_option_list($t_date[3], 0, 23); 
+      $str_out .= create_range_option_list($t_date[3], 0, 23);
       $str_out .= "</select>\n" ;
     }
     
-    if (strcasecmp( $t_char, "i") == 0) 
+    if (strcasecmp( $t_char, "i") == 0)
     {
-      $mask = '<select name="%s_minute" id="%s_minute" ';    
+      $mask = '<select name="%s_minute" id="%s_minute" ';
       $str_out .= sprintf($mask,$p_name,$p_name) . $common . $t_blank_line_time ;
-      $str_out .= create_range_option_list($t_date[4], 0, 59); 
+      $str_out .= create_range_option_list($t_date[4], 0, 59);
       $str_out .= "</select>\n" ;
     }
     
-    if (strcasecmp( $t_char, "s") == 0) 
+    if (strcasecmp( $t_char, "s") == 0)
     {
-      $mask = '<select name="%s_second" id="%s_second" ';    
+      $mask = '<select name="%s_second" id="%s_second" ';
       $str_out .= sprintf($mask,$p_name,$p_name) . $common . $t_blank_line_time ;
-      $str_out .= create_range_option_list($t_date[5], 0, 59); 
+      $str_out .= create_range_option_list($t_date[5], 0, 59);
       $str_out .= "</select>\n" ;
     }
   }
@@ -186,13 +186,13 @@ function create_date_selection_set($p_name, $p_format, $p_date=0, $options=null)
 
 
 /**
- * 
+ *
  *
  */
-function create_range_option_list($p_value, $p_min, $p_max ) 
+function create_range_option_list($p_value, $p_min, $p_max )
 {
   $option_list='';
-  for ($idx=$p_min; $idx<=$p_max; $idx++) 
+  for ($idx=$p_min; $idx<=$p_max; $idx++)
   {
     $selected='';
     $selected = ($idx == $p_value) ? ' selected="selected" ' :'';
@@ -222,13 +222,12 @@ function checkTimeStamp($ts)
   foreach($preg_str as $v)
   {
     $status_ok |= preg_match($v, $value);
-  } 
+  }
   
   if(!$status_ok)
   {
-    // Bye!
     throw new Exception("Invalid Timestamp format", 1);
-  } 
+  }
 
   // Check content
   if( $status_ok )
@@ -240,21 +239,20 @@ function checkTimeStamp($ts)
       $yyyymmdd = explode(' ',$value);
       $dp = explode('-',$yyyymmdd[0]);
       $status_ok = checkdate($dp[1], $dp[2], $dp[0]);
-    }  
+    }
 
     if( !$status_ok )
     {
-      // Bye!
       throw new Exception("Invalid Timestamp", 2);
-    }  
-  }  
+    }
+  }
 }
 
 
 
-/**  
- *  
- *  
+/**
+ *
+ *
  */
 function locateDateToISO($localeDateString,$dateFormat) {
 
@@ -288,7 +286,7 @@ function locateDateToISO($localeDateString,$dateFormat) {
       $y=0;
       $m=1;
       $d=2;
-    break;    
+    break;
 
     case '%d/%m/%Y':
     default:

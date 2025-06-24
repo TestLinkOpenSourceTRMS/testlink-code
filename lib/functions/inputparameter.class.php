@@ -5,16 +5,16 @@
  *
  * @package    TestLink
  * @author     Andreas Morsing
- * @copyright  2009, TestLink community 
+ * @copyright  2009, TestLink community
  * @filesource inputparameter.class.php
  * @link       http://www.teamst.org
  * @since      1.9
- * 
+ *
  **/
 
 /**
  * Helper class for Input parameters (parameters fetched from POST/GET/REQUEST
- * 
+ *
  * @package TestLink
  * @author Andreas Morsing
  */
@@ -74,7 +74,7 @@ class tlInputParameter extends tlObject
 	 * @param tlInputParameter $parameterInfo Infos about the parameter source
 	 * @param tl<TYPE>ValidationInfo $validationInfo Info about the validation of the parameter
 	 */
-	function __construct($parameterInfo,$validationInfo = null)
+	public function __construct($parameterInfo,$validationInfo = null)
 	{
 		parent::__construct();
 	
@@ -88,7 +88,7 @@ class tlInputParameter extends tlObject
 	
 	/**
 	 * Returns the FETCH state
-	 * @return boolean returns true if the parameter is fetched, else false 
+	 * @return boolean returns true if the parameter is fetched, else false
 	 */
 	protected function isFetched()
 	{
@@ -104,7 +104,7 @@ class tlInputParameter extends tlObject
 		return $this->isValid;
 	}
 	
-	/** 
+	/**
 	 * Cleans up the object
 	 */
 	protected function _clean()
@@ -146,13 +146,10 @@ class tlInputParameter extends tlObject
 	
 		$value = null;
 		$fetched = false;
-		if ($src)
-		{	
-			if (isset($src[$parameterName]))
-			{
+		if ($src && isset($src[$parameterName]))
+		{
 				$value = $src[$parameterName];
 				$fetched = true;
-			}
 		}
 		$this->bFetched = $fetched;
 		$this->taintValue = $value;
@@ -172,7 +169,7 @@ class tlInputParameter extends tlObject
 			else
 			{
 				$this->normalizedValue = $this->taintValue;
-			}	
+			}
 		}
 	}
 		
@@ -191,7 +188,7 @@ class tlInputParameter extends tlObject
 			$this->validationInfo->validate($this->normalizedValue);
 		}
 		$this->isValid = true;
-	}	
+	}
 	
 	/**
 	 * Returns the value of the parameter, after it was fetched and validated
@@ -202,7 +199,7 @@ class tlInputParameter extends tlObject
 		if ($this->isFetched() && $this->isValid())
 		{
 			return $this->normalizedValue;
-		}	
+		}
 		return null;
 	}
 }
@@ -224,10 +221,10 @@ class tlParameterInfo
 	 */
 	public $name = null;
 	
-	function __construct($source = null,$name = null)
+	public function __construct($source = null,$name = null)
 	{
 	    $this->source = $source;
-	    $this->name = $name;    
+	    $this->name = $name;
 	}
 	
 }
@@ -236,7 +233,7 @@ class tlParameterInfo
  * Helper class for validating strings
  * @package TestLink
  */
-class tlStringValidationInfo 
+class tlStringValidationInfo
 {
 	//some trimming related constants
 	const TRIM_NONE = 0;
@@ -293,21 +290,21 @@ class tlStringValidationInfo
 		else
 		{
 			$value = $this->trim($value);
-			if ($this->doStripSlashes)	
+			if ($this->doStripSlashes)
 			{
 				$value = $this->stripslashes($value);
-			}	
+			}
 		}
 		return $value;
 	}
 	
 	/**
 	 * @param string $value the string to strip the slashes of
-	 * @return string returns the stripped value 
+	 * @return string returns the stripped value
 	 */
 	public function stripslashes($value)
 	{
-		return strings_stripSlashes($value);	
+		return strings_stripSlashes($value);
 	}
 	
 	/**
@@ -330,10 +327,10 @@ class tlStringValidationInfo
 				$value = trim($value);
 				break;
 		}
-		if ($this->maxLen)	
+		if ($this->maxLen)
 		{
 			$value = tlSubStr($value,0,$this->maxLen);
-		}	
+		}
 		return $value;
 	}
 	
@@ -351,7 +348,7 @@ class tlStringValidationInfo
 			throw new Exception($msg);
 		}
 		
-		$regExp = $this->regExp; 
+		$regExp = $this->regExp;
 		if ($regExp)
 		{
 			$dummy = null;
@@ -361,20 +358,17 @@ class tlStringValidationInfo
 				       "[regExp: " . htmlspecialchars($value) . " " . htmlspecialchars($regExp) . "]";
 				tLog($msg,'ERROR');
 				throw new Exception($msg);
-			}	                    
-		}	
+			}
+		}
 		
 		$pfnValidation = $this->pfnValidation;
-		if ($pfnValidation)
+		if ($pfnValidation && !$pfnValidation($value))
 		{
-			if (!$pfnValidation($value))
-			{
 				$msg = "Input parameter validation failed [external function" .
 						" - $pfnValidation]";
 				tLog($msg,'ERROR');
 				throw new Exception($msg);
-			}	
-		}	
+		}
 			
 		return true;
 	}
@@ -500,7 +494,7 @@ class tlArrayValidationInfo
 
 
 /**
- * Helper class for validating checkboxex submitted via POST/GET 
+ * Helper class for validating checkboxex submitted via POST/GET
  * @package TestLink
  */
 class tlCheckBoxValidationInfo

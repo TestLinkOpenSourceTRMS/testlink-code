@@ -1,7 +1,7 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  oauth_api.php
  *
@@ -27,7 +27,7 @@ function oauth_link($oauthCfg)
     case 'github':
     case 'google':
     case 'microsoft':
-      // @20200523 it seems that with relative can work 
+      // @20200523 it seems that with relative can work
       $url = 'lib/functions/oauth_providers/OAuth2Call.php?oauth2='
              . trim($oauthCfg['oauth_name']);
     break;
@@ -45,7 +45,7 @@ function oauth_link($oauthCfg)
  * getOAuthProviderCfg
  *
  */
-function getOAuthProviderCfg($provider) 
+function getOAuthProviderCfg($provider)
 {
   $OAuthProviders = config_get('OAuthServers');
   foreach ($OAuthProviders as $providerCfg) {

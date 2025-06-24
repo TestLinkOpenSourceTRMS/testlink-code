@@ -1,5 +1,5 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
@@ -14,7 +14,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Load Composer's autoloader
-require 'autoload.php';
+require_once 'autoload.php';
 
 require_once 'lang_api.php';
 require_once 'common.php';
@@ -28,7 +28,7 @@ $g_phpMailer = null;
 /**
  *
  */
-function email_send_wrapper( $mailObj, $opt = null ) 
+function email_send_wrapper( $mailObj, $opt = null )
 {
   $prop = array();
   $prop['opt'] = array('cc','attachment');
@@ -39,26 +39,26 @@ function email_send_wrapper( $mailObj, $opt = null )
 
   $oops = array_merge($oops,(array)$opt);
   
-  // function email_send( 
+  // function email_send(
   // $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
-  // $p_exit_on_error = false, $htmlFormat = false, $opt = null ) 
-  return email_send($mailObj->from_address, $mailObj->to_address, 
+  // $p_exit_on_error = false, $htmlFormat = false, $opt = null )
+  return email_send($mailObj->from_address, $mailObj->to_address,
                     $mailObj->subject, $mailObj->message, $oops['cc'],
                     $oops['attachment'],$oops['exit_on_error'],
                     $oops['htmlFormat'],$opt);
 }
 
 
-/** 
- * sends the actual email 
- * 
- * @param boolean $p_exit_on_error == true - calls exit() on errors, else - returns true 
+/**
+ * sends the actual email
+ *
+ * @param boolean $p_exit_on_error == true - calls exit() on errors, else - returns true
  *    on success and false on errors
  * @param boolean $htmlFormat specify text type true = html, false (default) = plain text
  */
 function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
                      $p_attachment = null,
-                     $p_exit_on_error = false, $htmlFormat = false, $opt = null ) 
+                     $p_exit_on_error = false, $htmlFormat = false, $opt = null )
 {
 
   global $g_phpMailer;
@@ -93,14 +93,14 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
   # true => throw exceptions
   $mail = new PHPMailer(true);
 
-  $mail->SMTPAutoTLS = config_get('SMTPAutoTLS');    
+  $mail->SMTPAutoTLS = config_get('SMTPAutoTLS');
 
   // Need to get strings file for php mailer
   // To avoid problems I choose ENglish
   $mail->SetLanguage('en');
 
   # Select the method to send mail
-  switch ( config_get( 'phpMailer_method' ) ) 
+  switch ( config_get( 'phpMailer_method' ) )
   {
     case PHPMAILER_METHOD_MAIL: $mail->IsMail();
     break;
@@ -129,11 +129,11 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
       // is not a lot clear why this is useful (franciscom)
       // need to use sometime to understand .
-      if( is_null( $g_phpMailer ) )  
+      if( is_null( $g_phpMailer ) )
       {
         register_shutdown_function( 'email_smtp_close' );
-      } 
-      else 
+      }
+      else
       {
         $mail = $g_phpMailer;
       }
@@ -144,7 +144,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
   $mail->WordWrap = 80;
 
   # Urgent = 1, Not Urgent = 5, Disable = 0
-  $mail->Priority = config_get( 'mail_priority' ); 
+  $mail->Priority = config_get( 'mail_priority' );
 
   $mail->CharSet = config_get( 'charset');
   $mail->Host = config_get( 'smtp_host' );
@@ -156,20 +156,18 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
   {
     $mail->From = $p_from;
   }
- 
-  $t_debug_to = '';
 
   # add to the Recipient list
   $t_recipient_list = explode(',', $ot->recipient);
 
-  foreach ( $t_recipient_list as $t_recipient ) {  
+  foreach ( $t_recipient_list as $t_recipient ) {
     if ( !is_blank( $t_recipient ) ) {
         $mail->AddAddress( $t_recipient, '' );
     }
   }
 
   $t_cc_list = explode(',', $p_cc);
-  foreach ( $t_cc_list as $t_cc ) {  
+  foreach ( $t_cc_list as $t_cc ) {
       if ( !is_blank( $t_cc ) ) {
         $mail->AddCC( $t_cc, '' );
     }
@@ -180,15 +178,15 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
   if( !is_null($p_attachment) )
   {
-    $mail->AddAttachment($p_attachment['file'],$p_attachment['newname']);    
-  }  
+    $mail->AddAttachment($p_attachment['file'],$p_attachment['newname']);
+  }
 
-  if ( !$mail->Send() ) 
+  if ( !$mail->Send() )
   {
-    if ( $p_exit_on_error )  
+    if ( $p_exit_on_error )
     {
-      PRINT "PROBLEMS SENDING MAIL TO: $p_recipient<br />";
-      PRINT 'Mailer Error: '. $mail->ErrorInfo.'<br />';
+      print "PROBLEMS SENDING MAIL TO: $p_recipient<br />";
+      print 'Mailer Error: '. $mail->ErrorInfo.'<br />';
       exit;
     }
     else
@@ -204,8 +202,8 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
 /**
  * closes opened kept alive SMTP connection (if it was opened)
- * 
- * @param string 
+ *
+ * @param string
  * @return null
  */
 function email_smtp_close() {

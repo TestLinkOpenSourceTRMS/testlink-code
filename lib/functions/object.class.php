@@ -1,61 +1,61 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  object.class.php
  * @package     TestLink
- * @copyright   2007-2020, TestLink community 
+ * @copyright   2007-2020, TestLink community
  * @link        http://www.testlink.org
  *
  **/
  
-/** 
- * Namespace for TestLink, here we can safely define constants and other stuff, 
+/**
+ * Namespace for TestLink, here we can safely define constants and other stuff,
  * without risk of collision with other stuff
- * 
+ *
  * @package   TestLink
- * @abstract 
+ * @abstract
  */
 abstract class tl
 {
   /**
    * error and status codes:
-   * all SUCCESS error codes and SUCCESS status codes should be greater than tl::OK 
+   * all SUCCESS error codes and SUCCESS status codes should be greater than tl::OK
    * so we can check for SUCCESS with >= tl::OK, and for ERROR with < tl::OK
    */
   const OK = 1;
 
-  /** 
+  /**
    * error and status codes:
    * all ERROR error codes and ERROR status codes should be lesser than tl::ERROR
    * so we can check for ERRORS with <= tl::ERROR, and for SUCCESS with > tl::ERROR
    */
   const ERROR = 0;
   
-  /** 
+  /**
    * error and status codes:
-   * return code for not implemented interface functions 
+   * return code for not implemented interface functions
    */
   const E_NOT_IMPLEMENTED = -0xFFFFFFFF;
-};
+}
 
 
 require_once 'int_serialization.php';
 
 /**
  * Base class for all managed TestLink objects, all tl-managed objects should extend this base class
- * 
+ *
  * @package   TestLink
- * @abstract 
+ * @abstract
  */
 abstract class tlObject implements iSerialization
-{ 
+{
   /** @var string the unique object id */
   protected $objectID;
 
-  /** 
-   * @var string a message for user feedback 
+  /**
+   * @var string a message for user feedback
    */
   protected $userFeedback;
     
@@ -73,7 +73,7 @@ abstract class tlObject implements iSerialization
    * @var array useful to manage DB where TL table names must have a prefix.
    *    key: table name WITHOUT prefix
    *    value: table name WITH PREFIX
-   * @see getDBTables() 
+   * @see getDBTables()
    */
   protected $tables = null;
 
@@ -81,7 +81,7 @@ abstract class tlObject implements iSerialization
    * @var array useful to manage DB where TL view names must have a prefix.
    *    key: view name WITHOUT prefix
    *    value: view name WITH PREFIX
-   * @see getDBViews()  
+   * @see getDBViews()
    */
   protected $views = null;
 
@@ -104,7 +104,7 @@ abstract class tlObject implements iSerialization
     $this->auditCfg->logEnabled = true;
   
     /*
-      Any supported import/Export Serialization Interface must be prefixed with iSerializationTo 
+      Any supported import/Export Serialization Interface must be prefixed with iSerializationTo
       so we can automatically detected the interfaces
     */
     $prefix = "iSerializationTo";
@@ -132,24 +132,24 @@ abstract class tlObject implements iSerialization
 
   /**
    *
-   */ 
-  function setAuditLogOn()
+   */
+  public function setAuditLogOn()
   {
     $this->auditCfg->logEnabled = true;
   }
 
   /**
    *
-   */ 
-  function setAuditLogOff()
+   */
+  public function setAuditLogOff()
   {
     $this->auditCfg->logEnabled = false;
   }
 
   /**
    *
-   */ 
-  function setAuditEventSource($val)
+   */
+  public function setAuditEventSource($val)
   {
     $this->auditCfg->eventSource = $val;
   }
@@ -173,10 +173,10 @@ abstract class tlObject implements iSerialization
   
   /**
    * Getter for the unique objectID
-   * @return string the ID of the object 
+   * @return string the ID of the object
    */
   public function getObjectID()
-  { 
+  {
     return $this->objectID;
   }
   
@@ -187,9 +187,9 @@ abstract class tlObject implements iSerialization
   }
 
   
-  /** 
+  /**
    * magic method for usage with print() or echo() , dumps out the object
-   *  
+   *
    * @return string a dump of the object
    */
   public function __toString()
@@ -202,30 +202,30 @@ abstract class tlObject implements iSerialization
   {
   }
   
-  /** 
+  /**
    * Gets all serializationInterfaces the object supports
-   * 
-   * @return all supported Import/Export Interfaces  
+   *
+   * @return all supported Import/Export Interfaces
    **/
-  function getSupportedSerializationInterfaces()
+  public function getSupportedSerializationInterfaces()
   {
     return $this->serializationInterfaces;
   }
   
-  /** 
-   * @return all supported Import/Export Interfaces - Format Descriptors 
+  /**
+   * @return all supported Import/Export Interfaces - Format Descriptors
    **/
-  function getSupportedSerializationFormatDescriptions()
+  public function getSupportedSerializationFormatDescriptions()
   {
     return $this->serializationFormatDescriptors;
   }
   
-  /** 
+  /**
    * should be called whenever a not implemented method is called
-   * 
+   *
    * @param string name of method
    * @return integer error code "not implemented"
-   **/  
+   **/
   protected function handleNotImplementedMethod($fName = "<unknown>")
   {
     trigger_error("Method ".$fName." called which is not implemented",E_USER_WARNING);
@@ -240,10 +240,10 @@ abstract class tlObject implements iSerialization
    * @return map key=table name without prefix, value=table name on db
    *
     */
-  static public function getDBTables($tableNames = null)
+  public static function getDBTables($tableNames = null)
   {
     $items = array( 'assignment_status',
-                    'assignment_types', 
+                    'assignment_types',
                     'attachments',
                     'baseline_l1l2_context',
                     'baseline_l1l2_details',
@@ -272,7 +272,7 @@ abstract class tlObject implements iSerialization
                     'object_keywords',
                     'platforms',
                     'plugins',
-                    'plugins_configuration', 
+                    'plugins_configuration',
                     'req_coverage',
                     'req_relations',
                     'req_specs',
@@ -307,21 +307,21 @@ abstract class tlObject implements iSerialization
                     'user_testplan_roles',
                     'user_testproject_roles',
                     'users',
-                    'execution_tcsteps_wip' 
-    ); 
+                    'execution_tcsteps_wip'
+    );
 
     $tables = array();
     foreach($items as $tblKey) {
       $tables[$tblKey] = DB_TABLE_PREFIX . $tblKey;
     }
 
-    if ($tableNames != null) { 
+    if ($tableNames != null) {
       $tableNames = (array)$tableNames;
-      $tableNames = array_flip($tableNames);      
+      $tableNames = array_flip($tableNames);
       $tables = array_intersect_key($tables,$tableNames);
       if (sizeof($tables) != sizeof($tableNames)) {
         throw new Exception("Wrong table name(s) for getDBTables() detected!");
-      } 
+      }
     }
      
     return $tables;
@@ -330,7 +330,7 @@ abstract class tlObject implements iSerialization
   /**
    *
    */
-  static public function getDBViews($itemNames = null) 
+  public static function getDBViews($itemNames = null)
   {
     $items = array('tcversions_last_active' => null,
                    'tcversions_without_keywords' => null,
@@ -345,20 +345,20 @@ abstract class tlObject implements iSerialization
                    'latest_rspec_revision' => null,
                    'tsuites_tree_depth_2' => null,
                    'exec_by_date_time' => null,
-                   'exec_daily_stats' => null); 
+                   'exec_daily_stats' => null);
     
     foreach($items as $key => $value) {
       $items[$key] = DB_TABLE_PREFIX . $key;
     }
 
-    if ($itemNames != null) { 
+    if ($itemNames != null) {
       $itemNames = (array)$itemNames;
-      $itemNames = array_flip($itemNames);      
+      $itemNames = array_flip($itemNames);
       $items = array_intersect_key($items,$itemNames);
       if (sizeof($items) != sizeof($itemNames)) {
         $msg = "Wrong view name(s) for " . __FUNCTION__ . " detected!";
         throw new Exception($msg);
-      } 
+      }
     }
     
     return $items;
@@ -369,26 +369,26 @@ abstract class tlObject implements iSerialization
 
 /**
  * The base class for all managed TestLink objects which need a db connection
- * 
+ *
  * @package   TestLink
- * @abstract 
+ * @abstract
  */
 abstract class tlObjectWithDB extends tlObject
-{ 
+{
   /** @var resource the db connection to the testlink database */
   protected $db;
   
   /**
-   * Class contructor 
+   * Class contructor
    * @param object [ref] $db the database connection
    */
-  function __construct(&$db)
+  public function __construct(&$db)
   {
     tlObject::__construct();
     $this->db = &$db;
   }
 
-  function setDB(&$db)
+  public function setDB(&$db)
   {
     $this->db = &$db;
   }
@@ -397,9 +397,9 @@ abstract class tlObjectWithDB extends tlObject
 
 /**
  * The base class for all managed TestLink objects which support attachments
- * 
+ *
  * @package   TestLink
- * @abstract 
+ * @abstract
  */
 abstract class tlObjectWithAttachments extends tlObjectWithDB
 {
@@ -411,11 +411,11 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
   
   /**
    * Class constructor
-   *  
+   *
    * @param object [ref] $db the database connection
    * @param string $attachmentTableName the foreign key table name to store the attachments
    */
-  function __construct(&$db,$attachmentTableName)
+  public function __construct(&$db,$attachmentTableName)
   {
     tlObjectWithDB::__construct($db);
     $this->attachmentRepository = tlAttachmentRepository::create($this->db);
@@ -424,32 +424,32 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
   
   /**
    * gets all infos about the attachments of the object specified by $id
-   *    
-   * @param integer $id this is the fkid of the attachments table
-     * @return array returns map with the infos of the attachment, 
-     *         keys are the column names of the attachments table 
    *
-   * @TODO schlundus: legacy function to keep existing code, should be replaced by a 
-   *                  function which returns objects 
+   * @param integer $id this is the fkid of the attachments table
+     * @return array returns map with the infos of the attachment,
+     *         keys are the column names of the attachments table
+   *
+   * @TODO schlundus: legacy function to keep existing code, should be replaced by a
+   *                  function which returns objects
    */
-  function getAttachmentInfos($id)
+  public function getAttachmentInfos($id)
   {
     return $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName);
   }
   
   /**
-   * deletes all attachments of the object specified by $id   
+   * deletes all attachments of the object specified by $id
    *
    * @param int $id this is the fkid of the attachments table
    * @return returns tl::OK on success, else error code
    */
-  function deleteAttachments($id)
+  public function deleteAttachments($id)
   {
     return $this->attachmentRepository->deleteAttachmentsFor($id,$this->attachmentTableName);
   }
   
   /**
-   *  function used for resetting the object's internal data 
+   *  function used for resetting the object's internal data
    **/
   protected function _clean()
   {
@@ -457,33 +457,33 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
     $this->attachmentTableName = null;
   }
   
-  function getAttachmentTableName()
+  public function getAttachmentTableName()
   {
-    return $this->attachmentTableName;  
+    return $this->attachmentTableName;
   }
   
 }
 
 
 /**
- * class implement basic support for work with DB
- * 
- * @package   TestLink
- * @abstract 
- */
+* class implement basic support for work with DB
+*
+* @package   TestLink
+* @abstract
+*/
 abstract class tlDBObject extends tlObject implements iDBSerialization
 {
   /**
    * @var array this is the static object cache for all tlDBObject. objects are stored like this
    *       [classname][detailLevel][databaseID]
    */
-  static protected $objectCache = null;
+  protected static $objectCache = null;
   
   /**
-   * @var boolean activate Caching or not, default is set to false, because it all brings performance to certain 
+   * @var boolean activate Caching or not, default is set to false, because it all brings performance to certain
    *        objects
    */
-  protected $activateCaching = false; 
+  protected $activateCaching = false;
   
   /**
    * @var integer the database id of the object
@@ -491,7 +491,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
   public $dbID;
   
   /**
-   * @var int the detail level, used to configure how much information 
+   * @var int the detail level, used to configure how much information
    *          about the object is read from the database
    */
   protected $detailLevel;
@@ -506,12 +506,12 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
   //get all information
   const TLOBJ_O_GET_DETAIL_FULL = 0xFFFFFFFF;
   
-  /** 
+  /**
    * Class constructor
    *
    * @param integer $dbID (optional) the database identifier
    */
-  function __construct($dbID = null)
+  public function __construct($dbID = null)
   {
     parent::__construct();
     
@@ -520,8 +520,8 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
   }
   
   /**
-   * if we fetch an object, we can set here different details levels for the objects, because we 
-   * don't always need all nested data 
+   * if we fetch an object, we can set here different details levels for the objects, because we
+   * don't always need all nested data
   
    * @param $level integer any combination of TLOBJ_O_GET_DETAIL_? constancts
    */
@@ -533,16 +533,16 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
   /* some factory functions to be used to create tl managed objects */
   /**
    * creates any tl-managed objects
-   * 
+   *
    * @param object [ref] $db the database connection
    * @param int $id the id of the object to be created (must exist in the database)
    * @param string $className the  class name of the object
    * @param int $options some additional options for creating the options (these are class specific)
    * @param int $detailLevel the detail level of the object
-   * 
+   *
    * @return the newly created object on success, or null else
    */
-  static public function createObjectFromDB(&$db,$id,$className,
+   public static function createObjectFromDB(&$db,$id,$className,
                                             $options = self::TLOBJ_O_SEARCH_BY_ID,
                                             $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL) {
     if ($id) {
@@ -550,26 +550,26 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
       $item->setDetailLevel($detailLevel);
       if ($item->readFromDB($db,$options) >= tl::OK) {
         return $item;
-      } 
+      }
     }
     return null;
   }
   
   /**
    * used to create any tl-managed objects
-   * 
+   *
    * @param object [ref] $db the database connection
    * @param string $query the ids of the objects to be created are obtained by this query
    * @param string $column the  name of the column which delivers the ids
    * @param string $className the  class name of the objects
-   * @param boolean $returnAsMap if set to true, to objects are returned in a 
+   * @param boolean $returnAsMap if set to true, to objects are returned in a
    *                map whose keys are the ids, else they are returned in a normal array.
 
    * @param int $detailLevel the detail level of the object
-   * 
+   *
    * @return the newly created objects on success, or null else
    */
-  static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$returnAsMap = false,
+   public static function createObjectsFromDBbySQL(&$db,$query,$column,$className,$returnAsMap = false,
                                                   $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL,$limit = -1)
   {
     $ids = $db->fetchColumnsIntoArray($query,$column,$limit);
@@ -578,23 +578,24 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
   
   /**
    * used to create any tl-managed objects
-   * 
+   *
    * @param object [ref] $db the database connection
    * @param array $ids the ids of the objects to be created
    * @param string $className the class name of the objects
-   * @param boolean $returnAsMap if set to true, to objects are returned in a 
+   * @param boolean $returnAsMap if set to true, to objects are returned in a
    *                map whose keys are the ids, else they are returned in a normal array.
    * @param integer $detailLevel the detail level of the object
-   * 
+   *
    * @return mixed the newly created objects on success, or null else
    */
-  static public function createObjectsFromDB(&$db,$ids,$className,$returnAsMap = false,
+   public static function createObjectsFromDB(&$db,$ids,$className,$returnAsMap = false,
                                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
   {
     $items = null;
     
-    if (in_array("iDBBulkReadSerialization",class_implements($className)))
-      $items = self::bulkCreateObjectsFromDB($db,$ids,$className,$returnAsMap,$detailLevel);
+    if (in_array("iDBBulkReadSerialization",class_implements($className))){
+        $items = self::bulkCreateObjectsFromDB($db,$ids,$className,$returnAsMap,$detailLevel);
+    }
     else
     {
       for($i = 0;$i < sizeof((array)$ids);$i++)
@@ -619,21 +620,21 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
   
   /**
    * used to bulk-create tl-managed objects which support the "iDBBulkReadSerialization"-Interface
-   * 
+   *
    * @param object [ref] $db the database connection
    * @param array $ids the ids of the objects to be created
    * @param string $className the class name of the objects
-   * @param boolean $returnAsMap if set to true, to objects are returned in a 
+   * @param boolean $returnAsMap if set to true, to objects are returned in a
    *                map whose keys are the ids, else they are returned in a normal array.
    * @param integer $detailLevel the detail level of the object
-   * 
+   *
    * @return mixed the newly created objects on success, or null else
    */
-  static public function bulkCreateObjectsFromDB(&$db,$ids,$className,$returnAsMap = false,
+   public static function bulkCreateObjectsFromDB(&$db,$ids,$className,$returnAsMap = false,
                                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
   {
     $items = null;
-    if (null != $ids && sizeof($ids)) { 
+    if (null != $ids && sizeof($ids)) {
       $dummyItem = new $className();
       $query = $dummyItem->getReadFromDBQuery($ids,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
       $result = $db->exec_query($query);
@@ -649,20 +650,20 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
           }
         }
       }
-    }   
+    }
     return $items;
   }
   
   /**
    * deletes an tl-Managed object from the DB
-   * 
+   *
    * @param object [rerf] $db the database connection
    * @param int $id the database-id of the object which should be deleted
    * @param string $className the class name of the object
-   * 
+   *
    * @return integer result code
    */
-  static public function deleteObjectFromDB(&$db,$id,$className) {
+  public static function deleteObjectFromDB(&$db,$id,$className) {
     if ($id) {
       $item = new $className($id);
       return $item->deleteFromDB($db);
@@ -672,19 +673,19 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
   
   /**
    * Adds the object to the cache if caching is activated
-   * 
+   *
    * @return integer returns always tl::OK
    */
   protected function addToCache() {
     if ($this->activateCaching) {
       self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID] = $this;
     }
-    return tl::OK; 
+    return tl::OK;
   }
   
   /**
    * Remove the object from the cache
-   * 
+   *
    * @return integer returns always tl::OK
    */
   protected function removeFromCache() {
@@ -697,7 +698,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
   /**
    * Dummy implementation, each cachable object needs only to implement this function
    * The function must read the members (but not the internal ones) from object and copy it to itself
-   * 
+   *
    * @param $object the object to read from
    * @return integer returns always tl::OK
    */

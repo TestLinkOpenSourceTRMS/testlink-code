@@ -31,7 +31,7 @@ class assignment_mgr extends tlObjectWithDB
   /**
    *
    * @param string $key_field contains the filename that has to be used as the key of the returned hash.
-   * @return unknown
+   * @return array 
    */
   public function get_available_types($key_field='description')
   {
@@ -48,9 +48,9 @@ class assignment_mgr extends tlObjectWithDB
   /**
    *
    * @param string $key_field contains the name column that has to be used as the key of the returned hash.
-   * @return unknown
+   * @return array 
    */
-  function get_available_status($key_field='description')
+  public function get_available_status($key_field='description')
   {
     static $hash_types;
     if (!$hash_types)

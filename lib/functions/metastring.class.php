@@ -12,10 +12,10 @@
 /**
  * Creates an TLS object by giving a label and maybe some params, if the string is not localized
  * a "Not-localized" Event is generated
- * 
+ *
  * @param $label the string to localize
  * @param $params params which should be inserted into the localized label
- * @return tlMetaString returns the created tlMetaString Object 
+ * @return tlMetaString returns the created tlMetaString Object
  */
 function TLS($label,$params = null)
 {
@@ -27,10 +27,10 @@ function TLS($label,$params = null)
 /**
  * Creates an TLS object by giving a label and maybe some params, but doesn't fire any
  * "Not-localized" events
- * 
+ *
  * @param $label the string to localize
  * @param $params params which should be inserted into the localized label
- * @return tlMetaString returns the created tlMetaString Object 
+ * @return tlMetaString returns the created tlMetaString Object
  */
 function _TLS($label,$params = null)
 {
@@ -59,7 +59,7 @@ class tlMetaStringHelper
 	 */
 	public $bDontLocalize;
 	/**
-	 * @var boolean set this to true, if not-localized strings should not generate events 
+	 * @var boolean set this to true, if not-localized strings should not generate events
 	 */
 	public $bDontFireEvent;
 }
@@ -76,7 +76,7 @@ class tlMetaString extends tlObject
 	public $helper;
 
 	/** class constructor
-	 * @param $label string the label to localize, use {%1} to {%n} for parameters inserted into the localized string 
+	 * @param $label string the label to localize, use {%1} to {%n} for parameters inserted into the localized string
 	 * @param $args array the array of parameters
 	 */
 	public function __construct($label = null,$args = null) {
@@ -89,7 +89,7 @@ class tlMetaString extends tlObject
 
 	/**
 	 * Initializes the object
-	 * 
+	 *
 	 * @param $label @see __construct
 	 * @param $args  @see __construct
 	 */
@@ -112,11 +112,11 @@ class tlMetaString extends tlObject
 	
 	/**
 	 * Creates an tlMetaString object from a serialized representation
-	 * 
+	 *
 	 * @param $representation string the serialized representation of the object
 	 * @return tlMetaString the recreated tlMetaString object
 	 */
-	static public function unserialize($representation) {
+	public static function unserialize($representation) {
 		//at the moment we do this, maybe there is a more readable serialization
 		$helper = @unserialize($representation);
 		$metaString = new tlMetaString();
@@ -141,7 +141,7 @@ class tlMetaString extends tlObject
 	
 	/**
 	 * localizes the tlMetaString
-	 * 
+	 *
 	 * @param $locale string any valid locale (which is supported by TestLink)
 	 * @return string returns the localized tlMetaString
 	 */

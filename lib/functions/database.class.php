@@ -1,13 +1,13 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
- * 
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
  * @filesource  database.class.php
  * @package     TestLink
  * @author      Francisco Mancardi
  * @author      Mantis Team
- * @copyright   2006-2018 TestLink community 
+ * @copyright   2006-2018 TestLink community
  * @copyright   2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  *             (Parts of code has been adapted from Mantis BT)
  * @link       http://www.testlink.org
@@ -20,18 +20,18 @@
  *
  * ----------------------------------------------------------------------------------------------------------------------
  * $ADODB_COUNTRECS
- * If the database driver API does not support counting the number of records returned in a SELECT statement, 
+ * If the database driver API does not support counting the number of records returned in a SELECT statement,
  * the function RecordCount() is emulated when the global variable $ADODB_COUNTRECS is set to true, which is the default.
- * We emulate this by buffering the records, WHICH CAN TAKE UP LARGE AMOUNTS OF MEMORY FOR BIG RECORDSETS. 
- * Set this variable to false for the best performance. 
- * THIS VARIABLE IS CHECKED EVERY TIME A QUERY IS EXECUTED, so you can selectively choose which recordsets to count. 
+ * We emulate this by buffering the records, WHICH CAN TAKE UP LARGE AMOUNTS OF MEMORY FOR BIG RECORDSETS.
+ * Set this variable to false for the best performance.
+ * THIS VARIABLE IS CHECKED EVERY TIME A QUERY IS EXECUTED, so you can selectively choose which recordsets to count.
  * ----------------------------------------------------------------------------------------------------------------------
  *
  * this set will improve performance but have a side
  * effect, for DBMS like POSTGRES method num_rows() will return ALWAYS -1, causing problems
  *
  */
-$ADODB_COUNTRECS = TRUE;
+$ADODB_COUNTRECS = true;
 
 require_once dirname(__FILE__). '/logging.inc.php';
 
@@ -44,45 +44,45 @@ class database {
   const CUMULATIVE=1;
   const ONERROREXIT=1;
   
-  var $db;
-  var $queries_array = array();
-  var $is_connected=false;
-  var $nQuery = 0;
-  var $overallDuration = 0;
-  var $dbType;
+  public $db;
+  public $dbType;
   
+  private $queries_array = array();
+  private $is_connected=false;
+  private $nQuery = 0;
+  private $overallDuration = 0;
   private $logEnabled=0;
   private $logQueries=0;
   
   // timer analysis
-  function microtime_float() 
+  private function microtime_float()
   {
     list( $usec, $sec ) = explode( " ", microtime() );
     return (float)$usec + (float)$sec;
   }
   
-  function setLogEnabled($value)
+  private function setLogEnabled($value)
   {
       $this->logEnabled=$value ? 1 : 0;
   }
   
-  function getLogEnabled($value)
+  private function getLogEnabled($value)
   {
       return $this->logEnabled;
   }
   
-  function setLogQueries($value)
+  private function setLogQueries($value)
   {
       $this->logQueries = $value ? 1 : 0;
   }
   
-  function getLogQueries($value)
+  private function getLogQueries($value)
   {
       return $this->logQueries;
   }
 
   // TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
-  function __construct($db_type)
+  public function __construct($db_type)
   {
     $fetch_mode = ADODB_FETCH_ASSOC;
 
@@ -97,21 +97,19 @@ class database {
     if($this->dbType == 'mssql')
     {
       $fetch_mode = ADODB_FETCH_BOTH;
-      if(PHP_OS == 'WINNT')
+      
+      // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
+      // From PHP MANUAL - reganding mssql_* functions
+      // These functions allow you to access MS SQL Server database.
+      // This extension is not available anymore on Windows with PHP 5.3 or later.
+      // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
+      // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.
+      //
+      // PHP_VERSION_ID is available as of PHP 5.2.7
+      if(PHP_OS == 'WINNT' && defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)
       {
-        // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
-        // From PHP MANUAL - reganding mssql_* functions
-        // These functions allow you to access MS SQL Server database.
-        // This extension is not available anymore on Windows with PHP 5.3 or later.
-        // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
-        // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
-        //
-        // PHP_VERSION_ID is available as of PHP 5.2.7
-        if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
-        {
           $adodb_driver = 'mssqlnative';
-        }     
-      } 
+      }
     }
     $this->db = NewADOConnection($adodb_driver);
     $this->db->SetFetchMode($fetch_mode);
@@ -119,7 +117,7 @@ class database {
 
 
   // access to the ADODB object
-  function get_dbmgr_object()
+  public function get_dbmgr_object()
   {
     return $this->db;
   }
@@ -128,8 +126,8 @@ class database {
   
   /** Make a connection to the database */
   # changed Connect() to NConnect() see ADODB Manuals
-  function connect( $p_dsn, $p_hostname = null, $p_username = null, 
-                            $p_password = null, $p_database_name = null ) 
+  public function connect( $p_dsn, $p_hostname = null, $p_username = null,
+                            $p_password = null, $p_database_name = null )
   {
     $result = array('status' => 1, 'dbms_msg' => 'ok');
     
@@ -149,17 +147,17 @@ class database {
   }
 
 
-  /** 
-   * execute SQL query, 
+  /**
+   * execute SQL query,
    * requires connection to be opened
-   * 
+   *
    * @param string $p_query SQL request
    * @param integer $p_limit (optional) number of rows
    * @param integer $p_offset (optional) begining row number
-   * 
-   * @return boolean result of request 
+   *
+   * @return boolean result of request
    **/
-  function exec_query( $p_query, $p_limit = -1, $p_offset = -1 )
+  public function exec_query( $p_query, $p_limit = -1, $p_offset = -1 )
   {
     $ec = 0;
     $emsg = null;
@@ -195,8 +193,8 @@ class database {
       $logLevel = 'ERROR';
 
 
-      tLog("ERROR ON exec_query() - database.class.php <br />" . $this->error(htmlspecialchars($p_query)) . 
-           "<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");     
+      tLog("ERROR ON exec_query() - database.class.php <br />" . $this->error(htmlspecialchars($p_query)) .
+           "<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");
       echo "<pre> ============================================================================== </pre>";
       echo "<pre> DB Access Error - debug_print_backtrace() OUTPUT START </pre>";
       echo "<pre> ATTENTION: Enabling more debug info will produce path disclosure weakness (CWE-200) </pre>";
@@ -205,17 +203,13 @@ class database {
       echo "<pre> ============================================================================== </pre>";
       
       if(defined('DBUG_ON') && DBUG_ON == 1)
-      { 
+      {
         echo "<pre>"; debug_print_backtrace(); echo "</pre>";
         die();
-      }   
+      }
       echo "<pre>"; debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS); echo "</pre>";
         die();
       
-      //else
-      //{
-      //  echo "<pre>"; debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS); echo "</pre>";
-      //}  
       echo "<pre> ============================================================================== </pre>";
       $t_result = false;
     }
@@ -236,14 +230,14 @@ class database {
 
 
   // TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
-  function fetch_array( &$p_result ) 
+  public function fetch_array( &$p_result )
   {
     if ( $p_result->EOF ) {
       return false;
-    }   
+    }
     
     // mysql obeys FETCH_MODE_BOTH, hence ->fields works, other drivers do not support this
-    switch ($this->db->databaseType) 
+    switch ($this->db->databaseType)
     {
       case "mysql":
       case "oci8po":
@@ -262,9 +256,9 @@ class database {
   }
 
 
-    // 20080315 - franciscom - Got new code from Mantis, that manages FETCH_MODE_ASSOC
-  function db_result( $p_result, $p_index1=0, $p_index2=0 ) {
-    if ( $p_result && ( $this->num_rows( $p_result ) > 0 ) ) 
+  // 20080315 - franciscom - Got new code from Mantis, that manages FETCH_MODE_ASSOC
+  private function db_result( $p_result, $p_index1=0, $p_index2=0 ) {
+    if ( $p_result && ( $this->num_rows( $p_result ) > 0 ) )
     {
       $p_result->Move( $p_index1 );
       $t_result = $p_result->GetArray();
@@ -283,11 +277,11 @@ class database {
 
 
   /** @return integer the last inserted id */
-  function insert_id($p_table = null) 
+  public function insert_id($p_table = null)
   {
     if ( isset($p_table) && ($this->db_is_pgsql() || $this->db_is_oracle()))
     {
-      if ( $this->db_is_pgsql() ) 
+      if ( $this->db_is_pgsql() )
       {
         $sql = "SELECT currval('".$p_table."_id_seq')";
       }
@@ -303,64 +297,64 @@ class database {
 
 
   /** Check is the database is PostgreSQL */
-  function db_is_pgsql() 
+  private function db_is_pgsql()
   {
     $status_ok = false;
     $dbType = $this->dbType;
     if (strpos($dbType, 'postgres') === 0) {
       $dbType = 'postgres';
-    }  
+    }
 
     switch( $dbType ) {
       case 'postgres':
       case 'pgsql':
         $status_ok = true;
-      break;  
+      break;
     }
     return $status_ok;
   }
 
 
-  /** 
-   * Check is the database is ORACLE 
+  /**
+   * Check is the database is ORACLE
    * @return boolean TRUE = Oracle type
    **/
-  function db_is_oracle() 
+  private function db_is_oracle()
   {
     $status_ok = false;
-    switch( $this->dbType ) 
+    switch( $this->dbType )
     {
       case 'oci8':
       case 'oci8po':
         $status_ok = true;
-      break;  
-    }   
+      break;
+    }
     return $status_ok;
   }
 
 
-  function db_table_exists( $p_table_name ) {
+  private function db_table_exists( $p_table_name ) {
     return in_array ( $p_table_name , $this->db->MetaTables( "TABLE" ) ) ;
   }
 
 
-  function db_field_exists( $p_field_name, $p_table_name ) {
+  private function db_field_exists( $p_field_name, $p_table_name ) {
     return in_array ( $p_field_name , $this->db->MetaColumnNames( $p_table_name ) ) ;
   }
 
 
-  /** 
+  /**
    * Check if there is an index defined on the specified table/field and with
    * the specified type.
    * Warning: only works with MySQL
-   * 
+   *
    * @param string $p_table Name of table to check
    * @param string $p_field Name of field to check
    * @param string $p_key key type to check for (eg: PRI, MUL, ...etc)
-   * 
-   * @return boolean 
+   *
+   * @return boolean
    */
-  function key_exists_on_field( $p_table, $p_field, $p_key ) {
+  private function key_exists_on_field( $p_table, $p_field, $p_key ) {
     $c_table = $this->db->prepare_string( $p_table );
     $c_field = $this->db->prepare_string( $p_field );
     $c_key   = $this->db->prepare_string( $p_key );
@@ -382,10 +376,12 @@ class database {
 
   # prepare a string before DB insertion
   # 20051226 - fm
-  function prepare_string( $p_string )
+  public function prepare_string( $p_string )
   {
-    if (is_null($p_string))
-      return '';
+      if (is_null($p_string))
+      {
+          return '';
+      }
       
     $t_escaped = $this->db->qstr( $p_string, false );
     // from second char(1) to one before last(-1)
@@ -394,18 +390,18 @@ class database {
 
 
   # prepare an integer before DB insertion
-  function prepare_int( $p_int ) {
+  public function prepare_int( $p_int ) {
     return (int)$p_int;
   }
 
 
   # prepare a boolean before DB insertion
-  function prepare_bool( $p_bool ) {
+  private function prepare_bool( $p_bool ) {
     return (int)(bool)$p_bool;
   }
 
   # return current timestamp for DB
-  function db_now()
+  public function db_now()
   {
       switch($this->db->databaseType)
       {
@@ -424,7 +420,7 @@ class database {
   # -> 882226357
   # > SELECT UNIX_TIMESTAMP('1997-10-04 22:23:00');
   # -> 875996580
-  function db_timestamp( $p_date=null ) {
+  private function db_timestamp( $p_date=null ) {
 
     if ( null !== $p_date ) {
       $p_timestamp = $this->db->UnixTimeStamp($p_date);
@@ -435,7 +431,7 @@ class database {
   }
 
 
-  function db_unixtimestamp( $p_date=null ) {
+  public function db_unixtimestamp( $p_date=null ) {
 
     if ( null !== $p_date ) {
       $p_timestamp = $this->db->UnixTimeStamp($p_date);
@@ -447,13 +443,13 @@ class database {
 
 
   /** @return integer count queries */
-  function count_queries () {
+  private function count_queries () {
     return count( $this->queries_array );
     }
 
 
   /** @return integer count unique queries */
-  function count_unique_queries () {
+  private function count_unique_queries () {
 
     $t_unique_queries = 0;
     $t_shown_queries = array();
@@ -468,7 +464,7 @@ class database {
 
 
   /** get total time for queries */
-  function time_queries () {
+  private function time_queries () {
     $t_count = count( $this->queries_array );
     $t_total = 0;
     for ( $i = 0; $i < $t_count; $i++ ) {
@@ -478,61 +474,61 @@ class database {
   }
 
 
-  /** 
+  /**
    * close the connection.
    * Not really necessary most of the time since a connection is
    * automatically closed when a page finishes loading.
    */
-  function close() {
+  public function close() {
     $t_result = $this->db->Close();
   }
 
 
-  function error_num() {
+  private function error_num() {
     return $this->db->ErrorNo();
   }
 
 
-  function error_msg() {
+  public function error_msg() {
     return $this->db->ErrorMsg();
   }
 
 
-  /** 
+  /**
    * returns a message string with: error num, error msg and query.
-   * 
+   *
    * @return string the message
    */
-  function error( $p_query=null ) {
+  private function error( $p_query=null ) {
     $msg= $this->error_num() . " - " . $this->error_msg();
     
-    if ( null !== $p_query ) 
+    if ( null !== $p_query )
     {
       $msg .= " - " . $p_query ;
-    } 
+    }
     return $msg;
   }
 
 
-  function num_rows( $p_result ) {
+  public function num_rows( $p_result ) {
     return $p_result->RecordCount( );
   }
 
 
-  function affected_rows() {
+  public function affected_rows() {
     return $this->db->Affected_Rows( );
   }
 
 
   /**
-   * Fetches the first column first row 
+   * Fetches the first column first row
    *
    * @param string $sql the query to be executed
    * @param string $column the name of the column which shall be returned
-   * 
+   *
    * @return mixed the value of the column
    **/
-  function fetchFirstRowSingleColumn($sql,$column)
+  public function fetchFirstRowSingleColumn($sql,$column)
   {
     $value = null;
     $row = $this->fetchFirstRow($sql);
@@ -551,7 +547,7 @@ class database {
    * @param string $sql the query to be executed
    * @return array the first row
    **/
-  function fetchFirstRow($sql)
+  public function fetchFirstRow($sql)
   {
     $result = $this->exec_query($sql);
     $row = null;
@@ -566,7 +562,7 @@ class database {
 
   /**
    * Get one value (no array)
-   * for example: SELECT COUNT(*) FROM table 
+   * for example: SELECT COUNT(*) FROM table
    *
    * @param string $sql the query to be executed
    * @return string of one value || null
@@ -576,7 +572,7 @@ class database {
       $row = $this->fetchFirstRow($sql);
     if ($row)
       {
-      $fieldName = array_keys($row);   
+      $fieldName = array_keys($row);
       return $row[$fieldName[0]];
     }
     return null;
@@ -592,7 +588,7 @@ class database {
      *
    * @return array an enumerated array, which contains all the values
    **/
-  function fetchColumnsIntoArray($sql,$column,$limit = -1)
+  public function fetchColumnsIntoArray($sql,$column,$limit = -1)
   {
     $items = null;
     $result = $this->exec_query($sql,$limit);
@@ -601,7 +597,7 @@ class database {
       while($row = $this->fetch_array($result))
       {
         $items[] = $row[$column];
-      } 
+      }
     }
     
     unset($result);
@@ -623,13 +619,13 @@ class database {
    *                 X      B     Z
    *                 Y      B     0
    *
-   *        cumulative=0 -> 
+   *        cumulative=0 ->
    *        return items= array('X' => array('A','C'), 'Y' => array('B','0') )
    *
-   *        cumulative=1 -> 
-   *        return items= 
-   *                      array('X' => 
-   *                                   array( 0 => array('A','C'), 
+   *        cumulative=1 ->
+   *        return items=
+   *                      array('X' =>
+   *                                   array( 0 => array('A','C'),
    *                                          1 => array('B','Z')),
    *                            'Y' => array( 0 => array('B','0') )
    *
@@ -638,14 +634,13 @@ class database {
    * @return array an assoc array whose keys are the values from the columns
    *         of the rows
    **/
-  function fetchRowsIntoMap($sql,$column,$cumulative = 0,$limit = -1,$col2implode='')
+  public function fetchRowsIntoMap($sql,$column,$cumulative = 0,$limit = -1,$col2implode='')
   {
     $items = null;
     $result = $this->exec_query($sql,$limit);
     if ($result)
     {
-      // -----------------------------------------------
-      // Error management Code         
+      // Error management Code
       $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
       if( $empty_column = (trim($column)=='')  )
       {
@@ -656,36 +651,34 @@ class database {
 
       while($row = $this->fetch_array($result))
       {
-        // -----------------------------------------------
-                // Error management Code         
+                // Error management Code
                 if( !isset($row[$column]) )
                 {
                 $errorMsg .= 'missing column:' . $column;
               $errorMsg .= ' - SQL:' . $sql;
             trigger_error($errorMsg,E_USER_NOTICE);
             return null;
-          } 
-                // -----------------------------------------------
+          }
                 
         if ($cumulative)
         {
           $items[$row[$column]][] = $row;
         }
-        else if($col2implode != '')
+        elseif($col2implode != '')
         {
           if(isset($items[$row[$column]]))
           {
-            $items[$row[$column]][$col2implode] .= ',' . $row[$col2implode]; 
-          }  
+            $items[$row[$column]][$col2implode] .= ',' . $row[$col2implode];
+          }
           else
           {
             $items[$row[$column]] = $row;
-          }  
-        }  
-        else 
+          }
+        }
+        else
         {
           $items[$row[$column]] = $row;
-        } 
+        }
       }
     }
     
@@ -711,16 +704,16 @@ class database {
    *        cumulative=0 -> return items= array('X' => 'B', 'Y' => 'B')
    *
    *        cumulative=1 -> return items= array('X' => array('A','B'), 'Y' => array('B') )
-   *               
+   *
    * @param integer $limit (optional) number of rows
-   *               
+   *
    * @return assoc array whose keys are the values of column1 and the values are:
    *
-   *         cumulative=0  => the values of column2 
-   *         cumulative=1  => array with the values of column2 
+   *         cumulative=0  => the values of column2
+   *         cumulative=1  => array with the values of column2
    *
    **/
-  function fetchColumnsIntoMap($sql,$column1,$column2,$cumulative=0,$limit = -1)
+  public function fetchColumnsIntoMap($sql,$column1,$column2,$cumulative=0,$limit = -1)
   {
     $result = $this->exec_query($sql,$limit);
     $items = null;
@@ -736,7 +729,7 @@ class database {
         {
           $items[$myrow[$column1]] = $myrow[$column2];
         }
-      } 
+      }
     }
 
     unset($result);
@@ -750,7 +743,7 @@ class database {
    *
    * @return assoc array members 'version' and 'description'
    **/
-  function get_version_info()
+  private function get_version_info()
   {
     $version = $this->db->ServerInfo();
     return $version;
@@ -759,7 +752,7 @@ class database {
 
   /**
    **/
-  function get_recordset($sql,$fetch_mode = null,$limit = -1, $start = -1)
+  public function get_recordset($sql,$fetch_mode = null,$limit = -1, $start = -1)
   {
     $output = null;
 
@@ -769,7 +762,7 @@ class database {
       while($row = $this->fetch_array($result))
       {
         $output[] = $row;
-      } 
+      }
     }
 
     unset($result);
@@ -783,11 +776,11 @@ class database {
    * @param string $sql the query to be executed
    * @param string $column the name of the column
    * @param integer $limit (optional) number of rows
-     *
+   *
    * @return array an assoc array whose keys are the values from the columns
    *         of the rows
    **/
-  function fetchArrayRowsIntoMap($sql,$column,$limit = -1)
+  public function fetchArrayRowsIntoMap($sql,$column,$limit = -1)
   {
     $items = null;
     $result = $this->exec_query($sql,$limit);
@@ -812,11 +805,11 @@ class database {
    * @param string $column_sec_key the name of the column
    * @param boolean $cumulative
    * @param integer $limit (optional) number of rows
-   * 
+   *
    * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
-   * 
+   *
    **/
-  function fetchMapRowsIntoMap($sql,$main_key,$sec_key,
+  public function fetchMapRowsIntoMap($sql,$main_key,$sec_key,
                                $cumulative = 0,$limit = -1, $col2implode ='')
   {
     $items = null;
@@ -825,17 +818,16 @@ class database {
       while($row = $this->fetch_array($result)) {
         if($cumulative) {
           $items[$row[$main_key]][$row[$sec_key]][] = $row;
-        } else if($col2implode !='') {
+        } elseif($col2implode !='') {
           if(isset($items[$row[$main_key]][$row[$sec_key]])) {
-            $items[$row[$main_key]][$row[$sec_key]][$col2implode] .= 
-              ',' . $row[$col2implode];
+            $items[$row[$main_key]][$row[$sec_key]][$col2implode] .= ',' . $row[$col2implode];
           } else {
-            $items[$row[$main_key]][$row[$sec_key]] = $row;   
-          } 
-        }  
+            $items[$row[$main_key]][$row[$sec_key]] = $row;
+          }
+        }
         else {
           $items[$row[$main_key]][$row[$sec_key]] = $row;
-        } 
+        }
       }
     }
     
@@ -843,10 +835,10 @@ class database {
     return $items;
   }
 
-  /** 
+  /**
    *  TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
    **/
-  function build_sql_create_db($db_name)
+  public function build_sql_create_db($db_name)
   {
     $sql='';
     $dbType = $this->db->databaseType;
@@ -854,36 +846,40 @@ class database {
     // @user contribution
     if (strpos($dbType, 'postgres') === 0) {
       $dbType = 'postgres';
-    }  
+    }
 
     switch($dbType) {
       case 'postgres':
-        $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
+        $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' ";
         break;
         
       case 'mssql':
       case 'mssqlnative':
-        $sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) . '] '; 
+        $sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) . '] ';
         break;
         
       case 'mysql':
       default:
-        $sql = "CREATE DATABASE `" . $this->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
+        $sql = "CREATE DATABASE `" . $this->prepare_string($db_name) . "` CHARACTER SET utf8 ";
       break;
     }
     return $sql;
   }
 
 
-  function db_null_timestamp()
+  /**
+   *
+   * @return NULL|string
+   */
+  public function db_null_timestamp()
   {
     $db_type = $this->db->databaseType;
-    $nullValue = NULL;
+    $nullValue = null;
     
     switch($db_type)
     {
       case 'mysql':
-        // is not an error i put single quote on value      
+        // is not an error i put single quote on value
         $nullValue = " '0000-00-00 00:00:00' ";
       break;
     }
@@ -897,22 +893,21 @@ class database {
    * @param array $keyCols, columns to used as access key
    * @param boolean $cumulative
    * @param integer $limit (optional) number of rows
-   * 
+   *
    * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
-   * 
+   *
    **/
-  function fetchRowsIntoMap2l($sql,$keyCols,$cumulative = 0,$limit = -1) {
+  public function fetchRowsIntoMap2l($sql,$keyCols,$cumulative = 0,$limit = -1) {
     $items = null;
     $result = $this->exec_query($sql,$limit);
     
-    // new dBug($result);
     if ($result) {
       while($row = $this->fetch_array($result)) {
         if($cumulative) {
           $items[$row[$keyCols[0]]][$row[$keyCols[1]]][] = $row;
         } else {
           $items[$row[$keyCols[0]]][$row[$keyCols[1]]] = $row;
-        } 
+        }
       }
     }
 
@@ -927,22 +922,21 @@ class database {
    * @param array $keyCols, columns to used as access key
    * @param boolean $cumulative
    * @param integer $limit (optional) number of rows
-   * 
+   *
    * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
-   * 
+   *
    **/
-  function fetchRowsIntoMap3l($sql,$keyCols,$cumulative = 0,$limit = -1) {
+  public function fetchRowsIntoMap3l($sql,$keyCols,$cumulative = 0,$limit = -1) {
     $items = null;
     $result = $this->exec_query($sql,$limit);
     
-    // new dBug($result);
     if ($result) {
       while($row = $this->fetch_array($result)) {
         if($cumulative) {
           $items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]][] = $row;
         } else {
           $items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]] = $row;
-        } 
+        }
       }
     }
 
@@ -958,18 +952,15 @@ class database {
    * @param array $keyCols, columns to used as access key
    * @param boolean $cumulative
    * @param integer $limit (optional) number of rows
-   * 
+   *
    * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
-   * 
+   *
    **/
-  function fetchRowsIntoMap4l($sql,$keyCols,$cumulative = 0,$limit = -1)
+  public function fetchRowsIntoMap4l($sql,$keyCols,$cumulative = 0,$limit = -1)
   {
     $items = null;
     $result = $this->exec_query($sql,$limit);
   
-    // displayMemUsage(__FUNCTION__);
-  
-    // new dBug($result);
     if ($result)
     {
       while($row = $this->fetch_array($result))
@@ -981,12 +972,11 @@ class database {
         else
         {
           $items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]][$row[$keyCols[3]]] = $row;
-        } 
+        }
       }
     }
-    // displayMemUsage(__FUNCTION__);
     unset($result);
-    // displayMemUsage(__FUNCTION__);
+    
     return $items;
   }
 
@@ -999,7 +989,7 @@ class database {
    * @param string $sql the query to be executed
    * @param string $column the name of the column
    *
-   * @return array an assoc array 
+   * @return array an assoc array
    **/
   function fetchRowsIntoMapAddRC($sql,$column,$limit = -1)
   {
@@ -1023,7 +1013,7 @@ class database {
           $errorMsg .= ' - SQL:' . $sql;
           trigger_error($errorMsg,E_USER_NOTICE);
           return null;
-        } 
+        }
         if(!isset($items[$row[$column]]) )
         {
           $row['recordcount'] = 0;
@@ -1045,7 +1035,7 @@ class database {
   /**
    * @used-by testplan.class.php
    */
-  function fetchMapRowsIntoMapStackOnCol($sql,$column_main_key,$column_sec_key,$stackOnCol) {
+  public function fetchMapRowsIntoMapStackOnCol($sql,$column_main_key,$column_sec_key,$stackOnCol) {
     $items = null;
     $result = $this->exec_query($sql);
     if ($result) {
@@ -1062,4 +1052,4 @@ class database {
   }
 
 
-} // end of database class
+}

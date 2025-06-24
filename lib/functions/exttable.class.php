@@ -5,18 +5,18 @@
  *
  * @package     TestLink
  * @author      Erik Eloff
- * @copyright   2009,2012 TestLink community 
+ * @copyright   2009,2012 TestLink community
  * @filesource  exttable.class.php
  * @link        http://www.teamst.org
  * @since       1.9
  *
- * 
+ *
  **/
 
 require_once 'table.class.php';
 
 /**
- * Helper class used for EXT-JS tables. 
+ * Helper class used for EXT-JS tables.
  * There is an option to use custom type in order to use custom rendering and sorting if needed.
  */
 class tlExtTable extends tlTable
@@ -43,8 +43,8 @@ class tlExtTable extends tlTable
   public $allowMultiSort = true;
 
   /**
-   * If set to an POSITIVE INTEGER VALUE, use this column for grouping. 
-   * Rows with same value will be placed in a collapsible group. 
+   * If set to an POSITIVE INTEGER VALUE, use this column for grouping.
+   * Rows with same value will be placed in a collapsible group.
    * User can choose to group on other columns, this is just the default column.
    */
   public $groupByColumn = -1;
@@ -142,7 +142,7 @@ class tlExtTable extends tlTable
   /**
    * Creates a helper object to render a table to a EXT-JS GridPanel.
    * For use of column['type'] see $this->customTypes
-   * 
+   *
    * @param string $tableID tableID is used to create a store for
    *                        table settings. tableID should be unique for
    *                        each table occurence in each project.
@@ -153,19 +153,19 @@ class tlExtTable extends tlTable
   public function __construct($columns, $data, $tableID)
   {
     parent::__construct($columns, $data, $tableID);
-    $this->addCustomBehaviour('status', 
+    $this->addCustomBehaviour('status',
                               ['render' => 'statusRenderer',
                                'sort' => 'statusCompare',
                                'filter' => 'Status'
                               ]);
 
-    $this->addCustomBehaviour('notes', 
+    $this->addCustomBehaviour('notes',
                               ['render' => 'columnWrap']);
     
-    $this->addCustomBehaviour('textArea', 
+    $this->addCustomBehaviour('textArea',
                               ['render' => 'columnWrap']);
                           
-    $this->addCustomBehaviour('issueSummary', 
+    $this->addCustomBehaviour('issueSummary',
                               ['render' => 'columnWrap']);
 
     $this->showExportButton = config_get('enableTableExportButton');
@@ -194,7 +194,7 @@ class tlExtTable extends tlTable
    * @return string [["first row, first column", "first row second column"],
    *                 ["2nd row, first col", "2nd row, 2nd col"]];
    */
-  function buildContent()
+  private function buildContent()
   {
     if( !is_null($this->data) ) // to avoid warnings on foreach
     {
@@ -216,26 +216,26 @@ class tlExtTable extends tlTable
    *                 {header: "Test Case", dataIndex: 'id_TestCase',width: 350},
    *                 {header: "Version", dataIndex: 'id_Version'}];
    */
-  function buildColumns()
+  private function buildColumns()
   {
     static $l18n;
     
     if(is_null($l18n))
     {
-      $l18n = init_labels(array('warning_disable_user' => null,'disable' => null));  
+      $l18n = init_labels(array('warning_disable_user' => null,'disable' => null));
     }
     
     $s = '[';
     $n_columns = sizeof($this->columns);
     $options = array('width','hidden','groupable','hideable');
 
-    for ($i=0; $i<$n_columns; $i++) 
+    for ($i=0; $i<$n_columns; $i++)
     {
       $column = $this->columns[$i];
 
       // new dBug($column);
       // Because sometimes a column can be made HIDDEN but used to generate a group
-      // (this happens in the requirements based report), 
+      // (this happens in the requirements based report),
       // if we remove this column only checking for 'hidden' attribute, we will generate an issue
       //
       $isGroupable = isset($column['groupable']) ? $column['groupable'] : false;
@@ -248,7 +248,7 @@ class tlExtTable extends tlTable
       if( isset($column['tlType']) )
       {
         switch($column['tlType'])
-        { 
+        {
           case 'disableUser':
             $s .= $this->getDisableUserJS();
           break;
@@ -275,12 +275,12 @@ class tlExtTable extends tlTable
         {
           $s .= ",filter: {type: '{$column['filter']}'}";
         }
-      } 
-      else if (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) 
+      }
+      elseif (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter']))
       {
         // do not define a filter in this case. Special filters are applied later
-      } 
-      else 
+      }
+      else
       {
         // if no filter is specified use string filter
         // string filter is the most "basic" filter
@@ -289,7 +289,7 @@ class tlExtTable extends tlTable
 
       foreach($options as $opt_str)
       {
-        if (isset($column[$opt_str])) 
+        if (isset($column[$opt_str]))
         {
           $s .= ",$opt_str: {$column[$opt_str]}";
         }
@@ -310,22 +310,22 @@ class tlExtTable extends tlTable
             $method = 'build' . $target . 'FilterOptions';
             $s .= ",filter: " . $this->$method();
           }
-        } 
+        }
         if (isset($customBehaviour['render']) )
         {
           // Attach a custom renderer
           $s .= ",renderer: {$customBehaviour['render']}";
         }
       }
-      $s .= ",sortable: " . (isset($column['sortable']) ? $column['sortable'] : 'true'); 
-      $s .= "},\n";      
+      $s .= ",sortable: " . (isset($column['sortable']) ? $column['sortable'] : 'true');
+      $s .= "},\n";
     } // loop on columns
     $s = trim($s,",\n") . '];';
     return $s;
   }
 
   /**
-   * Build a JS object to describe the fields needed by EXT-JS ArrayStore. 
+   * Build a JS object to describe the fields needed by EXT-JS ArrayStore.
    * This is supposed to be used as columnData.
    *
    * @return string in the following format
@@ -336,7 +336,7 @@ class tlExtTable extends tlTable
    *         ATTENTION: if col_id is provided when configuring columns,
    *                    then it will be used instead of automatically generated.
    */
-  function buildFields()
+  private function buildFields()
   {
     $s = '[';
     $n_columns = sizeof($this->columns);
@@ -348,7 +348,7 @@ class tlExtTable extends tlTable
         isset($this->customBehaviour[$column['type']]['sort']) )
       {
         $s .= ", sortType: {$this->customBehaviour[$column['type']]['sort']}";
-      } else if (isset($column['sortType'])) {
+      } elseif (isset($column['sortType'])) {
         $s .= ", sortType: '{$column['sortType']}'";
       }
       
@@ -356,8 +356,6 @@ class tlExtTable extends tlTable
     }
     $s = trim($s,",\n");
     $s .= '];';
-    
-    //echo $s; die();
 
     return $s;
 
@@ -381,7 +379,7 @@ class tlExtTable extends tlTable
    *                prio_code_label[2] = 'Medium';
    *                prio_code_label[1] = 'Low';
    */
-  function buildCodeLabels()
+  private function buildCodeLabels()
   {
     $cfg = config_get('results');
     $s = "status_code_label = new Array();\n";
@@ -391,23 +389,23 @@ class tlExtTable extends tlTable
       $s .= "status_code_label.$code = '" . lang_get($label) . "';\n";
     }
     
-    // 20121223 - franciscom - 
+    // 20121223 - franciscom -
     // do not understand why this is working because priorities are computed
     // urgency => test plan attribute * importance => test spec attribute
     // See $tlCfg->urgencyImportance
     $cfg = config_get('urgency');
     $s .= "prio_code_label = new Array();\n";
-    foreach ($cfg['code_label'] as $code => $label) 
+    foreach ($cfg['code_label'] as $code => $label)
     {
       $s .= "prio_code_label[$code] = '" . lang_get($label) . "';\n";
-    } 
+    }
     
     $cfg = config_get('importance');
     $s .= "importance_code_label = new Array();\n";
-    foreach ($cfg['code_label'] as $code => $label) 
+    foreach ($cfg['code_label'] as $code => $label)
     {
       $s .= "importance_code_label[$code] = '" . lang_get($label) . "';\n";
-    } 
+    }
 
     
     return $s;
@@ -440,7 +438,6 @@ class tlExtTable extends tlTable
     $s .= "var tableData = new Array()\n\n";
     $s .= "var fields = new Array()\n\n";
     $s .= "var columnData = new Array()\n\n";
-    // $s .= "alert(importance_code_label);";
     $s .= '</script>' . "\n\n";
     
     return $s;
@@ -453,7 +450,7 @@ class tlExtTable extends tlTable
    *
    * @return string on the form: ,title: "My table", autoHeight: true
    */
-  function getGridSettings()
+  public function getGridSettings()
   {
     $s = '';
     $settings = array('title', 'width', 'height', 'autoHeight', 'collapsible', 'frame', 'stripeRows');
@@ -462,7 +459,7 @@ class tlExtTable extends tlTable
       if (!is_null($value)){
         if (is_int($value)) {
           $s .= ", {$setting}: {$value}";
-        } else if (is_bool($value)) {
+        } elseif (is_bool($value)) {
           $s .= ", {$setting}: " . ($value ? 'true' : 'false');
         } else {
           $s .= ", {$setting}: \"{$value}\"";
@@ -482,11 +479,11 @@ class tlExtTable extends tlTable
 
 
   /**
-   * Build a JS 
+   * Build a JS
    *
-   * @return 
+   * @return
    */
-  function buildCfg()
+  private function buildCfg()
   {
     $resultsCfg = config_get('results');
     $jsCode = "status_code_order = new Array();\n";
@@ -502,7 +499,7 @@ class tlExtTable extends tlTable
 
   /**
    * Get the index of a column by (localized) name of the column.
-   * 
+   *
    * @author Andreas Simon
    * @param string $name
    * @return int $column_idx
@@ -522,7 +519,7 @@ class tlExtTable extends tlTable
    * Convinience function to group by column name.
    * @param string $name column name to group by
    */
-  function setGroupByColumnName($name) {
+  public function setGroupByColumnName($name) {
     $idx = $this->getColumnIdxByName($name);
     $this->groupByColumn = $this->columns[$idx]['col_id'];
   }
@@ -531,12 +528,12 @@ class tlExtTable extends tlTable
    * Convinience function to sort on column name.
    * @param string $name column name to sort on
    */
-  function setSortByColumnName($name) {
+  public function setSortByColumnName($name) {
     $idx = $this->getColumnIdxByName($name);
     $this->sortByColumn = $this->columns[$idx]['col_id'];
   }
 
-  function buildStatusFilterOptions() 
+  private function buildStatusFilterOptions()
   {
     $resultsCfg = config_get('results');
     $statuses = array();
@@ -551,11 +548,11 @@ class tlExtTable extends tlTable
   // CRITIC
   // a companion method has to exists on ext_extensions.js or rendering will fail.
   // Ext.ux.grid.filter.PriorityFilter()
-  function buildPriorityFilterOptions() 
+  private function buildPriorityFilterOptions()
   {
     $cfg = config_get('urgency');
     $items = array();
-    foreach ($cfg['code_label'] as $code => $label) 
+    foreach ($cfg['code_label'] as $code => $label)
     {
       $items[] = array("$code", lang_get($label));
     }
@@ -565,24 +562,24 @@ class tlExtTable extends tlTable
   // CRITIC
   // a companion method has to exists on ext_extensions.js or rendering will fail.
   // Ext.ux.grid.filter.ImportanceFilter()
-  function buildImportanceFilterOptions() 
+  private function buildImportanceFilterOptions()
   {
     $cfg = config_get('importance');
     $items = array();
-    foreach ($cfg['code_label'] as $code => $label) 
+    foreach ($cfg['code_label'] as $code => $label)
     {
       $items[] = array("$code", lang_get($label));
     }
     return "{type: 'Importance', options: " . json_encode($items) . "}";
   }
 
-  function setImages($v)
+  public function setImages($v)
   {
-    $this->imgSet = $v;  
+    $this->imgSet = $v;
   }
 
 
-  function getGridViewConfig()
+  public function getGridViewConfig()
   {
     $s = 'forceFit: true' . $this->moreViewConfig;
     $s .= ',hideGroupedColumn:' . ($this->hideGroupedColumn ? 'true' : 'false');
@@ -593,12 +590,12 @@ class tlExtTable extends tlTable
     return $s;
   }
 
-  function getDisableUserJS()
+  private function getDisableUserJS()
   {
     static $l18n;
     if(is_null($l18n))
     {
-      $l18n = init_labels(array('warning_disable_user' => null,'disable' => null));  
+      $l18n = init_labels(array('warning_disable_user' => null,'disable' => null));
     }
 
     $js = "{xtype: 'actioncolumn',width: 50, hideable: false,sortable: false,groupable: false," .
@@ -609,16 +606,16 @@ class tlExtTable extends tlTable
           "           if( rec.get('is_special') == 0 ) \n" .
           "           { \n" .
           "             delete_confirmation(rec.get('user_id'),rec.get('login')," .
-                                            "'" . $l18n['disable'] . "','" . 
+                                            "'" . $l18n['disable'] . "','" .
                                             $l18n['warning_disable_user'] . "'); \n" .
           "           } \n" .
           "           } /* end handler function() */" .
-          ", getClass: function(v, meta, rec){" . 
-          " if(rec.get('is_special') == 1){" . 
-          " /* 0 points to the the FIRST (and only) item */ " . 
-          " this.items[0].tooltip = 'Demo mode => you can not disable me!'; return 'special_user';} " . 
-          " else { this.items[0].tooltip = 'Disable User'; return 'normal_user';} " . 
-          " } /* end getClass() */" .         
+          ", getClass: function(v, meta, rec){" .
+          " if(rec.get('is_special') == 1){" .
+          " /* 0 points to the the FIRST (and only) item */ " .
+          " this.items[0].tooltip = 'Demo mode => you can not disable me!'; return 'special_user';} " .
+          " else { this.items[0].tooltip = 'Disable User'; return 'normal_user';} " .
+          " } /* end getClass() */" .
           "}]";
     $js .= "},\n";
     

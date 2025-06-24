@@ -1,10 +1,10 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  no_editor.class.php
- * 
+ *
  **/
 
 class no_editor
@@ -35,19 +35,19 @@ class no_editor
     if(is_null($my_rows) || $my_rows <= 0)
     {
       $my_rows = $this->rows;
-    }  
+    }
     
     if(is_null($my_cols) || $my_cols <= 0)
     {
       $my_cols = $this->cols;
-    }      
+    }
 
     $Html = ' <textarea style="resize:both;" ' .
-            " name=\"{$this->InstanceName}\" " . 
+            " name=\"{$this->InstanceName}\" " .
             " id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\" >".
             "{$HtmlValue}</textarea>" ;
       
     return $Html ;
   }
 
-} // class end
+}

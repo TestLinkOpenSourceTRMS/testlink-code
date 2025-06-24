@@ -1,15 +1,15 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  lang_api.php
  * @package     TestLink
- * @copyright   2005-2016, TestLink community 
+ * @copyright   2005-2016, TestLink community
  * @link        http://www.testlink.org
  *
  * @internal thanks
- * The functionality is based on Mantis BTS project code 
+ * The functionality is based on Mantis BTS project code
  * Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
  * Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  *
@@ -33,9 +33,9 @@ $g_lang_overrides = array();
  * This function will return one of (in order of preference):
  *   1. The string in the current user's preferred language (if defined)
  *   2. The string in English
- * 
+ *
  * @param mixed $p_string string or array of string with term keys
- * 
+ *
  * @internal revisions
  */
 function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
@@ -48,11 +48,11 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
   $t_lang = $p_lang;
   if (null === $t_lang) {
     $t_lang = TL_DEFAULT_LOCALE;
-    if (isset($_SESSION['locale']) 
-        && is_string($_SESSION['locale']) 
+    if (isset($_SESSION['locale'])
+        && is_string($_SESSION['locale'])
         && strlen($_SESSION['locale']) == 5) {
         $t_lang = $_SESSION['locale'];
-    } 
+    }
   }
   
   lang_ensure_loaded($t_lang);
@@ -97,17 +97,17 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
     $stringFileCharset = "ISO-8859-1";
     if (isset($g_lang_strings[$t_lang]['STRINGFILE_CHARSET']))
     {
-      $stringFileCharset = $g_lang_strings[$t_lang]['STRINGFILE_CHARSET'];  
-    }  
+      $stringFileCharset = $g_lang_strings[$t_lang]['STRINGFILE_CHARSET'];
+    }
       
       
     if ($stringFileCharset != TL_TPL_CHARSET)
-    {  
+    {
       $the_str = iconv($stringFileCharset,TL_TPL_CHARSET,$loc_str);
-    }  
+    }
   }
   
-  if( $missingL18N ) 
+  if( $missingL18N )
   {
     if( $englishSolutionFound )
     {
@@ -115,9 +115,9 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
     }
     else
     {
-      $the_str = TL_LOCALIZE_TAG .$p_string; 
-      $addMsg = '';  
-    }  
+      $the_str = TL_LOCALIZE_TAG .$p_string;
+      $addMsg = '';
+    }
     
     if(!$bDontFireEvents)
     {
@@ -133,9 +133,9 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
       if( isset($_SESSION) && !isset($_SESSION['missingL18N'][$p_string]))
       {
         $msg = sprintf("string '%s' is not localized for locale '%s' {$addMsg}",$p_string,$t_lang);
-        $_SESSION['missingL18N'][$p_string] = $p_string; 
+        $_SESSION['missingL18N'][$p_string] = $p_string;
         logL18NWarningEvent($msg,"LOCALIZATION");
-      }  
+      }
     }
 
   }
@@ -145,7 +145,7 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 
 /**
  * Retrieves an internationalized string and insert text into
- * 
+ *
  * @param string $base string to be localized
  * @param string $modifier something to be inserted in the first string
  * @return string localized with inserted name or something
@@ -164,29 +164,29 @@ function langGetFormated( $text_key, $modifier )
 
 /**
  * Get localized string on key
- * 
+ *
  * When you choose to have translation results assigned to a smarty variable
  * now you can send a list (string with ',' as element separator) of labels
  * to be translated.
  * In this situation you will get as result an associative array that uses
  * as key the string to be translated.
- * 
+ *
  * Example:
  * <code>
  * {lang_get s='th_testsuite,details' var='labels'}
  * </code>
  * labels will be : labels['th_testsuite']
  *                  labels['details']
- * 
+ *
  * and on smarty template you will access in this way: $labels.details
- * 
+ *
  * @internal Revisions:
  * 20050708 - fm
  * Modified to cope with situation where you need
  * to assign a Smarty Template variable instead
  * of generate output.
  * Now you can use this function in both situatuons.
- * 
+ *
  * if the key 'var' is found in the associative array
  * instead of return a value, this value is assigned
  * to $params['var`]
@@ -212,7 +212,7 @@ function lang_get_smarty($params, $smarty) {
 }
 
 
-/** 
+/**
  * Loads the specified language and stores it in $g_lang_strings,
  * @param string $p_lang
  * @param string $p_dir
@@ -232,26 +232,26 @@ function lang_load( $p_lang, $p_dir = null ) {
   $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
   
   if( !is_null( $p_dir ) && is_file( $p_dir . 'strings.txt' )) {
-	require $p_dir . 'strings.txt';
+	require_once $p_dir . 'strings.txt';
   }
   
   if (file_exists($lang_resource_path) && is_readable($lang_resource_path))
   {
-    require $lang_resource_path;
+      require_once $lang_resource_path;
   }
   else
   {
-    require $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt';
+      require_once $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt';
   }
     
   $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'description.php';
   if (file_exists($lang_resource_path))
   {
-    require $lang_resource_path;
+      require_once $lang_resource_path;
   }
   else
   {
-    require $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php';
+      require_once $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php';
   }
     
   // Allow overriding strings declared in the language file.
@@ -262,10 +262,10 @@ function lang_load( $p_lang, $p_dir = null ) {
   }
 
   $t_vars = get_defined_vars();
-  foreach( array_keys($t_vars) as $t_var ) 
+  foreach( array_keys($t_vars) as $t_var )
   {
     $t_lang_var = preg_replace( '/^TLS_/', '', $t_var );
-    if ( $t_lang_var != $t_var) 
+    if ( $t_lang_var != $t_var)
     {
       $g_lang_strings[$p_lang][$t_lang_var] = $$t_var;
     }
@@ -273,7 +273,7 @@ function lang_load( $p_lang, $p_dir = null ) {
 }
 
 
-/** 
+/**
  * Ensures that a language file has been loaded
  */
 function lang_ensure_loaded( $p_lang ) {
@@ -285,9 +285,9 @@ function lang_ensure_loaded( $p_lang ) {
 }
 
 
-/** 
+/**
  * localize strings in array (used for example in html options element in form)
- * 
+ *
  * @param array $input_array list of localization string keys
  * @return array list of localized strings
  **/
@@ -303,15 +303,15 @@ function localize_array( $input_array ) {
 
 /**
  * Translate array of TLS keys to array of localized labels
- * 
- * @param array $map_code_label map 
+ *
+ * @param array $map_code_label map
  *       key=code
  *           value: string_to_translate, that can be found in strings.txt
- *       if is_null(value), then key will be used as string_to_translate 
+ *       if is_null(value), then key will be used as string_to_translate
  *
  * @return array  map key=code
  *             value: lang_get(string_to_translate)
- * 
+ *
  * @internal revision:
  */
 function init_labels($label2translate)
@@ -327,15 +327,15 @@ function init_labels($label2translate)
 
 /**
  * Add a date in smarty template (registered to Smarty class)
- * 
+ *
  * @tutorial usage: if registered as localize_date()
  *        {localize_date d='the date to localize'}
  * @uses localize_dateOrTimeStamp()
  * @internal Revisions:
- * 20050708 - fm - Modified to cope with situation where you need to assign 
+ * 20050708 - fm - Modified to cope with situation where you need to assign
  * a Smarty Template variable instead of generate output.
  * Now you can use this function in both situatuons.
- * 
+ *
  * if the key 'var' is found in the associative array instead of return a value,
  * this value is assigned to $params['var`]
  */
@@ -365,12 +365,12 @@ function localize_timestamp_smarty($params, $smarty)
  *                since TestLink 1.9.6
  *                also this format (that seems to be generated by MSSQL PHP drivers)
  *                is supported  YYYY-MM-DDTHH:MM:SSZ
- * 
+ *
  * @return string localized date or time
  *
  * @internal revisions
  * @since 1.9.6
- * 20130202 - franciscom - TICKET 
+ * 20130202 - franciscom - TICKET
  */
 function localize_dateOrTimeStamp($params,$smarty,$what,$value)
 {
@@ -379,7 +379,7 @@ function localize_dateOrTimeStamp($params,$smarty,$what,$value)
 
   $format = config_get($what);
   if (!is_numeric($value)) {
-    // in order to manage without error what seems to be 
+    // in order to manage without error what seems to be
     // a MSSQL PHP Drivers format
     // YYYY-MM-DDTHH:MM:SSZ
     //
@@ -397,12 +397,12 @@ function localize_dateOrTimeStamp($params,$smarty,$what,$value)
 /**
  *
  *
- */ 
+ */
 function localizeTimeStamp($value,$format)
 {
   if (!is_numeric($value))
   {
-    // in order to manage without error what seems to be 
+    // in order to manage without error what seems to be
     // a MSSQL PHP Drivers format
     // YYYY-MM-DDTHH:MM:SSZ
     //
@@ -429,7 +429,7 @@ function localizeTimeStamp($value,$format)
               $lzds . 'text_templates' . $lzds . 'mail';
 
   $rs = str_replace('/',$lzds,$key);
-  $resource_path = $dir_base . $lzds . $rs; 
+  $resource_path = $dir_base . $lzds . $rs;
 
   $str = file_get_contents($resource_path);
 

@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
- * 
+ *
  * 	@filesource	getreqspeclog.php
  * 	@author 	Francisco Mancardi
- * 
+ *
  *	@internal Revisions:
  */
 require_once '../../config.inc.php';

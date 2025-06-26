@@ -179,6 +179,8 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix,$
 
 /**
  *
+ * @param string $idList
+ * @param array $tcIDs
  */
 function getAllTCasesID($idList,&$tcIDs) {
     

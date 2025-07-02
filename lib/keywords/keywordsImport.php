@@ -16,7 +16,7 @@ require_once('common.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
 
-testlinkInitPage($db);
+testlinkInitPage($db, false, false, "checkRights");
 $templateCfg = templateConfiguration();
 
 $args = init_args($db);
@@ -77,17 +77,6 @@ function init_args(&$dbHandler)
     throw new Exception(" Error Invalid Test Project ID", 1);
   }
 
-  // Check rights before doing anything else
-  // Abort if rights are not enough 
-  $user = $_SESSION['currentUser'];
-  $env['tproject_id'] = $args->tproject_id;
-  $env['tplan_id'] = 0;
-  
-  $check = new stdClass();
-  $check->items = array('mgt_modify_key');
-  $check->mode = 'and';
-  checkAccess($dbHandler,$user,$env,$check);
- 
   $tproj_mgr = new testproject($dbHandler);
   $dm = $tproj_mgr->get_by_id($args->tproject_id,
                               array('output' => 'name'));
@@ -145,4 +134,8 @@ function initializeGui(&$argsObj)
 
 
   return $gui;
+}
+
+function checkRights(&$db,&$user) {
+	return ($user->hasRightOnProj($db,'mgt_modify_key'));
 }

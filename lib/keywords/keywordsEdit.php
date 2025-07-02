@@ -19,7 +19,7 @@ require_once("xml.inc.php");
 require_once("keywordsEnv.php");
 
 
-testlinkInitPage($db);
+testlinkInitPage($db, false, false, "checkRights");
 $tplCfg = templateConfiguration();
 
 $tplEngine = new TLSmarty();
@@ -119,18 +119,7 @@ function initEnv(&$dbHandler) {
     throw new Exception("Error Invalid Test Project ID", 1);
   }
 
-  // Check rights before doing anything else
-  // Abort if rights are not enough 
   $args->user = $_SESSION['currentUser'];
-  $env['tproject_id'] = $args->tproject_id;
-  $env['tplan_id'] = 0;
-  
-  $check = new stdClass();
-  $check->items = array('mgt_modify_key','mgt_view_key');
-  $check->mode = 'and';
-  checkAccess($dbHandler,$args->user,$env,$check);
-
-  // OK Go ahead
   $args->canManage = true;
   $args->mgt_view_events = $args->user->hasRight($dbHandler,"mgt_view_events",$args->tproject_id);
 
@@ -345,4 +334,9 @@ function initializeGui(&$dbH,&$args) {
                   "tproject_id={$gui->tproject_id}"; 
 
   return $gui;
+}
+
+function checkRights(&$db,&$user) {
+	return ($user->hasRightOnProj($db,'mgt_view_key')
+       || $user->hasRightOnProj($db,'mgt_modify_key'));
 }

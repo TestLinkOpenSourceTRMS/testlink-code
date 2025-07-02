@@ -15,7 +15,7 @@ require_once("csv.inc.php");
 require_once("xml.inc.php");
 require_once("keywordsEnv.php");
 
-testlinkInitPage($db);
+testlinkInitPage($db, false, false, "checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args($db);
 $gui = initializeGui($args);
@@ -46,17 +46,7 @@ function init_args(&$dbHandler) {
     throw new Exception("Error Invalid Test Project ID", 1);
   }
   
-  // Check rights before doing anything else
-  // Abort if rights are not enough 
   $args->user = $_SESSION['currentUser'];
-  $env['tproject_id'] = $args->tproject_id;
-  $env['tplan_id'] = 0;
-  
-  $check = new stdClass();
-  $check->items = array('mgt_view_key');
-  $check->mode = 'and';
-  checkAccess($dbHandler,$args->user,$env,$check);
- 
   $tproj_mgr = new testproject($dbHandler);
   $dm = $tproj_mgr->get_by_id($args->tproject_id,array('output' => 'name'));
   $args->tproject_name = $dm['name'];
@@ -131,4 +121,8 @@ function exportKeywordsToCSV($kwSet) {
   $keys = array( "keyword","notes","tcv_qty" );
   $csv = exportDataToCSV($kwSet,$keys,$keys,array('addHeader' => 1));
   return $csv;
+}
+
+function checkRights(&$db,&$user) {
+	return ($user->hasRightOnProj($db,'mgt_view_key'));
 }

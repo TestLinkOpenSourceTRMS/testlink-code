@@ -11,7 +11,7 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("keywordsEnv.php");
 
-testlinkInitPage($db);
+testlinkInitPage($db, false, false, "checkRights");
 $templateCfg = templateConfiguration();
 $gui = $args = init_args($db);
 
@@ -31,18 +31,7 @@ function init_args(&$dbHandler) {
     throw new Exception("Error Invalid Test Project ID", 1);
   }
 
-  // Check rights before doing anything else
-  // Abort if rights are not enough 
   $user = $_SESSION['currentUser'];
-  $env['tproject_id'] = $tproject_id;
-  $env['tplan_id'] = 0;
-  
-  $check = new stdClass();
-  $check->items = array('mgt_view_key');
-  $check->mode = 'and';
-  checkAccess($dbHandler,$user,$env,$check);
-  
-  // OK, go ahead
   $args = getKeywordsEnv($dbHandler,$user,$tproject_id);
   $args->tproject_id = $tproject_id;
 
@@ -62,4 +51,8 @@ function init_args(&$dbHandler) {
   }
 
   return $args;
+}
+
+function checkRights(&$db,&$user) {
+	return ($user->hasRightOnProj($db,'mgt_view_key'));
 }

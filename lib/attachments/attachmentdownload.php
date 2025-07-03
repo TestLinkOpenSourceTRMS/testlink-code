@@ -160,8 +160,8 @@ function init_args(&$dbHandler)
 }
 
 /**
- * @param $db resource the database connection handle
- * @param $user the current active user
+ * @param database $db resource the database connection handle
+ * @param tlUser $user the current active user
  * @return boolean returns true if the page can be accessed
  */
 function checkRights(&$db,&$user)

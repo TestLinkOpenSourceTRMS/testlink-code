@@ -5,13 +5,13 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 
 require_once '../../../../config.inc.php';
-require 'autoload.php';
-require 'RestApi.class.php';
+require_once 'autoload.php';
+require_once 'RestApi.class.php';
 
 $app = AppFactory::create();
 
-// CRITIC 
-// This will work if your url to test link 
+// CRITIC
+// This will work if your url to test link
 // is something like
 //
 // https://testlink.antartic.org/
@@ -21,15 +21,15 @@ $app = AppFactory::create();
 // You need to use:
 //   $basePath = "/testlink/lib/api/rest/v3";
 //
-// The standard .htaccess provided with testlink, 
+// The standard .htaccess provided with testlink,
 // that is similar to the .htaccess provided by MantisBT
 // it's ok!!!
 // No need to proceed as detailed in this documentation
-// - https://www.slimframework.com/docs/v4/start/web-servers.html 
+// - https://www.slimframework.com/docs/v4/start/web-servers.html
 //   Section: Running in a sub-directory
 //
 // - https://akrabat.com/running-slim-4-in-a-subdirectory/
-//   BUT this is a good example to understand how to configure 
+//   BUT this is a good example to understand how to configure
 //
 $basePath = config_get('restAPI')->basePath;
 $app->setBasePath($basePath);
@@ -49,7 +49,7 @@ if (is_dir($where)) {
   foreach ($itera as $fileinfo) {
     if ($fileinfo->isFile()) {
       $who = $fileinfo->getFilename();
-      require $where . $who;
+      require_once $where . $who;
 
       // generate class name
       $className = str_replace('.class.php', '', $who);
@@ -72,7 +72,7 @@ if (is_dir($where)) {
   foreach ($itera as $fileinfo) {
     if ($fileinfo->isFile()) {
       $who = $fileinfo->getFilename();
-      $customRoutes = require $where . $who;
+      $customRoutes = require_once $where . $who;
       $customRoutes($app);
     }
   }
@@ -80,7 +80,7 @@ if (is_dir($where)) {
 // * Load Custom API  - END
 
 // Register Standard routes
-$routes = require './core/routes.php';
+$routes = require_once './core/routes.php';
 $routes($app);
 
 // Middleware

@@ -1,7 +1,7 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource attachmentupload.php
  *
@@ -31,13 +31,12 @@ if ($args->bPostBack) {
     $opt = null;
     if (trim($gui->tableName) == 'executions') {
       $opt['allow_empty_title'] = true;
-    }  
+    }
 
     $l2d = count($fInfo);
     for($fdx=0; $fdx <= $l2d; $fdx++) {
       $fSize = isset($fInfo['size'][$fdx]) ? $fInfo['size'][$fdx] : 0;
-      $fTmpName = isset($fInfo['tmp_name'][$fdx]) ? 
-                        $fInfo['tmp_name'][$fdx] : '';
+      $fTmpName = isset($fInfo['tmp_name'][$fdx]) ? $fInfo['tmp_name'][$fdx] : '';
 
       $fin = array();
       $fin['size'] = $fSize;
@@ -50,15 +49,15 @@ if ($args->bPostBack) {
         $docRepo = tlAttachmentRepository::create($db);
         
         $uploadOP = $docRepo->insertAttachment($id,$gui->tableName,$args->title,$fin,$opt);
-        $gui->uploaded = $uploadOP->statusOK; 
+        $gui->uploaded = $uploadOP->statusOK;
         if ($gui->uploaded) {
           logAuditEvent(TLS("audit_attachment_created",
                         $args->title,$fin['name']),
                         "CREATE",$id,"attachments");
-        } 
+        }
       } else {
         $gui->msg  = getFileUploadErrorMessage($fin,$uploadOP);
-      } 
+      }
     }
   }
 }
@@ -78,11 +77,11 @@ $smarty->display('attachmentupload.tpl');
 function init_args()
 {
   $iParams = array(
-    //the id (attachments.fk_id) of the object, to which the attachment belongs to 
+    //the id (attachments.fk_id) of the object, to which the attachment belongs to
     "id" => array("GET",tlInputParameter::INT_N),
-    //the table to which the fk_id refers to (attachments.fk_table) of the attachment 
+    //the table to which the fk_id refers to (attachments.fk_table) of the attachment
     "tableName" => array("GET",tlInputParameter::STRING_N,0,250),
-    //the title of the attachment (attachments.title) 
+    //the title of the attachment (attachments.title)
     "title" => array("POST",tlInputParameter::STRING_N,0,250),
   );
   $args = new stdClass();
@@ -94,8 +93,8 @@ function init_args()
 }
 
 /**
- * @param $db resource the database connection handle
- * @param $user the current active user
+ * @param database $db resource the database connection handle
+ * @param tlUser $user the current active user
  * @return boolean returns true if the page can be accessed
  */
 function checkRights(&$db,&$user)

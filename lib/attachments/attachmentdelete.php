@@ -1,7 +1,7 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  attachmentdelete.php
  * Deletes an attachment by a given id
@@ -11,7 +11,7 @@ require_once '../functions/common.php';
 require_once '../functions/attachments.inc.php';
 testlinkInitPage($db,false,false,"checkRights");
 
-$args = init_args();  
+$args = init_args();
 $deleteDone = false;
 if ($args->id)
 {
@@ -24,7 +24,7 @@ if ($args->id)
     {
       logAuditEvent(TLS("audit_attachment_deleted",
                     $attachmentInfo['title']),"DELETE",$args->id,"attachments");
-    } 
+    }
   }
 }
 
@@ -50,9 +50,9 @@ function init_args()
 
 
 /**
- * @param $db resource the database connection handle
- * @param $user the current active user
- * 
+ * @param database $db resource the database connection handle
+ * @param tlUser $user the current active user
+ *
  * @return boolean returns true if the page can be accessed
  */
 function checkRights(&$db,&$user)

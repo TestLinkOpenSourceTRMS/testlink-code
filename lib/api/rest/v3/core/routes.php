@@ -9,7 +9,7 @@ return function (App $app) {
   // @20201124 - I do not understand this
   // $app->get('/',World::class . ':hello');
 
-  // using array(), was the way in Slim3 and 
+  // using array(), was the way in Slim3 and
   // still seems valid
   $app->get('/whoAmI',array($app->restApi,'whoAmI'));
 
@@ -20,36 +20,36 @@ return function (App $app) {
   
   $app->get('/testprojects/{id}/testcases',
             array($app->restApi,'getProjectTestCases'));
-  $app->get('/testprojects/{mixedID}/testplans', 
+  $app->get('/testprojects/{mixedID}/testplans',
             array($app->restApi,'getProjectTestPlans'));
 
-  $app->get('/testplans/{tplanApiKey}/builds', 
+  $app->get('/testplans/{tplanApiKey}/builds',
             array($app->restApi,'getPlanBuilds'));
 
   /*
-  $app->get('/builds/{id}', 
+  $app->get('/builds/{id}',
             array($app->restApi,'getBuild'));
   */
 
-  $app->post('/executions', 
+  $app->post('/executions',
              array($app->restApi,'createTestCaseExecution'));
 
   $app->post('/builds',
              array($app->restApi,'createBuild'));
 
-  $app->post('/keywords', 
+  $app->post('/keywords',
              array($app->restApi,'createKeyword'));
 
-  $app->post('/testcases', 
+  $app->post('/testcases',
              array($app->restApi,'createTestCase'));
 
-  $app->post('/testplans', 
+  $app->post('/testplans',
              array($app->restApi,'createTestPlan'));
 
   $app->post('/testprojects',
             array($app->restApi,'createTestProject'));
   
-  $app->post('/testsuites', 
+  $app->post('/testsuites',
              array($app->restApi,'createTestSuite'));
 
 
@@ -57,10 +57,10 @@ return function (App $app) {
   // Following advice from
   // https://restfulapi.net/rest-put-vs-post/
   //
-  $app->put('/builds/{id}', 
+  $app->put('/builds/{id}',
              array($app->restApi,'updateBuild'));
 
-  $app->put('/testplans/{id}', 
+  $app->put('/testplans/{id}',
              array($app->restApi,'updateTestPlan'));
 
   $app->put('/testplans/{tplan_id}/platforms',

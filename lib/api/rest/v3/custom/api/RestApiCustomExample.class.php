@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * @filesource  RestApiCustomExample.class.php
  *
@@ -23,7 +23,7 @@ require_once $dummy[0] . $ds . 'RestApi.class.php';
 
 /**
  * @author    Francisco Mancardi <francisco.mancardi@gmail.com>
- * @package   TestLink 
+ * @package   TestLink
  */
 class RestApiCustomExample extends RestApi
 {
@@ -31,12 +31,12 @@ class RestApiCustomExample extends RestApi
 
   /**
    */
-  public function __construct() 
+  public function __construct()
   {
     $this->db = new database(DB_TYPE);
     $this->db->db->SetFetchMode(ADODB_FETCH_ASSOC);
     doDBConnect($this->db,database::ONERROREXIT);
-  }  
+  }
 
 
 
@@ -44,7 +44,7 @@ class RestApiCustomExample extends RestApi
    *
    */
   public function whoAmI(Request $request, Response $response, $args)
-  {    
+  {
     $msg = json_encode(array('name' => __CLASS__ . ' : You have called Get Route /whoAmI'));
     $response->getBody()->write($msg);
     return $response;

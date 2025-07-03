@@ -2,13 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- *  
+ *
  * @filesource 	tlRestApi.class.php
  *
  * @author 		Francisco Mancardi <francisco.mancardi@gmail.com>
  * @package 	TestLink
- * @since     1.9.7             
- * 
+ * @since     1.9.7
+ *
  * References
  * http://ericbrandel.com/2013/01/14/quickly-build-restful-apis-in-php-with-slim-part-2/
  * https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Add+Comment
@@ -24,19 +24,19 @@
 
  *
  *
- * @internal revisions 
+ * @internal revisions
  * @since 1.9.11
  *
  */
 
 require_once '../../../../config.inc.php';
 require_once 'common.php';
-require 'Slim/Slim.php';
+require_once 'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
 /**
  * @author    Francisco Mancardi <francisco.mancardi@gmail.com>
- * @package   TestLink 
+ * @package   TestLink
  */
 class tlRestApi
 {
@@ -45,7 +45,7 @@ class tlRestApi
     
   /**
    * The DB object used throughout the class
-   * 
+   *
    * @access protected
    */
   protected $db = null;
@@ -67,7 +67,7 @@ class tlRestApi
   protected $user = null;
 
   /** array where all the args are stored for requests */
-  protected $args = null;  
+  protected $args = null;
 
   /** array where error codes and messages are stored */
   protected $errors = array();
@@ -93,13 +93,13 @@ class tlRestApi
   /**
    */
   public function __construct()
-  {    
+  {
     // We are following Slim naming convention
     $this->app = new \Slim\Slim();
     $this->app->contentType('application/json');
 
 
-    // test route with anonymous function 
+    // test route with anonymous function
     $this->app->get('/who', function () { echo __CLASS__ . ' : Get Route /who';});
 
     $this->app->get('/whoAmI', array($this,'authenticate'), array($this,'whoAmI'));
@@ -140,15 +140,15 @@ class tlRestApi
     $resultsCfg = config_get('results');
     foreach($resultsCfg['status_label_for_exec_ui'] as $key => $label )
     {
-        $this->statusCode[$key]=$resultsCfg['status_code'][$key];  
+        $this->statusCode[$key]=$resultsCfg['status_code'][$key];
     }
     
     if( isset($this->statusCode['not_run']) )
     {
-      unset($this->statusCode['not_run']);  
-    }   
+      unset($this->statusCode['not_run']);
+    }
     $this->codeStatus=array_flip($this->statusCode);
-  }  
+  }
 
 
   /**
@@ -158,25 +158,25 @@ class tlRestApi
   {
     $apiKey = null;
     if(is_null($apiKey))
-    {  
+    {
       $request = $this->app->request();
       $apiKey  = $request->headers('PHP_AUTH_USER');
-    } 
+    }
 
     $sql = "SELECT id FROM {$this->tables['users']} " .
            "WHERE script_key='" . $this->db->prepare_string($apiKey) . "'";
 
     $this->userID = $this->db->fetchFirstRowSingleColumn($sql, "id");
-    if( ($ok=!is_null($this->userID)) )
+    if( $ok=!is_null($this->userID) )
     {
-      $this->user = tlUser::getByID($this->db,$this->userID);  
-    }  
+      $this->user = tlUser::getByID($this->db,$this->userID);
+    }
     else
     {
       $this->app->status(400);
-      echo json_encode(array('status' => 'ko', 'message' => 'authentication error'));  
+      echo json_encode(array('status' => 'ko', 'message' => 'authentication error'));
       $this->app->stop();
-    }  
+    }
 
     return $ok;
   }
@@ -187,7 +187,7 @@ class tlRestApi
    *
    */
   public function whoAmI()
-  {    
+  {
     echo json_encode(array('name' => __CLASS__ . ' : Get Route /whoAmI'));
   }
   
@@ -206,7 +206,7 @@ class tlRestApi
       $opOptions = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
                           'add_reqmgrsystem' => true);
       $op['item'] = $this->tprojectMgr->get_accessible_for_user($this->userID,$opOptions);
-    }  
+    }
     else
     {
       $opOptions = array('output' => 'map','field_set' => 'id', 'format' => 'simple');
@@ -215,23 +215,23 @@ class tlRestApi
       {
         if( isset($zx[$safeID]) )
         {
-          $op['item'] = $this->tprojectMgr->get_by_id($safeID);  
-        } 
-      } 
+          $op['item'] = $this->tprojectMgr->get_by_id($safeID);
+        }
+      }
       else
       {
         // Will consider id = name
-        foreach( $zx as $key => $value ) 
+        foreach( $zx as $key => $value )
         {
           if( strcmp($value['name'],$idCard) == 0 )
           {
             $safeString = $this->db->prepare_string($idCard);
             $op['item'] = $this->tprojectMgr->get_by_name($safeString);
-            break;   
-          }  
+            break;
+          }
         }
-      } 
-    } 
+      }
+    }
 
     // Developer (silly?) information
     // json_encode() transforms maps in objects.
@@ -264,7 +264,7 @@ class tlRestApi
       $items = $this->tprojectMgr->get_all_testplans($tproject[0]['id']);
       $op['items'] = (!is_null($items) && count($items) > 0) ? $items : null;
     }
-    else 
+    else
     {
       $op['message'] = "No Test Project identified by '" . $idCard . "'!";
       $op['status']  = 'error';
@@ -280,7 +280,7 @@ class tlRestApi
    * @param mixed idCard if provided identifies test project
    *                     if intval() > 0 => is considered DBID
    *                     else => is used as PROJECT NAME
-   */ 
+   */
   public function getProjectTestCases($idCard)
   {
     $op  = array('status' => 'ok', 'message' => 'ok', 'items' => null);
@@ -303,7 +303,7 @@ class tlRestApi
         }
       }
     }
-    else 
+    else
     {
       $op['message'] = "No Test Project identified by '" . $idCard . "'!";
       $op['status']  = 'error';
@@ -312,10 +312,10 @@ class tlRestApi
     echo json_encode($op);
   }
 
-// ==============================================
+
   /**
-   * 
-   *        $item->name               
+   *
+   *        $item->name
    *        $item->prefix
    *        $item->notes
    *        $item->active
@@ -328,17 +328,17 @@ class tlRestApi
    */
   public function createTestProject()
   {
-    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
-    try 
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);
+    try
     {
       $request = $this->app->request();
       $item = json_decode($request->getBody());
       $op['id'] = $this->tprojectMgr->create($item,array('doChecks' => true));
       $op = array('status' => 'ok', 'message' => 'ok');
-    } 
-    catch (Exception $e) 
+    }
+    catch (Exception $e)
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage();
     }
     echo json_encode($op);
   }
@@ -358,11 +358,11 @@ class tlRestApi
    *
    *
    * Checks to be done
-   * 
+   *
    * A. User right & Test plan existence
    * user has right to execute on target Test plan?
    * this means also that: Test plan ID exists ?
-   *   
+   *
    * B. Build
    * does Build ID exist on target Test plan ?
    * is Build enable to execution ?
@@ -380,12 +380,12 @@ class tlRestApi
    * We are not going to check for other mandatory info
    * like: mandatory custom fields. (if we will be able in future to manage it)
    *
-   * 
+   *
    */
   public function createTestCaseExecution()
   {
-    $op = array('status' => ' ko', 'message' => 'ko', 'id' => -1);  
-    try 
+    $op = array('status' => ' ko', 'message' => 'ko', 'id' => -1);
+    try
     {
       $request = $this->app->request();
       $ex = json_decode($request->getBody());
@@ -396,13 +396,13 @@ class tlRestApi
       foreach($util as $prop => $value)
       {
         $ex->$prop = $value;
-      }  
+      }
       $op = array('status' => 'ok', 'message' => 'ok');
       $op['id'] = $this->tplanMgr->writeExecution($ex);
-    } 
-    catch (Exception $e) 
+    }
+    catch (Exception $e)
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage();
     }
     echo json_encode($op);
   }
@@ -414,9 +414,7 @@ class tlRestApi
   //
   private function checkExecutionEnvironment($ex)
   {
-    // throw new Exception($message, $code, $previous);
-
-    // Test plan ID exists and is ACTIVE    
+    // Test plan ID exists and is ACTIVE
     $msg = 'invalid Test plan ID';
     $getOpt = array('output' => 'testPlanFields','active' => 1,
                     'testPlanFields' => 'id,testproject_id,is_public');
@@ -428,8 +426,8 @@ class tlRestApi
       // hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
       $msg = 'user has no right to execute';
       $status_ok = $this->user->hasRight($this->db,'testplan_execute',
-                                         $testPlan['testproject_id'],$ex->testPlanID,true); 
-    }  
+                                         $testPlan['testproject_id'],$ex->testPlanID,true);
+    }
 
     if($status_ok)
     {
@@ -443,8 +441,8 @@ class tlRestApi
         // now check is execution can be done againts this build
         $msg = 'Build is not active and/or closed => execution can not be done';
         $status_ok = $build[$ex->buildID]['active'] && $build[$ex->buildID]['is_open'];
-      }  
-    }  
+      }
+    }
 
     if($status_ok)
     {
@@ -456,25 +454,25 @@ class tlRestApi
       {
         $status_ok = false;
         $msg = 'You can not execute against a platform, because Test plan has no platforms';
-      }  
+      }
 
       if($status_ok)
       {
         if($hasPlatforms)
-        {  
+        {
           if($ex->platformID == 0)
           {
             $status_ok = false;
             $msg = 'Test plan has platforms, you need to provide one in order to execute';
           }
-          else if (!isset($platformSet[$ex->platformID]))
+          elseif (!isset($platformSet[$ex->platformID]))
           {
             $status_ok = false;
             $msg = '(platform,test plan) couple is not valid';
-          }  
+          }
         }
-      }  
-    } 
+      }
+    }
 
     if($status_ok)
     {
@@ -482,13 +480,12 @@ class tlRestApi
       $msg = 'Test case does not exist';
 
       $tcaseID = $this->tcaseMgr->getInternalID($ex->testCaseExternalID);
-      $status_ok = ($tcaseID > 0);
       if( $status_ok = ($tcaseID > 0) )
       {
         $msg = 'Test case doesn not belong to right test project';
         $testCaseTestProject = $this->tcaseMgr->getTestProjectFromTestCase($tcaseID,0);
         $status_ok = ($testCaseTestProject == $testPlan['testproject_id']);
-      }  
+      }
       if($status_ok)
       {
         // Does this test case is linked to test plan ?
@@ -497,8 +494,8 @@ class tlRestApi
         $getOpt = array('output' => 'simple');
         $links = $this->tcaseMgr->get_linked_versions($tcaseID,$getFilters,$getOpt);
         $status_ok = !is_null($links);
-      }  
-    }  
+      }
+    }
     if($status_ok)
     {
       // status code is OK ?
@@ -509,8 +506,8 @@ class tlRestApi
       {
         $msg = 'Requested execution status is not configured on TestLink';
         $status_ok = isset($this->codeStatus[$ex->statusCode]);
-      }  
-    }  
+      }
+    }
 
     if($status_ok)
     {
@@ -523,7 +520,7 @@ class tlRestApi
     if(!$status_ok)
     {
       throw new Exception($msg);
-    }  
+    }
     return $ret;
   }
  
@@ -539,17 +536,17 @@ class tlRestApi
    */
   public function createTestPlan()
   {
-    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
-    try 
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);
+    try
     {
       $request = $this->app->request();
       $item = json_decode($request->getBody());
       $op = array('status' => 'ok', 'message' => 'ok');
       $op['id'] = $this->tplanMgr->createFromObject($item,array('doChecks' => true));
-    } 
-    catch (Exception $e) 
+    }
+    catch (Exception $e)
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage();
     }
     echo json_encode($op);
   }
@@ -564,8 +561,8 @@ class tlRestApi
    */
   public function updateTestPlan($id)
   {
-    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
-    try 
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);
+    try
     {
       $op = array('status' => 'ok', 'message' => 'ok');
 
@@ -573,10 +570,10 @@ class tlRestApi
       $item = json_decode($request->getBody());
       $item->id = $id;
       $op['id'] = $this->tplanMgr->updateFromObject($item);
-    } 
-    catch (Exception $e) 
+    }
+    catch (Exception $e)
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage();
     }
     echo json_encode($op);
   }
@@ -591,17 +588,17 @@ class tlRestApi
    */
   public function createTestSuite()
   {
-    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
-    try 
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);
+    try
     {
       $request = $this->app->request();
       $item = json_decode($request->getBody());
       $op = array('status' => 'ok', 'message' => 'ok');
       $op['id'] = $this->tsuiteMgr->createFromObject($item,array('doChecks' => true));
-    } 
-    catch (Exception $e) 
+    }
+    catch (Exception $e)
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage();
     }
     echo json_encode($op);
   }
@@ -622,8 +619,8 @@ class tlRestApi
    */
   public function createTestCase()
   {
-    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
-    try 
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);
+    try
     {
       $request = $this->app->request();
       $item = json_decode($request->getBody());
@@ -641,10 +638,10 @@ class tlRestApi
         $op['message'] = $ou['msg'];
       }
 
-    } 
-    catch (Exception $e) 
+    }
+    catch (Exception $e)
     {
-      $op['message'] = $e->getMessage();   
+      $op['message'] = $e->getMessage();
     }
     echo json_encode($op);
   }
@@ -652,7 +649,7 @@ class tlRestApi
   /**
    *
    *
-   */ 
+   */
   private function getUserID($login)
   {
 
@@ -662,7 +659,7 @@ class tlRestApi
   /**
    *
    *
-   */ 
+   */
   private function createTestCaseDefaultManagement(&$obj)
   {
     if(property_exists($obj, 'authorLogin'))
@@ -671,8 +668,8 @@ class tlRestApi
       if( $obj->authorID <= 0 )
       {
         // will use user that do the call ?
-      }  
-    }  
+      }
+    }
 
     if(!property_exists($obj, 'steps'))
     {
@@ -684,36 +681,36 @@ class tlRestApi
   /**
    *
    *
-   */ 
+   */
   private function checkRelatives($testProjectID,$testSuiteID)
   {
     if($testProjectID <= 0)
     {
       throw new Exception("Test Project ID is invalid (<=0)");
-    }  
+    }
 
     if($testSuiteID <= 0)
     {
       throw new Exception("Test Suite ID is invalid (<=0)");
-    }  
+    }
 
     $pinfo = $this->tprojectMgr->get_by_id($testProjectID);
     if( is_null($pinfo) )
     {
       throw new Exception("Test Project ID is invalid (does not exist)");
-    }  
+    }
 
     $pinfo = $this->tsuiteMgr->get_by_id($testSuiteID);
     if( is_null($pinfo) )
     {
       throw new Exception("Test Suite ID is invalid (does not exist)");
-    }  
+    }
 
 
     if( $testProjectID != $this->tsuiteMgr->getTestProjectFromTestSuite($testSuiteID,$testSuiteID) )
     {
       throw new Exception("Test Suite does not belong to Test Project ID");
-    }  
+    }
   }
 
 

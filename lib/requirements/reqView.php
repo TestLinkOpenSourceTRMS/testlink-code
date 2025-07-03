@@ -1,8 +1,8 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
- *  
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
  * @filesource	reqView.php
  *
  */
@@ -48,7 +48,7 @@ function init_args( &$reqMgr ) {
 
   if($args->req_id <= 0) {
     $args->req_id = $args->requirement_id;
-  }  
+  }
 
   $args->reqVersionIDFromCaller = $args->req_version_id;
   $args->showAllVersions = false;
@@ -69,7 +69,7 @@ function init_args( &$reqMgr ) {
 }
 
 /**
- * 
+ *
  *
  */
 function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
@@ -78,8 +78,7 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
   $gui = $commandMgr->initGuiBean( $argsObj );
 
   $opt = array('renderImageInline' => true);
-  $gui->req_versions = 
-    $req_mgr->get_by_id($gui->req_id, $gui->version_option,1,$opt);
+  $gui->req_versions = $req_mgr->get_by_id($gui->req_id, $gui->version_option,1,$opt);
   
   $gui->reqHasBeenDeleted = false;
   if( is_null($gui->req_versions) ) {
@@ -93,10 +92,10 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
 
   // Everything OK, go ahead
   $tproject_id = $req_mgr->getTestProjectID($argsObj->requirement_id);
-  $target_id = $argsObj->tproject_id; 
+  $target_id = $argsObj->tproject_id;
   if( $isAlien = ($tproject_id != $argsObj->tproject_id) ) {
     $target_id = $tproject_id;
-  } 
+  }
   
   $gui->grants = getGrants($dbHandler,$argsObj->user,$target_id);
   $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
@@ -108,11 +107,11 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
   if(isset($gui->reqMonitors[$argsObj->userID])) {
     $gui->btn_monitor_mgmt = lang_get('btn_stop_mon');
     $gui->btn_monitor_action = 'stopMonitoring';
-  }  
+  }
 
   $gui->req = current($gui->req_versions);
 
-  // 2018 $gui->req_coverage = $req_mgr->get_coverage($gui->req_id);  
+  // 2018 $gui->req_coverage = $req_mgr->get_coverage($gui->req_id);
   // This need to become an array.
   $loop2do = count($gui->req_versions);
   $gui->current_req_coverage = array();
@@ -127,45 +126,32 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
     }
   }
 
-  $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
+  $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' .
                       urlencode($gui->tcasePrefix) . '&item=req&id=' . urlencode($gui->req['req_doc_id']);
 
-
-  /*
-  $gui->fileUploadURL = $gui->delAttachmentURL = $_SESSION['basehref'];
-  $gui->fileUploadURL .= 
-    $req_mgr->getFileUploadRelativeURL($gui->req_id, $gui->req_version_id);
-
-  $gui->delAttachmentURL .= 
-    $req_mgr->getDeleteAttachmentRelativeURL($gui->req_id, $gui->req_version_id);
-  */
-
   // Same for all versions because we only use the FILE ID
-  // need to be refactored  
-  $gui->delAttachmentURL = $_SESSION['basehref'] .  
+  // need to be refactored
+  $gui->delAttachmentURL = $_SESSION['basehref'] .
     $req_mgr->getDeleteAttachmentRelativeURL($gui->req_id,0);
   
   $gui->fileUploadURL = array();
-  $gui->fileUploadURL[$gui->req_version_id] = $_SESSION['basehref'] . 
+  $gui->fileUploadURL[$gui->req_version_id] = $_SESSION['basehref'] .
     $req_mgr->getFileUploadRelativeURL($gui->req_id, $gui->req_version_id);
 
   $gui->log_target = null;
   $loop2do = count($gui->req_versions);
   for($rqx = 0; $rqx < $loop2do; $rqx++) {
-    $gui->log_target[] = ($gui->req_versions[$rqx]['revision_id'] > 0) ?  $gui->req_versions[$rqx]['revision_id'] :  
-                          $gui->req_versions[$rqx]['version_id'];
+    $gui->log_target[] = ($gui->req_versions[$rqx]['revision_id'] > 0) ?  $gui->req_versions[$rqx]['revision_id'] : $gui->req_versions[$rqx]['version_id'];
   }
   
-  $gui->req_has_history = count($req_mgr->get_history($gui->req_id, array('output' => 'array'))) > 1; 
+  $gui->req_has_history = count($req_mgr->get_history($gui->req_id, array('output' => 'array'))) > 1;
   
   
-  // This seems weird but is done to adapt template than can 
-  // display multiple requirements. 
+  // This seems weird but is done to adapt template than can
+  // display multiple requirements.
   // This logic has been borrowed from test case versions management
   $gui->current_version[0] = array($gui->req);
-  $gui->cfields_current_version[0] = 
-    $req_mgr->html_table_of_custom_field_values($gui->req_id,$gui->req['version_id'],
-                                                $argsObj->tproject_id);
+  $gui->cfields_current_version[0] = $req_mgr->html_table_of_custom_field_values($gui->req_id,$gui->req['version_id'], $argsObj->tproject_id);
 
   // Now CF for other Versions
   $gui->other_versions[0] = null;
@@ -175,11 +161,10 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
     $loop2do = count($gui->other_versions[0]);
     for($qdx=0; $qdx < $loop2do; $qdx++) {
       $target_version = $gui->other_versions[0][$qdx]['version_id'];
-      $gui->cfields_other_versions[0][$qdx]= 
-        $req_mgr->html_table_of_custom_field_values($gui->req_id,$target_version,$argsObj->tproject_id);
+      $gui->cfields_other_versions[0][$qdx]= $req_mgr->html_table_of_custom_field_values($gui->req_id,$target_version,$argsObj->tproject_id);
 
       // File Upload Management
-      $gui->fileUploadURL[$target_version] = $_SESSION['basehref'] . 
+      $gui->fileUploadURL[$target_version] = $_SESSION['basehref'] .
         $req_mgr->getFileUploadRelativeURL($gui->req_id, $target_version);
       }
   }
@@ -195,12 +180,12 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
   
   if( $gui->showAllVersions ) {
     $versionSet = array();
-    $loop2do = count($gui->req_versions);    
+    $loop2do = count($gui->req_versions);
     for( $ggx=0; $ggx < $loop2do; $ggx++ ) {
       $versionSet[] = intval($gui->req_versions[$ggx]['version_id']);
     }
   } else {
-    $versionSet = array($gui->req_version_id);    
+    $versionSet = array($gui->req_version_id);
   }
 
   foreach ($versionSet as $kiwi) {
@@ -210,11 +195,10 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
   $gui->reqStatus = init_labels($gui->req_cfg->status_labels);
   $gui->reqTypeDomain = init_labels($gui->req_cfg->type_labels);
 
-  $gui->req_relations = FALSE;
-  $gui->req_relation_select = FALSE;
-  $gui->testproject_select = FALSE;
-  $gui->req_add_result_msg = isset($argsObj->relation_add_result_msg) ? 
-                     $argsObj->relation_add_result_msg : "";
+  $gui->req_relations = false;
+  $gui->req_relation_select = false;
+  $gui->testproject_select = false;
+  $gui->req_add_result_msg = isset($argsObj->relation_add_result_msg) ? $argsObj->relation_add_result_msg : "";
   
   if ($gui->req_cfg->relations->enable) {
     $gui->req_relations = $req_mgr->get_relations($gui->req_id);
@@ -238,7 +222,7 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
 
 
 /**
- * 
+ *
  *
  */
 function getGrants( &$dbH, &$userObj, $tproject_id ) {
@@ -268,11 +252,11 @@ function checkRights(&$db,&$user,&$context)
 
 /**
  * Initializes the select field for the testprojects.
- * 
+ *
  * @return array $htmlSelect array with info, needed to create testproject select box on template
  */
 function initTestprojectSelect($userID, $tprojectID, &$tprojectMgr)  {
-  $opt = array('output' => 'map_name_with_inactive_mark', 'order_by' => config_get('gui')->tprojects_combo_order_by);  
+  $opt = array('output' => 'map_name_with_inactive_mark', 'order_by' => config_get('gui')->tprojects_combo_order_by);
   $testprojects = $tprojectMgr->get_accessible_for_user($userID,$opt);
   $htmlSelect = array('items' => $testprojects, 'selected' => $tprojectID);
   return $htmlSelect;

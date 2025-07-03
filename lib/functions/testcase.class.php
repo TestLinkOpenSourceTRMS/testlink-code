@@ -4773,7 +4773,7 @@ class testcase extends tlObjectWithAttachments {
    * Copy attachments from source testcase to target testcase
    *
    **/
-  function copy_attachments($source_id,$target_id) {
+  private function copy_attachments($source_id,$target_id) {
     return $this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
   }
 

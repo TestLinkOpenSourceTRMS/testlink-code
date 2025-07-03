@@ -1,8 +1,8 @@
 <?php
 
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  reqSpecSearch.php
  * @package   TestLink
@@ -46,7 +46,7 @@ $gui->tableSet = null;
 $itemSet = null;
 if ($args->tprojectID)
 {
-  $tables = tlObjectWithDB::getDBTables(array('cfield_design_values', 'nodes_hierarchy', 
+  $tables = tlObjectWithDB::getDBTables(array('cfield_design_values', 'nodes_hierarchy',
                         'req_specs','req_specs_revisions'));
   $filter = null;
   $join = null;
@@ -90,7 +90,7 @@ if ($args->tprojectID)
     }
 
   $sql =  " SELECT NHRSPEC.name, NHRSPEC.id, RSPEC.doc_id, RSPECREV.id AS revision_id, RSPECREV.revision " .
-      " FROM {$tables['req_specs']} RSPEC JOIN {$tables['req_specs_revisions']} RSPECREV " .   
+      " FROM {$tables['req_specs']} RSPEC JOIN {$tables['req_specs_revisions']} RSPECREV " .
       " ON RSPEC.id=RSPECREV.parent_id " .
       " JOIN {$tables['nodes_hierarchy']} NHRSPEC " .
       " ON NHRSPEC.id = RSPEC.id ";
@@ -107,15 +107,15 @@ if ($args->tprojectID)
     $sql .= implode("",$filter);
   }
 
-  $sql .= ' ORDER BY id ASC, revision DESC '; 
+  $sql .= ' ORDER BY id ASC, revision DESC ';
   $itemSet = $db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
   
 }
 
 $smarty = new TLSmarty();
-$gui->row_qty=count($itemSet);
-if($gui->row_qty > 0)
+if(!empty($itemSet))
 {
+  $gui->row_qty=count($itemSet);
   $gui->resultSet = $itemSet;
   if($gui->row_qty <= $req_cfg->search->max_qty_for_display)
   {
@@ -143,7 +143,7 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
 
-function buildExtTable($gui, $charset) 
+function buildExtTable($gui, $charset)
 {
   $lbl = array('edit' => 'requirement_spec', 'rev' => 'revision_short','req_spec' => 'req_spec',
          'revision_tag' => 'revision_tag', 'open_on_new_window' => 'open_on_new_window');
@@ -151,8 +151,8 @@ function buildExtTable($gui, $charset)
   $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
   $table = null;
 
-  // $gui->resultSet - 
-  // key: reqspec_id 
+  // $gui->resultSet -
+  // key: reqspec_id
   // value: array of matches
   // array
   // {
@@ -162,13 +162,11 @@ function buildExtTable($gui, $charset)
   //           "revision_id" => "251", "revision" => "3"}
   // ...
   // }
-  //
-  //
-  if(count($gui->resultSet) > 0) 
+  if(!empty($gui->resultSet))
   {
     $matrixData = array();
     $columns = array();
-    $columns[] = array('title_key' => 'req_spec', 'type' => 'text', 'groupable' => 'false', 
+    $columns[] = array('title_key' => 'req_spec', 'type' => 'text', 'groupable' => 'false',
                        'hideable' => 'false');
   
     $key2loop = array_keys($gui->resultSet);
@@ -178,23 +176,21 @@ function buildExtTable($gui, $charset)
 
       $itemSet = $gui->resultSet[$rspec_id];
       $rfx = &$itemSet[0];
-      $path = ($gui->path_info[$rfx['id']]) ? $gui->path_info[$rfx['id']] . " / " : "";
       $edit_link = "<a href=\"javascript:openLinkedReqSpecWindow(" . $rfx['id'] . ")\">" .
              "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" /></a> ";
 
       $title = htmlentities($rfx['doc_id'], ENT_QUOTES, $charset) . ":" .
              htmlentities($rfx['name'], ENT_QUOTES, $charset);
-      $cm = '<a href="javascript:openReqSpecRevisionWindow(%s)" title="' . $labels['open_on_new_window'] .'" >' . 
-          $labels['revision_tag'] . ' </a>'; 
-      // $link = $edit_link;
+      $cm = '<a href="javascript:openReqSpecRevisionWindow(%s)" title="' . $labels['open_on_new_window'] .'" >' .
+          $labels['revision_tag'] . ' </a>';
       $matches = '';
-      foreach($itemSet as $rx) 
+      foreach($itemSet as $rx)
       {
         $matches .= sprintf($cm,$rx['revision_id'],$rx['revision']);
       }
       $rowData[] = $edit_link . $title . ' ' . $matches;
       $matrixData[] = $rowData;
-    } 
+    }
       
     $table = new tlExtTable($columns, $matrixData, 'tl_table_req_spec_search');
     $table->setSortByColumnName($labels['req_spec']);

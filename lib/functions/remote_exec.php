@@ -2,12 +2,12 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
+ *
  * @filesource	remote_exec.php
  * @author		Francisco Mancardi <francisco.mancardi@gmail.com>
  *
  * @internal revisions
- * 20110308 - franciscom - refactoring 
+ * 20110308 - franciscom - refactoring
  */
 require_once '../../config.inc.php';
 require_once TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'xml-rpc/class-IXR.php';
@@ -20,7 +20,7 @@ require_once TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'xml-rpc/class-I
 * The fields are: server_host, server_port and server_path.
 * Precede 'tc_' for custom fields assigned to testcase level.
 *
-* @param $tcaseInfo: 
+* @param $tcaseInfo:
 * @param $serverCfg:
 * @param $context
 *
@@ -54,7 +54,7 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 
 	
 	$ret = array('system' => array('status' => 'ok', 'msg' => 'ok'),
-				 'execution' => array('scheduled' => '', 
+				 'execution' => array('scheduled' => '',
 				 					  'result' => '',
 				 					  'resultVerbose' => '',
 				 					  'notes' => '',
@@ -67,9 +67,9 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 	
 	$do_it = (!is_null($serverCfg) && !is_null($serverCfg["url"]) );
 	if(!$do_it)
-	{ 
+	{
 		$ret['system']['status'] = 'configProblems';
-		$ret['system']['msg'] = $labels['remoteExecServerConfigProblems'];						
+		$ret['system']['msg'] = $labels['remoteExecServerConfigProblems'];
 	}
 	
   	if($do_it)
@@ -79,7 +79,7 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 		{
 			$do_it = false;
 			$ret['system']['status'] = 'connectionFailure';
-			$ret['system']['msg'] = $labels['remoteExecServerConnectionFailure'];						
+			$ret['system']['msg'] = $labels['remoteExecServerConnectionFailure'];
 		}
 	}
 	
@@ -106,7 +106,7 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 		{
 			// Houston we have a problem!!! (Apollo 13)
 			$ret['system']['status'] = 'connectionFailure';
-			$ret['system']['msg'] = $labels['remoteExecServerConnectionFailure'];						
+			$ret['system']['msg'] = $labels['remoteExecServerConnectionFailure'];
 			$ret['execution'] = null;
 		}
 		else
@@ -115,7 +115,7 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 			$ret['execution']['resultVerbose'] = '';
 			
 			if(!is_null($response['result']))
-			{	
+			{
 				$code = trim($response['result']);
 				if( $code != '')
 				{
@@ -126,8 +126,8 @@ function executeTestCase($tcaseInfo,$serverCfg,$context)
 				}
 			}
 		}
-  	} 
+  	}
 
 	return $ret;
-} // function end
+}
 ?>

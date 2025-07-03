@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
  *  TestLink Open Source Project - http://testlink.sourceforge.net/
- * 
+ *
  *  @filesource getreqmonitors.php
  *  @author   Francisco Mancardi
- * 
+ *
  *  @internal revisions
  */
 require_once '../../../config.inc.php';

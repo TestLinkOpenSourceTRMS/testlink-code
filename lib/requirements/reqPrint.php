@@ -14,8 +14,8 @@
  */
 
 require_once '../../config.inc.php';
-require_once '../../cfg/reports.cfg.php'; 
-require_once 'print.inc.php'; 
+require_once '../../cfg/reports.cfg.php';
+require_once 'print.inc.php';
 require_once 'common.php';
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -32,25 +32,22 @@ $gui->object_name = $node['name'];
 $gui->page_title = sprintf(lang_get('print_requirement'),$node['name']);
 $gui->tproject_name=$args->tproject_name;
 $gui->tproject_id=$args->tproject_id;
-$gui->req_id=$args->req_id; 
+$gui->req_id=$args->req_id;
 $gui->req_version_id=$args->req_version_id;
 $gui->req_revision=$args->req_revision;
 
 
-// Struture defined in printDocument.php	
-$options = array('toc' => 0,              
+// Struture defined in printDocument.php
+$options = array('toc' => 0,
                  'req_linked_tcs' => 1, 'req_cf' => 1,
                  'req_scope' => 1, 'req_relations' => 1, 'req_coverage' => 1,
                  'req_status' => 1, 'req_type' => 1,'req_author'=> 1,
-                 'displayVersion' => 1, 'displayDates' => 1, 
+                 'displayVersion' => 1, 'displayDates' => 1,
                  'displayLastEdit' => 1, 'docType' => SINGLE_REQ);
 
 $text2print = '';
-$text2print .= 
-  renderHTMLHeader($gui->page_title,$_SESSION['basehref'],SINGLE_REQ);
-
-$text2print .= 
-  renderReqForPrinting($db,$node,$options,null,0,$args->tproject_id);
+$text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],SINGLE_REQ);
+$text2print .= renderReqForPrinting($db,$node,$options,0,$args->tproject_id);
 
 echo $text2print;
 
@@ -59,7 +56,7 @@ echo $text2print;
 
   args:
   
-  returns: 
+  returns:
 
 */
 function init_args() {

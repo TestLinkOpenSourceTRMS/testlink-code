@@ -1,7 +1,7 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- *  
+ *
  * @filesource  reqTcAssign.php
  *
 **/
@@ -27,11 +27,11 @@ $pfn = null;
 switch($args->doAction) {
     case 'assign':
       $pfn = "assign_to_tcase";
-    break;  
+    break;
 
     case 'unassign':
       $pfn = "delReqVersionTCVersionLinkByID";
-    break;  
+    break;
 
     case 'bulkassign':
       // need to check if we have test cases to work on
@@ -39,14 +39,14 @@ switch($args->doAction) {
       $bulkCounter = 0;
       $bulkDone = true;
       $args->edit = 'testsuite';
-      if( !is_null($tcase_set) && count($tcase_set) > 0 ) {
+      if( !is_null($tcase_set) && !empty($tcase_set) ) {
         $bulkCounter = doBulkAssignment($db,$args,$tcase_set);
       }
-    break;  
+    break;
 
     case 'switchspec':
       $args->edit = 'testsuite';
-    break;  
+    break;
 }
 
 if(!is_null($pfn)) {
@@ -63,8 +63,8 @@ switch($args->edit) {
     $gui = processTestSuite($db,$args,$gui);
     $templateCfg->default_template = 'reqTcBulkAssignment.tpl';
     if($bulkDone) {
-      $gui->user_feedback = sprintf(lang_get('bulk_assigment_done'),$bulkCounter); 
-    }    
+      $gui->user_feedback = sprintf(lang_get('bulk_assigment_done'),$bulkCounter);
+    }
   break;
       
   case 'testcase':
@@ -99,7 +99,7 @@ function init_args() {
                    "assign" => array(tlInputParameter::STRING_N,0,1),
                    "form_token" => array(tlInputParameter::INT_N),
                    "callback" => array(tlInputParameter::STRING_N,0,1),
-                   "idSRS" => array(tlInputParameter::INT_N));  
+                   "idSRS" => array(tlInputParameter::INT_N));
     
   $args = new stdClass();
   R_PARAMS($iParams,$args);
@@ -115,7 +115,7 @@ function init_args() {
   $args->tcaseSet = null;
   if(isset($_SESSION['edit_mode'][$args->form_token]['testcases_to_show'])) {
     $args->tcaseSet = $_SESSION['edit_mode'][$args->form_token]['testcases_to_show'];
-  }  
+  }
 
   if(is_null($args->doAction)) {
     $args->doAction = ($args->unassign != "") ? "unassign" : null;
@@ -129,7 +129,7 @@ function init_args() {
     $args->idReqSpec = $args->idSRS;
     $_SESSION['currentSrsId'] = $args->idReqSpec;
   }
-  else if(isset($_SESSION['currentSrsId']) && intval($_SESSION['currentSrsId']) > 0) {
+  elseif(isset($_SESSION['currentSrsId']) && intval($_SESSION['currentSrsId']) > 0) {
     $args->idReqSpec = intval($_SESSION['currentSrsId']);
   }
 
@@ -139,7 +139,7 @@ function init_args() {
 }
 
 /**
- * 
+ *
  *
  */
 function processTestSuite(&$dbHandler,&$argsObj,&$guiObj) {
@@ -159,43 +159,38 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj) {
   $guiObj->tcase_number = 0;
   $guiObj->has_req_spec = false;
 
-  if(!is_null($guiObj->req_specs) && count($guiObj->req_specs)) {  
+  if(!is_null($guiObj->req_specs) && count($guiObj->req_specs)) {
     $guiObj->has_req_spec = true;
        
     if(is_null($argsObj->idReqSpec)) {
       $guiObj->selectedReqSpec = key($guiObj->req_specs);
     }
-    $guiObj->selectedReqSpecName = 
-      trim($guiObj->req_specs[$guiObj->selectedReqSpec],'&nbsp;');
+    $guiObj->selectedReqSpecName = trim($guiObj->req_specs[$guiObj->selectedReqSpec],'&nbsp;');
 
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);
        
-    $getOpt = array('output' => 'array');   
-    $guiObj->requirements = 
-      $req_spec_mgr->getAllLatestRQVOnReqSpec($guiObj->selectedReqSpec,$getOpt);
+    $getOpt = array('output' => 'array');
+    $guiObj->requirements = $req_spec_mgr->getAllLatestRQVOnReqSpec($guiObj->selectedReqSpec,$getOpt);
 
     $guiObj->reqCountOnReqSpec = count((array)$guiObj->requirements);
 
-    $guiObj->reqCountFeedback = 
-      sprintf(lang_get('req_on_req_spec'),$guiObj->reqCountOnReqSpec,
+    $guiObj->reqCountFeedback = sprintf(lang_get('req_on_req_spec'),$guiObj->reqCountOnReqSpec,
               $guiObj->selectedReqSpecName);
 
 
     $tcase_set = getTargetTestCases($dbHandler,$argsObj);
-    $guiObj->tcase_number = count($tcase_set);            
+    $guiObj->tcase_number = count($tcase_set);
     if( $guiObj->tcase_number > 0 ) {
-      $guiObj->bulkassign_warning_msg = 
-        sprintf(lang_get('bulk_req_assign_msg'),$guiObj->tcase_number,$tsuite_info['name']);
+      $guiObj->bulkassign_warning_msg = sprintf(lang_get('bulk_req_assign_msg'),$guiObj->tcase_number,$tsuite_info['name']);
     } else {
-      $guiObj->bulkassign_warning_msg = 
-        lang_get('bulk_req_assign_no_test_cases');
-    } 
+      $guiObj->bulkassign_warning_msg = lang_get('bulk_req_assign_no_test_cases');
+    }
   }
   return $guiObj;
 }
 
 /**
- * 
+ *
  *
  */
 function doBulkAssignment(&$dbHandler,&$argsObj,$targetTestCaseSet = null)
@@ -214,19 +209,19 @@ function doBulkAssignment(&$dbHandler,&$argsObj,$targetTestCaseSet = null)
 
     if( !is_null($tcase_set) && count($tcase_set) )
     {
-      // $assignmentCounter = $req_mgr->bulk_assignment($requirements,$tcase_set,$argsObj->user->dbID);
-
-      $assignmentCounter = 
-        $req_mgr->bulkAssignLatestREQVTCV($requirements,$tcase_set,$argsObj->user->dbID);
-
+      $assignmentCounter = $req_mgr->bulkAssignLatestREQVTCV($requirements,$tcase_set,$argsObj->user->dbID);
     }
-
-  } 
+  }
   return $assignmentCounter;
 }
 
 /**
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param stdClass $guiObj
+ * @param string $pfn
+ * @return stdClass
  */
 function doSingleTestCaseOperation(&$dbHandler,&$argsObj,&$guiObj,$pfn) {
   $msg = '';
@@ -255,28 +250,28 @@ function doSingleTestCaseOperation(&$dbHandler,&$argsObj,&$guiObj,$pfn) {
         $res = $req_mgr->$pfn($idOneReq,$argsObj->id,$argsObj->user->dbID);
         if (!$res) {
           $msg .= $idOneReq . ', ';
-        } 
+        }
       }
       if (!empty($msg)) {
         $guiObj->user_feedback = lang_get('req_msg_notupdated_coverage') . $msg;
-      } 
+      }
     break;
 
     case 'delReqVersionTCVersionLinkByID':
       foreach ($items as $idLink) {
         $res = $req_mgr->$pfn($idLink);
         if (!$res) {
-          $msg .= $idOneReq . ', ';
-        } 
+            $msg .= $idLink . ', ';
+        }
       }
       if (!empty($msg)) {
         $guiObj->user_feedback = lang_get('req_msg_notupdated_coverage') . $msg;
-      } 
+      }
     break;
   }
 
   return $guiObj;
-} 
+}
 
 
 /**
@@ -293,7 +288,6 @@ function array_diff_byId($arrAll, $arrPart) {
     return $arrAll;
   }
 
-  $arrTempAll = array();
   foreach ($arrAll as $penny) {
     $highLander[$penny['id']] = $penny;
   }
@@ -301,7 +295,7 @@ function array_diff_byId($arrAll, $arrPart) {
   foreach ($arrPart as $penny) {
     if(isset($highLander[$penny['id']])) {
       unset($highLander[$penny['id']]);
-    }  
+    }
   }
 
   return array_values($highLander);
@@ -311,6 +305,10 @@ function array_diff_byId($arrAll, $arrPart) {
 /**
  * processTestCase
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param stdClass $guiObj
+ * @return stdClass
  */
 function processTestCase(&$dbHandler,&$argsObj,&$guiObj) {
   $tproject_mgr = new testproject($dbHandler);
@@ -349,14 +347,14 @@ function processTestCase(&$dbHandler,&$argsObj,&$guiObj) {
         $guiObj->unassignedReq = array_diff_byId($guiObj->allReq, $guiObj->assignedReq);
       }
     }
-  } 
+  }
   return $guiObj;
 }
 
 /**
  *
  */
-function initializeGui(&$dbH,$argsObj) { 
+function initializeGui(&$dbH,$argsObj) {
   $guiObj = new stdClass();
   $guiObj->user_feedback = '';
   $guiObj->tcTitle = $guiObj->assignedReq = null;
@@ -374,8 +372,7 @@ function initializeGui(&$dbH,$argsObj) {
   $reqCfg = getWebEditorCfg('requirement_spec');
   $guiObj->reqSpecEditorType = $reqCfg['type'];
 
-  $guiObj->req_tcase_link_management = 
-    $argsObj->user->hasRightOnProj($dbH,'req_tcase_link_management');
+  $guiObj->req_tcase_link_management = $argsObj->user->hasRightOnProj($dbH,'req_tcase_link_management');
 
   return $guiObj;
 }
@@ -387,7 +384,7 @@ function getTargetTestCases(&$dbHandler,&$argsObj) {
   $mgr = new testsuite($dbHandler);
   $items = $mgr->get_testcases_deep($argsObj->id,'only_id');
   
-  if(!is_null($argsObj->tcaseSet)) {  
+  if(!is_null($argsObj->tcaseSet)) {
     $rr = array_intersect($items,$argsObj->tcaseSet);
     $items = $rr;
   }

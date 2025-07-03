@@ -1468,7 +1468,7 @@ class testsuite extends tlObjectWithAttachments
    * Copy attachments from source test suite to target test suite
    * 
    **/
-  function copy_attachments($source_id,$target_id)
+  private function copy_attachments($source_id,$target_id)
   {
     return $this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
   }

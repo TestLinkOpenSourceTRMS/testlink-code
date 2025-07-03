@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
@@ -8,8 +8,8 @@
  * @author      Leon Jordans
  * @copyright   2016 TestLink community
  * @filesource  reqMonitorOverview.php
- * 
- *    
+ *
+ *
  */
 
 require_once '../../config.inc.php';
@@ -29,13 +29,11 @@ $context = new stdClass();
 $context->tproject_id = $args->tproject_id;
 checkRights($db,$_SESSION['currentUser'],$context);
 
-
 $cfg = getCfg();
 
-// manageUserSubscribtion($db,$args);
 $smarty = new TLSmarty();
 
-if(count($gui->reqIDSet) > 0) 
+if(!empty($gui->reqIDSet))
 {
   $pathCache = null;
   $imgSet = $smarty->getImages();
@@ -52,77 +50,72 @@ if(count($gui->reqIDSet) > 0)
     {
       $m2c = 'monitor' . ucfirst($args->action);
       $req_mgr->$m2c($args->req_id,$args->userID,$args->tproject_id);
-    }  
-  }  
+    }
+  }
 
   // array to gather table data row per row
-  $rows = array();    
+  $rows = array();
  
   $monitoredSet = $req_mgr->getMonitoredByUser($args->userID,$args->tproject_id);
 
-  foreach($gui->reqIDSet as $id) 
+  foreach($gui->reqIDSet as $id)
   {
     $req = $reqSet[$id][0];
    
     // create the link to display
-    $title = htmlentities($req['req_doc_id'], ENT_QUOTES, $cfg->charset) . $cfg->glue_char . 
+    $title = htmlentities($req['req_doc_id'], ENT_QUOTES, $cfg->charset) . $cfg->glue_char .
              htmlentities($req['title'], ENT_QUOTES, $cfg->charset);
     
     // reqspec-"path" to requirement
     if( !isset($pathCache[$req['srs_id']]) )
     {
       $path = $req_mgr->tree_mgr->get_path($req['srs_id']);
-      foreach ($path as $key => $p) 
+      foreach ($path as $key => $p)
       {
         $path[$key] = $p['name'];
       }
       $pathCache[$req['srs_id']] = htmlentities(implode("/", $path), ENT_QUOTES, $cfg->charset);
-    }         
+    }
 
     // get content for each row to display
     $result = array();
     $result[] = $pathCache[$req['srs_id']];
         
-    $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $req['version_id'] . ')">' . 
+    $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $req['version_id'] . ')">' .
                  '<img title="' .$lbl['mixed']['requirement'] . '" src="' . $imgSet['edit'] . '" /></a> ';
       
     $result[] =  '<!-- ' . $title . ' -->' . $edit_link . $title;
           
     // use html comment to sort properly by this columns (extjs)
-    $result[] = "<!--{$req['creation_ts']}-->" . 
+    $result[] = "<!--{$req['creation_ts']}-->" .
                 localizeTimeStamp($req['creation_ts'],$cfg->datetime) . " ({$req['author']})";
     
     $action = 'on';
-    foreach($monitoredSet as $monReqID => $dummy) 
+    foreach($monitoredSet as $monReqID => $dummy)
     {
-      if($req["id"] == $monReqID) 
+      if($req["id"] == $monReqID)
       {
         $action = 'off';
         break;
       }
     }
-		$result[] = $onClick[$action]['open'] . $req["id"] . 
+		$result[] = $onClick[$action]['open'] . $req["id"] .
                 $onClick[$action]['close'];
 	 
     $rows[] = $result;
   }
 
-   
-
-
-
-  // -------------------------------------------------------------------------------------------------- 
-  // Construction of EXT-JS table starts here    
-  if(($gui->row_qty = count($rows)) > 0 ) 
+  // Construction of EXT-JS table starts here
+  if(($gui->row_qty = count($rows)) > 0 )
   {
        
     /**
      * get column header titles for the table
-     * 
-     * IMPORTANT: 
+     *
+     * IMPORTANT:
      * the order of following items in this array has to be
      * the same as row content above!!!
-     * 
+     *
      * should be:
      * 1. path, 2. title, 3. created_on, 4. monitor
      */
@@ -156,7 +149,7 @@ if(count($gui->reqIDSet) > 0)
     $gui->tableSet= array($matrix);
   }
 
-} 
+}
 
 
 $smarty->assign('gui',$gui);
@@ -165,14 +158,12 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
  * initialize user input
- * 
+ *
  * @param resource &$tproject_mgr reference to testproject manager
  * @return array $args array with user input information
  */
 function init_args(&$tproject_mgr)
 {
-  $args = new stdClass();
-
   $i2get = array("tproject_id" => array(tlInputParameter::INT_N),
                  "req_id" => array(tlInputParameter::INT_N),
                  "action" => array(tlInputParameter::STRING_N,2,3));
@@ -183,7 +174,7 @@ function init_args(&$tproject_mgr)
   if( $args->tproject_id <= 0 )
   {
     throw new Exception("Test project is mandatory", 1);
-  } 
+  }
    
   $item = $tproject_mgr->get_by_id($args->tproject_id);
   $args->tproject_name = $item['name'];
@@ -198,11 +189,11 @@ function init_args(&$tproject_mgr)
 
 /**
  * initialize GUI
- * 
+ *
  * @param stdClass $argsObj reference to user input
  * @return stdClass $gui gui data
  */
-function initializeGui(&$argsObj,&$tprojectMgr) 
+function initializeGui(&$argsObj,&$tprojectMgr)
 {
   $gui = new stdClass();
   
@@ -238,20 +229,20 @@ function getLabels($reqCfg)
 {
   $lbl = array();
 
-  $l2get = array('no' => 'No', 'yes' => 'Yes', 
+  $l2get = array('no' => 'No', 'yes' => 'Yes',
                  'not_aplicable' => null,'never' => null,
-                 'req_spec_short' => null,'title' => null, 
+                 'req_spec_short' => null,'title' => null,
                  'version' => null, 'th_coverage' => null,
                  'frozen' => null, 'type'=> null,
-                 'status' => null,'th_relations' => null, 
-                 'requirements' => null,'number_of_reqs' => null, 
-                 'number_of_versions' => null, 
+                 'status' => null,'th_relations' => null,
+                 'requirements' => null,'number_of_reqs' => null,
+                 'number_of_versions' => null,
                  'requirement' => null, 'monitor' => null,
-                 'version_revision_tag' => null, 
+                 'version_revision_tag' => null,
                  'week_short' => 'calendar_week_short',
                  'on2off' => 'on_turn_off', 'off2on' => 'off_turn_on');
   
-  $lbl['mixed'] = init_labels($l2get); 
+  $lbl['mixed'] = init_labels($l2get);
   $lbl['type'] = init_labels($reqCfg->type_labels);
   $lbl['status'] = init_labels($reqCfg->status_labels);
 
@@ -260,7 +251,7 @@ function getLabels($reqCfg)
   
 /**
  *
- */  
+ */
 function buildOnClick($args,$lbl,$imgSet)
 {
   $ret = array();

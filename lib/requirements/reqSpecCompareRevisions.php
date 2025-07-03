@@ -1,12 +1,12 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	reqSpecCompareRevisions.php
  * @package 	TestLink
  * @author		franciscom
- * @copyright 	2011, TestLink community 
+ * @copyright 	2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements spec revisions with each other.
@@ -16,19 +16,17 @@
 
 require_once '../../config.inc.php';
 require_once 'common.php';
-require '../../third_party/diff/diff.php';
-require '../../third_party/daisydiff/src/HTMLDiff.php';
+require_once '../../third_party/diff/diff.php';
+require_once '../../third_party/daisydiff/src/HTMLDiff.php';
 
 $templateCfg = templateConfiguration();
 testlinkInitPage($db);
 $smarty = new TLSmarty();
 
-$labels = init_labels(array("num_changes" => null,"no_changes" => null, 
+$labels = init_labels(array("num_changes" => null,"no_changes" => null,
 					  		"version_short" => null,"diff_details_rev" => null,
 					  		"type" => null, "status" => null, "name" => "title",
 					  		"doc_id" => null,"revision_short" => null, "revision" => null) );
-
-
 
 $itemMgr = new requirement_spec_mgr($db);
 $differ = new diff();
@@ -37,7 +35,7 @@ $gui = initializeGui($db,$args,$labels,$itemMgr);
 
 // if already two revisions are selected, display diff
 // else display template with versions to select
-if ($args->doCompare) 
+if ($args->doCompare)
 {
 	// Side By Side
 	$sbs = getItemsToCompare($args->left_item_id,$args->right_item_id,$gui->items);
@@ -53,9 +51,9 @@ if ($args->doCompare)
 	}
 
 	$gui->diff = array("scope" => array());
-	foreach($gui->diff as $key => $val) 
+	foreach($gui->diff as $key => $val)
 	{
-		if ($args->useDaisyDiff) 
+		if ($args->useDaisyDiff)
 		{
 			$diff = new HTMLDiffer();
 			list($differences, $diffcount) = $diff->htmlDiff($sbs['left_item'][$key], $sbs['right_item'][$key]);
@@ -67,7 +65,7 @@ if ($args->doCompare)
 			$gui->diff[$key]["left"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['left_item'][$key]));
 			$gui->diff[$key]["right"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['right_item'][$key]));
 		
-			$gui->diff[$key]["diff"] = $differ->inline($gui->diff[$key]["left"], $gui->leftID, 
+			$gui->diff[$key]["diff"] = $differ->inline($gui->diff[$key]["left"], $gui->leftID,
 			                                            $gui->diff[$key]["right"], $gui->rightID,$args->context);
 			$gui->diff[$key]["count"] = count($differ->changes);
 		}
@@ -77,11 +75,11 @@ if ($args->doCompare)
 		// are there any changes? then display! if not, nothing to show here
 		$additional = '';
 		$msg_key = "no_changes";
-		if ($gui->diff[$key]["count"] > 0) 
+		if ($gui->diff[$key]["count"] > 0)
 		{
 			$msg_key = "num_changes";
 			$additional = $gui->diff[$key]["count"];
-		}		
+		}
 		$gui->diff[$key]["message"] = sprintf($labels[$msg_key], $key, $additional);
 	}
 
@@ -92,24 +90,20 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * 
  *
- */
-/**
- * 
  *
  */
 function getItemsToCompare($leftSideID,$rightSideID,&$itemSet)
 {
 
 	$ret = array();
-	foreach($itemSet as $item) 
+	foreach($itemSet as $item)
 	{
-		if ($item['item_id'] == $leftSideID) 
+		if ($item['item_id'] == $leftSideID)
 		{
 			$ret['left_item'] = $item;
 		}
-		if ($item['item_id'] == $rightSideID) 
+		if ($item['item_id'] == $rightSideID)
 		{
 			$ret['right_item'] = $item;
 		}
@@ -124,12 +118,12 @@ function getItemsToCompare($leftSideID,$rightSideID,&$itemSet)
 
 
 /**
- * 
+ *
  *
  */
 function getCFToCompare($sides,$tprojectID,&$itemMgr)
 {
-	$cfields = array('left_side' => array('key' => 'left_item', 'value' => null), 
+	$cfields = array('left_side' => array('key' => 'left_item', 'value' => null),
 					 'right_side' => array('key' => 'right_item', 'value' => null));
 
 
@@ -137,17 +131,15 @@ function getCFToCompare($sides,$tprojectID,&$itemMgr)
 	foreach($cfields as $item_side => $dummy)
 	{
 		$target_id = $sides[$dummy['key']];
-		// $target_id = $target_id['item_id'];
-		// $cfields[$item_side]['value'] = $itemMgr->get_linked_cfields(null,$target_id,$tprojectID);
 		$who['item_id'] = $target_id['item_id'];
 		$cfields[$item_side]['value'] = $itemMgr->get_linked_cfields($who);
 	}
-	return $cfields;	
+	return $cfields;
 }
 
 
 /**
- * 
+ *
  *
  * @internal revisions
  * 20101211 - franciscom -  use show_custom_fields_without_value
@@ -175,28 +167,26 @@ function getCFDiff($cfields,&$itemMgr)
 		$cfCfg = config_get('custom_fields');
 		foreach($key2loop as $cf_key)
 		{
-			// $cfg->show_custom_fields_without_value 
+			// $cfg->show_custom_fields_without_value
 			// false => At least one value has to be <> NULL to include on comparsion results
-			// 
-		    if( $cfCfg->show_custom_fields_without_value == true ||
-		    	($cfCfg->show_custom_fields_without_value == false &&
+		    if( $cfCfg->show_custom_fields_without_value || (!$cfCfg->show_custom_fields_without_value &&
 		    	 ( (!is_null($cfieldsRight) && !is_null($cfieldsRight[$cf_key]['value'])) ||
 		    	   (!is_null($cfieldsLeft) && !is_null($cfieldsLeft[$cf_key]['value'])) )
-		      	) 
-		      )		 
-		    {	  
+		      	)
+		      )
+		    {
 				$cmp[$cf_key] = array('label' => htmlspecialchars($cfieldsLeft[$cf_key]['label']),
 				                      'lvalue' => $cfieldsLeft[$cf_key]['value'],
 				                      'rvalue' => !is_null($cfieldsRight) ? $cfieldsRight[$cf_key]['value'] : null,
 				                      'changed' => $cfieldsLeft[$cf_key]['value'] != $cfieldsRight[$cf_key]['value']);
 			
 				if($type_code[$cfieldsLeft[$cf_key]['type']] == 'date' ||
-				   $type_code[$cfieldsLeft[$cf_key]['type']] == 'datetime') 
+				   $type_code[$cfieldsLeft[$cf_key]['type']] == 'datetime')
 				{
 					$t_date_format = str_replace("%","",$formats['date']); // must remove %
 					foreach($key2convert as $fx)
 					{
-						if( ($doIt = ($cmp[$cf_key][$fx] != null)) )
+						if( $doIt = ($cmp[$cf_key][$fx] != null) )
 						{
 							switch($type_code[$cfieldsLeft[$cf_key]['type']])
 							{
@@ -204,30 +194,29 @@ function getCFDiff($cfields,&$itemMgr)
     	    				            $t_date_format .= " " . $cfg->custom_fields->time_format;
 								break ;
 							}
-						}	                       
+						}
 						if( $doIt )
 						{
 						  	$cmp[$cf_key][$fx] = date($t_date_format,$cmp[$cf_key][$fx]);
 						}
 					}
-				} 
-			} // mega if
-		}  // foraeach		
+				}
+			}
+		}
 	}
-	return count($cmp) > 0 ? $cmp : null;	
+	return !empty($cmp) ? $cmp : null;
 }
 
 
 
 /**
- * 
+ *
  *
  */
 function init_args()
 {
 	$_REQUEST=strings_stripSlashes($_REQUEST);
 	
-
 	$args = new stdClass();
 	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? intval($_REQUEST['req_spec_id']) : 0;
 	$args->doCompare = isset($_REQUEST['doCompare']) ? true : false;
@@ -236,11 +225,9 @@ function init_args()
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 	$args->useDaisyDiff = (isset($_REQUEST['diff_method']) && ($_REQUEST['diff_method'] == 'htmlCompare')) ? 1 : 0;
 	
-
-
 	$diffEngineCfg = config_get("diffEngine");
 	$args->context = null;
-	if( !isset($_REQUEST['context_show_all'])) 
+	if( !isset($_REQUEST['context_show_all']))
 	{
 		$args->context = (isset($_REQUEST['context']) && is_numeric($_REQUEST['context'])) ? $_REQUEST['context'] : $diffEngineCfg->context;
 	}
@@ -249,7 +236,7 @@ function init_args()
 }
 
 /**
- * 
+ *
  *
  */
 function initializeGui(&$dbHandler,&$argsObj,$lbl,&$itemMgr)
@@ -260,7 +247,7 @@ function initializeGui(&$dbHandler,&$argsObj,$lbl,&$itemMgr)
 	
 	// Truncate log message
 	if( $reqSpecCfg->log_message_len > 0 )
-	{	
+	{
 		$loop2do = count($guiObj->items);
 		for($idx=0; $idx < $loop2do; $idx++)
 		{
@@ -270,7 +257,7 @@ function initializeGui(&$dbHandler,&$argsObj,$lbl,&$itemMgr)
 			}
 			$guiObj->items[$idx]['log_message'] = htmlspecialchars($guiObj->items[$idx]['log_message']);
 		}
-	} 
+	}
 	$guiObj->req_spec_id = $argsObj->req_spec_id;
 	$guiObj->doCompare = $argsObj->doCompare;
 	$guiObj->context = $argsObj->context;
@@ -280,24 +267,23 @@ function initializeGui(&$dbHandler,&$argsObj,$lbl,&$itemMgr)
 }
 
 /**
- * 
+ *
  *
  */
 function prepareUserFeedback(&$dbHandler,&$guiObj,$itemID,$labels,$sbs)
-{	
+{
 	$guiObj->leftID = $labels['revision'] . ':' . $sbs['left_item']['revision'];
 	$guiObj->rightID = $labels['revision'] . ':' . $sbs['right_item']['revision'];
-	$guiObj->subtitle = sprintf($labels['diff_details_rev'], 
-							 	$sbs['left_item']['revision'],$sbs['left_item']['revision'],  
+	$guiObj->subtitle = sprintf($labels['diff_details_rev'],
+							 	$sbs['left_item']['revision'],$sbs['left_item']['revision'],
 							 	$sbs['right_item']['revision'],$sbs['right_item']['revision']);
 
 	
 }
 
 
-
 /**
- * 
+ *
  *
  */
 function getAttrDiff($leftSide,$rightSide,$labels)
@@ -306,7 +292,6 @@ function getAttrDiff($leftSide,$rightSide,$labels)
 	
 	// attribute => label definition on TL configuration (just if NOT NULL)
 	// order in this array will drive display order
-	// $key2loop = array('doc_id' => null,'status' => 'status_labels','type' => 'type_labels');
 	$key2loop = array('doc_id' => null,'name' => null,'type' => 'type_labels');
 	foreach($key2loop as $fkey => $lkey)
 	{
@@ -320,8 +305,8 @@ function getAttrDiff($leftSide,$rightSide,$labels)
 			$decode = $req_spec_cfg->$lkey;
 			$cmp[$fkey]['lvalue'] = lang_get($decode[$cmp[$fkey]['lvalue']]);
 			$cmp[$fkey]['rvalue'] = lang_get($decode[$cmp[$fkey]['rvalue']]);
-		}                   
-	}		
-	return $cmp;	
+		}
+	}
+	return $cmp;
 }
 ?>

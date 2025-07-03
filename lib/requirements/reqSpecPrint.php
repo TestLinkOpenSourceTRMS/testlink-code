@@ -68,8 +68,7 @@ if( !is_null($childrenReq) && $req_cfg->show_child_reqs_on_reqspec_print_view)
 	$loop2do = count($childrenReq);
 	for($rdx=0; $rdx < $loop2do; $rdx++)
 	{
-		$text2print .= renderReqForPrinting($db,$childrenReq[$rdx],$reqPrintOpts,
-											null,0,$args->tproject_id);
+		$text2print .= renderReqForPrinting($db,$childrenReq[$rdx],$reqPrintOpts,0,$args->tproject_id);
 	}
 }
 $text2print .= renderEOF();

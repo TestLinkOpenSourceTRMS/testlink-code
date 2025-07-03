@@ -1,8 +1,8 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- *  
+ *
  */
 class printDocOptions {
 
@@ -14,18 +14,17 @@ class printDocOptions {
   /**
    *
    */
-  function __construct() {
+  public function __construct() {
 
     $this->doc = array();
 
     // element format
-    // 
+    //
     // 'value' => 'toc','description' => 'opt_show_toc','checked' => 'n'
     // 'value': will be used to get the value
     // 'description': label id, to be used for localization
     //
     // if checked is not present => 'checked' => 'n'
-    //
     $this->doc[] = array( 'value' => 'toc','description' => 'opt_show_toc');
     $this->doc[] = array( 'value' => 'headerNumbering','description' => 'opt_show_hdrNumbering');
 
@@ -38,12 +37,11 @@ class printDocOptions {
                       'req_type','req_cf','req_relations',
                       'req_linked_tcs','req_coverage','displayVersion');
 
-    $yes = array('req_spec_scope' => 'y','req_scope' => 'y');
     foreach($key2init as $key) {
       $yn = isset($key2init2yes[$key]) ? $key2init2yes[$key] : 'n';
       $this->reqSpec[] = array('value' => $key,'checked' => $yn,
                                'description' => 'opt_' . $key);
-    } 
+    }
 
     $this->testSpec = array();
     $this->testSpec[] = array('value' => 'header','description' => 'opt_show_suite_txt');
@@ -54,7 +52,7 @@ class printDocOptions {
     $this->testSpec[] = array('value' => 'cfields','description' => 'opt_show_cfields');
     $this->testSpec[] = array( 'value' => 'requirement','description' => 'opt_show_tc_reqs');
 
-    $this->exec = array(); 
+    $this->exec = array();
     $this->exec[] = array( 'value' => 'execResultsByCFOnExecCombination','description' => 'opt_cfexec_comb');
 
     $this->exec[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes');
@@ -73,21 +71,21 @@ class printDocOptions {
   /**
    *
    */
-  function getDocOpt() {
+  public function getDocOpt() {
     return $this->doc;
   }
 
   /**
    *
    */
-  function getTestSpecOpt() {
+  public function getTestSpecOpt() {
     return $this->testSpec;
   }
 
   /**
    *
    */
-  function getReqSpecOpt() {
+  public function getReqSpecOpt() {
     return $this->reqSpec;
   }
 
@@ -95,7 +93,7 @@ class printDocOptions {
   /**
    *
    */
-  function getExecOpt() {
+  public function getExecOpt() {
     return $this->exec;
   }
 
@@ -103,15 +101,15 @@ class printDocOptions {
   /**
    *
    */
-  function getAllOptVars() {
+  public function getAllOptVars() {
 
     $ov = array();
     $prop = array('doc','testSpec','reqSpec','exec');
     foreach($prop as $pp) {
       foreach($this->$pp as $ele) {
         $ov[$ele['value']] = isset($ele['checked']) ? $ele['checked'] : 'n';
-        $ov[$ele['value']] = ($ov[$ele['value']] == 'y') ? 1 : 0; 
-      }      
+        $ov[$ele['value']] = ($ov[$ele['value']] == 'y') ? 1 : 0;
+      }
     }
 
     return $ov;
@@ -120,14 +118,14 @@ class printDocOptions {
   /**
    *
    */
-  function getJSPrintPreferences() {
+  public function getJSPrintPreferences() {
 
     $ov = array();
     $prop = array("doc","testSpec","reqSpec","exec");
     foreach($prop as $pp) {
       foreach($this->$pp as $ele) {
-        $ov[] = $ele['value']; 
-      }      
+        $ov[] = $ele['value'];
+      }
     }
     return implode(',',$ov);
   }

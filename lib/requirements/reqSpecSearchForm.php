@@ -1,13 +1,13 @@
 <?php
 
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	reqSpecSearchForm.php
  * @package 	TestLink
  * @author		asimon
- * @copyright 	2005-2011, TestLink community 
+ * @copyright 	2005-2011, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search form for requiremnt specifications.
@@ -48,15 +48,15 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'reqSpecSearchForm.tpl');
 
 /*
-  function: 
+  function:
 
   args:
   
-  returns: 
+  returns:
 
 */
 function init_args()
-{              
+{
   	$args = new stdClass();
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;

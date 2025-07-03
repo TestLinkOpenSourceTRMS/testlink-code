@@ -37,17 +37,14 @@ require_once 'lang_api.php';
  * @internal revisions
  *
  */
-function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tprojectID)
+function renderReqForPrinting(&$db,$node, &$options, $reqLevel, $tprojectID)
 {
-  
   static $tableColspan;
   static $firstColWidth;
   static $labels;
   static $title_separator;
   static $req_mgr;
-  static $tplan_mgr;
   static $req_cfg;
-  static $req_spec_cfg;
   static $decodeReq;
   static $force = null;
   static $basehref;
@@ -57,7 +54,6 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   if (!$req_mgr) {
     $basehref = $_SESSION['basehref'];
     $req_cfg = config_get('req_cfg');
-    $req_spec_cfg = config_get('req_spec_cfg');
     $firstColWidth = '20%';
     $tableColspan = 2;
     $labels = array('requirement' => 'requirement', 'status' => 'status',
@@ -81,7 +77,6 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
       
     $title_separator = config_get('gui_title_separator_1');
     $req_mgr = new requirement_mgr($db);
-    $tplan_mgr = new testplan($db);
 
     $repoDir = config_get('repositoryPath');
   }
@@ -106,7 +101,6 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   $req = $dummy[0];
 
   // update with values got from req, this is needed if user did not provide it
-  $versionID = $req['version_id'];
   $revision = $req['revision'];
 
   $name =  htmlspecialchars($req["req_doc_id"] . $title_separator . $req['title']);
@@ -510,15 +504,11 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,$tocPrefix, $rsCnt
   
   static $tree_mgr;
   static $map_id_descr;
-  static $tplan_mgr;
-  static $repoDir;
   $code = null;
 
   if(!$tree_mgr) {
-    $tplan_mgr = new testplan($db);
     $tree_mgr = new tree($db);
     $map_id_descr = $tree_mgr->node_types;
-    $repoDir = config_get('repositoryPath');
   }
    $verbose_node_type = $map_id_descr[$node['node_type_id']];
    
@@ -536,8 +526,7 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,$tocPrefix, $rsCnt
 
     case 'requirement':
       $tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $rsCnt;
-      $code .= renderReqForPrinting($db, $node, $options,
-                                    $tocPrefix, $rstLevel, $tprojectID);
+      $code .= renderReqForPrinting($db, $node, $options, $rstLevel, $tprojectID);
       break;
   }
   
@@ -661,13 +650,7 @@ function renderFirstPage($doc_info)
     
   if ($docCfg->company_logo != '' )
   {
-    // allow to configure height via config file
-    $height = '';
-    if (isset($docCfg->company_logo_height) && $docCfg->company_logo_height != '')
-    {
-      $height = "height=\"{$docCfg->company_logo_height}\"";
-    }
-    
+    // allow to configure height via config file    
     $safePName = $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo;
     list($iWidth, $iHeight, $iType, $iAttr) = getimagesize($safePName);
     $output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
@@ -776,16 +759,12 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocP
 {
   static $tree_mgr;
   static $id_descr;
-  static $tplan_mgr;
-  static $repoDir;
 
   $code = null;
 
   if(!$tree_mgr) {
-    $tplan_mgr = new testplan($db);
     $tree_mgr = new tree($db);
     $id_descr = $tree_mgr->node_types;
-    $repoDir = config_get('repositoryPath');
 
     $k2i = array('tproject_id' => 0, 'tplan_id' => 0, 'platform_id' => 0,  'build_id' => 0, 'prefix' => null);
     $context = array_merge($k2i,$context);
@@ -882,26 +861,20 @@ function gendocGetUserName(&$db, $userId)
  * @internal revisions
  */
 function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLevel) {
-
-
   static $st;
   static $statusL10N;
   static $labels;
   static $tcase_prefix;
-  static $userMap = array();
   static $cfg;
   static $force = null;
 
   $code = null;
   $tcInfo = null;
-  // $tcResultInfo = null;
   $tcase_pieces = null;
 
   $id = $node['id'];
-  // $tcversion_id = isset($node['tcversion_id']) ? $node['tcversion_id'] : null;
 
   $level = $indentLevel;
-  // $prefix = isset($context['prefix']) ? $context['prefix'] : null;
   $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
   $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
   $platform_id = isset($context['platform_id']) ? $context['platform_id'] : 0;
@@ -984,7 +957,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     // exec info for this.
     //
     // ATTENTION: THIS IS OK ONLY WHEN BUILD ID is not provided
-    //
     //
     // Get Linked test case version
     $linkedItem = $st->tplan_mgr->getLinkInfo($tplan_id,$id,$platform_id);
@@ -1166,10 +1138,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     //   function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
     // $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
     // $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
-    $canManageAttachments = false;
-    if(isset($context['user']) && !is_null($context['user'])) {
-      $canManageAttachments = $context['user']->hasRight($db,'testplan_execute',$tprojectID,$tplan_id);
-    }
+//     $canManageAttachments = false;
+//     if(isset($context['user']) && !is_null($context['user'])) {
+//       $canManageAttachments = $context['user']->hasRight($db,'testplan_execute',$tprojectID,$tplan_id);
+//     }
 
     // Multiple Test Case Steps Feature
     foreach($tcase_pieces as $key) {
@@ -1654,7 +1626,6 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   static $title_separator;
   static $cfieldFormatting;
   static $getOpt;
-  static $reporDir;
 
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
@@ -1751,7 +1722,6 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
                                                        $context['tproject_id'],
                                                        $cfieldFormatting);
       if($cfields[$key] != "") {
-        $add_br = true;
         $code .= '<p>' . $cfields[$key] . '</p>';
       }
     }
@@ -1788,7 +1758,6 @@ function renderTestDuration($statistics,$platform_id=0) {
   static $ecfg;
 
   $output = '';
-  $hasOutput = false;
   
   if(!$ecfg) {
     $ecfg = config_get('exec_cfg');
@@ -2274,7 +2243,6 @@ function initStaticRenderTestCaseForPrinting(&$dbH,$tcaseID,$ctx,$cfg) {
   $things->cfieldFormatting = array('label_css_style' => '',  'add_table' => false,
           'value_css_style' =>
             ' colspan = "' . ($cfg['tableColspan']-1) . '" ' );
-
 
   return $things;
 }

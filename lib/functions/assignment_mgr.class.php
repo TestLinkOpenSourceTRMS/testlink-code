@@ -22,7 +22,7 @@
 class assignment_mgr extends tlObjectWithDB
 {
 
-  function __construct(&$db)
+  public function __construct(&$db)
   {
     parent::__construct($db);
   }
@@ -31,7 +31,7 @@ class assignment_mgr extends tlObjectWithDB
   /**
    *
    * @param string $key_field contains the filename that has to be used as the key of the returned hash.
-   * @return array 
+   * @return array
    */
   public function get_available_types($key_field='description')
   {
@@ -48,7 +48,7 @@ class assignment_mgr extends tlObjectWithDB
   /**
    *
    * @param string $key_field contains the name column that has to be used as the key of the returned hash.
-   * @return array 
+   * @return array
    */
   public function get_available_status($key_field='description')
   {
@@ -67,7 +67,7 @@ class assignment_mgr extends tlObjectWithDB
    *
    * @param int or array $feature_id
    */
-  function delete_by_feature_id($feature_id)
+  public function delete_by_feature_id($feature_id)
   {
     if( is_array($feature_id) )
     {
@@ -90,7 +90,7 @@ class assignment_mgr extends tlObjectWithDB
    * @param boolean $delete_all_types If true, all assignments regardless of type will be deleted,
    *                              else (default) only tester assignments.
    */
-  function delete_by_build_id($build_id, $delete_all_types = false)
+  public function delete_by_build_id($build_id, $delete_all_types = false)
   {
     $type_sql = "";
     
@@ -113,7 +113,7 @@ class assignment_mgr extends tlObjectWithDB
    *
    * @param array $feature_map
    */
-  function delete_by_feature_id_and_build_id($feature_map)
+  public function delete_by_feature_id_and_build_id($feature_map)
   {
     $feature_id_list = implode(",",array_keys($feature_map));
     $where_clause = " WHERE feature_id IN ($feature_id_list) ";
@@ -245,7 +245,7 @@ class assignment_mgr extends tlObjectWithDB
    *
    * @internal revisions
    */
-  function update($feature_map)
+  public function update($feature_map)
   {
     foreach($feature_map as $feature_id => $elem)
     {
@@ -312,7 +312,7 @@ class assignment_mgr extends tlObjectWithDB
    *
    * @internal revisions
    */
-  function get_not_run_tc_count_per_build($build_id, $all_types = false, $user_id = 0)
+  public function get_not_run_tc_count_per_build($build_id, $all_types = false, $user_id = 0)
   {
     $count = 0;
     
@@ -414,7 +414,7 @@ class assignment_mgr extends tlObjectWithDB
    * @param mixed $buildID can be single value or array of build ID.
    * @return unknown
    */
-  function getExecAssignmentsCountByBuild($buildID)
+  private function getExecAssignmentsCountByBuild($buildID)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $rs = null;
@@ -441,7 +441,7 @@ class assignment_mgr extends tlObjectWithDB
    * @param mixed $buildID can be single value or array of build ID.
    * @return unknown
    */
-  function getNotRunAssignmentsCountByBuild($buildID)
+  private function getNotRunAssignmentsCountByBuild($buildID)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $rs = null;

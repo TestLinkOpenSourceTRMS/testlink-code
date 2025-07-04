@@ -15,8 +15,6 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($cfield_mgr);
 
-
-$result_msg = null;
 $do_control_combo_display = 1;
 $cfMix = getCFCfg($args,$cfield_mgr);
 $cfieldCfg = $cfMix->cfieldCfg;
@@ -285,7 +283,7 @@ function edit(&$argsObj,&$cfieldMgr)
 
 /**
  *
- * @param unknown $hash_request
+ * @param array $hash_request
  * @param cfield_mgr $cfieldMgr
  * @param stdClass $argsObj
  * @return stdClass

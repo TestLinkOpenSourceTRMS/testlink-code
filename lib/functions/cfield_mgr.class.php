@@ -48,10 +48,10 @@ class cfield_mgr extends tlObject
   const DISABLED = 0;
     
 	/** @var resource the database handler */
-	var $db;
+	private $db;
 
 	/** @var object tree class */
-	var $tree_manager;
+	private $tree_manager;
 
   /**
    *  @var array $application_areas
@@ -66,7 +66,7 @@ class cfield_mgr extends tlObject
    * IMPORTANT: this values are used as access keys in several properties of this object.
    *            then if you add one here, remember to update other properties.
    */
-  var $application_areas = array('execution','design','testplan_design');
+  private $application_areas = array('execution','design','testplan_design');
 
 	/**
 	 * @var array Define type of custom fields managed.
@@ -77,7 +77,7 @@ class cfield_mgr extends tlObject
    * Added specific type for test automation related custom fields.
    * Start at code 500
    */
-  var $custom_field_types = array(0=>'string',
+  public $custom_field_types = array(0=>'string',
                                   1=>'numeric',
                                   2=>'float',
                                   4=>'email',
@@ -96,7 +96,7 @@ class cfield_mgr extends tlObject
      * Keys of this map must be the values present in:
      * <code>$this->custom_field_types</code>
      */
-    var $possible_values_cfg = array('string' => 0,
+    public $possible_values_cfg = array('string' => 0,
                                      'numeric'=> 0,
                                      'float'=> 0,
                                      'email'=> 0,
@@ -111,10 +111,10 @@ class cfield_mgr extends tlObject
     							                   'server' => 0);
     
     /**  @var array only the types listed here can have custom fields */
-    var $node_types = array('build','testsuite','testplan','testcase','requirement_spec','requirement');
+    private $node_types = array('build','testsuite','testplan','testcase','requirement_spec','requirement');
 
    /**
-     *  @var map of maps $locations
+     *  @var array of maps $locations
      *
      *  Location is place on page where to display custom field.
      *  This concept has been created to implement a user contribution, that allows for
@@ -132,7 +132,7 @@ class cfield_mgr extends tlObject
      * IMPORTANT: if you add a new key, this values are used as access keys in several properties of this object.
      *            then if you add one here, remember to update other properties.
      */
-    var $locations = [
+    private $locations = [
       'testcase' => [
         1 => 'standard_location',
         2 => 'before_steps_results',
@@ -154,7 +154,7 @@ class cfield_mgr extends tlObject
     // 0 => combo will not displayed
     //
     // May be need a review, because after the changes, seems a little bit silly.
-    var $enable_on_cfg = array('execution' => array('build' => 0, 'testsuite' => 0,
+    private $enable_on_cfg = array('execution' => array('build' => 0, 'testsuite' => 0,
                                                     'testplan'  => 0,'testcase'  => 1,
                                                     'requirement_spec' => 0,'requirement' => 0),
 								               'design' => array('build' => 0,'testsuite' => 0,
@@ -165,7 +165,7 @@ class cfield_mgr extends tlObject
                                                           'requirement_spec' => 0,'requirement' => 0));
 
   // 0 => combo will not displayed
-  var $show_on_cfg=array('execution'=>array('testsuite' => 1,
+  private $show_on_cfg=array('execution'=>array('testsuite' => 1,
 	                                          'testplan'  => 1,
 	                                          'testcase'  => 1,
                                             'build'  => 1,
@@ -188,23 +188,23 @@ class cfield_mgr extends tlObject
     // the name of html input will have the following format
     // <name_prefix>_<custom_field_type_id>_<progressive>
     //
-    var $name_prefix='custom_field_';
-    var $sizes = null;
+    public $name_prefix='custom_field_';
+    private $sizes = null;
     
     // must be equal to the lenght of:
     // value column on cfield_*_values tables
     // default_value column on custom_fields table
     // 0 -> no limit
     // Is used on text area types
-    var $max_length_value;
+    private $max_length_value;
     
     // must be equal to the lenght of:
     // possible_values column on custom_fields table
     // 0 -> no limit
-    var $max_length_possible_values;
+    private $max_length_possible_values;
 
-    var $decode;
-    var $html_date_input_suffix = array('input' => true,'hour' => true,
+    private $decode;
+    private $html_date_input_suffix = array('input' => true,'hour' => true,
                                         'minute' => true,'second' => true);
 
 	/**
@@ -212,7 +212,7 @@ class cfield_mgr extends tlObject
 	 *
 	 * @param database &$db reference to the database handler
 	 */
-	function __construct(&$db)
+	public function __construct(&$db)
 	{
    	parent::__construct();
 
@@ -249,7 +249,7 @@ class cfield_mgr extends tlObject
    *
    * @return array
    */
-  function getSizeLimit()
+  private function getSizeLimit()
   {
     return $this->max_length_value;
   }
@@ -259,7 +259,7 @@ class cfield_mgr extends tlObject
    *
    * @return array
    */
-	function get_application_areas()
+	public function get_application_areas()
 	{
     return $this->application_areas;
   }
@@ -268,7 +268,7 @@ class cfield_mgr extends tlObject
   /**
    * @return array with available locatipons
    */
-   function getLocations()
+   public function getLocations()
    {
     return $this->locations;
   }
@@ -279,7 +279,7 @@ class cfield_mgr extends tlObject
 	 *       key: numeric id
 	 *       value: short description
 	 */
-	function get_available_types()
+	public function get_available_types()
 	{
 		return $this->custom_field_types;
 	}
@@ -287,7 +287,7 @@ class cfield_mgr extends tlObject
 	/**
 	 * @return string
 	 */
-	function get_name_prefix() {
+	public function get_name_prefix() {
 		return $this->name_prefix ;
 	}
 
@@ -296,7 +296,7 @@ class cfield_mgr extends tlObject
 	 *       key:   short description (node_types.description)
 	 *       value: node_type_id      (node_types.id)
 	 */
-	function get_allowed_nodes()
+	public function get_allowed_nodes()
 	{
 		$allowed_nodes = array();
 		foreach($this->node_types as $verbose_type )
@@ -311,7 +311,7 @@ class cfield_mgr extends tlObject
 	 *       key  : node_type_id      (node_types.id)
 	 *       value: 1 -> enable on exec can be configured by user
 	 */
-	function get_enable_on_cfg($ui_mode)
+	public function get_enable_on_cfg($ui_mode)
 	{
 		$mgmt_cfg=array();
 		$mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->enable_on_cfg[$ui_mode]);
@@ -321,10 +321,10 @@ class cfield_mgr extends tlObject
 
 	/**
 	 *
-	 * @param unknown $ui_mode
+	 * @param string $ui_mode
 	 * @return array
 	 */
-	function get_show_on_cfg($ui_mode)
+	public function get_show_on_cfg($ui_mode)
 	{
 		$mgmt_cfg=array();
 		$mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->show_on_cfg[$ui_mode]);
@@ -342,7 +342,7 @@ class cfield_mgr extends tlObject
 
 
   */
-  function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
+  private function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   {
     $enabled_mgmt = array();
     $tl_node_types = $this->decode['nodes'];
@@ -368,7 +368,7 @@ class cfield_mgr extends tlObject
 
 
   */
-  function get_possible_values_cfg()
+  public function get_possible_values_cfg()
 	{
     $pv_cfg=array();
     $custom_field_types_id=array_flip($this->custom_field_types);
@@ -386,11 +386,9 @@ class cfield_mgr extends tlObject
    * @param unknown $context
    * @param unknown $filters
    * @param string $access_key
-   * @return unknown
+   * @return array
    */
-  function getLinkedCfieldsAtDesign($context,$filters=null,$access_key='id') {
-
-    // $context
+  public function getLinkedCfieldsAtDesign($context,$filters=null,$access_key='id') {
     $ctx = array('tproject_id' => null, 'enabled' => true, 'node_type' => null,
                  'node_id' => null);
     $ctx = array_merge($ctx,$context);
@@ -466,7 +464,7 @@ class cfield_mgr extends tlObject
     rev :
 
   */
-  function get_linked_cfields_at_design($tproject_id,$enabled,
+  public function get_linked_cfields_at_design($tproject_id,$enabled,
              $filters=null,$node_type=null,$node_id=null,
              $access_key='id')
   {
@@ -611,7 +609,7 @@ class cfield_mgr extends tlObject
 
     rev :
   */
-	function string_custom_field_input($p_field_def,$opt = null)
+	public function string_custom_field_input($p_field_def,$opt = null)
 	{
     $options = array('name_suffix' => '', 'field_size' => 0, 'show_on_filters' => false, 'remove_required' => false);
     $options = array_merge($options,(array)$opt);
@@ -676,9 +674,9 @@ class cfield_mgr extends tlObject
         // but respect the maximum window size
        	$t_list_size = $t_values_count;
 		    if($t_list_size > $window_size)
-       	{
-          $t_list_size=$window_size;
-        }
+		    {
+		        $t_list_size=$window_size;
+		    }
         	
         $html_identity=$input_name . $t_name_suffix;
   			$str_out .= '<select data-cfield="list" '  .
@@ -833,7 +831,7 @@ class cfield_mgr extends tlObject
 
     rev:
   */
-  function design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null,$node_type=null)
+  public function design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null,$node_type=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     if( is_null($hash) && is_null($cf_map) ) {
@@ -914,7 +912,7 @@ class cfield_mgr extends tlObject
           20070102 - franciscom - $node_id can be an array
 
   */
-  function remove_all_design_values_from_node($node_id,$node_type=null)
+  public function remove_all_design_values_from_node($node_id,$node_type=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     switch($node_type)
@@ -953,10 +951,10 @@ class cfield_mgr extends tlObject
              key: custom field id
 
   */
-  function get_all($id2exclude=null,$opt=null)
+  public function get_all($id2exclude=null,$opt=null)
   {
     static $lbl;
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    // $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     if(!$lbl)
     {
@@ -1016,9 +1014,9 @@ class cfield_mgr extends tlObject
 
     internal revision:
   */
-  function get_linked_to_testproject($tproject_id,$active=null,$opt=null)
+  public function get_linked_to_testproject($tproject_id,$active=null,$opt=null)
   {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    // $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $options = array('name' => null);
     $options = array_merge($options,(array)$opt);
@@ -1065,7 +1063,7 @@ class cfield_mgr extends tlObject
 
     returns: -
   */
-	function link_to_testproject($tproject_id,$cfield_ids)
+	public function link_to_testproject($tproject_id,$cfield_ids)
 	{
 		if(is_null($cfield_ids))
 		{
@@ -1105,7 +1103,7 @@ class cfield_mgr extends tlObject
 
     returns: -
   */
-	function set_active_for_testproject($tproject_id,$cfield_ids,$active_val)
+	public function set_active_for_testproject($tproject_id,$cfield_ids,$active_val)
 	{
   	if(is_null($cfield_ids))
   	{
@@ -1138,7 +1136,7 @@ class cfield_mgr extends tlObject
   /**
    *
    */
-  function setRequired($tproject_id,$cfieldSet,$val)
+  private function setRequired($tproject_id,$cfieldSet,$val)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -1185,7 +1183,7 @@ class cfield_mgr extends tlObject
    * @param array $cfield_ids
    *
    */
-	function unlink_from_testproject($tproject_id,$cfield_ids)
+  public function unlink_from_testproject($tproject_id,$cfield_ids)
   {
 		if(is_null($cfield_ids))
 		{
@@ -1221,7 +1219,7 @@ class cfield_mgr extends tlObject
 
     returns: hash
   */
-	function get_by_name($name)
+	public function get_by_name($name)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	  $my_name=$this->db->prepare_string(trim($name));
@@ -1244,7 +1242,7 @@ class cfield_mgr extends tlObject
     returns: hash
 
   */
-	function get_by_id($id)
+	public function get_by_id($id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = "/* $debugMsg */ SELECT CF.*, CFNT.node_type_id" .
@@ -1263,7 +1261,7 @@ class cfield_mgr extends tlObject
 
     returns:
   */
-	function get_available_item_type($id)
+	private function get_available_item_type($id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	  $sql = "/* $debugMsg */ SELECT CFNT.field_id,CFNT.node_type_id ".
@@ -1290,7 +1288,7 @@ class cfield_mgr extends tlObject
    *	   		enable_on_testplan_design	-> [*]
    *
 	 */
-	function sanitize($cf)
+	private function sanitize($cf)
 	{
 		$safe = $cf;
 		
@@ -1489,7 +1487,7 @@ class cfield_mgr extends tlObject
     @used by cfieldsEdit.php, cfieldsEdit.tpl
 
   */
-	function is_used($id)
+	public function is_used($id)
 	{
 	  $sql="SELECT field_id FROM {$this->tables['cfield_design_values']} " .
 	       "WHERE  field_id={$id} " .
@@ -1533,7 +1531,7 @@ public function name_is_unique($id,$name)
 	# $p_node_id	bug id to display the custom field value for
 	#
 	# [$p_value_field]: field id, to point to the field value in $p_field_def
-	function string_custom_field_value( $p_field_def, $p_node_id,$p_value_field='value')
+	public function string_custom_field_value( $p_field_def, $p_node_id,$p_value_field='value')
 	{
 		$t_value = isset($p_field_def[$p_value_field]) ? $p_field_def[$p_value_field] : null;
 		$cfValue = htmlspecialchars($t_value);
@@ -1634,7 +1632,7 @@ public function name_is_unique($id,$name)
              key: custom field id
 
   */
-  function get_linked_cfields_at_execution($tproject_id,$enabled,
+  public function get_linked_cfields_at_execution($tproject_id,$enabled,
                                            $node_type=null,$node_id=null,
                                            $execution_id=null,$testplan_id=null,
                                            $access_key='id',$location=null)
@@ -1773,7 +1771,7 @@ public function name_is_unique($id,$name)
         20090727 - franciscom - added [hash_type], to reuse this method on API
         20070501 - franciscom - limiting lenght of value before writting
   */
-  function execution_values_to_db($hash,$node_id,$execution_id,$testplan_id,
+  public function execution_values_to_db($hash,$node_id,$execution_id,$testplan_id,
                                   $cf_map=null,$hash_type=null)
   {
     if( is_null($hash) && is_null($cf_map) )
@@ -1874,7 +1872,7 @@ public function name_is_unique($id,$name)
 
     rev:
   */
-  function _build_cfield($hash,$cf_map) {
+  public function _build_cfield($hash,$cf_map) {
     $localesDateFormat = config_get('locales_date_format');
     $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
 	  $date_format = str_replace('%', '', $localesDateFormat[$locale]);
@@ -1886,15 +1884,12 @@ public function name_is_unique($id,$name)
     $cfid_pos=3;
     $cfield=null;
 
-    // ---------------------------------------------------------------------
     if( !is_null($cf_map) ) {
       foreach($cf_map as $key => $value) {
         $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => '');
       }
     }
-    // ---------------------------------------------------------------------
 
-    // ---------------------------------------------------------------------
     // Overwrite with values if custom field id exist
     if( !is_null($hash) ) {
       foreach($hash as $key => $value) {
@@ -2024,7 +2019,7 @@ public function name_is_unique($id,$name)
    returns:
 
  */
- function set_display_order($tproject_id, $map_field_id_display_order)
+ public function set_display_order($tproject_id, $map_field_id_display_order)
  {
  	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
     foreach($map_field_id_display_order as $field_id => $display_order)
@@ -2047,7 +2042,7 @@ public function name_is_unique($id,$name)
  *
  *
  */
- function setDisplayLocation($tproject_id, $field_id_location)
+ public function setDisplayLocation($tproject_id, $field_id_location)
  {
  	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
     foreach($field_id_location as $field_id => $location)
@@ -2069,7 +2064,7 @@ public function name_is_unique($id,$name)
  # --------------------
  # returns a tab index value and increments it by one.  This is used to give sequential tab index on
  # a form.
- function helper_get_tab_index_value() {
+ private function helper_get_tab_index_value() {
 	 static $tab_index = 0;
 	 return ++$tab_index;
  }
@@ -2077,7 +2072,7 @@ public function name_is_unique($id,$name)
  # --------------------
  # returns a tab index and increments internal state by 1.  This is used to give sequential tab index on
  # a form.  For example, this function returns: tabindex="1"
- function helper_get_tab_index() {
+ private function helper_get_tab_index() {
 	 return 'tabindex="' . helper_get_tab_index_value() . '"';
  }
 
@@ -2126,7 +2121,7 @@ public function name_is_unique($id,$name)
  *							values to test case version not to test case
  *
  **/
-function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
+public function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 {
 	static $node_type;
 	static $likeTarget;
@@ -2134,7 +2129,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 	
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-	$srv_cfg = new stdClass();
+	// $srv_cfg = new stdClass();
 	
 	if( is_null($node_type) )
 	{
@@ -2244,7 +2239,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 
     rev:
   */
-  function testplan_design_values_to_db($hash,$node_id,$link_id,$cf_map=null,$hash_type=null)
+  public function testplan_design_values_to_db($hash,$node_id,$link_id,$cf_map=null,$hash_type=null)
   {
 	if( is_null($hash) && is_null($cf_map) )
 	{
@@ -2347,13 +2342,13 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
              
 
   */
-  function get_linked_cfields_at_testplan_design($tproject_id,$enabled,
+  public function get_linked_cfields_at_testplan_design($tproject_id,$enabled,
                                                  $node_type=null,$node_id=null,
                                                  $link_id=null,$testplan_id=null,$access_key = 'id')
   {
     $additional_join="";
     $additional_values="";
-    $additional_filter="";
+    // $additional_filter="";
     
     $order_by_clause = " ORDER BY display_order,CF.id ";
     $fetchMethod = 'fetchRowsIntoMap';
@@ -2478,7 +2473,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
     rev: 20080816 - franciscom
 
   */
-  function build_cfield_radio($custom_field_value)
+  private function build_cfield_radio($custom_field_value)
   {
       if( count($custom_field_value) > 1)
       {
@@ -2550,10 +2545,10 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
  * useful on export to XML method for items that can have custom fields,
  * example: test cases, test suites, req specification, etc.
  *
- * @param map $cfMap: key: custom file ID, value: map with at least keys 'name', 'value'
+ * @param array $cfMap: key: custom file ID, value: map with at least keys 'name', 'value'
  *
  */
- function exportValueAsXML($cfMap)
+ public function exportValueAsXML($cfMap)
  {
     $cfRootElem = "<custom_fields>\n{{XMLCODE}}\t\t</custom_fields>\n";
     $cfElemTemplate = "\t\t\t" . "<custom_field>\n\t\t\t<name><![CDATA[||NAME||]]></name>\n\t\t\t" .
@@ -2572,7 +2567,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
  * @param int $id: custom field id
  *
  */
-function remove_all_scopes_values($id)
+private function remove_all_scopes_values($id)
 {
   // some sort of blind delete
   $tables = array('cfield_design_values','cfield_build_design_values',
@@ -2590,9 +2585,9 @@ function remove_all_scopes_values($id)
  * For a given custom field id return all test projects where is linked.
  *
  * @param int $id: custom field id
- *
+ * @return array
  */
-function get_linked_testprojects($id)
+public function get_linked_testprojects($id)
 {
     $sql=" SELECT NH.id, NH.name " .
          " FROM {$this->tables['cfield_testprojects']} CFTP, {$this->tables['nodes_hierarchy']} NH " .
@@ -2612,7 +2607,7 @@ function get_linked_testprojects($id)
  *                         value: location code
  *
  */
-function buildLocationMap($nodeType)
+public function buildLocationMap($nodeType)
 {
 	$locationMap=null;
   $dummy = $this->getLocations();
@@ -2635,9 +2630,9 @@ function buildLocationMap($nodeType)
  *
  * @used by testsuite.class.php => copy_cfields_values
  */
-function getByLinkID($linkID, $options=null)
+public function getByLinkID($linkID, $options=null)
 {
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	// $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 	$my['options'] = array('scope' => 'design', 'output' => 'field_id');
 	$my['options'] = array_merge($my['options'], (array)$options);
@@ -2684,7 +2679,7 @@ function getByLinkID($linkID, $options=null)
  * buildHTMLInputName
  *
  */
-function buildHTMLInputName($cf,$name_suffix) {
+private function buildHTMLInputName($cf,$name_suffix) {
   return "{$this->name_prefix}{$cf['type']}_{$cf['id']}{$name_suffix}";
 }
 
@@ -2694,7 +2689,7 @@ function buildHTMLInputName($cf,$name_suffix) {
  *
  *
  */
-function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=null)
+public function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=null)
 {
 	$cf_smarty = '';
   $getOpt = array('name_suffix' => $name_suffix);
@@ -2740,7 +2735,7 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=
     	$cf_smarty .= "<tr>";
       if($my['opt']['addCheck'])
       {
-        $check_id = str_replace('id="', 'id="check_', $dummy[0]);
+        // $check_id = str_replace('id="', 'id="check_', $dummy[0]);
         $check_name = str_replace('id="', 'name="check_', $dummy[0]);
         $cf_smarty .= "<td> {$add_img}" .
                       "<input type=\"checkbox\" {$check_name}> </td>";
@@ -2760,7 +2755,7 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=
  *
  * @used-by html_inputs(), html_table_inputs()
  */
-function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
+private function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
 {
 
  	if( !is_null($input_values) )
@@ -2860,7 +2855,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
    *
    *
    */
-  function html_inputs($cfields_map,$name_suffix='',$input_values=null)
+  public function html_inputs($cfields_map,$name_suffix='',$input_values=null)
   {
     $inputSet = array();
     $getOpt = array('name_suffix' => $name_suffix);
@@ -2899,7 +2894,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
    *
    *
    */
-  function getByIDAndEnableOn($id,$enableOn=null)
+  public function getByIDAndEnableOn($id,$enableOn=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = "/* $debugMsg */ SELECT CF.*, CFNT.node_type_id" .
@@ -2924,7 +2919,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
  /**
    *
    */
-  function setMonitorable($tproject_id,$cfieldSet,$val)
+  private function setMonitorable($tproject_id,$cfieldSet,$val)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -2964,7 +2959,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
    *
    *
    */
-  function cfdate2mktime($value)
+  public function cfdate2mktime($value)
   {
     if (($value == 0) || ($value == ''))
     {
@@ -2992,7 +2987,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
   /**
    *
    */
-  function getBooleanAttributes($tproject_id,$cfSet=null)
+  public function getBooleanAttributes($tproject_id,$cfSet=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -3015,7 +3010,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
    *
    * @return stdClass
    */
-  function initViewGUI() {
+  public function initViewGUI() {
     $gogo = new stdClass();
 
     $gogo->cfield = null;

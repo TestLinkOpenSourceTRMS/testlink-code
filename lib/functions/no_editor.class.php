@@ -9,25 +9,25 @@
 
 class no_editor
 {
-  var $InstanceName ;
-  var $Value;
-  var $rows = 8;
-  var $cols = 80;
+  public $InstanceName ;
+  public $Value;
+  public $rows = 8;
+  public $cols = 80;
 
-  function __construct($instanceName)
+  public function __construct($instanceName)
   {
     $this->InstanceName = $instanceName;
     $this->Value    = '';
   }
   
-  function Create($rows = null,$cols = null)
+  public function Create($rows = null,$cols = null)
   {
-    echo $this->CreateHtml($rows,$cols);
+      echo $this->CreateHtml($rows,$cols);
   }
 
-  function CreateHtml($rows = null,$cols = null)
+  public function CreateHtml($rows = null,$cols = null)
   {
-    $HtmlValue = htmlspecialchars($this->Value);
+    $htmlValue = htmlspecialchars($this->Value);
 
     $my_rows = $rows;
     $my_cols = $cols;
@@ -42,12 +42,12 @@ class no_editor
       $my_cols = $this->cols;
     }
 
-    $Html = ' <textarea style="resize:both;" ' .
+    $html= ' <textarea style="resize:both;" ' .
             " name=\"{$this->InstanceName}\" " .
             " id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\" >".
-            "{$HtmlValue}</textarea>" ;
+            "{$htmlValue}</textarea>" ;
       
-    return $Html ;
+    return $html;
   }
 
 }

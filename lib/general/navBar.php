@@ -167,7 +167,7 @@ function initializeGui(&$db,&$args) {
         }
       }
 
-      if( $testPlanFound == 0 && is_array($testPlanSet) &&  count($testPlanSet) > 0) {
+      if( $testPlanFound == 0 && is_array($testPlanSet) && !empty($testPlanSet) ) {
         setSessionTestPlan($testPlanSet[0]);
       }
       $testPlanSet[$index]['selected']=1;

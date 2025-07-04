@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	editExecution.php
  *
  * Edit an execution notes and custom fields
- * 
+ *
 **/
 require_once '../../config.inc.php';
 require_once 'common.php';
@@ -29,15 +29,15 @@ switch ($args->doAction) {
         
   case 'doUpdate':
     doUpdate($db,$args,$tcase_mgr,$_REQUEST);
-  break;  
+  break;
 }
 $map = get_execution($db,$args->exec_id);
 $owebeditor->Value = $map[0]['notes'];
 
-// order on script is critic 
+// order on script is critic
 $gui = initializeGui($args,$tcase_mgr);
 $cols = intval(isset($editorCfg['cols']) ? $editorCfg['cols'] : 60);
-$rows = intval(isset($editorCfg['rows']) ? $editorCfg['rows'] : 10); 
+$rows = intval(isset($editorCfg['rows']) ? $editorCfg['rows'] : 10);
 $gui->notes = $owebeditor->CreateHTML($rows,$cols);
 $gui->editorType = $editorCfg['type'];
 
@@ -77,7 +77,7 @@ function init_args()
   $args->basehref = $_SESSION['basehref'];
   $args->user = $_SESSION['currentUser'];
 
-  return $args; 
+  return $args;
 }
 
 /**
@@ -103,7 +103,7 @@ function initializeGui(&$argsObj,&$tcaseMgr)
 
 /**
  * Checks the user rights for viewing the page
- * 
+ *
  * @param $db resource the database connection handle
  * @param $user tlUser the object of the current user
  *

@@ -10,15 +10,15 @@
 require_once '../../third_party/ckeditorWrapper/CKEditorPHPWrapper.php';
 
 class ckeditorInterface {
-	var $InstanceName ;
-	var $Value ;
-	var $Editor ;
-	var $config ;
+	public $InstanceName ;
+	public $Value ;
+	public $Editor ;
+	public $config ;
 
   /**
    *
    */
-	function __construct($instanceName) {
+	public function __construct($instanceName) {
 		$this->InstanceName	= $instanceName;
 		$this->Value		= '';
 		$this->Editor		= new CKEditor();
@@ -28,16 +28,16 @@ class ckeditorInterface {
   /**
    *
    */
- 	function Create() {
+ 	public function Create() {
 		echo $this->CreateHtml($rows,$cols);
 	}
 
   /**
    *
    */
-	function CreateHtml($config=[]) {
-		$Html = $this->Editor->editor($this->InstanceName, $this->Value, $config);
-		return $Html ;
+	public function CreateHtml($config=[]) {
+		$html = $this->Editor->editor($this->InstanceName, $this->Value, $config);
+		return $html ;
 	}
 
 }

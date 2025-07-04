@@ -50,7 +50,7 @@ $smarty->display($tpl);
 
 
 /**
- * 
+ *
  *
  */
 function initializeGui(&$dbH,&$control) {
@@ -58,22 +58,20 @@ function initializeGui(&$dbH,&$control) {
   
   // This logic is managed from execSetResults.php
   $gui->loadExecDashboard = true;
-  if( isset($_SESSION['loadExecDashboard'][$control->form_token]) || 
-      $control->args->loadExecDashboard == 0 
-    ) {
-    $gui->loadExecDashboard = false;  
-    unset($_SESSION['loadExecDashboard'][$control->form_token]);      
-  }  
+  if( isset($_SESSION['loadExecDashboard'][$control->form_token]) || $control->args->loadExecDashboard == 0 ) {
+    $gui->loadExecDashboard = false;
+    unset($_SESSION['loadExecDashboard'][$control->form_token]);
+  }
 
   $gui->menuUrl = 'lib/execute/execSetResults.php';
   $gui->args = $control->get_argument_string();
-  if($control->args->loadExecDashboard == false) {
+  if(!$control->args->loadExecDashboard) {
     $gui->src_workframe = '';
   } else {
     $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
-                          "?edit=testproject&id={$control->args->testproject_id}" . 
+                          "?edit=testproject&id={$control->args->testproject_id}" .
                           $gui->args;
-  } 
+  }
   
   $control->draw_export_testplan_button = true;
   $control->draw_import_xml_results_button = true;
@@ -95,11 +93,11 @@ function initializeGui(&$dbH,&$control) {
     $gui->features['export'] = true;
     $gui->features['import'] = true;
     $gui->execAccess = true;
-  }  
+  }
 
   if($grants['exec_ro_access']) {
     $gui->execAccess = true;
-  }  
+  }
 
 
   $control->draw_export_testplan_button = $gui->features['export'];
@@ -122,7 +120,7 @@ function checkAccessToExec(&$dbH,&$ct) {
   {
     throw new Exception("Can not find Test Project For Test Plan - ABORT", 1);
     
-  }  
+  }
   $rs = current($rs);
   $tproject_id = $rs['testproject_id'];
 
@@ -135,8 +133,8 @@ function checkAccessToExec(&$dbH,&$ct) {
     if( $user->hasRight($dbH,$r2c,$tproject_id,$tplan_id,true) || $user->globalRoleID == TL_ROLES_ADMIN )
     {
       $grants[$r2c] = true;
-    }    
-  }  
+    }
+  }
 
   return $grants;
-} 
+}

@@ -1,7 +1,7 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	getExecNotes.php
  *
@@ -29,7 +29,7 @@ $webeditorCfg = getWebEditorCfg('display_execution_notes');
 $map = get_execution($db,$args->exec_id);
 $notesContent = $map[0]['notes'];
 
-$readonly = $args->readonly > 0 ? 'readonly="readonly"' : ''; 
+$readonly = $args->readonly > 0 ? 'readonly="readonly"' : '';
 $smarty = new TLSmarty();
 $smarty->assign('notes',$notesContent);
 $smarty->assign('webeditorCfg',$webeditorCfg);
@@ -52,7 +52,7 @@ function createExecNotesWebEditor($id,$basehref,$editorCfg,$content=null)
     //
     $of=web_editor("exec_notes_$id",$basehref,$editorCfg) ;
     $of->Value = $content;
-    $editor=$of->CreateHTML(10,60);         
+    $editor=$of->CreateHTML(10,60);
     unset($of);
     return $editor;
 }
@@ -65,6 +65,6 @@ function init_args()
                      "readonly" => array(tlInputParameter::INT_N));
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
-    return $args; 
+    return $args;
 }
 ?>

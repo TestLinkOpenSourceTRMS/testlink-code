@@ -184,7 +184,7 @@ function build_link_exec(&$argsObj)
     }
     else
     {
-        $lk .= "&tplan_id=" . $argsObj->tplan_id . "&platform_id=" . $argsObj->platform_id;
+        $lk .= "&tplan_id=" . $argsObj->tplan_id . "&platform_id=" . $argsObj->platform_id .
         "&tcversion_id=" . $argsObj->tcversion_id;
     }
     $lk .= "&build_id=" . $argsObj->build_id;
@@ -227,8 +227,6 @@ function process_exec(&$dbHandler,$context)
 function process_xta2m(&$dbHandler,$context)
 {
     $ret = array();
-    // $ret['url'] = null;
-    // $ret['msg'] = 'ko';
     
     $treeMgr = new tree($dbHandler);
     $info = $treeMgr->get_node_hierarchy_info($context['tcversion_id']);
@@ -239,8 +237,6 @@ function process_xta2m(&$dbHandler,$context)
         "&setting_testplan=" . $context['setting_testplan'] .
         "&setting_build=" . $context['setting_build'] .
         "&setting_platform=" . $context['setting_platform'];
-    
-    
     
     $ret['msg'] = 'ok';
     return $ret;

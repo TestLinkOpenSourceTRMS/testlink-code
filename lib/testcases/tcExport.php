@@ -103,7 +103,7 @@ if( $args->doExport || ( $args->doExportSkel && !$gui->oneTestCaseExport ) ) {
       $content = $tcase_mgr->$pfn($args->tcase_id,$args->tcversion_id,$args->tproject_id,null,$args->optExport);
     } else {
       
-      $opt = $args->optExport; 
+      $opt = $args->optExport;
       if( $args->doExportSkel ) {
         $opt['skeleton'] = 1;
       }
@@ -157,7 +157,7 @@ function init_args(&$dbHandler) {
     $args->addPrefix = isset($_REQUEST['addPrefix']) ? 1 : 0;
   }
 
-  $args->optExport = array('REQS' => $args->exportReqs, 
+  $args->optExport = array('REQS' => $args->exportReqs,
     'CFIELDS' => $args->exportCFields,
     'KEYWORDS' => $args->exportKeywords,
     'EXTERNALID' => $args->exportTestCaseExternalID,
@@ -169,13 +169,13 @@ function init_args(&$dbHandler) {
     'TCSTEPS' => $args->exportTCSteps);
     
   
-  $omgr = $args->useRecursion ? new testsuite($dbHandler) : new testcase($dbHandler); 
+  $omgr = $args->useRecursion ? new testsuite($dbHandler) : new testcase($dbHandler);
   $args->exportTypes = $omgr->get_export_file_types();
   $args->exportType = null;
   if( isset($_REQUEST['exportType']) ) {
     $xd = strtoupper(trim($_REQUEST['exportType']));
     $args->exportType = isset($args->exportTypes[$xd]) ? $args->exportTypes[$xd] : null;
-  }  
+  }
 
   $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
 
@@ -191,10 +191,10 @@ function init_args(&$dbHandler) {
       $args->tproject_name = $dummy['name'];
     } else {
       throw new Exception("BAD Test Project ID={$args->tproject_id}", 1);
-    }  
+    }
   } else {
     throw new Exception("Test Project ID=0", 1);
-  }  
+  }
 
   $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
@@ -220,13 +220,13 @@ function initializeGui($argsObj) {
   $guiObj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : '';
   $guiObj->oneTestCaseExport = ($argsObj->tcase_id && $argsObj->tcversion_id);
 
-  $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 
+  $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" .
     "lib/testcases/archiveData.php?";
   if($argsObj->useRecursion || !$guiObj->oneTestCaseExport) {
-    $guiObj->cancelActionJS .= 'edit=testsuite&id=' . 
+    $guiObj->cancelActionJS .= 'edit=testsuite&id=' .
       intval($argsObj->container_id) . "'";
   } else {
-    $guiObj->cancelActionJS .= 'edit=testcase&id=' . 
+    $guiObj->cancelActionJS .= 'edit=testcase&id=' .
       intval($argsObj->tcase_id) . "'";
   }
   return $guiObj;

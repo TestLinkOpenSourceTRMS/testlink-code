@@ -169,7 +169,6 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   static $feedbackMsg;
   static $tcase_mgr;
   static $tproject_mgr;
-  static $req_spec_mgr;
   static $req_mgr;
   static $safeSizeCfg;
   static $linkedCustomFields;
@@ -291,8 +290,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     }
 
     // Check for skip, to avoid useless processing
-    if( $duplicatedLogic['actionOnHit'] == 'skip' && !is_null($dupInfo) &&
-        count($dupInfo) > 0 ) {
+    if( $duplicatedLogic['actionOnHit'] == 'skip' && !empty($dupInfo) ) {
       $resultMap[] = array($name,$messages['already_exists_skipped']);
       continue;
     }
@@ -674,7 +672,6 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcIDCard,
   // Since 1.9.18, links are between req version e test case version
   // We will work on latest test case version and lates req version
   $tcaseId = $tcIDCard['id'];
-  $latestTCVersionID = $tcIDCard['tcversion_id'];
 
   foreach($tcReq as $ydx => $value) {
     $cachedReqSpec=array();
@@ -708,7 +705,7 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcIDCard,
                " AND REQ.srs_id={$req_spec_id} ";
                    
         $rsx = $dbHandler->get_recordset($sql);
-        if( $useit=((!is_null($rsx) && count($rsx) > 0) ? true : false) ) {
+        if( $useit=(!empty($rsx)  ? true : false) ) {
           $cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']]=$rsx[0]['id'];
         }
       }
@@ -1035,7 +1032,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
       }
       else
       {
-        $ret = $tsuiteMgr->update(($tsuite['id'] = $info[0]['id']),$tsuite['name'],$tsuite['details'],
+        $tsuiteMgr->update(($tsuite['id'] = $info[0]['id']),$tsuite['name'],$tsuite['details'],
                                   null,$tsuite['node_order']);
         
       }

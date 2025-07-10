@@ -7,7 +7,7 @@
  *
  * @author   uwe_kirst@mentor.com
  * @internal revisions
- * 
+ *
  *
 **/
 require_once dirname(__FILE__) . '/../../config.inc.php';
@@ -26,7 +26,7 @@ $gui->user_feedback = $args->user_feedback;
 
 if($args->id > 0)
 {
-  $gui->items[$args->id]['connection_status'] = $codeTrackerMgr->checkConnection($args->id) ? 'ok' : 'ko'; 
+  $gui->items[$args->id]['connection_status'] = $codeTrackerMgr->checkConnection($args->id) ? 'ok' : 'ko';
 }
 
 $smarty = new TLSmarty();
@@ -47,7 +47,7 @@ function init_args()
   {
     $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   }
-  $args->currentUser = $_SESSION['currentUser']; 
+  $args->currentUser = $_SESSION['currentUser'];
   
   $args->user_feedback = array('type' => '', 'message' => '');
   

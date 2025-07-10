@@ -1,17 +1,17 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
- * TLSmarty class is TestLink wraper for GUI templates processing. 
+ *
+ * TLSmarty class is TestLink wraper for GUI templates processing.
  * The class is loaded via common.php to all pages.
- * 
+ *
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2022, TestLink community 
+ * @copyright 	2005-2022, TestLink community
  * @link 		    http://www.testlink.org/
- * @link 		    http://www.smarty.net/ 
+ * @link 		    http://www.smarty.net/
  *
  *
  */
@@ -27,10 +27,10 @@ if(!defined('TL_USE_LOG4JAVASCRIPT') ) {
 }
 
 
-/** 
+/**
  * The next two functions was moved here from common.php */
 function translate_tc_status($status_code) {
-	$resultsCfg = config_get('results'); 
+	$resultsCfg = config_get('results');
 	$verbose = lang_get('test_status_not_run');
 	if( $status_code != '') {
 		$suffix = $resultsCfg['code_status'][$status_code];
@@ -39,7 +39,7 @@ function translate_tc_status($status_code) {
 	return $verbose;
 }
 
-/** 
+/**
  * function is registered in tlSmarty class
  * @uses function translate_tc_status
  * @todo should be moved to tlSmarty class
@@ -54,7 +54,7 @@ function translate_tc_status_smarty($params, $smarty) {
 }
 
 /**
- * Should be used to prevent certain templates to only get included once per page load. 
+ * Should be used to prevent certain templates to only get included once per page load.
  * For example javascript includes, such as ext-js.
  *
  * Usage (in template):
@@ -82,9 +82,9 @@ function guard_header_smarty($file) {
  */
 class TLSmarty extends Smarty {
   private $tlImages;
-  var $tlTemplateCfg;
+  public $tlTemplateCfg;
 	
-  function __construct() {
+  public function __construct() {
     global $tlCfg;
     global $g_tpl;
     
@@ -97,16 +97,14 @@ class TLSmarty extends Smarty {
     $this->config_dir = TL_ABS_PATH . 'gui/templates/conf';
     $this->compile_dir = TL_TEMP_PATH;
     
-
-
     $testproject_coloring = $tlCfg->gui->testproject_coloring;
-    $testprojectColor = $tlCfg->gui->background_color ; 
+    $testprojectColor = $tlCfg->gui->background_color ;
     
     if (isset($_SESSION['testprojectColor'])) {
       $testprojectColor =  $_SESSION['testprojectColor'];
       if ($testprojectColor == "") {
           $testprojectColor = $tlCfg->gui->background_color;
-      }    
+      }
     }
     $this->assign('testprojectColor', $testprojectColor);
     
@@ -153,15 +151,13 @@ class TLSmarty extends Smarty {
             
     $this->assign('tplan_name',null);
     $this->assign('name',null);
-    // -----------------------------------------------------------------------------
     
     $this->assign('basehref', $basehref);
     $this->assign('css', $basehref . TL_TESTLINK_CSS);
     $this->assign('use_custom_css', 0);
     if(!is_null($tlCfg->custom_css) && $tlCfg->custom_css != '') {
       $this->assign('use_custom_css', 1);
-      $this->assign('custom_css', 
-        $basehref . TL_THEME_CSS_DIR . $tlCfg->custom_css);
+      $this->assign('custom_css', $basehref . TL_THEME_CSS_DIR . $tlCfg->custom_css);
     }
     
     $this->assign('locale', $my_locale);
@@ -175,11 +171,10 @@ class TLSmarty extends Smarty {
     
     $stdTPLCfg['keywords.inc'] = 'testcases/keywords.inc.tpl';
 
-    $stdTPLCfg['attributesLinearForViewer.inc'] = 
-      'testcases/attributesLinearForViewer.inc.tpl';
+    $stdTPLCfg['attributesLinearForViewer.inc'] = 'testcases/attributesLinearForViewer.inc.tpl';
 
-    $stdTPLCfg['relations.inc'] = 'testcases/relations.inc.tpl'; 
-    $stdTPLCfg['quickexec.inc'] = 'testcases/quickexec.inc.tpl'; 
+    $stdTPLCfg['relations.inc'] = 'testcases/relations.inc.tpl';
+    $stdTPLCfg['quickexec.inc'] = 'testcases/quickexec.inc.tpl';
 
     $stdTPLCfg['steps_horizontal.inc'] = 'testcases/steps_horizontal.inc.tpl';
     $stdTPLCfg['steps_vertical.inc'] = 'testcases/steps_vertical.inc.tpl';
@@ -187,7 +182,6 @@ class TLSmarty extends Smarty {
     $stdTPLCfg['platforms.inc'] = 'testcases/platforms.inc.tpl';
 
 
-    // -----------------------------------------------------------------------------
     // load configuration
     $this->assign('session',isset($_SESSION) ? $_SESSION : null);
     $this->assign('tlCfg',$tlCfg);
@@ -198,25 +192,25 @@ class TLSmarty extends Smarty {
     
     $this->assign('pageCharset',$tlCfg->charset);
     $this->assign('tlVersion',TL_VERSION);
-    $this->assign('testproject_coloring',null);
+    // $this->assign('testproject_coloring',null);
+    $this->assign('testproject_coloring',$testproject_coloring);
     
     	
-    // -----------------------------------------------------------------------------
     // define a select structure for {html_options ...}
     $this->assign('gsmarty_option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));
-    $this->assign('gsmarty_option_priority', array(HIGH => lang_get('high_priority'), 
-                                                   MEDIUM => lang_get('medium_priority'), 
+    $this->assign('gsmarty_option_priority', array(HIGH => lang_get('high_priority'),
+                                                   MEDIUM => lang_get('medium_priority'),
                                                    LOW => lang_get('low_priority')));
     
-    $this->assign('gsmarty_option_importance', array(HIGH => lang_get('high_importance'), 
-                                                     MEDIUM => lang_get('medium_importance'), 
+    $this->assign('gsmarty_option_importance', array(HIGH => lang_get('high_importance'),
+                                                     MEDIUM => lang_get('medium_importance'),
                                                      LOW => lang_get('low_importance')));
        
     $wkf = array();
     $xcfg = config_get('testCaseStatus');
     foreach($xcfg as $human => $key) {
       $wkf[$key] = lang_get('testCaseStatus_' . $human);
-    }  
+    }
     $this->assign('gsmarty_option_wkfstatus',$wkf);
 
 
@@ -260,7 +254,7 @@ class TLSmarty extends Smarty {
                   
     $this->assign('gsmarty_timestamp_format',$tlCfg->locales_timestamp_format[$my_locale]);
     
-    // -----------------------------------------------------------------------------
+
     // Images
     $this->tlImages = tlSmarty::getImageSet();
     
@@ -305,24 +299,23 @@ class TLSmarty extends Smarty {
     $this->registerPlugin("modifier","dirname","dirname");
 
     // Call to smarty filter that adds a CSRF filter to all form elements
-    if(isset($tlCfg->csrf_filter_enabled) && 
-       $tlCfg->csrf_filter_enabled === TRUE && function_exists('smarty_csrf_filter')) {
+    if(isset($tlCfg->csrf_filter_enabled) && $tlCfg->csrf_filter_enabled === true && function_exists('smarty_csrf_filter')) {
           $this->registerFilter('output','smarty_csrf_filter');
     }
 
-  } // end of function TLSmarty()
+  }
 
   /**
    *
    */
-  function getImages() {
+  public function getImages() {
     return $this->tlImages;
   }
 
   /**
    *
    */
-  static function getImageSet() {
+  public static function getImageSet() {
     $burl = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
     $imgLoc = $burl . TL_THEME_IMG_DIR;
 
@@ -445,18 +438,18 @@ class TLSmarty extends Smarty {
                    'keyword_add' => $imgLoc . 'tag_blue_add.png');
 
     $imi = config_get('images');
-    if(count($imi) >0) {
+    if(!empty($imi)) {
       foreach($imi as $key => $img) {
 
         // You need to configure in your custom config something like this
-        // $tlCfg->images['test_status_passed_with_remarks'] = 
+        // $tlCfg->images['test_status_passed_with_remarks'] =
         // '%imgLoc%test_status_passed_with_remarks.png';
         // PAY ATTENTION to the place holder %imgLoc%
         $imi[$key] = str_replace('%imgLoc%', $imgLoc, $img);
       }
       $dummy = array_merge($dummy,$imi);
-    }                 
+    }
     return $dummy;
 	}
 
-} 
+}

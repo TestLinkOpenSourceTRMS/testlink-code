@@ -8,9 +8,9 @@ Purpose: smarty template - show Test Results and Metrics
              title_test_case_bugs, info_bugs_per_tc_report,
              generated_by_TestLink_on,bugs_resolved,bugs_total,tcs_with_bugs'}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {$tableID="$matrix->tableID"}
+  {assign var=tableID value=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -20,7 +20,7 @@ Purpose: smarty template - show Test Results and Metrics
   {/if}
   {$matrix->renderHeadSection()}
 {/foreach}
-
+</head>
 <body>
 
 {if $gui->printDate == ''}

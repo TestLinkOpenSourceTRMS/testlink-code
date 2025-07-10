@@ -987,10 +987,15 @@ function init_build_selector(&$testplan_mgr, &$argsObj) {
   $menu['selected'] = $build_id;
   
   return $menu;
-} // end of method
+}
 
 /**
  *
+ * @param database $dbHandler
+ * @param stdClass $argsObj
+ * @param stdClass $guiObj
+ * @param testplan $tplanMgr
+ * @param testcase $tcaseMgr
  */
 function addToTestPlan(&$dbHandler,&$argsObj,&$guiObj,&$tplanMgr,&$tcaseMgr) {
   // items_to_link structure:
@@ -1013,7 +1018,7 @@ function addToTestPlan(&$dbHandler,&$argsObj,&$guiObj,&$tplanMgr,&$tcaseMgr) {
   $linked_features=$tplanMgr->link_tcversions($argsObj->tplan_id,$items_to_link,$argsObj->userID);
 
   if( $argsObj->testerID > 0 ) {
-    $features2add = null;
+    $features2 = null;
     $status_map = $tplanMgr->assignment_mgr->get_available_status();
     $types_map = $tplanMgr->assignment_mgr->get_available_types();
     $db_now = $dbHandler->db_now();

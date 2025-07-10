@@ -383,8 +383,8 @@ class cfield_mgr extends tlObject
 
   /**
    *
-   * @param unknown $context
-   * @param unknown $filters
+   * @param array $context
+   * @param array $filters
    * @param string $access_key
    * @return array
    */
@@ -954,7 +954,6 @@ class cfield_mgr extends tlObject
   public function get_all($id2exclude=null,$opt=null)
   {
     static $lbl;
-    // $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     if(!$lbl)
     {
@@ -1016,8 +1015,6 @@ class cfield_mgr extends tlObject
   */
   public function get_linked_to_testproject($tproject_id,$active=null,$opt=null)
   {
-    // $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
     $options = array('name' => null);
     $options = array_merge($options,(array)$opt);
 
@@ -2128,8 +2125,6 @@ public function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 	static $CFGKEY_IDX;
 	
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
-	// $srv_cfg = new stdClass();
 	
 	if( is_null($node_type) )
 	{
@@ -2348,7 +2343,6 @@ public function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
   {
     $additional_join="";
     $additional_values="";
-    // $additional_filter="";
     
     $order_by_clause = " ORDER BY display_order,CF.id ";
     $fetchMethod = 'fetchRowsIntoMap';
@@ -2632,8 +2626,6 @@ public function buildLocationMap($nodeType)
  */
 public function getByLinkID($linkID, $options=null)
 {
-	// $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
 	$my['options'] = array('scope' => 'design', 'output' => 'field_id');
 	$my['options'] = array_merge($my['options'], (array)$options);
 
@@ -2735,7 +2727,6 @@ public function html_table_inputs($cfields_map,$name_suffix='',$input_values=nul
     	$cf_smarty .= "<tr>";
       if($my['opt']['addCheck'])
       {
-        // $check_id = str_replace('id="', 'id="check_', $dummy[0]);
         $check_name = str_replace('id="', 'name="check_', $dummy[0]);
         $cf_smarty .= "<td> {$add_img}" .
                       "<input type=\"checkbox\" {$check_name}> </td>";

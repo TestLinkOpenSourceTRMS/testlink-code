@@ -182,7 +182,7 @@ class tlExtTable extends tlTable
    * $table->addType('color', array('render' => 'colorRendererMethod'))
    *
    * @param string $type new type.
-   * @param map $behaviour the custom things to enable for this type
+   * @param array $behaviour the custom things to enable for this type
    **/
   public function addCustomBehaviour($type, $behaviour)
   {

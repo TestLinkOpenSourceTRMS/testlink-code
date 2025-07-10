@@ -46,7 +46,7 @@ $cfOnExec = $cfSet = null;
 
 // done here in order to get some config about images
 $smarty = new TLSmarty();
-if (!is_null($metrics) and count($metrics) > 0) {
+if (!is_null($metrics) && !empty($metrics)) {
   if ($args->addOpAccess) {
     $links = featureLinks($labels,$smarty->getImages());
   }
@@ -61,7 +61,7 @@ if (!is_null($metrics) and count($metrics) > 0) {
     
   $out = array();
   $users = getUsersForHtmlOptions($db);
-  $pathCache = $topCache = $levelCache = null;
+  $pathCache = null;
   $nameCache = initNameCache($gui);
 
   $odx = 0;
@@ -290,8 +290,7 @@ switch ($args->format) {
       'show_platforms' => $gui->show_platforms
     ];
 
-    $gui->tableSet[] = buildMatrix($gui->dataSet, $args, $tableOpt ,
-                                   $gui->platformSet,$cfSet);
+    $gui->tableSet[] = buildMatrix($gui->dataSet, $args, $tableOpt, $gui->platformSet, $cfSet);
   break;
 }
 
@@ -407,7 +406,7 @@ function initializeGui(&$dbh,&$argsObj,&$tplanMgr)
   foreach( $reportCfg as $key => $val )
   {
     $checkIt = false;
-    if( $checkIt = (strpos($key,$needle) !== FALSE) )
+    if( $checkIt = (strpos($key,$needle) !== false) )
     {
       // now get the verbose status
       // list_tc_[verbose_status], example list_tc_not_run
@@ -415,22 +414,16 @@ function initializeGui(&$dbh,&$argsObj,&$tplanMgr)
 
       // if( $verbose_status != 'not_run' || $verbose_status != 'passed' )
       $guiObj->bugs_msg = $lbl_th_bugs_not_linked;
-      if( isset($reportCfg[$key]['misc']) )
+      if( isset($reportCfg[$key]['misc']) && isset($reportCfg[$key]['misc']['bugs_not_linked']) && !$reportCfg[$key]['misc']['bugs_not_linked'] )
       {
-        if( isset($reportCfg[$key]['misc']['bugs_not_linked']) && $reportCfg[$key]['misc']['bugs_not_linked'] == false )
-        {
           $guiObj->bugs_msg = '';
-        }
       }
     }
 
-    if( $checkIt )
+    if( $checkIt && $argsObj->type == $argsObj->statusCode[$verbose_status])
     {
-      if($argsObj->type == $argsObj->statusCode[$verbose_status])
-      {
         $guiObj->title = lang_get('list_of_' . $verbose_status);
         break;
-      }
     }
   }
 
@@ -507,7 +500,7 @@ function buildMailCfg(&$guiObj)
  * @param stdClass $args
  * @param array $options
  * @param array $platforms
- * @param unknown $customFieldColumns
+ * @param array $customFieldColumns
  * @return tlExtTable|tlHTMLTable
  */
 function buildMatrix($dataSet, &$args, $options = [], $platforms = null,$customFieldColumns=null)
@@ -697,8 +690,8 @@ function initNameCache($guiObj)
 
 /**
  *
- * @param unknown $targetStatus
- * @param unknown $statusCfg
+ * @param String $targetStatus
+ * @param array $statusCfg
  * @return array
  */
 function getWarning($targetStatus,$statusCfg)
@@ -721,7 +714,7 @@ function getWarning($targetStatus,$statusCfg)
  * @param stdClass $gui
  * @param stdClass $args
  * @param string $media
- * @param unknown $customFieldColumns
+ * @param array $customFieldColumns
  */
 function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
 {
@@ -766,7 +759,8 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
   $dataHeader = array($lbl['title_test_suite_name'],$lbl['title_test_case_title'],
           $lbl['version'],$lbl['summary']);
 
-  if( $showPlatforms = ( property_exists($gui,'platformSet') && !is_null($gui->platformSet) && !isset($gui->platformSet[0])) )
+  // if( $showPlatforms = ( property_exists($gui,'platformSet') && !is_null($gui->platformSet) && !isset($gui->platformSet[0])) )
+  if( property_exists($gui,'platformSet') && !is_null($gui->platformSet) && !isset($gui->platformSet[0]) )
   {
     $dataHeader[] = $lbl['platform'];
   }
@@ -810,7 +804,6 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
   $startingRow++;
   $qta_loops = count($gui->dataSet);
   for ($idx = 0; $idx < $qta_loops; $idx++) {
-    $line2write = $gui->dataSet[$idx];
     $colCounter = 0;
     foreach($gui->dataSet[$idx] as $ldx => $field) {
       if( $ldx != 'bugString' || ($ldx == 'bugString' && $gui->bugInterfaceOn) )
@@ -828,7 +821,6 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
         $objPHPExcel->setActiveSheetIndex(0)->getStyle($cellID)->getAlignment()->setWrapText(true);
       }
     }
-    $cellEnd = $cellRange[$colCounter-1] . $startingRow;
     $startingRow++;
   }
   
@@ -964,7 +956,6 @@ function xlsStepOne($oj,$style,$lbl,$gui)
     $oj->setActiveSheetIndex(0)->setCellValue("A{$cdx}", current($fields))
        ->setCellValue("B{$cdx}", end($fields));
   }
-  // $cellArea .= "A{$cdx}";
   $cellArea .= "A[$cdx]";
   $oj->getActiveSheet()->getStyle($cellArea)
      ->applyFromArray($style['ReportContext']);

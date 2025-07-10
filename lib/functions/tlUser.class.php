@@ -1,25 +1,25 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
+ *
  * @filesource  tlUser.class.php
  * @package     TestLink
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2019, TestLink community
  * @link        http://www.testlink.org
  *
  */
  
 /**
  * Class for handling users in TestLink
- * 
+ *
  * @package TestLink
  * @author  Andreas Morsing
  * @uses    config.inc.php
- */ 
+ */
 class tlUser extends tlDBObject {
   /**
-   * @var the name of the table the object is stored into
+   * @var string the name of the table the object is stored into
    * @access private
    */
   private $object_table = "users";
@@ -65,12 +65,12 @@ class tlUser extends tlDBObject {
   public $globalRoleID;
 
   /**
-   * @var array of tlRole, holds the roles of the user for the different testprojects 
+   * @var array of tlRole, holds the roles of the user for the different testprojects
    */
-  public $tprojectRoles; 
+  public $tprojectRoles;
 
   /**
-   * @var array of tlRole, holds the roles of the user for the different testplans 
+   * @var array of tlRole, holds the roles of the user for the different testplans
    */
   public $tplanRoles;
 
@@ -138,19 +138,19 @@ class tlUser extends tlDBObject {
 
   /**
    * Constructor, creates the user object
-   * 
+   *
    * @param resource $db database handler
    */
-  function __construct($dbID = null) {
+  public function __construct($dbID = null) {
 
     parent::__construct($dbID);
 
-    $this->object_table = $this->tables['users']; 
+    $this->object_table = $this->tables['users'];
     
     $authCfg = config_get('authentication');
     $this->usernameFormat = config_get('username_format');
     $this->loginRegExp = config_get('validation_cfg')->user_login_valid_regex;
-    $this->maxLoginLength = 100; 
+    $this->maxLoginLength = 100;
     $this->loginMethod = $authCfg['method'];
 
     $this->globalRoleID = config_get('default_roleid');
@@ -160,9 +160,9 @@ class tlUser extends tlDBObject {
     $this->tplanRoles = null;
   }
   
-  /** 
+  /**
    * Cleans the object by resetting the members to default values
-   * 
+   *
    * @param mixed $options tlUser/tlObject options
    */
   protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID) {
@@ -195,18 +195,18 @@ class tlUser extends tlDBObject {
 
   }
   
-  /** 
+  /**
    * Checks if password management is external (like LDAP)...
    *
    * @param  string $method2check must be one of the keys of configuration $tlCfg->authentication['domain']
-   *           
+   *
    * @return boolean return true if password management is external, else false
    */
-  static public function isPasswordMgtExternal($method2check=null)
+  public static function isPasswordMgtExternal($method2check=null)
   {
     $target = $method2check;
 
-    // Contains Domain and Default Method  
+    // Contains Domain and Default Method
     $authCfg = config_get('authentication');
  
     if( is_null($target) || $target=='')
@@ -223,17 +223,17 @@ class tlUser extends tlDBObject {
   }
   
   /**
-   *  Obtain a secure password. 
-   *  You can choose the number of alphanumeric characters to add and 
-   *  the number of non-alphanumeric characters. 
+   *  Obtain a secure password.
+   *  You can choose the number of alphanumeric characters to add and
+   *  the number of non-alphanumeric characters.
    *  You can add another characters to the non-alphanumeric list if you need.
-   *           
+   *
    *   @param integer $numAlpha number alphanumeric characters in generated password
    *  @param integer $numNonAlpha number special characters in generated password
-   * 
+   *
    *   @return string the generated password
   */
-  static public function generatePassword($numAlpha = 6,$numNonAlpha = 2)
+  public static function generatePassword($numAlpha = 6,$numNonAlpha = 2)
   {
     $listAlpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     $listNonAlpha = ',;:!?.$/*-+&@_+;./*&?$-!,';
@@ -242,23 +242,23 @@ class tlUser extends tlDBObject {
                         substr(str_shuffle($listNonAlpha),0,$numNonAlpha));
   }
   
-  /** 
+  /**
    * not used at the moment, only placeholder
-   * 
+   *
    * @return void
-   * @TODO implement  
+   * @TODO implement
    **/
-  function create()
+  private function create()
   {
   }
   
   //----- BEGIN interface iDBSerialization -----
-  /** 
+  /**
    * Reads an user object identified by its database id from the given database
-   * 
+   *
    * @param resource &$db reference to database handler
    * @param mixed $options (optional) tlUser/tlObject options
-   * 
+   *
    * @return integer tl::OK if the object could be read from the db, else tl::ERROR
    */
   public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID) {
@@ -270,15 +270,15 @@ class tlUser extends tlDBObject {
     $clauses = null;
 
     if ($options & self::TLOBJ_O_SEARCH_BY_ID) {
-      $clauses[] = "id = " . intval($this->dbID);    
+      $clauses[] = "id = " . intval($this->dbID);
     }
 
     if ($options & self::USER_O_SEARCH_BYLOGIN) {
-      $clauses[] = "login = '".$db->prepare_string($this->login)."'";    
+      $clauses[] = "login = '".$db->prepare_string($this->login)."'";
     }
 
     if ($options & self::USER_O_SEARCH_BYEMAIL) {
-      $clauses[] = "email = '".$db->prepare_string($this->emailAddress)."'";    
+      $clauses[] = "email = '".$db->prepare_string($this->emailAddress)."'";
     }
 
     if ($clauses) {
@@ -317,14 +317,14 @@ class tlUser extends tlDBObject {
   }
   
   /**
-   * Fetches all the testproject roles of of the user, and store them into the object. 
+   * Fetches all the testproject roles of of the user, and store them into the object.
    * Result could be limited to a certain testproject
-   * 
+   *
    * @param resource &$db reference to database handler
-   * @param integer $testProjectID Identifier of the testproject to read the roles for, 
+   * @param integer $testProjectID Identifier of the testproject to read the roles for,
    *     if null all roles are read
-   * 
-   * @return integer returns tl::OK 
+   *
+   * @return integer returns tl::OK
    */
   public function readTestProjectRoles(&$db,$testProjectID = null) {
     $sql = "SELECT testproject_id,role_id " .
@@ -348,23 +348,23 @@ class tlUser extends tlDBObject {
 
         if ($tprojectRole) {
           $this->tprojectRoles[$tprojectID] = $tprojectRole;
-        }  
+        }
       }
     }
     return tl::OK;
   }
   
   /**
-   * Fetches all the testplan roles of of the user, and store them into the object. 
+   * Fetches all the testplan roles of of the user, and store them into the object.
    * Result could be limited to a certain testplan
-   * 
+   *
    * @param resource &$db reference to database handler
    * @param integer $testPlanID Identifier of the testplan to read the roles for, if null all roles are read
-   * 
-   * @return integer returns tl::OK 
+   *
+   * @return integer returns tl::OK
    */
   public function readTestPlanRoles(&$db,$testPlanID = null) {
-    $sql = "SELECT testplan_id,role_id " . 
+    $sql = "SELECT testplan_id,role_id " .
            " FROM {$this->tables['user_testplan_roles']} user_testplan_roles " .
            " WHERE user_id = " . intval($this->dbID);
     if ($testPlanID) {
@@ -385,15 +385,15 @@ class tlUser extends tlDBObject {
 
         if ($tplanRole) {
           $this->tplanRoles[$tplanID] = $tplanRole;
-        }  
+        }
       }
     }
     return tl::OK;
   }
   
-  /** 
+  /**
    * Writes the object into the database
-   * 
+   *
    * @param resource &$db reference to database handler
    * @return integer tl::OK if the object could be written to the db, else error code
    */
@@ -403,13 +403,13 @@ class tlUser extends tlDBObject {
 
     $result = $this->checkDetails($db);
     if ($result >= tl::OK)
-    {    
-      $t_cookie_string = $this->auth_generate_unique_cookie_string($db);   
+    {
+      $t_cookie_string = $this->auth_generate_unique_cookie_string($db);
 
       // After addition of cookie_string, and following Mantisbt pattern,
       // seems we need to check if password has changed.
       //
-      // IMPORTANT NOTICE: 
+      // IMPORTANT NOTICE:
       // this implementation works ONLY when password is under TestLink control
       // i.e. is present on TestLink Database.
       //
@@ -418,26 +418,26 @@ class tlUser extends tlDBObject {
       {
         $gsql = " /* debugMsg */ SELECT password FROM {$this->object_table} WHERE id = " . $this->dbID;
         $rs = $db->get_recordset($gsql);
-        if(strcmp($rs[0]['password'],$this->password) == 0) 
+        if(strcmp($rs[0]['password'],$this->password) == 0)
         {
           // NO password change
           $t_cookie_string = null;
-        }    
+        }
 
         $sql = "/* debugMsg */ UPDATE {$this->tables['users']} " .
                " SET first = '" . $db->prepare_string($this->firstName) . "'" .
                ", last = '" .  $db->prepare_string($this->lastName)    . "'" .
                ", email = '" . $db->prepare_string($this->emailAddress)   . "'" .
-               ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
+               ", locale = ". "'" . $db->prepare_string($this->locale) . "'" .
                ", password = " . "'" . $db->prepare_string($this->password) . "'" .
-               ", role_id = ". $db->prepare_int($this->globalRoleID) . 
-               ", active = ". $db->prepare_string($this->isActive) . 
+               ", role_id = ". $db->prepare_int($this->globalRoleID) .
+               ", active = ". $db->prepare_string($this->isActive) .
                ", auth_method = ". "'" . $db->prepare_string($this->authentication) . "'";
 
         if(!is_null($t_cookie_string) )
-        {        
+        {
           $sql .= ", cookie_string = " .  "'" . $db->prepare_string($t_cookie_string) . "'";
-        }        
+        }
         $sql .= " WHERE id = " . intval($this->dbID);
         $result = $db->exec_query($sql);
       }
@@ -445,31 +445,31 @@ class tlUser extends tlDBObject {
       {
         $sql = "/* debugMsg */ INSERT INTO {$this->tables['users']} " .
                " (login,password,cookie_string,first,last,email,role_id,locale,active,auth_method) " .
-               " VALUES ('" . 
-               $db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
+               " VALUES ('" .
+               $db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" .
                $db->prepare_string($t_cookie_string) . "','" .
-               $db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
-               $db->prepare_string($this->emailAddress) . "'," . $db->prepare_int($this->globalRoleID) . ",'". 
-               $db->prepare_string($this->locale). "'," . $this->isActive . "," . 
+               $db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" .
+               $db->prepare_string($this->emailAddress) . "'," . $db->prepare_int($this->globalRoleID) . ",'".
+               $db->prepare_string($this->locale). "'," . $this->isActive . "," .
                "'" . $db->prepare_string($this->authentication). "'" . ")";
 
         $result = $db->exec_query($sql);
         if($result)
         {
           $this->dbID = $db->insert_id($this->tables['users']);
-        }  
+        }
       }
       $result = $result ? tl::OK : self::E_DBERROR;
     }
     return $result;
-  }  
+  }
 
-  /** 
-   * WARNING: DO NOT USE THE FUNCTION - CAUSES DB INCONSISTENCE! 
-   *  
-   * @deprecated 1.8.3 
-   * @see #2407 
-   **/  
+  /**
+   * WARNING: DO NOT USE THE FUNCTION - CAUSES DB INCONSISTENCE!
+   *
+   * @deprecated 1.8.3
+   * @see #2407
+   **/
   public function deleteFromDB(&$db)
   {
     $safeUserID = intval($this->dbID);
@@ -480,9 +480,9 @@ class tlUser extends tlDBObject {
     foreach($sqlSet as $sql)
     {
       $result = $db->exec_query($sql) ? tl::OK : tl::ERROR;
-      if($result == tl::ERROR) 
+      if($result == tl::ERROR)
       {
-        break;  
+        break;
       }
     }
   
@@ -498,7 +498,7 @@ class tlUser extends tlDBObject {
    *
    * @param resource &$db reference to database handler
    * @param integer $userID the user ID
-   * 
+   *
    * @return integer tl::OK on success, tl:ERROR else
    **/
   protected function deleteTestProjectRoles(&$db)
@@ -507,9 +507,9 @@ class tlUser extends tlDBObject {
     return $db->exec_query($sql) ? tl::OK : tl::ERROR;
   }
 
-  /** 
+  /**
    * Returns a user friendly representation of the user name
-   * 
+   *
    * @return string the display nmae
    */
   public function getDisplayName($format=null)
@@ -525,22 +525,22 @@ class tlUser extends tlDBObject {
   
   /**
    * Encrypts a given password with MD5
-   * 
-   * @param $pwd the password to encrypt
+   *
+   * @param string $pwd the password to encrypt
    * @return string the encrypted password
    */
   protected function encryptPassword($pwd,$authentication=null)
   {
-    if (self::isPasswordMgtExternal($authentication)) {  
+    if (self::isPasswordMgtExternal($authentication)) {
       return self::S_PWDMGTEXTERNAL;
-    }  
+    }
    
     return password_hash($pwd,PASSWORD_DEFAULT);
   }
   
   /**
    * Set encrypted password
-   * 
+   *
    * @param string $pwd the new password
    * @return integer return tl::OK is the password is stored, else errorcode
    */
@@ -550,7 +550,7 @@ class tlUser extends tlDBObject {
     {
       return self::S_PWDMGTEXTERNAL;
     }
-    $pwd = trim($pwd);  
+    $pwd = trim($pwd);
     if ($pwd == "") {
       return self::E_PWDEMPTY;
     }
@@ -560,7 +560,7 @@ class tlUser extends tlDBObject {
   
   /**
    * Getter for the password of the user
-   * 
+   *
    * @return string the password of the user
    */
   public function getPassword()
@@ -570,42 +570,40 @@ class tlUser extends tlDBObject {
   
   /**
    * compares a given password with the current password of the user
-   * 
-   * @param string $pwd the password to compate with the password actually set 
+   *
+   * @param string $pwd the password to compate with the password actually set
    * @return integer returns tl::OK if the password's match, else errorcode
    */
   public function comparePassword(&$dbH,$pwd)
   {
-    if (self::isPasswordMgtExternal($this->authentication)) {  
+    if (self::isPasswordMgtExternal($this->authentication)) {
       return self::S_PWDMGTEXTERNAL;
     }
 
     // If we are here this means that we are using
     // internal password management.
-    //  
+    //
     // Manage migration from MD5
     // MD5 hash check
     // This is valid ONLY for internal password management
     $encriptedPWD = $this->getPassword();
-    if (strlen($encriptedPWD) == 32) {
-      /* Update the old MD5 hash to the new bcrypt */
-      if ($encriptedPWD === md5($pwd)) {
+    /* Update the old MD5 hash to the new bcrypt */
+    if (strlen($encriptedPWD) == 32 && $encriptedPWD === md5($pwd)) {
         $this->password = $this->encryptPassword($pwd,$this->authentication);
         $this->writePasswordToDB($dbH);
         return tl::OK;
-      } 
-    } 
+    }
 
-    if (password_verify($pwd,$encriptedPWD)) { 
+    if (password_verify($pwd,$encriptedPWD)) {
       return tl::OK;
-    } 
+    }
 
-    return self::E_PWDDONTMATCH;    
+    return self::E_PWDDONTMATCH;
   }
 
   
   /**
-   * 
+   *
    */
   public function checkDetails(&$db) {
     $this->firstName = trim($this->firstName);
@@ -642,69 +640,70 @@ class tlUser extends tlDBObject {
     $login = trim($login);
     
     if ($login == "" || (tlStringLen($login) > $this->maxLoginLength))
-    {  
+    {
       $result = self::E_LOGINLENGTH;
     }
-    else if (!preg_match($this->loginRegExp,$login)) 
+    elseif (!preg_match($this->loginRegExp,$login))
     {
       //Only allow a basic set of characters
       $result = self::E_NOTALLOWED;
-    }  
+    }
     return $result;
   }
   
   /**
    * Returns the id of the effective role in the context of ($tproject_id,$tplan_id)
-   * 
+   *
    * @param resource &$db reference to database handler
    * @param integer $tproject_id the testproject id
    * @param integer $tplan_id the plan id
-   * 
+   *
    * @return integer tlRole the effective role
    */
-  function getEffectiveRole(&$db,$tproject_id,$tplan_id)
+  public function getEffectiveRole(&$db,$tproject_id,$tplan_id)
   {
     $tprojects_role = $this->tprojectRoles;
     $tplans_role = $this->tplanRoles;
     $effective_role = $this->globalRole;
 
     if(!is_null($tplans_role) && isset($tplans_role[$tplan_id])) {
-      $effective_role = $tplans_role[$tplan_id];  
+      $effective_role = $tplans_role[$tplan_id];
     }
-    else if(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id])) {
-      $effective_role = $tprojects_role[$tproject_id];  
+    elseif(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id])) {
+      $effective_role = $tprojects_role[$tproject_id];
     }
     return $effective_role;
   }
 
   /**
-   * Gets all userids of users with a certain testplan role @TODO WRITE RIGHT COMMENTS FROM START
+   * Gets all userids of users with a certain testplan role
+   * @TODO WRITE RIGHT COMMENTS FROM START
    *
    * @param resource &$db reference to database handler
    * @return array returns array of userids
    **/
   protected function getUserNamesWithTestPlanRole(&$db)
   {
-    $sql = "SELECT DISTINCT id FROM {$this->tables['users']} users," . 
+    $sql = "SELECT DISTINCT id FROM {$this->tables['users']} users," .
            " {$this->tables['user_testplan_roles']} user_testplan_roles " .
            " WHERE  users.id = user_testplan_roles.user_id";
     $sql .= " AND user_testplan_roles.role_id = " . intval($this->dbID);
     $idSet = $db->fetchColumnsIntoArray($sql,"id");
     
-    return $idSet; 
+    return $idSet;
   }
 
 
   /**
      * Get a list of names with a defined project right (for example for combo-box)
      * used by ajax script getUsersWithRight.php
-     * 
+     *
      * @param integer $db DB Identifier
      * @param string $rightNick key corresponding with description in rights table
      * @param integer $testprojectID Identifier of project
      *
      * @return array list of user IDs and names
-     * 
+     *
      * @todo fix the case that user has default role with a right but project role without
      *     i.e. he should be listed
      */
@@ -735,14 +734,14 @@ class tlUser extends tlDBObject {
          " WHERE b.description='" . $db->prepare_string($rightNick) . "'";
     $projectRoles = $db->fetchRowsIntoMap($sql,'id');
     
-    // merge arrays    
+    // merge arrays
     // the next function is available from php53 but we support php52
     // $output = array_replace($output1, $output2);
     if( !is_null($projectRoles) )
     {
-      foreach($projectRoles as $k => $v) 
+      foreach($projectRoles as $k => $v)
       {
-        if( !isset($defaultRoles[$k]) ) 
+        if( !isset($defaultRoles[$k]) )
         {
           $defaultRoles[$k] = $v;
         }
@@ -750,20 +749,20 @@ class tlUser extends tlDBObject {
     }
 
     // format for ext-js combo-box (remove associated array)
-    // foreach($defaultRoles as $k => $v) 
+    // foreach($defaultRoles as $k => $v)
     // {
     //     $output[] = $v;
     // }
-    $output = array_values($defaultRoles);   
+    $output = array_values($defaultRoles);
        
     return $output;
   }
 
   
   /**
-     * Get a list of all names 
+     * Get a list of all names
      * used for replacement user ID by user login
-     * 
+     *
      * @param integer $db DB Identifier
      * @return array list of user IDs and names
      */
@@ -775,7 +774,7 @@ class tlUser extends tlDBObject {
     $inClause = '';
     if( !is_null($idSet) )
     {
-      $inClause = " WHERE id IN (" . implode(',',(array)$idSet) . ") ";    
+      $inClause = " WHERE id IN (" . implode(',',(array)$idSet) . ") ";
     }
 
     $output = $db->fetchRowsIntoMap($sql . $inClause,'id');
@@ -791,7 +790,7 @@ class tlUser extends tlDBObject {
    *
    * @internal revisions
    */
-  function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
+  public function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
   {
     global $g_propRights_global;
     global $g_propRights_product;
@@ -813,7 +812,7 @@ class tlUser extends tlDBObject {
         $mgr = new testproject($db);
         $accessPublic['tproject'] = $mgr->getPublicAttr($testprojectID);
         unset($mgr);
-      }  
+      }
 
       if($testPlanID > 0) {
         $mgr = new testplan($db);
@@ -840,7 +839,7 @@ class tlUser extends tlDBObject {
       $doMoreAnalysis = true;
       if( count($userTestProjectRights) == 1) {
         $doMoreAnalysis = !is_null($userTestProjectRights[0]->dbID);
-      }  
+      }
 
       $allRights = null;
       if( $doMoreAnalysis ) {
@@ -849,17 +848,17 @@ class tlUser extends tlDBObject {
           $testProjectRights[] = $right->name;
         }
 
-        // subtract global rights    
+        // subtract global rights
         $testProjectRights = array_diff($testProjectRights,array_keys($g_propRights_global));
         propagateRights($globalRights,$g_propRights_global,$testProjectRights);
         $allRights = $testProjectRights;
       } else {
         return false;
-      }  
+      }
     } else {
       if(!is_null($accessPublic) && $accessPublic['tproject'] == 0) {
-        return false;      
-      }  
+        return false;
+      }
     }
 
     if( $testPlanID > 0) {
@@ -870,15 +869,15 @@ class tlUser extends tlDBObject {
           $testPlanRights[] = $right->name;
         }
         
-        //subtract test projects rights    
+        //subtract test projects rights
         $testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
         
         propagateRights($allRights,$g_propRights_product,$testPlanRights);
         $allRights = $testPlanRights;
       } else {
         if(!is_null($accessPublic) && $accessPublic['tplan'] == 0) {
-          return false;      
-        }  
+          return false;
+        }
       }
     }
 
@@ -888,12 +887,12 @@ class tlUser extends tlDBObject {
   }
 
   /**
-     * get array with accessible test plans for user on a test project, 
+     * get array with accessible test plans for user on a test project,
      * analising user roles.
      *
-     * @param resource $db database handler  
-     * @param int testprojectID 
-     * @param int testplanID: default null. 
+     * @param resource $db database handler
+     * @param int testprojectID
+     * @param int testplanID: default null.
      *            Used as filter when you want to check if this test plan
      *            is accessible.
      *
@@ -908,9 +907,9 @@ class tlUser extends tlDBObject {
      * @return array if 0 accessible test plans => null
      *
      * @internal revisions
-     * 
+     *
      */
-  function getAccessibleTestPlans(&$db,$testprojectID,$testplanID=null, $options=null) {
+  public function getAccessibleTestPlans(&$db,$testprojectID,$testplanID=null, $options=null) {
     $debugTag = 'Class:' .  __CLASS__ . '- Method:' . __FUNCTION__ . '-';
     
     $my['options'] = array( 'output' => null, 'active' => ACTIVE);
@@ -922,7 +921,7 @@ class tlUser extends tlDBObject {
 
     if( $my['options']['output'] == 'mapfull' ) {
       $fields2get .= ' ,TPLAN.notes, TPLAN.testproject_id ';
-    }    
+    }
     
     $sql = " /* $debugTag */  SELECT {$fields2get} " .
            " FROM {$this->tables['nodes_hierarchy']} NH" .
@@ -948,8 +947,7 @@ class tlUser extends tlDBObject {
     // Role at Test Project level is defined?
     $userProjectRoleIsNoRights = 0;
     if( isset($this->tprojectRoles[$testprojectID]->dbID) ) {
-      $userProjectRoleIsNoRights = 
-        ($this->tprojectRoles[$testprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
+      $userProjectRoleIsNoRights = ($this->tprojectRoles[$testprojectID]->dbID == TL_ROLES_NO_RIGHTS);
     }
 
     // according to new configuration option
@@ -961,32 +959,31 @@ class tlUser extends tlDBObject {
     switch ( config_get('testplan_role_inheritance_mode') ) {
 
       case 'testproject':
-        // If user has a role for $testprojectID, then we DO NOT HAVE 
+        // If user has a role for $testprojectID, then we DO NOT HAVE
         // to check for globalRole
         if( isset($this->tprojectRoles[$testprojectID]->dbID) ) {
           $analyseGlobalRole = 0;
         }
 
-        // User can have NO RIGHT on test project under analisys ($testprojectID), 
-        // in this situation he/she 
-        // has to have a role at Test Plan level in order to access one or more test plans 
+        // User can have NO RIGHT on test project under analisys ($testprojectID),
+        // in this situation he/she
+        // has to have a role at Test Plan level in order to access one or more test plans
         // that belong to $testprojectID.
         //
         // Other situation: he/she has been created with role without rights ($globalNoRights)
         //
-        if( $userProjectRoleIsNoRights || 
-            ($analyseGlobalRole && $userGlobalRoleIsNoRights) ) {
+        if( $userProjectRoleIsNoRights || ($analyseGlobalRole && $userGlobalRoleIsNoRights) ) {
           // In order to access he/she needs specific configuration.
           $where .= " AND (USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
-        }  
+        }
         else {
           // in this situation:
-          // We can use what we have inherited from test project 
-          // OR 
-          // We can use specific test plan role if defined            
+          // We can use what we have inherited from test project
+          // OR
+          // We can use specific test plan role if defined
           $where .= " AND (USER_TPLAN_ROLES.role_id IS NULL OR ";
         }
-        $where .= " USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")"; 
+        $where .= " USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")";
 
       break;
 
@@ -1001,16 +998,16 @@ class tlUser extends tlDBObject {
         if( $userGlobalRoleIsNoRights ) {
           // In order to access he/she needs specific configuration.
           $where .= " AND (USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
-        }  
+        }
         else {
           // in this situation:
           // We can use what we have inherited from GLOBAL
-          // 
-          // OR 
-          // We can use specific test plan role if defined            
+          //
+          // OR
+          // We can use specific test plan role if defined
           $where .= " AND (USER_TPLAN_ROLES.role_id IS NULL OR ";
         }
-        $where .= " USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")"; 
+        $where .= " USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")";
       break;
     }
     
@@ -1036,15 +1033,14 @@ class tlUser extends tlDBObject {
                                            
     // Admin exception
     $doReindex = false;
-    if( $this->globalRoleID != TL_ROLES_ADMIN && null != $testPlanSet 
-        && count($testPlanSet) > 0 ) {
+    if( $this->globalRoleID != TL_ROLES_ADMIN && null != $testPlanSet && !empty($testPlanSet) ) {
       foreach($testPlanSet as $idx => $item) {
         if( $item['is_public'] == 0 && $item['has_role'] == 0 ) {
           unset($testPlanSet[$idx]);
           $doReindex = true;
-        }         
+        }
       }
-    } 
+    }
     
     if($my['options']['output'] == 'combo') {
       $dummy = array();
@@ -1063,11 +1059,11 @@ class tlUser extends tlDBObject {
 
   /**
    * Checks the correctness of an email address
-   * 
+   *
    * @param string $email
    * @return integer returns tl::OK on success, errorcode else
    */
-  static public function checkEmailAddress($email)
+   public static function checkEmailAddress($email)
   {
     $result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
     if ($result == tl::OK)
@@ -1077,17 +1073,17 @@ class tlUser extends tlDBObject {
       if (!preg_match($email_regex,$email,$matches))
       {
         $result = self::E_EMAILFORMAT;
-      }  
+      }
     }
     return $result;
   }
   
-  static public function checkFirstName($first)
+  public static function checkFirstName($first)
   {
     return is_blank($first) ? self::E_FIRSTNAMELENGTH : tl::OK;
   }
   
-  static public function checkLastName($last)
+  public static function checkLastName($last)
   {
     return is_blank($last) ? self::E_LASTNAMELENGTH : tl::OK;
   }
@@ -1095,7 +1091,7 @@ class tlUser extends tlDBObject {
   /**
    *
    */
-  static public function doesUserExist(&$db,$login)
+  public static function doesUserExist(&$db,$login)
   {
     $user = new tlUser();
     $user->login = $login;
@@ -1108,7 +1104,7 @@ class tlUser extends tlDBObject {
   /**
    *
    */
-  static public function doesUserExistByEmail(&$db,$email) {
+  public static function doesUserExistByEmail(&$db,$email) {
     $user = new tlUser();
     $user->emailAddress = $email;
     if ($user->readFromDB($db,self::USER_O_SEARCH_BYEMAIL) >= tl::OK) {
@@ -1121,7 +1117,7 @@ class tlUser extends tlDBObject {
   /**
    *
    */
-  static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL) {
+  public static function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL) {
     return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
   }
   
@@ -1129,7 +1125,7 @@ class tlUser extends tlDBObject {
   /**
    *
    */
-  static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL) {
+  public static function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL) {
     $users = null;
  
     if( null == $ids ) {
@@ -1139,14 +1135,14 @@ class tlUser extends tlDBObject {
     for($idx = 0;$idx < sizeof($ids);$idx++) {
       $id = $ids[$idx];
       $user = tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
-      if ($user) {  
+      if ($user) {
         $users[$id] = $user;
-      }  
+      }
     }
     return $users ? $users : null;
   }
 
-  static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
+  public static function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
                                 $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
   {
     $tables = tlObject::getDBTables('users');
@@ -1160,21 +1156,21 @@ class tlUser extends tlDBObject {
     return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
   }
 
-  /** 
+  /**
    */
   public function setActive(&$db,$value)
   {
     $booleanVal = intval($value) > 0 ? 1 : 0;
     $sql = " UPDATE {$this->tables['users']} SET active = {$booleanVal} " .
            " WHERE id = " . intval($this->dbID);
-    $result = $db->exec_query($sql);
+    $db->exec_query($sql);
     return tl::OK;
   }
 
 
-  /** 
+  /**
    * Writes user password into the database
-   * 
+   *
    * @param resource &$db reference to database handler
    * @return integer tl::OK if no problem written to the db, else error code
    *
@@ -1189,7 +1185,7 @@ class tlUser extends tlDBObject {
       // After addition of cookie_string, and following Mantisbt pattern,
       // seems we need to check if password has changed.
       //
-      // IMPORTANT NOTICE: 
+      // IMPORTANT NOTICE:
       // this implementation works ONLY when password is under TestLink control
       // i.e. is present on TestLink Database.
       //
@@ -1198,25 +1194,25 @@ class tlUser extends tlDBObject {
 
       $gsql = " SELECT password FROM {$this->object_table} WHERE id = " . intval($this->dbID);
       $rs = $db->get_recordset($gsql);
-      if(strcmp($rs[0]['password'],$this->password) != 0) 
+      if(strcmp($rs[0]['password'],$this->password) != 0)
       {
         // Password HAS CHANGED
-        $t_cookie_string = $this->auth_generate_unique_cookie_string($db);   
-      }    
+        $t_cookie_string = $this->auth_generate_unique_cookie_string($db);
+      }
       
       $sql = "UPDATE {$this->tables['users']} " .
              " SET password = ". "'" . $db->prepare_string($this->password) . "'";
       
       if(!is_null($t_cookie_string) )
-      {        
+      {
         $sql .= ", cookie_string = " .  "'" . $db->prepare_string($t_cookie_string) . "'";
-      }        
+      }
       $sql .= " WHERE id = " . intval($this->dbID);
       $result = $db->exec_query($sql);
     }
     $result = $result ? tl::OK : self::E_DBERROR;
     return $result;
-  }  
+  }
 
 
   /**
@@ -1228,7 +1224,7 @@ class tlUser extends tlDBObject {
    * @return string 64 character cookie string
    * @access public
    */
-  function auth_generate_cookie_string() 
+  private function auth_generate_cookie_string()
   {
     $t_val = mt_rand( 0, mt_getrandmax() ) + mt_rand( 0, mt_getrandmax() );
     $t_val = md5( $t_val ) . md5( time() );
@@ -1243,7 +1239,7 @@ class tlUser extends tlDBObject {
    * @return bool indicating whether cookie string is unique
    * @access public
    */
-  function auth_is_cookie_string_unique(&$db,$p_cookie_string) 
+  private function auth_is_cookie_string_unique(&$db,$p_cookie_string)
   {
     $sql = "SELECT COUNT(0) AS hits FROM $this->object_table " .
            "WHERE cookie_string = '" . $db->prepare_string($p_cookie_string) . "'" ;
@@ -1253,7 +1249,7 @@ class tlUser extends tlDBObject {
     {
       // better die because this method is used in a do/while
       // that can create infinite loop
-      die(__METHOD__);  
+      die(__METHOD__);
     }
     $status = ($rs['hits'] == 0);
     return $status;
@@ -1270,7 +1266,7 @@ class tlUser extends tlDBObject {
    *
    * @since 1.9.4
    */
-  function auth_generate_unique_cookie_string(&$db) 
+  private function auth_generate_unique_cookie_string(&$db)
   {
     do {
       $t_cookie_string = $this->auth_generate_cookie_string();
@@ -1286,10 +1282,10 @@ class tlUser extends tlDBObject {
    *
    * @since 1.9.4
    */
-  static function auth_get_current_user_cookie() 
+  public static function auth_get_current_user_cookie()
   {
     $t_cookie_name = config_get('auth_cookie');
-    $t_cookie = isset($_COOKIE[$t_cookie_name]) ? $_COOKIE[$t_cookie_name] : null;  
+    $t_cookie = isset($_COOKIE[$t_cookie_name]) ? $_COOKIE[$t_cookie_name] : null;
     return $t_cookie;
   }
 
@@ -1303,7 +1299,7 @@ class tlUser extends tlDBObject {
    *
    * @since 1.9.4
    */
-  function auth_is_cookie_valid(&$db,$p_cookie_string) 
+  private function auth_is_cookie_valid(&$db,$p_cookie_string)
   {
     # fail if cookie is blank
     $status = ('' === $p_cookie_string) ? false : true;
@@ -1319,7 +1315,7 @@ class tlUser extends tlDBObject {
       {
         // better die because this method is used in a do/while
         // that can create infinite loop
-        die(__METHOD__);  
+        die(__METHOD__);
       }
       $status = ($rs['hits'] == 1);
     }
@@ -1328,10 +1324,10 @@ class tlUser extends tlDBObject {
 
   /**
    * (from Mantisbt)
-   * 
-   * Getter 
-   * 
-   * @return string 
+   *
+   * Getter
+   *
+   * @return string
    *
    * @since 1.9.4
    */
@@ -1343,7 +1339,7 @@ class tlUser extends tlDBObject {
   /**
    *
    */
-  static function hasRoleOnTestProject(&$dbHandler,$id,$tprojectID)
+  public static function hasRoleOnTestProject(&$dbHandler,$id,$tprojectID)
   {
     $tables = tlObject::getDBTables('user_testproject_roles');
     $sql = " SELECT user_id FROM {$tables['user_testproject_roles']} " .
@@ -1355,7 +1351,7 @@ class tlUser extends tlDBObject {
   /**
    *
    */
-  static function hasRoleOnTestPlan(&$dbHandler,$id,$tplanID)
+  public static function hasRoleOnTestPlan(&$dbHandler,$id,$tplanID)
   {
     $tables = tlObject::getDBTables('user_testplan_roles');
     $sql = " SELECT user_id FROM {$tables['user_testplan_roles']} " .
@@ -1368,7 +1364,7 @@ class tlUser extends tlDBObject {
   /**
    *
    */
-  static public function getByAPIKey(&$dbHandler,$value)
+  public static function getByAPIKey(&$dbHandler,$value)
   {
     $tables = tlObject::getDBTables('users');
     $target = $dbHandler->prepare_string($value);
@@ -1380,9 +1376,9 @@ class tlUser extends tlDBObject {
 
   /**
    * @use _SESSION
-   * 
+   *
    */
-  function checkGUISecurityClearance(&$dbHandler,$context,$rightsToCheck,$checkMode)
+  public function checkGUISecurityClearance(&$dbHandler,$context,$rightsToCheck,$checkMode)
   {
     $doExit = false;
     $action = 'any';
@@ -1401,7 +1397,7 @@ class tlUser extends tlDBObject {
         $status = $this->hasRight($dbHandler,$verboseRight,$myContext['tproject_id'],$myContext['tplan_id']);
     
         if( ($doExit = !$status) && ($checkMode == 'and'))
-        { 
+        {
           $action = 'any';
           logAuditEvent(TLS("audit_security_user_right_missing",$this->login,$myContext['script'],$action),
                         $action,$this->dbID,"users");
@@ -1410,7 +1406,7 @@ class tlUser extends tlDBObject {
       }
     }
     
-    if ($doExit){   
+    if ($doExit){
       redirect($_SESSION['basehref'],"top.location");
       exit();
     }
@@ -1420,14 +1416,14 @@ class tlUser extends tlDBObject {
   /**
    *
    */
-  static function checkPasswordQuality($password)
+  public static function checkPasswordQuality($password)
   {
     $ret = array('status_ok' => tl::OK, 'msg' => 'ok');
     $cfg = config_get('passwordChecks');
     if( is_null($cfg) )
     {
       return $ret;  // >>---> Bye!
-    }  
+    }
 
     $regexp['number'] = "#[0-9]+#";
     $regexp['letter'] = "#[a-z]+#";
@@ -1446,7 +1442,7 @@ class tlUser extends tlDBObject {
           {
             $ret['status_ok'] = tl::ERROR;
             $ret['msg'] = sprintf($base_msg,intval($val), $pl);
-          }  
+          }
         break;
 
         case 'maxlen':
@@ -1454,7 +1450,7 @@ class tlUser extends tlDBObject {
           {
             $ret['status_ok'] = tl::ERROR;
             $ret['msg'] = sprintf($base_msg, intval($val), $pl);
-          }  
+          }
         break;
 
         case 'number':
@@ -1465,54 +1461,53 @@ class tlUser extends tlDBObject {
           {
             $ret['status_ok'] = tl::ERROR;
             $ret['msg'] = $base_msg;
-          }  
+          }
         break;
       }
 
       if($ret['status_ok'] == tl::ERROR)
       {
         break;
-      }  
-    }  
+      }
+    }
     return $ret;
 
   }
 
-  /** 
+  /**
    */
-  static public function setExpirationDate(&$dbHandler,$userID,$ISODate)
+  public static function setExpirationDate(&$dbHandler,$userID,$ISODate)
   {
     $sch = tlObject::getDBTables(array('users'));
 
     $setClause = " SET expiration_date = ";
     if( is_null($ISODate) || trim($ISODate) == '' )
     {
-      $setClause .= " NULL "; 
-    }  
+      $setClause .= " NULL ";
+    }
     else
     {
       // it's really a date?
       // if not => do nothing
       try {
-        $xx = new DateTime($ISODate);
-        $setClause .= "'" . $dbHandler->prepare_string($ISODate) . "'"; 
-      } 
+        $setClause .= "'" . $dbHandler->prepare_string($ISODate) . "'";
+      }
       catch (Exception $e) {
         return;
       }
-    }  
+    }
 
     $sql = " UPDATE {$sch['users']} {$setClause} " .
            " WHERE id = " . intval($userID);
 
-    $rx = $dbHandler->exec_query($sql);
+    $dbHandler->exec_query($sql);
     return tl::OK;
   }
 
   /**
    *
    */
-  function hasRightWrap(&$db,$roleQuestion,$context=null) {
+  private function hasRightWrap(&$db,$roleQuestion,$context=null) {
 
     $cx = array('tproject_id' => null,'tplan_id' => null,
                 'checkPublicPrivateAttr' => false);
@@ -1525,7 +1520,7 @@ class tlUser extends tlDBObject {
   /**
    *
    */
-  function hasRightOnProj(&$db,$roleQuestion) {
+  public function hasRightOnProj(&$db,$roleQuestion) {
     $tproj = null;
     if (isset($_SESSION['testprojectID'])) {
       $tproj = intval($_SESSION['testprojectID']);

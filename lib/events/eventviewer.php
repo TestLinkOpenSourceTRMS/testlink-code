@@ -60,7 +60,7 @@ $gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $arg
                                          $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
                                          $filters->endTime,$filters->users);
 
-if (count($gui->events) > 0)
+if (!empty($gui->events))
 {
   $table = buildExtTable($gui, $show_icon, $charset);
   if (!is_null($table))
@@ -248,7 +248,7 @@ function buildExtTable($gui,$show_icon,$charset)
                    
       $rowData[] = $event->getlogLevel();
       
-      if (isset($event->userID) && $event->userID != false && isset($gui->users[$event->userID])) {
+      if (isset($event->userID) && $event->userID && isset($gui->users[$event->userID])) {
         $rowData[] = $gui->users[$event->userID];
       } else {
         $rowData[] = lang_get("not_aplicable");

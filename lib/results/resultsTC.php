@@ -547,8 +547,8 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
                                     array('userDisplayFormat' => '%first% %last%'));
 
   // invariant pieces  => avoid wasting time on loops
-  $dlink = '<a href="' . str_replace(" ", "%20", $args->basehref) .
-           'linkto.php?tprojectPrefix=' . urlencode($args->prefix) . '&item=testcase&id=';
+  // $dlink = '<a href="' . str_replace(" ", "%20", $args->basehref) .
+  //          'linkto.php?tprojectPrefix=' . urlencode($args->prefix) . '&item=testcase&id=';
 
   $hist_img_tag = '<img title="' . $labels['history'] . '"' . ' src="' . $gui->img->history . '" /></a> ';
   $edit_img_tag = '<img title="' . $labels['design'] . '"' . ' src="' . $gui->img->edit . '" /></a> ';

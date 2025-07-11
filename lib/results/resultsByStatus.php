@@ -13,16 +13,13 @@
  *
  * 
  */
-require('../../config.inc.php');
-
-// Must be included BEFORE common.php
-require_once('../../third_party/codeplex/PHPExcel.php');   
-
-require_once('common.php');
-require_once('displayMgr.php');
-require_once('users.inc.php');
-require_once('exttable.class.php');
-require_once('exec.inc.php'); // used for bug string lookup
+require_once '../../config.inc.php';
+require_once '../../third_party/codeplex/PHPExcel.php'; // Must be included BEFORE common.php
+require_once 'common.php';
+require_once 'displayMgr.php';
+require_once 'users.inc.php';
+require_once 'exttable.class.php';
+require_once 'exec.inc.php'; // used for bug string lookup
 
 // IMPORTANT NOTICE/WARNING about XLS generation
 // Seams that \n are not liked 
@@ -62,8 +59,8 @@ $cfOnExec = $cfSet = null;
 
 // done here in order to get some config about images
 $smarty = new TLSmarty();
-if (!is_null($metrics) and count($metrics) > 0) {              
-  if ($args->addOpAccess) {  
+if (!is_null($metrics) && !empty($metrics)) {
+  if ($args->addOpAccess) {
     $links = featureLinks($labels,$smarty->getImages());
   }  
 
@@ -305,8 +302,7 @@ switch ($args->format) {
                       'format' => $args->format,
                       'show_platforms' => $gui->show_platforms);
 
-    $gui->tableSet[] = buildMatrix($gui->dataSet, $args, $tableOpt ,
-                                   $gui->platformSet,$cfSet);
+    $gui->tableSet[] = buildMatrix($gui->dataSet, $args, $gui->platformSet, $tableOpt, $cfSet);
   break;
 } 
 
@@ -522,7 +518,7 @@ function buildMailCfg(&$guiObj)
  * return tlExtTable
  *
  */
-function buildMatrix($dataSet, &$args, $options = array(), $platforms,$customFieldColumns=null)
+function buildMatrix($dataSet, &$args, $platforms, $options = array(), $customFieldColumns=null)
 {
   $default_options = array('bugInterfaceOn' => false,'show_platforms' => false,
                            'status_not_run' => false,'format' => FORMAT_HTML);
@@ -910,10 +906,10 @@ function xlsStepOne($oj,$style,$lbl,$gui)
   foreach($lines2write as $zdx => $fields)
   {
     $cdx = $zdx+1;
-    $oj->setActiveSheetIndex(0)->setCellValue("A{$cdx}", current($fields))
-       ->setCellValue("B{$cdx}", end($fields));
+    $oj->setActiveSheetIndex(0)->setCellValue("A[$cdx]", current($fields))
+       ->setCellValue("B[$cdx]", end($fields));
   }
-  $cellArea .= "A{$cdx}";
+  $cellArea .= "A[$cdx]";
   $oj->getActiveSheet()->getStyle($cellArea)
      ->applyFromArray($style['ReportContext']); 
 

@@ -6,19 +6,15 @@
  * @filesource execTimelineStats.php
  * 
  */
-require('../../config.inc.php');
-
-// Must be included BEFORE common.php
-require_once('../../third_party/codeplex/PHPExcel.php');
-
-require_once('common.php');
-require_once('displayMgr.php');
+require_once '../../config.inc.php';
+require_once '../../third_party/codeplex/PHPExcel.php'; // Must be included BEFORE common.php
+require_once 'common.php';
+require_once 'displayMgr.php';
 
 $timerOn = microtime(true);
 $tplCfg = templateConfiguration();
 
-testlinkInitPage($db,'init_project' == 'dont_init_project',
-                     'doNotCheckSession' == 'doNotCheckSession');
+testlinkInitPage($db,'init_project' == 'dont_init_project', true);
 
 list($tplan_mgr,$args) = initArgsForReports($db);
 if( null == $tplan_mgr ) {
@@ -41,7 +37,7 @@ $stats = $mgr->getExecTimelineStats($args->tplan_id,null,$statsBy[$group]);
 if ($stats != null) {
   $gui->do_report['status_ok'] = 1;
   $gui->do_report['msg'] = '';
-  $gui->statistics->exec = $stats;
+  $gui->statistics->exec = $stats[0];
 
   if( !is_null($gui->statistics->exec) ) {
     switch ($group) {

@@ -10,7 +10,7 @@ Purpose: smarty template - show Test Results and Metrics
 
 {include file="inc_head.tpl"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {$tableID="$matrix->tableID"}
+  {$tableID=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}

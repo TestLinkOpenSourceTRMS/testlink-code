@@ -12,16 +12,13 @@
  *
  * 
  */
-require('../../config.inc.php');
-
-// Must be included BEFORE common.php
-require_once('../../third_party/codeplex/PHPExcel.php');   
-
-require_once('common.php');
-require_once('displayMgr.php');
-require_once('users.inc.php');
-require_once('exttable.class.php');
-require_once('exec.inc.php'); // used for bug string lookup
+require_once '../../config.inc.php';
+require_once '../../third_party/codeplex/PHPExcel.php'; // Must be included BEFORE common.php
+require_once 'common.php';
+require_once 'displayMgr.php';
+require_once 'users.inc.php';
+require_once 'exttable.class.php';
+require_once 'exec.inc.php'; // used for bug string lookup
 
 // IMPORTANT NOTICE/WARNING about XLS generation
 // Seams that \n are not liked 
@@ -151,8 +148,7 @@ if( $doIt ) {
         array('format' => $args->format,
               'show_platforms' => $gui->show_platforms);
 
-      $gui->tableSet[] = buildMatrix($gui->dataSet, $args, $tableOpt ,
-                                     $gui->platformSet,$cfSet);
+      $gui->tableSet[] = buildMatrix($gui->dataSet, $args, $gui->platformSet, $tableOpt , $cfSet);
     break;
   } 
 }
@@ -276,7 +272,9 @@ function initializeGui(&$dbh,&$argsObj,&$tplanMgr) {
 
   // will be used when sending mail o creating spreadsheet
   $guiObj->platSet = array();
-  $pp = (array)array_flip($argsObj->platSet);
+  if (!empty($argsObj->platSet)) {
+      $pp = (array)array_flip($argsObj->platSet);
+  }
   if( !isset($pp[0]) ) {
     // we have platforms
     foreach( $argsObj->platSet as $pk ) {
@@ -328,9 +326,8 @@ function buildMailCfg(&$guiObj) {
  * return tlExtTable
  *
  */
-function buildMatrix($dataSet, &$args, $options = array(), $platforms,$customFieldColumns=null) {
-  $default_options = 
-    array('show_platforms' => false,'format' => FORMAT_HTML);
+function buildMatrix($dataSet, &$args, $platforms, $options = array(), $customFieldColumns=null) {
+  $default_options = array('show_platforms' => false,'format' => FORMAT_HTML);
   $options = array_merge($default_options, $options);
 
   $l18n = init_labels(array('platform' => null));

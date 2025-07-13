@@ -1,11 +1,11 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
- *  
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
  * @filesource  reqSpecCommands.class.php
  * @author      Francisco Mancardi
- * 
+ *
  *
  */
 class reqSpecCommands
@@ -24,7 +24,7 @@ class reqSpecCommands
 
   const OVERWRITESCOPE=true;
 
-  function __construct(&$db,$tproject_id)
+  public function __construct(&$db,$tproject_id)
   {
     $this->db=$db;
     $this->reqSpecMgr = new requirement_spec_mgr($db);
@@ -48,12 +48,12 @@ class reqSpecCommands
     }
   }
 
-  function setAuditContext($auditContext)
+  public function setAuditContext($auditContext)
   {
     $this->auditContext=$auditContext;
   }
 
-  function getReqMgrSystem()
+  public function getReqMgrSystem()
   {
     return $this->reqMgrSystem;
   }
@@ -63,7 +63,7 @@ class reqSpecCommands
    * common properties needed on gui
    *
    */
-  function initGuiBean($options=null)
+  public function initGuiBean($options=null)
   {
     $obj = new stdClass();
     $obj->pageTitle = '';
@@ -110,13 +110,12 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function create(&$argsObj)
+  public function create(&$argsObj)
   {
-    // echo __CLASS__ . '.' . __FUNCTION__ . '()<br>';
-    $guiObj = $this->initGuiBean(); 
+    $guiObj = $this->initGuiBean();
     $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
     $guiObj->action_descr = lang_get('create_req_spec');
 
@@ -128,7 +127,7 @@ class reqSpecCommands
     $guiObj->req_spec_doc_id=null;
     $guiObj->total_req_counter=null;
 
-    return $guiObj;  
+    return $guiObj;
   }
 
   /*
@@ -136,15 +135,13 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
   // following req command model
-  function edit(&$argsObj,$request,$overwriteArgs=true)
+  public function edit(&$argsObj,$request,$overwriteArgs=true)
   {
-    // echo __CLASS__ . '.' . __FUNCTION__ . '()<br>';
-
-    $guiObj = $this->initGuiBean(); 
+    $guiObj = $this->initGuiBean();
 
     $guiObj->req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
     $guiObj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $guiObj->req_spec['title'];
@@ -164,13 +161,13 @@ class reqSpecCommands
                                         $argsObj->req_spec_revision_id,
                                         $argsObj->tproject_id);
     
-    // not really clear    
+    // not really clear
     if( $overwriteArgs )
     {
       $argsObj->scope = $guiObj->req_spec['scope'];
     }
     
-    return $guiObj;  
+    return $guiObj;
   }
 
   /*
@@ -178,14 +175,12 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function doCreate(&$argsObj,$request)
+  public function doCreate(&$argsObj,$request)
   {
-    // echo __CLASS__ . '.' . __FUNCTION__ . '()<br>';
-  
-    $guiObj = $this->initGuiBean(); 
+    $guiObj = $this->initGuiBean();
     $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
     $guiObj->action_descr = lang_get('create_req_spec');
     $guiObj->submit_button_label=$this->submit_button_label;
@@ -230,7 +225,7 @@ class reqSpecCommands
       $guiObj->req_spec_title=$argsObj->title;
       $guiObj->total_req_counter=$argsObj->countReq;
     }
-    return $guiObj;  
+    return $guiObj;
   }
 
 
@@ -239,14 +234,14 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function doUpdate(&$argsObj,$request)
+  public function doUpdate(&$argsObj,$request)
   {
     $descr_prefix = lang_get('req_spec_short') . TITLE_SEP;
 
-    $guiObj = $this->initGuiBean(); 
+    $guiObj = $this->initGuiBean();
     $guiObj->submit_button_label=$this->submit_button_label;
     $guiObj->template = null;
     $guiObj->req_spec_id = $argsObj->req_spec_id;
@@ -254,9 +249,9 @@ class reqSpecCommands
     $guiObj = $this->edit($argsObj,null,!self::OVERWRITESCOPE);
     $guiObj->user_feedback = '';
     $guiObj->template = null;
-    $guiObj->askForRevision = false;      
+    $guiObj->askForRevision = false;
     
-    // why can not do the check now ? 20110730 
+    // why can not do the check now ? 20110730
     $chk = $this->reqSpecMgr->check_main_data($argsObj->title,$argsObj->doc_id,
                           $argsObj->tproject_id,$argsObj->parentID,
                           $argsObj->req_spec_id);
@@ -283,13 +278,13 @@ class reqSpecCommands
         $guiObj->req_spec[$item_key] = $argsObj->$from;
       }
     
-      $guiObj->action_status_ok = false; 
+      $guiObj->action_status_ok = false;
       $guiObj->user_feedback = $chk['msg'];
-      $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, 
+      $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id,
                                               null, null,$request);
     }
     
-    return $guiObj;  
+    return $guiObj;
   }
 
 
@@ -298,12 +293,12 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function doDelete(&$argsObj)
+  public function doDelete(&$argsObj)
   {
-    $guiObj = $this->initGuiBean(); 
+    $guiObj = $this->initGuiBean();
 
     $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
     $this->reqSpecMgr->delete_deep($argsObj->req_spec_id);
@@ -317,9 +312,9 @@ class reqSpecCommands
 
     $guiObj->user_feedback = sprintf(lang_get('req_spec_deleted'),$req_spec['title']);
     $guiObj->refreshTree = 1; // needed to enable refresh_tree logic
-    $guiObj->result = 'ok';  
+    $guiObj->result = 'ok';
         
-    return $guiObj;  
+    return $guiObj;
   }
   
   
@@ -328,12 +323,12 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function reorder(&$argsObj)
+  public function reorder(&$argsObj)
   {
-    $guiObj = $this->initGuiBean(); 
+    $guiObj = $this->initGuiBean();
     $guiObj->template = 'reqSpecReorder.tpl';
     $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
     $guiObj->action_descr = lang_get('title_change_req_spec_order');
@@ -352,12 +347,12 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function doReorder(&$argsObj)
+  public function doReorder(&$argsObj)
   {
-    $guiObj = $this->initGuiBean(); 
+    $guiObj = $this->initGuiBean();
     $guiObj->tproject_name=$argsObj->tproject_name;
     $guiObj->tproject_id=$argsObj->tproject_id;
     $guiObj->template = 'project_req_spec_mgmt.tpl';
@@ -378,13 +373,13 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function createChild(&$argsObj)
+  public function createChild(&$argsObj)
   {
     $reqParent=$this->reqSpecMgr->get_by_id($argsObj->parentID);
-    $guiObj = $this->initGuiBean(); 
+    $guiObj = $this->initGuiBean();
     $guiObj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $reqParent['title'];
     $guiObj->action_descr = lang_get('create_child_req_spec');
 
@@ -396,7 +391,7 @@ class reqSpecCommands
     $guiObj->req_spec_title=null;
     $guiObj->total_req_counter=null;
 
-    return $guiObj;  
+    return $guiObj;
   }
 
 
@@ -405,12 +400,12 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function copyRequirements(&$argsObj,$options=null)
+  public function copyRequirements(&$argsObj,$options=null)
   {
-    $obj = $this->initGuiBean(); 
+    $obj = $this->initGuiBean();
     $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
     
     $my['options'] = array( 'get_items' => true);
@@ -444,12 +439,12 @@ class reqSpecCommands
   }
 
   /**
-   * 
+   *
    *
    */
-  function doCopyRequirements(&$argsObj)
+  public function doCopyRequirements(&$argsObj)
   {
-    $obj = $this->initGuiBean(); 
+    $obj = $this->initGuiBean();
     $obj = $this->copyRequirements($argsObj, array( 'get_items' => false));
     $obj->req = null;
     $obj->req_spec_id = $argsObj->req_spec_id;
@@ -474,13 +469,13 @@ class reqSpecCommands
         $obj->user_feedback = $logMsg; // sprintf(lang_get('req_created'), $new_req['req_doc_id']);
         $obj->template = 'reqCopy.tpl';
         $obj->req_id = $ret['id'];
-        $obj->array_of_msg[] = $logMsg;  
+        $obj->array_of_msg[] = $logMsg;
       }
     }
     $obj->items = $this->reqSpecMgr->get_requirements($obj->req_spec_id,
                                                       'all',null,$this->getRequirementsOptions);
     
-    return $obj;  
+    return $obj;
   }
 
 
@@ -490,12 +485,12 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function copy(&$argsObj,$options=null)
+  public function copy(&$argsObj,$options=null)
   {
-    $obj = $this->initGuiBean(); 
+    $obj = $this->initGuiBean();
     $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
     
     $my['options'] = array( 'get_items' => true);
@@ -535,12 +530,12 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function doCopy(&$argsObj)
+  public function doCopy(&$argsObj)
   {
-    $obj = $this->initGuiBean(); 
+    $obj = $this->initGuiBean();
     $obj = $this->copy($argsObj);
     $obj->req = null;
     $obj->req_spec_id = $argsObj->req_spec_id;
@@ -558,7 +553,7 @@ class reqSpecCommands
     $obj->top_checked = ' checked = "checked" ';
     $obj->bottom_checked = ' ';
   
-    $op = $this->reqSpecMgr->copy_to($argsObj->req_spec_id,$argsObj->containerID, 
+    $op = $this->reqSpecMgr->copy_to($argsObj->req_spec_id,$argsObj->containerID,
                                      $argsObj->tproject_id, $argsObj->user_id);
 
     if( $op['status_ok'] )
@@ -585,26 +580,26 @@ class reqSpecCommands
   /**
    *
    */
-  public function doFreeze(&$argsObj,$request) 
+  public function doFreeze(&$argsObj,$request)
   {
-    $req_spec_id = $request["req_spec_id"];    
+    $req_spec_id = $request["req_spec_id"];
     $req_spec = $this->reqSpecMgr->getReqTree($req_spec_id);
     $req_spec_info = $this->reqSpecMgr->get_by_id($req_spec_id);
     
     $childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
-    if( !is_null($childNodes)) 
+    if( !is_null($childNodes))
     {
-      $loop_qty=sizeof($childNodes); 
-      for($idx = 0;$idx < $loop_qty;$idx++) 
+      $loop_qty=sizeof($childNodes);
+      for($idx = 0;$idx < $loop_qty;$idx++)
       {
         $cNode = $childNodes[$idx];
         $nTable = $cNode['node_table'];
-        if($cNode['node_table'] == 'req_specs') 
+        if($cNode['node_table'] == 'req_specs')
         {
           $request["req_spec_id"]=$cNode['id'];
           $this->doFreeze($argsObj,$request);
         }
-        else if ($cNode['node_table'] == 'requirements') 
+        elseif ($cNode['node_table'] == 'requirements')
         {
           $req = $this->reqMgr->get_by_id($cNode['id'],requirement_mgr::LATEST_VERSION);
           $req_freeze_version = new stdClass();
@@ -612,9 +607,9 @@ class reqSpecCommands
           $this->commandMgr->doFreezeVersion($req_freeze_version);
         }
       }
-    }  
+    }
     
-    $obj = $this->initGuiBean(); 
+    $obj = $this->initGuiBean();
     $obj->template = 'show_message.tpl';
     $obj->template_dir = '';
     $obj->user_feedback = lang_get('req_frozen');
@@ -631,10 +626,10 @@ class reqSpecCommands
    * on reqCommand.class.php
    *
    */
-  function simpleCompare($old,$new,$oldCF,$newCF)
+  private function simpleCompare($old,$new,$oldCF,$newCF)
   {
     // - log message is only forced to be entered when a custom field, title or document ID is changed
-    // - when only changes where made to scope user is free to create a new revision or 
+    // - when only changes where made to scope user is free to create a new revision or
     //   overwrite the old revision (Cancel -> overwrite)
     $ret = array('force' =>  false, 'suggest' => false, 'nochange' => false, 'changeon' => null);
   
@@ -643,7 +638,7 @@ class reqSpecCommands
     // Then to compare old and new
     // $old[$key] compare to $new[$value]
     //
-    $suggest_revision = array('scope' => 'scope'); 
+    $suggest_revision = array('scope' => 'scope');
     $force_revision = array('type' => 'reqSpecType', 'doc_id'=> 'doc_id', 'title' => 'title');
 
     foreach($force_revision as $access_key => $access_prop)
@@ -667,7 +662,7 @@ class reqSpecCommands
             break;
           }
         }
-      }    
+      }
     }
     
     if( !$ret['force'] )
@@ -691,14 +686,14 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
      @internal revisions
 
   */
-  function doCreateRevision(&$argsObj,$request)
+  public function doCreateRevision(&$argsObj,$request)
   {
-    $item = array('log_message' => $argsObj->log_message, 'author_id' => $argsObj->user_id);    
+    $item = array('log_message' => $argsObj->log_message, 'author_id' => $argsObj->user_id);
     $ret = $this->reqSpecMgr->clone_revision($argsObj->req_spec_id,$item);
     
     $obj = $this->initGuiBean();
@@ -707,7 +702,7 @@ class reqSpecCommands
     $obj->req_spec = null;
     $obj->req_spec_id=$argsObj->req_spec_id;
     $obj->req_spec_revision_id = $ret['id'];
-    return $obj;  
+    return $obj;
   }
 
 
@@ -715,7 +710,7 @@ class reqSpecCommands
   /**
    *
    */
-  function process_revision(&$guiObj,&$argsObj,&$userInput)
+  private function process_revision(&$guiObj,&$argsObj,&$userInput)
   {
   
     // TICKET 4661
@@ -735,7 +730,7 @@ class reqSpecCommands
       $guiObj->askForLog = true;
       $guiObj->refreshTree = false;
       
-      // Need Change several values with user input data, to match logic on 
+      // Need Change several values with user input data, to match logic on
       // edit php page on function renderGui()
       // $map = array('status' => 'reqStatus', 'type' => 'reqSpecType','scope' => 'scope',
       $map = array('type' => 'reqSpecType','scope' => 'scope',
@@ -745,7 +740,7 @@ class reqSpecCommands
       {
         $guiObj->req_spec[$k] = $argsObj->$w;
       }
-      $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, 
+      $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id,
                                               null, null,$userInput);
 
     }
@@ -769,7 +764,7 @@ class reqSpecCommands
       $user_key = $createRev ? 'author_id' : 'modifier_id';
       $item[$user_key] = $argsObj->user_id;
       
-      $opt = array('skip_controls' => true, 'create_rev' => $createRev, 'log_message' => $argsObj->log_message);                                 
+      $opt = array('skip_controls' => true, 'create_rev' => $createRev, 'log_message' => $argsObj->log_message);
       $ret = $this->reqSpecMgr->update($item,$opt);
     
       $guiObj->user_feedback = $ret['msg'];
@@ -785,7 +780,7 @@ class reqSpecCommands
         $guiObj->template = "reqSpecView.php?refreshTree={$argsObj->refreshTree}&" .
                             "req_spec_id={$guiObj->req_spec_id}";
   
-        // TODO 
+        // TODO
         // logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
       }
       else
@@ -800,7 +795,7 @@ class reqSpecCommands
     }
     else if( $diff['suggest'] )
     {
-      $guiObj->askForRevision = true;      
+      $guiObj->askForRevision = true;
     }
 
     return $guiObj;
@@ -810,7 +805,7 @@ class reqSpecCommands
   /**
    *
    */
-  function fileUpload(&$argsObj,$request)
+  public function fileUpload(&$argsObj,$request)
   {
     $argsObj->uploadOp = fileUploadManagement($this->db,$argsObj->req_spec_id,$argsObj->fileTitle,$this->reqSpecMgr->getAttachmentTableName());
     return $this->initGuiObjForAttachmentOperations($argsObj);
@@ -819,7 +814,7 @@ class reqSpecCommands
   /**
    *
    */
-  function deleteFile(&$argsObj)
+  public function deleteFile(&$argsObj)
   {
     deleteAttachment($this->db,$argsObj->file_id);
     return $this->initGuiObjForAttachmentOperations($argsObj);
@@ -841,7 +836,7 @@ class reqSpecCommands
 
     $guiObj->uploadOp = $argsObj->uploadOp;
 
-    return $guiObj;    
+    return $guiObj;
   }
 
   /*
@@ -849,12 +844,12 @@ class reqSpecCommands
 
     args:
     
-    returns: 
+    returns:
 
   */
-  function bulkReqMon(&$argsObj,$options=null)
+  public function bulkReqMon(&$argsObj,$options=null)
   {
-    $obj = $this->initGuiBean(); 
+    $obj = $this->initGuiBean();
     $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
     
     $my['options'] = array( 'get_items' => true);
@@ -863,9 +858,8 @@ class reqSpecCommands
 
     if( $my['options']['get_items'] )
     {
-      $opt = $this->getRequirementsOptions + 
-             array('outputLevel' => 'minimal', 'decodeUsers' => false);
-      $obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,'all',null,$opt);    
+      $opt = $this->getRequirementsOptions + array('outputLevel' => 'minimal', 'decodeUsers' => false);
+      $obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,'all',null,$opt);
     }
 
     $opx = array('reqSpecID' => $argsObj->req_spec_id);
@@ -879,7 +873,7 @@ class reqSpecCommands
       $itx['monitor'] = $onOff ? 'On' : 'Off';
       $obj->enable_start_btn |= !$onOff;
       $obj->enable_stop_btn |= $onOff;
-    }  
+    }
 
     $obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
     $obj->action_descr = lang_get('bulk_monitoring');
@@ -895,12 +889,12 @@ class reqSpecCommands
   }
 
  /**
-   * 
+   *
    *
    */
-  function doBulkReqMon(&$argsObj)
+  public function doBulkReqMon(&$argsObj)
   {
-    $obj = $this->initGuiBean(); 
+    $obj = $this->initGuiBean();
     $obj->req = null;
     $obj->req_spec_id = $argsObj->req_spec_id;
     $obj->array_of_msg = '';
@@ -916,7 +910,7 @@ class reqSpecCommands
         {
           $f2r = isset($monSet[$req_id]) ? 'monitorOff' : 'monitorOn';
           $this->reqMgr->$f2r($req_id,$argsObj->user_id,$argsObj->tproject_id);
-        }  
+        }
       break;
 
       case 'startMon':
@@ -926,15 +920,15 @@ class reqSpecCommands
       case 'stopMon':
         $m2r = 'monitorOff';
       break;
-    }     
+    }
 
     if( !is_null($m2r) )
     {
       foreach($argsObj->itemSet as $req_id)
       {
         $this->reqMgr->$m2r($req_id,$argsObj->user_id,$argsObj->tproject_id);
-      }  
-    } 
+      }
+    }
 
     return $this->bulkReqMon($argsObj);
   }

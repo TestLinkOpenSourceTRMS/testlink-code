@@ -8,7 +8,7 @@
  * @filesource  searchForm.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2017, TestLink community
  * @link        http://www.testlink.org
  *
  *
@@ -29,11 +29,11 @@ $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'tcSearchForm.tpl');
 /**
- * 
+ *
  *
  */
 function init_args()
-{              
+{
   $args = new stdClass();
   $args->tprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
@@ -41,7 +41,7 @@ function init_args()
   if($args->tprojectID <= 0)
   {
     throw new Exception("Error Processing Request - Invalid Test project id " . __FILE__);
-  }   
+  }
       
   return $args;
 }
@@ -71,7 +71,7 @@ function initializeGui(&$dbHandler,&$argsObj)
   $reqSpecSet = $tproject_mgr->genComboReqSpec($argsObj->tprojectID);
   $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
 
-  $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
+  $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'),
                                   LOW => lang_get('low_importance'));
 
  

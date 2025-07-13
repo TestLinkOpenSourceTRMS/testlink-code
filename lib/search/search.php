@@ -3,14 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Execute Search. 
+ * Execute Search.
  * Search is done ONLY ON CURRENT test project
  *
  *
  * @filesource  search.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2017, TestLink community
  * @link        http://www.testlink.org/
  *
  *
@@ -40,18 +40,18 @@ $cfieldMgr = new cfield_mgr($db);
 $targetSet = cleanUpTarget($db,$args->target);
 $canUseTarget = (count($targetSet) > 0);
 
-if($args->oneCheck == false) {
+if(!$args->oneCheck) {
   $gui->caller = 'search';
   $smarty->assign('gui',$gui);
   $smarty->display($templateCfg->template_dir . $tpl);
   exit();
-}  
+}
 
-if($canUseTarget == false && $args->oneValueOK == false) {
+if(!$canUseTarget && !$args->oneValueOK) {
   $smarty->assign('gui',$gui);
   $smarty->display($templateCfg->template_dir . $tpl);
   exit();
-}  
+}
 
 // Processing
 $map = null;
@@ -66,19 +66,19 @@ if( $args->custom_field_id > 0) {
 
   if ( isset( $gui->design_cf_req[$args->custom_field_id] ) ) {
     $req_cf_id = $args->custom_field_id;
-  }  
+  }
 }
 
 $args->reqType = null;
 if($args->reqType != '') {
   $args->reqType = str_replace('RQ','', $args->reqTypes);
-}  
+}
 
 if( ($args->tproject_id > 0) && $args->doAction == 'doSearch') {
   $tables = $cmdMgr->getTables();
   $views = $cmdMgr->getViews();
 
-  $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 
+  $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ',
                 'by_requirement_doc_id' => '', 'users' => '');
   $tcaseID = null;
 
@@ -102,28 +102,28 @@ if( $canUseTarget && ($args->ts_summary || $args->ts_title) ) {
 // Requirment SPECification
 if( $canUseTarget && ($args->rs_scope || $args->rs_title) ) {
   $mapRS = $cmdMgr->searchReqSpec($targetSet,$canUseTarget);
-} 
+}
 
 // REQuirements
 if( $args->rq_scope || $args->rq_title || $args->rq_doc_id || ($req_cf_id > 0) ) {
-  $mapRQ = $cmdMgr->searchReq($targetSet,$canUseTarget,$req_cf_id);  
-} 
+  $mapRQ = $cmdMgr->searchReq($targetSet,$canUseTarget,$req_cf_id);
+}
 
   
 $hasTestCases = (!is_null($tcaseSet) && count($tcaseSet) > 0);
 if( $hasTestCases ) {
   $emptyTestProject = false;
   $mapTC = $cmdMgr->searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id);
-}  
+}
 
 // Render Results
 if( !is_null($mapTC) ) {
-  $tcase_mgr = new testcase($db);   
+  $tcase_mgr = new testcase($db);
   $tcase_set = array_keys($mapTC);
   $options = array('output_format' => 'path_as_string');
   $gui->path_info = $treeMgr->get_full_path_verbose($tcase_set, $options);
   $gui->resultSet = $mapTC;
-} else if ($emptyTestProject) {
+} elseif ($emptyTestProject) {
   $gui->warning_msg = lang_get('empty_testproject');
 } else {
   $gui->warning_msg = lang_get('no_records_found');
@@ -139,24 +139,24 @@ if (!is_null($table)) {
 $table = null;
 if( !is_null($mapTS)) {
   $gui->resultTestSuite = $mapTS;
-  $table = buildTSExtTable($gui, $charset, $img['edit_icon'], $img['history_small']); 
-}  
+  $table = buildTSExtTable($gui, $charset, $img['edit_icon']);
+}
   
 $gui->warning_msg = '';
 if(!is_null($table)) {
   $gui->tableSet[] = $table;
-}  
+}
 
 $table = null;
 if( !is_null($mapRS)) {
   $gui->resultReqSpec = $mapRS;
-  $table = buildRSExtTable($gui, $charset, $img['edit_icon'], $img['history_small']); 
-}  
+  $table = buildRSExtTable($gui, $charset, $img['edit_icon']);
+}
   
 $gui->warning_msg = '';
 if(!is_null($table)) {
   $gui->tableSet[] = $table;
-}  
+}
 
 $table = null;
 if( !is_null($mapRQ)) {
@@ -171,14 +171,14 @@ if( !is_null($mapRQ)) {
 $gui->warning_msg = '';
 if(!is_null($table)) {
   $gui->tableSet[] = $table;
-}  
+}
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
 
 /**
- * 
+ *
  *
  */
 function buildTCExtTable($gui, $charset, $edit_icon, $history_icon)  {
@@ -200,7 +200,7 @@ function buildTCExtTable($gui, $charset, $edit_icon, $history_icon)  {
     
     $titleSeparator = config_get('gui_title_separator_1');
     
-    foreach($gui->resultSet as $result) 
+    foreach($gui->resultSet as $result)
     {
       $rowData = array();
       $rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
@@ -210,7 +210,7 @@ function buildTCExtTable($gui, $charset, $edit_icon, $history_icon)  {
                       "<img title=\"". lang_get('execution_history') . "\" src=\"{$history_icon}\" /></a> ";
       $edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
                    "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
-      $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . 
+      $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] .
                    " [v" . $result['version'] . "]" . $titleSeparator .
                    htmlentities($result['name'], ENT_QUOTES, $charset);
 
@@ -238,18 +238,18 @@ function buildTCExtTable($gui, $charset, $edit_icon, $history_icon)  {
 }
 
 /**
- * 
+ *
  *
  */
-function buildTSExtTable($gui, $charset, $edit_icon, $history_icon) 
+function buildTSExtTable($gui, $charset, $edit_icon)
 {
   $table = null;
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
   
-  if(count($gui->resultTestSuite) > 0) 
+  if(!empty($gui->resultTestSuite))
   {
-    $labels = array('test_suite' => lang_get('test_suite'), 
+    $labels = array('test_suite' => lang_get('test_suite'),
                     'details' => lang_get('details'));
     $columns = array();
     
@@ -259,7 +259,7 @@ function buildTSExtTable($gui, $charset, $edit_icon, $history_icon)
     // Extract the relevant data and build a matrix
     $matrixData = array();
     
-    foreach($gui->resultTestSuite as $result) 
+    foreach($gui->resultTestSuite as $result)
     {
      $edit_link = "<a href=\"javascript:openTSEditWindow({$result['id']});\">" .
                    "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
@@ -290,18 +290,18 @@ function buildTSExtTable($gui, $charset, $edit_icon, $history_icon)
 }
 
 /**
- * 
+ *
  *
  */
-function buildRSExtTable($gui, $charset, $edit_icon, $history_icon) 
+function buildRSExtTable($gui, $charset, $edit_icon)
 {
   $table = null;
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
   
-  if(count($gui->resultReqSpec) > 0) 
+  if(!empty($gui->resultReqSpec))
   {
-    $labels = array('req_spec' => lang_get('req_spec'), 
+    $labels = array('req_spec' => lang_get('req_spec'),
                     'scope' => lang_get('scope'));
     $columns = array();
     
@@ -311,15 +311,14 @@ function buildRSExtTable($gui, $charset, $edit_icon, $history_icon)
     // Extract the relevant data and build a matrix
     $matrixData = array();
     
-    foreach($gui->resultReqSpec as $result) 
+    foreach($gui->resultReqSpec as $result)
     {
      $edit_link = "<a href=\"javascript:openLinkedReqSpecWindow({$result['req_spec_id']});\">" .
                    "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
   
       $rowData = array();
       
-      $rowData[] = $edit_link . 
-                   htmlentities($result['name'] . "[r{$result['revision']}]", ENT_QUOTES, $charset);
+      $rowData[] = $edit_link . htmlentities($result['name'] . "[r{$result['revision']}]", ENT_QUOTES, $charset);
   
       $rowData[] = ($designType == 'none' ? nl2br($result['scope']) : $result['scope']);
 
@@ -345,7 +344,7 @@ function buildRSExtTable($gui, $charset, $edit_icon, $history_icon)
 
 
 /**
- * 
+ *
  *
  */
 function buildRQExtTable($gui, $charset)
@@ -354,14 +353,14 @@ function buildRQExtTable($gui, $charset)
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
 
-  $lbl = array('edit' => 'requirement', 'req_spec' => 'req_spec', 
-               'requirement' => 'requirement','scope' => 'scope', 
+  $lbl = array('edit' => 'requirement', 'req_spec' => 'req_spec',
+               'requirement' => 'requirement','scope' => 'scope',
                'version_revision_tag' => 'version_revision_tag');
 
   $labels = init_labels($lbl);
   $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
   
-  if(count($gui->resultReq) > 0) 
+  if(!empty($gui->resultReq))
   {
     $columns = array();
     
@@ -375,8 +374,6 @@ function buildRQExtTable($gui, $charset)
     
     $key2loop = array_keys($gui->resultReq);
     $img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
-    $reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
-    $reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">' . $labels['version_revision_tag'] . ' </a>'; 
   
     foreach($key2loop as $req_id)
     {
@@ -430,8 +427,8 @@ function cleanUpTarget(&$dbHandler,$target)
     if(trim($val) != '')
     {
       $targetSet[] = $dbHandler->prepare_string($val);
-    }  
-  } 
+    }
+  }
   return $targetSet;
 }
 
@@ -440,22 +437,22 @@ function cleanUpTarget(&$dbHandler,$target)
 /*
 create view latest_tcase_version_number  AS
 SELECT NH_TC.id AS testcase_id,max(TCV.version) AS version
-FROM nodes_hierarchy NH_TC 
-JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = NH_TC.id 
-JOIN tcversions TCV ON NH_TCV.id = TCV.id 
+FROM nodes_hierarchy NH_TC
+JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = NH_TC.id
+JOIN tcversions TCV ON NH_TCV.id = TCV.id
 group by testcase_id
 ===========
 
-SELECT LVN.testcase_id, TCV.id,TCV.version 
-FROM latest_tcase_version_number LVN 
-JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = LVN.testcase_id 
+SELECT LVN.testcase_id, TCV.id,TCV.version
+FROM latest_tcase_version_number LVN
+JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = LVN.testcase_id
 JOIN tcversions TCV ON NH_TCV.id = TCV.id AND LVN.version = TCV.version
 WHERE 1=1 AND NH_TCV.parent_id IN (7945) AND ( 1=1 AND TCV.summary like '%three%' )
 
 create view latest_rspec_revision AS
 SELECT parent_id AS req_spec_id,testproject_id, max(revision) AS revision
 FROM req_specs_revisions RSR
-JOIN req_specs RS ON RS.id = RSR.parent_id 
+JOIN req_specs RS ON RS.id = RSR.parent_id
 group by parent_id,testproject_id
 
 CREATE VIEW latest_req_version AS
@@ -469,6 +466,6 @@ select RQV.scope,RQ.req_doc_id,NHRQ.name  from nodes_hierarchy NHRQV
 JOIN latest_req_version LV on LV.req_id = NHRQV.parent_id
 JOIN req_versions RQV on NHRQV.id = RQV.id AND RQV.version = LV.version
 JOIN nodes_hierarchy NHRQ on NHRQ.id = LV.req_id
-JOIN requirements RQ on RQ.id = LV.req_id 
+JOIN requirements RQ on RQ.id = LV.req_id
 
 */

@@ -1,11 +1,11 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  reqSearch.php
  * @package     TestLink
- * @copyright   2005-2020, TestLink community 
+ * @copyright   2005-2020, TestLink community
  * @link        http://www.testlink.org/index.php
  *
  * Search results for requirements.
@@ -48,7 +48,6 @@ if ($args->tprojectID) {
 
   // key: req id (db id)
   // value: array of versions and revisions
-  //
   $map = (array)$db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
 
   // dont show requirements from different testprojects than the selected one
@@ -70,8 +69,7 @@ if($gui->row_qty > 0) {
   if($gui->row_qty <= $req_cfg->search->max_qty_for_display) {
     $req_set = array_keys($map);
     $options = array('output_format' => 'path_as_string');
-    $gui->path_info = 
-      $tproject_mgr->tree_manager->get_full_path_verbose($req_set,$options);
+    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($req_set,$options);
   } else {
     $gui->warning_msg = lang_get('too_wide_search_criteria');
   }
@@ -85,43 +83,41 @@ if (!is_null($table)) {
   $gui->tableSet[] = $table;
 }
 
-$gui->pageTitle = 
-  $gui->main_descr . " - " . lang_get('match_count') . ": " . $gui->row_qty;
+$gui->pageTitle = $gui->main_descr . " - " . lang_get('match_count') . ": " . $gui->row_qty;
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
 /**
- * 
+ *
  *
  */
 function buildExtTable($gui, $charset) {
   $table = null;
-  $lbl = array('edit' => 'requirement', 'rev' => 'revision_short', 
-               'ver' => 'version_short', 
+  $lbl = array('edit' => 'requirement', 'rev' => 'revision_short',
+               'ver' => 'version_short',
                'req_spec' => 'req_spec', 'requirement' => 'requirement',
                'version_revision_tag' => 'version_revision_tag');
 
   $labels = init_labels($lbl);
   $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
   
-  // $gui->resultSet - 
-  // key: reqspec_id 
+  // $gui->resultSet -
+  // key: reqspec_id
   // value: array of matches
   // array
   // {
   // [4][0]=>{"name" => "QAZ MNNN","id" => "4","req_doc_id" => "QAZ",
-  //        "version_id" => 5, "version" => 1, 
+  //        "version_id" => 5, "version" => 1,
   //      "revision_id" => -1, "revision" => 2}   -> revisio_id < 0 => lives on REQ VERSIONS TABLE
     //
   //    [1]=>{"name" => "QAZ MNNN","id" => "4","req_doc_id" => "QAZ",
-  //        "version_id" => 5, "version" => 1, 
-  //      "revision_id" => 6, "revision" => 1}   
+  //        "version_id" => 5, "version" => 1,
+  //      "revision_id" => 6, "revision" => 1}
   // ...
   // }
   //
   //
-
   if(count($gui->resultSet) > 0) {
     $columns = array();
     
@@ -134,9 +130,9 @@ function buildExtTable($gui, $charset) {
     $key2loop = array_keys($gui->resultSet);
     $img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
     // req_id, req_version_id
-    $reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
+    $reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>';
     // req_revision_id
-    $reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">' . $labels['version_revision_tag'] . ' </a>'; 
+    $reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">' . $labels['version_revision_tag'] . ' </a>';
     
     foreach($key2loop as $req_id) {
       $rowData = array();
@@ -158,7 +154,7 @@ function buildExtTable($gui, $charset) {
         } else {
           $dummy = sprintf($reqVerHref,$req_id,$rx['version_id'],$rx['version'],
                            $rx['revision']);
-        } 
+        }
         $matches .= $dummy;
       }
       $rowData[] = $edit_link . $title . ' ' . $matches;
@@ -182,6 +178,7 @@ function buildExtTable($gui, $charset) {
   return $table;
 }
 
+
 /*
  function:
 
@@ -194,7 +191,7 @@ function init_args($dateFormat) {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $strnull = array('requirement_document_id', 'name','scope', 
+  $strnull = array('requirement_document_id', 'name','scope',
                    'reqStatus',
                    'custom_field_value', 'targetRequirement',
                    'creation_date_from','creation_date_to',
@@ -224,11 +221,11 @@ function init_args($dateFormat) {
   foreach( $dk as $tdk => $hhmmss ) {
     if (isset($args->$tdk) && trim($args->$tdk) != '') {
       $l10ndate = split_localized_date($args->$tdk, $dateFormat);
-      $args->$tdk = null;   
+      $args->$tdk = null;
       if ($l10ndate != null && is_array($l10ndate)) {
         // set date in iso format
-        $args->$tdk = $l10ndate['year'] . "-" . 
-                      $l10ndate['month'] . "-" . 
+        $args->$tdk = $l10ndate['year'] . "-" .
+                      $l10ndate['month'] . "-" .
                       $l10ndate['day'] . $hhmmss;
       }
     }
@@ -243,12 +240,12 @@ function init_args($dateFormat) {
 
 
 /**
- * 
+ *
  *
  */
 function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
-  $tables = tlObjectWithDB::getDBTables(array('cfield_design_values', 
-              'nodes_hierarchy', 'req_specs', 'req_relations', 'req_versions', 
+  $tables = tlObjectWithDB::getDBTables(array('cfield_design_values',
+              'nodes_hierarchy', 'req_specs', 'req_relations', 'req_versions',
               'req_revisions','requirements', 'req_coverage', 'tcversions'));
 
   // ver => REQ Versions
@@ -261,12 +258,10 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
   //
   // That's why to certain extent filter seems to work in OR mode.
   // May be this is a BUG, that was never reported.
-  //
   $filter = array();
   $filter['ver'] = null;
   $filter['rev'] = null;
 
-  // -----------------------------------------------------------------------
   // date filters can be build using algorithm
   // Need to sanitize!!! 2019
   $date_fields = array('creation_ts' => 'ts' ,'modification_ts' => 'ts');
@@ -278,28 +273,26 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
         $filter['ver'][$fkey] = " AND REQV.$fx $op '{$argsObj->$fkey}' ";
         $filter['rev'][$fkey] = " AND REQR.$fx $op '{$argsObj->$fkey}' ";
       }
-    }   
+    }
   }
-  // -----------------------------------------------------------------------
 
   // key: args key
   // value: map
   //      key: table field
-  //      value: map 
+  //      value: map
   //         key: filter scope, will identify with part of SQL affects
   //         value: table alias
-  //  
-  $likeKeys = array('name' => 
-                      array('name' => 
+  $likeKeys = array('name' =>
+                      array('name' =>
                             array('ver' => "NH_REQ", 'rev' => "REQR")),
-                    'requirement_document_id' => 
-                      array('req_doc_id' => 
+                    'requirement_document_id' =>
+                      array('req_doc_id' =>
                             array('ver' => 'REQ', 'rev' => 'REQR')),
-                    'scope' => 
-                      array('scope' => 
+                    'scope' =>
+                      array('scope' =>
                             array('ver' => 'REQV', 'rev' => 'REQR')),
-                    'log_message' 
-                      => array('log_message' => 
+                    'log_message'
+                      => array('log_message' =>
                                array('ver' => 'REQV','rev' =>'REQR')));
 
   foreach($likeKeys as $key => $fcfg) {
@@ -310,12 +303,12 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
         $filter[$table][$field] = " AND {$alias}.{$field} like '%{$value}%' ";
       }
     }
-  }           
+  }
 
-  $char_keys = array( 'reqType' => 
-                 array('type' => 
+  $char_keys = array( 'reqType' =>
+                 array('type' =>
                           array('ver' => "REQV", 'rev' => "REQR")),
-                       'reqStatus' => 
+                       'reqStatus' =>
                          array('status' => array('ver' => 'REQV', 'rev' => 'REQR')));
 
   foreach($char_keys as $key => $fcfg) {
@@ -326,7 +319,7 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
         $filter[$table][$field] = " AND {$alias}.{$field} = '{$value}' ";
       }
     }
-  }           
+  }
 
   if ($argsObj->version) {
     $version = $dbHandler->prepare_int($argsObj->version);
@@ -344,37 +337,35 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
   
   // Complex processing
   if(!is_null($argsObj->relation_type) && intval($argsObj->relation_type) >0) {
-    // search by relation type    
+    // search by relation type
     // $argsObj->relation_type is a string in following form
     // e.g. 3_destination or 2_source or only 4
     // must be treated different
     $dummy = explode('_',$argsObj->relation_type);
     $rel_type = $dummy[0];
-    $side = isset($dummy[1]) ? " RR.{$dummy[1]}_id = NH_REQ.id " : 
+    $side = isset($dummy[1]) ? " RR.{$dummy[1]}_id = NH_REQ.id " :
         " RR.source_id = NH_REQ.id OR RR.destination_id = NH_REQ.id ";
 
     $from['ver']['relation_type'] = " JOIN {$tables['req_relations']} RR " .
-                    " ON ($side) AND RR.relation_type = {$rel_type} "; 
+                    " ON ($side) AND RR.relation_type = {$rel_type} ";
     $from['rev']['relation_type'] = $from['ver']['relation_type'];
 
-  } 
+  }
 
   if($argsObj->custom_field_id > 0) {
     $cfield_id = $dbHandler->prepare_string($argsObj->custom_field_id);
     $cfield_value = $dbHandler->prepare_string($argsObj->custom_field_value);
-    $from['ver']['custom_field'] =  
-          " JOIN {$tables['cfield_design_values']} CFD " .
-          " ON CFD.node_id = REQV.id "; 
+    $from['ver']['custom_field'] = " JOIN {$tables['cfield_design_values']} CFD " .
+          " ON CFD.node_id = REQV.id ";
 
-    $from['rev']['custom_field'] =  
-          " JOIN {$tables['cfield_design_values']} CFD " .
-          " ON CFD.node_id = REQR.id "; 
+    $from['rev']['custom_field'] = " JOIN {$tables['cfield_design_values']} CFD " .
+          " ON CFD.node_id = REQR.id ";
 
     $filter['ver']['custom_field'] = " AND CFD.field_id = {$cfield_id} " .
                                          " AND CFD.value like '%{$cfield_value}%' ";
                                        
-    $filter['rev']['custom_field'] = $filter['ver']['custom_field'];                               
-  } 
+    $filter['rev']['custom_field'] = $filter['ver']['custom_field'];
+  }
 
   if ($argsObj->tcid != "" && strcmp($argsObj->tcid, $guiObj->tcasePrefix) != 0) {
     // search for reqs linked to this testcase
@@ -384,28 +375,27 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
     $filter['ver']['tcid'] = " AND TCV.tc_external_id = '$tcid' ";
     $filter['rev']['tcid'] = $filter['ver']['tcid'];
       
-    $from['ver']['tcid'] =  
-
+    $from['ver']['tcid'] =
         " /* 1.9.18 Changed */ " .
         " /* Look for Req Coverage info */ " .
-        " JOIN {$tables['req_coverage']} RC ON RC.req_version_id = NH_REQV.id " .  
+        " JOIN {$tables['req_coverage']} RC ON RC.req_version_id = NH_REQV.id " .
 
         " /* 1.9.18 Changed */ " .
         " /* Need Test case children => test case versions */ ".
-        " JOIN {$tables['nodes_hierarchy']} NH_TCV 
+        " JOIN {$tables['nodes_hierarchy']} NH_TCV
           ON NH_TCV.id = RC.tcversion_id " .
         
         " /* Needed to search using External ID  */ ".
         " JOIN {$tables['tcversions']} TCV ON TCV.id = NH_TCV.id ";
 
-      $from['rev']['tcid'] = $from['ver']['tcid']; 
+      $from['rev']['tcid'] = $from['ver']['tcid'];
   }
 
   // We will search on two steps
   // STEP 1
   // Search on REQ Versions
   //
-  $common = " SELECT NH_REQ.name, REQ.id, REQ.req_doc_id,"; 
+  $common = " SELECT NH_REQ.name, REQ.id, REQ.req_doc_id,";
   $sql =  $common .
           " REQV.id as version_id, REQV.version, REQV.revision, -1 AS revision_id " .
           " /*  */" .
@@ -414,8 +404,8 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
           " JOIN {$tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id=REQ.id " .
           " /* */ " .
           " /* Need to get all REQ children => REQ Versions */ " .
-          " JOIN {$tables['nodes_hierarchy']} 
-            NH_REQV ON NH_REQV.parent_id = NH_REQ.id " .  
+          " JOIN {$tables['nodes_hierarchy']}
+            NH_REQV ON NH_REQV.parent_id = NH_REQ.id " .
           " /* */ " .
           " /* Go for REQ REV data */ " .
           " JOIN {$tables['req_versions']} REQV ON REQV.id=NH_REQV.id " .
@@ -427,8 +417,8 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
     if(!is_null($ref['ver'])) {
       $sql .= ($vv == 'filter') ? ' WHERE 1=1 ' : '';
       $sql .= implode("",$ref['ver']);
-    }   
-  }   
+    }
+  }
   $stm['ver'] = $sql;
   
 
@@ -443,7 +433,7 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
       " JOIN {$tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id=REQ.id " .
       " /* SQL For Req REVISIONS - */ " .
       " /* SQL For Req REVISIONS - Need to get all REQ children => REQ Versions because they are parent of REVISIONS */ " .
-      " JOIN {$tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id " .  
+      " JOIN {$tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id " .
       " /* SQL For Req REVISIONS - */ " .
       " /* SQL For Req REVISIONS - Go for REQ REVISION DATA */" .
       " JOIN {$tables['req_versions']} REQV ON REQV.id=NH_REQV.id " .
@@ -456,8 +446,8 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
     if(!is_null($ref['rev'])) {
       $sql4Union .= ($vv == 'filter') ? ' WHERE 1=1 ' : '';
       $sql4Union .= implode("",$ref['rev']);
-    }   
-  }   
+    }
+  }
 
 
   // add additional joins that depends on user search criteria

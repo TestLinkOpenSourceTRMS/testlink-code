@@ -1,11 +1,11 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @package 	TestLink
  * @author		asimon
- * @copyright 	2005-2009, TestLink community 
+ * @copyright 	2005-2009, TestLink community
  * @version    	CVS: $Id: reqSearchForm.php,v 1.4 2010/10/21 14:57:07 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
@@ -14,7 +14,7 @@
  * @internal revisions
  *
  * @since 1.9.4
- * 20110815 - franciscom - 	TICKET 4700: Req Search Improvements - search on log message and 
+ * 20110815 - franciscom - 	TICKET 4700: Req Search Improvements - search on log message and
  *							provide link/url to multiple results
  *
  * @since 1.9.3
@@ -79,7 +79,7 @@ $smarty->display($templateCfg->template_dir . 'reqSearchForm.tpl');
 
 
 function init_args()
-{              
+{
   	$args = new stdClass();
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;

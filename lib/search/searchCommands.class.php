@@ -8,7 +8,7 @@
  * @filesource  searchCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2017, TestLink community
  * @link        http://testlink.sourceforge.net/
  *
  *
@@ -37,7 +37,7 @@ class searchCommands
   /**
    *
    */
-  function __construct(&$db)
+  private function __construct(&$db)
   {
     $this->db = $db;
     $this->tcaseMgr = new testcase($this->db);
@@ -49,20 +49,20 @@ class searchCommands
     $dbt = strtolower($this->db->db->databaseType);
     
     $this->likeOp = 'LIKE';
-    if(stristr($dbt, 'postgres') !== FALSE)
+    if(stristr($dbt, 'postgres') !== false)
     {
       $this->likeOp = 'I' . $this->likeOp;
-    }  
+    }
   }
 
 
   /**
    *
    */
-  function isReqFeatureEnabled($tproject_id)
+  private function isReqFeatureEnabled($tproject_id)
   {
     $info = $this->tprojectMgr->get_by_id($tproject_id);
-    return isset($info['opt']->requirementsEnabled) 
+    return isset($info['opt']->requirementsEnabled)
             ? $info['opt']->requirementsEnabled : 0;
   }
 
@@ -70,7 +70,7 @@ class searchCommands
   /**
    *
    */
-  function getTestCaseIDSet($tproject_id)
+  public function getTestCaseIDSet($tproject_id)
   {
     $items = array();
     $this->tprojectMgr->get_all_testcases_id($tproject_id,$items);
@@ -80,7 +80,7 @@ class searchCommands
   /**
    *
    */
-  function getTestSuiteIDSet($tproject_id) {
+  private function getTestSuiteIDSet($tproject_id) {
     $nt2ex = array('testcase' => 'exclude_me',
                    'testplan' => 'exclude_me',
                    'requirement_spec'=> 'exclude_me',
@@ -101,11 +101,9 @@ class searchCommands
   /**
    *
    */
-  function getReqSpecIDSet($tproject_id)
+  private function getReqSpecIDSet($tproject_id)
   {
     $items = array();
-
-    $opt = array('output' => 'id');
     $items = $this->reqSpecMgr->get_all_id_in_testproject($tproject_id);
     return $items;
   }
@@ -113,7 +111,7 @@ class searchCommands
   /**
    *
    */
-  function getReqIDSet($tproject_id)
+  private function getReqIDSet($tproject_id)
   {
     $items = array();
     $items = $this->tprojectMgr->get_all_requirement_ids($tproject_id);
@@ -124,7 +122,7 @@ class searchCommands
   /**
    *
    */
-  function getArgs()
+  public function getArgs()
   {
     return $this->args;
   }
@@ -132,7 +130,7 @@ class searchCommands
   /**
    *
    */
-  function getGui()
+  public function getGui()
   {
     return $this->gui;
   }
@@ -140,7 +138,7 @@ class searchCommands
   /**
    *
    */
-  function getFilters()
+  private function getFilters()
   {
     return $this->filters;
   }
@@ -148,7 +146,7 @@ class searchCommands
   /**
    *
    */
-  function getTables()
+  public function getTables()
   {
     return $this->tables;
   }
@@ -156,7 +154,7 @@ class searchCommands
   /**
    *
    */
-  function getViews()
+  public function getViews()
   {
     return $this->views;
   }
@@ -166,7 +164,7 @@ class searchCommands
   /**
    *
    */
-  function initEnv()
+  public function initEnv()
   {
     $this->initArgs();
     $this->initGui();
@@ -177,7 +175,7 @@ class searchCommands
   /**
    *
    */
-  function initSchema() {
+  public function initSchema() {
     $this->tables = tlObjectWithDB::getDBTables(
       array('cfield_design_values','nodes_hierarchy',
             'requirements','tcsteps','testcase_keywords',
@@ -194,7 +192,7 @@ class searchCommands
   /**
    *
    */
-  function initArgs()
+  private function initArgs()
   {
     $cb = array("rq_scope" => array(tlInputParameter::CB_BOOL),
                 "rq_title" => array(tlInputParameter::CB_BOOL),
@@ -245,30 +243,30 @@ class searchCommands
       if($args->oneCheck)
       {
         break;
-      }       
-    } 
+      }
+    }
 
-    $args->oneValueOK = false; 
+    $args->oneValueOK = false;
     foreach($numIn as $key => $vx)
     {
       $args->oneValueOK = (intval($args->$key) > 0);
       if($args->oneValueOK)
       {
         break;
-      }  
-    } 
+      }
+    }
 
-    if($args->oneValueOK == false)
+    if(!$args->oneValueOK)
     {
       foreach($strIn as $key => $vx)
       {
-        $args->oneValueOK = (trim($args->$key) != ''); 
+        $args->oneValueOK = (trim($args->$key) != '');
         if($args->oneValueOK)
         {
           break;
-        }  
-      }     
-    }  
+        }
+      }
+    }
 
     // try to sanitize target against XSS
     // remove all blanks
@@ -286,18 +284,18 @@ class searchCommands
     {
       $args->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
       $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
-    }  
+    }
     else
     {
       $args->tprojectID = intval($args->tproject_id);
       $info = $this->tprojectMgr->get_by_id($args->tprojectID);
       $args->tprojectName = $info['name'];
-    }  
+    }
 
     if($args->tprojectID <= 0)
     {
       throw new Exception("Error Processing Request - Invalid Test project id " . __FILE__);
-    }   
+    }
 
     // convert according local
 
@@ -307,7 +305,7 @@ class searchCommands
 
     $k2f = array('creation_date_from' => ' creation_ts >= ',
                  'creation_date_to' => 'creation_ts <= ',
-                 'modification_date_from' => ' modification_ts >= ', 
+                 'modification_date_from' => ' modification_ts >= ',
                  'modification_date_to' => ' modification_ts <= ');
 
 
@@ -319,10 +317,10 @@ class searchCommands
       $lk = 'loc_' . $key;
       $args->$lk = '';
       
-      if (isset($args->$key) && $args->$key != '') 
+      if (isset($args->$key) && $args->$key != '')
       {
         $da = split_localized_date($args->$key, $dateFormat);
-        if ($da != null) 
+        if ($da != null)
         {
           $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
           $this->filters['dates4tc'][$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
@@ -331,23 +329,19 @@ class searchCommands
           $args->$lk = implode("/",$da);
         }
       }
-    } 
+    }
 
-    // $args->and_or = isset($_REQUEST['and_or']) ? $_REQUEST['and_or'] : 'or';   
     $args->user = $_SESSION['currentUser'];
-
     $args->canAccessTestSpec = $args->user->hasRight($this->db,'mgt_view_tc',$args->tproject_id);
-
     $args->canAccessReqSpec = $args->user->hasRight($this->db,'mgt_view_req',$args->tproject_id);
-
   }
 
 
   /**
-   * 
+   *
    *
    */
-  function initGui()
+  private function initGui()
   {
     $this->gui = new stdClass();
 
@@ -355,8 +349,6 @@ class searchCommands
 
     $this->gui->tcasePrefix = $this->tprojectMgr->getTestCasePrefix($this->args->tprojectID);
     $this->gui->tcasePrefix .= $this->tcaseCfg->glue_character;
-
-
 
     $this->gui->reqType = $this->args->reqType;
     $this->gui->reqStatus = $this->args->reqStatus;
@@ -376,7 +368,6 @@ class searchCommands
     $this->gui->doSearch = ($this->args->doAction == 'doSearch');
     $this->gui->tproject_id = intval($this->args->tprojectID);
     
-    // ----------------------------------------------------
     $this->gui->mainCaption = lang_get('testproject') . " " . $this->args->tprojectName;
     
     $this->gui->search_important_notice = sprintf(lang_get('search_important_notice'),$this->args->tprojectName);
@@ -401,7 +392,6 @@ class searchCommands
     $this->gui->rq_scope = $this->args->rq_scope;
     $this->gui->rq_doc_id = $this->args->rq_doc_id;
 
-
     $this->gui->custom_field_id = $this->args->custom_field_id;
     $this->gui->custom_field_value = $this->args->custom_field_value;
     $this->gui->creation_date_from = $this->args->loc_creation_date_from;
@@ -412,7 +402,6 @@ class searchCommands
     $this->gui->created_by = trim($this->args->created_by);
     $this->gui->edited_by =  trim($this->args->edited_by);
     $this->gui->keyword_id = intval($this->args->keyword_id);
-
 
     $this->gui->forceSearch = false;
     
@@ -433,9 +422,9 @@ class searchCommands
     $this->gui->reqStatusDomain = init_labels($reqCfg->status_labels);
 
     $this->gui->reqTypes = array_flip(init_labels($reqCfg->type_labels));
-    foreach ($this->gui->reqTypes as $key => $value) 
+    foreach ($this->gui->reqTypes as $key => $value)
     {
-      $this->gui->reqTypes[$key] = 'RQ' . $value;  
+      $this->gui->reqTypes[$key] = 'RQ' . $value;
     }
     $this->gui->reqTypes = array_flip($this->gui->reqTypes);
     $this->gui->tcWKFStatusDomain = $this->getTestCaseWKFStatusDomain();
@@ -445,11 +434,10 @@ class searchCommands
   /**
    *
    */
-  function initSearch()
+  private function initSearch()
   {
 
     $this->gui->reqEnabled = $this->isReqFeatureEnabled($this->args->tproject_id);
-
 
     $this->gui->cf = null;
     $this->gui->design_cf_req = null;
@@ -462,23 +450,23 @@ class searchCommands
       $this->gui->design_cf_req = $this->cfieldMgr->get_linked_cfields_at_design(
                               $this->args->tproject_id,
                               cfield_mgr::ENABLED,null,'requirement');
-    }  
+    }
 
     if(!is_null($this->gui->design_cf_tc))
     {
       $this->gui->cf = $this->gui->design_cf_tc;
-    }  
+    }
     
     if(!is_null($this->gui->design_cf_req))
     {
       if(is_null($this->gui->cf))
       {
         $this->gui->cf = $this->gui->design_cf_req;
-      }  
+      }
       else
       {
-        $this->gui->cf += $this->gui->design_cf_req;        
-      }  
+        $this->gui->cf += $this->gui->design_cf_req;
+      }
     }
 
     $this->gui->filter_by['custom_fields'] = !is_null($this->gui->cf) && count($this->gui->cf) > 0;
@@ -488,16 +476,16 @@ class searchCommands
    
     $reqSpecSet = $this->tprojectMgr->genComboReqSpec($this->args->tprojectID);
     $this->gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
-    $reqSpecSet = null; 
+    $reqSpecSet = null;
 
     $this->gui->status = isset($this->args->status) ? intval($this->args->status) : '';
     $this->gui->target = $this->args->target;
   }
 
-  /** 
+  /**
    *
    */
-  function searchReqSpec($targetSet,$canUseTarget) {
+  public function searchReqSpec($targetSet,$canUseTarget) {
     // shortcuts
     $args = &$this->args;
     $db = &$this->db;
@@ -507,7 +495,7 @@ class searchCommands
 
     $mapRSpec = null;
     $sql = "SELECT RSRV.name, RSRV.scope, LRSR.req_spec_id, RSRV.id," .
-           "LRSR.revision " . 
+           "LRSR.revision " .
            "FROM {$this->views['latest_rspec_revision']} LRSR " .
            "JOIN {$this->tables['req_specs_revisions']} RSRV " .
            "ON RSRV.parent_id = LRSR.req_spec_id " .
@@ -525,35 +513,35 @@ class searchCommands
       $filterRS['scope'] = ' OR ( ';
       $filterRS['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       foreach($targetSet as $target) {
-        $filterRS['scope'] .= $args->and_or . " $udf(RSRV.scope) $this->likeOp '%{$target}%' ";  
-      }  
+        $filterRS['scope'] .= $args->and_or . " $udf(RSRV.scope) $this->likeOp '%{$target}%' ";
+      }
       $filterRS['scope'] .= ')';
   
       $filterRS['name'] = ' OR ( ';
       $filterRS['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       foreach($targetSet as $trgt) {
         $target = trim($trgt);
-        $filterRS['name'] .= $args->and_or . " RSRV.name $this->likeOp '%{$target}%' ";  
-      }  
+        $filterRS['name'] .= $args->and_or . " RSRV.name $this->likeOp '%{$target}%' ";
+      }
       $filterRS['name'] .= ')';
-    }  
+    }
 
-    $otherFRS = '';  
+    $otherFRS = '';
     if(!is_null($filterRS)) {
       $otherFRS = " AND (" . implode("",$filterRS) . ")";
-    }  
+    }
 
     $sql .= $otherFRS;
     if($doFilter) {
-      $mapRSpec = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
-    }  
+      $mapRSpec = $db->fetchRowsIntoMap($sql,'req_spec_id');
+    }
     return $mapRSpec;
-  } 
+  }
 
   /**
    *
    */
-  function searchReq($targetSet,$canUseTarget,$req_cf_id) {
+  public function searchReq($targetSet,$canUseTarget,$req_cf_id) {
     // shortcuts
     $args = &$this->args;
     $gui = &$this->gui;
@@ -568,9 +556,9 @@ class searchCommands
     $reqSet = $this->getReqIDSet($args->tproject_id);
 
     $noItems = is_null($reqSet) || count($reqSet) == 0;
-    $bye = $noItems || (!$canUseTarget && $req_cf_id <= 0); 
+    $bye = $noItems || (!$canUseTarget && $req_cf_id <= 0);
     if( $bye )
-    {  
+    {
       return null;
     }
 
@@ -578,11 +566,11 @@ class searchCommands
     $doSql = true;
     $doFilter = false;
     $fi = null;
-    $from['by_custom_field'] = ''; 
+    $from['by_custom_field'] = '';
 
 
     if($req_cf_id >0)
-    {      
+    {
       $cf_def = $gui->design_cf_rq[$req_cf_id];
 
       $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
@@ -602,7 +590,7 @@ class searchCommands
           $fi['by_custom_field'] .= " AND CFD.value $this->likeOp '%{$args->custom_field_value}%' ";
         break;
       }
-    }  
+    }
 
     $args->created_by = trim($args->created_by);
     $from['users'] = '';
@@ -613,7 +601,7 @@ class searchCommands
       $fi['author'] = " AND ( RQAUTHOR.login $this->likeOp '%{$args->created_by}%' OR " .
                       "       RQAUTHOR.first $this->likeOp '%{$args->created_by}%' OR " .
                       "       RQAUTHOR.last $this->likeOp '%{$args->created_by}%') ";
-    }  
+    }
   
     $args->edited_by = trim($args->edited_by);
     if( $args->edited_by != '' )
@@ -623,12 +611,12 @@ class searchCommands
       $fi['modifier'] = " AND ( UPDATER.login $this->likeOp '%{$args->edited_by}%' OR " .
                             "       UPDATER.first $this->likeOp '%{$args->edited_by}%' OR " .
                             "       UPDATER.last $this->likeOp '%{$args->edited_by}%') ";
-    }  
+    }
 
-    if( $doSql ) {  
+    if( $doSql ) {
       $doFilter = true;
   
-      $sql = " /* " . __LINE__ . " */ " . 
+      $sql = " /* " . __LINE__ . " */ " .
              " SELECT RQ.id AS req_id, RQV.scope,RQ.req_doc_id,NHRQ.name  " .
              " FROM {$tables['nodes_hierarchy']} NHRQV " .
              " JOIN {$views['latest_req_version']} LV on LV.req_id = NHRQV.parent_id " .
@@ -641,12 +629,12 @@ class searchCommands
       if(!is_null($args->reqType)) {
         $doFilter = true;
         $sql .= " AND RQV.type ='" . $db->prepare_string($args->reqType) . "' ";
-      }  
+      }
 
       if($args->reqStatus != '') {
         $doFilter = true;
         $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
-      }  
+      }
 
       $filterRQ = null;
       if( $canUseTarget ) {
@@ -657,10 +645,10 @@ class searchCommands
           $filterRQ['scope'] = ' OR ( ';
           $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
           foreach($targetSet as $target) {
-            $filterRQ['scope'] .= $args->and_or . " $udf(RQV.scope) $this->likeOp '%{$target}%' "; 
-          }  
+            $filterRQ['scope'] .= $args->and_or . " $udf(RQV.scope) $this->likeOp '%{$target}%' ";
+          }
           $filterRQ['scope'] .= ')';
-        }  
+        }
 
         if( $args->rq_title )
         {
@@ -669,10 +657,10 @@ class searchCommands
 
           foreach($targetSet as $target)
           {
-            $filterRQ['name'] .= $args->and_or . " NHRQ.name $this->likeOp '%{$target}%' "; 
-          }  
+            $filterRQ['name'] .= $args->and_or . " NHRQ.name $this->likeOp '%{$target}%' ";
+          }
           $filterRQ['name'] .= ')';
-        }  
+        }
 
         if( $args->rq_doc_id )
         {
@@ -680,40 +668,40 @@ class searchCommands
           $filterRQ['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
           foreach($targetSet as $target)
           {
-            $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id $this->likeOp '%{$target}%' ";  
-          }  
+            $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id $this->likeOp '%{$target}%' ";
+          }
           $filterRQ['req_doc_id'] .= ')';
-        } 
-      } 
+        }
+      }
 
-      $otherFRQ = '';  
+      $otherFRQ = '';
       if(!is_null($filterRQ))
       {
         $otherFRQ = " AND (" . implode("",$filterRQ) . ")";
-      }  
+      }
 
-      $xfil = ''; 
+      $xfil = '';
       if(!is_null($fi))
       {
         $xfil = implode("",$fi);
-      }  
+      }
 
       $sql .= $xfil . $otherFRQ;
-      if( $doFilter ) 
+      if( $doFilter )
       {
         //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
-        $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
+        $mapRQ = $db->fetchRowsIntoMap($sql,'req_id');
       }
 
       return $mapRQ;
-    }  
+    }
   }
 
 
   /**
    *
    */
-  function searchTestSuites($targetSet,$canUseTarget) {
+  public function searchTestSuites($targetSet,$canUseTarget) {
 
     // shortcuts
     $args = &$this->args;
@@ -729,7 +717,7 @@ class searchCommands
     if(is_null($tsuiteSet) || count($tsuiteSet) == 0)
     {
       return null;
-    }  
+    }
 
     $filterSpecial = null;
     $filterSpecial['tricky'] = " 1=0 ";
@@ -739,11 +727,11 @@ class searchCommands
       $filterSpecial['ts_summary'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       
       foreach($targetSet as $target) {
-        $filterSpecial['ts_summary'] .= $args->and_or . 
+        $filterSpecial['ts_summary'] .= $args->and_or .
           " $udf(TS.details) $this->likeOp '%{$target}%' ";
-      }  
+      }
       $filterSpecial['ts_summary'] .= ')';
-    }  
+    }
 
     if( $doIt = $args->ts_title && $canUseTarget ) {
       $filterSpecial['ts_title'] = ' OR ( ';
@@ -751,15 +739,15 @@ class searchCommands
 
       foreach($targetSet as $target) {
         $filterSpecial['ts_title'] .= $args->and_or . " NH_TS.name $this->likeOp '%{$target}%' ";
-      }  
+      }
       $filterSpecial['ts_title'] .= ')';
-    }  
+    }
 
-    $otherFilters = '';  
+    $otherFilters = '';
     if(!is_null($filterSpecial))
     {
       $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
-    }  
+    }
 
     if($args->ts_title || $args->ts_summary)
     {
@@ -768,8 +756,8 @@ class searchCommands
       if($args->keyword_id)
       {
        $fromTS['by_keyword_id'] = " JOIN {$tables['object_keywords']} KW ON KW.fk_id = NH_TS.id ";
-       $filterTS['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
-      }  
+       $filterTS['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id;
+      }
     
       $sqlFields = " SELECT NH_TS.name, TS.id, TS.details " .
                    " FROM {$tables['nodes_hierarchy']} NH_TS " .
@@ -778,19 +766,19 @@ class searchCommands
                    " WHERE TS.id IN (" . implode(',', $tsuiteSet) . ")";
       
       $sql = $sqlFields . $filterTS['by_keyword_id'] . $otherFilters;
-      $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
+      $mapTS = $db->fetchRowsIntoMap($sql,'id');
 
       //DEBUGecho 'DEBUG===' . $sql;
     }
 
     return $mapTS;
-  }  
+  }
 
 
   /**
    *
    */
-  function searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id) {
+  public function searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id) {
     // shortcuts
     $args = &$this->args;
     $gui = &$this->gui;
@@ -813,10 +801,10 @@ class searchCommands
     if( is_null($tcaseSet) || count($tcaseSet) == 0)
     {
       return null;
-    }  
+    }
 
 
-    $filter['by_tc_internal_id'] = " AND NH_TCV.parent_id IN (" . 
+    $filter['by_tc_internal_id'] = " AND NH_TCV.parent_id IN (" .
                           implode(",",$tcaseSet) . ") ";
 
 
@@ -832,11 +820,11 @@ class searchCommands
         $target = trim($tgx);
         if( is_numeric($target) )
         {
-          $filterSpecial['by_tc_id'] .= $args->and_or . 
-                                      " TCV.tc_external_id = $target ";  
-        }  
-      }  
-    }  
+          $filterSpecial['by_tc_id'] .= $args->and_or .
+                                      " TCV.tc_external_id = $target ";
+        }
+      }
+    }
 
     $doFilter = false;
     $doFilter = ($args->tc_summary || $args->tc_title || $args->tc_id);
@@ -878,27 +866,27 @@ class searchCommands
       $filterSpecial['by_steps'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       
       foreach($targetSet as $target) {
-        $filterSpecial['by_steps'] .= $args->and_or . 
-          " $udf(TCSTEPS.actions) $this->likeOp '%{$target}%' ";  
-      }  
+        $filterSpecial['by_steps'] .= $args->and_or .
+          " $udf(TCSTEPS.actions) $this->likeOp '%{$target}%' ";
+      }
       $filterSpecial['by_steps'] .= ')';
-    }    
+    }
 
     if($args->tc_expected_results && $canUseTarget) {
       $filterSpecial['by_expected_results'] = ' OR ( ';
       $filterSpecial['by_expected_results'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       
       foreach($targetSet as $target) {
-        $filterSpecial['by_expected_results'] .= $args->and_or . 
-          " $udf(TCSTEPS.expected_results) $this->likeOp '%{$target}%' "; 
-      }  
+        $filterSpecial['by_expected_results'] .= $args->and_or .
+          " $udf(TCSTEPS.expected_results) $this->likeOp '%{$target}%' ";
+      }
       $filterSpecial['by_expected_results'] .= ')';
-    }    
+    }
 
     if($canUseTarget)
     {
       $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
-      $i2s = array('name' => 'tc_title', 'summary' => 'tc_summary', 
+      $i2s = array('name' => 'tc_title', 'summary' => 'tc_summary',
                    'preconditions' => 'tc_preconditions');
       foreach($k2w as $kf => $alias)
       {
@@ -919,37 +907,37 @@ class searchCommands
                 $xx = " $udf(" . $xx . ") ";
               break;
             }
-            $filterSpecial[$kf] .= "{$xx} {$this->likeOp}  '%{$target}%' "; 
-          }  
+            $filterSpecial[$kf] .= "{$xx} {$this->likeOp}  '%{$target}%' ";
+          }
           $filterSpecial[$kf] .= ' )';
         }
-      }     
-    } 
+      }
+    }
 
 
-    $otherFilters = '';  
+    $otherFilters = '';
     if(!is_null($filterSpecial) && count($filterSpecial) > 1)
     {
-      $otherFilters = " AND (/* filterSpecial */ " . 
+      $otherFilters = " AND (/* filterSpecial */ " .
                       implode("",$filterSpecial) . ")";
-    }  
+    }
 
-    // Search on latest test case version using view    
+    // Search on latest test case version using view
     $sqlFields = " SELECT LVN.testcase_id, NH_TC.name, TCV.id AS tcversion_id," .
-                 " TCV.summary, TCV.version, TCV.tc_external_id "; 
+                 " TCV.summary, TCV.version, TCV.tc_external_id ";
     
     if($doFilter)
     {
-      if($args->tcWKFStatus > 0)       
+      if($args->tcWKFStatus > 0)
       {
         $tg = intval($args->tcWKFStatus);
-        $filter['by_tcWKFStatus'] = " AND TCV.status = {$tg} "; 
+        $filter['by_tcWKFStatus'] = " AND TCV.status = {$tg} ";
       }
 
-      if($args->keyword_id)       
+      if($args->keyword_id)
       {
          $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
-         $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
+         $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id;
       }
 
       $created_by_on_tc = $args->created_by = trim($args->created_by);
@@ -961,7 +949,7 @@ class searchCommands
         $filter['author'] = " AND ( AUTHOR.login $this->likeOp '%{$args->created_by}%' OR " .
                             "       AUTHOR.first $this->likeOp '%{$args->created_by}%' OR " .
                             "       AUTHOR.last $this->likeOp '%{$args->created_by}%') ";
-      }  
+      }
     
       $edited_by_on_tc = $args->edited_by = trim($args->edited_by);
       if( $edited_by_on_tc != '' )
@@ -971,7 +959,7 @@ class searchCommands
         $filter['modifier'] = " AND ( UPDATER.login $this->likeOp '%{$args->edited_by}%' OR " .
                             "         UPDATER.first $this->likeOp '%{$args->edited_by}%' OR " .
                             "         UPDATER.last $this->likeOp '%{$args->edited_by}%') ";
-      }  
+      }
     }
 
 
@@ -980,13 +968,13 @@ class searchCommands
                 " JOIN {$tables['nodes_hierarchy']} NH_TC ON NH_TC.id = LVN.testcase_id " .
                 " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
                 " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
-                " AND TCV.version = LVN.version " . 
+                " AND TCV.version = LVN.version " .
                 $from['tc_steps'] . $from['users'] . $from['by_keyword_id'] .
                 $from['by_custom_field'] .
                 " WHERE LVN.testcase_id IN (" . implode(',', $tcaseSet) . ")";
 
 
-    $mapTC = NULL;
+    $mapTC = null;
     if($doFilter)
     {
       $mixedFilter = $this->getFilters();
@@ -1003,8 +991,8 @@ class searchCommands
       $sql = $sqlFields . $sqlPart2 . $otherFilters;
 
       //DEBUGecho __FUNCTION__ . '-' . __LINE__ . '-' . $sql .'<br>';
-      $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
-    }  
+      $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id');
+    }
 
     return $mapTC;
   }
@@ -1012,14 +1000,11 @@ class searchCommands
   /**
    *
    */
-  static function getTestCaseWKFStatusDomain() {
+  public static function getTestCaseWKFStatusDomain() {
     $cv = array_flip(config_get('testCaseStatus'));
     foreach($cv as $cc => $vv) {
-      $lbl = lang_get('testCaseStatus_' . $vv);
       $cv[$cc] = lang_get('testCaseStatus_' . $vv);
-    }  
+    }
     return $cv;
   }
-
-
-} // end class  
+}

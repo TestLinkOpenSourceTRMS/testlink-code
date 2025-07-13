@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	scriptAdd.php
  * @internal revisions
  * @since 1.9.15
- * 
+ *
  */
 require_once '../../config.inc.php';
 require_once '../functions/common.php';
@@ -34,11 +34,11 @@ if(!is_null($codeT) && $args->project_key != "" && $args->repository_name != "" 
   else
   {
     $gui->msg = sprintf($l18n["error_code_does_not_exist_on_cts"],$args->direct_link);
-  }  
+  }
 }
 else
 {
-  $gui->msg = lang_get("error_script_not_deleted"); 
+  $gui->msg = lang_get("error_script_not_deleted");
 }
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -46,8 +46,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * 
- * 
+ *
+ *
  */
 function initEnv(&$dbHandler)
 {
@@ -121,24 +121,17 @@ function getCodeTracker(&$dbHandler,$argsObj,&$guiObj)
       $cts = $ct_mgr->getInterfaceObject($argsObj->tproject_id);
       $guiObj->codeTrackerCfg->VerboseType = $codeTrackerCfg['verboseType'];
       $guiObj->codeTrackerCfg->VerboseID = $codeTrackerCfg['codetracker_name'];
-      $guiObj->codeTrackerCfg->createCodeURL = $cts->getEnterCodeURL();    
+      $guiObj->codeTrackerCfg->createCodeURL = $cts->getEnterCodeURL();
     }
   }
-  return array($cts,$codeTrackerCfg); 
+  return array($cts,$codeTrackerCfg);
 }
 
 /**
  *
  */
-function del_testcase_script(&$dbHandler, $tcversion_id, $project_key,
-                             $repo_name, $code_path)
+function del_testcase_script(&$dbHandler, $tcversion_id, $project_key,$repo_name, $code_path)
 {
-  $fields = "(`tcversion_id`,`project_key`,`repository_name`,`code_path`";
-  $values = "(".intval($tcversion_id).",'{$project_key}'," .
-            "'{$repo_name}','{$code_path}'";
-  $fields .= ")";
-  $values .= ")";
-
   $tbk = array('testcase_script_links');
   $tbl = tlObjectWithDB::getDBTables($tbk);
   $sql = " DELETE FROM `{$tbl['testcase_script_links']}` " .
@@ -154,7 +147,7 @@ function del_testcase_script(&$dbHandler, $tcversion_id, $project_key,
 
 /**
  * Checks the user rights for viewing the page
- * 
+ *
  * @param $db resource the database connection handle
  * @param $user tlUser the object of the current user
  *

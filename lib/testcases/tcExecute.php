@@ -1,23 +1,23 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: tcExecute.php,v $
  * @version $Revision: 1.5 $
  *
- * Handles testcase execution through AJAX calls. 
- * Testcases are executed on a remote server, and the response 
+ * Handles testcase execution through AJAX calls.
+ * Testcases are executed on a remote server, and the response
  * is sent back via an XML-RPC server.
  *
- * Code contributed by: 
+ * Code contributed by:
  *
  * Important note:
  * XML-RPC Server Settings need to be configured using the custom fields feature.
- * Three fields each for testcase level and testsuite level are required. 
- * The fields are: server_host, server_port and server_path. 
+ * Three fields each for testcase level and testsuite level are required.
+ * The fields are: server_host, server_port and server_path.
  *                 Precede 'tc_' for custom fields assigned to testcase level.
- * 
+ *
  *
  * @modified $Date: 2010/09/27 14:06:04 $ by $Author: franciscom $
 */
@@ -42,7 +42,7 @@ switch($args->level)
 {
 	case "testcase":
 		$xmlResponse = remote_exec_testcase($db,$args->testcase_id,$msg);
-  		break;  
+  		break;
 	case "testsuite":
   	case "testproject":
   		//@TODO schlundus, investigate this!
@@ -61,6 +61,7 @@ if(!is_null($xmlResponse))
 	echo $xmlResponse;
 }
 
+
 function remote_exec_testcase(&$db,$tcase_id,$msg)
 {
 	$cfield_manager = new cfield_mgr($db);
@@ -75,16 +76,16 @@ function remote_exec_testcase(&$db,$tcase_id,$msg)
 	
 	$xmlResponse = '<tr><th colspan="2">' . lang_get('result_after_exec') . " {$myMessage}</th></tr>";
 
-	if($myResult != -1 and $myNotes != -1)
+	if($myResult != -1 && $myNotes != -1)
 	{
-		$xmlResponse .= "<tr><td>" . lang_get('tcexec_result') . "</td>" . 
-		                "<td>{$myResult}</td></tr>" . 
-		                "<tr><td>" . lang_get('tcexec_notes'). "</td>" . 
+		$xmlResponse .= "<tr><td>" . lang_get('tcexec_result') . "</td>" .
+		                "<td>{$myResult}</td></tr>" .
+		                "<tr><td>" . lang_get('tcexec_notes'). "</td>" .
 		                "<td> {$myNotes}</td></tr>";
 	}
 	else
 	{
-		$xmlResponse .= $msg['check_server_setting'];	
+		$xmlResponse .= $msg['check_server_setting'];
 	}
   
 	return $xmlResponse;
@@ -92,11 +93,11 @@ function remote_exec_testcase(&$db,$tcase_id,$msg)
 
 
 /*
-  function: 
+  function:
 
   args :
   
-  returns: 
+  returns:
 
 */
 function remote_exec_testcase_set(&$db,$parent_id,$msg)
@@ -113,15 +114,10 @@ function remote_exec_testcase_set(&$db,$parent_id,$msg)
 			if($_value['node_type_id'] == $node_type['testcase']) {
 				$executionResults[$_value['id']] = executeTestCase($_value['id'],$tree_manager,$cfield_manager);
 			}
-			else{
-				//Can add some logic here. If required.
-				continue;
-			}
 		}
 	}
 	if($executionResults){
 		foreach($executionResults as $key => $value){
-		  
 		  $node_info=$tree_manager->get_node_hierarchy_info($key);
 		  
 			$xmlResponse .= '<tr><th colspan="2">' . lang_get('tcexec_results_for') .
@@ -131,9 +127,9 @@ function remote_exec_testcase_set(&$db,$parent_id,$msg)
 				if($_value != -1){
 					$xmlResponse .= "<tr><td>" . $_key . ":</td><td>" . $_value . "</td></tr>";
 				}
-				else
-					$serverTest = $serverTest+1;
-				
+				else {
+				    $serverTest = $serverTest+1;
+				}
 			}
 			if($serverTest != 1){
 				$xmlResponse .= $xmlResponse .= $msg['check_server_setting'];
@@ -144,7 +140,7 @@ function remote_exec_testcase_set(&$db,$parent_id,$msg)
 }
 
 /**
- * 
+ *
  *
  */
 function init_args()

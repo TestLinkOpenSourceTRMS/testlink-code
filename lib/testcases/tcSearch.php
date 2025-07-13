@@ -3,14 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Display test cases search results. 
+ * Display test cases search results.
  * Search is done ONLY ON CURRENT test project
  *
  *
  * @filesource  tcSearch.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2018, TestLink community
  * @link        http://www.testlink.org/
  *
  **/
@@ -30,8 +30,6 @@ $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $filter = null;
 list($args,$filter) = init_args($tproject_mgr);
-
-//Kint::dump($_REQUEST);die();
 
 $ga = initializeGui($args,$tproject_mgr);
 $gx = $tcase_mgr->getTcSearchSkeleton($args);
@@ -67,13 +65,13 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
 
     if(!is_null($a_tcid)) {
       $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$a_tcid) . ") ";
-    }  
+    }
     else {
-      // Force Nothing extracted, because test project 
-      // has no test case defined 
+      // Force Nothing extracted, because test project
+      // has no test case defined
       $emptyTestProject = true;
       $filter['by_tc_id'] = " AND 1 = 0 ";
-    }  
+    }
   }
 
   if($args->version) {
@@ -82,7 +80,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
     
   if($args->keyword_id) {
   	 $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
-     $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
+     $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id;
   }
     
 
@@ -91,22 +89,21 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
   $feOp = " AND ";
   $filterSpecial['tricky'] = " 1=1 ";
   if($args->jolly != "") {
-    // $filterSpecial['trick'] = " 1=1 ";
     $useOr = true;
     $feOp = " OR ";
     $filterSpecial['tricky'] = " 1=0 ";
     $args->steps = $args->expected_results = $args->jolly;
-  }  
+  }
     
   if($args->steps != "") {
     $args->steps = $db->prepare_string($args->steps);
-    $filterSpecial['by_steps'] = $feOp . " TCSTEPS.actions like '%{$args->steps}%' ";  
-  }    
+    $filterSpecial['by_steps'] = $feOp . " TCSTEPS.actions like '%{$args->steps}%' ";
+  }
     
   if($args->expected_results != "") {
     $args->expected_results = $db->prepare_string($args->expected_results);
-    $filterSpecial['by_expected_results'] = $feOp . " TCSTEPS.expected_results like '%{$args->expected_results}%' "; 
-  }    
+    $filterSpecial['by_expected_results'] = $feOp . " TCSTEPS.expected_results like '%{$args->expected_results}%' ";
+  }
 
   $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
   $jollyEscaped = $db->prepare_string($args->jolly);
@@ -114,16 +111,16 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
     if($args->$kf != "" || $args->jolly != '') {
       if( $args->jolly == '' ) {
         $args->$kf =  $db->prepare_string($args->$kf);
-      }  
+      }
       $filterSpecial[$kf] = " {$feOp} {$alias}.{$kf} like ";
-      $filterSpecial[$kf] .= ($args->jolly == '') ? " '%{$args->$kf}%' " : " '%{$jollyEscaped}%' "; 
+      $filterSpecial[$kf] .= ($args->jolly == '') ? " '%{$args->$kf}%' " : " '%{$jollyEscaped}%' ";
     }
-  } 
+  }
  
-  $otherFilters = '';  
+  $otherFilters = '';
   if(!is_null($filterSpecial)) {
     $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
-  }  
+  }
 
 
   if($args->custom_field_id > 0) {
@@ -161,22 +158,22 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
 
   if($args->requirement_doc_id != "") {
     $args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
-    $from['by_requirement_doc_id'] = " JOIN {$tables['req_coverage']} RC" .  
+    $from['by_requirement_doc_id'] = " JOIN {$tables['req_coverage']} RC" .
                                      " ON RC.testcase_id = NH_TC.id " .
                                      " JOIN {$tables['requirements']} REQ " .
                                      " ON REQ.id=RC.req_id " ;
     $filter['by_requirement_doc_id'] = " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' ";
-  }   
+  }
 
   if( $args->importance > 0)
   {
     $filter['importance'] = " AND TCV.importance = {$args->importance} ";
-  }  
+  }
 
   if( $args->status > 0)
   {
     $filter['status'] = " AND TCV.status = {$args->status} ";
-  }  
+  }
 
 
   $args->created_by = trim($args->created_by);
@@ -187,7 +184,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
     $filter['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
                         "       AUTHOR.first LIKE '%{$args->created_by}%' OR " .
                         "       AUTHOR.last LIKE '%{$args->created_by}%') ";
-  }  
+  }
 
   $args->edited_by = trim($args->edited_by);
   if( $args->edited_by != '' )
@@ -196,10 +193,10 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
     $filter['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
                         "         UPDATER.first LIKE '%{$args->edited_by}%' OR " .
                         "         UPDATER.last LIKE '%{$args->edited_by}%') ";
-  }  
+  }
     
   $sqlFields = " SELECT NH_TC.id AS testcase_id,NH_TC.name,TCV.id AS tcversion_id," .
-               " TCV.summary, TCV.version, TCV.tc_external_id "; 
+               " TCV.summary, TCV.version, TCV.tc_external_id ";
     
   // Count Test Cases NOT Test Case Versions
   // ATTENTION:
@@ -227,7 +224,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
   }
 
   if( $applyFilters )
-  {      
+  {
     if ($filter)
     {
       $sqlPart2 .= implode("",$filter);
@@ -239,18 +236,18 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
     // Count results
     $sql = $sqlCount . $sqlPart2;
 
-    $gui->row_qty = $db->fetchOneValue($sql); 
+    $gui->row_qty = $db->fetchOneValue($sql);
     if ($gui->row_qty)
     {
       if ($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
       {
         $sql = $sqlFields . $sqlPart2;
-        $map = $db->fetchRowsIntoMap($sql,'testcase_id'); 
+        $map = $db->fetchRowsIntoMap($sql,'testcase_id');
       }
       else
       {
         $gui->warning_msg = lang_get('too_wide_search_criteria');
-      } 
+      }
     }
   }
 }
@@ -258,20 +255,20 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
 if($gui->doSearch)
 {
   $gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
-}  
+}
 
 if($gui->row_qty > 0)
-{ 
+{
   if ($map)
   {
-    $tcase_mgr = new testcase($db);   
+    $tcase_mgr = new testcase($db);
     $tcase_set = array_keys($map);
     $options = array('output_format' => 'path_as_string');
     $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
     $gui->resultSet = $map;
   }
 }
-else if ($emptyTestProject) 
+elseif ($emptyTestProject)
 {
   $gui->warning_msg = lang_get('empty_testproject');
 }
@@ -282,7 +279,7 @@ else
 
 $img = $smarty->getImages();
 $table = buildExtTable($gui, $charset, $img['edit_icon'], $img['history_small']);
-if (!is_null($table)) 
+if (!is_null($table))
 {
   $gui->tableSet[] = $table;
 }
@@ -292,7 +289,7 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
 /**
- * 
+ *
  *
  */
 function buildExtTable($gui, $charset, $edit_icon, $history_icon)  {
@@ -314,7 +311,7 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)  {
     
     $titleSeperator = config_get('gui_title_separator_1');
     
-    foreach($gui->resultSet as $result) 
+    foreach($gui->resultSet as $result)
     {
       $rowData = array();
       $rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
@@ -324,7 +321,7 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)  {
                       "<img title=\"". lang_get('execution_history') . "\" src=\"{$history_icon}\" /></a> ";
       $edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
                    "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
-      $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . 
+      $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] .
                    " [v" . $result['version'] . "]" . $titleSeperator .
                    htmlentities($result['name'], ENT_QUOTES, $charset);
 
@@ -361,7 +358,7 @@ function init_args(&$tprojectMgr)
 
   $args = new stdClass();
   $iParams = array("doAction" => array(tlInputParameter::STRING_N,0,10),
-                   "tproject_id" => array(tlInputParameter::INT_N), 
+                   "tproject_id" => array(tlInputParameter::INT_N),
                    "status" => array(tlInputParameter::INT_N),
                    "keyword_id" => array(tlInputParameter::INT_N),
                    "version" => array(tlInputParameter::INT_N,999),
@@ -399,18 +396,18 @@ function init_args(&$tprojectMgr)
   {
     $args->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
     $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
-  }  
+  }
   else
   {
     $args->tprojectID = intval($args->tproject_id);
     $info = $tprojectMgr->get_by_id($args->tprojectID);
     $args->tprojectName = $info['name'];
-  }  
+  }
 
   if($args->tprojectID <= 0)
   {
     throw new Exception("Error Processing Request - Invalid Test project id " . __FILE__);
-  }   
+  }
 
   // convert "creation date from" to iso format for database usage
   $k2w = array('creation_date_from' => '','creation_date_to' => " 23:59:59",
@@ -418,7 +415,7 @@ function init_args(&$tprojectMgr)
 
   $k2f = array('creation_date_from' => ' creation_ts >= ',
                'creation_date_to' => 'creation_ts <= ',
-               'modification_date_from' => ' modification_ts >= ', 
+               'modification_date_from' => ' modification_ts >= ',
                'modification_date_to' => ' modification_ts <= ');
 
 
@@ -426,23 +423,23 @@ function init_args(&$tprojectMgr)
   $filter = null;
   foreach($k2w as $key => $value)
   {
-    if (isset($args->$key) && $args->$key != '') 
+    if (isset($args->$key) && $args->$key != '')
     {
       $da = split_localized_date($args->$key, $dateFormat);
-      if ($da != null) 
+      if ($da != null)
       {
         $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
         $filter[$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
       }
     }
-  } 
+  }
 
   return array($args,$filter);
 }
 
 
 /**
- * 
+ *
  *
  */
 function initializeGui(&$argsObj,&$tprojectMgr)
@@ -463,7 +460,6 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->doSearch = ($argsObj->doAction == 'doSearch');
   $gui->tproject_id = intval($argsObj->tprojectID);
   
-  // ----------------------------------------------------
   $gui->mainCaption = lang_get('testproject') . " " . $argsObj->tprojectName;
  
   $gui->creation_date_from = null;
@@ -474,7 +470,6 @@ function initializeGui(&$argsObj,&$tprojectMgr)
 
   // need to set values that where used on latest search (if any was done)
   // $gui->importance = config_get('testcase_importance_default');
-
   return $gui;
 }
 
@@ -502,25 +497,24 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
   $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . config_get('testcase_cfg')->glue_character;
 
 
-  $gui->targetTestCase = (is_null($argsObj->targetTestCase) || $argsObj->targetTestCase == '') ? 
-                         $gui->tcasePrefix : $argsObj->targetTestCase;
+  $gui->targetTestCase = (is_null($argsObj->targetTestCase) || $argsObj->targetTestCase == '') ? $gui->tcasePrefix : $argsObj->targetTestCase;
 
   
-  $txtin = array("created_by","edited_by","jolly");   
+  $txtin = array("created_by","edited_by","jolly");
   $jollyKilled = array("summary","steps","expected_results","preconditions","name");
   $txtin = array_merge($txtin, $jollyKilled);
   
   foreach($txtin as $key )
   {
     $gui->$key = $argsObj->$key;
-  }  
+  }
 
   if($argsObj->jolly != '')
   {
     foreach($jollyKilled as $key)
     {
-      $gui->$key = '';  
-    }  
-  }  
+      $gui->$key = '';
+    }
+  }
 
 }

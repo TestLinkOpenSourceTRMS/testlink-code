@@ -1,14 +1,14 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  tcBulkOp.php
  *
- * 
+ *
  * @internal revisions
  * @since 1.9.14
- * 
+ *
  */
 require_once '../../config.inc.php';
 require_once '../functions/common.php';
@@ -28,8 +28,8 @@ if($args->doAction == 'apply')
     {
       $tcaseMgr->setIntAttrForAllVersions($args->tcase_id,$key,$val,$args->forceFrozenVersions);
     }
-  }  
-}  
+  }
+}
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -41,7 +41,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
   args:
   
-  returns: 
+  returns:
 
 */
 function init_args(&$tcaseMgr)
@@ -63,12 +63,12 @@ function init_args(&$tcaseMgr)
   $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : 0;
   $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
-  $args->uchoice = array();  
+  $args->uchoice = array();
   $k2s = array('importance','status','execution_type');
   foreach($k2s as $tg)
   {
-    $args->uchoice[$tg] = intval(isset($_REQUEST[$tg]) ? $_REQUEST[$tg] : -1); 
-  }  
+    $args->uchoice[$tg] = intval(isset($_REQUEST[$tg]) ? $_REQUEST[$tg] : -1);
+  }
 
   $dummy = getConfigAndLabels('testCaseStatus','code');
   $args->tcStatusCfg['status_code'] = $dummy['cfg'];
@@ -77,7 +77,7 @@ function init_args(&$tcaseMgr)
   $args->domainTCExecType = $tcaseMgr->get_execution_types();
 
   $dummy = config_get('importance');
-  foreach ($dummy['code_label'] as $code => $label) 
+  foreach ($dummy['code_label'] as $code => $label)
   {
 	$args->domainTCImportance[$code] =  lang_get($label);
   }
@@ -101,7 +101,7 @@ function initializeGui(&$argsObj)
   $guiObj->domainTCExecType = array(-1 => '') + $argsObj->domainTCExecType;
   $guiObj->domainTCImportance = array(-1 => '') + $argsObj->domainTCImportance;
 
-  $guiObj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : ''; 
+  $guiObj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : '';
   
   return $guiObj;
 }

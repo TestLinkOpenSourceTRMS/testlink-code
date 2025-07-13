@@ -30,7 +30,7 @@ $labels = init_labels(array('overall_progress' => null, 'test_plan' => null, 'pr
 list($gui->tplan_metrics,$gui->show_platforms, $platforms) = getMetrics($db,$_SESSION['currentUser'],$args,$result_cfg, $labels);
 
 
-if(count($gui->tplan_metrics) > 0)
+if(!empty($gui->tplan_metrics))
 {
   $statusSetForDisplay = $result_cfg['status_label_for_exec_ui'];
   $gui->warning_msg = '';

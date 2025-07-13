@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource  tcAssignedToUser.php
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
- * 
+ *
  * @internal revisions
  * @since 1.9.15
  */
@@ -53,11 +53,11 @@ if($args->result != '' && $args->tcvx > 0)
          "         {$args->tcvx}, {$version_number}, {$args->tpx}, {$args->pxi},{$args->bxi})";
 
   $db->exec_query($sql);
-}  
+}
 
 
 if( $doIt )
-{   
+{
   $execCfg = config_get('exec_cfg');
 
   $tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
@@ -84,7 +84,7 @@ if( $doIt )
       	$tcase_id = $tcase['testcase_id'];
       	$tcversion_id = $tcase['tcversion_id'];
       	
-      	if ($args->show_user_column) 
+      	if ($args->show_user_column)
       	{
           if($tcase['user_id'] > 0 &&  isset($args->userSet[$tcase['user_id']]))
           {
@@ -93,7 +93,7 @@ if( $doIt )
           else
           {
             $current_row[] = '';
-          }  
+          }
       	}
       
       	$current_row[] = htmlspecialchars($tcase['build_name']);
@@ -105,13 +105,13 @@ if( $doIt )
         
         if($execCfg->exec_mode->tester == 'assigned_to_me') {
           $canExec = $canExec && ($tcase['user_id'] == $_SESSION['userID']);
-        }  
+        }
 
-        if($canExec) {  
+        if($canExec) {
           $ekk = sprintf($exec['common'],$tplan_id,$tcase['platform_id'],$tplan_id,$tcase['build_id'],
                          $tplan_id,$tcversion_id,$tplan_id);
           
-          $elk = sprintf($exec['passed'],$tplan_id) . $ekk . '&nbsp;' . sprintf($exec['failed'],$tplan_id ) . $ekk . '&nbsp;' . 
+          $elk = sprintf($exec['passed'],$tplan_id) . $ekk . '&nbsp;' . sprintf($exec['failed'],$tplan_id ) . $ekk . '&nbsp;' .
                  sprintf($exec['blocked'],$tplan_id) . $ekk;
 
           $exec_link = "<a href=\"javascript:openExecutionWindow(" .
@@ -128,7 +128,7 @@ if( $doIt )
                      "<img title=\"{$gui->l18n['design']}\" src=\"{$imgSet['edit_icon']}\" /></a> ";
         
         $current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $elk . $exec_history_link .
-                         $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . 
+                         $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar .
                          $tcase['tc_external_id'] . " : " . htmlspecialchars($tcase['name']) .
                          sprintf($gui->l18n['tcversion_indicator'],$tcase['version']);
 
@@ -137,31 +137,31 @@ if( $doIt )
           $current_row[] = htmlspecialchars($tcase['platform_name']);
         }
         
-        if ($args->priority_enabled) 
+        if ($args->priority_enabled)
         {
           $current_row[] = "<!-- " . $tcase['priority'] . " -->" . $gui->priority[priority_to_level($tcase['priority'])];
         }
         
         $leOptions = array('getSteps' => 0);
-        $lexec = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id, 
+        $lexec = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id,
                                                 $tcase['build_id'],$tcase['platform_id'],
                                                 $leOptions);
         $status = $lexec[$tcversion_id]['status'];
-        if (!$status) 
+        if (!$status)
         {
           $status = $statusGui->status_code['not_run'];
         }
         $current_row[] = $statusGui->definition[$status];
 
-        if ($args->show_user_column) 
+        if ($args->show_user_column)
         {
             $current_row[] = htmlspecialchars($lexec[$tcversion_id]['tester_login']);
         }
 
 
                     
-        // need to check if we are using the right timestamp                      
-        $current_row[] = htmlspecialchars($tcase['creation_ts']) . 
+        // need to check if we are using the right timestamp
+        $current_row[] = htmlspecialchars($tcase['creation_ts']) .
                          " (" . get_date_diff($tcase['creation_ts']) . ")";
         
         $rows[] = $current_row;
@@ -217,7 +217,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @author Andreas Simon
  * @param $date
  */
-function get_date_diff($date) 
+function get_date_diff($date)
 {
 	$date = (is_string($date)) ? strtotime($date) : $date;
 	$i = 1/60/60/24;
@@ -235,7 +235,7 @@ function get_date_diff($date)
  *
  * @author franciscom - francisco.mancardi@gmail.com
  * @args - used global coupling accessing $_REQUEST and $_SESSION
- * 
+ *
  * @return object of stdClass
  *
  * @internal revisions
@@ -250,7 +250,7 @@ function init_args(&$dbHandler)
   if( $args->tproject_id == 0)
   {
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-  }  
+  }
   if( $args->tproject_id == 0)
   {
     throw new Exception(__FILE__ . ' Can not work without Test project ID => Aborting');
@@ -266,9 +266,9 @@ function init_args(&$dbHandler)
   if( $args->user_id != 0)
   {
     $args->user = new tlUser($args->user_id);
-    $args->user->readFromDB($dbHandler); 
+    $args->user->readFromDB($dbHandler);
   }
-  else 
+  else
   {
     $args->user_id = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
     if( $args->user_id == 0)
@@ -276,12 +276,12 @@ function init_args(&$dbHandler)
       throw new Exception(__FILE__ . ' Can not work without User ID => Aborting');
     }
     $args->user = $_SESSION['currentUser'];
-  }	
+  }
 
 
   $args->executedBy = $args->user_id;
   $args->user_name = $args->user->login;
-  $args->userSet =  $args->user->getNames($dbHandler);                  
+  $args->userSet =  $args->user->getNames($dbHandler);
 
   $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
   $args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
@@ -293,35 +293,35 @@ function init_args(&$dbHandler)
   {
     $args->show_all_users = (intval($_REQUEST['show_all_users']) == 1);
   }
-  $args->show_user_column = $args->show_all_users; 
+  $args->show_user_column = $args->show_all_users;
 
 
   $show_closed_builds = isset($_REQUEST['show_closed_builds']) ? true : false;
 	$show_closed_builds_hidden = isset($_REQUEST['show_closed_builds_hidden']) ? true : false;
-	if ($show_closed_builds) 
+	if ($show_closed_builds)
   {
 		$selection = true;
-	} 
-  else if ($show_closed_builds_hidden) 
+	}
+  elseif ($show_closed_builds_hidden)
   {
 		$selection = false;
-	} 
-  else if (isset($_SESSION['show_closed_builds'])) 
+	}
+  elseif (isset($_SESSION['show_closed_builds']))
   {
 		$selection = intval($_SESSION['show_closed_builds']);
-	} 
-  else 
+	}
+  else
   {
 		$selection = false;
 	}
 	$args->show_closed_builds = $_SESSION['show_closed_builds'] = $selection;
 
-	if ($args->show_all_users) 
+	if ($args->show_all_users)
   {
 		$args->user_id = TL_USER_ANYBODY;
 	}
 	
-  $args->show_inactive_and_closed = false;	
+  $args->show_inactive_and_closed = false;
   if( isset($_REQUEST['show_inactive_and_closed']) )
   {
     $args->show_inactive_and_closed = (intval($_REQUEST['show_inactive_and_closed']) != 0);
@@ -337,7 +337,7 @@ function init_args(&$dbHandler)
   {
     $key = $tg . '_' . $args->tpx;
     $args->$tg = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;
-  }  
+  }
 	$args->result = isset($_REQUEST['result_' .  $args->tpx]) ? $_REQUEST['result_' .  $args->tpx][0] : '';
 
 	return $args;
@@ -357,7 +357,7 @@ function getColumnsDefinition($dbHandler,$tplan_id,$optionalColumns)
     $tplan_mgr = new testplan($dbHandler);
 
     $lbl2get = array('build' => null,'testsuite' => null,'testcase' => null,'platform' => null,
-                     'user' => null, 'priority' => null,'status' => null, 'version' => null, 
+                     'user' => null, 'priority' => null,'status' => null, 'version' => null,
                      'low_priority' => null,'medium_priority' => null,'high_priority' => null,
                      'due_since' => null);
     $labels = init_labels($lbl2get);
@@ -367,7 +367,7 @@ function getColumnsDefinition($dbHandler,$tplan_id,$optionalColumns)
   $sortByCol = $labels['testsuite'];
   
   // user column is only shown for assignment overview
-  if ($optionalColumns['user']) 
+  if ($optionalColumns['user'])
   {
     $colDef[] = array('title_key' => 'user', 'width' => 80);
     $sortByCol = $labels['build'];
@@ -383,10 +383,10 @@ function getColumnsDefinition($dbHandler,$tplan_id,$optionalColumns)
     $colDef[] = array('title_key' => 'platform', 'width' => 50, 'filter' => 'list', 'filterOptions' => $platforms);
   }
   
-  if ($optionalColumns['priority']) 
+  if ($optionalColumns['priority'])
   {
     $sortByCol = $labels['priority'];
-    $colDef[] = array('title_key' => 'priority', 'width' => 50, 'filter' => 'ListSimpleMatch', 
+    $colDef[] = array('title_key' => 'priority', 'width' => 50, 'filter' => 'ListSimpleMatch',
                       'filterOptions' => array($labels['low_priority'],$labels['medium_priority'],$labels['high_priority']));
   }
   
@@ -394,7 +394,7 @@ function getColumnsDefinition($dbHandler,$tplan_id,$optionalColumns)
   if($optionalColumns['user'])
   {
     $colDef[] = array('title_key' => 'tester', 'width' => 80);
-  }  
+  }
   
 
   $colDef[] = array('title_key' => 'due_since', 'width' => 100);
@@ -415,7 +415,7 @@ function initializeGui(&$dbHandler,$argsObj)
   $gui->glueChar = config_get('testcase_cfg')->glue_character;
   $gui->warning_msg = '';
   $gui->tableSet = null;
-  $gui->l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
+  $gui->l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null,
                                  'testplan' => null, 'assigned_tc_overview' => null,
                                  'testcases_assigned_to_user' => null,
                                  'quick_passed' => null, 'quick_failed' => null,'quick_blocked' => null,
@@ -425,11 +425,11 @@ function initializeGui(&$dbHandler,$argsObj)
   $gui->priority = array(LOW => $gui->l18n['low_priority'],MEDIUM => $gui->l18n['medium_priority'],
                          HIGH => $gui->l18n['high_priority']);
 
-  if ($argsObj->show_all_users) 
+  if ($argsObj->show_all_users)
   {
     $gui->pageTitle=sprintf($gui->l18n['assigned_tc_overview'], $gui->tproject_name);
-  } 
-  else 
+  }
+  else
   {
     $gui->pageTitle=sprintf($gui->l18n['testcases_assigned_to_user'],$gui->tproject_name, $argsObj->user_name);
   }
@@ -437,11 +437,11 @@ function initializeGui(&$dbHandler,$argsObj)
   $gui->user_id = $argsObj->user_id;
   $gui->tplan_id = $argsObj->tplan_id;
 
-  $gui->directLink = $_SESSION['basehref'] . 
+  $gui->directLink = $_SESSION['basehref'] .
                      'ltx.php?item=xta2m&user_id=' . $gui->user_id .
                      '&tplan_id=' . $gui->tplan_id;
 
-  return $gui;  
+  return $gui;
 }
 
 
@@ -452,7 +452,7 @@ function initFilters($argsObj)
   $filters['tplan_status'] = $argsObj->show_inactive_tplans ? 'all' : 'active';
   $filters['build_status'] = $argsObj->show_closed_builds ? 'all' : 'open';
   
-  if ($argsObj->build_id) 
+  if ($argsObj->build_id)
   {
     $filters['build_id'] = $argsObj->build_id;
     
@@ -472,9 +472,9 @@ function getStatusGuiCfg()
   $ret->code_css = array();
   $ret->definition = array();
   
-  foreach($cfg['code_status'] as $code => $status) 
+  foreach($cfg['code_status'] as $code => $status)
   {
-    if (isset($cfg['status_label'][$status])) 
+    if (isset($cfg['status_label'][$status]))
     {
       $label = $cfg['status_label'][$status];
       $ret->code_css[$code] = array();
@@ -494,16 +494,16 @@ function getStatusGuiCfg()
 function getQuickExecCfg($gui,$imgSet,$statusCode)
 {
   $qexe['passed'] = "<img title=\"{$gui->l18n['quick_passed']}\" src=\"{$imgSet['exec_passed']}\" " .
-                    " onclick=\"result_%s.value='{$statusCode['passed']}';"; 
+                    " onclick=\"result_%s.value='{$statusCode['passed']}';";
 
 
   $qexe['failed'] = "<img title=\"{$gui->l18n['quick_failed']}\" src=\"{$imgSet['exec_failed']}\" " .
-                    " onclick=\"result_%s.value='{$statusCode['failed']}';"; 
+                    " onclick=\"result_%s.value='{$statusCode['failed']}';";
 
   $qexe['blocked'] = "<img title=\"{$gui->l18n['quick_blocked']}\" src=\"{$imgSet['exec_blocked']}\" " .
-                    " onclick=\"result_%s.value='{$statusCode['blocked']}';"; 
+                    " onclick=\"result_%s.value='{$statusCode['blocked']}';";
 
   $qexe['common'] = 'pxi_%s.value=%s;bxi_%s.value=%s;tcvx_%s.value=%s;fog_%s.submit();" /> ';
 
-  return $qexe;  
+  return $qexe;
 }

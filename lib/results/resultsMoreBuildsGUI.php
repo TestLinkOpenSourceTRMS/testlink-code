@@ -10,7 +10,7 @@
  *
  * @internal revisions
  * @since 1.9.4
- * 
+ *
  **/
 require_once '../../config.inc.php';
 require_once 'common.php';
@@ -52,7 +52,7 @@ function get_status_for_reports_html_options()
 
 
 /**
- * 
+ *
  * @param database $dbHandler
  * @param unknown $args
  * @return stdClass
@@ -60,7 +60,7 @@ function get_status_for_reports_html_options()
 function initializeGui(&$dbHandler,$args)
 {
 
-    $gui = new stdClass();  
+    $gui = new stdClass();
     $tplan_mgr = new testplan($dbHandler);
 
     $gui_open = config_get('gui_separator_open');
@@ -89,12 +89,11 @@ function initializeGui(&$dbHandler,$args)
     // Show only users that are able to execute test cases ?
     // What happens if a user that has loose right to execute, but
     // before loosing this right has been assigned some tests, or have executed it?
-    // 
+    //
     // $gui->assigned_users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER, ADD_BLANK_OPTION);
     // $gui->assigned_users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER,
     // 	                                                   array(TL_USER_ANYBODY => $gui->str_option_any,
-	  //                                                            TL_USER_NOBODY => $gui->str_option_none) );
-    //
+    //                                                            TL_USER_NOBODY => $gui->str_option_none) );
     $gui->assigned_users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER,
     	                                                 array(TL_USER_ANYBODY => $gui->str_option_any) );
 
@@ -104,7 +103,7 @@ function initializeGui(&$dbHandler,$args)
 															array('output' => 'plain'));
 
     $gui->keywords->items[0]=$gui->str_option_any;
-    if(!is_null($tplan_keywords_map=$tplan_mgr->get_keywords_map($gui->tplan_id)) ) 
+    if(!is_null($tplan_keywords_map=$tplan_mgr->get_keywords_map($gui->tplan_id)) )
     {
         $gui->keywords->items += $tplan_keywords_map;
     }
@@ -121,7 +120,7 @@ function initializeGui(&$dbHandler,$args)
 
     $reports_cfg = config_get('reportsCfg');
 	$ldf = config_get('locales_date_format');
-	$date_format = $ldf[((isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB')];		
+	$date_format = $ldf[((isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB')];
     $gui->selected_start_date = @strftime($date_format, time() - ($reports_cfg->start_date_offset));
     $gui->selected_start_time = $reports_cfg->start_time;
     $gui->selected_end_date = @strftime($date_format, time());
@@ -132,13 +131,13 @@ function initializeGui(&$dbHandler,$args)
 
 
 /**
- * 
+ *
  * @return stdClass
  */
 function init_args()
 {
 	$iParams = array("format" => array(tlInputParameter::INT_N),
-					 "tplan_id" => array(tlInputParameter::INT_N));
+	    "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
@@ -151,7 +150,7 @@ function init_args()
 
 
 /**
- * 
+ *
  * @param database $db
  * @param tlUser $user
  * @return string

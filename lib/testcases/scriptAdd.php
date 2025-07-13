@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	scriptAdd.php
  * @internal revisions
  * @since 1.9.15
- * 
+ *
  */
 require_once '../../config.inc.php';
 require_once '../functions/common.php';
@@ -58,7 +58,7 @@ if(!is_null($args->commits) && $args->user_action != 'projectSelected' && $args-
 {
   $gui->codeTrackerMetaData['commits'] = $args->commits;
 }
-else if(($args->user_action == 'branchSelected') ||
+elseif(($args->user_action == 'branchSelected') ||
     (!is_null($gui->branch_name) && ($args->user_action == 'expand' || $args->user_action == 'collapse')))
 {
   $gui->codeTrackerMetaData['commits'] = $cts->getCommitsForHTMLSelect($gui->project_key, $gui->repository_name,
@@ -69,7 +69,7 @@ if(!is_null($args->files) && ($args->user_action == 'expand' || $args->user_acti
 {
   $gui->codeTrackerMetaData['files'] = $args->files;
 }
-else if($args->user_action == 'repoSelected' || $args->user_action == 'branchSelected' ||
+elseif($args->user_action == 'repoSelected' || $args->user_action == 'branchSelected' ||
 $args->user_action == 'expand' || $args->user_action == 'collapse' || ($args->user_action == 'link' && !is_null($gui->repository_name)))
 {
   $gui->codeTrackerMetaData['files'] = $cts->getRepoContentForHTMLSelect($gui->project_key, $gui->repository_name, '', $gui->branch_name, $gui->commit_id);
@@ -86,7 +86,7 @@ if($args->user_action == 'expand')
     $tmpFileArray = &$tmpFileArray[$item][0];
   }
 }
-else if($args->user_action == 'collapse')
+elseif($args->user_action == 'collapse')
 {
   if(substr($args->collapse_item,-1) == "/")
   {
@@ -200,11 +200,11 @@ if($args->user_action == 'create')
     else
     {
       $gui->msg = sprintf($l18n["error_code_does_not_exist_on_cts"],$args->direct_link);
-    }  
+    }
   }
   else
   {
-    $gui->msg = lang_get("error_script_not_added"); 
+    $gui->msg = lang_get("error_script_not_added");
   }
 }
 $smarty = new TLSmarty();
@@ -213,8 +213,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * 
- * 
+ *
+ *
  */
 function initEnv(&$dbHandler)
 {
@@ -225,7 +225,7 @@ function initEnv(&$dbHandler)
   foreach($uaWhiteList['elements'] as $xmen)
   {
     $uaWhiteList['length'][] = strlen($xmen);
-  }  
+  }
   $user_action['maxLength'] = max($uaWhiteList['length']);
   $user_action['minLength'] = min($uaWhiteList['length']);
 
@@ -303,17 +303,16 @@ function getCodeTracker(&$dbHandler,$argsObj,&$guiObj)
       $cts = $ct_mgr->getInterfaceObject($argsObj->tproject_id);
       $guiObj->codeTrackerCfg->VerboseType = $codeTrackerCfg['verboseType'];
       $guiObj->codeTrackerCfg->VerboseID = $codeTrackerCfg['codetracker_name'];
-      $guiObj->codeTrackerCfg->createCodeURL = $cts->getEnterCodeURL();    
+      $guiObj->codeTrackerCfg->createCodeURL = $cts->getEnterCodeURL();
     }
   }
-  return array($cts,$codeTrackerCfg); 
+  return array($cts,$codeTrackerCfg);
 }
 
 /**
  *
  */
-function write_testcase_script(&$dbHandler, &$cts, $tcversion_id, $project_key,
-                               $repo_name, $code_path, $branch_name, $commit_id)
+function write_testcase_script(&$dbHandler, &$cts, $tcversion_id, $project_key,$repo_name, $code_path, $branch_name, $commit_id)
 {
   $result = true;
 
@@ -411,7 +410,7 @@ function write_cfield_testscript(&$dbHandler, &$user, $field_id, $node_id, $valu
 
 /**
  * Checks the user rights for viewing the page
- * 
+ *
  * @param $db resource the database connection handle
  * @param $user tlUser the object of the current user
  *

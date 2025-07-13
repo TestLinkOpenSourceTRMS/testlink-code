@@ -1,15 +1,15 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Scope: control test specification import
  *
  * @filesource  tcCreateFromIssueFromMantisXML.php
  * @package     TestLink
- * @copyright   2007-2013, TestLink community 
+ * @copyright   2007-2013, TestLink community
  * @link        http://www.teamst.org/index.php
- * 
+ *
  *
  *
  * <?xml version="1.0" encoding="UTF-8"?>
@@ -42,7 +42,7 @@
  * @since 1.9.7
  *
  */
-require '../../config.inc.php';
+require_once '../../config.inc.php';
 require_once 'common.php';
 require_once 'xml.inc.php';
 
@@ -60,7 +60,7 @@ if ($args->do_upload)
   $doIt = false;
   $gui->file_check = null;
   if (($source != 'none') && ($source != ''))
-  { 
+  {
     // ATTENTION:
     // MAX_FILE_SIZE hidden input is defined on form, but anyway we do not get error at least using
     // Firefox and Chrome.
@@ -71,7 +71,7 @@ if ($args->do_upload)
     }
   }
   if($doIt)
-  { 
+  {
     $gui->file_check['status_ok'] = 1;
     if (move_uploaded_file($source, $gui->dest))
     {
@@ -82,7 +82,7 @@ if ($args->do_upload)
     $gui->resultMap = importIssueFromXML($db,$gui->dest,intval($args->container_id),
                                          intval($args->tproject_id),intval($args->userID),$opt);
   }
-  else if(is_null($gui->file_check))
+  elseif(is_null($gui->file_check))
   {
     
     tLog('Missing upload file','WARNING');
@@ -96,23 +96,21 @@ $gui->testprojectName = $args->tproject_name;
 $gui->importTypes = array('XML' => 'Mantis XML');
 
 $smarty = new TLSmarty();
-$smarty->assign('gui',$gui);  
+$smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-// --------------------------------------------------------------------------------------
 /*
-  function: 
+  function:
   args :
-  returns: 
+  returns:
 */
 function importIssueFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$options=null)
 {
-  $xmlTCs = null;
   $resultMap  = null;
   $my = array();
   $my['options'] = array('useRecursion' => false, 'importIntoProject' => 0,
-                         'duplicateLogic' => array('hitCriteria' => 'name', 'actionOnHit' => null)); 
+                         'duplicateLogic' => array('hitCriteria' => 'name', 'actionOnHit' => null));
   $my['options'] = array_merge($my['options'], (array)$options);
   foreach($my['options'] as $varname => $value)
   {
@@ -122,7 +120,7 @@ function importIssueFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$optio
   if (file_exists($fileName))
   {
     $xml = @simplexml_load_file_wrapper($fileName);
-    if($xml !== FALSE)
+    if($xml !== false)
     {
       $resultMap = importTestCasesFromIssueSimpleXML($db,$xml,$parentID,$tproject_id,$userID,null,$duplicateLogic);
     }
@@ -131,14 +129,12 @@ function importIssueFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$optio
 }
 
 
-// --------------------------------------------------------------------------------------
 /*
   function: saveImportedTCData
   args :
-  returns: 
+  returns:
 */
-function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
-                            $userID,$kwMap,$duplicatedLogic = array('hitCriteria' => 'name', 'actionOnHit' => null))
+function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwMap,$duplicatedLogic = array('hitCriteria' => 'name', 'actionOnHit' => null))
 {
   static $messages;
   static $fieldSizeCfg;
@@ -158,11 +154,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   {
     return;
   }
-  
-  // $tprojectHas = array('customFields' => false, 'reqSpec' => false);
-  $hasCustomFieldsInfo = false;
-  $hasRequirements = false;
-    
+
   if(is_null($messages))
   {
     $feedbackMsg = array();
@@ -196,14 +188,14 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 
     // because name can be changed automatically during item creation
     // to avoid name conflict adding a suffix automatically generated,
-    // is better to use a max size < max allowed size 
+    // is better to use a max size < max allowed size
     $safeSizeCfg = new stdClass();
     $safeSizeCfg->testcase_name=($fieldSizeCfg->testcase_name) * 0.8;
 
 
     // Get CF with scope design time and allowed for test cases linked to this test project
     $linkedCustomFields = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,1,null,'testcase',null,'name');
-    $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
+    $tprojectHas['customFields']=!is_null($linkedCustomFields);
 
     $reqSpecSet = $tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title','RSPEC.doc_id as rspec_doc_id', 'REQ.req_doc_id'),'req_doc_id');
     $tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count($reqSpecSet) > 0);
@@ -223,7 +215,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $summary = $tc['summary'];
     $steps = $tc['steps'];
 
-    // I've changed value to use when order has not been provided 
+    // I've changed value to use when order has not been provided
     // from testcase:DEFAULT_ORDER to a counter, because with original solution
     // an issue arise with 'save execution and go next'
     // if use has not provided order I think is OK TestLink make any choice.
@@ -231,7 +223,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $internalid = $tc['internalid'];
     $preconditions = $tc['preconditions'];
     $exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
-    $importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;    
+    $importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;
 
     $externalid = $tc['externalid'];
     if( intval($externalid) <= 0 )
@@ -261,7 +253,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       }
     }
       
-    $name_len = tlStringLen($name);  
+    $name_len = tlStringLen($name);
     if($name_len > $fieldSizeCfg->testcase_name)
     {
       // Will put original name inside summary
@@ -269,7 +261,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       $xx .= sprintf($messages['testcase_name_too_long'],$name_len, $fieldSizeCfg->testcase_name) . "\n";
       $xx .= $messages['original_name'] . "\n" . $name. "\n" . $messages['end_warning'] . "\n";
       $summary = nl2br($xx) . $summary;
-      $name = tlSubStr($name, 0, $safeSizeCfg->testcase_name);      
+      $name = tlSubStr($name, 0, $safeSizeCfg->testcase_name);
     }
         
     
@@ -277,7 +269,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     if (isset($tc['keywords']) && $tc['keywords'])
     {
       $kwIDs = implode(",",buildKeywordList($kwMap,$tc['keywords']));
-    }  
+    }
     
     $doCreate=true;
     if( $duplicatedLogic['actionOnHit'] == 'update_last_version' )
@@ -311,7 +303,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
        {
            case 1:
              $doCreate=false;
-             $tcase_id = key($info); 
+             $tcase_id = key($info);
              $last_version = $tcase_mgr->get_last_version_info($tcase_id,$getVersionOpt);
              $tcversion_id = $last_version['id'];
              $ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
@@ -324,40 +316,40 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
            break;
            
            case 0:
-             $doCreate=true; 
+             $doCreate=true;
            break;
            
            default:
-               $doCreate=false; 
+               $doCreate=false;
            break;
        }
      }
    }
     
     if( $doCreate )
-    {           
+    {
       // Want to block creation of with existent EXTERNAL ID, if containers ARE DIFFERENT.
-      $item_id = intval($tcase_mgr->getInternalID($externalid, array('tproject_id' => $tproject_id)));   
+      $item_id = intval($tcase_mgr->getInternalID($externalid, array('tproject_id' => $tproject_id)));
       if( $item_id > 0)
       {
         // who is his parent ?
-        $owner = $tcase_mgr->getTestSuite($item_id);  
+        $owner = $tcase_mgr->getTestSuite($item_id);
         if( $owner != $container_id)
-        { 
+        {
           // Get full path of existent Test Cases
           $stain = $tcase_mgr->tree_manager->get_path($item_id,null, 'name');
-          $n = count($stain);         
+          $n = count($stain);
           $stain[$n-1] = $tcasePrefix . config_get('testcase_cfg')->glue_character . $externalid . ':' . $stain[$n-1];
           $stain = implode('/',$stain);
           
           $resultMap[] = array($name,$messages['hit_with_same_external_ID'] . $stain);
           $doCreate = false;
         }
-      }        
+      }
     }
     if( $doCreate )
-    {     
-        $createOptions = array('check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
+    {
+        $createOptions = array('check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME,
                                'action_on_duplicate_name' => $duplicatedLogic['actionOnHit'],
                                'external_id' => $externalid);
 
@@ -366,7 +358,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
                                       $exec_type,$importance,$createOptions))
         {
             $resultMap[] = array($name,$ret['msg']);
-        }  
+        }
     }
       
   }
@@ -375,21 +367,21 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 
 
 
-/* contribution by mirosvad - 
-   Convert new line characters from XLS to HTML 
+/* contribution by mirosvad -
+   Convert new line characters from XLS to HTML
 */
-function nl2p($str)  
+function nl2p($str)
 {
   return str_replace('<p></p>', '', '<p>' . preg_replace('#\n|\r#', '</p>$0<p>', $str) . '</p>'); //MS
 }
 
 
 /*
-  function: 
+  function:
   
   args :
   
-  returns: 
+  returns:
   
 */
 function init_args()
@@ -398,7 +390,7 @@ function init_args()
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
     $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
-    $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
+    $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null;
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
     $args->containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
     $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
@@ -414,7 +406,7 @@ function init_args()
 
 
 /**
- * 
+ *
  *
  */
 function importTestCasesFromIssueSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic)
@@ -424,12 +416,12 @@ function importTestCasesFromIssueSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproje
   if ($tcData)
   {
     $resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap,$duplicateLogic);
-  }  
+  }
   return $resultMap;
 }
 
 /**
- * 
+ *
  *
  * @internal revisions
  * 20100317 - added internalid - BUGID 3236
@@ -444,7 +436,7 @@ function getTestCaseSetFromIssueSimpleXMLObj($xmlObj)
     
 
   $l18n = init_labels( array('issue_issue' => null, 'issue_steps_to_reproduce' => null, 'issue_summary' => null,
-                             'issue_target_version' => null,'issue_description' => null, 
+                             'issue_target_version' => null,'issue_description' => null,
                              'issue_additional_information' => null));
 
   $jdx = 0;
@@ -453,7 +445,7 @@ function getTestCaseSetFromIssueSimpleXMLObj($xmlObj)
  
   $XMLDef['elements'] = array('string' => array('summary' => null,'description' => null,
                                                 'additional_information' => null,
-                                                'steps_to_reproduce' => null, 
+                                                'steps_to_reproduce' => null,
                                                 'target_version' => null, 'id' => null));
   $itemSet = array();
   $nl = "<p>";
@@ -466,26 +458,24 @@ function getTestCaseSetFromIssueSimpleXMLObj($xmlObj)
     if(!is_null($dummy['steps_to_reproduce']))
     {
       $isum .= $nl . $l18n['issue_steps_to_reproduce'] . $nl . $dummy['steps_to_reproduce'];
-    }  
+    }
     if(!is_null($dummy['additional_information']))
     {
       $isum .= $nl . $l18n['issue_additional_information'] . $nl . $dummy['additional_information'];
-    }  
+    }
 
-    $itemSet[$jdx++] = array('name' => ($l18n['issue_issue'] . ':' . $dummy['id'] . ' - ' . $dummy['summary']), 
+    $itemSet[$jdx++] = array('name' => ($l18n['issue_issue'] . ':' . $dummy['id'] . ' - ' . $dummy['summary']),
                              'summary' => $isum, 'steps' => null, 'internalid' => null, 'externalid' => null,
-                             'author_login' => null, 'preconditions' => null);    
+                             'author_login' => null, 'preconditions' => null);
   }
   return $itemSet;
 }
 
 
-
-
 /**
- * 
  *
- * 
+ *
+ *
  **/
 function initializeGui(&$dbHandler,&$argsObj)
 {
@@ -512,15 +502,15 @@ function initializeGui(&$dbHandler,&$argsObj)
   {
     $tree_mgr = new tree($dbHandler);
     $node_info = $tree_mgr->get_node_hierarchy_info($argsObj->container_id);
-    unset($tree_mgr);    
+    unset($tree_mgr);
     $guiObj->container_name = $node_info['name'];
     if($argsObj->container_id == $argsObj->tproject_id)
     {
       $guiObj->container_description = lang_get('testproject');
-    }  
+    }
   }
 
   return $guiObj;
-} 
+}
 
 ?>

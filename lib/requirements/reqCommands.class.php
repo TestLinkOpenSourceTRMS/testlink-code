@@ -173,7 +173,7 @@ class reqCommands {
     returns:
 
   */
-  public function edit(&$argsObj,$overwriteArgs=true)
+  private function edit(&$argsObj,$overwriteArgs=true)
   {
     $obj = $this->initGuiBean();
     $obj->display_path = false;
@@ -657,7 +657,6 @@ class reqCommands {
    */
   public function doAddRelation($argsObj)
   {
-    $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
     $op = array('ok' => true, 'msg' => lang_get('new_rel_add_success'));
     $own_id = $argsObj->relation_source_req_id;
     $authorID = $argsObj->user_id;
@@ -730,14 +729,12 @@ class reqCommands {
    *
    * @author Andreas Simon
    *
-   * @param stcClass $argsObj user input data
+   * @param stdClass $argsObj user input data
    *
    * @return stdClass $object data for template to display
    */
   public function doDeleteRelation($argsObj)
   {
-    
-    $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
     $ok_msg = '<div class="info">' . lang_get('delete_rel_success') . '</div>';
     $op = array('ok' => true, 'msg' => $ok_msg);
     

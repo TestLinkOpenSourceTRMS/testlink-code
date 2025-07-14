@@ -1,17 +1,17 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  platformsEdit.php
  * @package     TestLink
- * @copyright   2009-2022, TestLink community 
- * @link        http://www.testlink.org 
- * @link        http://mantis.testlink.org 
- * @link        https://github.com/TestLinkOpenSourceTRMS/testlink-code 
- * 
+ * @copyright   2009-2022, TestLink community
+ * @link        http://www.testlink.org
+ * @link        http://mantis.testlink.org
+ * @link        https://github.com/TestLinkOpenSourceTRMS/testlink-code
  *
- * allows users to manage platforms. 
+ *
+ * allows users to manage platforms.
  *
  *
 **/
@@ -57,7 +57,7 @@ switch ($args->doAction) {
   case "disableExec":
   case "enableExec":
   case "openForExec":
-  case "closeForExec":      
+  case "closeForExec":
     $platform_mgr->$method($args->platform_id);
     
     // optimistic
@@ -77,7 +77,7 @@ if ($op->status == 1) {
 }
 
 // refresh
-$guiX = $platform_mgr->initViewGui($args->currentUser,$args);    
+$guiX = $platform_mgr->initViewGui($args->currentUser,$args);
 $gui->platforms = $guiX->platforms;
 
 $gui->notes = $of->CreateHTML();
@@ -86,7 +86,7 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $default_template);
 
 /**
- * 
+ *
  *
  */
 function initEnv(&$dbHandler) {
@@ -105,10 +105,10 @@ function initEnv(&$dbHandler) {
 
 
 /**
- * 
+ *
  *
  */
-function init_args( &$dbH ) 
+function init_args( &$dbH )
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
@@ -134,19 +134,19 @@ function init_args( &$dbH )
   $tables = tlDBObject::getDBTables(array('nodes_hierarchy','platforms'));
   
   if( 0 != $args->platform_id ) {
-    $sql = "SELECT testproject_id FROM {$tables['platforms']}  
+    $sql = "SELECT testproject_id FROM {$tables['platforms']}
             WHERE id={$args->platform_id}";
     $info = $dbH->get_recordset($sql);
 
-    $args->tproject_id = $info[0]['testproject_id'];    
-  } 
+    $args->tproject_id = $info[0]['testproject_id'];
+  }
     
   if( 0 == $args->tproject_id ) {
     throw new Exception("Unable to Get Test Project ID, Aborting", 1);
   }
 
   $args->testproject_name = '';
-  $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
+  $sql = "SELECT name FROM {$tables['nodes_hierarchy']}
           WHERE id={$args->tproject_id}";
   $info = $dbH->get_recordset($sql);
   if( null != $info ) {
@@ -178,7 +178,7 @@ function init_args( &$dbH )
 
   args:
   
-  returns: - 
+  returns: -
 
 */
 function create(&$args,&$gui) {
@@ -201,7 +201,7 @@ function create(&$args,&$gui) {
 
   args:
   
-  returns: - 
+  returns: -
 
 */
 function edit(&$args,&$gui,&$platform_mgr) {
@@ -221,15 +221,13 @@ function edit(&$args,&$gui,&$platform_mgr) {
     $args->name = $platform['name'];
     $args->notes = $platform['notes'];
 
-    // ---------------------------------------------------------
-    // Copy from args into $gui 
+    // Copy from args into $gui
     $gui->enable_on_design = $args->enable_on_design;
     $gui->enable_on_execution = $args->enable_on_execution;
     $gui->is_open = $args->is_open;
   
     $gui->name = $args->name;
     $gui->notes = $args->notes;
-    // ---------------------------------------------------------
 
     $gui->action_descr .= TITLE_SEP . $platform['name'];
   }
@@ -242,11 +240,11 @@ function edit(&$args,&$gui,&$platform_mgr) {
 }
 
 /**
- * function: do_create 
+ * function: do_create
  *           do operations on db
  *
  */
-function do_create(&$args,&$gui,&$platform_mgr) 
+function do_create(&$args,&$gui,&$platform_mgr)
 {
   $gui->main_descr = lang_get('platform_management');
   $gui->action_descr = lang_get('create_platform');
@@ -256,7 +254,7 @@ function do_create(&$args,&$gui,&$platform_mgr)
   $ret = new stdClass();
   $ret->template = 'platformsView.tpl';
   $plat = new stdClass();
-  $plat->name = $args->name; 
+  $plat->name = $args->name;
   $k2c = [
     'notes' => null,
     'enable_on_design' => 0,
@@ -269,7 +267,7 @@ function do_create(&$args,&$gui,&$platform_mgr)
   }
   $op = $platform_mgr->create($plat);
 
-  $ret->status = $op['status']; 
+  $ret->status = $op['status'];
   $ret->user_feedback = sprintf(lang_get('platform_created'), $args->name);
   
   return $ret;
@@ -311,7 +309,7 @@ function do_update(&$args,&$gui,&$platform_mgr) {
 
   args :
   
-  returns: 
+  returns:
 
 */
 function do_delete(&$args,&$gui,&$platform_mgr) {
@@ -336,7 +334,7 @@ function do_delete(&$args,&$gui,&$platform_mgr) {
 function getErrorMessage($code,$platform_name) {
   switch($code) {
     case tlPlatform::E_NAMENOTALLOWED:
-      $msg = lang_get('platforms_char_not_allowed'); 
+      $msg = lang_get('platforms_char_not_allowed');
       break;
 
     case tlPlatform::E_NAMELENGTH:
@@ -344,7 +342,7 @@ function getErrorMessage($code,$platform_name) {
       break;
 
     case tlPlatform::E_DBERROR:
-    case ERROR: 
+    case ERROR:
       $msg = lang_get('platform_update_failed');
       break;
 

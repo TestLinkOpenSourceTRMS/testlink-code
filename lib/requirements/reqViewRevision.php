@@ -1,11 +1,11 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
- *  
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
  * @filesource reqViewRevision.php
  * @author francisco.mancardi@gmail.com
- * 
+ *
  *
  */
 require_once '../../config.inc.php';
@@ -34,7 +34,7 @@ $smarty->display($templateCfg->template_dir . 'reqViewRevisionRO.tpl');
  */
 function init_args() {
 	$iParams = array("item_id" => array(tlInputParameter::INT_N),
-			             "showReqSpecTitle" => array(tlInputParameter::INT_N));	
+			             "showReqSpecTitle" => array(tlInputParameter::INT_N));
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
@@ -48,7 +48,7 @@ function init_args() {
 }
 
 /**
- * 
+ *
  *
  */
 function initialize_gui(&$dbHandler,$argsObj) {
@@ -93,7 +93,7 @@ function initialize_gui(&$dbHandler,$argsObj) {
       $reqVersionID = $info['req_version_id'];
    	break;
   }
-  $gui->reqCoverage = $req_mgr->getActiveForReqVersion($reqVersionID);  
+  $gui->reqCoverage = $req_mgr->getActiveForReqVersion($reqVersionID);
   
   $gui->item = $info;
 	$gui->cfields = $req_mgr->html_table_of_custom_field_values(null,$gui->item_id,$argsObj->tproject_id);

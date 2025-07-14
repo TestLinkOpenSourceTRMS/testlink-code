@@ -1,13 +1,13 @@
 <?php
  /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Platform link/unlink from a test plan
- * 
+ *
  * @package     TestLink
  * @author      eloff
- * @copyright   2005-2022, TestLink community 
+ * @copyright   2005-2022, TestLink community
  * @filesource  platformsAssign.php
  * @link        http://www.testlink.org
  *
@@ -93,41 +93,30 @@ $smarty->assign('opt_cfg', $opt_cfg);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
- * Initializes option transfer items, by appending a text with number linked TC:s 
+ * Initializes option transfer items, by appending a text with number linked TC:s
  * for every assigned platform.
- * It also builds a js map platform_name => linked_count. 
- * This map is used to show warning dialog only when trying to unlink 
+ * It also builds a js map platform_name => linked_count.
+ * This map is used to show warning dialog only when trying to unlink
  * platforms with assigned TCs
  */
-function init_option_panels(&$tplan_mgr, &$platform_mgr, 
-                            &$opt_cfg, &$args)
+function init_option_panels(&$tplan_mgr, &$platform_mgr,&$opt_cfg, &$args)
 {
-
-  /*
-  $opx = [
-    'enable_on_design' => false, 
-    'enable_on_execution' => true,
-    'is_open' => true
-  ];
-  */
-  
   $opt_cfg->from->map = $platform_mgr->getAllAsMap(config_get('platforms')->allowedOnAssign);
 
   $optLTT = null;
   $map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id,
                                                  $optLTT);
   $platform_count_js = "platform_count_map = new Array();\n";
-  if (!is_null($map)) {     
+  if (!is_null($map)) {
     foreach ($map as $plat_id => &$plat_name) {
       $count = $tplan_mgr->count_testcases($args->tplan_id,
                                            $plat_id);
-      $plat_name .= sprintf(lang_get('platform_linked_count'), 
+      $plat_name .= sprintf(lang_get('platform_linked_count'),
                             $count);
-      $platform_count_js .= 
-        "platform_count_map['$plat_name'] = $count;\n";
+      $platform_count_js .= "platform_count_map['$plat_name'] = $count;\n";
 
-      // Removal of duplicates is NOT handled 
-      // automatically since we just have modified 
+      // Removal of duplicates is NOT handled
+      // automatically since we just have modified
       // their names adding a usage counter.
       unset($opt_cfg->from->map[$plat_id]);
     }
@@ -138,7 +127,7 @@ function init_option_panels(&$tplan_mgr, &$platform_mgr,
 }
 
 /**
- * 
+ *
  *
  */
 function init_args(&$opt_cfg)
@@ -166,7 +155,7 @@ function init_args(&$opt_cfg)
      $args->platformsToAdd = explode(",", $pParams[$added]);
   }
   
-  if( $pParams[$removed] != "" ) 
+  if( $pParams[$removed] != "" )
   {
     $args->platformsToRemove = explode(",", $pParams[$removed]);
   }

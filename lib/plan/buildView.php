@@ -8,7 +8,7 @@
  *
  *
  */
-require '../../config.inc.php';
+require_once '../../config.inc.php';
 require_once 'common.php';
 testlinkInitPage($db,false,false);
 
@@ -94,11 +94,10 @@ function initEnv(&$dbHandler)
     if ($hasCF) {
       $cfields = (array)$build_mgr->getCustomFieldsValues($idk,$gui->tproject_id);
       foreach ($cfields as $cfd) {
-        if ($initCFCol) {
-          if (!isset($col2hide[$cfd['name']])) {
+        if ($initCFCol && !isset($col2hide[$cfd['name']]))
+        {
             $gui->cfieldsColumns[] = $cfd['label'];
             $gui->cfieldsType[] = $cfd['type'];
-          }
         }
         $gui->buildSet[$idk][$cfd['label']] = ['value' => $cfd['value'], 'data-order' => $cfd['value']];
         if ($cfd['type'] == 'date') {

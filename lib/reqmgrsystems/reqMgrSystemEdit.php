@@ -1,14 +1,14 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  issueTrackerEdit.php
  * @author      francisco.mancardi@gmail.com
  * @since 1.9.6
  *
  * @internal revisions
- * 
+ *
 **/
 require_once '../../config.inc.php';
 require_once 'common.php';
@@ -38,7 +38,7 @@ function renderGui(&$dbHandler,&$argsObj,$guiObj,$opObj,$templateCfg)
     // key: gui action
     // value: next gui action (used to set value of action button on gui)
     $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                             'doDelete' => '', 'doCreate' => 'doCreate', 
+                             'doDelete' => '', 'doCreate' => 'doCreate',
                              'doUpdate' => 'doUpdate');
 
   // Get rendering type and set variable for template
@@ -62,7 +62,7 @@ function renderGui(&$dbHandler,&$argsObj,$guiObj,$opObj,$templateCfg)
         if($pos === false)
         {
           $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
-          $tpl = $tplDir . $tpl;      
+          $tpl = $tplDir . $tpl;
           $renderType = 'template';
         }
         break;
@@ -73,7 +73,7 @@ function renderGui(&$dbHandler,&$argsObj,$guiObj,$opObj,$templateCfg)
       case 'template':
         $smartyObj->assign('gui',$guiObj);
         $smartyObj->display($tpl);
-      break;  
+      break;
  
       case 'redirect':
         header("Location: {$tpl}");
@@ -86,7 +86,7 @@ function renderGui(&$dbHandler,&$argsObj,$guiObj,$opObj,$templateCfg)
 }
 
 /**
- * 
+ *
  */
 function initScript(&$dbHandler)
 {
@@ -115,16 +115,13 @@ function init_args($whiteLists)
   // sanitize via whitelist
   foreach($whiteLists as $inputKey => $allowedValues)
   {
-    if( property_exists($args,$inputKey) )
+    if( property_exists($args,$inputKey) && !isset($allowedValues[$args->$inputKey]) )
     {
-      if( !isset($allowedValues[$args->$inputKey]) )
-      {
         $msg = "Input parameter $inputKey - white list validation failure - " .
                "Value:" . $args->$inputKey . " - " .
-               "File: " . basename(__FILE__) . " - Function: " . __FUNCTION__ ; 
+               "File: " . basename(__FILE__) . " - Function: " . __FUNCTION__ ;
         tLog($msg,'ERROR');
         throw new Exception($msg);
-      }
     }
   }
 
@@ -135,7 +132,7 @@ function init_args($whiteLists)
 
 
 /**
- * 
+ *
  *
  */
 function initializeGui(&$dbHandler,&$argsObj,&$commandMgr)
@@ -170,8 +167,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$commandMgr)
 
 /**
  * @param $db resource the database connection handle
- * @param $user the current active user
- * 
+ * @param tlUser $user the current active user
+ *
  * @return boolean returns true if the page can be accessed
  */
 function checkRights(&$db,&$user)

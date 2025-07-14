@@ -43,13 +43,11 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
 
 /**
- * 
+ *
  *
  */
 function init_args()
 {
-  $args = new stdClass();
-
   $iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
                    "req_spec_id" => array(tlInputParameter::INT_N),
                    "req_spec_revision_id" => array(tlInputParameter::INT_N),
@@ -97,8 +95,8 @@ function init_args()
     {
       $args->op = $btn;
       break;
-    }  
-  }  
+    }
+  }
   
   $args->user = $_SESSION['currentUser'];
 
@@ -143,24 +141,24 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     break;
 
     default:
-      if($opObj->askForRevision || $opObj->askForLog || !$opObj->action_status_ok) 
+      if($opObj->askForRevision || $opObj->askForLog || !$opObj->action_status_ok)
       {
         $owebEditor->Value = $argsObj->scope;
       }
       else
       {
         $owebEditor->Value = getItemTemplateContents('req_spec_template',$owebEditor->InstanceName,$argsObj->scope);
-      }                        
+      }
     break;
   }
   $guiObj->scope = $owebEditor->CreateHTML();
-  $guiObj->editorType = $editorCfg['type'];  
+  $guiObj->editorType = $editorCfg['type'];
 
   // Tree refresh Processing
   switch($argsObj->doAction)
   {
     case "doCreate":
-    case "doUpdate": 
+    case "doUpdate":
     case "doCopyRequirements":
     case "doCopy":
     case "doFreeze":
@@ -194,7 +192,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
       $renderType = 'template';
       $key2loop = get_object_vars($opObj);
             
-      if($opObj->action_status_ok == false)
+      if(!$opObj->action_status_ok)
       {
         // Remember that scope normally is a WebRichEditor, and that
         // we have already processed WebRichEditor
@@ -215,8 +213,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
       if ($pos === false) {
         $tpl = $tpd . $tpl;
       } else {
-        $renderType = 'redirect'; 
-        if (null != $guiObj->uploadOp && $guiObj->uploadOp->statusOK == false) {
+        $renderType = 'redirect';
+        if (!is_null($guiObj->uploadOp) && !$guiObj->uploadOp->statusOK) {
           $tpl .= "&uploadOPStatusCode=" . $guiObj->uploadOp->statusCode;
         }
       }
@@ -229,7 +227,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
       $smartyObj->assign('mgt_view_events',has_rights($db,"mgt_view_events"));
       $smartyObj->assign('gui',$guiObj);
       $smartyObj->display($tpl);
-    break;  
+    break;
  
     case 'redirect':
       header("Location: {$tpl}");
@@ -243,7 +241,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 }
 
 /**
- * 
+ *
  *
  */
 function initialize_gui(&$dbHandler, &$argsObj, &$req_cfg, &$commandMgr)

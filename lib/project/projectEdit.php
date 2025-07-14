@@ -215,7 +215,7 @@ switch($args->doAction) {
  *
  * @param array $request_hash the $_REQUEST
  * @param hash session_hash the $_SESSION
- * @return singleton object with html values tranformed and other
+ * @return stdClass object with html values tranformed and other
  *                   generated variables.
  * @internal
  */
@@ -321,7 +321,7 @@ function init_args($tprojectMgr,$request_hash) {
  * Collect a test project options (input from form) to a singleton
  *
  * @param array $argsObj the page input
- * @return singleton data to be stored
+ * @return stdClass data to be stored
  */
 function prepareOptions($argsObj) {
   $opts = new stdClass();

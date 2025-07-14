@@ -19,7 +19,7 @@
  * @internal revisions
  *
  **/
-require '../../config.inc.php';
+require_once '../../config.inc.php';
 require_once 'common.php';
 require_once 'xml.inc.php';
 
@@ -219,7 +219,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
   }
   
   $xml = @simplexml_load_file_wrapper($targetFile);
-  if($xml !== FALSE)
+  if($xml !== false)
   {
     $tcaseMgr = new testcase($dbHandler);
     $tcaseSet = array();
@@ -252,7 +252,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
     {
       $tables = tlObjectWithDB::getDBTables(array('testplan_tcversions'));
       $platformSet = $tplanMgr->getPlatforms($contextObj->tplan_id,array('outputFormat' => 'mapAccessByName'));
-      $targetHasPlatforms = (count($platformSet) > 0);
+      $targetHasPlatforms = (!empty($platformSet));
       
       $xmlLinks = $xml->executables->children();
       $loops2do = count($xmlLinks);
@@ -337,7 +337,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
             $dummy = $tcaseMgr->get_basic_info($tcaseSet[$externalID],
                                                array('number' => $version));
 
-            if( count($dummy) > 0 )
+            if(!empty($dummy))
             {
               // Check :
               // for same test plan there is a different version already linked ?
@@ -468,7 +468,7 @@ function processPlatforms(&$platMgr,&$tplanMgr,$universe,$xmlSubset,$lbl,$tplanI
     $targetName = trim((string)$children[$idx]->name);
     if( isset($universe[$targetName]) )
     {
-      $status_ok = $status_ok && true;
+      $status_ok = true;
       $idSet[$universe[$targetName]] = $targetName;
     }
     else

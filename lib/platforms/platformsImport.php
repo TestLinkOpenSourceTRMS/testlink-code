@@ -1,20 +1,20 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- *  
+ *
  * Platforms import management
  *
  * @package 	  TestLink
  * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2022, TestLink community 
+ * @copyright   2005-2022, TestLink community
  * @filesource  platformsImport.php
  * @link 		    http://www.testlink.org
  * @uses 		    config.inc.php
  *
  *
  */
-require '../../config.inc.php';
+require_once '../../config.inc.php';
 require_once 'common.php';
 require_once 'xml.inc.php';
 testlinkInitPage($db,false,false,"checkRights");
@@ -28,15 +28,15 @@ $resultMap = null;
 switch($args->doAction) {
   case 'doImport':
     $gui->file_check = doImport($db,$args->tproject_id);
-  break;  
+  break;
     
   default:
-  break;  
+  break;
 }
 
 
 $smarty = new TLSmarty();
-$smarty->assign('gui',$gui);  
+$smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -60,7 +60,7 @@ function init_args(&$dbH) {
 
   $args->testproject_name = '';
   $tables = tlDBObject::getDBTables(array('nodes_hierarchy'));
-  $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
+  $sql = "SELECT name FROM {$tables['nodes_hierarchy']}
           WHERE id={$args->tproject_id}";
   $info = $dbH->get_recordset($sql);
   if( null != $info ) {
@@ -80,25 +80,24 @@ function initializeGui(&$argsObj) {
   $guiObj->tplan_id = $argsObj->tplan_id;
 
 
-  $guiObj->goback_url = $_SESSION['basehref'] . 
+  $guiObj->goback_url = $_SESSION['basehref'] .
                         'lib/platforms/platformsView.php?tproject_id=' . $guiObj->tproject_id .
                         'tplan_id=' . $guiObj->tplan_id;
 
   $guiObj->page_title = lang_get('import_platforms');
   $guiObj->file_check = [
-    'show_results' => 0, 
-    'status_ok' => 1, 
-    'msg' => 'ok', 
+    'show_results' => 0,
+    'status_ok' => 1,
+    'msg' => 'ok',
     'filename' => ''
   ];
 
   $guiObj->importTypes = array('XML' => 'XML');
 
   $guiObj->importLimitBytes = config_get('import_file_max_size_bytes');
-  $guiObj->max_size_import_file_msg = 
-    sprintf(lang_get('max_size_file_msg'), $guiObj->importLimitBytes/1024);
+  $guiObj->max_size_import_file_msg = sprintf(lang_get('max_size_file_msg'), $guiObj->importLimitBytes/1024);
 
-  return $guiObj;  
+  return $guiObj;
 }
 
 
@@ -110,26 +109,26 @@ function doImport(&$dbHandler,$testproject_id)
 {
 
   $import_msg = array('ok' => array(), 'ko' => array());
-  $file_check = array('show_results' => 0, 'status_ok' => 0, 'msg' => '', 
+  $file_check = array('show_results' => 0, 'status_ok' => 0, 'msg' => '',
                     	'filename' => '', 'import_msg' => $import_msg);
   
   $key = 'targetFilename';
 	$dest = TL_TEMP_PATH . session_id(). "-import_platforms.tmp";
 	$fInfo = $_FILES[$key];
 	$source = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : null;
-	if (($source != 'none') && ($source != '')) { 
+	if (($source != 'none') && ($source != '')) {
 		$file_check['filename'] = $fInfo['name'];
 		$xml = false;
 		if (move_uploaded_file($source, $dest)) {
       // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
       $xml = @simplexml_load_file_wrapper($dest);
     }
-		if ($xml !== FALSE) {
+		if ($xml !== false) {
      	$file_check['status_ok'] = 1;
       $file_check['show_results'] = 1;
       $platform_mgr = new tlPlatform($dbHandler,$testproject_id);
 
-      $platformsOnSystem = $platform_mgr->getAllAsMap(['accessKey' => 'name', 
+      $platformsOnSystem = $platform_mgr->getAllAsMap(['accessKey' => 'name',
                                                        'output' => 'rows',
                                                        'enable_on_design' => null,
                                                        'enable_on_execution' => null,
@@ -137,7 +136,7 @@ function doImport(&$dbHandler,$testproject_id)
                                                       ]);
                                                       
       foreach($xml as $platform) {
-        if (property_exists($platform, 'name')) {  
+        if (property_exists($platform, 'name')) {
          	// Check if platform with this name already exists on test Project
          	// if answer is yes => update fields
          	$name = trim((string)$platform->name);
@@ -164,13 +163,13 @@ function doImport(&$dbHandler,$testproject_id)
          	}
         } else {
           $import_msg['ko'][] = lang_get('bad_line_skipped');
-        }  
-      }      
+        }
+      }
     }
     else
     {
-      $file_check['msg'] = lang_get('problems_loading_xml_content');  
-    }  
+      $file_check['msg'] = lang_get('problems_loading_xml_content');
+    }
           
   }
 	else
@@ -182,7 +181,7 @@ function doImport(&$dbHandler,$testproject_id)
   if( count($import_msg['ko']) == 0 )
   {
     $import_msg['ko'] = null;
-  }  
+  }
   $file_check['import_msg'] = $import_msg;
   return $file_check;
 }

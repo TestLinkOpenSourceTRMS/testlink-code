@@ -18,14 +18,14 @@ class planMilestonesCommands
   private $auditContext;
   private $viewAction = 'lib/plan/planMilestonesView.php';
   
-  function __construct(&$db)
+  public function __construct(&$db)
   {
       $this->db = $db;
       $this->milestone_mgr = new milestone_mgr($db);
     $this->submit_button_label = lang_get('btn_save');
   }
 
-  function setAuditContext($auditContext)
+  private function setAuditContext($auditContext)
   {
       $this->auditContext = $auditContext;
   }
@@ -38,7 +38,7 @@ class planMilestonesCommands
     returns:
 
   */
-  function create(&$argsObj)
+  private function create(&$argsObj)
   {
       $guiObj = new stdClass();
     $guiObj->main_descr = lang_get('testplan') . TITLE_SEP;
@@ -62,7 +62,7 @@ class planMilestonesCommands
     returns:
 
   */
-  function edit(&$argsObj)
+  private function edit(&$argsObj)
   {
     $guiObj = new stdClass();
     $dummy = $this->milestone_mgr->get_by_id($argsObj->id);
@@ -100,7 +100,7 @@ class planMilestonesCommands
     returns:
 
   */
-  function doCreate(&$argsObj,$basehref)
+  public function doCreate(&$argsObj,$basehref)
   {
     $date_format_cfg = config_get('date_format');
     $guiObj = new stdClass();
@@ -190,7 +190,7 @@ class planMilestonesCommands
     returns:
 
   */
-  function doUpdate(&$argsObj,$basehref)
+  public function doUpdate(&$argsObj,$basehref)
   {
     $date_format_cfg = config_get('date_format');
     $obj=new stdClass();
@@ -289,7 +289,7 @@ class planMilestonesCommands
     returns: object with info useful to manage user interface
 
   */
-  function doDelete(&$argsObj,$basehref)
+  public function doDelete(&$argsObj,$basehref)
   {
     $dummy = $this->milestone_mgr->get_by_id($argsObj->id);
       $milestone = $dummy[$argsObj->id];

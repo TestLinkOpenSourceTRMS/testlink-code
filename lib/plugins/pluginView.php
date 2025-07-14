@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Enable/Disable/Show plugins
  *
@@ -43,12 +43,12 @@ switch($args->operation)
     {
       $t_basename = plugin_uninstall($args->pluginId);
       $feedback = sprintf(lang_get('plugin_uninstalled'), $t_basename);
-    }  
+    }
   break;
 		
 	default:
 	break;
-} 
+}
 
 $gui->main_title = lang_get('title_plugin_mgmt');
 $gui->installed_plugins = get_all_installed_plugins();

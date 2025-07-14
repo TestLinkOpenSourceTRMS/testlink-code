@@ -48,7 +48,7 @@ function init_args()
 }
 
 /**
- * 
+ *
  *
  */
 function initialize_gui(&$dbHandler,&$argsObj)
@@ -65,8 +65,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
   $gui->external_req_management = ($gui->req_cfg->external_req_management == ENABLED) ? 1 : 0;
   
   $gui->grants = new stdClass();
-  $gui->grants->req_mgmt = 
-     has_rights($db,"mgt_modify_req",$argsObj->tproject_id);
+  $gui->grants->req_mgmt = has_rights($db,"mgt_modify_req",$argsObj->tproject_id);
 
   $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
   $gui->revCount = $req_spec_mgr->getRevisionsCount($argsObj->req_spec_id);
@@ -79,8 +78,8 @@ function initialize_gui(&$dbHandler,&$argsObj)
   
   
   $gui->tproject_name = $argsObj->tproject_name;
-  $gui->main_descr = lang_get('req_spec_short') . 
-                     config_get('gui_title_separator_1') . 
+  $gui->main_descr = lang_get('req_spec_short') .
+                     config_get('gui_title_separator_1') .
                      "[{$gui->req_spec['doc_id']}] :: " .
                      $gui->req_spec['title'];
 
@@ -96,7 +95,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
   $gui->reqSpecTypeDomain = init_labels($gui->req_spec_cfg->type_labels);
 
   $prefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
-  $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
+  $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . urlencode($prefix) .
                       '&item=reqspec&id=' . urlencode($gui->req_spec['doc_id']);
 
 

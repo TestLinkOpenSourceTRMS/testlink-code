@@ -1,13 +1,13 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- *  
+ *
  * Platforms definition export management
  *
  * @package   TestLink
  * @author    Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2022, TestLink community 
+ * @copyright   2005-2022, TestLink community
  * @filesource  platformsExport.php
  * @link    http://www.testlink.org
  * @uses    config.inc.php
@@ -25,10 +25,10 @@ $gui = initializeGui($args);
 switch($args->doAction) {
   case 'doExport':
     doExport($db,$gui->export_filename,$args->tproject_id);
-  break;  
+  break;
     
   default:
-  break;  
+  break;
 }
 
 $smarty = new TLSmarty();
@@ -41,8 +41,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args( &$dbH ) {
   $args = new stdClass();
-  $iParams = 
-    array("doAction" => array(tlInputParameter::STRING_N,0,50),
+  $iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
           "export_filename" => array(tlInputParameter::STRING_N,0,255),
           "tproject_id" => array(tlInputParameter::INT));
     
@@ -53,7 +52,7 @@ function init_args( &$dbH ) {
 
   $args->testproject_name = '';
   $tables = tlDBObject::getDBTables(array('nodes_hierarchy'));
-  $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
+  $sql = "SELECT name FROM {$tables['nodes_hierarchy']}
           WHERE id={$args->tproject_id}";
   $info = $dbH->get_recordset($sql);
   if( null != $info ) {
@@ -62,7 +61,7 @@ function init_args( &$dbH ) {
 
   if(is_null($args->export_filename)) {
     $args->export_filename = $args->testproject_name . "-platforms.xml";
-  } 
+  }
   $args->export_filename = trim(str_ireplace(" ", "",$args->export_filename));
   return $args;
 }
@@ -79,8 +78,8 @@ function initializeGui(&$argsObj) {
   $guiObj->exportTypes = array('XML' => 'XML');
 
   $guiObj->tproject_id = $argsObj->tproject_id;
-  $guiObj->goback_url = $_SESSION['basehref'] . 
-    'lib/platforms/platformsView.php?tproject_id=' . $guiObj->tproject_id; 
+  $guiObj->goback_url = $_SESSION['basehref'] .
+    'lib/platforms/platformsView.php?tproject_id=' . $guiObj->tproject_id;
 
   return $guiObj;
 }
@@ -100,9 +99,9 @@ function doExport(&$db,$filename,$tproject_id)
   $tables = tlObjectWithDB::getDBTables(array('platforms'));
   $adodbXML = new ADODB_XML("1.0", "UTF-8");
 
-  $sql = "/* $debugMsg */ 
-          SELECT name,notes,enable_on_design,enable_on_execution,is_open 
-          FROM {$tables['platforms']} PLAT 
+  $sql = "/* $debugMsg */
+          SELECT name,notes,enable_on_design,enable_on_execution,is_open
+          FROM {$tables['platforms']} PLAT
           WHERE PLAT.testproject_id=" . intval($tproject_id);
   
   $adodbXML->setRootTagName('platforms');

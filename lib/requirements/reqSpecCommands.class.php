@@ -90,13 +90,10 @@ class reqSpecCommands
     $obj->askForRevision = false;
     $obj->askForLog = false;
     $obj->req_spec = null;
-    if(!is_null($options))
+    if(!is_null($options) && isset($options['getReqSpec']))
     {
-      if(isset($options['getReqSpec']))
-      {
         $ref = &$options['getReqSpec'];
         $obj->req_spec = $this->reqSpecMgr->get_by_id($ref['id'],$ref['options']);
-      }
     }
     
     return $obj;
@@ -139,7 +136,7 @@ class reqSpecCommands
 
   */
   // following req command model
-  public function edit(&$argsObj,$request,$overwriteArgs=true)
+  private function edit(&$argsObj,$request,$overwriteArgs=true)
   {
     $guiObj = $this->initGuiBean();
 
@@ -239,8 +236,6 @@ class reqSpecCommands
   */
   public function doUpdate(&$argsObj,$request)
   {
-    $descr_prefix = lang_get('req_spec_short') . TITLE_SEP;
-
     $guiObj = $this->initGuiBean();
     $guiObj->submit_button_label=$this->submit_button_label;
     $guiObj->template = null;
@@ -466,7 +461,7 @@ class reqSpecCommands
 
         $logMsg = TLS("audit_requirement_copy",$new_req['req_doc_id'],$source_req['req_doc_id']);
         logAuditEvent($logMsg,"COPY",$ret['id'],"requirements");
-        $obj->user_feedback = $logMsg; // sprintf(lang_get('req_created'), $new_req['req_doc_id']);
+        $obj->user_feedback = $logMsg;
         $obj->template = 'reqCopy.tpl';
         $obj->req_id = $ret['id'];
         $obj->array_of_msg[] = $logMsg;
@@ -593,7 +588,6 @@ class reqSpecCommands
       for($idx = 0;$idx < $loop_qty;$idx++)
       {
         $cNode = $childNodes[$idx];
-        $nTable = $cNode['node_table'];
         if($cNode['node_table'] == 'req_specs')
         {
           $request["req_spec_id"]=$cNode['id'];
@@ -650,10 +644,8 @@ class reqSpecCommands
       }
     }
     
-    if( !$ret['force'] )
+    if( !$ret['force'] && !is_null($newCF) )
     {
-      if( !is_null($newCF) )
-      {
         foreach($newCF as $cf_key => $cf)
         {
           if( $ret['force'] = ($oldCF[$cf_key]['value'] != $cf['cf_value']) )
@@ -662,7 +654,6 @@ class reqSpecCommands
             break;
           }
         }
-      }
     }
     
     if( !$ret['force'] )
@@ -677,7 +668,7 @@ class reqSpecCommands
       }
     
     }
-    $ret['nochange'] = ($ret['force'] == false && $ret['suggest'] == false);
+    $ret['nochange'] = (!$ret['force'] && !$ret['suggest']);
     return $ret;
   }
 
@@ -712,7 +703,6 @@ class reqSpecCommands
    */
   private function process_revision(&$guiObj,&$argsObj,&$userInput)
   {
-  
     // TICKET 4661
     $itemOnDB = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
     $who = array('tproject_id' => $argsObj->tproject_id);
@@ -744,7 +734,7 @@ class reqSpecCommands
                                               null, null,$userInput);
 
     }
-    else if( $diff['nochange'] || ( ($createRev = $diff['force'] && !$guiObj->askForLog) || $argsObj->do_save ) )
+    elseif( $diff['nochange'] || ( ($createRev = $diff['force'] && !$guiObj->askForLog) || $argsObj->do_save ) )
     {
         
       if( $argsObj->do_save == 1)
@@ -793,7 +783,7 @@ class reqSpecCommands
                                                 $argsObj->tproject_id);
       }
     }
-    else if( $diff['suggest'] )
+    elseif( $diff['suggest'] )
     {
       $guiObj->askForRevision = true;
     }

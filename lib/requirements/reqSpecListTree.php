@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * 
+ *
  * @filesource reqSpecListTree.php
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
- * 
+ *
  * Tree menu with requirement specifications.
  *
  */
@@ -42,7 +42,7 @@ function init_args()
   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'undefned';
   $args->basehref = $_SESSION['basehref'];
  
-  $args->user = isset($_SESSION['currentUser']) 
+  $args->user = isset($_SESSION['currentUser'])
                 ? $_SESSION['currentUser'] : null;
 
   return $args;
@@ -58,7 +58,7 @@ function init_args()
   
   returns: stdClass object
   
-  rev: 
+  rev:
 
 */
 function initializeGui($argsObj)
@@ -70,13 +70,13 @@ function initializeGui($argsObj)
   $gui->req_manager_url = "lib/requirements/reqView.php";
   $gui->basehref = $argsObj->basehref;
     
-  return $gui;  
+  return $gui;
 }
 
 /*
- * rights check 
+ * rights check
  */
-function checkRights(&$db, &$user, $context) 
+function checkRights(&$db, &$user, $context)
 {
   $context->rightsOr = ["mgt_view_req","mgt_modify_req"];
   $context->rightsAnd = [];

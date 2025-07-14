@@ -7,7 +7,7 @@
  *
  * @author  francisco.mancardi@gmail.com
  * @internal revisions
- * 
+ *
  * @since 1.9.6
  *
 **/
@@ -27,7 +27,7 @@ $gui->user_feedback = $args->user_feedback;
 
 if($args->id > 0)
 {
-  $gui->items[$args->id]['connection_status'] = $mgr->checkConnection($args->id) ? 'ok' : 'ko'; 
+  $gui->items[$args->id]['connection_status'] = $mgr->checkConnection($args->id) ? 'ok' : 'ko';
 }
 
 $smarty = new TLSmarty();
@@ -57,7 +57,7 @@ function init_args()
   {
     $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_SESSION['tproject_id']) : 0;
   }
-  $args->currentUser = $_SESSION['currentUser']; 
+  $args->currentUser = $_SESSION['currentUser'];
   
   $args->user_feedback = array('type' => '', 'message' => '');
   $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;

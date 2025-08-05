@@ -173,7 +173,7 @@ class reqCommands {
     returns:
 
   */
-  private function edit(&$argsObj,$overwriteArgs=true)
+  public function edit(&$argsObj,$overwriteArgs=true)
   {
     $obj = $this->initGuiBean();
     $obj->display_path = false;

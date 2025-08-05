@@ -388,7 +388,7 @@ function gen_coverage_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_i
         // key: test case version id
         // value: index inside $out, where parent test suite of test case version id is located.
         //
-        list ($a_tcid, $a_tsuite_idx, $tsuite_tcqty, $out) = buildSkeleton($id, $name, $cfg, $test_spec, $platforms);
+        list ($a_tcid, $a_tsuite_idx, , $out) = buildSkeleton($id, $name, $cfg, $test_spec, $platforms);
     }
 
     // This code has been replace (see below on Remove empty branches)
@@ -417,19 +417,6 @@ function gen_coverage_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_i
 
         $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid, testcase::ALL_VERSIONS, null, $optGBI);
         $result = addLinkedVersionsInfo($tcaseVersionSet, $a_tsuite_idx, $out, $linked_items);
-    }
-
-    // Try to prune empty test suites, to reduce memory usage and to remove elements
-    // that do not need to be displayed on user interface.
-    if (count($result['spec_view']) > 0) {
-        // removeEmptyTestSuites($result['spec_view'],$tcase_mgr->tree_manager,
-        // ($my['options']['prune_unlinked_tcversions'] && $is_tplan_view_type),$hash_descr_id);
-    }
-
-    // Remove empty branches
-    // Loop to compute test case qty ($tsuite_tcqty) on every level and prune test suite branchs that are empty
-    if (count($result['spec_view']) > 0) {
-        // removeEmptyBranches($result['spec_view'],$tsuite_tcqty);
     }
 
     /**
@@ -748,12 +735,14 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems, $masterCont
     }
 
     // more specif analisys
-    if ($useFilter['status'] = ($filters['status'][0] > 0)) {
+    if (!empty($filters['status'][0])) {
+        $useFilter['status'] = $filters['status'][0];
         $applyFilters = true;
         $filtersByValue['status'] = array_flip((array) $filters['status']);
     }
 
-    if ($useFilter['importance'] = ($filters['importance'][0] > 0)) {
+    if (!empty($filters['importance'][0])) {
+        $useFilter['importance'] = $filters['importance'][0];
         $applyFilters = true;
         $filtersByValue['importance'] = array_flip((array) $filters['importance']);
     }
@@ -776,7 +765,8 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems, $masterCont
         );
     }
 
-    if ($useFilter['keyword_id'] = $filters['keyword_id'][0] > 0) {
+    if (!empty($filters['keyword_id'][0])) {
+        $useFilter['keyword_id'] = $filters['keyword_id'][0];
         $applyFilters = true;
         switch ($specViewType) {
             case 'testplan':
@@ -791,7 +781,8 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems, $masterCont
     }
 
     $tcpl_map = null;
-    if ($useFilter['platforms'] = $filters['platform_id'][0] > 0) {
+    if (!empty($filters['platform_id'][0])) {
+        $useFilter['platforms'] = $filters['platform_id'][0];
         $applyFilters = true;
         switch ($specViewType) {
             case 'testplan':
@@ -1064,11 +1055,11 @@ function addCustomFieldsToView(&$testSuiteSet, $tprojectId, &$tcaseMgr)
                     }
                 }
             }
-        } // is_null($value)
+        }
     }
 }
 
-// function end
+
 
 /**
  * Developer Notice
@@ -1103,7 +1094,6 @@ function buildSkeleton($id, $name, $config, &$test_spec, &$platforms)
     $out[$idx]['linked_by'] = 0;
     $out[$idx]['priority'] = 0;
 
-    $out[0]['level'] + 1;
     $idx ++;
     $tsuite_tcqty = array(
         $id => 0
@@ -1548,7 +1538,7 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name, &$linked_ite
         // key: test case version id
         // value: index inside $out, where parent test suite of test case version id is located.
         //
-        list ($a_tcid, $a_tsuite_idx, $tsuite_tcqty, $out) = buildSkeletonFlat($id, $name, $cfg, $test_spec, $platforms);
+        list ($a_tcid, $a_tsuite_idx, , $out) = buildSkeletonFlat($id, $name, $cfg, $test_spec, $platforms);
     }
 
     // Collect information related to linked testcase versions
@@ -1622,7 +1612,6 @@ function buildSkeletonFlat($branchRootID, $name, $config, &$test_spec, &$platfor
         $branchRootID => 0
     );
 
-    $rdx = 0;
     foreach ($test_spec as $current) {
         // it will be interesting to understand if this can happen due to filtering
         if (is_null($current)) {

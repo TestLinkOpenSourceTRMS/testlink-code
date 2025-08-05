@@ -25,7 +25,7 @@ if( !isset($_SESSION) )
 
 $inst_phase = 'checking';  // global variable -> absolutely wrong use as usual, used on installHead.inc
 $msg='';
-include 'installHead.inc';
+include_once 'installHead.inc';
 ?>
 <div class="tlStory">
 
@@ -72,5 +72,5 @@ reportCheckingPermissions($errors,$inst_type);
 <?php
 }
 
-include 'installFooter.inc';
+include_once 'installFooter.inc';
 ?>

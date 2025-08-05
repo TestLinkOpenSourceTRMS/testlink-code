@@ -210,7 +210,7 @@ switch($db_type) {
 }
 
 $db = new database($dbDriverName);
-define('NO_DSN',FALSE);
+define('NO_DSN',false);
 @$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass);
 
 if( $conn_result['status'] == 0 )  {
@@ -264,7 +264,7 @@ if($create) {
   $db->close();
   $db = null;
   
-  $db = New database($dbDriverName);
+  $db = new database($dbDriverName);
   $conn_result=$db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass);
   echo "<br /><b>Creating database `" . $db_name . "`</b>:";
   
@@ -502,7 +502,7 @@ if ($update_pwd) {
 }
 
 
-if($sqlParser->install_failed==true)
+if($sqlParser->install_failed)
 {
   echo "<span class='notok'>Failed!</span></b> - {$inst_type_verbose} failed!";
   $errors += 1;
@@ -629,7 +629,7 @@ function write_config_db($filename, $data)
   }
   
   // Write $somecontent to our opened file.
-  if (@fwrite($handle, $configString) === FALSE)
+  if (@fwrite($handle, $configString) === false)
   {
     $ret['status'] = 'ko';
   }

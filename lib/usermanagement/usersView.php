@@ -32,7 +32,7 @@ switch($args->operation) {
             $refe = $_SERVER['HTTP_REFERER'];
             $target = trim($_SESSION['basehref'],'/') .
             '/lib/usermanagement/usersView.php';
-            if (strpos($refe,$target) === FALSE) {
+            if (strpos($refe,$target) === false) {
                 // No good
                 exit();
             }

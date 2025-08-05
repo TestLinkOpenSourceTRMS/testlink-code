@@ -42,8 +42,8 @@ function getPhaseAttr($inst_phase, $phase)
   <li<?php echo getPhaseAttr($inst_phase,'dbaccess')?> >Definition of DB access</li>
   <li<?php echo getPhaseAttr($inst_phase,'dbprocess')?> >
   <?php if ($_SESSION['isNew'])
-  echo "Create DB, testlink DB user, structures and default data & create configuration file.";
-  else echo "Update DB structures and migrate data."; ?>
+  {echo "Create DB, testlink DB user, structures and default data & create configuration file.";}
+  else {echo "Update DB structures and migrate data.";} ?>
   </li>
   <li<?php echo getPhaseAttr($inst_phase,'final') ?>>Verify the procedure result and continue
       to TestLink login.</li>

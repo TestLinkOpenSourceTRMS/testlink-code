@@ -24,7 +24,7 @@ if( !isset($_SESSION) )
 
 $msg='';
 $inst_phase = 'dbaccess';  // global variable -> absolutely wrong use as usual, used on installHead.inc
-include 'installHead.inc';
+include_once 'installHead.inc';
 ?>
 <div class="tlStory">
 
@@ -210,7 +210,7 @@ include 'installHead.inc';
     </p>
         
     <p>
-      <?php 
+      <?php
       if ($_SESSION['isNew']) {
           echo 'After successfull installation You will' . ' have the following login for TestLink Administrator:<br />' . 'login name: admin <br /> password  : admin';
       }
@@ -223,4 +223,4 @@ include 'installHead.inc';
   </form>
 
 </div>
-<?php include 'installFooter.inc'; ?>
+<?php include_once 'installFooter.inc'; ?>

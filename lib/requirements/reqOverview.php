@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
@@ -11,8 +11,8 @@
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See TICKET 3227 for a more detailed description of this feature.
- * 
- *    
+ *
+ *
  */
 
 require_once '../../config.inc.php';
@@ -47,15 +47,15 @@ if(count($gui->reqIDs) > 0)  {
   $type_labels = init_labels($cfg->req->type_labels);
   $status_labels = init_labels($cfg->req->status_labels);
   
-  $labels2get = array('no' => 'No', 'yes' => 'Yes', 
+  $labels2get = array('no' => 'No', 'yes' => 'Yes',
                       'not_aplicable' => null,'never' => null,
-                      'req_spec_short' => null,'title' => null, 
+                      'req_spec_short' => null,'title' => null,
                       'version' => null, 'th_coverage' => null,
                       'frozen' => null, 'type'=> null,'status' => null,
                       'th_relations' => null, 'requirements' => null,
-                      'number_of_reqs' => null, 'number_of_versions' => null, 
+                      'number_of_reqs' => null, 'number_of_versions' => null,
                       'requirement' => null,
-                      'version_revision_tag' => null, 
+                      'version_revision_tag' => null,
                       'week_short' => 'calendar_week_short');
           
   $labels = init_labels($labels2get);
@@ -67,7 +67,7 @@ if(count($gui->reqIDs) > 0)  {
   $coverageSet = null;
   $relationCounters = null;
 
-  $version_option = $args->all_versions ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
+  $version_option = $args->all_versions ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION;
   if( $version_option == requirement_mgr::LATEST_VERSION ) {
     $reqSet = $req_mgr->getByIDBulkLatestVersionRevision($gui->reqIDs,array('outputFormat' => 'mapOfArray'));
   }
@@ -86,7 +86,7 @@ if(count($gui->reqIDs) > 0)  {
     foreach($xSet as $rqID) {
       $reqVersionSet[] = $reqSet[$rqID][0]['version_id'];
     }
-  }  
+  }
   
   if($cfg->req->expected_coverage_management)  {
 
@@ -100,19 +100,19 @@ if(count($gui->reqIDs) > 0)  {
   if ($gui->processCF) {
     // get custom field values bulk
     $cfByReqVer = (array)$req_mgr->get_linked_cfields(null,$reqVersionSet,$args->tproject_id,array('access_key' => 'node_id'));
-  }  
+  }
         
 
   // array to gather table data row per row
-  $rows = array();    
+  $rows = array();
  
   foreach($gui->reqIDs as $id)  {
 
     $req = $reqSet[$id];
 
     // create the link to display
-    $title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $cfg->charset) . 
-               $cfg->glue_char . 
+    $title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $cfg->charset) .
+               $cfg->glue_char .
              htmlentities($req[0]['title'], ENT_QUOTES, $cfg->charset);
     
     // reqspec-"path" to requirement
@@ -122,7 +122,7 @@ if(count($gui->reqIDs) > 0)  {
         $path[$key] = $p['name'];
       }
       $pathCache[$req[0]['srs_id']] = htmlentities(implode("/", $path), ENT_QUOTES, $cfg->charset);
-    }         
+    }
 
 
     # get all cfield ids we have columns for in the req overview
@@ -137,10 +137,10 @@ if(count($gui->reqIDs) > 0)  {
       $result = array();
         
       /**
-        * IMPORTANT: 
+        * IMPORTANT:
         * the order of following items in this array has to be
         * the same as column headers are below!!!
-        * 
+        *
         * should be:
         * 1. path
         * 2. title
@@ -155,7 +155,7 @@ if(count($gui->reqIDs) > 0)  {
         
       $result[] = $pathCache[$req[0]['srs_id']];
         
-      $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' . 
+      $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' .
                    '<img title="' .$labels['requirement'] . '" src="' . $imgSet['edit'] . '" /></a> ';
       
       $result[] =  '<!-- ' . $title . ' -->' . $edit_link . $title;
@@ -170,21 +170,21 @@ if(count($gui->reqIDs) > 0)  {
                   "[v{$version['version']}r{$version['revision']}]";
           
       // use html comment to sort properly by this columns (extjs)
-      $result[] = "<!--{$version['creation_ts']}-->" . localizeTimeStamp($version['creation_ts'],$cfg->datetime) . 
+      $result[] = "<!--{$version['creation_ts']}-->" . localizeTimeStamp($version['creation_ts'],$cfg->datetime) .
                     " ({$version['author']})";
       
-      // 20140914 - 
+      // 20140914 -
       // Because we can do this logic thoundands of times, I suppose it will cost less
       // to do not use my other approach of firts assigning instead of using else.
-      // 
+      //
       // use html comment to sort properly by this column (extjs)
       if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $cfg->neverModifiedTS) ) {
-        $result[] = "<!--{$version['modification_ts']}-->" . localizeTimeStamp($version['modification_ts'],$cfg->datetime) . 
+        $result[] = "<!--{$version['modification_ts']}-->" . localizeTimeStamp($version['modification_ts'],$cfg->datetime) .
                     " ({$version['modifier']})";
       }
       else {
-        $result[] = "<!-- 0 -->" . $labels['never'];  
-      }  
+        $result[] = "<!-- 0 -->" . $labels['never'];
+      }
         
         
       // is it frozen?
@@ -212,10 +212,10 @@ if(count($gui->reqIDs) > 0)  {
         $result[] = "<!-- " . str_pad($rx,10,'0') . " -->" . $rx;
       }
       
-      #8792: append one item to $result for every displayed column (no content?: append empty string) 
-      if($gui->processCF) {  
+      #8792: append one item to $result for every displayed column (no content?: append empty string)
+      if($gui->processCF) {
         $linkedCFWithContent = array();
-        if ( isset($cfByReqVer[$version['version_id']])) {      
+        if ( isset($cfByReqVer[$version['version_id']])) {
           $linkedCFWithContent = $cfByReqVer[$version['version_id']];
         }
 
@@ -231,28 +231,26 @@ if(count($gui->reqIDs) > 0)  {
           }
           else {
             $result[]  = '';
-            continue;
-          }  
+          }
         }
       }
         
       $rows[] = $result;
     }
   }
-    
-  // --------------------------------------------------------------------
-  // Construction of EXT-JS table starts here    
+
+  // Construction of EXT-JS table starts here
   if(($gui->row_qty = count($rows)) > 0 ) {
     $version_string = ($args->all_versions) ? $labels['number_of_versions'] : $labels['number_of_reqs'];
     $gui->pageTitle .= " - " . $version_string . ": " . $gui->row_qty;
        
     /**
      * get column header titles for the table
-     * 
-     * IMPORTANT: 
+     *
+     * IMPORTANT:
      * the order of following items in this array has to be
      * the same as row content above!!!
-     * 
+     *
      * should be:
      * 1. path
      * 2. title
@@ -319,7 +317,7 @@ if(count($gui->reqIDs) > 0)  {
 
   $chronoStop = microtime(true);
   $gui->elapsedSeconds = round($chronoStop - $chronoStart);
-} 
+}
 
 
 $smarty->assign('gui',$gui);
@@ -328,22 +326,22 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
  * initialize user input
- * 
+ *
  * @param resource &$tproject_mgr reference to testproject manager
  * @return array $args array with user input information
  */
 function init_args(&$tproject_mgr) {
   $args = new stdClass();
-  $args->user = isset($_SESSION['currentUser']) 
+  $args->user = isset($_SESSION['currentUser'])
                 ? $_SESSION['currentUser'] : null;
 
   $all_versions = isset($_REQUEST['all_versions']) ? true : false;
   $all_versions_hidden = isset($_REQUEST['all_versions_hidden']) ? true : false;
   if ($all_versions) {
     $selection = true;
-  } else if ($all_versions_hidden) {
+  } elseif ($all_versions_hidden) {
     $selection = false;
-  } else if (isset($_SESSION['all_versions'])) {
+  } elseif (isset($_SESSION['all_versions'])) {
     $selection = $_SESSION['all_versions'];
   } else {
     $selection = false;
@@ -365,7 +363,7 @@ function init_args(&$tproject_mgr) {
 
 /**
  * initialize GUI
- * 
+ *
  * @param stdClass $argsObj reference to user input
  * @return stdClass $gui gui data
  */
@@ -404,7 +402,7 @@ function getCfg() {
 /**
  *
  */
-function checkRights(&$db, &$user, $context) 
+function checkRights(&$db, &$user, $context)
 {
   $context->rightsOr = ["mgt_view_req"];
   $context->rightsAnd = [];

@@ -511,11 +511,11 @@ function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd) {
   $isMariaDB = false;
   $isMySQL = false;
   foreach ($vg as $vn => $vv) {
-    if (strripos($vv,'MariaDB') !== FALSE) {
+    if (strripos($vv,'MariaDB') !== false) {
        $isMariaDB = true;
        break;
     }
-    if (strripos($vv,'MySQL') !== FALSE) {
+    if (strripos($vv,'MySQL') !== false) {
        $isMySQL = true;
        break;
     }
@@ -880,7 +880,7 @@ function _mssql_make_user($db,$the_host,$db_name,$login,$passwd)
   // I've problems trying to set password,
   // then I will use as workaround setting a NULL password
   // and after do a password change.
-  $passwd_null=NULL;
+  $passwd_null=null;
   $stmt = $db->db->PrepareSP('SP_PASSWORD');
   $db->db->InParameter($stmt,$login,'loginame');
   $db->db->InParameter($stmt,$passwd_null,'old');

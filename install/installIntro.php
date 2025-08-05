@@ -44,7 +44,7 @@ else
 	exit;
 }
 
-include 'installHead.inc';
+include_once 'installHead.inc';
 ?>
 <div class="tlStory">
 <p><b>TestLink</b> is developed and shared under GPL license. You are welcome to share your changes
@@ -96,4 +96,4 @@ function ableButton() {
 <p>
 
 </div>
-<?php include 'installFooter.inc'; ?>
+<?php include_once 'installFooter.inc'; ?>

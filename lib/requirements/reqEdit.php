@@ -58,7 +58,7 @@ function init_args(&$dbHandler)
                    "req_spec_id" => array(tlInputParameter::INT_N),
                    "req_title" => array(tlInputParameter::STRING_N,0,$reqTitleSize),
                    "req_id_cbox" => array(tlInputParameter::ARRAY_INT),
-                   "reqDocId" => array(tlInputParameter::STRING_N,0,64), 
+                   "reqDocId" => array(tlInputParameter::STRING_N,0,64),
                    "reqStatus" => array(tlInputParameter::STRING_N,0,1),
                    "reqType" => array(tlInputParameter::STRING_N,0,1),
                    "containerID" => array(tlInputParameter::INT_N),
@@ -94,15 +94,15 @@ function init_args(&$dbHandler)
   $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   if($args->tproject_id <= 0)
   {
-    throw new Exception(__FILE__ . '::' . __FUNCTION__ . " Test project ID can not be <= 0 ");  
-  }                                                                                        
+    throw new Exception(__FILE__ . '::' . __FUNCTION__ . " Test project ID can not be <= 0 ");
+  }
   
   $mgr = new testproject($dbHandler);
   $info = $mgr->get_by_id($args->tproject_id);
   if(is_null($info))
   {
-    throw new Exception(__FILE__ . '::' . __FUNCTION__ . " Unable to get test project data ");  
-  }                                                                                        
+    throw new Exception(__FILE__ . '::' . __FUNCTION__ . " Unable to get test project data ");
+  }
   
   $args->tproject_name = $info['name'];
   $args->tcasePrefix = $info['prefix'];
@@ -122,7 +122,7 @@ function init_args(&$dbHandler)
 }
 
 /**
- * 
+ *
  *
  */
 function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
@@ -157,13 +157,13 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     break;
 
     default:
-      if($opObj->suggest_revision || $opObj->prompt_for_log) 
+      if($opObj->suggest_revision || $opObj->prompt_for_log)
       {
         $owebEditor->Value = $argsObj->scope;
       }
       else
       {
-        $owebEditor->Value = getItemTemplateContents('requirement_template',$owebEditor->InstanceName, 
+        $owebEditor->Value = getItemTemplateContents('requirement_template',$owebEditor->InstanceName,
                                                      $argsObj->scope);
       }
     break;
@@ -175,7 +175,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 
   $guiObj->scope = $owebEditor->CreateHTML();
   $guiObj->editorType = $editorCfg['type'];
-  switch($argsObj->doAction) 
+  switch($argsObj->doAction)
   {
     case "doDelete":
       $guiObj->refreshTree = 1; // has to be forced
@@ -236,13 +236,13 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 
       $pos = strpos($tpl, '.php');
       if($pos === false) {
-        $tpl = $tplDir . $tpl;      
+        $tpl = $tplDir . $tpl;
       } else {
         $renderType = 'redirect';
-        if (null != $guiObj->uploadOp && $guiObj->uploadOp->statusOK == false) {
+        if (null != $guiObj->uploadOp && !$guiObj->uploadOp->statusOK) {
           $tpl .= "&uploadOPStatusCode=" . $guiObj->uploadOp->statusCode;
         }
-      } 
+      }
     break;
   }
     
@@ -255,7 +255,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     case 'template':
       $smartyObj->assign('gui',$guiObj);
       $smartyObj->display($tpl);
-    break;  
+    break;
  
     case 'redirect':
       header("Location: {$tpl}");
@@ -268,14 +268,12 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 }
 
 /**
- * 
+ *
  *
  */
 function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 {
   $req_spec_mgr = new requirement_spec_mgr($dbHandler);
-
-  // new dBug($argsObj);
 
   $gui = $commandMgr->initGuiBean();
   $gui->req_cfg = config_get('req_cfg');

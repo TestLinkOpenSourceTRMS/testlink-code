@@ -1,16 +1,16 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
+ *
  * @filesource  testproject.class.php
  * @package     TestLink
- * @copyright   2005-2020, TestLink community 
+ * @copyright   2005-2020, TestLink community
  * @link        http://testlink.sourceforge.net/
- * 
+ *
  **/
 
-/** related functions */ 
+/** related functions */
 require_once 'attachments.inc.php';
 require_once 'event_api.php';
 
@@ -25,141 +25,146 @@ class testproject extends tlObjectWithAttachments {
   const TESTCASE_PREFIX_MAXLEN = 16; // must be changed if field dimension changes
   const GET_NOT_EMPTY_REQSPEC = 1;
   const GET_EMPTY_REQSPEC = 0;
-  
+
   /** @var database handler */
-  var $db;
-  var $tree_manager;
-  var $cfield_mgr;
+  public $db;
+  public $tree_manager;
+  private $cfield_mgr;
 
   // Node Types (NT)
-  var $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
+  private $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
 
-  var $nt2exclude_children=array('testcase' => 'exclude_my_children','requirement_spec'=> 'exclude_my_children');
+  private $nt2exclude_children=array('testcase' => 'exclude_my_children','requirement_spec'=> 'exclude_my_children');
 
-  var $debugMsg;
-  var $tmp_dir;
-  var $node_types_descr_id;
-  var $my_node_type;
-  var $cfg;
+  private $debugMsg;
+  private $tmp_dir;
+  private $node_types_descr_id;
+  private $my_node_type;
+  private $cfg;
 
-  /** 
-   * Class constructor
-   * 
-   * @param resource &$db reference to database handler
-   */
-  function __construct(&$db) {
+    /**
+     * Class constructor
+     *
+     * @param
+     *            resource &$db reference to database handler
+     */
+    public function __construct(&$db)
+    {
+        $this->tmp_dir = config_get('temp_dir');
 
-    $this->tmp_dir = config_get('temp_dir');
+        $this->db = &$db;
+        $this->tree_manager = new tree($this->db);
+        $this->cfield_mgr = new cfield_mgr($this->db);
+        $this->debugMsg = 'Class:' . __CLASS__ . ' - Method: ';
+        tlObjectWithAttachments::__construct($this->db, 'nodes_hierarchy');
+        $this->object_table = $this->tables['testprojects'];
 
-    $this->db = &$db;
-    $this->tree_manager = new tree($this->db);
-    $this->cfield_mgr=new cfield_mgr($this->db);
-    $this->debugMsg = 'Class:' . __CLASS__ . ' - Method: ';
-    tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
-    $this->object_table = $this->tables['testprojects'];
+        $this->node_types_descr_id = &$this->tree_manager->node_descr_id;
+        $this->my_node_type = $this->tree_manager->node_descr_id['testproject'];
 
-    $this->node_types_descr_id = &$this->tree_manager->node_descr_id;
-    $this->my_node_type = $this->tree_manager->node_descr_id['testproject'];
-
-    $this->cfg = new stdClass();
-    $this->cfg->keywords = config_get('keywords');
-  }
-
-/**
- * Create a new Test project
- * 
- * @param string $name Name of project
- * @param string $color value according to CSS color definition
- * @param string $notes project description (HTML text)
- * @param array $options project features/options
- *         bolean keys: inventoryEnabled, automationEnabled, 
- *         testPriorityEnabled, requirementsEnabled 
- * @param boolean $active [1,0] optional
- * @param string $tcasePrefix [''] 
- * @param boolean $is_public [1,0] optional
- *
- * @return integer test project id or 0 (if fails)
- *
- * @internal revisions
- * 
- */
-function create($item,$opt=null) {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-  $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
-  $my['opt'] = array_merge($my['opt'],(array)$opt);
-  
-  $serOptions = serialize($item->options);
-
-  try {
-    $tcPrefix = $this->formatTcPrefix($item->prefix); // will truncate prefix is len() > limit
-
-    // mandatory checks
-    if(strlen($item->name)==0) {
-      throw new Exception('Empty name is not allowed');      
-    }  
-   
-    if($my['opt']['doChecks']) {
-      $check = $this->checkNameSintax($item->name);
-      if($check['status_ok']) {  
-        $check = $this->checkNameExistence($item->name);
-      }
-      if($check['status_ok']) {  
-        $check = $this->checkTestCasePrefixExistence($tcPrefix);
-      }
-
-      if(!$check['status_ok']) {
-        throw new Exception($check['msg']);  
-      }  
+        $this->cfg = new stdClass();
+        $this->cfg->keywords = config_get('keywords');
     }
-  }   
-  catch (Exception $e) {
-    throw $e;  // rethrow
-  }
 
-  // Create API KEY 64 bit long
-  $api_key = md5(rand()) . md5(rand());
+    /**
+     * Create a new Test project
+     *
+     * @param string $name
+     *            Name of project
+     * @param string $color
+     *            value according to CSS color definition
+     * @param string $notes
+     *            project description (HTML text)
+     * @param array $options
+     *            project features/options
+     *            bolean keys: inventoryEnabled, automationEnabled,
+     *            testPriorityEnabled, requirementsEnabled
+     * @param boolean $active
+     *            [1,0] optional
+     * @param string $tcasePrefix
+     *            ['']
+     * @param boolean $is_public
+     *            [1,0] optional
+     *
+     * @return integer test project id or 0 (if fails)
+     *
+     * @internal revisions
+     *
+     */
+    public function create($item, $opt = null)
+    {
+        $my['opt'] = array(
+            'doChecks' => false,
+            'setSessionProject' => true
+        );
+        $my['opt'] = array_merge($my['opt'], (array) $opt);
 
-  // Create Node and get the id
-  $id = $this->tree_manager->new_root_node($item->name);
-  $sql = " INSERT INTO {$this->object_table} (id,color," .
-         " options,notes,active,is_public,prefix,api_key) " .
-         " VALUES (" . $id . ", '" .
-                       $this->db->prepare_string($item->color) . "','" .
-                       $serOptions . "','" .
-                       $this->db->prepare_string($item->notes) . "'," .
-                       $item->active . "," . $item->is_public . ",'" .
-                       $this->db->prepare_string($tcPrefix) . "','" .
-                       $this->db->prepare_string($api_key) . "')";
-  $result = $this->db->exec_query($sql);
-  
-  $evt = new stdClass();
-  $evt->message = TLS("audit_testproject_created", $item->name); 
-  $evt->code = "CREATE";
-  $evt->source = $this->auditCfg->eventSource;
-  $evt->objectType = 'testprojects';
- 
-  if ($result) {
-    // set project to session if not defined (the first project) or update the current
-    if (!isset($_SESSION['testprojectID']) && $my['opt']['setSessionProject']) {
-      $this->setSessionProject($id);
+        $serOptions = serialize($item->options);
+
+        try {
+            $tcPrefix = $this->formatTcPrefix($item->prefix); // will truncate prefix is len() > limit
+
+            // mandatory checks
+            if (strlen($item->name) == 0) {
+                throw new Exception('Empty name is not allowed');
+            }
+
+            if ($my['opt']['doChecks']) {
+                $check = $this->checkNameSintax($item->name);
+                if ($check['status_ok']) {
+                    $check = $this->checkNameExistence($item->name);
+                }
+                if ($check['status_ok']) {
+                    $check = $this->checkTestCasePrefixExistence($tcPrefix);
+                }
+
+                if (! $check['status_ok']) {
+                    throw new Exception($check['msg']);
+                }
+            }
+        } catch (Exception $e) {
+            throw $e; // rethrow
+        }
+
+        // Create API KEY 64 bit long
+        $api_key = md5(rand()) . md5(rand());
+
+        // Create Node and get the id
+        $id = $this->tree_manager->new_root_node($item->name);
+        $sql = " INSERT INTO {$this->object_table} (id,color," . " options,notes,active,is_public,prefix,api_key) " . " VALUES (" . $id . ", '" . $this->db->prepare_string($item->color) . "','" . $serOptions . "','" . $this->db->prepare_string($item->notes) . "'," . $item->active . "," . $item->is_public . ",'" . $this->db->prepare_string($tcPrefix) . "','" . $this->db->prepare_string($api_key) . "')";
+        $result = $this->db->exec_query($sql);
+
+        $evt = new stdClass();
+        $evt->message = TLS("audit_testproject_created", $item->name);
+        $evt->code = "CREATE";
+        $evt->source = $this->auditCfg->eventSource;
+        $evt->objectType = 'testprojects';
+
+        if ($result) {
+            // set project to session if not defined (the first project) or update the current
+            if (! isset($_SESSION['testprojectID']) && $my['opt']['setSessionProject']) {
+                $this->setSessionProject($id);
+            }
+            $evt->logLevel = 'AUDIT';
+
+            // Send Event
+            $ctx = array(
+                'id' => $id,
+                'name' => $item->name,
+                'prefix' => $tcPrefix
+            );
+            event_signal('EVENT_TEST_PROJECT_CREATE', $ctx);
+        } else {
+            $id = 0;
+            $evt->logLevel = 'ERROR';
+        }
+
+        $evt->objectID = $id;
+
+        logEvent($evt);
+
+        return $id;
     }
-    $evt->logLevel = 'AUDIT';
-
-    // Send Event
-    $ctx = array('id' => $id, 'name' => $item->name, 'prefix' => $tcPrefix);
-    event_signal('EVENT_TEST_PROJECT_CREATE', $ctx);
-  }
-  else {
-    $id = 0;
-    $evt->logLevel = 'ERROR';
-  }
-  
-  $evt->objectID = $id;
-
-  logEvent($evt);
-
-  return $id;
-}
 
 /**
  * Update Test project data in DB and (if applicable) current session data
@@ -169,19 +174,18 @@ function create($item,$opt=null) {
  * @param string $color value according to CSS color definition
  * @param string $notes project description (HTML text)
  * @param array $options project features/options
- *         bolean keys: inventoryEnabled, automationEnabled, 
- *         testPriorityEnabled, requirementsEnabled 
- * 
+ *         bolean keys: inventoryEnabled, automationEnabled,
+ *         testPriorityEnabled, requirementsEnabled
+ *
  * @return boolean result of DB update
  *
  * @internal
  *
  **/
-function update($id, $name, $color, $notes,$options,$active=null,
+public function update($id, $name, $color, $notes,$options,$active=null,
                 $tcasePrefix=null,$is_public=null)
 {
   $status_ok=1;
-  $status_msg = 'ok';
   $log_msg = 'Test project ' . $name . ' update: Ok.';
   $log_level = 'INFO';
   $safeID = intval($id);
@@ -241,13 +245,13 @@ function update($id, $name, $color, $notes,$options,$active=null,
 
 /**
  * Set session data related to a Test project
- * 
+ *
  * @param integer $projectId Project ID; zero causes unset data
  */
 public function setSessionProject($projectId)
 {
   $tproject_info = null;
-  
+
   if ($projectId)
   {
     $tproject_info = $this->get_by_id($projectId);
@@ -260,27 +264,27 @@ public function setSessionProject($projectId)
     $_SESSION['testprojectPrefix'] = $tproject_info['prefix'];
 
     $_SESSION['testprojectOptions'] = new stdClass();
-    $_SESSION['testprojectOptions']->requirementsEnabled = 
-            isset($tproject_info['opt']->requirementsEnabled) 
+    $_SESSION['testprojectOptions']->requirementsEnabled =
+            isset($tproject_info['opt']->requirementsEnabled)
             ? $tproject_info['opt']->requirementsEnabled : 0;
-    $_SESSION['testprojectOptions']->testPriorityEnabled = 
-            isset($tproject_info['opt']->testPriorityEnabled) 
+    $_SESSION['testprojectOptions']->testPriorityEnabled =
+            isset($tproject_info['opt']->testPriorityEnabled)
             ? $tproject_info['opt']->testPriorityEnabled : 0;
-    $_SESSION['testprojectOptions']->automationEnabled = 
-            isset($tproject_info['opt']->automationEnabled) 
+    $_SESSION['testprojectOptions']->automationEnabled =
+            isset($tproject_info['opt']->automationEnabled)
             ? $tproject_info['opt']->automationEnabled : 0;
-    $_SESSION['testprojectOptions']->inventoryEnabled = 
-            isset($tproject_info['opt']->inventoryEnabled) 
+    $_SESSION['testprojectOptions']->inventoryEnabled =
+            isset($tproject_info['opt']->inventoryEnabled)
             ? $tproject_info['opt']->inventoryEnabled : 0;
 
-    tLog("Test Project was activated: [" . $tproject_info['id'] . "]" . 
+    tLog("Test Project was activated: [" . $tproject_info['id'] . "]" .
         $tproject_info['name'], 'INFO');
   }
   else
   {
     if (isset($_SESSION['testprojectID']))
     {
-      tLog("Test Project deactivated: [" . $_SESSION['testprojectID'] . "] " . 
+      tLog("Test Project deactivated: [" . $_SESSION['testprojectID'] . "] " .
           $_SESSION['testprojectName'], 'INFO');
     }
     unset($_SESSION['testprojectID']);
@@ -295,8 +299,8 @@ public function setSessionProject($projectId)
 
 /**
  * Unserialize project options
- * 
- * @param array $recorset produced by getTestProject() 
+ *
+ * @param array $recorset produced by getTestProject()
  */
 protected function parseTestProjectRecordset(&$recordset) {
   if (null != $recordset && count($recordset) > 0) {
@@ -312,17 +316,16 @@ protected function parseTestProjectRecordset(&$recordset) {
 
 /**
  * Get Test project data according to parameter with unique value
- * 
+ *
  * @param string $condition (optional) additional SQL condition(s)
  * @return array map with test project info; null if query fails
  */
 protected function getTestProject($condition = null, $opt=null)
 {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
+    $debugMsg = $this->debugMsg . __FUNCTION__;
   $my = array('options' => array('output' => 'full'));
   $my['options'] = array_merge($my['options'],(array)$opt);
-  
+
   $doParse = true;
   $tprojCols = ' testprojects.* ';
 
@@ -336,33 +339,34 @@ protected function getTestProject($condition = null, $opt=null)
 
     case 'existsByName':
       $doParse = false;
-      $sql = "/* debugMsg */ SELECT testprojects.id ".
+      $sql = "/* $debugMsg */ SELECT testprojects.id ".
              " FROM {$this->object_table} testprojects, " .
              " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
              " WHERE testprojects.id = nodes_hierarchy.id " .
-             " AND nodes_hierarchy.node_type_id = " . 
+             " AND nodes_hierarchy.node_type_id = " .
              $this->tree_manager->node_descr_id['testproject'];
     break;
-  
+
     case 'name':
       $doParse = false;
       $tprojCols = 'testprojects.id';
+      break;
 
     case 'full':
     default:
-      $sql = "/* debugMsg */ SELECT {$tprojCols}, nodes_hierarchy.name ".
+      $sql = "/* $debugMsg */ SELECT {$tprojCols}, nodes_hierarchy.name ".
              " FROM {$this->object_table} testprojects, " .
              " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
              " WHERE testprojects.id = nodes_hierarchy.id ";
-             " AND nodes_hierarchy.node_type_id = " . 
+             " AND nodes_hierarchy.node_type_id = " .
                $this->tree_manager->node_descr_id['testproject'];
     break;
-  }  
+  }
   if (!is_null($condition) )
   {
     $sql .= " AND " . $condition;
   }
-  
+
   $rs = $this->db->get_recordset($sql);
   if($doParse)
   {
@@ -374,10 +378,10 @@ protected function getTestProject($condition = null, $opt=null)
 
 /**
  * Get Test project data according to name
- * 
- * @param string $name 
+ *
+ * @param string $name
  * @param string $addClause (optional) additional SQL condition(s)
- * 
+ *
  * @return array map with test project info; null if query fails
  */
 public function get_by_name($name, $addClause = null, $opt=null)
@@ -391,7 +395,7 @@ public function get_by_name($name, $addClause = null, $opt=null)
 
 /**
  * Get Test project data according to ID
- * 
+ *
  * @param integer $id test project
  * @return array map with test project info; null if query fails
  */
@@ -405,10 +409,10 @@ public function get_by_id($id, $opt=null)
 
 /**
  * Get Test project data according to prefix
- * 
- * @param string $prefix 
+ *
+ * @param string $prefix
  * @param string $addClause optional additional SQL 'AND filter' clause
- * 
+ *
  * @return array map with test project info; null if query fails
  */
 public function get_by_prefix($prefix, $addClause = null) {
@@ -423,7 +427,7 @@ public function get_by_prefix($prefix, $addClause = null) {
 
 /**
  * Get Test project data according to APIKEY
- * 
+ *
  * @param string 64 chars
  * @return array map with test project info; null if query fails
  */
@@ -444,35 +448,35 @@ args:[order_by]: default " ORDER BY nodes_hierarchy.name " -> testproject name
 
 
 */
-function get_all($filters=null,$options=null)
+public function get_all($filters=null,$options=null)
 {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = $this->debugMsg . __FUNCTION__;
   $my = array ('filters' => '', 'options' => '');
-  
-  
+
+
   $my['filters'] = array('active' => null);
-  $my['options'] = array('order_by' => " ORDER BY nodes_hierarchy.name ", 
+  $my['options'] = array('order_by' => " ORDER BY nodes_hierarchy.name ",
                          'access_key' => null, 'output' => 'std');
-  
+
   $my['filters'] = array_merge($my['filters'], (array)$filters);
   $my['options'] = array_merge($my['options'], (array)$options);
-    
-  
+
+
   if($my['options']['output'] == 'count')
   {
     $sql = "/* $debugMsg */ SELECT COUNT(testprojects.id) AS qty ".
            " FROM {$this->object_table} testprojects";
 
-    $rs = $this->db->get_recordset($sql);       
+    $rs = $this->db->get_recordset($sql);
     return $rs[0]['qty'];
   }
 
-  // 
+  //
   $sql = "/* $debugMsg */ SELECT testprojects.*, nodes_hierarchy.name ".
          " FROM {$this->object_table} testprojects, " .
          " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
          " WHERE testprojects.id = nodes_hierarchy.id ";
-  
+
   if (!is_null($my['filters']['active']) )
   {
     $sql .= " AND active=" . intval($my['filters']['active']) . " ";
@@ -482,7 +486,7 @@ function get_all($filters=null,$options=null)
   {
     $sql .= $my['options']['order_by'];
   }
-  
+
   if( is_null($my['options']['access_key'])) {
     $recordset = $this->db->get_recordset($sql);
     $this->parseTestProjectRecordset($recordset);
@@ -493,7 +497,7 @@ function get_all($filters=null,$options=null)
         $recordset[$number]['opt'] = unserialize($row['options']);
       }
     }
-  }  
+  }
 
   return $recordset;
 }
@@ -527,20 +531,20 @@ args:
      [order_by]: default: ORDER BY name
 
 */
-function get_accessible_for_user($user_id,$opt = null,$filters = null) {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+public function get_accessible_for_user($user_id,$opt = null,$filters = null) {
+    $debugMsg = $this->debugMsg . __FUNCTION__;
   $my = array();
   $my['opt'] = array('output' => 'map', 'order_by' => ' ORDER BY name ', 'field_set' => 'full',
                      'format' => 'std', 'add_issuetracker' => false, 'add_codetracker' => false,
                      'add_reqmgrsystem' => false);
   $my['opt'] = array_merge($my['opt'],(array)$opt);
-  
+
   // key = field name
   // value = array('op' => Domain ('=','like'), 'value' => the value)
   $my['filters'] = array('name' => null, 'id' => null, 'prefix' => null);
   $my['filters'] = array_merge($my['filters'],(array)$filters);
 
-                     
+
   $items = array();
   $safe_user_id = intval($user_id);
 
@@ -555,9 +559,9 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
     $itsql = " LEFT OUTER JOIN {$this->tables['testproject_issuetracker']} AS TIT " .
              " ON TIT.testproject_id  = TPROJ.id " .
              " LEFT OUTER JOIN {$this->tables['issuetrackers']} AS ITMD " .
-             " ON ITMD.id = TIT.issuetracker_id ";     
+             " ON ITMD.id = TIT.issuetracker_id ";
     $itf = ",ITMD.name AS itname,ITMD.type AS ittype";
-  }        
+  }
 
   $ctsql = '';
   $ctf = '';
@@ -565,9 +569,9 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
     $ctsql = " LEFT OUTER JOIN {$this->tables['testproject_codetracker']} AS TCT " .
              " ON TCT.testproject_id  = TPROJ.id " .
              " LEFT OUTER JOIN {$this->tables['codetrackers']} AS CTMD " .
-             " ON CTMD.id = TCT.codetracker_id ";     
+             " ON CTMD.id = TCT.codetracker_id ";
     $ctf = ",CTMD.name AS ctname,CTMD.type AS cttype";
-  }        
+  }
 
 
   $rmssql = '';
@@ -576,9 +580,9 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
     $rmssql = " LEFT OUTER JOIN {$this->tables['testproject_reqmgrsystem']} AS TRMS " .
               " ON TRMS.testproject_id  = TPROJ.id " .
               " LEFT OUTER JOIN {$this->tables['reqmgrsystems']} AS RMSMD " .
-              " ON RMSMD.id = TRMS.reqmgrsystem_id ";     
+              " ON RMSMD.id = TRMS.reqmgrsystem_id ";
     $rmsf =   ",RMSMD.name AS rmsname,RMSMD.type AS rmstype";
-  }        
+  }
 
   switch($my['opt']['field_set']) {
     case 'id':
@@ -595,8 +599,8 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
     default:
       $cols = ' TPROJ.*,NHTPROJ.name,COALESCE(UTR.role_id,U.role_id) AS effective_role ';
     break;
-  } 
-  
+  }
+
   $sql = " /* $debugMsg */ SELECT {$cols} {$itf} {$ctf} {$rmsf} " .
          " FROM {$this->tables['nodes_hierarchy']} NHTPROJ " .
          " JOIN {$this->object_table} TPROJ ON NHTPROJ.id=TPROJ.id " .
@@ -605,11 +609,11 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
          " ON TPROJ.id = UTR.testproject_id " .
          " AND UTR.user_id =" . $safe_user_id . $itsql . $ctsql . $rmssql .
          " WHERE 1=1 ";
-  
+
   // Private test project feature
   if( $globalRoleID != TL_ROLES_ADMIN ) {
     if ($globalRoleID != TL_ROLES_NO_RIGHTS) {
-      $sql .=  " AND "; 
+      $sql .=  " AND ";
       $sql_public = " ( TPROJ.is_public = 1 AND (UTR.role_id IS NULL OR UTR.role_id != " . TL_ROLES_NO_RIGHTS. ") )";
       $sql_private = " ( TPROJ.is_public = 0 AND UTR.role_id != " . TL_ROLES_NO_RIGHTS. ") ";
       $sql .= " ( {$sql_public}  OR {$sql_private} ) ";
@@ -624,7 +628,7 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
     $sql .= " AND TPROJ.active=1 ";
   }
   unset($userObj);
-  
+
   foreach($my['filters'] as $fname => $fspec) {
     if(!is_null($fspec)) {
       switch($fname) {
@@ -651,17 +655,17 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
             $sql .= "='" . $safe . "'";
           } else {
             $sql .= "=" . $safe;
-          }  
+          }
         break;
 
         case 'like':
-          $sql .= " LIKE '%" . $safe ."%'";         
+          $sql .= " LIKE '%" . $safe ."%'";
         break;
       }
-    }  
-  }  
-  
- 
+    }
+  }
+
+
   $sql .= str_replace('nodes_hierarchy','NHTPROJ',$my['opt']['order_by']);
   $parseOpt = false;
   $do_post_process = 0;
@@ -687,7 +691,7 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
       $do_post_process = (count($arrTemp) > 0);
     break;
   }
-    
+
   if($my['opt']['format'] == 'std' && $parseOpt) {
     $this->parseTestProjectRecordset($items);
   }
@@ -700,16 +704,16 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
         if (!$row['active']) {
          $noteActive = TL_INACTIVE_MARKUP;
         }
-        $items[$id] = $noteActive . 
+        $items[$id] = $noteActive .
                       ( ($my['opt']['field_set'] =='prefix') ? ($row['prefix'] . ':') : '' ) . $row['name'];
       }
       break;
-      
+
       case 'map_of_map':
       foreach($arrTemp as $id => $row) {
         $items[$id] = array('name' => $row['name'],'active' => $row['active']);
       }
-      break;       
+      break;
     }
     unset($arrTemp);
   }
@@ -736,15 +740,15 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
 
 
 */
-function get_subtree($id,$filters=null,$opt=null)
+public function get_subtree($id,$filters=null,$opt=null)
 {
   $my = array();
   $my['options'] = array('recursive' => false, 'exclude_testcases' => false, 'output' => 'full');
   $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
                           'exclude_children_of' => $this->nt2exclude_children,
                           'exclude_branches' => null,
-                          'additionalWhereClause' => '');      
-    
+                          'additionalWhereClause' => '');
+
   $my['options'] = array_merge($my['options'],(array)$opt);
   $my['filters'] = array_merge($my['filters'],(array)$filters);
 
@@ -752,9 +756,9 @@ function get_subtree($id,$filters=null,$opt=null)
   {
     $my['filters']['exclude_node_types']['testcase']='exclude me';
   }
-    
+
   $subtree = $this->tree_manager->get_subtree(intval($id),$my['filters'],$my['options']);
-  return $subtree;   
+  return $subtree;
 }
 
 
@@ -770,13 +774,13 @@ function get_subtree($id,$filters=null,$opt=null)
  * @internal revisions
  *
  **/
-function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
+public function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
 {
   $gui = $guiObj;
 
   if (!property_exists($gui, 'uploadOp')) {
     $gui->uploadOp = null;
-  } 
+  }
 
   $gui->sqlResult = '';
   $gui->sqlAction = '';
@@ -804,13 +808,13 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
   $gui->page_title = lang_get('testproject');
   $gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
   $gui->attachmentInfos = getAttachmentInfosFrom($this,$safeID);
-   
+
   // attachments management on page
   $gui->fileUploadURL = $_SESSION['basehref'] . $this->getFileUploadRelativeURL($safeID);
   $gui->delAttachmentURL = $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($safeID);
   $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
   $gui->fileUploadMsg = '';
-  
+
   $exclusion = array( 'testcase', 'me', 'testplan' => 'me', 'requirement_spec' => 'me');
   $gui->canDoExport = count((array)$this->tree_manager->get_children($safeID,$exclusion)) > 0;
   if ($modded_item_id) {
@@ -818,19 +822,19 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
   }
   $cfg = getWebEditorCfg('testproject');
   $gui->testProjectEditorType = $cfg['type'];
-  
-  $smarty->assign('gui', $gui); 
+
+  $smarty->assign('gui', $gui);
   $smarty->display($template_dir . 'containerView.tpl');
 }
 
 
 /**
  * Count testcases without considering active/inactive status.
- * 
+ *
  * @param integer $id: test project identifier
  * @return integer count of test cases presents on test project.
  */
-function count_testcases($id)
+public function count_testcases($id)
 {
   $tcIDs = array();
   $this->get_all_testcases_id($id,$tcIDs);
@@ -892,7 +896,7 @@ function count_testcases($id)
     returns: map , structure depens on $mode argument.
 
   */
-  function gen_combo_test_suites($id,$exclude_branches=null,$mode='dotted')
+  public function gen_combo_test_suites($id,$exclude_branches=null,$mode='dotted')
   {
     $ret = array();
     $test_spec = $this->get_subtree($id, array('exclude_branches' => $exclude_branches),
@@ -912,7 +916,7 @@ function count_testcases($id)
    * @param string $name the name to check
    * @return map with keys: status_ok, msg
    **/
-  function checkName($name)
+  public function checkName($name)
   {
     $forbidden_pattern = config_get('ereg_forbidden');
     $ret['status_ok'] = 1;
@@ -937,7 +941,7 @@ function count_testcases($id)
    * @param string $name the name to check
    * @return map with keys: status_ok, msg
    **/
-  function checkNameSintax($name)
+  public function checkNameSintax($name)
   {
     $forbidden_pattern = config_get('ereg_forbidden');
     $ret['status_ok'] = 1;
@@ -960,11 +964,11 @@ function count_testcases($id)
    * Checks is there is another testproject with different id but same name
    *
    **/
-  function checkNameExistence($name,$id=0)
+  public function checkNameExistence($name,$id=0)
   {
     $check_op['msg'] = '';
     $check_op['status_ok'] = 1;
-       
+
     if($this->get_by_name($name,"testprojects.id <> {$id}") )
     {
       $check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'),$name);
@@ -977,7 +981,7 @@ function count_testcases($id)
    * Checks is there is another testproject with different id but same prefix
    *
    **/
-  function checkTestCasePrefixExistence($prefix,$id=0)
+  private function checkTestCasePrefixExistence($prefix,$id=0)
   {
     $check_op = array('msg' => '', 'status_ok' => 1);
     $sql = " SELECT id FROM {$this->object_table} " .
@@ -990,19 +994,19 @@ function count_testcases($id)
       $check_op['msg'] = sprintf(lang_get('error_tcase_prefix_exists'),$prefix);
       $check_op['status_ok'] = 0;
     }
-      
+
     return $check_op;
   }
 
 
 
-  /** 
+  /**
    * allow activate or deactivate a test project
-   * 
+   *
    * @param integer $id test project ID
    * @param integer $status 1=active || 0=inactive
    */
-  function activate($id, $status)
+  public function activate($id, $status)
   {
     $sql = "UPDATE {$this->tables['testprojects']} SET active=" . $status . " WHERE id=" . $id;
     $result = $this->db->exec_query($sql);
@@ -1010,22 +1014,24 @@ function count_testcases($id)
     return $result ? 1 : 0;
   }
 
-  /** @TODO add description */
-  function formatTcPrefix($str)
-  {
-    $fstr = trim($str);
-    if(tlStringLen($fstr) == 0)
+    /**
+     *
+     * @param string $str
+     * @return string
+     */
+    private function formatTcPrefix($str)
     {
-      throw new Exception('Empty prefix is not allowed');      
-    } 
+        $fstr = trim($str);
+        if (tlStringLen($fstr) == 0) {
+            throw new Exception('Empty prefix is not allowed');
+        }
 
-    // limit tcasePrefix len.
-    if(tlStringLen($fstr) > self::TESTCASE_PREFIX_MAXLEN)
-    {
-      $fstr = substr($fstr, 0, self::TESTCASE_PREFIX_MAXLEN);
+        // limit tcasePrefix len.
+        if (tlStringLen($fstr) > self::TESTCASE_PREFIX_MAXLEN) {
+            $fstr = substr($fstr, 0, self::TESTCASE_PREFIX_MAXLEN);
+        }
+        return $fstr;
     }
-    return $fstr;
-  }
 
 
   /*
@@ -1033,8 +1039,8 @@ function count_testcases($id)
    returns: null if query fails
    string
    */
-  function getTestCasePrefix($id) {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  public function getTestCasePrefix($id) {
+      $debugMsg = $this->debugMsg . __FUNCTION__;
     $ret=null;
     $sql = "/* $debugMsg */ SELECT prefix FROM {$this->object_table} WHERE id = {$id}";
     $ret = $this->db->fetchOneValue($sql);
@@ -1047,18 +1053,18 @@ function count_testcases($id)
    returns: null if query fails
    a new test case number
    */
-  function generateTestCaseNumber($id)
+  public function generateTestCaseNumber($id)
   {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    
-    $retry = 3; 
+      $debugMsg = $this->debugMsg . __FUNCTION__;
+
+    $retry = 3;
     $lockfile = $this->tmp_dir . __FUNCTION__ . '.lock';
     $lock = fopen($lockfile, 'a');
-    
+
     $gotLock = false;
     while( $retry > 0 && !$gotLock )
-    {  
-      if( flock($lock,LOCK_EX) ) 
+    {
+      if( flock($lock,LOCK_EX) )
       {
         $gotLock = true;
       }
@@ -1066,7 +1072,7 @@ function count_testcases($id)
       {
         $retry--;
         usleep(20);
-      }  
+      }
     }
 
     if( $gotLock || $retry == 0 )
@@ -1076,20 +1082,20 @@ function count_testcases($id)
       $ret=null;
       $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
                " SET tc_counter=tc_counter+1 WHERE id = {$safeID}";
-      $rs = $this->db->exec_query($sql);
-        
+      $this->db->exec_query($sql);
+
       $sql = " SELECT tc_counter  FROM {$this->object_table}  WHERE id = {$safeID}";
       $rs = $this->db->get_recordset($sql);
       $ret = $rs[0]['tc_counter'];
-      
+
       if( $gotLock )
       {
         flock($lock, LOCK_UN);
-      }  
+      }
       fclose($lock);
 
       return $ret;
-    }  
+    }
 
   }
 
@@ -1097,31 +1103,30 @@ function count_testcases($id)
    *
    *
    */
-  function setTestCaseCounter($id,$value,$force=false)
+  protected function setTestCaseCounter($id,$value,$force=false)
   {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    
+      $debugMsg = $this->debugMsg . __FUNCTION__;
+
     $safeValue = intval($value);
-    $ret=null;
     $sql = " /* $debugMsg */ UPDATE {$this->object_table} " .
-           ' SET tc_counter=' . $safeValue . 
+           ' SET tc_counter=' . $safeValue .
            ' WHERE id =' . intval($id);
 
     if(!$force)
     {
       $sql .= ' AND tc_counter < ' . $safeValue;
-    }       
-    $rs = $this->db->exec_query($sql);
+    }
+    $this->db->exec_query($sql);
   }
 
 
 
-/** 
+/**
  * @param integer $id test project ID
  */
-function setPublicStatus($id,$status)
+private function setPublicStatus($id,$status)
 {
-    $isPublic = val($status) > 0 ? 1 : 0; 
+    $isPublic = val($status) > 0 ? 1 : 0;
   $sql = "UPDATE {$this->object_table} SET is_public={$isPublic} WHERE id={$id}";
   $result = $this->db->exec_query($sql);
   return $result ? 1 : 0;
@@ -1141,7 +1146,7 @@ function setPublicStatus($id,$status)
   public function addKeyword($testprojectID,$keyword,$notes) {
     $kw = new tlKeyword();
     $kw->initialize(null,$testprojectID,$keyword,$notes);
-    $op = array('status' => tlKeyword::E_DBERROR, 'id' => -1, 
+    $op = array('status' => tlKeyword::E_DBERROR, 'id' => -1,
                 'msg' => 'ko DB Error');
 
     $op['status'] = $kw->writeToDB($this->db);
@@ -1165,11 +1170,11 @@ function setPublicStatus($id,$status)
    * @param type $notes
    *
    **/
-  function updateKeyword($testprojectID,$id,$keyword,$notes) {
+  public function updateKeyword($testprojectID,$id,$keyword,$notes) {
     $kw = new tlKeyword($id);
     $kw->initialize($id,$testprojectID,$keyword,$notes);
     $result = $kw->writeToDB($this->db);
-    if ($result >= tl::OK) {  
+    if ($result >= tl::OK) {
       logAuditEvent(TLS("audit_keyword_saved",$keyword),"SAVE",$kw->dbID,"keywords");
     }
     return $result;
@@ -1183,13 +1188,13 @@ function setPublicStatus($id,$status)
   public function getKeyword($id) {
     return tlKeyword::getByID($this->db,$id);
   }
-  
+
   /**
    * Gets the keywords of the given test project
    *
    * @param int $tprojectID the test project id
    * @param int $keywordID [default = null] the optional keyword id
-   * 
+   *
    * @return array, every elemen is map with following structure:
    *                id
    *                keyword
@@ -1207,7 +1212,7 @@ function setPublicStatus($id,$status)
    * @return int returns 1 on success, 0 else
    *
    **/
-  function deleteKeyword($id, $opt=null) {
+  public function deleteKeyword($id, $opt=null) {
     $result = tl::ERROR;
     $my['opt'] = array('checkBeforeDelete' => true, 'nameForAudit' => null,
                        'context' => '', 'tproject_id' => null);
@@ -1217,23 +1222,23 @@ function setPublicStatus($id,$status)
     $doIt = !$my['opt']['checkBeforeDelete'];
     $keyword = $my['opt']['nameForAudit'];
 
-    if($my['opt']['checkBeforeDelete']) {      
+    if($my['opt']['checkBeforeDelete']) {
       $doIt = true;
       if( $this->cfg->keywords->onDeleteCheckExecutedTCVersions ) {
         $linkedAndNotExec = $this->checkKeywordIsLinkedAndNotExecuted($id);
         $doIt = $doIt && $linkedAndNotExec;
       }
-      
+
       if( $this->cfg->keywords->onDeleteCheckFrozenTCVersions ) {
         $linkedToFrozen = $this->checkKeywordIsLinkedToFrozenVersions($id);
         $doIt = $doIt && !$linkedToFrozen;
       }
-    }  
-    
+    }
+
     if( $doIt ) {
       if( $this->auditCfg->logEnabled ) {
         $keyword = $this->getKeywordSimple($id);
-      }  
+      }
       $result = tlDBObject::deleteObjectFromDB($this->db,$id,"tlKeyword");
     }
 
@@ -1255,7 +1260,7 @@ function setPublicStatus($id,$status)
   /**
    * delete Keywords
    */
-  function deleteKeywords($tproject_id,$tproject_name=null) {
+  public function deleteKeywords($tproject_id,$tproject_name=null) {
     $result = tl::OK;
 
     $itemSet = (array)$this->getKeywordSet($tproject_id);
@@ -1269,16 +1274,16 @@ function setPublicStatus($id,$status)
       $opt['nameForAudit'] = $itemSet[$kwIDs[$idx]]['keyword'];
 
       $resultKw = $this->deleteKeyword($kwIDs[$idx],$opt);
-      if ($resultKw != tl::OK) {  
+      if ($resultKw != tl::OK) {
         $result = $resultKw;
-      }  
+      }
     }
     return $result;
   }
 
 
   /**
-   * 
+   *
    *
    */
   protected function getKeywordIDsFor($testproject_id) {
@@ -1290,10 +1295,10 @@ function setPublicStatus($id,$status)
   }
 
   /**
-   * 
+   *
    *
    */
-  function getKeywordSet($tproject_id) {
+  public function getKeywordSet($tproject_id) {
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']}  " .
            " WHERE testproject_id = {$tproject_id}" .
            " ORDER BY keyword ASC";
@@ -1304,13 +1309,13 @@ function setPublicStatus($id,$status)
 
 
   /**
-   * 
+   *
    *
    */
-  function hasKeywords($id) {
+  public function hasKeywords($id) {
     // seems that postgres PHP driver do not manage well UPPERCASE  in AS CLAUSE
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = "/* {$debugMsg} */ SELECT COUNT(0) AS qty FROM {$this->tables['keywords']}  " .
+      $debugMsg = $this->debugMsg . __FUNCTION__;
+    $sql = "/* $debugMsg */ SELECT COUNT(0) AS qty FROM {$this->tables['keywords']}  " .
            " WHERE testproject_id = " . intval($id);
     $rs = $this->db->get_recordset($sql);
 
@@ -1348,7 +1353,7 @@ function setPublicStatus($id,$status)
    *
    * @return string the generated CSV code
    **/
-  function exportKeywordsToCSV($testproject_id,$delim = ';') {
+  private function exportKeywordsToCSV($testproject_id,$delim = ';') {
     $kwIDs = $this->getKeywordIDsFor($testproject_id);
     $csv = null;
     for($idx = 0;$idx < sizeof($kwIDs);$idx++) {
@@ -1359,7 +1364,7 @@ function setPublicStatus($id,$status)
     return $csv;
   }
 
-  function importKeywordsFromCSV($testproject_id,$fileName,$delim = ';')
+  public function importKeywordsFromCSV($testproject_id,$fileName,$delim = ';')
   {
     $handle = fopen($fileName,"r");
     if ($handle)
@@ -1367,11 +1372,11 @@ function setPublicStatus($id,$status)
       while($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, $delim))
       {
         $kw = new tlKeyword();
-        $kw->initialize(null,$testproject_id,NULL,NULL);
+        $kw->initialize(null,$testproject_id,null,null);
         if ($kw->readFromCSV(implode($delim,$data)) >= tl::OK)
         {
           if ($kw->writeToDB($this->db) >= tl::OK)
-          {  
+          {
             logAuditEvent(TLS("audit_keyword_created",$kw->name),"CREATE",$kw->dbID,"keywords");
           }
         }
@@ -1382,14 +1387,14 @@ function setPublicStatus($id,$status)
     else
     {
       return ERROR;
-    }  
+    }
   }
 
   /**
    * @param $testproject_id
    * @param $fileName
     */
-  function importKeywordsFromXMLFile($testproject_id,$fileName)
+  public function importKeywordsFromXMLFile($testproject_id,$fileName)
   {
     $simpleXMLObj = @$this->simplexml_load_file_helper($fileName);
     return $this->importKeywordsFromSimpleXML($testproject_id,$simpleXMLObj);
@@ -1400,7 +1405,7 @@ function setPublicStatus($id,$status)
    * @param $testproject_id
    * @param $xmlString
     */
-  function importKeywordsFromXML($testproject_id,$xmlString)
+  public function importKeywordsFromXML($testproject_id,$xmlString)
   {
     $simpleXMLObj = simplexml_load_string($xmlString);
     return $this->importKeywordsFromSimpleXML($testproject_id,$simpleXMLObj);
@@ -1410,20 +1415,20 @@ function setPublicStatus($id,$status)
    * @param $testproject_id
    * @param $simpleXMLObj
     */
-  function importKeywordsFromSimpleXML($testproject_id,$simpleXMLObj)
+  public function importKeywordsFromSimpleXML($testproject_id,$simpleXMLObj)
   {
     $status = tl::OK;
     if(!$simpleXMLObj || $simpleXMLObj->getName() != 'keywords')
     {
       $status = tlKeyword::E_WRONGFORMAT;
     }
-  
+
     if( ($status == tl::OK) && $simpleXMLObj->keyword )
     {
       foreach($simpleXMLObj->keyword as $keyword)
       {
         $kw = new tlKeyword();
-        $kw->initialize(null,$testproject_id,NULL,NULL);
+        $kw->initialize(null,$testproject_id,null,null);
         $status = tlKeyword::E_WRONGFORMAT;
         if ($kw->readFromSimpleXML($keyword) >= tl::OK)
         {
@@ -1431,7 +1436,7 @@ function setPublicStatus($id,$status)
           if ($kw->writeToDB($this->db) >= tl::OK)
           {
             logAuditEvent(TLS("audit_keyword_created",$kw->name),"CREATE",$kw->dbID,"keywords");
-          }  
+          }
         }
       }
     }
@@ -1444,7 +1449,7 @@ function setPublicStatus($id,$status)
    *  @param  integer $testproject_id the ID of the testproject
    *  @return array   map: key: keyword_id, value: keyword
    */
-  function get_keywords_map($testproject_id) {
+  public function get_keywords_map($testproject_id) {
     $keywordMap = null;
     $keywords = $this->getKeywords($testproject_id);
     if ($keywords) {
@@ -1461,16 +1466,16 @@ function setPublicStatus($id,$status)
    *  @param  integer $id testproject
    *  @return array   map: key: keyword_id, value: keyword
    */
-  function getUsedKeywordsMap($id) {
+  public function getUsedKeywordsMap($id) {
     $debugMsg = $this->debugMsg . __FUNCTION__;
     $sql = "/* $debugMsg */
             SELECT DISTINCT KW.id,KW.keyword
             FROM {$this->tables['keywords']} KW
             JOIN {$this->tables['testcase_keywords']} TCKW
             ON TCKW.keyword_id = KW.id
-            WHERE KW.testproject_id =" . intval($id);  
+            WHERE KW.testproject_id =" . intval($id);
     $sql .= " ORDER BY keyword";
-    $rs = $this->db->fetchColumnsIntoMap($sql,'id','keyword');        
+    $rs = $this->db->fetchColumnsIntoMap($sql,'id','keyword');
     return $rs;
   }
 
@@ -1481,19 +1486,19 @@ function setPublicStatus($id,$status)
   /**
    * get list of all SRS for a test project, no distinction between levels
    *
-   * 
+   *
      * @used-by lib/results/uncoveredTestCases.php
      *      lib/requirements/reqTcAssign.php
      *       lib/requirements/reqSpecSearchForm.php
      *      lib/requirements/reqSearchForm.php
-   *   
+   *
    * @author Martin Havlat
    * @return associated array List of titles according to IDs
-   * 
+   *
    * @internal revisions
-   * 
+   *
    **/
-  function getOptionReqSpec($tproject_id,$get_not_empty=self::GET_EMPTY_REQSPEC)
+  public function getOptionReqSpec($tproject_id,$get_not_empty=self::GET_EMPTY_REQSPEC)
   {
     $additional_table='';
     $additional_join='';
@@ -1504,7 +1509,7 @@ function setPublicStatus($id,$status)
     }
     $sql = " SELECT SRS.id,NH.name AS title " .
            " FROM {$this->tables['req_specs']} SRS, " .
-           " {$this->tables['nodes_hierarchy']} NH " . 
+           " {$this->tables['nodes_hierarchy']} NH " .
            $additional_table .
            " WHERE testproject_id={$tproject_id} " .
            " AND SRS.id=NH.id " .
@@ -1526,10 +1531,10 @@ function setPublicStatus($id,$status)
      *      lib/requirements/reqSearchForm.php
      *
      * @internal revisions
-     * 
+     *
      *
    **/
-  function genComboReqSpec($id,$mode='dotted',$dot='.')
+  public function genComboReqSpec($id,$mode='dotted',$dot='.')
   {
     $ret = array();
       $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
@@ -1537,7 +1542,7 @@ function setPublicStatus($id,$status)
                                 'requirement_spec_revision' => 'exclude_me');
 
      $my['filters'] = array('exclude_node_types' => $exclude_node_types);
-    
+
     $my['options'] = array('order_cfg' => array('type' => 'rspec'), 'output' => 'rspec');
       $subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
       if(count($subtree))
@@ -1548,7 +1553,7 @@ function setPublicStatus($id,$status)
   }
 
   /*
-  
+
               [$mode]: dotted -> $level number of dot characters are appended to
                                the left of item name to create an indent effect.
                                Level indicates on what tree layer item is positioned.
@@ -1605,7 +1610,7 @@ function setPublicStatus($id,$status)
         $the_level++;
         $level[$current['parent_id']]=$the_level;
       }
-      else if ($pivot['parent_id'] != $current['parent_id'])
+      elseif ($pivot['parent_id'] != $current['parent_id'])
       {
         $the_level = $level[$current['parent_id']];
       }
@@ -1614,7 +1619,7 @@ function setPublicStatus($id,$status)
       {
           case 'dotted':
             $dm = $addprefix ? "[{$current[$addfield]}] - " : '';
-            $pding = ($the_level == 1) ? 0 : $the_level+1;  
+            $pding = ($the_level == 1) ? 0 : $the_level+1;
           $hmap[$current['id']] = str_repeat($dot,$pding) . $dm . $current['name'];
           break;
 
@@ -1627,7 +1632,7 @@ function setPublicStatus($id,$status)
       $level[$current['parent_id']]= $the_level;
       $pivot=$elem;
     }
-    
+
       return $hmap;
   }
 
@@ -1639,7 +1644,7 @@ function setPublicStatus($id,$status)
    * @param integer $testproject_id
    * @param string  $id optional id of the requirement specification
    *
-   * @return mixed 
+   * @return mixed
    *     null if no srs exits, or no srs exists for id
    *     array, where each element is a map with SRS data.
    *
@@ -1656,23 +1661,23 @@ function setPublicStatus($id,$status)
    *         modification_ts
    *
    * @author Martin Havlat
-   * @internal revisions 
-   *       
+   * @internal revisions
+   *
    **/
   public function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
   {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = $this->debugMsg . __FUNCTION__;
 
-    $fields2get = " RSPEC.id, RSPEC.testproject_id, RSPECREV.scope, RSPECREV.doc_id," . 
+    $fields2get = " RSPEC.id, RSPEC.testproject_id, RSPECREV.scope, RSPECREV.doc_id," .
                   " RSPECREV.total_req, RSPECREV.type, RSPECREV.author_id, RSPECREV.creation_ts, " .
-                  " RSPECREV.modifier_id, RSPECREV.modification_ts, RSPECREV.name AS title, NH.parent_id";    
+                  " RSPECREV.modifier_id, RSPECREV.modification_ts, RSPECREV.name AS title, NH.parent_id";
 
     $fields = is_null($fields) ? $fields2get : implode(',',$fields);
     $sql = " /* $debugMsg */ " .
            " SELECT {$fields} FROM {$this->tables['req_specs_revisions']} RSPECREV, " .
            " {$this->tables['req_specs']} RSPEC, {$this->tables['nodes_hierarchy']} NH, " .
            " {$this->tables['requirements']} REQ " .
-           " WHERE RSPECREV.parent_id=RSPEC.id " . 
+           " WHERE RSPECREV.parent_id=RSPEC.id " .
            " AND NH.id=RSPEC.id AND REQ.srs_id = RSPEC.id " .
            " AND RSPEC.testproject_id={$testproject_id} ";
 
@@ -1685,7 +1690,7 @@ function setPublicStatus($id,$status)
     $sql .= " GROUP BY RSPEC.id" ;
     $sql .= " ORDER BY RSPEC.id,title";
 
-    $rs = is_null($access_key) ? $this->db->get_recordset($sql) 
+    $rs = is_null($access_key) ? $this->db->get_recordset($sql)
                                : $this->db->fetchRowsIntoMap($sql,$access_key);
     return $rs;
   }
@@ -1704,7 +1709,7 @@ function setPublicStatus($id,$status)
    *
    * rev: 20071106 - franciscom - changed return type
    */
-  function createReqSpec($testproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
+  private function createReqSpec($testproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
   {
     $ignore_case=1;
     $result=array();
@@ -1772,9 +1777,9 @@ function setPublicStatus($id,$status)
   {
     $output=null;
     $title=trim($title);
-    
+
     $sql = "SELECT * FROM req_specs ";
-    
+
     if($ignore_case)
     {
       $sql .= " WHERE UPPER(title)='" . strtoupper($this->db->prepare_string($title)) . "'";
@@ -1785,10 +1790,10 @@ function setPublicStatus($id,$status)
     }
     $sql .= " AND testproject_id={$testproject_id}";
     $output = $this->db->fetchRowsIntoMap($sql,'id');
-    
+
     return $output;
   }
-  
+
 
 
   /*
@@ -1807,24 +1812,24 @@ function setPublicStatus($id,$status)
     returns:
 
   */
-  function check_srs_title($testproject_id,$title,$ignore_case=0)
+  public function check_srs_title($testproject_id,$title,$ignore_case=0)
   {
     $ret['status_ok'] = 1;
     $ret['msg'] = '';
-    
+
     $title = trim($title);
-    
+
     if ($title == "")
     {
       $ret['status_ok'] = 0;
       $ret['msg'] = lang_get("warning_empty_req_title");
     }
-    
+
     if($ret['status_ok'])
     {
       $ret['msg'] = 'ok';
       $rs = $this->get_srs_by_title($testproject_id,$title,$ignore_case);
-      
+
       if(!is_null($rs))
       {
         $ret['msg'] = lang_get("warning_duplicate_req_title");
@@ -1843,37 +1848,37 @@ function setPublicStatus($id,$status)
    * @param integer $tproject_id
    * @return integer tl::OK on success, tl::ERROR else
    **/
-  function deleteUserRoles($tproject_id,$users=null,$opt=null)
+  public function deleteUserRoles($tproject_id,$users=null,$opt=null)
   {
     $my['opt'] = array('auditlog' => true);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
-    $query = " DELETE FROM {$this->tables['user_testproject_roles']} " . 
+    $query = " DELETE FROM {$this->tables['user_testproject_roles']} " .
              " WHERE testproject_id = " . intval($tproject_id) ;
 
     if(!is_null($users))
     {
       $query .= " AND user_id IN(" . implode(',',$users) . ")";
-    } 
+    }
 
     if ($this->db->exec_query($query) && $my['opt']['auditlog'])
     {
       $testProject = $this->get_by_id($tproject_id);
-    
+
       if ($testProject)
       {
         if(is_null($users))
         {
           logAuditEvent(TLS("audit_all_user_roles_removed_testproject",$testProject['name']),
                         "ASSIGN",$tproject_id,"testprojects");
-        }  
+        }
         else
         {
           // TBD
-        }  
+        }
       }
       return tl::OK;
     }
-    
+
     return tl::ERROR;
   }
 
@@ -1883,12 +1888,12 @@ function setPublicStatus($id,$status)
    * @param integer $tproject_id
    * @return array assoc array with keys take from the user_id column
    **/
-  function getUserRoleIDs($tproject_id)
+  private function getUserRoleIDs($tproject_id)
   {
     $query = "SELECT user_id,role_id FROM {$this->tables['user_testproject_roles']} " .
       "WHERE testproject_id = {$tproject_id}";
     $roles = $this->db->fetchRowsIntoMap($query,'user_id');
-    
+
     return $roles;
   }
 
@@ -1898,13 +1903,13 @@ function setPublicStatus($id,$status)
    * @param integer $userID the id of the user
    * @param integer $tproject_id
    * @param integer $roleID the role id
-   * 
+   *
    * @return integer tl::OK on success, tl::ERROR else
    **/
-  function addUserRole($userID,$tproject_id,$roleID)
+  public function addUserRole($userID,$tproject_id,$roleID)
   {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__; 
-    $query = "/* debugMsg*/ INSERT INTO {$this->tables['user_testproject_roles']} " .
+    $debugMsg = $this->debugMsg . __FUNCTION__;
+    $query = "/* $debugMsg */ INSERT INTO {$this->tables['user_testproject_roles']} " .
              " (user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
     if($this->db->exec_query($query))
     {
@@ -1923,25 +1928,25 @@ function setPublicStatus($id,$status)
     }
     return tl::ERROR;
   }
-  
+
   /**
    * delete test project from system, deleting all dependent data:
    *      keywords, requirements, custom fields, testsuites, testplans,
    *      testcases, results, testproject related roles,
-   * 
+   *
    * @param integer $id test project id
    * @return integer status
-   * 
+   *
    */
-  function delete($id) {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    
+  public function delete($id) {
+      $debugMsg = $this->debugMsg . __FUNCTION__;
+
     $ret['msg']='ok';
     $ret['status_ok']=1;
-    
+
     $error = '';
     $reqspec_mgr = new requirement_spec_mgr($this->db);
-    
+
     // get some info for audit
     $info['name'] = '';
     if($this->auditCfg->logEnabled)
@@ -1954,14 +1959,14 @@ function setPublicStatus($id,$status)
       $event->source = $this->auditCfg->eventSource;
       $event->logLevel = 'AUDIT';
       $event->code = 'DELETE';
-    }  
+    }
 
-    //    
+    //
     // Notes on delete related to Foreing Keys
     // All link tables has to be deleted first
     //
     // req_relations
-    // 
+    //
     // testplan_tcversions
     // testplan_platforms
     // object_keywords
@@ -1970,8 +1975,8 @@ function setPublicStatus($id,$status)
     // milestones
     //
     // testplans
-    // keywords    
-    // platforms 
+    // keywords
+    // platforms
     // attachtments
     // testcases
     // testsuites
@@ -1980,18 +1985,18 @@ function setPublicStatus($id,$status)
     // testproject
     $this->deleteKeywords($id,$info['name']);
     $this->deleteAttachments($id);
-    
+
     $reqSpecSet=$reqspec_mgr->get_all_id_in_testproject($id);
     if( !is_null($reqSpecSet) && count($reqSpecSet) > 0 ) {
       foreach($reqSpecSet as $reqSpec) {
         $reqspec_mgr->delete_deep($reqSpec['id']);
-      }      
+      }
     }
-    
+
     $tplanSet = $this->get_all_testplans($id);
     if( !is_null($tplanSet) && count($tplanSet) > 0 ) {
       $tplan_mgr = new testplan($this->db);
-      $items=array_keys($tplanSet);     
+      $items=array_keys($tplanSet);
       foreach($items as $key) {
         $tplan_mgr->delete($key);
       }
@@ -1999,8 +2004,8 @@ function setPublicStatus($id,$status)
 
     $platform_mgr = new tlPlatform($this->db,$id);
     $platform_mgr->deleteByTestProject($id);
-    
-    $a_sql[] = array("/* $debugMsg */ UPDATE {$this->tables['users']}  " . 
+
+    $a_sql[] = array("/* $debugMsg */ UPDATE {$this->tables['users']}  " .
                      " SET default_testproject_id = NULL " .
                      " WHERE default_testproject_id = {$id}",
                      'info_resetting_default_project_fails');
@@ -2012,9 +2017,9 @@ function setPublicStatus($id,$status)
     if( !is_null($inventorySet) ) {
       foreach($inventorySet as $key => $dummy) {
         $inventory_mgr->deleteInventory($key);
-      }    
+      }
     }
-    
+
     foreach ($a_sql as $oneSQL)
     {
       if (empty($error))
@@ -2024,23 +2029,23 @@ function setPublicStatus($id,$status)
         if (!$result)
         {
           $error .= lang_get($oneSQL[1]);
-        }  
+        }
       }
     }
-    
-    
+
+
     if ($this->deleteUserRoles($id) < tl::OK)
     {
       $error .= lang_get('info_deleting_project_roles_fails');
     }
-    
+
     $xSQL = array('testproject_issuetracker','testproject_codetracker',
                   'testproject_reqmgrsystem');
     foreach($xSQL as $target)
     {
       $sql = "/* $debugMsg */ DELETE FROM " . $this->tables[$target] .
-             " WHERE testproject_id = " . intval($id);                 
-      $result = $this->db->exec_query($sql);
+             " WHERE testproject_id = " . intval($id);
+      $this->db->exec_query($sql);
     }
 
     // ---------------------------------------------------------------------------------------
@@ -2052,9 +2057,9 @@ function setPublicStatus($id,$status)
     {
       $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testprojects']} WHERE testproject_id = {$id} ";
       $this->db->exec_query($sql);
-      
+
       $sql = "/* $debugMsg */ DELETE FROM {$this->object_table} WHERE id = {$id}";
-      
+
       $result = $this->db->exec_query($sql);
       if ($result)
       {
@@ -2062,14 +2067,14 @@ function setPublicStatus($id,$status)
         if ($id == $tproject_id_on_session)
         {
           $this->setSessionProject(null);
-        }  
+        }
       }
       else
       {
         $error .= lang_get('info_product_delete_fails');
-      }  
+      }
     }
-    
+
     if (empty($error))
     {
       // Delete test project with requirements defined crashed with memory exhausted
@@ -2084,15 +2089,15 @@ function setPublicStatus($id,$status)
       if($this->auditCfg->logEnabled)
       {
         logEvent($event);
-      }  
+      }
     }
-    
+
     if( !empty($error) )
     {
       $ret['msg']=$error;
       $ret['status_ok']=0;
     }
-    
+
     return $ret;
   }
 
@@ -2108,14 +2113,14 @@ function setPublicStatus($id,$status)
            null is nothing found
 
 */
-  function get_all_testcases_id($idList,&$tcIDs,$options = null)
+  public function get_all_testcases_id($idList,&$tcIDs,$options = null)
   {
     static $tcNodeTypeID;
     static $tsuiteNodeTypeID;
     static $debugMsg;
     if (!$tcNodeTypeID)
     {
-      $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
       $tcNodeTypeID = $this->tree_manager->node_descr_id['testcase'];
       $tsuiteNodeTypeID = $this->tree_manager->node_descr_id['testsuite'];
     }
@@ -2123,23 +2128,23 @@ function setPublicStatus($id,$status)
     $my = array();
     $my['options'] = array('output' => 'just_id');
     $my['options'] = array_merge($my['options'], (array)$options);
-  
-    switch($my['options']['output']) 
+
+    switch($my['options']['output'])
     {
       case 'external_id':
         $use_array = true;
       break;
-      
+
       case 'just_id':
       default:
         $use_array = false;
       break;
     }
-    
+
     $sql = "/* $debugMsg */  SELECT id,node_type_id from {$this->tables['nodes_hierarchy']} " .
            " WHERE parent_id IN ({$idList})";
-    $sql .= " AND node_type_id IN ({$tcNodeTypeID},{$tsuiteNodeTypeID}) "; 
-    
+    $sql .= " AND node_type_id IN ({$tcNodeTypeID},{$tsuiteNodeTypeID}) ";
+
     $result = $this->db->exec_query($sql);
     if ($result)
     {
@@ -2150,11 +2155,11 @@ function setPublicStatus($id,$status)
         {
           if( $use_array )
           {
-            $sql = " SELECT DISTINCT NH.parent_id, TCV.tc_external_id " . 
+            $sql = " SELECT DISTINCT NH.parent_id, TCV.tc_external_id " .
                    " FROM {$this->tables['nodes_hierarchy']} NH " .
                    " JOIN  {$this->tables['tcversions']} TCV ON TCV.id = NH.id " .
                    " WHERE NH.parent_id = {$row['id']} ";
-            
+
             $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
             $tcIDs[$row['id']] = $rs[$row['id']]['tc_external_id'];
           }
@@ -2173,7 +2178,7 @@ function setPublicStatus($id,$status)
         $suiteIDs  = implode(",",$suiteIDs);
         $this->get_all_testcases_id($suiteIDs,$tcIDs,$options);
       }
-    }  
+    }
   }
 
 
@@ -2190,7 +2195,7 @@ function setPublicStatus($id,$status)
 
 
   returns: map: key: testcase_id
-                value: map 
+                value: map
                           key: keyword_id
                           value: testcase_id,keyword_id,keyword
 
@@ -2198,7 +2203,7 @@ function setPublicStatus($id,$status)
                  [24] => Array ( [3] => Array( [testcase_id] => 24
                                                [keyword_id] => 3
                                                [keyword] => MaxFactor )
-                         
+
                                  [2] => Array( [testcase_id] => 24
                                                [keyword_id] => 2
                                                [keyword] => Terminator ) )
@@ -2206,14 +2211,14 @@ function setPublicStatus($id,$status)
 @internal revisions:
   20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
 */
-function DEPRECATED_get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_type='Or')
+private function DEPRECATED_get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_type='Or')
 {
     $keyword_filter= '' ;
     $subquery='';
 
     if( is_array($keyword_id) )
     {
-        $keyword_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";            
+        $keyword_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";
         if($keyword_filter_type == 'And') {
             $subquery = "AND testcase_id IN (" .
                         " SELECT FOXDOG.testcase_id FROM
@@ -2224,15 +2229,15 @@ function DEPRECATED_get_keywords_tcases($testproject_id, $keyword_id=0, $keyword
                             {$keyword_filter}
                             GROUP BY testcase_id ) AS FOXDOG " .
                         " WHERE FOXDOG.HITS=" . count($keyword_id) . ")";
-                     
+
             $keyword_filter ='';
-        }    
+        }
     }
-    else if( $keyword_id > 0 )
+    elseif( $keyword_id > 0 )
     {
         $keyword_filter = " AND keyword_id = {$keyword_id} ";
     }
-    
+
     $map_keywords = null;
     $sql = " SELECT testcase_id,keyword_id,keyword
              FROM {$this->tables['keywords']} K, {$this->tables['testcase_keywords']}
@@ -2250,7 +2255,7 @@ function DEPRECATED_get_keywords_tcases($testproject_id, $keyword_id=0, $keyword
 /**
  *
  */
-function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
+public function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
 
     $kwFilter= '' ;
     $subquery='';
@@ -2258,7 +2263,7 @@ function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
                   ON LTCV.tcversion_id = TK.tcversion_id ";
 
     if( is_array($keyword_id) ) {
-      $kwFilter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";                  
+      $kwFilter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";
       if($kwFilterType == 'And') {
         $ltcvJoin = " ";
         $sqlCount = " /* SQL COUNT */ " .
@@ -2266,10 +2271,10 @@ function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
                       FROM {$this->tables['keywords']} K
                       JOIN {$this->tables['testcase_keywords']} TK
                       ON keyword_id = K.id
-                      
+
                       JOIN {$this->views['latest_tcase_version_id']} LTCV
                       ON LTCV.tcversion_id = TK.tcversion_id
-                      
+
                       WHERE testproject_id = {$tproject_id}
                       {$kwFilter}
                       GROUP BY TK.tcversion_id ";
@@ -2279,12 +2284,12 @@ function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
                           ( $sqlCount ) AS FOXDOG " .
                         " WHERE FOXDOG.HITS=" . count($keyword_id) . ")";
         $kwFilter ='';
-      }    
+      }
     }
-    else if( $keyword_id > 0 ) {
+    elseif( $keyword_id > 0 ) {
       $kwFilter = " AND keyword_id = {$keyword_id} ";
     }
-    
+
     $items = null;
     $sql = " SELECT TK.testcase_id,TK.keyword_id,K.keyword
              FROM {$this->tables['keywords']} K
@@ -2302,12 +2307,12 @@ function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
 
 /**
  *
- * 20200117 
+ * 20200117
  * it seems I've duplicated code
  * designed to be used by
  * @used-by specview.php
  */
-function XXXgetPlatformsLatestTCV($tproject_id, $platform_id=0, $filterType='Or') {
+private function XXXgetPlatformsLatestTCV($tproject_id, $platform_id=0, $filterType='Or') {
 
     $platFilter= '' ;
     $subquery='';
@@ -2315,7 +2320,7 @@ function XXXgetPlatformsLatestTCV($tproject_id, $platform_id=0, $filterType='Or'
                   ON LTCV.tcversion_id = TK.tcversion_id ";
 
     if( is_array($platform_id) ) {
-      $platFilter = " AND platform_id IN (" . implode(',',$platform_id) . ")";                  
+      $platFilter = " AND platform_id IN (" . implode(',',$platform_id) . ")";
       if($filterType == 'And') {
         $ltcvJoin = " ";
         $sqlCount = " /* SQL COUNT */ " .
@@ -2323,10 +2328,10 @@ function XXXgetPlatformsLatestTCV($tproject_id, $platform_id=0, $filterType='Or'
                       FROM {$this->tables['platforms']} K
                       JOIN {$this->tables['testcase_platforms']} TPL
                       ON platform_id = PL.id
-                      
+
                       JOIN {$this->views['latest_tcase_version_id']} LTCV
                       ON LTCV.tcversion_id = TPL.tcversion_id
-                      
+
                       WHERE testproject_id = {$tproject_id}
                       {$platFilter}
                       GROUP BY TPL.tcversion_id ";
@@ -2336,12 +2341,12 @@ function XXXgetPlatformsLatestTCV($tproject_id, $platform_id=0, $filterType='Or'
                           ( $sqlCount ) AS FOXDOG " .
                         " WHERE FOXDOG.HITS=" . count($platform_id) . ")";
         $platFilter ='';
-      }    
+      }
     }
-    else if( $platform_id > 0 ) {
+    elseif( $platform_id > 0 ) {
       $platFilter = " AND platform_id = {$platform_id} ";
     }
-    
+
     $items = null;
     $sql = " SELECT TPL.testcase_id,TPL.keyword_id,PL.name
              FROM {$this->tables['platforms']} K
@@ -2376,15 +2381,15 @@ function XXXgetPlatformsLatestTCV($tproject_id, $platform_id=0, $filterType='Or'
 
                      [$exclude_tplans]: null -> do not apply exclusion
                                         id -> test plan id to exclude
-         
+
          [options]:
-         
+
   returns:
 
 */
-function get_all_testplans($id,$filters=null,$options=null) {
+public function get_all_testplans($id,$filters=null,$options=null) {
 
-  $my['options'] = array('fields2get' => 
+  $my['options'] = array('fields2get' =>
                            'NH.id,NH.name,notes,active,
                             is_public,testproject_id,api_key',
                          'outputType' => null);
@@ -2395,33 +2400,33 @@ function get_all_testplans($id,$filters=null,$options=null) {
     $forHMLSelect = true;
     $my['options']['fields2get'] = 'NH.id,NH.name';
   }
-  
+
   $sql = " SELECT {$my['options']['fields2get']} " .
          " FROM {$this->tables['nodes_hierarchy']} NH,{$this->tables['testplans']} TPLAN";
-         
-  $where = " WHERE NH.id=TPLAN.id AND (testproject_id = " . 
+
+  $where = " WHERE NH.id=TPLAN.id AND (testproject_id = " .
              $this->db->prepare_int($id) . " ";
   if( !is_null($filters) ) {
     $key2check=array('get_tp_without_tproject_id' => 0, 'plan_status' => null,'tplan2exclude' => null);
-    
+
     foreach($key2check as $varname => $defValue) {
-      $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
-    }                
-        
+      $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;
+    }
+
     $where .= " ) ";
-    
+
     if(!is_null($plan_status)) {
       $my_active = to_boolean($plan_status);
       $where .= " AND active = " . $my_active;
     }
-    
+
     if(!is_null($tplan2exclude)) {
       $where .= " AND TPLAN.id != {$tplan2exclude} ";
     }
   } else {
-    $where .= ")";  
-  }  
-  
+    $where .= ")";
+  }
+
   $sql .= $where . " ORDER BY name";
   if( $forHMLSelect ) {
     $map = $this->db->fetchColumnsIntoMap($sql,'id','name');
@@ -2446,7 +2451,7 @@ function get_all_testplans($id,$filters=null,$options=null) {
 
 
 */
-function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
+public function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
 {
   $sql = " SELECT NH.id, NH.name, testproject_id " .
          " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['testplans']} testplans " .
@@ -2485,7 +2490,7 @@ function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
           fixed bug when there are no children
 
 */
-function get_first_level_test_suites($tproject_id,$mode='simple',$opt=null)
+public function get_first_level_test_suites($tproject_id,$mode='simple',$opt=null)
 {
   $fl=$this->tree_manager->get_children($tproject_id,
                                         array( 'testcase', 'exclude_me',
@@ -2497,7 +2502,7 @@ function get_first_level_test_suites($tproject_id,$mode='simple',$opt=null)
     break;
 
     case 'smarty_html_options':
-    if( !is_null($fl) && count($fl) > 0)
+    if( !empty($fl) )
     {
       foreach($fl as $idx => $map)
       {
@@ -2518,27 +2523,27 @@ function get_first_level_test_suites($tproject_id,$mode='simple',$opt=null)
  *
  * for target test project id ($id) get test case id of
  * every test case that has been assigned at least to one of all test plans
- * belonging to test project. 
+ * belonging to test project.
  *
  * @param int $id test project id
  *
  */
-function getTCasesLinkedToAnyTPlan($id)
+private function getTCasesLinkedToAnyTPlan($id)
 {
   $tplanNodeType = $this->tree_manager->node_descr_id['testplan'];
-  
+
   // len of lines must be <= 100/110 as stated on development standard guide.
     $sql = " SELECT DISTINCT NHTCV.parent_id AS testcase_id " .
            " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
            " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
            " ON NHTCV.id = TPTCV.tcversion_id ";
-    
+
     // get testplan id for target test�project, to get test case versions linked to testplan.
     $sql .= " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN " .
             " ON TPTCV.testplan_id = NHTPLAN.id  " .
             " WHERE NHTPLAN.node_type_id = {$tplanNodeType} AND NHTPLAN.parent_id = " . intval($id);
     $rs = $this->db->fetchRowsIntoMap($sql,'testcase_id');
-    
+
     return $rs;
 }
 
@@ -2550,13 +2555,13 @@ function getTCasesLinkedToAnyTPlan($id)
  * @param int $id test project id
  * @param $options for future uses.
  */
-function getFreeTestCases($id,$options=null)
+public function getFreeTestCases($id,$options=null)
 {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = $this->debugMsg . __FUNCTION__;
     $retval['items']=null;
     $retval['allfree']=false;
-    
-    $all=array(); 
+
+    $all=array();
     $this->get_all_testcases_id($id,$all);
     $linked=array();
     $free=null;
@@ -2564,10 +2569,10 @@ function getFreeTestCases($id,$options=null)
     {
         $all=array_flip($all);
         $linked=$this->getTCasesLinkedToAnyTPlan($id);
-        $retval['allfree']=is_null($linked); 
+        $retval['allfree']=is_null($linked);
         $free=$retval['allfree'] ? $all : array_diff_key($all,$linked);
     }
-    
+
     if( !is_null($free) && count($free) > 0)
     {
         $in_clause=implode(',',array_keys($free));
@@ -2580,12 +2585,12 @@ function getFreeTestCases($id,$options=null)
              " JOIN {$this->tables['nodes_hierarchy']} NHTC " .
                 " ON NHTC.id = NHTCV.parent_id " .
              " WHERE NHTCV.parent_id IN ({$in_clause}) " .
-             " GROUP BY NHTC.name,NHTCV.parent_id,TCV.tc_external_id,TCV.importance " . 
+             " GROUP BY NHTC.name,NHTCV.parent_id,TCV.tc_external_id,TCV.importance " .
              " ORDER BY NHTCV.parent_id";
-      $retval['items']=$this->db->fetchRowsIntoMap($sql,'id');       
+      $retval['items']=$this->db->fetchRowsIntoMap($sql,'id');
     }
 
-    
+
     return $retval;
 }
 
@@ -2634,7 +2639,7 @@ function getFreeTestCases($id,$options=null)
 
 
 */
-function get_linked_custom_fields($id,$node_type=null,$access_key='id')
+public function get_linked_custom_fields($id,$node_type=null,$access_key='id')
 {
   $additional_table="";
   $additional_join="";
@@ -2647,7 +2652,7 @@ function get_linked_custom_fields($id,$node_type=null,$access_key='id')
     $additional_table=",{$this->tables['cfield_node_types']} CFNT ";
     $additional_join=" AND CFNT.field_id=CF.id AND CFNT.node_type_id={$node_type_id} ";
   }
-  
+
   $sql="SELECT CF.*,CFTP.display_order " .
        " FROM {$this->tables['custom_fields']} CF, {$this->tables['cfield_testprojects']} CFTP " .
        $additional_table .
@@ -2681,7 +2686,7 @@ args: id: source testproject id
                       priorities,
                       platforms
                       execution assignment.
-                          
+
                     != null, a map with keys that controls what child elements to copy
 
 
@@ -2689,8 +2694,8 @@ returns: N/A
 
 
 */
-function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+public function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
+    $debugMsg = $this->debugMsg . __FUNCTION__;
 
   $my['options'] = array('copy_requirements' => 1,
                      'copy_user_roles' => 1,'copy_platforms' => 1);
@@ -2698,7 +2703,7 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
 
   // get source test project general info
   $rs_source = $this->get_by_id($id);
-  
+
   if(!is_null($new_name)) {
     $sql="/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
          "SET name='" . $this->db->prepare_string(trim($new_name)) . "' " .
@@ -2708,25 +2713,25 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
 
   // Copy elements that can be used by other elements
   // Custom Field assignments
-  $this->copy_cfields_assignments($id,$new_id);  
+  $this->copy_cfields_assignments($id,$new_id);
 
   // Keywords
   $oldNewMappings['keywords'] = $this->copy_keywords($id,$new_id);
 
   // Platforms
   $oldNewMappings['platforms'] = $this->copy_platforms($id,$new_id);
-  
+
   // Requirements
   if( $my['options']['copy_requirements'] ) {
-    list($oldNewMappings['requirements'],$onReqSet) = 
+    list($oldNewMappings['requirements'],$onReqSet) =
       $this->copy_requirements($id,$new_id,$user_id);
-  
+
     // need to copy relations between requirements
     $rel = null;
     foreach ($oldNewMappings['requirements'] as $erek) {
       foreach ($erek['req'] as $okey => $nkey) {
         $sql = "/* $debugMsg */ SELECT id, source_id, destination_id," .
-               " relation_type, author_id, creation_ts " . 
+               " relation_type, author_id, creation_ts " .
                " FROM {$this->tables['req_relations']} " .
                " WHERE source_id=$okey OR destination_id=$okey ";
         $rel[$okey] = $this->db->get_recordset($sql);
@@ -2740,11 +2745,11 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
           foreach ($ir as $rval) {
             if( isset($done[$rval['id']]) ) {
               continue;
-            }  
-            
-            $done[$rval['id']] = $rval['id']; 
-            $sql = "/* $debugMsg */ 
-                     INSERT INTO {$this->tables['req_relations']} "  . 
+            }
+
+            $done[$rval['id']] = $rval['id'];
+            $sql = "/* $debugMsg */
+                     INSERT INTO {$this->tables['req_relations']} "  .
                    " (source_id, destination_id, relation_type, author_id, creation_ts) " .
                    " values (" .
                    $onReqSet[$rval['source_id']] . "," .
@@ -2753,8 +2758,8 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
                    "$totti)";
             $this->db->exec_query($sql);
           }
-        }  
-      }  
+        }
+      }
     }
   }
 
@@ -2763,7 +2768,7 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
   $filters['exclude_node_types'] = array('testplan' => 'exclude_me','requirement_spec' => 'exclude_me');
   $filters['exclude_children_of'] = array('testcase' => 'exclude_me', 'requirement' => 'exclude_me',
                                           'testcase_step' => 'exclude_me');
-                   
+
   $elements = $this->tree_manager->get_children($id,$filters['exclude_node_types']);
 
   // Copy Test Specification
@@ -2772,50 +2777,50 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
   $copyTSuiteOpt['preserve_external_id'] = true;
   $copyTSuiteOpt['copyKeywords'] = 1;
 
-  // Attention: 
+  // Attention:
   // copyRequirements really means copy requirement to testcase assignments
-  $copyTSuiteOpt['copyRequirements'] = $my['options']['copy_requirements'];    
-  
+  $copyTSuiteOpt['copyRequirements'] = $my['options']['copy_requirements'];
+
   $oldNewMappings['test_spec'] = array();
   foreach($elements as $piece) {
-    $op = $item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt,$oldNewMappings);        
+    $op = $item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt,$oldNewMappings);
     $oldNewMappings['test_spec'] += $op['mappings'];
   }
 
   // Copy Test Plans and all related information
   $this->copy_testplans($id,$new_id,$user_id,$oldNewMappings);
-    
+
   $this->copy_user_roles($id,$new_id);
 
-  // need to understand if we need to change this and 
+  // need to understand if we need to change this and
   // PRESERVE External Test case ID
   //
-  // When copying a project, external TC ID is not preserved  
+  // When copying a project, external TC ID is not preserved
   // need to update external test case id numerator
   $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
-         " SET tc_counter = {$rs_source['tc_counter']} " . 
+         " SET tc_counter = {$rs_source['tc_counter']} " .
          " WHERE id = {$new_id}";
-  $recordset = $this->db->exec_query($sql);
+  $this->db->exec_query($sql);
 
 
-} // end function copy_as
+}
 
 
 /**
  * function to get an array with all requirement IDs in testproject
- * 
- * @param string $IDList commaseparated list of Container-IDs - can be testproject ID or reqspec IDs 
+ *
+ * @param string $IDList commaseparated list of Container-IDs - can be testproject ID or reqspec IDs
  * @return array $reqIDs result IDs
- * 
+ *
  * @internal revisions:
  * 20100310 - asimon - removed recursion logic
  */
 public function get_all_requirement_ids($IDList) {
-  
+
   $coupleTypes = array();
   $coupleTypes['target'] = $this->tree_manager->node_descr_id['requirement'];
   $coupleTypes['container'] = $this->tree_manager->node_descr_id['requirement_spec'];
-  
+
   $reqIDs = array();
   $this->tree_manager->getAllItemsID($IDList,$reqIDs,$coupleTypes);
 
@@ -2825,7 +2830,7 @@ public function get_all_requirement_ids($IDList) {
 
 /**
  * uses get_all_requirements_ids() to count all requirements in testproject
- * 
+ *
  * @param integer $tp_id ID of testproject
  * @return integer count of requirements in given testproject
  */
@@ -2835,14 +2840,14 @@ public function count_all_requirements($tp_id) {
 
 /**
  * Copy user roles to a new Test Project
- * 
+ *
  * @param int $source_id original Test Project identificator
  * @param int $target_id new Test Project identificator
  */
 private function copy_user_roles($source_id, $target_id)
 {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-  
+    $debugMsg = $this->debugMsg . __FUNCTION__;
+
   $sql = "/* $debugMsg */ SELECT * FROM {$this->tables['user_testproject_roles']} " .
          "WHERE testproject_id={$source_id} ";
   $rs=$this->db->get_recordset($sql);
@@ -2862,16 +2867,15 @@ private function copy_user_roles($source_id, $target_id)
 
 /**
  * Copy platforms
- * 
+ *
  * @param int $source_id original Test Project identificator
  * @param int $target_id new Test Project identificator
  */
 private function copy_platforms($source_id, $target_id)
 {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $platform_mgr = new tlPlatform($this->db,$source_id);
   $old_new = null;
-  
+
   $platformSet = $platform_mgr->getAll();
 
   if( !is_null($platformSet) )
@@ -2895,17 +2899,17 @@ private function copy_platforms($source_id, $target_id)
 
 /**
  * Copy platforms
- * 
+ *
  * @param int $source_id original Test Project identificator
  * @param int $target_id new Test Project identificator
  */
 private function copy_keywords($source_id, $target_id)
 {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = $this->debugMsg . __FUNCTION__;
   $old_new = null;
   $sql = "/* $debugMsg */ SELECT * FROM {$this->tables['keywords']} " .
        " WHERE testproject_id = {$source_id}";
-       
+
   $itemSet = $this->db->fetchRowsIntoMap($sql,'id');
   if( !is_null($itemSet) ) {
     foreach($itemSet as $item) {
@@ -2921,16 +2925,16 @@ private function copy_keywords($source_id, $target_id)
 
 
 /**
- * 
+ *
  *
  */
 private function copy_cfields_assignments($source_id, $target_id)
 {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = "/* $debugMsg */ " . 
+    $debugMsg = $this->debugMsg . __FUNCTION__;
+    $sql = "/* $debugMsg */ " .
            " SELECT field_id FROM {$this->tables['cfield_testprojects']} " .
            " WHERE testproject_id = {$source_id}";
-    $row_set = $this->db->fetchRowsIntoMap($sql,'field_id');   
+    $row_set = $this->db->fetchRowsIntoMap($sql,'field_id');
   if( !is_null($row_set) )
   {
     $cfield_set = array_keys($row_set);
@@ -2940,13 +2944,13 @@ private function copy_cfields_assignments($source_id, $target_id)
 
 
 /**
- * 
+ *
  *
  */
 private function copy_testplans($source_id,$target_id,$user_id,$mappings)
 {
   static $tplanMgr;
-  
+
   $tplanSet = $this->get_all_testplans($source_id);
   if( !is_null($tplanSet) )
   {
@@ -2955,7 +2959,7 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
     {
       $tplanMgr = new testplan($this->db);
     }
-    
+
     foreach($keySet as $itemID)
     {
       $new_id = $tplanMgr->create($tplanSet[$itemID]['name'],$tplanSet[$itemID]['notes'],
@@ -2965,15 +2969,15 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
       {
         // TICKET 5190: Copy Test projects - tester assignments to testplan+build are not copied
         $tplanMgr->copy_as($itemID,$new_id,null,$target_id,$user_id,array('copy_assigned_to' => 1),$mappings);
-      }                       
+      }
     }
-    
+
   }
 }
 
 
 /**
- * 
+ *
  *
  */
 private function copy_requirements($source_id,$target_id,$user_id) {
@@ -2982,31 +2986,30 @@ private function copy_requirements($source_id,$target_id,$user_id) {
 
   // need to get subtree and create a new one
   $filters = array();
-  $filters['exclude_node_types'] = 
+  $filters['exclude_node_types'] =
     array('testplan' => 'exclude','testcase' => 'exclude',
           'testsuite' => 'exclude','requirement' => 'exclude');
-                   
+
   $elements = $this->tree_manager->get_children($source_id,
     $filters['exclude_node_types']);
 
   if( !is_null($elements) ) {
     $mappings = array();
     $reqSpecMgr = new requirement_spec_mgr($this->db);
-    
+
     // Development Note - 20110817
     // why we choose to do not copy testcase_assignments ?
-    // Because due to order used to copy different items, 
-    // when we ask to copy requirements WE DO NOT HAVE 
+    // Because due to order used to copy different items,
+    // when we ask to copy requirements WE DO NOT HAVE
     // TEST CASES on new test project.
     //
-    $options = array('copy_also' => 
-                 array('testcase_assignments' => false), 
+    $options = array('copy_also' =>
+                 array('testcase_assignments' => false),
                        'caller' => 'copy_testproject');
-    
-    $rel = null;
+
     foreach($elements as $piece) {
       $op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
-      
+
       $mappings[] = $op['mappings'];
       $or += $op['mappings']['req'];
     }
@@ -3024,7 +3027,7 @@ private function copy_requirements($source_id,$target_id,$user_id) {
 
 /**
  * getTestSpec
- * 
+ *
  * get structure with Test suites and Test Cases
  * Filters that act on test cases work on attributes that are common to all
  * test cases versions: test case name
@@ -3041,34 +3044,34 @@ private function copy_requirements($source_id,$target_id,$user_id) {
  *        testcase_name filter in LIKE %string%, if will be case sensitive or not
  *        will depend of DBMS.
  *
- * 
+ *
  */
-function getTestSpec($id,$filters=null,$options=null) {
+private function getTestSpec($id,$filters=null,$options=null) {
 
   $items = array();
 
-  $my['options'] = array('recursive' => false, 
-                         'exclude_testcases' => false, 
+  $my['options'] = array('recursive' => false,
+                         'exclude_testcases' => false,
                          'remove_empty_branches' => false);
-                 
+
   $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
                          'exclude_children_of' => $this->nt2exclude_children,
                          'exclude_branches' => null,
-                         'testcase_name' => null, 'importance' => null, 
+                         'testcase_name' => null, 'importance' => null,
                          'testcase_id' => null, 'execution_type' => null,
                          'status' => null, 'keywords' => null,
                          'additionalWhereClause' => null,
-                         'platforms' => null);      
- 
+                         'platforms' => null);
+
 
   $my['filters'] = array_merge($my['filters'], (array)$filters);
   $my['options'] = array_merge($my['options'], (array)$options);
 
- 
+
   if( $my['options']['exclude_testcases'] ) {
     $my['filters']['exclude_node_types']['testcase']='exclude me';
   }
-  
+
   // transform some of our options/filters on something the 'worker' will understand
   // when user has request filter by test case name, we do not want to display empty branches
   // If we have choose any type of filter, we need to force remove empty test suites
@@ -3079,21 +3082,21 @@ function getTestSpec($id,$filters=null,$options=null) {
   {
     $my['options']['remove_empty_nodes_of_type'] = 'testsuite';
   }
-  
+
   $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
 
-  $qnum = $this->$method2call($id,$items,$my['filters'],$my['options']);
+  $this->$method2call($id,$items,$my['filters'],$my['options']);
   return $items;
 }
 
 
 /**
- * 
+ *
  * @return
  *
  * @internal revisions
  */
-function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
+private function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
   static $qnum;
   static $my;
   static $exclude_branches;
@@ -3101,32 +3104,30 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
   static $node_types;
   static $tcaseFilter;
   static $tcversionFilter;
-  static $childFilterOn;
   static $staticSql;
   static $inClause;
-  static $kwJoin;
 
   if (!$my) {
     $qnum=0;
     $node_types = array_flip($this->tree_manager->get_available_node_types());
-        
+
     $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
                            'additionalWhereClause' => '', 'testcase_name' => null,
-                           'testcase_id' => null,'active_testcase' => false, 
+                           'testcase_id' => null,'active_testcase' => false,
                            'importance' => null, 'status' => null);
-                           
+
     $my['options'] = array('remove_empty_nodes_of_type' => null);
 
     $my['filters'] = array_merge($my['filters'], (array)$filters);
     $my['options'] = array_merge($my['options'], (array)$options);
 
     $exclude_branches = $my['filters']['exclude_branches'];
-    $exclude_children_of = $my['filters']['exclude_children_of'];  
+    $exclude_children_of = $my['filters']['exclude_children_of'];
 
 
     $tcaseFilter['name'] = !is_null($my['filters']['testcase_name']);
     $tcaseFilter['id'] = !is_null($my['filters']['testcase_id']);
-    
+
     $tcaseFilter['is_active'] = !is_null($my['filters']['active_testcase']) && $my['filters']['active_testcase'];
     $tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'] || $tcaseFilter['is_active'];
 
@@ -3139,15 +3140,13 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
     $tcversionFilter['enabled'] = false;
     foreach($actOnVersion as $target) {
       $tcversionFilter['enabled'] = $tcversionFilter['enabled'] ||  $tcversionFilter[$target];
-    }  
+    }
 
-   
-    $childFilterOn = $tcaseFilter['enabled'] || $tcversionFilter['enabled'];
 
     if( !is_null($my['options']['remove_empty_nodes_of_type']) ) {
-      // this way I can manage code or description      
+      // this way I can manage code or description
       if( !is_numeric($my['options']['remove_empty_nodes_of_type']) ) {
-        $my['options']['remove_empty_nodes_of_type'] = 
+        $my['options']['remove_empty_nodes_of_type'] =
                 $this->tree_manager->node_descr_id[$my['options']['remove_empty_nodes_of_type']];
       }
     }
@@ -3156,13 +3155,13 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
     $tfields = "NH.id, NH.parent_id, NH.name, NH.node_type_id, NH.node_order, '' AS external_id ";
     $staticSql = " SELECT DISTINCT {$tfields} " .
                  " FROM {$this->tables['nodes_hierarchy']} NH ";
-    
+
     // Generate IN Clauses
     $inClause = array('status' => ' ', 'importance' => ' ');
 
     foreach($inClause as $tgf => $dummy) {
       if( $tcversionFilter[$tgf] ) {
-        $inClause[$tgf] = 
+        $inClause[$tgf] =
           " TCV.$tgf IN (" . implode(',',$my['filters'][$tgf]) . ')';
       }
     }
@@ -3172,7 +3171,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
           " AND (" .
           "      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
           "      OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} ";
-  
+
   if( $tcaseFilter['enabled'] ) {
     foreach($tcaseFilter as $key => $apply) {
       if( $apply ) {
@@ -3181,7 +3180,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
              $safe4DB = $this->db->prepare_string($my['filters']['testcase_name']);
              $sql .= " AND NH.name LIKE '%{$safe4DB}%' ";
           break;
-          
+
           case 'id':
             $safe4DB = intval($my['filters']['testcase_id']);
             $sql .= " AND NH.id = {$safe4DB} ";
@@ -3192,8 +3191,8 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
   }
   $sql .= " )) ";
   $sql .= " ORDER BY NH.node_order,NH.id";
-  
-  // Approach Change - get all 
+
+  // Approach Change - get all
   $rs = (array)$this->db->fetchRowsIntoMap($sql,'id');
   if( count($rs) == 0 ) {
     return $qnum;
@@ -3206,41 +3205,41 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
     if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] ) {
       $tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
     }
-  }    
+  }
   if( !is_null($tclist) ) {
     $filterOnTC = false;
 
     // 2018, where is the active check?
 
     // Can be replace with a view?
-    $glvn = " /* Get LATEST ACTIVE tcversion NUMBER */ " .  
+    $glvn = " /* Get LATEST ACTIVE tcversion NUMBER */ " .
             " SELECT MAX(TCVX.version) AS version, NHTCX.parent_id AS tc_id " .
-            " FROM {$this->tables['tcversions']} TCVX " . 
+            " FROM {$this->tables['tcversions']} TCVX " .
             " JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
             " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
             " WHERE NHTCX.parent_id IN (" . implode(',',$tclist) . ")" .
             " GROUP BY NHTCX.parent_id";
-  
+
     // 2018, again where is the active check?
-    $ssx = " /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .  
+    $ssx = " /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
            " SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
            " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
            " JOIN ( $glvn ) SQ " .
            " ON NHTCV.parent_id = SQ.tc_id " .
-           " JOIN {$this->tables['tcversions']} TCV " . 
+           " JOIN {$this->tables['tcversions']} TCV " .
            " ON NHTCV.id = TCV.id ";
-           
-    // 2018       
+
+    // 2018
     $where = " WHERE SQ.version = TCV.version ";
 
     // We can add here keyword filtering if exist ?
     if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] ) {
       $addAnd = false;
-      if ($tcversionFilter['importance'] || $tcversionFilter['execution_type'] || 
+      if ($tcversionFilter['importance'] || $tcversionFilter['execution_type'] ||
           $tcversionFilter['status'] ) {
         $where .= " AND ";
       }
-           
+
       if( $tcversionFilter['importance'] ) {
         $where .= $inClause['importance'];
         $filterOnTC = true;
@@ -3250,35 +3249,24 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
       if( $addAnd && $tcversionFilter['execution_type']) {
         $where .= " AND ";
       }
-            
+
       if( $tcversionFilter['execution_type'] ) {
         $where .= " TCV.execution_type = " . $my['filters']['execution_type'];
         $filterOnTC = true;
         $addAnd = true;
-      }  
+      }
 
       if( $addAnd && $tcversionFilter['status']) {
         $where .= " AND ";
       }
-            
+
       if( $tcversionFilter['status'] ) {
         $where .= $inClause['status'];
         $filterOnTC = true;
         $addAnd = true;
-      }  
-
-      /*
-      if( $addAnd && $tcversionFilter['keywords']) {
-        $where .= " AND ";
       }
+    }
 
-      if( $tcversionFilter['keywords'] ) {
-        $kwJoin = '';
-      }  
-      */
-    }    
-
-    // $ssx .= $kwJoin . $where;
     $ssx .= $where;
 
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
@@ -3286,23 +3274,23 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
       $ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
       if( count($ky) > 0 ) {
         foreach($ky as $tcase) {
-          unset($rs[$tcase]);            
+          unset($rs[$tcase]);
         }
       }
     }
-    
+
   }
-  
+
   foreach($rs as $row) {
-  if(!isset($exclude_branches[$row['id']])) {  
+  if(!isset($exclude_branches[$row['id']])) {
       $node = $row + array('node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
       $node['childNodes'] = null;
 
       if($node['node_table'] == 'testcases') {
-        $node['leaf'] = true; 
+        $node['leaf'] = true;
         $node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : null;
-      }      
-      
+      }
+
       // why we use exclude_children_of ?
       // 1. Sometimes we don't want the children if the parent is a testcase,
       //    due to the version management
@@ -3312,23 +3300,23 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
         $this->_get_subtree_rec($row['id'],$node,$my['filters'],$my['options']);
       }
 
-         
+
       // Have added this logic, because when export test plan will be developed
       // having a test spec tree where test suites that do not contribute to test plan
       // are pruned/removed is very important, to avoid additional processing
-      //            
+      //
       // If node has no childNodes, we check if this kind of node without children
       // can be removed.
       //
-      $doRemove = is_null($node['childNodes']) && 
+      $doRemove = is_null($node['childNodes']) &&
                   ($node['node_type_id'] == $my['options']['remove_empty_nodes_of_type']);
       if(!$doRemove) {
         $pnode['childNodes'][] = $node;
-      } 
+      }
 
     } // if(!isset($exclude_branches[$rowID]))
   } //while
-  
+
   return $qnum;
 }
 
@@ -3336,9 +3324,9 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
 /**
  *
  * -1 => WITHOUT KEYWORDS
- * 
+ *
  */
-function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyword_filter_type='Or') {
+protected function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyword_filter_type='Or') {
   $keySet = (array)$keyword_id;
   $sql = null;
   $tcaseSet = array();
@@ -3346,49 +3334,49 @@ function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyw
   $hasTCases = false;
 
   // -1 => WITHOUT KEYWORDS
-  $getWithOutKeywords = in_array(-1,$keySet); 
-  if( $getWithOutKeywords || $keyword_filter_type == 'NotLinked') {  
+  $getWithOutKeywords = in_array(-1,$keySet);
+  if( $getWithOutKeywords || $keyword_filter_type == 'NotLinked') {
 
     $this->get_all_testcases_id($tproject_id,$tcaseSet);
     if( $hasTCases = count($tcaseSet) > 0 ) {
       $delTT = true;
       $tt = 'temp_tcset_' . $tproject_id . md5(microtime());
-      $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS 
-              ( SELECT id FROM {$this->tables['nodes_hierarchy']} 
+      $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS
+              ( SELECT id FROM {$this->tables['nodes_hierarchy']}
                 LIMIT 0 )";
       $this->db->exec_query($sql);
       $a4ins = array_chunk($tcaseSet, 2000); // MAGIC
       foreach($a4ins as $chu) {
         $sql = "INSERT INTO $tt (id) VALUES (" .
-               implode('),(',$chu) . ")"; 
+               implode('),(',$chu) . ")";
         $this->db->exec_query($sql);
       }
     }
   }
 
-  if( $getWithOutKeywords && $hasTCases) {  
-    $sql = " /* WITHOUT KEYWORDS */  
+  if( $getWithOutKeywords && $hasTCases) {
+    $sql = " /* WITHOUT KEYWORDS */
              SELECT TCVNO_KW.testcase_id FROM
-             {$this->views['tcversions_without_keywords']} TCVNO_KW   
+             {$this->views['tcversions_without_keywords']} TCVNO_KW
              JOIN {$this->views['latest_tcase_version_id']} LTVC
              ON LTVC.tcversion_id = TCVNO_KW.id
              JOIN $tt TT ON TT.id = TCVNO_KW.testcase_id ";
-  } else {  
+  } else {
     $kwFilter = " keyword_id IN (" . implode(',',$keySet) . ")";
     switch($keyword_filter_type) {
       case 'NotLinked':
         if($hasTCases) {
-          $sql = " /* WITHOUT SPECIFIC KEYWORDS */  
-                   SELECT NHTCV.parent_id AS testcase_id  
-                   FROM {$this->tables['nodes_hierarchy']} NHTCV   
-                   JOIN {$this->views['latest_tcase_version_id']} LTCV 
-                   ON NHTCV.id = LTCV.tcversion_id 
-                   JOIN $tt TT ON TT.id = NHTCV.parent_id 
+          $sql = " /* WITHOUT SPECIFIC KEYWORDS */
+                   SELECT NHTCV.parent_id AS testcase_id
+                   FROM {$this->tables['nodes_hierarchy']} NHTCV
+                   JOIN {$this->views['latest_tcase_version_id']} LTCV
+                   ON NHTCV.id = LTCV.tcversion_id
+                   JOIN $tt TT ON TT.id = NHTCV.parent_id
                    WHERE NOT EXISTS
-                   (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK  
-                   WHERE TCK.tcversion_id = LTCV.tcversion_id 
+                   (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK
+                   WHERE TCK.tcversion_id = LTCV.tcversion_id
                    AND {$kwFilter} )";
-        } 
+        }
       break;
 
 
@@ -3409,8 +3397,8 @@ function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyw
                       GROUP BY TK.tcversion_id ";
 
         $sql = "/* Filter Type = AND */
-                SELECT FOXDOG.testcase_id 
-                FROM ( $sqlCount ) AS FOXDOG 
+                SELECT FOXDOG.testcase_id
+                FROM ( $sqlCount ) AS FOXDOG
                 WHERE FOXDOG.HITS=" . count($keyword_id);
       break;
 
@@ -3451,13 +3439,13 @@ function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyw
  * @since 1.9.4
  *
  */
-function isIssueTrackerEnabled($id)
+public function isIssueTrackerEnabled($id)
 {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = $this->debugMsg . __FUNCTION__;
   $sql = "/* $debugMsg */ " .
          "SELECT issue_tracker_enabled FROM {$this->object_table} " .
-         "WHERE id =" . intval($id);   
-       
+         "WHERE id =" . intval($id);
+
   $ret = $this->db->get_recordset($sql);
   return $ret[0]['issue_tracker_enabled'];
 }
@@ -3471,7 +3459,7 @@ function isIssueTrackerEnabled($id)
  * @since 1.9.4
  *
  */
-function enableIssueTracker($id)
+public function enableIssueTracker($id)
 {
   $this->setIssueTrackerEnabled($id,1);
 }
@@ -3483,7 +3471,7 @@ function enableIssueTracker($id)
  * @since 1.9.4
  *
  */
-function disableIssueTracker($id)
+public function disableIssueTracker($id)
 {
   $this->setIssueTrackerEnabled($id,0);
 }
@@ -3496,15 +3484,15 @@ function disableIssueTracker($id)
  * @since 1.9.4
  *
  */
-function setIssueTrackerEnabled($id,$value)
+public function setIssueTrackerEnabled($id,$value)
 {
 
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = $this->debugMsg . __FUNCTION__;
   $sql = "/* $debugMsg */ " .
        " UPDATE {$this->object_table} " .
        " SET issue_tracker_enabled = " . (intval($value) > 0 ? 1 : 0) .
-       " WHERE id =" . intval($id);   
-  $ret = $this->db->exec_query($sql);
+       " WHERE id =" . intval($id);
+  $this->db->exec_query($sql);
 }
 
 
@@ -3512,12 +3500,12 @@ function setIssueTrackerEnabled($id,$value)
  *
  *
  */
-function isCodeTrackerEnabled($id) {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+public function isCodeTrackerEnabled($id) {
+    $debugMsg = $this->debugMsg . __FUNCTION__;
   $sql = "/* $debugMsg */ " .
          "SELECT code_tracker_enabled FROM {$this->object_table} " .
-         "WHERE id =" . intval($id);   
-       
+         "WHERE id =" . intval($id);
+
   $ret = $this->db->get_recordset($sql);
   return $ret[0]['code_tracker_enabled'];
 }
@@ -3531,7 +3519,7 @@ function isCodeTrackerEnabled($id) {
  * @since 1.9.17
  *
  */
-function enableCodeTracker($id)
+public function enableCodeTracker($id)
 {
   $this->setCodeTrackerEnabled($id,1);
 }
@@ -3543,7 +3531,7 @@ function enableCodeTracker($id)
  * @since 1.9.17
  *
  */
-function disableCodeTracker($id)
+public function disableCodeTracker($id)
 {
   $this->setCodeTrackerEnabled($id,0);
 }
@@ -3556,22 +3544,22 @@ function disableCodeTracker($id)
  * @since 1.9.17
  *
  */
-function setCodeTrackerEnabled($id,$value)
+public function setCodeTrackerEnabled($id,$value)
 {
 
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = $this->debugMsg . __FUNCTION__;
   $sql = "/* $debugMsg */ " .
        " UPDATE {$this->object_table} " .
        " SET code_tracker_enabled = " . (intval($value) > 0 ? 1 : 0) .
-       " WHERE id =" . intval($id);   
-  $ret = $this->db->exec_query($sql);
+       " WHERE id =" . intval($id);
+  $this->db->exec_query($sql);
 }
 
 /**
  *
  */
-function getItemCount() {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+public function getItemCount() {
+    $debugMsg = $this->debugMsg . __FUNCTION__;
   $sql = "/* $debugMsg */ " .
          " SELECT COUNT(0) AS qty FROM {$this->object_table} ";
   $ret = $this->db->get_recordset($sql);
@@ -3581,18 +3569,18 @@ function getItemCount() {
 /**
  *
  */
-function getPublicAttr($id)
+public function getPublicAttr($id)
 {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = $this->debugMsg . __FUNCTION__;
   $sql = "/* $debugMsg */ " .
          " SELECT is_public FROM {$this->object_table} " .
-         " WHERE id =" . intval($id); 
-  
+         " WHERE id =" . intval($id);
+
   $ret = $this->db->get_recordset($sql);
   if(is_null($ret))
   {
     throw new Exception("Test Project ID does not exist!", 1);
-  } 
+  }
   return $ret[0]['is_public'];
 }
 
@@ -3600,60 +3588,60 @@ function getPublicAttr($id)
 
 
   /**
-   * Gets test cases created per user. 
-   * The test cases are restricted to a test project. 
-   * 
+   * Gets test cases created per user.
+   * The test cases are restricted to a test project.
+   *
    * Optional values may be passed in the options array.
-   * 
+   *
    * @param integer $user_id User ID
    * @param integer $tproject_id Test Project ID
    * @param mixed $options Optional array of options
    * @return mixed Array of test cases created per user
    */
-  function getTestCasesCreatedByUser($id,$user_id,$options=null)
+  public function getTestCasesCreatedByUser($id,$user_id,$options=null)
   {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      
+      $debugMsg = $this->debugMsg . __FUNCTION__;
+
     $opt = array('startTime' => null, 'endTime' => null);
     $opt = array_merge($opt,(array)$options);
     $safe = array('user_id' => intval($user_id), 'tproject_id' => intval($id));
-    
+
     $cfg = config_get('testcase_cfg');
     $eid = $this->db->db->concat('TPROJ.prefix',"'{$cfg->glue_character}'",'TCV.tc_external_id');
-    
-    // 
+
+    //
     $target = array();
     $this->get_all_testcases_id($id,$target);
     $itemQty = count($target);
-   
+
     $rs = null;
     if($itemQty > 0)
     {
       $sql = " /* $debugMsg */ SELECT TPROJ.id AS tproject_id, TCV.id AS tcversion_id," .
-             " TCV.version, {$eid} AS external_id, NHTC.id  AS tcase_id, NHTC.name AS tcase_name, ". 
-             " TCV.creation_ts, TCV.modification_ts, " . 
+             " TCV.version, {$eid} AS external_id, NHTC.id  AS tcase_id, NHTC.name AS tcase_name, ".
+             " TCV.creation_ts, TCV.modification_ts, " .
              " U.first  AS first_name, U.last AS last_name, U.login, ".
              " TCV.importance " .
              " FROM {$this->tables['testprojects']} TPROJ,{$this->tables['nodes_hierarchy']} NHTC " .
              " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
-             " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " . 
+             " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
              " JOIN {$this->tables['users']} U ON U.id = TCV.author_id " .
              " WHERE TPROJ.id = {$safe['tproject_id']} " .
              " AND NHTC.id IN (" . implode(',', $target) . ")";
-      
-      if($user_id !== 0) 
-      {               
+
+      if($user_id !== 0)
+      {
         $sql .= " AND U.id = {$safe['user_id']}";
-      }                                        
-      if( !is_null($opt['startTime']) ) 
+      }
+      if( !is_null($opt['startTime']) )
       {
         $sql .= " AND TCV.creation_ts >= '{$opt['startTime']}'";
       }
-      if( !is_null($opt['endTime']) ) 
+      if( !is_null($opt['endTime']) )
       {
         $sql .= " AND TCV.creation_ts <= '{$opt['endTime']}'";
       }
-      
+
       $rs = $this->db->fetchRowsIntoMap($sql,'tcase_id',database::CUMULATIVE);
       if( !is_null($rs) )
       {
@@ -3665,12 +3653,12 @@ function getPublicAttr($id)
           foreach($rx as $ex)
           {
             $rs[$tgx][$ex]['path'] = $path_info[$tgx];
-          }  
+          }
         }
       }
     }
     return $rs;
-  }  
+  }
 
 
   /**
@@ -3680,14 +3668,14 @@ function getPublicAttr($id)
    * @internal revisions
    *
    */
-  function isReqMgrIntegrationEnabled($id)
+  private function isReqMgrIntegrationEnabled($id)
   {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+      $debugMsg = $this->debugMsg . __FUNCTION__;
     $targetField = 'reqmgr_integration_enabled';
     $sql = "/* $debugMsg */ " .
            "SELECT {$targetField} FROM {$this->object_table} " .
-           "WHERE id =" . intval($id);   
-         
+           "WHERE id =" . intval($id);
+
     $ret = $this->db->get_recordset($sql);
     return $ret[0][$targetField];
   }
@@ -3699,7 +3687,7 @@ function getPublicAttr($id)
    * @internal revisions
    *
    */
-  function enableReqMgrIntegration($id)
+  private function enableReqMgrIntegration($id)
   {
     $this->setOneZeroField($id,'reqmgr_integration_enabled',1);
   }
@@ -3711,12 +3699,12 @@ function getPublicAttr($id)
    * @internal revisions
    *
    */
-  function disableReqMgrIntegration($id)
+  private function disableReqMgrIntegration($id)
   {
     $this->setOneZeroField($id,'reqmgr_integration_enabled',0);
   }
 
-  function setReqMgrIntegrationEnabled($id,$value)
+  public function setReqMgrIntegrationEnabled($id,$value)
   {
     $this->setOneZeroField($id,'reqmgr_integration_enabled',$value);
   }
@@ -3728,15 +3716,15 @@ function getPublicAttr($id)
    * @since 1.9.4
    *
    */
-  function setOneZeroField($id,$field,$value)
+  private function setOneZeroField($id,$field,$value)
   {
-  
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+      $debugMsg = $this->debugMsg . __FUNCTION__;
     $sql = "/* $debugMsg */ " .
          " UPDATE {$this->object_table} " .
          " SET {$field} = " . (intval($value) > 0 ? 1 : 0) .
-         " WHERE id =" . intval($id);   
-    $ret = $this->db->exec_query($sql);
+         " WHERE id =" . intval($id);
+    $this->db->exec_query($sql);
   }
 
 
@@ -3747,7 +3735,7 @@ function getPublicAttr($id)
    * @since 1.9.4
    *
    */
-  function getByChildID($child)
+  public function getByChildID($child)
   {
     $path = $this->tree_manager->get_path($child);
     return $this->get_by_id(intval($path[0]['parent_id']));
@@ -3757,7 +3745,7 @@ function getPublicAttr($id)
    * @internal revisions
    * @since 1.9.8
    */
-  function setActive($id)
+  public function setActive($id)
   {
     $this->setOneZeroField($id,'active',1);
   }
@@ -3766,7 +3754,7 @@ function getPublicAttr($id)
    * @internal revisions
    * @since 1.9.8
    */
-  function setInactive($id)
+  public function setInactive($id)
   {
     $this->setOneZeroField($id,'active',0);
   }
@@ -3774,10 +3762,10 @@ function getPublicAttr($id)
   /**
    *
    */
-  function simplexml_load_file_helper($filename)
+  private function simplexml_load_file_helper($filename)
   {
     // http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
-    libxml_disable_entity_loader(true);  
+    libxml_disable_entity_loader(true);
     $zebra = file_get_contents($filename);
     $xml = @simplexml_load_string($zebra);
     return $xml;
@@ -3788,7 +3776,7 @@ function getPublicAttr($id)
    *
    * @used-by containerEdit.php
    */
-  function getFileUploadRelativeURL($id)
+  private function getFileUploadRelativeURL($id)
   {
     // I've to use testsuiteID because this is how is name on containerEdit.php
     $url = "lib/testcases/containerEdit.php?containerType=testproject&doAction=fileUpload&tprojectID=" . intval($id);
@@ -3798,11 +3786,11 @@ function getPublicAttr($id)
   /**
    * @used-by containerEdit.php
    */
-  function getDeleteAttachmentRelativeURL($id)
+  private function getDeleteAttachmentRelativeURL($id)
   {
     // I've to use testsuiteID because this is how is name on containerEdit.php
     $url = "lib/testcases/containerEdit.php?containerType=testproject&doAction=deleteFile&tprojectID=" . intval($id) .
-           "&file_id=" ; 
+           "&file_id=" ;
     return $url;
   }
 
@@ -3811,41 +3799,39 @@ function getPublicAttr($id)
   /**
    * @used-by projectEdit.php
    */
-  function enableRequirements($id) {
-    $debugMsg = $this->debugMsg . __FUNCTION__;
+  public function enableRequirements($id) {
     $opt = $this->getOptions($safeID = intval($id));
     $opt->requirementsEnabled = 1;
     $this->setOptions($safeID,$opt);
-  }  
+  }
 
   /**
    * @used-by projectEdit.php
    */
-  function disableRequirements($id)
+  public function disableRequirements($id)
   {
-    $debugMsg = $this->debugMsg . __FUNCTION__;
     $opt = $this->getOptions($safeID = intval($id));
     $opt->requirementsEnabled = 0;
     $this->setOptions($safeID,$opt);
-  }  
+  }
 
 
   /**
-   * @used-by 
+   * @used-by
    */
-  function getOptions($id) {
+  public function getOptions($id) {
     $debugMsg = $this->debugMsg . __FUNCTION__;
     $sql = "/* $debugMsg */ SELECT testprojects.options ".
            " FROM {$this->object_table} testprojects " .
            " WHERE testprojects.id = " . intval($id);
-    $rs = $this->db->get_recordset($sql);  
-    return unserialize($rs[0]['options']);       
-  }  
+    $rs = $this->db->get_recordset($sql);
+    return unserialize($rs[0]['options']);
+  }
 
   /**
-   * @used-by 
+   * @used-by
    */
-  function setOptions($id,$optObj)
+  private function setOptions($id,$optObj)
   {
     $debugMsg = $this->debugMsg . __FUNCTION__;
 
@@ -3857,24 +3843,24 @@ function getPublicAttr($id)
       {
         $itemOpt->$prop = $optObj->$prop;
         $nike = true;
-      }  
+      }
     }
 
     if($nike)
     {
-      $sql = "/* $debugMsg */ UPDATE {$this->object_table} " . 
+      $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
              " SET options = '" . $this->db->prepare_string(serialize($itemOpt)) . "'" .
              " WHERE id = " . $safeID;
 
-      $this->db->exec_query($sql);  
-    }  
-  }  
+      $this->db->exec_query($sql);
+    }
+  }
 
 
 /**
  *
  */
-function getActiveTestPlansCount($id)
+public function getActiveTestPlansCount($id)
 {
   $debugMsg = $this->debugMsg . __FUNCTION__;
   $sql = "/* $debugMsg */ SELECT COUNT(0) AS qty".
@@ -3884,13 +3870,13 @@ function getActiveTestPlansCount($id)
          " AND TPLAN.active = 1";
 
   $rs = $this->db->get_recordset($sql);
-  return $rs[0]['qty'];       
+  return $rs[0]['qty'];
 }
 
   /**
    *
    */
-  static function getAPIKey(&$dbh,$id) {
+  private static function getAPIKey(&$dbh,$id) {
     $sch = tlDBObject::getDBTables('testprojects');
     $sql = "SELECT api_key FROM {$sch['testprojects']} WHERE id=" . intval($id);
     $rs = $dbh->get_recordset($sql);
@@ -3898,97 +3884,93 @@ function getActiveTestPlansCount($id)
     return is_null($rs) ? $rs : $rs[0]['api_key'];
   }
 
-
-  /**
-   *
-   */
-  function checkKeywordIsLinkedAndNotExecuted($keyword_id,$tproject_id=null) {
-
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $whereAdd = '';
-    $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
+    /**
+     */
+    private function checkKeywordIsLinkedAndNotExecuted($keyword_id, $tproject_id = null)
+    {
+        $debugMsg = $this->debugMsg . __FUNCTION__;
+        $whereAdd = '';
+        $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
              WHERE id = {$keyword_id} ";
 
-    if( null != $tproject_id ) {
-      $whereAdd = " AND testproject_id = " . intval($tproject_id);
-    }         
-    $sql .= $whereAdd;
+        if (null != $tproject_id) {
+            $whereAdd = " AND testproject_id = " . intval($tproject_id);
+        }
+        $sql .= $whereAdd;
 
-    $rs = $this->db->get_recordset($sql);    
-    if( is_null($rs) ) {
-      return null;
-    }  
+        $rs = $this->db->get_recordset($sql);
+        if (is_null($rs)) {
+            return null;
+        }
 
-    // Now try to understand if it is linked 
-    if( !is_null($rs) ) {
-      $sql = "/* $debugMsg */
+        // Now try to understand if it is linked
+        if (! is_null($rs)) {
+            $sql = "/* $debugMsg */
               SELECT DISTINCT keyword_id,keyword,
-                      CASE 
+                      CASE
                         WHEN EX.status IS NULL THEN 'NOT_RUN'
                         ELSE 'EXECUTED'
-                      END AS exec_status 
+                      END AS exec_status
                FROM {$this->tables['keywords']} KW
                JOIN {$this->tables['testcase_keywords']} TCKW
                ON TCKW.keyword_id = KW.id
 
-               LEFT OUTER JOIN {$this->tables['executions']} EX 
+               LEFT OUTER JOIN {$this->tables['executions']} EX
                ON EX.tcversion_id = TCKW.tcversion_id
-               
+
                WHERE KW.id = {$keyword_id} {$whereAdd} ";
-    }         
-    $rs = $this->db->fetchRowsIntoMap($sql,'exec_status');
+        }
+        $rs = $this->db->fetchRowsIntoMap($sql, 'exec_status');
 
-    $rs = (array)$rs;
-    return isset($rs['EXECUTED']) ? 0 : 1;
-  }
+        $rs = (array) $rs;
+        return isset($rs['EXECUTED']) ? 0 : 1;
+    }
 
-
-  /**
-   *
-   */
-  function checkKeywordIsLinkedToFrozenVersions($keyword_id,$tproject_id=null) {
-
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $whereAdd = '';
-    $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
+    /**
+     */
+    private function checkKeywordIsLinkedToFrozenVersions($keyword_id, $tproject_id = null)
+    {
+        $debugMsg = $this->debugMsg . __FUNCTION__;
+        $whereAdd = '';
+        $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
              WHERE id = {$keyword_id} ";
 
-    if( null != $tproject_id ) {
-      $whereAdd = " AND testproject_id = " . intval($tproject_id);
-    }         
-    $sql .= $whereAdd;
+        if (null != $tproject_id) {
+            $whereAdd = " AND testproject_id = " . intval($tproject_id);
+        }
+        $sql .= $whereAdd;
 
-    $rs = $this->db->get_recordset($sql);    
-    if( is_null($rs) ) {
-      return null;
-    }  
+        $rs = $this->db->get_recordset($sql);
+        if (is_null($rs)) {
+            return null;
+        }
 
-    if( !is_null($rs) ) {
-      $sql = "/* $debugMsg */ 
+        if (! is_null($rs)) {
+            $sql = "/* $debugMsg */
               SELECT DISTINCT keyword_id,keyword,
-               CASE 
+               CASE
                  WHEN TCV.is_open=0 THEN 'FROZEN'
                  ELSE 'FRESH'
-               END AS freeze_status  
+               END AS freeze_status
                FROM {$this->tables['keywords']} KW
                JOIN {$this->tables['testcase_keywords']} TCKW
                ON TCKW.keyword_id = KW.id
 
-               JOIN {$this->tables['tcversions']} TCV 
+               JOIN {$this->tables['tcversions']} TCV
                ON TCV.id = TCKW.tcversion_id
-               
-               WHERE KW.id = {$keyword_id} {$whereAdd} ";
-    }         
-    $rs = $this->db->fetchRowsIntoMap($sql,'freeze_status');
 
-    $rs = (array)$rs;
-    return isset($rs['FROZEN']) ? 1 : 0;
-  }
+               WHERE KW.id = {$keyword_id} {$whereAdd} ";
+        }
+        $rs = $this->db->fetchRowsIntoMap($sql, 'freeze_status');
+
+        $rs = (array) $rs;
+        return isset($rs['FROZEN']) ? 1 : 0;
+    }
 
   /**
    *
    */
-  function getKeywordSimple( $keyword_id ) {
+  private function getKeywordSimple( $keyword_id ) {
     $sql = " SELECT keyword FROM {$this->tables['keywords']}
              WHERE id = " . intval($keyword_id);
     $rs = current($this->db->get_recordset($sql));
@@ -4000,28 +3982,28 @@ function getActiveTestPlansCount($id)
   /**
    *
    */
-  function getKeywordsExecStatus($keywordSet,$tproject_id=null) {
+  public function getKeywordsExecStatus($keywordSet,$tproject_id=null) {
 
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+      $debugMsg = $this->debugMsg . __FUNCTION__;
     $whereAdd = '';
     if( null != $tproject_id ) {
       $whereAdd = " AND testproject_id = " . intval($tproject_id);
-    }         
+    }
 
     $idSet = implode(',', $keywordSet);
-    $sql = "/* $debugMsg */ 
+    $sql = "/* $debugMsg */
             SELECT DISTINCT keyword_id,keyword,
-                      CASE 
+                      CASE
                         WHEN EX.status IS NULL THEN 'NOT_RUN'
                         ELSE 'EXECUTED'
-                      END AS exec_or_not 
+                      END AS exec_or_not
                FROM {$this->tables['keywords']} KW
                JOIN {$this->tables['testcase_keywords']} TCKW
                ON TCKW.keyword_id = KW.id
 
-               LEFT OUTER JOIN {$this->tables['executions']} EX 
+               LEFT OUTER JOIN {$this->tables['executions']} EX
                ON EX.tcversion_id = TCKW.tcversion_id
-               
+
                WHERE KW.id IN( {$idSet} )  {$whereAdd} ";
 
     $rs = $this->db->fetchRowsIntoMap($sql,'keyword_id');
@@ -4029,44 +4011,42 @@ function getActiveTestPlansCount($id)
     return $rs;
   }
 
-  /**
-   *
-   */
-  function getKeywordsFreezeStatus($keywordSet,$tproject_id=null) {
+    /**
+     */
+    public function getKeywordsFreezeStatus($keywordSet, $tproject_id = null)
+    {
+        $debugMsg = $this->debugMsg . __FUNCTION__;
+        $whereAdd = '';
+        if (null != $tproject_id) {
+            $whereAdd = " AND testproject_id = " . intval($tproject_id);
+        }
 
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $whereAdd = '';
-    if( null != $tproject_id ) {
-      $whereAdd = " AND testproject_id = " . intval($tproject_id);
-    }         
-    
-    $idSet = implode(',', $keywordSet);
-    $sql = "/* $debugMsg */ 
+        $idSet = implode(',', $keywordSet);
+        $sql = "/* $debugMsg */
             SELECT DISTINCT keyword_id,keyword,
-               CASE 
+               CASE
                  WHEN TCV.is_open=0 THEN 'FROZEN'
                  ELSE 'FRESH'
-               END AS fresh_or_frozen  
+               END AS fresh_or_frozen
                FROM {$this->tables['keywords']} KW
                JOIN {$this->tables['testcase_keywords']} TCKW
                ON TCKW.keyword_id = KW.id
 
-               JOIN {$this->tables['tcversions']} TCV 
+               JOIN {$this->tables['tcversions']} TCV
                ON TCV.id = TCKW.tcversion_id
-               
+
                WHERE KW.id IN( {$idSet} ) {$whereAdd} ";
 
-    $rs = $this->db->fetchRowsIntoMap($sql,'keyword_id');
-    return $rs;
-  }
+        $rs = $this->db->fetchRowsIntoMap($sql, 'keyword_id');
+        return $rs;
+    }
 
-  /**
-   *
-   */
-  function countKeywordUsageInTCVersions($tproject_id) {
-
-    $pid = intval($tproject_id);
-    $sql = " SELECT KW.id AS keyword_id,
+    /**
+     */
+    public function countKeywordUsageInTCVersions($tproject_id)
+    {
+        $pid = intval($tproject_id);
+        $sql = " SELECT KW.id AS keyword_id,
                     CASE
                       WHEN TCKW.keyword_id IS NULL THEN 0
                       ELSE count(0)
@@ -4078,28 +4058,26 @@ function getActiveTestPlansCount($id)
              WHERE testproject_id = {$pid}
              GROUP BY KW.id,TCKW.keyword_id ";
 
-    $rs = $this->db->fetchRowsIntoMap($sql,'keyword_id');
-    return $rs;
-  }
+        $rs = $this->db->fetchRowsIntoMap($sql, 'keyword_id');
+        return $rs;
+    }
 
-/**
- *
- */
-function getPlatformsLatestTCV($tproject_id, $platform_id=0) {
-
-  $filter = '' ;
-  $ltcvJoin = " JOIN {$this->views['latest_tcase_version_id']} LTCV
+    /**
+     */
+    public function getPlatformsLatestTCV($tproject_id, $platform_id = 0)
+    {
+        $filter = '';
+        $ltcvJoin = " JOIN {$this->views['latest_tcase_version_id']} LTCV
                 ON LTCV.tcversion_id = TPL.tcversion_id ";
 
-  if( is_array($platform_id) ) {
-    $filter = " AND platform_id IN (" . implode(',',$platform_id) . ")";   
-  }
-  else if( $platform_id > 0 ) {
-    $filter = " AND platform_id = {$platform_id} ";
-  }
-  
-  $items = null;
-  $sql = " SELECT TPL.testcase_id,TPL.platform_id,PL.name
+        if (is_array($platform_id)) {
+            $filter = " AND platform_id IN (" . implode(',', $platform_id) . ")";
+        } elseif ($platform_id > 0) {
+            $filter = " AND platform_id = {$platform_id} ";
+        }
+
+        $items = null;
+        $sql = " SELECT TPL.testcase_id,TPL.platform_id,PL.name
            FROM {$this->tables['platforms']} PL
            JOIN {$this->tables['testcase_platforms']} TPL
            ON TPL.platform_id = PL.id
@@ -4108,18 +4086,18 @@ function getPlatformsLatestTCV($tproject_id, $platform_id=0) {
            {$filter}
            ORDER BY name ASC ";
 
-  $items = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','platform_id');
+        $items = $this->db->fetchMapRowsIntoMap($sql, 'testcase_id', 'platform_id');
 
-  return $items;
-} //end function
+        return $items;
+    }
 
 
 /**
  * @used-by getTestSpecTree()@treeMenu.inc.php
  * -1 => WITHOUT PLATFORMS
- * 
+ *
  */
-function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
+protected function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
   $platSet = (array)$platform_id;
   $sql = null;
   $tcaseSet = array();
@@ -4127,49 +4105,49 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
   $hasTCases = false;
 
   // -1 => WITHOUT PLATFORMS
-  $getWithOutPlatforms = in_array(-1,$platSet); 
-  if( $getWithOutPlatforms ) {  
+  $getWithOutPlatforms = in_array(-1,$platSet);
+  if( $getWithOutPlatforms ) {
     $this->get_all_testcases_id($tproject_id,$tcaseSet);
     if( $hasTCases = count($tcaseSet) > 0 ) {
       $delTT = true;
       $tt = 'temp_tcset_' . $tproject_id . md5(microtime());
-      $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS 
-              ( SELECT id FROM {$this->tables['nodes_hierarchy']} 
+      $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS
+              ( SELECT id FROM {$this->tables['nodes_hierarchy']}
                 LIMIT 0 )";
       $this->db->exec_query($sql);
       $a4ins = array_chunk($tcaseSet, 2000); // MAGIC
       foreach($a4ins as $chu) {
         $sql = "INSERT INTO $tt (id) VALUES (" .
-               implode('),(',$chu) . ")"; 
+               implode('),(',$chu) . ")";
         $this->db->exec_query($sql);
       }
     }
   }
 
-  if( $getWithOutPlatforms && $hasTCases) {  
-    $sql = " /* WITHOUT PLATFORMS */  
+  if( $getWithOutPlatforms && $hasTCases) {
+    $sql = " /* WITHOUT PLATFORMS */
              SELECT TCVNO_PL.testcase_id FROM
-             {$this->views['tcversions_without_platforms']} TCVNO_PL   
+             {$this->views['tcversions_without_platforms']} TCVNO_PL
              JOIN {$this->views['latest_tcase_version_id']} LTVC
              ON LTVC.tcversion_id = TCVNO_PL.id
              JOIN $tt TT ON TT.id = TCVNO_PL.testcase_id ";
-  } else {  
+  } else {
     $filter = " platform_id IN (" . implode(',',$platSet) . ")";
     $filter_type = 'And';
     switch($filter_type) {
       case 'NotLinked':
         if($hasTCases) {
-          $sql = " /* WITHOUT SPECIFIC KEYWORDS */  
-                   SELECT NHTCV.parent_id AS testcase_id  
-                   FROM {$this->tables['nodes_hierarchy']} NHTCV   
-                   JOIN {$this->views['latest_tcase_version_id']} LTCV 
-                   ON NHTCV.id = LTCV.tcversion_id 
-                   JOIN $tt TT ON TT.id = NHTCV.parent_id 
+          $sql = " /* WITHOUT SPECIFIC KEYWORDS */
+                   SELECT NHTCV.parent_id AS testcase_id
+                   FROM {$this->tables['nodes_hierarchy']} NHTCV
+                   JOIN {$this->views['latest_tcase_version_id']} LTCV
+                   ON NHTCV.id = LTCV.tcversion_id
+                   JOIN $tt TT ON TT.id = NHTCV.parent_id
                    WHERE NOT EXISTS
-                   (SELECT 1 FROM {$this->tables['testcase_platforms']} TCPL  
-                   WHERE TCPL.tcversion_id = LTCV.tcversion_id 
+                   (SELECT 1 FROM {$this->tables['testcase_platforms']} TCPL
+                   WHERE TCPL.tcversion_id = LTCV.tcversion_id
                    AND {$filter} )";
-        } 
+        }
       break;
 
 
@@ -4190,8 +4168,8 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
                       GROUP BY TPL.tcversion_id ";
 
         $sql = "/* Filter Type = AND */
-                SELECT PLTFOXDOG.testcase_id 
-                FROM ( $sqlCount ) AS PLTFOXDOG 
+                SELECT PLTFOXDOG.testcase_id
+                FROM ( $sqlCount ) AS PLTFOXDOG
                 WHERE PLTFOXDOG.HITS=" . count($platform_id);
       break;
 
@@ -4225,10 +4203,10 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
   /**
    *
    */
-  static function getName(&$dbh,$id) {
+  public static function getName(&$dbh,$id) {
     $sch = tlDBObject::getDBTables(array('nodes_hierarchy','testprojects'));
     $sql = "SELECT name FROM {$sch['nodes_hierarchy']} NH
-            JOIN {$sch['testprojects']} TPRJ 
+            JOIN {$sch['testprojects']} TPRJ
             ON TPRJ.id = NH.id
             WHERE TPRJ.id=" . intval($id);
     $rs = $dbh->get_recordset($sql);
@@ -4237,9 +4215,9 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
 
   /***
    *
-   * @used-by testcase.class.php 
+   * @used-by testcase.class.php
    */
-  function getKeywordsAsMapByName($tproject_id) {
+  public function getKeywordsAsMapByName($tproject_id) {
     $keywordMap = null;
     $keywords = $this->getKeywords($tproject_id);
     if ($keywords) {
@@ -4250,4 +4228,4 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
     return $keywordMap;
   }
 
-} // end class
+}

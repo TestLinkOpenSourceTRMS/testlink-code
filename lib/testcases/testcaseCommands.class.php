@@ -331,7 +331,7 @@ class testcaseCommands {
     returns:
   
   */
-  private function edit(&$argsObj,&$otCfg,$oWebEditorKeys) {
+  public function edit(&$argsObj,&$otCfg,$oWebEditorKeys) {
     $guiObj = $this->initGuiBean($argsObj);
     $otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id,$argsObj->tcversion_id,
         array('orderByClause' =>" ORDER BY keyword ASC "));

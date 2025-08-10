@@ -42,7 +42,7 @@ if(is_null($tsInf)) {
   $keywordsMetrics = $metricsMgr->getStatusTotalsByKeywordForRender($args->tplan_id,null, array('groupByPlatform' => 1) );
 
 	$gui->statistics->keywords = !is_null($keywordsMetrics) ? $keywordsMetrics->info : null;
-                              
+
 	if( $gui->showPlatforms ) {
 		$items2loop[] = 'platform';
 		$platformMetrics = $metricsMgr->getStatusTotalsByPlatformForRender($args->tplan_id);
@@ -61,7 +61,7 @@ if(is_null($tsInf)) {
 	foreach($items2loop as $item) {
     if( !is_null($gui->statistics->$item) ) {
       $gui->columnsDefinition->$item = array();
-      
+
      	// Get labels
      	$dummy = current($gui->statistics->$item);
      	if(isset($dummy['details'])) {
@@ -76,9 +76,9 @@ if(is_null($tsInf)) {
 
   $doubleItemToLoop = array('priorities','keywords','testsuites');
   foreach( $doubleItemToLoop as $item ) {
-    if( !is_null($gui->statistics->$item) ) {
+    if( !empty($gui->statistics->$item) ) {
       $gui->columnsDefinition->$item = array();
-   
+
       // Get labels
       // !!double current because main key is PLATFORM
       $dummy = current(current($gui->statistics->$item));
@@ -97,7 +97,7 @@ if(is_null($tsInf)) {
 	$colDefinition = null;
 	$results = null;
 	if($gui->do_report['status_ok']) {
-		
+
     $o = $metricsMgr->getOverallBuildStatusForRender($args->tplan_id);
     $gui->statistics->overallBuildStatus = $o->info;
     $gui->columnsDefinition->overallBuildStatus = $o->colDefinition;
@@ -118,7 +118,7 @@ if(is_null($tsInf)) {
   }
 
 
-	
+
   /* MILESTONE & PRIORITY REPORT */
   // Need to be refactored ???
 	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);
@@ -165,7 +165,7 @@ function init_args(&$dbHandler) {
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
     $cerbero->args->tplan_id = $args->tplan_id;
-    
+
     if(strlen($args->apikey) == 32) {
       $cerbero->args->getAccessAttr = true;
       $cerbero->method = 'checkRights';
@@ -193,7 +193,7 @@ function init_args(&$dbHandler) {
 		tlog("Parameter 'format' is not defined", 'ERROR');
 		exit();
 	}
-	
+
 	$args->user = $_SESSION['currentUser'];
   $args->format = $args->sendByMail ? FORMAT_MAIL_HTML : $args->format;
 
@@ -212,7 +212,7 @@ function buildMailCfg(&$guiObj) {
 	$cfg->cc = '';
 	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . $guiObj->tproject_name .
 	                ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
-	                 
+
 	return $cfg;
 }
 
@@ -340,7 +340,7 @@ function createSpreadsheet($gui,&$tplanMgr) {
     foreach( $dataHeaderMetrics as $val ) {
       $dataHeader[] = $val;
     }
-  
+
     $startingRow++;
     $startingRow++;
     $cellArea = "A{$startingRow}:";
@@ -440,7 +440,7 @@ function createSpreadsheet($gui,&$tplanMgr) {
     foreach( $dataHeaderMetrics as $val ) {
       $dataHeader[] = $val;
     }
-  
+
     $cellArea = "A{$startingRow}:";
     foreach($dataHeader as $zdx => $field) {
       $cellID = $cellRange[$zdx] . $startingRow;
@@ -462,12 +462,12 @@ function createSpreadsheet($gui,&$tplanMgr) {
 
       foreach($infoSet as $itemID => $fieldSet) {
         $whatCell=0;
-        
+
         if( $hasPlatforms ) {
           $cellID = $cellRange[$whatCell] . $startingRow;
           $field = $platName;
           $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
-          
+
           $whatCell++;
         }
 
@@ -496,7 +496,7 @@ function createSpreadsheet($gui,&$tplanMgr) {
         $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValue($cellID,
                          $fieldSet['percentage_completed']);
-        
+
         $cellZone = "A{$startingRow}:" . $cellRange[$whatCell] . "$startingRow";
 
         $objPHPExcel->getActiveSheet()
@@ -521,7 +521,7 @@ function createSpreadsheet($gui,&$tplanMgr) {
   $xlsType = 'Excel5';
   $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, $xlsType);
   $objWriter->save($tmpfname);
-  
+
   downloadXls($tmpfname,$xlsType,$gui,'TestLink_GTMP_');
 }
 

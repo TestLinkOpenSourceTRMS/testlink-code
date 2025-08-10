@@ -1516,7 +1516,7 @@ class testsuite extends tlObjectWithAttachments
       $my['options'] = array_merge($my['options'], (array)$options);
 
       $subtree = $this->tree_manager->get_children($id, array('testcase' => 'exclude_me'));
-      if(!is_null($subtree) && count($subtree) > 0)
+      if(!empty($subtree))
       {
       foreach( $subtree as $the_key => $elem)
       {
@@ -2001,7 +2001,7 @@ class testsuite extends tlObjectWithAttachments
       // the new ones.
       foreach($kwForTS as $tsk => $kwVenn) {
         $kw2add = array_diff($kwSet,$kwVenn);
-        if( count($kw2add) > 0 ) {
+        if( !empty($kw2add) ) {
           foreach($kw2add as $kaboom) {
             $vv[] = "($tsk,'nodes_hierarchy',$kaboom)";
           }
@@ -2009,7 +2009,7 @@ class testsuite extends tlObjectWithAttachments
       }
     }
 
-    if( count($vv) > 0 ) {
+    if(!empty($vv)) {
       $sql = "/* $debugMsg */
               INSERT INTO {$this->tables['object_keywords']}
               (fk_id,fk_table,keyword_id)

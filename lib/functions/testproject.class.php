@@ -33,7 +33,6 @@ class testproject extends tlObjectWithAttachments {
 
   // Node Types (NT)
   private $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
-
   private $nt2exclude_children=array('testcase' => 'exclude_my_children','requirement_spec'=> 'exclude_my_children');
 
   private $debugMsg;
@@ -332,7 +331,7 @@ protected function getTestProject($condition = null, $opt=null)
   switch($my['options']['output']) {
     case 'existsByID':
       $doParse = false;
-      $sql = "/* debugMsg */ SELECT testprojects.id ".
+      $sql = "/* $debugMsg */ SELECT testprojects.id ".
              " FROM {$this->object_table} testprojects " .
              " WHERE 1=1 ";
     break;
@@ -350,14 +349,12 @@ protected function getTestProject($condition = null, $opt=null)
     case 'name':
       $doParse = false;
       $tprojCols = 'testprojects.id';
-      break;
-
     case 'full':
     default:
       $sql = "/* $debugMsg */ SELECT {$tprojCols}, nodes_hierarchy.name ".
              " FROM {$this->object_table} testprojects, " .
              " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
-             " WHERE testprojects.id = nodes_hierarchy.id ";
+             " WHERE testprojects.id = nodes_hierarchy.id " .
              " AND nodes_hierarchy.node_type_id = " .
                $this->tree_manager->node_descr_id['testproject'];
     break;
@@ -985,7 +982,7 @@ public function count_testcases($id)
   {
     $check_op = array('msg' => '', 'status_ok' => 1);
     $sql = " SELECT id FROM {$this->object_table} " .
-           " WHERE prefix='" . $this->db->prepare_string($prefix) . "'";
+           " WHERE prefix='" . $this->db->prepare_string($prefix) . "'" .
            " AND id <> {$id}";
 
     $rs = $this->db->get_recordset($sql);
@@ -3876,7 +3873,7 @@ public function getActiveTestPlansCount($id)
   /**
    *
    */
-  private static function getAPIKey(&$dbh,$id) {
+  public static function getAPIKey(&$dbh,$id) {
     $sch = tlDBObject::getDBTables('testprojects');
     $sql = "SELECT api_key FROM {$sch['testprojects']} WHERE id=" . intval($id);
     $rs = $dbh->get_recordset($sql);

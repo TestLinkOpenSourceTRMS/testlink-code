@@ -302,7 +302,7 @@ public function setSessionProject($projectId)
  * @param array $recorset produced by getTestProject()
  */
 protected function parseTestProjectRecordset(&$recordset) {
-  if (null != $recordset && count($recordset) > 0) {
+  if (!empty($recordset)) {
     foreach ($recordset as $number => $row) {
       $recordset[$number]['opt'] = unserialize($row['options']);
     }
@@ -489,7 +489,7 @@ public function get_all($filters=null,$options=null)
     $this->parseTestProjectRecordset($recordset);
   } else {
     $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
-    if (null != $recordset && count($recordset) > 0) {
+    if (!empty($recordset)) {
       foreach ($recordset as $number => $row) {
         $recordset[$number]['opt'] = unserialize($row['options']);
       }
@@ -685,7 +685,7 @@ public function get_accessible_for_user($user_id,$opt = null,$filters = null) {
     case 'map_with_inactive_mark':
     default:
       $arrTemp = (array)$this->db->fetchRowsIntoMap($sql,'id');
-      $do_post_process = (count($arrTemp) > 0);
+      $do_post_process = !empty($arrTemp);
     break;
   }
 
@@ -1984,7 +1984,7 @@ private function setPublicStatus($id,$status)
     $this->deleteAttachments($id);
 
     $reqSpecSet=$reqspec_mgr->get_all_id_in_testproject($id);
-    if( !is_null($reqSpecSet) && count($reqSpecSet) > 0 ) {
+    if(!empty($reqSpecSet)) {
       foreach($reqSpecSet as $reqSpec) {
         $reqspec_mgr->delete_deep($reqSpec['id']);
       }
@@ -2570,7 +2570,7 @@ public function getFreeTestCases($id,$options=null)
         $free=$retval['allfree'] ? $all : array_diff_key($all,$linked);
     }
 
-    if( !is_null($free) && count($free) > 0)
+    if(!empty($free))
     {
         $in_clause=implode(',',array_keys($free));
          $sql = " /* $debugMsg */ " .
@@ -2592,9 +2592,7 @@ public function getFreeTestCases($id,$options=null)
 }
 
 
-// -------------------------------------------------------------------------------
 // Custom field related methods
-// -------------------------------------------------------------------------------
 /*
   function: get_linked_custom_fields
             Get custom fields that has been linked to testproject.
@@ -3269,7 +3267,7 @@ private function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = n
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
     if( $filterOnTC ) {
       $ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
-      if( count($ky) > 0 ) {
+      if(!empty($ky)) {
         foreach($ky as $tcase) {
           unset($rs[$tcase]);
         }
@@ -3335,7 +3333,7 @@ protected function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_i
   if( $getWithOutKeywords || $keyword_filter_type == 'NotLinked') {
 
     $this->get_all_testcases_id($tproject_id,$tcaseSet);
-    if( $hasTCases = count($tcaseSet) > 0 ) {
+    if($hasTCases = !empty($tcaseSet)) {
       $delTT = true;
       $tt = 'temp_tcset_' . $tproject_id . md5(microtime());
       $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS

@@ -1172,7 +1172,7 @@ class testsuite extends tlObjectWithAttachments
         }
         if (isset($optExport['CFIELDS']) && $optExport['CFIELDS']) {
           $cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
-          if( count($cfMap) > 0 ) {
+          if( !empty($cfMap) ) {
             $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
           }
         }
@@ -1199,7 +1199,7 @@ class testsuite extends tlObjectWithAttachments
             }
           }
 
-          if( !is_null($attach) && count($attach) > 0 ) {
+          if( !empty($attach) ) {
             $attchRootElem = "<attachments>\n{{XMLCODE}}</attachments>\n";
             $attchElemTemplate = "\t<attachment>\n" .
                       "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .

@@ -1091,7 +1091,7 @@ class testsuite extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $status = 1;
     $kw = $this->getKeywords($id,$kw_id);
-    if( $doLink = !sizeof($kw) )
+    if( empty($kw) )
     {
       $sql = "/* $debugMsg */ INSERT INTO {$this->tables['object_keywords']} " .
              " (fk_id,fk_table,keyword_id) VALUES ($id,'nodes_hierarchy',$kw_id)";

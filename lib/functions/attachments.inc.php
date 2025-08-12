@@ -61,7 +61,7 @@ function getAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$count
  * Stores the attachment infos into the session for referencing it later
  *
  * @param array $attachmentInfos infos about attachment
- * @param $counter counter for the attachments in the session
+ * @param int $counter counter for the attachments in the session
  */
 function storeAttachmentsInSession($attachmentInfos,$counter = 0)
 {
@@ -69,12 +69,12 @@ function storeAttachmentsInSession($attachmentInfos,$counter = 0)
   {
     $attachmentInfos = array();
   }
-    
+
   if (!isset($_SESSION['s_lastAttachmentInfos']) || !$_SESSION['s_lastAttachmentInfos'])
   {
     $_SESSION['s_lastAttachmentInfos'] = array();
   }
-    
+
   if ($counter == 0)
   {
     $_SESSION['s_lastAttachmentInfos'] = $attachmentInfos;
@@ -83,7 +83,7 @@ function storeAttachmentsInSession($attachmentInfos,$counter = 0)
   {
     $_SESSION['s_lastAttachmentInfos'] = array_merge($_SESSION['s_lastAttachmentInfos'],$attachmentInfos);
   }
-    
+
 }
 
 /**
@@ -123,12 +123,12 @@ function fileUploadManagement(&$dbHandler,$id,$title,$table)
   $uploadOp->statusOK = false;
   $uploadOp->statusCode = 0;
   $uploadOp->msg = null;
- 
+
   $fInfo  = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
   if ($fInfo && $id) {
     $fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
     $fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
-    
+
     if ($fSize && $fTmpName != "") {
       $repo = tlAttachmentRepository::create($dbHandler);
       $uploadOp = $repo->insertAttachment($id,$table,$title,$fInfo);

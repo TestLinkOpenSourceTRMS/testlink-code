@@ -735,13 +735,13 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems, $masterCont
     }
 
     // more specif analisys
-    if (!empty($filters['status'][0])) {
+    if (! empty($filters['status'][0])) {
         $useFilter['status'] = $filters['status'][0];
         $applyFilters = true;
         $filtersByValue['status'] = array_flip((array) $filters['status']);
     }
 
-    if (!empty($filters['importance'][0])) {
+    if (! empty($filters['importance'][0])) {
         $useFilter['importance'] = $filters['importance'][0];
         $applyFilters = true;
         $filtersByValue['importance'] = array_flip((array) $filters['importance']);
@@ -765,7 +765,7 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems, $masterCont
         );
     }
 
-    if (!empty($filters['keyword_id'][0])) {
+    if (! empty($filters['keyword_id'][0])) {
         $useFilter['keyword_id'] = $filters['keyword_id'][0];
         $applyFilters = true;
         switch ($specViewType) {
@@ -781,7 +781,7 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems, $masterCont
     }
 
     $tcpl_map = null;
-    if (!empty($filters['platform_id'][0])) {
+    if (! empty($filters['platform_id'][0])) {
         $useFilter['platforms'] = $filters['platform_id'][0];
         $applyFilters = true;
         switch ($specViewType) {
@@ -810,9 +810,7 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems, $masterCont
 
         foreach ($itemKeys as $key => $tspecKey) {
             // case insensitive search
-            if (($useFilter['keyword_id'] && ! isset($tck_map[$test_spec[$tspecKey]['id']])) ||
-            ($useFilter['platforms'] && ! isset($tcpl_map[$test_spec[$tspecKey]['id']])) ||
-            ($useFilter['tcase_id'] && ! in_array($test_spec[$tspecKey]['id'], $testCaseSet)) || ($useFilter['tcase_name'] && (stripos($test_spec[$tspecKey]['name'], $filters['tcase_name']) === false))) {
+            if (($useFilter['keyword_id'] && ! isset($tck_map[$test_spec[$tspecKey]['id']])) || ($useFilter['platforms'] && ! isset($tcpl_map[$test_spec[$tspecKey]['id']])) || ($useFilter['tcase_id'] && ! in_array($test_spec[$tspecKey]['id'], $testCaseSet)) || ($useFilter['tcase_name'] && (stripos($test_spec[$tspecKey]['name'], $filters['tcase_name']) === false))) {
                 $test_spec[$tspecKey] = null;
                 unset($itemSet[$key]);
             }
@@ -964,8 +962,7 @@ function removeEmptyTestSuites(&$testSuiteSet, &$treeMgr, $pruneUnlinkedTcversio
         // - do not contain test cases
         if (is_null($value)) {
             unset($testSuiteSet[$key]);
-        }
-        elseif ($pruneUnlinkedTcversions && (isset($value['testcase_qty']) && $value['testcase_qty'] > 0)) {
+        } elseif ($pruneUnlinkedTcversions && (isset($value['testcase_qty']) && $value['testcase_qty'] > 0)) {
             // only linked tcversion must be returned, but this analisys must be done
             // for test suites that has test cases.
             if (isset($value['linked_testcase_qty']) && $value['linked_testcase_qty'] == 0) {
@@ -981,8 +978,7 @@ function removeEmptyTestSuites(&$testSuiteSet, &$treeMgr, $pruneUnlinkedTcversio
                     }
                 }
             }
-        }
-        else {
+        } else {
             // list of children test suites if useful on smarty template, in order
             // to draw nested div.
             $tsuite_id = $value['testsuite']['id'];
@@ -1025,10 +1021,12 @@ function removeEmptyBranches(&$testSuiteSet, &$tsuiteTestCaseQty)
 
 /**
  *
- * @param array &$testSuiteSet: changes will be done to this array to add custom fields info.
+ * @param
+ *            array &$testSuiteSet: changes will be done to this array to add custom fields info.
  *            Custom field info will be indexed by platform id
  * @param integer $tprojectId
- * @param testcase &$tcaseMgr reference to testCase class instance
+ * @param
+ *            testcase &$tcaseMgr reference to testCase class instance
  * @internal revisions
  *           20100119 - franciscom - start fixing missing platform refactoring
  *
@@ -1058,8 +1056,6 @@ function addCustomFieldsToView(&$testSuiteSet, $tprojectId, &$tcaseMgr)
         }
     }
 }
-
-
 
 /**
  * Developer Notice
@@ -1551,7 +1547,6 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name, &$linked_ite
         );
 
         if (isset($options['onlyLatestTCV']) && $options['onlyLatestTCV']) {
-            $whatSet = testcase::LATEST_VERSION;
             $tcaseVersionSet = $tcase_mgr->getLTCVInfo($a_tcid);
         } else {
             $whatSet = testcase::ALL_VERSIONS;

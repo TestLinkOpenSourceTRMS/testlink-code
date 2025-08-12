@@ -21,7 +21,7 @@ class bareBonesRestAPI {
    */
   public $apikey = '';
   public $apitoken = '';
-  
+
   /**
    * Curl interface with specific settings
    * @var string
@@ -45,7 +45,7 @@ class bareBonesRestAPI {
    *  password
    */
   public $proxy = null;
-  
+
   public $cfg;
 
   /**
@@ -72,16 +72,16 @@ class bareBonesRestAPI {
     catch (Exception $e) {
       var_dump($e);
     }
-    
+
     // set the agent, forwarding, and turn off ssl checking
     // Timeout in Seconds
     $curlCfg = [CURLOPT_USERAGENT => $agent,
                 CURLOPT_VERBOSE => 0,
-                CURLOPT_FOLLOWLOCATION => TRUE,
-                CURLOPT_RETURNTRANSFER => TRUE,
-                CURLOPT_AUTOREFERER => TRUE,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_AUTOREFERER => true,
                 CURLOPT_TIMEOUT => 60,
-                CURLOPT_SSL_VERIFYPEER => FALSE];
+                CURLOPT_SSL_VERIFYPEER => false];
 
     if(!is_null($this->proxy))
     {
@@ -164,7 +164,7 @@ class bareBonesRestAPI {
    * @internal notice
    * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
    **/
-  protected function _request_json($method, $cmd, $body = NULL, $ignore_status = 0,$reporter=null) {
+  protected function _request_json($method, $cmd, $body = null, $ignore_status = 0,$reporter=null) {
     $r = $this->_request($method, $cmd, $body, $ignore_status,$reporter);
     $response = $r['response'];
 
@@ -183,7 +183,7 @@ class bareBonesRestAPI {
 
     throw new Exception($msg, 1);
   }
-  
+
  /**
   *
   * @param unknown $method
@@ -196,7 +196,7 @@ class bareBonesRestAPI {
   * @internal notice
   * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
   **/
-  protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0,$reporter = null)
+  protected function _request($method, $cmd, $body = null, $ignoreStatusCode = 0,$reporter = null)
   {
 
     // this is the minimal test
@@ -217,7 +217,7 @@ class bareBonesRestAPI {
       $additional = trim($this->api);
     }
     $url = $this->url . $additional . $cmd;
-    
+
     curl_setopt($this->curl, CURLOPT_URL, $url);
     curl_setopt($this->curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
     curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
@@ -229,22 +229,22 @@ class bareBonesRestAPI {
 
     switch ($method) {
       case 'GET':
-        curl_setopt($this->curl, CURLOPT_HTTPGET, TRUE);
+        curl_setopt($this->curl, CURLOPT_HTTPGET, true);
       break;
-    
+
       case 'POST':
       case 'PATCH':
-        curl_setopt($this->curl, CURLOPT_POST, TRUE);
+        curl_setopt($this->curl, CURLOPT_POST, true);
         if (!empty($body)) {
           curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($body));
         }
       break;
-    
+
       default:
         throw new exception("Unknown method $method!");
       break;
     }
-    
+
     $content = curl_exec($this->curl);
     $response = curl_getinfo($this->curl);
     $curlError =  curl_error($this->curl);
@@ -253,11 +253,11 @@ class bareBonesRestAPI {
       throw new exception(__METHOD__ . "url:$this->url - response:" .
                           json_encode($response) . ' - content: ' . json_encode($content) );
     }
-    
+
     $rr = ['content' => $content,'response' => $response,'curlError' => $curlError];
     return $rr;
   }
-  
+
   /**
    *
    */

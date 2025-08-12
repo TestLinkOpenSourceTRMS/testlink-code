@@ -14,7 +14,7 @@
  * @internal revisions
  * @since 1.9.15
  */
- 
+
 /**
  * class manage assignment users for testing
  * @package   TestLink
@@ -58,11 +58,11 @@ class assignment_mgr extends tlObjectWithDB
       $sql = " SELECT * FROM {$this->tables['assignment_status']} ";
       $hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
     }
-    
+
     return $hash_types;
   }
 
-  
+
   /**
    *
    * @param int or array $feature_id
@@ -79,9 +79,9 @@ class assignment_mgr extends tlObjectWithDB
       $where_clause = " WHERE feature_id={$feature_id}";
     }
     $sql = " DELETE FROM {$this->tables['user_assignments']}  {$where_clause}";
-    $result = $this->db->exec_query($sql);
+    $this->db->exec_query($sql);
   }
-  
+
   /**
    * Delete the user assignments for a given build.
    *
@@ -93,17 +93,17 @@ class assignment_mgr extends tlObjectWithDB
   public function delete_by_build_id($build_id, $delete_all_types = false)
   {
     $type_sql = "";
-    
+
     if (!$delete_all_types)
     {
       $types = $this->get_available_types();
       $tc_execution_type = $types['testcase_execution']['id'];
       $type_sql = " AND type = {$tc_execution_type} ";
     }
-    
+
     $sql = " DELETE FROM {$this->tables['user_assignments']} " .
            " WHERE build_id = " . intval($build_id) . " {$type_sql} ";
-    
+
     $this->db->exec_query($sql);
   }
 
@@ -117,9 +117,9 @@ class assignment_mgr extends tlObjectWithDB
   {
     $feature_id_list = implode(",",array_keys($feature_map));
     $where_clause = " WHERE feature_id IN ($feature_id_list) ";
-      
+
     $sql = " DELETE FROM {$this->tables['user_assignments']}  {$where_clause} ";
-    
+
     // build_id is the same for all entries because of assignment form
     // -> skip foreach after first iteration
     $build_id = 0;
@@ -128,12 +128,12 @@ class assignment_mgr extends tlObjectWithDB
       $build_id = $feature['build_id'];
       break;
     }
-    
+
     $sql .= " AND build_id = {$build_id} ";
-    $result = $this->db->exec_query($sql);
+    $this->db->exec_query($sql);
   }
 
-  
+
   /**
    *
    * @param array $items array of signature
@@ -148,7 +148,7 @@ class assignment_mgr extends tlObjectWithDB
       {
         $sql .= " AND $column = " . intval($val);
       }
-      $result = $this->db->exec_query($sql);
+      $this->db->exec_query($sql);
     }
   }
 
@@ -174,13 +174,13 @@ class assignment_mgr extends tlObjectWithDB
     $ret = array();
     $types = $this->get_available_types();
     $safe = null;
-   
+
     foreach($feature_map as $feature_id => $elem)
     {
       $safe['feature_id'] = intval($feature_id);
       $safe['build_id'] = intval($elem['build_id']);
       $safe['type'] = intval($elem['type']);
-      
+
       $uSet = (array)$elem['user_id'];
 
       foreach($uSet as $user_id)
@@ -200,18 +200,18 @@ class assignment_mgr extends tlObjectWithDB
           {
             $sql = "INSERT INTO {$this->tables['user_assignments']} " .
                    "(feature_id,user_id,assigner_id,type,status,creation_ts";
-                      
+
             $values = "VALUES({$safe['feature_id']},{$safe['user_id']}," .
                       "{$elem['assigner_id']}," .
                       "{$safe['type']},{$elem['status']},";
             $values .= (isset($elem['creation_ts']) ? $elem['creation_ts'] : $this->db->db_now());
-          
+
             if(isset($elem['deadline_ts']) )
             {
               $sql .=",deadline_ts";
               $values .="," . $elem['deadline_ts'];
             }
-          
+
             if(isset($elem['build_id']))
             {
               $sql .= ",build_id";
@@ -224,7 +224,7 @@ class assignment_mgr extends tlObjectWithDB
                 throw new Exception("Error Processing Request - BUILD ID is Mandatory");
               }
             }
-          
+
             $sql .= ") " . $values . ")";
             tLog(__METHOD__ . '::' . $sql,"DEBUG");
             $this->db->exec_query($sql);
@@ -234,7 +234,7 @@ class assignment_mgr extends tlObjectWithDB
     }
     return $ret;
   }
-  
+
 
   /**
    *
@@ -253,7 +253,7 @@ class assignment_mgr extends tlObjectWithDB
       $sql = "UPDATE {$this->tables['user_assignments']} SET ";
       $simple_fields = array('user_id','assigner_id','type','status');
       $date_fields = array('deadline_ts','creation_ts');
-    
+
       foreach($simple_fields as $idx => $field)
       {
         if(isset($elem[$field]))
@@ -262,7 +262,7 @@ class assignment_mgr extends tlObjectWithDB
           $sepa=",";
         }
       }
-      
+
       foreach($date_fields as $idx => $field)
       {
         if(isset($elem[$field]))
@@ -271,13 +271,13 @@ class assignment_mgr extends tlObjectWithDB
           $sepa = ",";
         }
       }
-      
+
       $sql .= "WHERE feature_id={$feature_id} AND build_id={$elem['build_id']}";
-      
+
       $this->db->exec_query($sql);
     }
   }
-  
+
   /**
    * Get the number of assigned users for a given build ID.
    * @param int $build_id ID of the build to check
@@ -289,21 +289,21 @@ class assignment_mgr extends tlObjectWithDB
   public function get_count_of_assignments_for_build_id($build_id, $count_all_types = false, $user_id = 0)
   {
     $count = 0;
-    
+
     $types = $this->get_available_types();
     $tc_execution_type = $types['testcase_execution']['id'];
     $type_sql = ($count_all_types) ? "" : " AND type = {$tc_execution_type} ";
-      
+
     $user_sql = ($user_id && is_numeric($user_id)) ? "AND user_id = {$user_id} " : "";
-    
+
     $sql = " SELECT COUNT(id) AS count FROM {$this->tables['user_assignments']} " .
            " WHERE build_id = {$build_id} {$user_sql} {$type_sql} ";
-      
+
     $count = $this->db->fetchOneValue($sql);
-      
+
     return $count;
   }
-  
+
   /**
    * Get count of assigned, but not run testcases per build (and optionally user).
    * @param int $build_id
@@ -315,12 +315,12 @@ class assignment_mgr extends tlObjectWithDB
   public function get_not_run_tc_count_per_build($build_id, $all_types = false, $user_id = 0)
   {
     $count = 0;
-    
+
     $types = $this->get_available_types();
     $tc_execution_type = $types['testcase_execution']['id'];
     $type_sql = ($all_types) ? "" : " AND UA.type = {$tc_execution_type} ";
     $user_sql = ($user_id && is_numeric($user_id)) ? "AND UA.user_id = {$user_id} " : "";
-    
+
     $sql = " SELECT UA.id as assignment_id,UA.user_id,TPTCV.testplan_id," .
            " TPTCV.platform_id,BU.id AS BUILD_ID,E.id AS EXECID, E.status " .
            " FROM {$this->tables['user_assignments']} UA " .
@@ -334,15 +334,15 @@ class assignment_mgr extends tlObjectWithDB
            "     AND E.platform_id = TPTCV.platform_id " .
            "     AND E.build_id = UA.build_id " .
            " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";
-       
-       
+
+
     if (isset($build_id) && is_numeric($build_id)) {
       $count = count($this->db->fetchRowsIntoMap($sql, 'assignment_id'));
     }
-    
+
     return $count;
   }
-  
+
   /**
    * Copy the test case execution assignments for a test plan
    * from one build to another.
@@ -367,7 +367,7 @@ class assignment_mgr extends tlObjectWithDB
   public function copy_assignments($source_build_id, $target_build_id,
                             $assigner_id = 0, $opt = null)
   {
-  
+
     $my = array('opt');
     $my['opt']['keep_old_assignments'] = false;
     $my['opt']['copy_all_types'] = false;
@@ -379,7 +379,7 @@ class assignment_mgr extends tlObjectWithDB
     $types = $this->get_available_types();
     $tc_execution_type = $types['testcase_execution']['id'];
     $delete_all_types = $my['opt']['copy_all_types'];
-      
+
     $type_sql = ($my['opt']['copy_all_types']) ? "" : " AND type = {$tc_execution_type} ";
     $user_sql = (is_numeric($assigner_id) && $assigner_id != 0) ? $assigner_id : "assigner_id";
 
@@ -388,11 +388,11 @@ class assignment_mgr extends tlObjectWithDB
       // delete the old tester assignments in target builds if there are any
       $this->delete_by_build_id($target_build_id, $delete_all_types);
     }
-    
+
     $sql = " INSERT INTO {$ua} " .
            " (type, feature_id, user_id, deadline_ts, " .
            " assigner_id, creation_ts, status, build_id) " .
-  
+
            " SELECT type, feature_id, user_id, deadline_ts, " .
            " {$user_sql}, {$creation_ts}, status, {$target_build_id} " .
            " FROM {$ua} " .
@@ -405,14 +405,14 @@ class assignment_mgr extends tlObjectWithDB
 
     $this->db->exec_query($sql);
   }
-  
+
 
   /**
    * get hash with build id and amount of test cases assigned to testers
    *
    * @author Francisco Mancardi
    * @param mixed $buildID can be single value or array of build ID.
-   * @return unknown
+   * @return array
    */
   private function getExecAssignmentsCountByBuild($buildID)
   {
@@ -420,7 +420,7 @@ class assignment_mgr extends tlObjectWithDB
     $rs = null;
     $types = $this->get_available_types();
     $execAssign = $types['testcase_execution']['id'];
-      
+
     $sql =  "/* $debugMsg */ ".
             " SELECT COUNT(id) AS qty, build_id " .
             " FROM {$this->tables['user_assignments']} " .
@@ -428,7 +428,7 @@ class assignment_mgr extends tlObjectWithDB
             " AND type = {$execAssign} " .
             " GROUP BY build_id ";
       $rs = $this->db->fetchRowsIntoMap($sql,'build_id');
-      
+
     return $rs;
   }
 
@@ -439,7 +439,7 @@ class assignment_mgr extends tlObjectWithDB
    *
    * @author Francisco Mancardi
    * @param mixed $buildID can be single value or array of build ID.
-   * @return unknown
+   * @return array
    */
   private function getNotRunAssignmentsCountByBuild($buildID)
   {
@@ -464,9 +464,9 @@ class assignment_mgr extends tlObjectWithDB
             " AND E.status IS NULL " .
             " AND type = {$execAssign} " .
             " GROUP BY UA.build_id ";
-      
+
       $rs = $this->db->fetchRowsIntoMap($sql,'build_id');
-      
+
     return $rs;
   }
 
@@ -482,7 +482,7 @@ class assignment_mgr extends tlObjectWithDB
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $rs = null;
-    
+
     if(is_null($assignmentType) || !is_numeric($assignmentType) )
     {
       throw new Exception(__METHOD__ . ' assignmentType can not be NULL or not numeric ');
@@ -493,12 +493,12 @@ class assignment_mgr extends tlObjectWithDB
             " WHERE UA.build_id = " . intval($buildID) .
             " AND UA.feature_id IN(" . implode(",",(array)$featureSet)  . " )" .
             " AND type = " . intval($assignmentType);
-            
+
     $rs = $this->db->fetchMapRowsIntoMap($sql,'feature_id','user_id');
 
     return $rs;
   }
-  
+
 
 
   /**
@@ -537,10 +537,10 @@ class assignment_mgr extends tlObjectWithDB
             " WHERE B.testplan_id = " . $tplan_id .
             " AND B.id = " . $build_id .
             " AND type = " . intval($atd['testcase_execution']['id']);
-            
+
     $rs = $this->db->fetchRowsIntoMap($sql,'user_id');
 
-    
+
     $bye = true;
     if( !is_null($rs) && !empty($rs))
     {
@@ -572,7 +572,7 @@ class assignment_mgr extends tlObjectWithDB
     $genby = lang_get('generated_by_TestLink_on') . ' ' . $isoTS;
     $ll = lang_get('mail_subject_link_to_assigned');
     $email['subject'] = sprintf($ll,$names['tplan'],$isoTS);
-    
+
     $ln = $_SESSION['basehref'] . 'ltx.php?item=xta2m&tplan_id=' .
           $tplan_id . '&user_id=';
 
@@ -594,7 +594,7 @@ class assignment_mgr extends tlObjectWithDB
           $email['exit_on_error'] = true;
           $email['htmlFormat'] = true;
 
-          $eop = email_send($email['from_address'],$email['to_address'],
+          email_send($email['from_address'],$email['to_address'],
                             $email['subject'], $email['body'],
                             $email['cc'],$email['attachment'],
                             $email['exit_on_error'], $email['htmlFormat']);

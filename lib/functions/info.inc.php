@@ -16,9 +16,11 @@
  *
  */
 
-/** @uses email_api.php */
+/**
+ *
+ * @uses email_api.php
+ */
 require_once '../functions/email_api.php';
-
 
 /**
  * Display simple info and exit
@@ -28,11 +30,11 @@ require_once '../functions/email_api.php';
  */
 function displayInfo($title, $message)
 {
-	$smarty = new TLSmarty;
-	$smarty->assign('title', $title);
-	$smarty->assign('content', $message);
-	$smarty->display('workAreaSimple.tpl');
+    $smarty = new TLSmarty();
+    $smarty->assign('title', $title);
+    $smarty->assign('content', $message);
+    $smarty->display('workAreaSimple.tpl');
 
-	exit();
+    exit();
 }
 ?>

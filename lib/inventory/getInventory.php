@@ -10,7 +10,6 @@
  * @copyright 2009,2019 TestLink community
  *
  **/
-
 require_once '../../config.inc.php';
 require_once 'common.php';
 testlinkInitPage($db);
@@ -23,7 +22,7 @@ $tlUser = new tlUser(intval($_SESSION['userID']));
 $users = $tlUser->getNames($db);
 
 // fill login instead of user ID
-if (!is_null($data)) {
+if (! is_null($data)) {
     foreach ($data as $k => $v) {
         if ($v['owner_id'] != '0') {
             $data[$k]['owner'] = $users[$v['owner_id']]['login'];

@@ -97,7 +97,9 @@ function doAuthorize(&$db, $login, $pwd, $options = null)
             }
             $doLogin = $password_check->status_ok && $user->isActive;
             if (! $doLogin) {
-                logAuditEvent(TLS("audit_login_failed", $login, $_SERVER['REMOTE_ADDR']), "LOGIN_FAILED", $user->dbID, "users");
+                logAuditEvent(
+                    TLS("audit_login_failed", $login, $_SERVER['REMOTE_ADDR']),
+                    "LOGIN_FAILED", $user->dbID, "users");
             }
         }
     }
@@ -125,7 +127,8 @@ function doAuthorize(&$db, $login, $pwd, $options = null)
 
                 if ($check->status_ok) {
                     $forceUserCreation = true;
-                    $uf = getUserFieldsFromLDAP($user->login, $authCfg['ldap'][$check->ldap_index]);
+                    $uf = getUserFieldsFromLDAP($user->login,
+                        $authCfg['ldap'][$check->ldap_index]);
 
                     $user->emailAddress = $uf->emailAddress;
                     $user->firstName = $uf->firstName;
@@ -185,8 +188,13 @@ function doAuthorize(&$db, $login, $pwd, $options = null)
         tlSetCookie($ckObj);
 
         // Disallow two sessions within one browser
-        if (property_exists($options, 'doSessionExistsCheck') && $options->doSessionExistsCheck && isset($_SESSION['currentUser']) && ! is_null($_SESSION['currentUser'])) {
-            $result['msg'] = lang_get('login_msg_session_exists1') . ' <a style="color:white;" href="logout.php">' . lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+        if (property_exists($options, 'doSessionExistsCheck') &&
+            $options->doSessionExistsCheck && isset($_SESSION['currentUser']) &&
+            ! is_null($_SESSION['currentUser'])) {
+            $result['msg'] = lang_get('login_msg_session_exists1') .
+                ' <a style="color:white;" href="logout.php">' .
+                lang_get('logout_link') . '</a>' .
+                lang_get('login_msg_session_exists2');
         } else {
             // Setting user's session information
             $_SESSION['currentUser'] = $user;
@@ -194,7 +202,8 @@ function doAuthorize(&$db, $login, $pwd, $options = null)
 
             $g_tlLogger->endTransaction();
             $g_tlLogger->startTransaction();
-            setUserSession($db, $user->login, $user->dbID, $user->globalRoleID, $user->emailAddress, $user->locale, null);
+            setUserSession($db, $user->login, $user->dbID, $user->globalRoleID,
+                $user->emailAddress, $user->locale);
 
             $result['status'] = tl::OK;
         }
@@ -211,7 +220,8 @@ function doAuthorize(&$db, $login, $pwd, $options = null)
  *
  * return map
  */
-function doSSOClientCertificate(&$dbHandler, $apache_mod_ssl_env, $authCfg = null)
+function doSSOClientCertificate(&$dbHandler, $apache_mod_ssl_env,
+    $authCfg = null)
 {
     global $g_tlLogger;
 
@@ -231,7 +241,8 @@ function doSSOClientCertificate(&$dbHandler, $apache_mod_ssl_env, $authCfg = nul
     if (! is_null($login)) {
         $user = new tlUser();
         $user->login = $login;
-        $login_exists = ($user->readFromDB($dbHandler, tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK);
+        $login_exists = ($user->readFromDB($dbHandler,
+            tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK);
 
         if ($login_exists && $user->isActive) {
             // Need to do set COOKIE following Mantis model
@@ -244,8 +255,12 @@ function doSSOClientCertificate(&$dbHandler, $apache_mod_ssl_env, $authCfg = nul
             tlSetCookie($ckObj);
 
             // Disallow two sessions within one browser
-            if (isset($_SESSION['currentUser']) && ! is_null($_SESSION['currentUser'])) {
-                $ret['msg'] = lang_get('login_msg_session_exists1') . ' <a style="color:white;" href="logout.php">' . lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+            if (isset($_SESSION['currentUser']) &&
+                ! is_null($_SESSION['currentUser'])) {
+                $ret['msg'] = lang_get('login_msg_session_exists1') .
+                    ' <a style="color:white;" href="logout.php">' .
+                    lang_get('logout_link') . '</a>' .
+                    lang_get('login_msg_session_exists2');
             } else {
                 // Setting user's session information
                 $_SESSION['currentUser'] = $user;
@@ -253,11 +268,14 @@ function doSSOClientCertificate(&$dbHandler, $apache_mod_ssl_env, $authCfg = nul
 
                 $g_tlLogger->endTransaction();
                 $g_tlLogger->startTransaction();
-                setUserSession($dbHandler, $user->login, $user->dbID, $user->globalRoleID, $user->emailAddress, $user->locale, null);
+                setUserSession($dbHandler, $user->login, $user->dbID,
+                    $user->globalRoleID, $user->emailAddress, $user->locale);
                 $ret['status'] = tl::OK;
             }
         } else {
-            logAuditEvent(TLS("audit_login_failed", $login, $_SERVER['REMOTE_ADDR']), "LOGIN_FAILED", $user->dbID, "users");
+            logAuditEvent(
+                TLS("audit_login_failed", $login, $_SERVER['REMOTE_ADDR']),
+                "LOGIN_FAILED", $user->dbID, "users");
         }
     }
     return $ret;
@@ -273,7 +291,8 @@ function auth_does_password_match(&$db, &$userObj, $cleartext_password)
     $authCfg = config_get('authentication');
     $ret = new stdClass();
     $ret->status_ok = false;
-    $ret->msg = sprintf(lang_get('unknown_authentication_method'), $authCfg['method']);
+    $ret->msg = sprintf(lang_get('unknown_authentication_method'),
+        $authCfg['method']);
 
     $authMethod = $userObj->authentication;
     switch ($userObj->authentication) {
@@ -289,11 +308,15 @@ function auth_does_password_match(&$db, &$userObj, $cleartext_password)
     switch ($authMethod) {
         case 'LDAP':
             $msg[ERROR_LDAP_AUTH_FAILED] = lang_get('error_ldap_auth_failed');
-            $msg[ERROR_LDAP_SERVER_CONNECT_FAILED] = lang_get('error_ldap_server_connect_failed');
-            $msg[ERROR_LDAP_UPDATE_FAILED] = lang_get('error_ldap_update_failed');
-            $msg[ERROR_LDAP_USER_NOT_FOUND] = lang_get('error_ldap_user_not_found');
+            $msg[ERROR_LDAP_SERVER_CONNECT_FAILED] = lang_get(
+                'error_ldap_server_connect_failed');
+            $msg[ERROR_LDAP_UPDATE_FAILED] = lang_get(
+                'error_ldap_update_failed');
+            $msg[ERROR_LDAP_USER_NOT_FOUND] = lang_get(
+                'error_ldap_user_not_found');
             $msg[ERROR_LDAP_BIND_FAILED] = lang_get('error_ldap_bind_failed');
-            $msg[ERROR_LDAP_START_TLS_FAILED] = lang_get('error_ldap_start_tls_failed');
+            $msg[ERROR_LDAP_START_TLS_FAILED] = lang_get(
+                'error_ldap_start_tls_failed');
 
             $xx = ldap_authenticate($userObj->login, $cleartext_password);
             $ret->status_ok = $xx->status_ok;
@@ -304,7 +327,8 @@ function auth_does_password_match(&$db, &$userObj, $cleartext_password)
         case 'MD5':
         case 'DB':
         default:
-            $ret->status_ok = ($userObj->comparePassword($db, $cleartext_password) == tl::OK);
+            $ret->status_ok = ($userObj->comparePassword($db,
+                $cleartext_password) == tl::OK);
             $ret->msg = 'ok';
             break;
     }
@@ -324,7 +348,8 @@ function getUserFieldsFromLDAP($login, $ldapCfg)
     $ret = new stdClass();
 
     foreach ($k2l as $p => $ldf) {
-        $ret->$p = ldap_get_field_from_username($ldapCfg, $login, strtolower($ldapCfg['ldap_' . $ldf . '_field']));
+        $ret->$p = ldap_get_field_from_username($ldapCfg, $login,
+            strtolower($ldapCfg['ldap_' . $ldf . '_field']));
     }
 
     // Defaults
@@ -365,7 +390,11 @@ function doSSOWebServerVar(&$dbHandler, $authCfg = null)
             'users'
         ));
 
-        $sql = "/* $debugMsg */" . "SELECT login,role_id,email,first,last,active " . "FROM {$tables['users']} " . "WHERE active = 1 AND " . " {$authCfg['SSO_user_target_dbfield']} = '" . $dbHandler->prepare_string($userIdentity) . "'";
+        $sql = "/* $debugMsg */" .
+            "SELECT login,role_id,email,first,last,active " .
+            "FROM {$tables['users']} " . "WHERE active = 1 AND " .
+            " {$authCfg['SSO_user_target_dbfield']} = '" .
+            $dbHandler->prepare_string($userIdentity) . "'";
 
         $rs = $dbHandler->get_recordset($sql);
 
@@ -390,9 +419,12 @@ function doSSOWebServerVar(&$dbHandler, $authCfg = null)
 
         if ($loginKO) {
             if ($accountQty > 1) {
-                $ret['msg'] = TLS("audit_login_sso_failed_multiple_matches", $_SERVER['REMOTE_ADDR'], $accountQty, $userIdentity, $authCfg['SSO_user_target_dbfield']);
+                $ret['msg'] = TLS("audit_login_sso_failed_multiple_matches",
+                    $_SERVER['REMOTE_ADDR'], $accountQty, $userIdentity,
+                    $authCfg['SSO_user_target_dbfield']);
             } else {
-                $ret['msg'] = TLS("audit_login_failed_silence", $_SERVER['REMOTE_ADDR']);
+                $ret['msg'] = TLS("audit_login_failed_silence",
+                    $_SERVER['REMOTE_ADDR']);
             }
             logAuditEvent($result['msg'], "LOGIN_FAILED", "users");
         }
@@ -420,7 +452,10 @@ function doSessionSetUp(&$dbHandler, &$userObj)
 
     // Block two sessions within one browser
     if (isset($_SESSION['currentUser']) && ! is_null($_SESSION['currentUser'])) {
-        $ret['msg'] = lang_get('login_msg_session_exists1') . ' <a style="color:white;" href="logout.php">' . lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+        $ret['msg'] = lang_get('login_msg_session_exists1') .
+            ' <a style="color:white;" href="logout.php">' .
+            lang_get('logout_link') . '</a>' .
+            lang_get('login_msg_session_exists2');
     } else {
         // Setting user's session information
         $_SESSION['currentUser'] = $userObj;

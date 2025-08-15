@@ -140,7 +140,8 @@ class testsuite extends tlObjectWithAttachments
      * $ret['id'] -> when status_ok=1, id of the new element
      * rev :
      */
-    public function create($parent_id, $name, $details, $order = null, $check_duplicate_name = 0, $action_on_duplicate_name = 'allow_repeat')
+    public function create($parent_id, $name, $details, $order = null,
+        $check_duplicate_name = 0, $action_on_duplicate_name = 'allow_repeat')
     {
         static $l18n;
         static $cfg;
@@ -150,7 +151,8 @@ class testsuite extends tlObjectWithAttachments
             $cfg['node_order'] = config_get('treemenu_default_testsuite_order');
 
             $l18n = array();
-            $l18n['component_name_already_exists'] = lang_get('component_name_already_exists');
+            $l18n['component_name_already_exists'] = lang_get(
+                'component_name_already_exists');
         }
 
         if (is_null($order)) {
@@ -161,9 +163,10 @@ class testsuite extends tlObjectWithAttachments
             // get all siblings, then calculate bottom
             // this way theorically each will be a different order.
             // this can be good when ordering
-            $node_order = $this->tree_manager->getBottomOrder($parent_id, array(
-                'node_type' => 'testsuite'
-            )) + 1;
+            $node_order = $this->tree_manager->getBottomOrder($parent_id,
+                array(
+                    'node_type' => 'testsuite'
+                )) + 1;
         } else {
             $node_order = $order;
         }
@@ -178,26 +181,32 @@ class testsuite extends tlObjectWithAttachments
         );
 
         if ($check_duplicate_name) {
-            $check = $this->tree_manager->nodeNameExists($name, $this->my_node_type, null, $parent_id);
+            $check = $this->tree_manager->nodeNameExists($name,
+                $this->my_node_type, null, $parent_id);
             if ($check['status'] == 1) {
                 if ($action_on_duplicate_name == 'block') {
                     $ret['status_ok'] = 0;
-                    $ret['msg'] = sprintf($l18n['component_name_already_exists'], $name);
+                    $ret['msg'] = sprintf(
+                        $l18n['component_name_already_exists'], $name);
                 } else {
 
                     $ret['status_ok'] = 1;
                     if ($action_on_duplicate_name == 'generate_new') {
 
                         $desired_name = $name;
-                        $name = $cfg['prefix_name_for_copy'] . " " . $desired_name;
+                        $name = $cfg['prefix_name_for_copy'] . " " .
+                            $desired_name;
 
                         if (strlen($name) > self::MAXLEN_NAME) {
                             $len2cut = strlen($cfg['prefix_name_for_copy']);
-                            $name = $cfg['prefix_name_for_copy'] . substr($desired_name, 0, self::MAXLEN_NAME - $len2cut);
+                            $name = $cfg['prefix_name_for_copy'] .
+                                substr($desired_name, 0,
+                                    self::MAXLEN_NAME - $len2cut);
                         }
                         $ret['name'] = $name;
 
-                        $ret['msg'] = sprintf(lang_get('created_with_new_name'), $name, $desired_name);
+                        $ret['msg'] = sprintf(lang_get('created_with_new_name'),
+                            $name, $desired_name);
                         $ret['name_changed'] = true;
                     }
                 }
@@ -206,8 +215,11 @@ class testsuite extends tlObjectWithAttachments
 
         if ($ret['status_ok']) {
             // get a new id
-            $tsuite_id = $this->tree_manager->new_node($parent_id, $this->my_node_type, $name, $node_order);
-            $sql = " INSERT INTO {$this->tables['testsuites']} (id,details) " . " VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
+            $tsuite_id = $this->tree_manager->new_node($parent_id,
+                $this->my_node_type, $name, $node_order);
+            $sql = " INSERT INTO {$this->tables['testsuites']} (id,details) " .
+                " VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) .
+                "')";
 
             $result = $this->db->exec_query($sql);
             if ($result) {
@@ -233,21 +245,25 @@ class testsuite extends tlObjectWithAttachments
      * @internal Revisions
      *           20100904 - franciscom - added node_order
      */
-    public function update($id, $name, $details, $parent_id = null, $node_order = null)
+    public function update($id, $name, $details, $parent_id = null,
+        $node_order = null)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         $ret['status_ok'] = 0;
         $ret['msg'] = '';
 
         $safeID = intval($id);
-        $check = $this->tree_manager->nodeNameExists($name, $this->my_node_type, $safeID, $parent_id);
+        $check = $this->tree_manager->nodeNameExists($name, $this->my_node_type,
+            $safeID, $parent_id);
 
         if ($check['status'] == 0) {
             $where = " WHERE id = {$safeID} ";
 
             // Work on enity table
             if (! is_null($details)) {
-                $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " . " SET details = '" . $this->db->prepare_string($details) . "'" . $where;
+                $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
+                    " SET details = '" . $this->db->prepare_string($details) .
+                    "'" . $where;
                 $result = $this->db->exec_query($sql);
             }
 
@@ -260,7 +276,8 @@ class testsuite extends tlObjectWithAttachments
             }
 
             if (! is_null($node_order) && intval($node_order) > 0) {
-                $sql = ' SET node_order=' . $this->db->prepare_int(intval($node_order));
+                $sql = ' SET node_order=' .
+                    $this->db->prepare_int(intval($node_order));
                 $sql = $sqlUpd . $sql . $where;
                 $result = $this->db->exec_query($sql);
             }
@@ -302,7 +319,7 @@ class testsuite extends tlObjectWithAttachments
      *
      * ATTENTION: may be in future this can be refactored, and written better.
      */
-    private function delete($unsafe_id)
+    public function delete($unsafe_id)
     {
         $tcase_mgr = new testcase($this->db);
         $id = intval($unsafe_id);
@@ -323,7 +340,8 @@ class testsuite extends tlObjectWithAttachments
         $sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
         $this->db->exec_query($sql);
 
-        $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . "WHERE id={$id} AND node_type_id=" . $this->my_node_type;
+        $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " .
+            "WHERE id={$id} AND node_type_id=" . $this->my_node_type;
         $result = $this->db->exec_query($sql);
         if ($result) {
             $ctx = array(
@@ -369,7 +387,9 @@ class testsuite extends tlObjectWithAttachments
                 break;
         }
 
-        $sql .= " NH.parent_id " . " FROM {$this->tables['testsuites']} TS " . " JOIN {$this->tables['nodes_hierarchy']} NH " . " ON NH.id = TS.id " . " WHERE NH.name = '" . $this->db->prepare_string($name) . "'";
+        $sql .= " NH.parent_id " . " FROM {$this->tables['testsuites']} TS " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH " . " ON NH.id = TS.id " .
+            " WHERE NH.name = '" . $this->db->prepare_string($name) . "'";
 
         if (! is_null($parent_id)) {
             $sql .= " AND NH.parent_id = " . $this->db->prepare_int($parent_id);
@@ -380,8 +400,7 @@ class testsuite extends tlObjectWithAttachments
             $sql .= " AND TS.id != {$my['opt']['id']} ";
         }
 
-        $rs = $this->db->get_recordset($sql);
-        return $rs;
+        return $this->db->get_recordset($sql);
     }
 
     /*
@@ -412,7 +431,10 @@ class testsuite extends tlObjectWithAttachments
 
         $f2g = is_null($my['opt']['fields']) ? 'TS.*, NH.name, NH.node_type_id, NH.node_order, NH.parent_id' : $my['opt']['fields'];
 
-        $sql = "/* $debugMsg */ SELECT {$f2g} " . "  FROM {$this->tables['testsuites']} TS " . "  JOIN {$this->tables['nodes_hierarchy']} NH ON TS.id = NH.id " . "  WHERE TS.id ";
+        $sql = "/* $debugMsg */ SELECT {$f2g} " .
+            "  FROM {$this->tables['testsuites']} TS " .
+            "  JOIN {$this->tables['nodes_hierarchy']} NH ON TS.id = NH.id " .
+            "  WHERE TS.id ";
 
         $sql .= is_array($id) ? " IN (" . implode(',', $id) . ")" : " = {$id} ";
         $sql .= $my['opt']['orderByClause'];
@@ -442,10 +464,12 @@ class testsuite extends tlObjectWithAttachments
      */
     public function get_all()
     {
-        $sql = " SELECT testsuites.*, nodes_hierarchy.name " . " FROM {$this->tables['testsuites']} testsuites, " . " {$this->tables['nodes_hierarchy']} nodes_hierarchy " . " WHERE testsuites.id = nodes_hierarchy.id";
+        $sql = " SELECT testsuites.*, nodes_hierarchy.name " .
+            " FROM {$this->tables['testsuites']} testsuites, " .
+            " {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
+            " WHERE testsuites.id = nodes_hierarchy.id";
 
-        $recordset = $this->db->get_recordset($sql);
-        return $recordset;
+        return $this->db->get_recordset($sql);
     }
 
     /**
@@ -459,7 +483,8 @@ class testsuite extends tlObjectWithAttachments
      *
      * returns: -
      */
-    public function show(&$smarty, $guiObj, $template_dir, $id, $options = null, $sqlResult = '', $action = 'update', $modded_item_id = 0)
+    public function show(&$smarty, $guiObj, $template_dir, $id, $options = null,
+        $sqlResult = '', $action = 'update', $modded_item_id = 0)
     {
         $gui = is_null($guiObj) ? new stdClass() : $guiObj;
         $gui->cf = '';
@@ -481,8 +506,10 @@ class testsuite extends tlObjectWithAttachments
         }
 
         // attachments management on page
-        $gui->fileUploadURL = $_SESSION['basehref'] . $this->getFileUploadRelativeURL($id);
-        $gui->delAttachmentURL = $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($id);
+        $gui->fileUploadURL = $_SESSION['basehref'] .
+            $this->getFileUploadRelativeURL($id);
+        $gui->delAttachmentURL = $_SESSION['basehref'] .
+            $this->getDeleteAttachmentRelativeURL($id);
         $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
         $gui->fileUploadMsg = '';
 
@@ -499,10 +526,12 @@ class testsuite extends tlObjectWithAttachments
 
         $gui->item_id = $tsuite_id = $id;
         if (! property_exists($gui, 'tproject_id')) {
-            $gui->tproject_id = $this->getTestProjectFromTestSuite($tsuite_id, null);
+            $gui->tproject_id = $this->getTestProjectFromTestSuite($tsuite_id,
+                null);
         }
 
-        $gui->modify_tc_rights = has_rights($this->db, "mgt_modify_tc", $gui->tproject_id);
+        $gui->modify_tc_rights = has_rights($this->db, "mgt_modify_tc",
+            $gui->tproject_id);
 
         if ($my['options']['show_mode'] == 'readonly') {
             $gui->modify_tc_rights = 'no';
@@ -510,18 +539,21 @@ class testsuite extends tlObjectWithAttachments
 
         $gui->assign_keywords = 0;
         if (property_exists($gui, 'user')) {
-            $yn = $gui->user->hasRight($this->db, 'mgt_modify_key', $gui->tproject_id);
+            $yn = $gui->user->hasRight($this->db, 'mgt_modify_key',
+                $gui->tproject_id);
             $gui->assign_keywords = ($yn == "yes");
         }
 
-        $gui->container_data = $this->get_by_id($id, array(
-            'renderImageInline' => true
-        ));
-        $gui->moddedItem = $gui->container_data;
-        if ($modded_item_id) {
-            $gui->moddedItem = $this->get_by_id($modded_item_id, array(
+        $gui->container_data = $this->get_by_id($id,
+            array(
                 'renderImageInline' => true
             ));
+        $gui->moddedItem = $gui->container_data;
+        if ($modded_item_id) {
+            $gui->moddedItem = $this->get_by_id($modded_item_id,
+                array(
+                    'renderImageInline' => true
+                ));
         }
 
         $gui->cf = $this->html_table_of_custom_field_values($id);
@@ -575,7 +607,9 @@ class testsuite extends tlObjectWithAttachments
      * returns: -
      *
      */
-    public function viewer_edit_new(&$smarty, $template_dir, $webEditorHtmlNames, $oWebEditor, $action, $parent_id, $id = null, $messages = null, $userTemplateKey = null, $userInput = null)
+    public function viewer_edit_new(&$smarty, $template_dir, $webEditorHtmlNames,
+        $oWebEditor, $action, $parent_id, $id = null, $messages = null,
+        $userTemplateKey = null, $userInput = null)
     {
         $internalMsg = array(
             'result_msg' => null,
@@ -591,7 +625,8 @@ class testsuite extends tlObjectWithAttachments
         $useUserInput = is_null($userInput) ? 0 : 1;
         $pnode_info = $this->tree_manager->get_node_hierarchy_info($parent_id);
 
-        $parent_info['description'] = lang_get($this->node_types_id_descr[$pnode_info['node_type_id']]);
+        $parent_info['description'] = lang_get(
+            $this->node_types_id_descr[$pnode_info['node_type_id']]);
         $parent_info['name'] = $pnode_info['name'];
 
         $a_tpl = array(
@@ -618,14 +653,18 @@ class testsuite extends tlObjectWithAttachments
             $webEditorData = $the_data;
         }
 
-        $cf_smarty = $this->html_table_of_custom_field_inputs($id, $parent_id, 'design', '', $userInput);
+        $cf_smarty = $this->html_table_of_custom_field_inputs($id, $parent_id,
+            'design', '', $userInput);
 
         // webeditor
         // templates will be also used after 'add_testsuite', when
         // presenting a new test suite with all other fields empty.
-        if (! $useUserInput && ($action == 'new_testsuite' || $action == 'add_testsuite') && ! is_null($userTemplateKey)) {
+        if (! $useUserInput &&
+            ($action == 'new_testsuite' || $action == 'add_testsuite') &&
+            ! is_null($userTemplateKey)) {
             // need to understand if need to use templates
-            $webEditorData = $this->_initializeWebEditors($webEditorHtmlNames, $userTemplateKey);
+            $webEditorData = $this->_initializeWebEditors($webEditorHtmlNames,
+                $userTemplateKey);
         }
 
         foreach ($webEditorHtmlNames as $key) {
@@ -675,7 +714,8 @@ class testsuite extends tlObjectWithAttachments
      * added option 'preserve_external_id' needed by tcase copy_to()
      *
      */
-    public function copy_to($id, $parent_id, $user_id, $options = null, $mappings = null)
+    public function copy_to($id, $parent_id, $user_id, $options = null,
+        $mappings = null)
     {
         $my['options'] = array(
             'check_duplicate_name' => 0,
@@ -700,7 +740,10 @@ class testsuite extends tlObjectWithAttachments
         $tcase_mgr = new testcase($this->db);
         $tsuite_info = $this->get_by_id($id);
 
-        $op = $this->create($parent_id, $tsuite_info['name'], $tsuite_info['details'], $tsuite_info['node_order'], $my['options']['check_duplicate_name'], $my['options']['action_on_duplicate_name']);
+        $op = $this->create($parent_id, $tsuite_info['name'],
+            $tsuite_info['details'], $tsuite_info['node_order'],
+            $my['options']['check_duplicate_name'],
+            $my['options']['action_on_duplicate_name']);
 
         $op['mappings'][$id] = $op['id'];
         $new_tsuite_id = $op['id'];
@@ -709,9 +752,10 @@ class testsuite extends tlObjectWithAttachments
         // Attachments - always copied
         // Keyword assignment - according to user choice
         // Custom Field values - always copied
-        $oldToNew = $this->copy_attachments($id, $new_tsuite_id);
+        $oldToNew = $this->copyAttachments($id, $new_tsuite_id);
         if (! is_null($oldToNew)) {
-            $this->inlineImageProcessing($new_tsuite_id, $tsuite_info['details'], $oldToNew);
+            $this->inlineImageProcessing($new_tsuite_id, $tsuite_info['details'],
+                $oldToNew);
         }
 
         if ($my['options']['copyKeywords']) {
@@ -734,24 +778,30 @@ class testsuite extends tlObjectWithAttachments
                 switch ($elem['node_type_id']) {
                     case $this->node_types_descr_id['testcase']:
                         // forgotten parameter $mappings caused requirement assignments to use wrong IDs
-                        $tcOp = $tcase_mgr->copy_to($elem['id'], $the_parent_id, $user_id, $copyTCaseOpt, $my['mappings']);
+                        $tcOp = $tcase_mgr->copy_to($elem['id'], $the_parent_id,
+                            $user_id, $copyTCaseOpt, $my['mappings']);
                         $op['mappings'] += $tcOp['mappings'];
                         break;
 
                     case $this->node_types_descr_id['testsuite']:
                         $tsuite_info = $this->get_by_id($elem['id']);
-                        $ret = $this->create($the_parent_id, $tsuite_info['name'], $tsuite_info['details'], $tsuite_info['node_order']);
+                        $ret = $this->create($the_parent_id,
+                            $tsuite_info['name'], $tsuite_info['details'],
+                            $tsuite_info['node_order']);
 
                         $parent_decode[$elem['id']] = $ret['id'];
                         $op['mappings'][$elem['id']] = $ret['id'];
 
-                        $oldToNew = $this->copy_attachments($elem['id'], $ret['id']);
+                        $oldToNew = $this->copyAttachments($elem['id'],
+                            $ret['id']);
                         if (! is_null($oldToNew)) {
-                            $this->inlineImageProcessing($ret['id'], $tsuite_info['details'], $oldToNew);
+                            $this->inlineImageProcessing($ret['id'],
+                                $tsuite_info['details'], $oldToNew);
                         }
 
                         if ($my['options']['copyKeywords']) {
-                            $this->copy_keyword_assignment($elem['id'], $ret['id'], $kmap);
+                            $this->copy_keyword_assignment($elem['id'],
+                                $ret['id'], $kmap);
                         }
                         $this->copy_cfields_values($elem['id'], $ret['id']);
 
@@ -793,8 +843,8 @@ class testsuite extends tlObjectWithAttachments
             $my['filters']['exclude_node_types']['testcase'] = 'exclude_me';
         }
 
-        $subtree = $this->tree_manager->get_subtree($id, $my['filters'], $my['options']);
-        return $subtree;
+        return $this->tree_manager->get_subtree($id, $my['filters'],
+            $my['options']);
     }
 
     /*
@@ -854,7 +904,8 @@ class testsuite extends tlObjectWithAttachments
                     } else {
                         // After first call passing $prefix with right value, avoids a function call
                         // inside of getExternalID();
-                        list ($identity, $prefix, ,) = $tcase_mgr->getExternalID($elem['id'], null, $prefix);
+                        list ($identity, $prefix, ,) = $tcase_mgr->getExternalID(
+                            $elem['id'], null, $prefix);
                         $elem['external_id'] = $identity;
                         $testcases[] = $elem;
                         $parentSet[$elem['parent_id']] = $elem['parent_id'];
@@ -865,14 +916,16 @@ class testsuite extends tlObjectWithAttachments
         }
 
         if ($doit && $details == 'full') {
-            $parentNodes = $this->tree_manager->get_node_hierarchy_info($parentSet);
+            $parentNodes = $this->tree_manager->get_node_hierarchy_info(
+                $parentSet);
 
             $rs = array();
             foreach ($testcases as $idx => $value) {
-                $item = $tcase_mgr->get_last_version_info($value['id'], array(
-                    'output' => 'full',
-                    'get_steps' => true
-                ));
+                $item = $tcase_mgr->get_last_version_info($value['id'],
+                    array(
+                        'output' => 'full',
+                        'get_steps' => true
+                    ));
                 $item['tcversion_id'] = $item['id'];
                 $tsuite['tsuite_name'] = $parentNodes[$value['parent_id']]['name'];
 
@@ -895,13 +948,15 @@ class testsuite extends tlObjectWithAttachments
      * get_children_testcases
      * get only test cases with parent=testsuite without doing a deep search
      */
-    public function get_children_testcases($id, $details = 'simple', $options = null)
+    public function get_children_testcases($id, $details = 'simple',
+        $options = null)
     {
         $testcases = null;
         $only_id = ($details == 'only_id') ? true : false;
-        $subtree = $this->tree_manager->get_children($id, array(
-            'testsuite' => 'exclude_me'
-        ));
+        $subtree = $this->tree_manager->get_children($id,
+            array(
+                'testsuite' => 'exclude_me'
+            ));
         $doit = ! is_null($subtree);
 
         $opt = array(
@@ -927,10 +982,11 @@ class testsuite extends tlObjectWithAttachments
             $rs = array();
             $tcase_mgr = new testcase($this->db);
             foreach ($testcases as $idx => $value) {
-                $item = $tcase_mgr->get_last_version_info($value['id'], array(
-                    'output' => 'full',
-                    'get_steps' => true
-                ));
+                $item = $tcase_mgr->get_last_version_info($value['id'],
+                    array(
+                        'output' => 'full',
+                        'get_steps' => true
+                    ));
                 $item['tcversion_id'] = $item['id'];
                 $parent['tsuite_name'] = $tsuiteName;
 
@@ -962,9 +1018,10 @@ class testsuite extends tlObjectWithAttachments
     public function delete_deep($id)
     {
         // BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
-        $this->tree_manager->delete_subtree_objects($id, $id, '', array(
-            'testcase' => 'exclude_tcversion_nodes'
-        ));
+        $this->tree_manager->delete_subtree_objects($id, $id, '',
+            array(
+                'testcase' => 'exclude_tcversion_nodes'
+            ));
         $this->delete($id);
     }
 
@@ -982,7 +1039,8 @@ class testsuite extends tlObjectWithAttachments
     {
         $wdata = array();
         foreach ($WebEditors as $key => $html_name) {
-            $wdata[$html_name] = getItemTemplateContents($itemTemplateCfgKey, $html_name, '');
+            $wdata[$html_name] = getItemTemplateContents($itemTemplateCfgKey,
+                $html_name, '');
         }
         return $wdata;
     }
@@ -1005,13 +1063,13 @@ class testsuite extends tlObjectWithAttachments
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $sql = "/* $debugMsg */ SELECT keyword_id,keywords.keyword, notes " . " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " . " WHERE keyword_id = keywords.id AND fk_id = {$id}";
+        $sql = "/* $debugMsg */ SELECT keyword_id,keywords.keyword, notes " .
+            " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " .
+            " WHERE keyword_id = keywords.id AND fk_id = {$id}";
         if (! is_null($kw_id)) {
             $sql .= " AND keyword_id = {$kw_id}";
         }
-        $map_keywords = $this->db->fetchRowsIntoMap($sql, 'keyword_id');
-
-        return $map_keywords;
+        return $this->db->fetchRowsIntoMap($sql, 'keyword_id');
     }
 
     /*
@@ -1046,7 +1104,10 @@ class testsuite extends tlObjectWithAttachments
         $options = array_merge($options, (array) $opt);
         $order_by_clause = $options['order_by_clause'];
 
-        $sql = "/* $debugMsg */ SELECT OKW.id AS kw_link,OKW.keyword_id,keywords.keyword " . " FROM {$this->tables['object_keywords']} OKW " . " JOIN {$this->tables['keywords']} keywords " . " ON OKW.keyword_id = keywords.id ";
+        $sql = "/* $debugMsg */ SELECT OKW.id AS kw_link,OKW.keyword_id,keywords.keyword " .
+            " FROM {$this->tables['object_keywords']} OKW " .
+            " JOIN {$this->tables['keywords']} keywords " .
+            " ON OKW.keyword_id = keywords.id ";
 
         if (is_array($id)) {
             $sql .= " AND fk_id IN (" . implode(",", $id) . ") ";
@@ -1064,7 +1125,8 @@ class testsuite extends tlObjectWithAttachments
 
             case 'std':
             default:
-                $map_keywords = $this->db->fetchColumnsIntoMap($sql, 'keyword_id', 'keyword');
+                $map_keywords = $this->db->fetchColumnsIntoMap($sql,
+                    'keyword_id', 'keyword');
                 break;
         }
 
@@ -1079,7 +1141,8 @@ class testsuite extends tlObjectWithAttachments
         $status = 1;
         $kw = $this->getKeywords($id, $kw_id);
         if (empty($kw)) {
-            $sql = "/* $debugMsg */ INSERT INTO {$this->tables['object_keywords']} " . " (fk_id,fk_table,keyword_id) VALUES ($id,'nodes_hierarchy',$kw_id)";
+            $sql = "/* $debugMsg */ INSERT INTO {$this->tables['object_keywords']} " .
+                " (fk_id,fk_table,keyword_id) VALUES ($id,'nodes_hierarchy',$kw_id)";
             $status = $this->db->exec_query($sql) ? 1 : 0;
         }
         return $status;
@@ -1125,7 +1188,8 @@ class testsuite extends tlObjectWithAttachments
      * returns:
      *
      */
-    public function exportTestSuiteDataToXML($container_id, $tproject_id, $optExport = array())
+    public function exportTestSuiteDataToXML($container_id, $tproject_id,
+        $optExport = array())
     {
         static $keywordMgr;
         static $tcase_mgr;
@@ -1155,11 +1219,14 @@ class testsuite extends tlObjectWithAttachments
                 if (isset($optExport['KEYWORDS']) && $optExport['KEYWORDS']) {
                     $kwMap = $this->getKeywords($container_id);
                     if ($kwMap) {
-                        $kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap, true) . "</keywords>";
+                        $kwXML = "<keywords>" .
+                            $keywordMgr->toXMLString($kwMap, true) .
+                            "</keywords>";
                     }
                 }
                 if (isset($optExport['CFIELDS']) && $optExport['CFIELDS']) {
-                    $cfMap = (array) $this->get_linked_cfields_at_design($container_id, null, null, $tproject_id);
+                    $cfMap = (array) $this->get_linked_cfields_at_design(
+                        $container_id, null, null, $tproject_id);
                     if (! empty($cfMap)) {
                         $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
                     }
@@ -1168,13 +1235,15 @@ class testsuite extends tlObjectWithAttachments
                 $attach = [];
                 if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS']) {
                     // get all attachments
-                    $attInfos = $this->attachmentRepository->getAttachmentInfosFor($container_id, $this->attachmentTableName, 'id');
+                    $attInfos = $this->attachmentRepository->getAttachmentInfosFor(
+                        $container_id, $this->attachmentTableName, 'id');
 
                     // get all attachments content and encode it in base64
                     if ($attInfos) {
                         foreach ($attInfos as $axInfo) {
                             $aID = $axInfo["id"];
-                            $content = $this->attachmentRepository->getAttachmentContent($aID, $axInfo);
+                            $content = $this->attachmentRepository->getAttachmentContent(
+                                $aID, $axInfo);
 
                             if ($content != null) {
                                 $attach[$aID]["id"] = $aID;
@@ -1182,14 +1251,23 @@ class testsuite extends tlObjectWithAttachments
                                 $attach[$aID]["file_type"] = $axInfo["file_type"];
                                 $attach[$aID]["title"] = $axInfo["title"];
                                 $attach[$aID]["date_added"] = $axInfo["date_added"];
-                                $attach[$aID]["content"] = base64_encode($content);
+                                $attach[$aID]["content"] = base64_encode(
+                                    $content);
                             }
                         }
                     }
 
                     if (! empty($attach)) {
                         $attchRootElem = "<attachments>\n{{XMLCODE}}</attachments>\n";
-                        $attchElemTemplate = "\t<attachment>\n" . "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" . "\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" . "\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" . "\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" . "\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" . "\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" . "\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" . "\t</attachment>\n";
+                        $attchElemTemplate = "\t<attachment>\n" .
+                            "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
+                            "\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
+                            "\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+                            "\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
+                            "\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
+                            "\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
+                            "\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
+                            "\t</attachment>\n";
 
                         $attchDecode = array(
                             "||ATTACHMENT_ID||" => "id",
@@ -1200,11 +1278,15 @@ class testsuite extends tlObjectWithAttachments
                             "||ATTACHMENT_DATE_ADDED||" => "date_added",
                             "||ATTACHMENT_CONTENT||" => "content"
                         );
-                        $attachXML = exportDataToXML($attach, $attchRootElem, $attchElemTemplate, $attchDecode, true);
+                        $attachXML = exportDataToXML($attach, $attchRootElem,
+                            $attchElemTemplate, $attchDecode, true);
                     }
                 }
             }
-            $xmlTC = '<testsuite id="' . $tsuiteData['id'] . '" ' . 'name="' . htmlspecialchars($tsuiteData['name']) . '" >' . "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" . "<details><![CDATA[{$tsuiteData['details']}]]></details> \n{$kwXML}{$cfXML}{$attachXML}";
+            $xmlTC = '<testsuite id="' . $tsuiteData['id'] . '" ' . 'name="' .
+                htmlspecialchars($tsuiteData['name']) . '" >' .
+                "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
+                "<details><![CDATA[{$tsuiteData['details']}]]></details> \n{$kwXML}{$cfXML}{$attachXML}";
         } else {
             $xmlTC = "<testcases>";
         }
@@ -1226,12 +1308,14 @@ class testsuite extends tlObjectWithAttachments
                 $cNode = $childNodes[$idx];
                 $nTable = $cNode['node_table'];
                 if ($doRecursion && $nTable == 'testsuites') {
-                    $xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'], $tproject_id, $optExport);
+                    $xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],
+                        $tproject_id, $optExport);
                 } elseif ($nTable == 'testcases') {
                     if (is_null($tcase_mgr)) {
                         $tcase_mgr = new testcase($this->db);
                     }
-                    $xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'], testcase::LATEST_VERSION, $tproject_id, true, $optExport);
+                    $xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],
+                        testcase::LATEST_VERSION, $tproject_id, true, $optExport);
 
                     // 20140816
                     // Collect and do cache of all test case relations that exists inside this test suite.
@@ -1240,7 +1324,8 @@ class testsuite extends tlObjectWithAttachments
                         foreach ($relSet['relations'] as $key => $rel) {
                             // If we have already found this relation, skip it.
                             if (! in_array($rel['id'], $relCache)) {
-                                $relXmlData .= $tcase_mgr->exportRelationToXML($rel, $relSet['item']);
+                                $relXmlData .= $tcase_mgr->exportRelationToXML(
+                                    $rel, $relSet['item']);
                                 $relCache[] = $rel['id'];
                             }
                         }
@@ -1267,13 +1352,14 @@ class testsuite extends tlObjectWithAttachments
      *
      * rev :
      */
-    public function get_linked_cfields_at_design($id, $parent_id = null, $filters = null, $tproject_id = null, $access_key = 'id')
+    public function get_linked_cfields_at_design($id, $parent_id = null,
+        $filters = null, $tproject_id = null, $access_key = 'id')
     {
         if (! $tproject_id) {
             $tproject_id = $this->getTestProjectFromTestSuite($id, $parent_id);
         }
-        $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id, cfield_mgr::CF_ENABLED, $filters, 'testsuite', $id, $access_key);
-        return $cf_map;
+        return $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,
+            cfield_mgr::CF_ENABLED, $filters, 'testsuite', $id, $access_key);
     }
 
     /**
@@ -1281,8 +1367,8 @@ class testsuite extends tlObjectWithAttachments
      */
     public function getTestProjectFromTestSuite($id, $parent_id)
     {
-        $tproject_id = $this->tree_manager->getTreeRoot((! is_null($id) && $id > 0) ? $id : $parent_id);
-        return $tproject_id;
+        return $this->tree_manager->getTreeRoot(
+            (! is_null($id) && $id > 0) ? $id : $parent_id);
     }
 
     /*
@@ -1302,16 +1388,18 @@ class testsuite extends tlObjectWithAttachments
      * rev :
      * 20110129 - franciscom - BUGID 4202
      */
-    private function get_linked_cfields_at_execution($id, $parent_id = null, $filters = null, $tproject_id = null)
+    private function get_linked_cfields_at_execution($id, $parent_id = null,
+        $filters = null, $tproject_id = null)
     {
         if (! $tproject_id) {
-            $the_path = $this->tree_manager->get_path(! is_null($id) ? $id : $parent_id);
+            $the_path = $this->tree_manager->get_path(
+                ! is_null($id) ? $id : $parent_id);
             $path_len = count($the_path);
             $tproject_id = ($path_len > 0) ? $the_path[$path_len - 1]['parent_id'] : $parent_id;
         }
 
-        $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id, cfield_mgr::CF_ENABLED, $filters, 'testsuite', $id);
-        return $cf_map;
+        return $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,
+            cfield_mgr::CF_ENABLED, $filters, 'testsuite', $id);
     }
 
     /*
@@ -1327,7 +1415,8 @@ class testsuite extends tlObjectWithAttachments
      * returns: html string
      *
      */
-    public function html_table_of_custom_field_inputs($id, $parent_id = null, $scope = 'design', $name_suffix = '', $input_values = null)
+    public function html_table_of_custom_field_inputs($id, $parent_id = null,
+        $scope = 'design', $name_suffix = '', $input_values = null)
     {
         $cf_smarty = '';
         $method_suffix = $scope == 'design' ? $scope : 'execution';
@@ -1335,7 +1424,8 @@ class testsuite extends tlObjectWithAttachments
         $cf_map = $this->$method_name($id, $parent_id);
 
         if (! is_null($cf_map)) {
-            $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map, $name_suffix, $input_values);
+            $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,
+                $name_suffix, $input_values);
         }
         return $cf_smarty;
     }
@@ -1353,7 +1443,8 @@ class testsuite extends tlObjectWithAttachments
      * returns: html string
      *
      */
-    public function html_table_of_custom_field_values($id, $scope = 'design', $show_on_execution = null, $tproject_id = null, $formatOptions = null)
+    public function html_table_of_custom_field_values($id, $scope = 'design',
+        $show_on_execution = null, $tproject_id = null, $formatOptions = null)
     {
         $filters = array(
             'show_on_execution' => $show_on_execution
@@ -1378,12 +1469,14 @@ class testsuite extends tlObjectWithAttachments
         $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
 
         if ($scope == 'design') {
-            $cf_map = $this->get_linked_cfields_at_design($id, $parent_id, $filters, $tproject_id);
+            $cf_map = $this->get_linked_cfields_at_design($id, $parent_id,
+                $filters, $tproject_id);
         } else {
             // Important: remember that for Test Suite, custom field value CAN NOT BE changed
             // at execution time just displayed.
             // 20110129 - if we know test project id is better to use it
-            $cf_map = $this->get_linked_cfields_at_execution($id, null, null, $tproject_id);
+            $cf_map = $this->get_linked_cfields_at_execution($id, null, null,
+                $tproject_id);
         }
 
         if (! is_null($cf_map)) {
@@ -1392,8 +1485,13 @@ class testsuite extends tlObjectWithAttachments
                 // BUGID 3989
                 if ($cf_info['node_id'] || $show_cf) {
                     // true => do not create input in audit log
-                    $label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf_info['label'], null, true));
-                    $cf_smarty .= "<tr><td {$label_css_style} >" . htmlspecialchars($label) . "</td>" . "<td {$value_css_style}>" . $this->cfield_mgr->string_custom_field_value($cf_info, $id) . "</td></tr>\n";
+                    $label = str_replace(TL_LOCALIZE_TAG, '',
+                        lang_get($cf_info['label'], null, true));
+                    $cf_smarty .= "<tr><td {$label_css_style} >" .
+                        htmlspecialchars($label) . "</td>" .
+                        "<td {$value_css_style}>" .
+                        $this->cfield_mgr->string_custom_field_value($cf_info,
+                            $id) . "</td></tr>\n";
                 }
             }
         }
@@ -1406,9 +1504,10 @@ class testsuite extends tlObjectWithAttachments
     /**
      * Copy attachments from source test suite to target test suite
      */
-    private function copy_attachments($source_id, $target_id)
+    private function copyAttachments($source_id, $target_id)
     {
-        return $this->attachmentRepository->copyAttachments($source_id, $target_id, $this->attachmentTableName);
+        return $this->attachmentRepository->copyAttachments($source_id,
+            $target_id, $this->attachmentTableName);
     }
 
     /**
@@ -1440,11 +1539,17 @@ class testsuite extends tlObjectWithAttachments
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         // Get source_id cfields assignment
-        $sourceItems = $this->cfield_mgr->getByLinkID($source_id, array(
-            'scope' => 'design'
-        ));
+        $sourceItems = $this->cfield_mgr->getByLinkID($source_id,
+            array(
+                'scope' => 'design'
+            ));
         if (! is_null($sourceItems)) {
-            $sql = "/* $debugMsg */ " . " INSERT INTO {$this->tables['cfield_design_values']} " . " (field_id,value,node_id) " . " SELECT field_id,value,{$target_id} AS target_id" . " FROM {$this->tables['cfield_design_values']} " . " WHERE node_id = {$source_id} ";
+            $sql = "/* $debugMsg */ " .
+                " INSERT INTO {$this->tables['cfield_design_values']} " .
+                " (field_id,value,node_id) " .
+                " SELECT field_id,value,{$target_id} AS target_id" .
+                " FROM {$this->tables['cfield_design_values']} " .
+                " WHERE node_id = {$source_id} ";
             $this->db->exec_query($sql);
         }
     }
@@ -1461,18 +1566,20 @@ class testsuite extends tlObjectWithAttachments
         );
         $my['options'] = array_merge($my['options'], (array) $options);
 
-        $subtree = $this->tree_manager->get_children($id, array(
-            'testcase' => 'exclude_me'
-        ));
+        $subtree = $this->tree_manager->get_children($id,
+            array(
+                'testcase' => 'exclude_me'
+            ));
         if (! empty($subtree)) {
             foreach ($subtree as $the_key => $elem) {
                 $itemKeys[] = $elem['id'];
             }
 
             if ($my['options']['details'] == 'full') {
-                $itemSet = $this->get_by_id($itemKeys, array(
-                    'orderByClause' => 'ORDER BY node_order'
-                ));
+                $itemSet = $this->get_by_id($itemKeys,
+                    array(
+                        'orderByClause' => 'ORDER BY node_order'
+                    ));
             } else {
                 $itemSet = $itemKeys;
             }
@@ -1486,8 +1593,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function get_branch($id)
     {
-        $branch = $this->tree_manager->get_subtree_list($id, $this->my_node_type);
-        return $branch;
+        return $this->tree_manager->get_subtree_list($id, $this->my_node_type);
     }
 
     /**
@@ -1513,20 +1619,26 @@ class testsuite extends tlObjectWithAttachments
 
             // what checks need to be done ?
             // 1. test project exist
-            $pinfo = $this->tree_manager->get_node_hierarchy_info($item->testProjectID);
-            if (is_null($pinfo) || $this->node_types_id_descr[$pinfo['node_type_id']] != 'testproject') {
+            $pinfo = $this->tree_manager->get_node_hierarchy_info(
+                $item->testProjectID);
+            if (is_null($pinfo) ||
+                $this->node_types_id_descr[$pinfo['node_type_id']] !=
+                'testproject') {
                 throw new Exception('Test project ID does not exist');
             }
 
             // 2. parentID exists and its node type can be:
             // testproject,testsuite
             //
-            $pinfo = $this->tree_manager->get_node_hierarchy_info($item->parentID);
+            $pinfo = $this->tree_manager->get_node_hierarchy_info(
+                $item->parentID);
             if (is_null($pinfo)) {
                 throw new Exception('Parent ID does not exist');
             }
 
-            if ($this->node_types_id_descr[$pinfo['node_type_id']] != 'testproject' && $this->node_types_id_descr[$pinfo['node_type_id']] != 'testsuite') {
+            if ($this->node_types_id_descr[$pinfo['node_type_id']] !=
+                'testproject' &&
+                $this->node_types_id_descr[$pinfo['node_type_id']] != 'testsuite') {
                 throw new Exception('Node Type for Parent ID is not valid');
             }
 
@@ -1534,15 +1646,18 @@ class testsuite extends tlObjectWithAttachments
             $name = trim($item->name);
             $op = $this->checkNameExistence($name, $item->parentID);
             if (! $op['status_ok']) {
-                throw new Exception('Test suite name is already in use at same level');
+                throw new Exception(
+                    'Test suite name is already in use at same level');
             }
         } catch (Exception $e) {
             throw $e; // rethrow
         }
 
-        $id = $this->tree_manager->new_node($item->parentID, $this->my_node_type, $name, intval($item->order));
+        $id = $this->tree_manager->new_node($item->parentID, $this->my_node_type,
+            $name, intval($item->order));
 
-        $sql = " INSERT INTO {$this->tables['testsuites']} (id,details) " . " VALUES ({$id},'" . $this->db->prepare_string($item->notes) . "')";
+        $sql = " INSERT INTO {$this->tables['testsuites']} (id,details) " .
+            " VALUES ({$id},'" . $this->db->prepare_string($item->notes) . "')";
 
         $result = $this->db->exec_query($sql);
         return $result ? $id : 0;
@@ -1562,7 +1677,8 @@ class testsuite extends tlObjectWithAttachments
             'id' => intval($id)
         );
         if ($this->get_by_name($name, intval($parentID), $getOpt)) {
-            $check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'), $name);
+            $check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'),
+                $name);
             $check_op['status_ok'] = 0;
         }
         return $check_op;
@@ -1575,8 +1691,8 @@ class testsuite extends tlObjectWithAttachments
     public function getFileUploadRelativeURL($id)
     {
         // I've to use testsuiteID because this is how is name on containerEdit.php
-        $url = "lib/testcases/containerEdit.php?containerType=testsuite&doAction=fileUpload&testsuiteID=" . intval($id);
-        return $url;
+        return "lib/testcases/containerEdit.php?containerType=testsuite&doAction=fileUpload&testsuiteID=" .
+            intval($id);
     }
 
     /**
@@ -1586,8 +1702,8 @@ class testsuite extends tlObjectWithAttachments
     private function getDeleteAttachmentRelativeURL($id)
     {
         // I've to use testsuiteID because this is how is name on containerEdit.php
-        $url = "lib/testcases/containerEdit.php?containerType=testsuite&doAction=deleteFile&testsuiteID=" . intval($id) . "&file_id=";
-        return $url;
+        return "lib/testcases/containerEdit.php?containerType=testsuite&doAction=deleteFile&testsuiteID=" .
+            intval($id) . "&file_id=";
     }
 
     /**
@@ -1600,7 +1716,8 @@ class testsuite extends tlObjectWithAttachments
     {
         static $attSet;
         if (! $attSet || ! isset($attSet[$id])) {
-            $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor($id, $this->attachmentTableName, 'id');
+            $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor(
+                $id, $this->attachmentTableName, 'id');
             $beginTag = '[tlInlineImage]';
             $endTag = '[/tlInlineImage]';
         }
@@ -1615,7 +1732,8 @@ class testsuite extends tlObjectWithAttachments
         //
         // CRITIC: skipCheck is needed to render OK when creating report on Pseudo-Word format.
         $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
-        $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=%sec%&id=%id%"></p>';
+        $img = '<p><img src="' . $bhref .
+            '/lib/attachments/attachmentdownload.php?skipCheck=%sec%&id=%id%"></p>';
 
         $key2check = array(
             'details'
@@ -1642,15 +1760,18 @@ class testsuite extends tlObjectWithAttachments
                         if (($elc = count($yy)) > 0) {
                             $atx = $yy[0];
                             try {
-                                if (isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image']) {
-                                    $sec = hash('sha256', $attSet[$id][$atx]['file_name']);
-                                    $ghost .= str_replace(array(
-                                        '%id%',
-                                        '%sec%'
-                                    ), array(
-                                        $atx,
-                                        $sec
-                                    ), $img);
+                                if (isset($attSet[$id][$atx]) &&
+                                    $attSet[$id][$atx]['is_image']) {
+                                    $sec = hash('sha256',
+                                        $attSet[$id][$atx]['file_name']);
+                                    $ghost .= str_replace(
+                                        array(
+                                            '%id%',
+                                            '%sec%'
+                                        ), array(
+                                            $atx,
+                                            $sec
+                                        ), $img);
                                 }
                                 $lim = $elc - 1;
                                 for ($cpx = 1; $cpx <= $lim; $cpx ++) {
@@ -1679,7 +1800,9 @@ class testsuite extends tlObjectWithAttachments
     private function updateDetails($id, $details)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " . " SET details = '" . $this->db->prepare_string($details) . "'" . " WHERE id = " . intval($id);
+        $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
+            " SET details = '" . $this->db->prepare_string($details) . "'" .
+            " WHERE id = " . intval($id);
         $this->db->exec_query($sql);
     }
 
@@ -1688,7 +1811,8 @@ class testsuite extends tlObjectWithAttachments
     private function inlineImageProcessing($id, $details, $rosettaStone)
     {
         // get all attachments, then check is there are images
-        $att = $this->attachmentRepository->getAttachmentInfosFor($id, $this->attachmentTableName, 'id');
+        $att = $this->attachmentRepository->getAttachmentInfosFor($id,
+            $this->attachmentTableName, 'id');
 
         foreach ($rosettaStone as $oid => $nid) {
             if ($att[$nid]['is_image']) {
@@ -1715,8 +1839,8 @@ class testsuite extends tlObjectWithAttachments
     {
         $tproject_mgr = new testproject($this->db);
         $prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
-        $dl = $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . '&item=testsuite&id=' . $id;
-        return $dl;
+        return $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) .
+            '&item=testsuite&id=' . $id;
     }
 
     /**
@@ -1726,9 +1850,10 @@ class testsuite extends tlObjectWithAttachments
     {
         $testcases = null;
         $items = null;
-        $subtree = $this->tree_manager->get_children($id, array(
-            'testsuite' => 'exclude_me'
-        ));
+        $subtree = $this->tree_manager->get_children($id,
+            array(
+                'testsuite' => 'exclude_me'
+            ));
 
         $doit = ! is_null($subtree);
 
@@ -1809,9 +1934,8 @@ class testsuite extends tlObjectWithAttachments
             $sql .= " AND KW.keyword LIKE '{$target}%' ";
         }
 
-        $items = $this->db->fetchRowsIntoMap($sql, 'tsuite_id', database::CUMULATIVE);
-
-        return $items;
+        return $this->db->fetchRowsIntoMap($sql, 'tsuite_id',
+            database::CUMULATIVE);
     }
 
     /**
@@ -1854,7 +1978,8 @@ class testsuite extends tlObjectWithAttachments
 
         switch ($my['opt']['output']) {
             case 'html_options':
-                $items = $this->db->fetchColumnsIntoMap($sql, 'keyword_id', 'keyword');
+                $items = $this->db->fetchColumnsIntoMap($sql, 'keyword_id',
+                    'keyword');
                 if (null != $items && $my['opt']['add_blank']) {
                     $items = array(
                         0 => ''
@@ -1864,7 +1989,8 @@ class testsuite extends tlObjectWithAttachments
                 break;
 
             default:
-                $items = $this->db->fetchRowsIntoMap($sql, $my['opt']['accessKey']);
+                $items = $this->db->fetchRowsIntoMap($sql,
+                    $my['opt']['accessKey']);
                 break;
         }
 
@@ -1900,7 +2026,9 @@ class testsuite extends tlObjectWithAttachments
         // Get tree of Test Suites
         $tsList = $rootTestSuiteID;
 
-        $tsSubList = trim($this->tree_manager->get_subtree_list($rootTestSuiteID, $this->my_node_type));
+        $tsSubList = trim(
+            $this->tree_manager->get_subtree_list($rootTestSuiteID,
+                $this->my_node_type));
 
         if ('' != $tsSubList) {
             $tsList .= ',' . $tsSubList;
@@ -1955,9 +2083,8 @@ class testsuite extends tlObjectWithAttachments
              WHERE fk_id IN ( {$idSet} )
              AND fk_table = 'nodes_hierarchy' ";
 
-        $kw = $this->db->fetchColumnsIntoMap($sql, 'tsuite_id', 'keyword_id', database::CUMULATIVE);
-
-        return $kw;
+        return $this->db->fetchColumnsIntoMap($sql, 'tsuite_id', 'keyword_id',
+            database::CUMULATIVE);
     }
 
     /**

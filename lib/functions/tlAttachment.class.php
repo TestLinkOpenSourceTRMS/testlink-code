@@ -188,7 +188,8 @@ class tlAttachment extends tlDBObject
      *
      * @return integer returns tl::OK
      */
-    public function create($fkid, $fkTableName, $fName, $destFPath, $fContents, $fType, $fSize, $title, $opt = null)
+    public function create($fkid, $fkTableName, $fName, $destFPath, $fContents,
+        $fType, $fSize, $title, $opt = null)
     {
         $this->_clean();
 
@@ -227,7 +228,8 @@ class tlAttachment extends tlDBObject
 
         // for FS-repository, the path to the repository itself is cut off, so the path is
         // relative to the repository itself
-        $this->destFPath = str_replace($this->repositoryPath . DIRECTORY_SEPARATOR, "", $destFPath);
+        $this->destFPath = str_replace(
+            $this->repositoryPath . DIRECTORY_SEPARATOR, "", $destFPath);
         $this->title = trim($title);
 
         return tl::OK;
@@ -245,7 +247,8 @@ class tlAttachment extends tlDBObject
     public function readFromDB(&$db, $options = self::TLOBJ_O_SEARCH_BY_ID)
     {
         $this->_clean($options);
-        $query = "SELECT id,title,description,file_name,file_type,file_size,date_added," . "compression_type,file_path,fk_id,fk_table FROM {$this->tables['attachments']} ";
+        $query = "SELECT id,title,description,file_name,file_type,file_size,date_added," .
+            "compression_type,file_path,fk_id,fk_table FROM {$this->tables['attachments']} ";
 
         $clauses = null;
         if ($options & self::TLOBJ_O_SEARCH_BY_ID) {
@@ -316,14 +319,17 @@ class tlAttachment extends tlDBObject
         $title = $db->prepare_string($this->title);
         $fType = $db->prepare_string($this->fType);
 
-        $destFPath = is_null($this->destFPath) ? 'NULL' : "'" . $db->prepare_string($this->destFPath) . "'";
+        $destFPath = is_null($this->destFPath) ? 'NULL' : "'" .
+            $db->prepare_string($this->destFPath) . "'";
 
         // for FS-repository the contents are null
-        $fContents = is_null($this->fContents) ? 'NULL' : "'" . base64_encode($this->fContents) . "'";
+        $fContents = is_null($this->fContents) ? 'NULL' : "'" .
+            base64_encode($this->fContents) . "'";
 
         $query = "INSERT INTO {$this->tables['attachments']}
              (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title)
-             VALUES ({$this->fkID},'{$tableName}','{$fName}',{$destFPath},{$this->fSize},'{$this->fType}'," . $db->db_now() . ",$fContents,{$this->compressionType},'{$title}')";
+             VALUES ({$this->fkID},'{$tableName}','{$fName}',{$destFPath},{$this->fSize},'{$this->fType}'," .
+            $db->db_now() . ",$fContents,{$this->compressionType},'{$title}')";
 
         $result = $db->exec_query($query);
         if ($result) {
@@ -359,9 +365,11 @@ class tlAttachment extends tlDBObject
      *            detailLevel
      * @return tlAttachment the created attachment or null on failure
      */
-    public static function getByID(&$db, $id, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function getByID(&$db, $id,
+        $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
-        return tlDBObject::createObjectFromDB($db, $id, __CLASS__, tlAttachment::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
+        return tlDBObject::createObjectFromDB($db, $id, __CLASS__,
+            tlAttachment::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
     }
 
     /**
@@ -375,7 +383,8 @@ class tlAttachment extends tlDBObject
      *            detailLevel
      * @return array returns an array of tlAttachment (the created attachments) or null on failure
      */
-    public static function getByIDs(&$db, $ids, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function getByIDs(&$db, $ids,
+        $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
         return self::handleNotImplementedMethod(__FUNCTION__);
     }
@@ -395,7 +404,8 @@ class tlAttachment extends tlDBObject
      *            detailLevel
      * @return unknown_type
      */
-    public static function getAll(&$db, $whereClause = null, $column = null, $orderBy = null, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function getAll(&$db, $whereClause = null, $column = null,
+        $orderBy = null, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
         return self::handleNotImplementedMethod(__FUNCTION__);
     }

@@ -84,7 +84,8 @@ class requirement_mgr extends tlObjectWithAttachments
 
         $this->attachmentTableName = 'req_versions';
 
-        tlObjectWithAttachments::__construct($this->db, $this->attachmentTableName);
+        tlObjectWithAttachments::__construct($this->db,
+            $this->attachmentTableName);
 
         $this->node_types_descr_id = $this->tree_mgr->get_available_node_types();
         $this->node_types_id_descr = array_flip($this->node_types_descr_id);
@@ -150,7 +151,8 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      *
      */
-    public function get_by_id($id, $version_id = self::ALL_VERSIONS, $version_number = 1, $options = null, $filters = null)
+    public function get_by_id($id, $version_id = self::ALL_VERSIONS,
+        $version_number = 1, $options = null, $filters = null)
     {
         static $debugMsg;
         static $userCache; // key: user id, value: display name
@@ -209,7 +211,8 @@ class requirement_mgr extends tlObjectWithAttachments
                 // search by "human" version number
                 $where_clause .= " AND REQV.version = {$version_number} ";
             } else {
-                if ($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION) {
+                if ($version_id != self::ALL_VERSIONS &&
+                    $version_id != self::LATEST_VERSION) {
                     $where_clause .= " AND REQV.id = {$version_id} ";
                 }
             }
@@ -225,18 +228,31 @@ class requirement_mgr extends tlObjectWithAttachments
 
             case 'std':
             default:
-                $outf = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . " REQV.scope,REQV.status,REQV.type,REQV.active," . " REQV.is_open,REQV.is_open AS reqver_is_open,REQV.author_id,REQV.version,REQV.id AS version_id," . " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," . " REQV.modification_ts,REQV.revision, -1 AS revision_id, " . " NH_REQ.name AS title, REQ_SPEC.testproject_id, " . " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
+                $outf = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," .
+                    " REQV.scope,REQV.status,REQV.type,REQV.active," .
+                    " REQV.is_open,REQV.is_open AS reqver_is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
+                    " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+                    " REQV.modification_ts,REQV.revision, -1 AS revision_id, " .
+                    " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+                    " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
                 break;
         }
 
         // added -1 AS revision_id to make some process easier
-        $sql = $outf . " FROM {$this->object_table} REQ " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id " . " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " . " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " . " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " . $where_clause . $filter_clause . $my['options']['order_by'];
+        $sql = $outf . " FROM {$this->object_table} REQ " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id " .
+            " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .
+            " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+            $where_clause . $filter_clause . $my['options']['order_by'];
 
         $decodeUserMode = 'simple';
         if ($version_id != self::LATEST_VERSION) {
             switch ($my['options']['output_format']) {
                 case 'mapOfArray':
-                    $recordset = $this->db->fetchRowsIntoMap($sql, 'id', database::CUMULATIVE);
+                    $recordset = $this->db->fetchRowsIntoMap($sql, 'id',
+                        database::CUMULATIVE);
                     $decodeUserMode = 'complex';
                     break;
 
@@ -283,8 +299,10 @@ class requirement_mgr extends tlObjectWithAttachments
                             foreach ($user_keys as $ukey => $userid_field) {
                                 $rs[$flk][$key][$ukey] = '';
                                 if (trim($rs[$flk][$key][$userid_field]) != "") {
-                                    if (! isset($userCache[$rs[$flk][$key][$userid_field]])) {
-                                        $user = tlUser::getByID($this->db, $rs[$flk][$key][$userid_field]);
+                                    if (! isset(
+                                        $userCache[$rs[$flk][$key][$userid_field]])) {
+                                        $user = tlUser::getByID($this->db,
+                                            $rs[$flk][$key][$userid_field]);
                                         $rs[$flk][$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
                                         $userCache[$rs[$flk][$key][$userid_field]] = $rs[$flk][$key][$ukey];
                                         unset($user);
@@ -304,8 +322,10 @@ class requirement_mgr extends tlObjectWithAttachments
                         foreach ($user_keys as $ukey => $userid_field) {
                             $rs[$key][$ukey] = '';
                             if (trim($rs[$key][$userid_field]) != "") {
-                                if (! isset($userCache[$rs[$key][$userid_field]])) {
-                                    $user = tlUser::getByID($this->db, $rs[$key][$userid_field]);
+                                if (! isset(
+                                    $userCache[$rs[$key][$userid_field]])) {
+                                    $user = tlUser::getByID($this->db,
+                                        $rs[$key][$userid_field]);
                                     $rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
                                     $userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
                                     unset($user);
@@ -346,7 +366,10 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      * @internal revision
      */
-    public function create($srs_id, $reqdoc_id, $title, $scope, $user_id, $status = TL_REQ_STATUS_VALID, $type = TL_REQ_TYPE_INFO, $expected_coverage = 1, $node_order = 0, $tproject_id = null, $options = null)
+    public function create($srs_id, $reqdoc_id, $title, $scope, $user_id,
+        $status = TL_REQ_STATUS_VALID, $type = TL_REQ_TYPE_INFO,
+        $expected_coverage = 1, $node_order = 0, $tproject_id = null,
+        $options = null)
     {
         // This kind of saving is important when called in a loop in situations like
         // copy test project
@@ -358,7 +381,8 @@ class requirement_mgr extends tlObjectWithAttachments
             $log_message = lang_get('req_created_automatic_log');
         }
 
-        $tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot($srs_id) : $tproject_id;
+        $tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot(
+            $srs_id) : $tproject_id;
 
         $result = array(
             'id' => 0,
@@ -373,25 +397,32 @@ class requirement_mgr extends tlObjectWithAttachments
         if (! $my['options']['quickAndDirty']) {
             $reqdoc_id = trim_and_limit($reqdoc_id, $this->fieldSize->req_docid);
             $title = trim_and_limit($title, $this->fieldSize->req_title);
-            $op = $this->check_basic_data($srs_id, $tproject_id, $title, $reqdoc_id);
+            $op = $this->check_basic_data($srs_id, $tproject_id, $title,
+                $reqdoc_id);
         } else {
             $op['status_ok'] = true;
         }
 
         $result['msg'] = $op['status_ok'] ? $result['msg'] : $op['msg'];
         if ($op['status_ok']) {
-            $result = $this->create_req_only($srs_id, $reqdoc_id, $title, $node_order);
+            $result = $this->create_req_only($srs_id, $reqdoc_id, $title,
+                $node_order);
             if ($result["status_ok"]) {
                 if ($this->internal_links->enable) {
                     $scope = req_link_replace($this->db, $scope, $tproject_id);
                 }
 
-                $op = $this->create_version($result['id'], 1, $scope, $user_id, $status, $type, intval($expected_coverage));
+                $op = $this->create_version($result['id'], 1, $scope, $user_id,
+                    $status, $type, intval($expected_coverage));
                 $result['msg'] = $op['status_ok'] ? $result['msg'] : $op['msg'];
                 $result['version_id'] = $op['status_ok'] ? $op['id'] : - 1;
 
                 if ($op['status_ok']) {
-                    $sql = "/* $debugMsg */ " . "UPDATE {$this->tables['req_versions']} " . " SET log_message='" . $this->db->prepare_string($log_message) . "'" . " WHERE id = " . intval($op['id']);
+                    $sql = "/* $debugMsg */ " .
+                        "UPDATE {$this->tables['req_versions']} " .
+                        " SET log_message='" .
+                        $this->db->prepare_string($log_message) . "'" .
+                        " WHERE id = " . intval($op['id']);
                     $this->db->exec_query($sql);
                 }
             }
@@ -428,7 +459,10 @@ class requirement_mgr extends tlObjectWithAttachments
      * 20091202 - franciscom -
      *
      */
-    public function update($id, $version_id, $reqdoc_id, $title, $scope, $user_id, $status, $type, $expected_coverage, $node_order = null, $tproject_id = null, $skip_controls = 0, $create_revision = false, $log_msg = null)
+    public function update($id, $version_id, $reqdoc_id, $title, $scope,
+        $user_id, $status, $type, $expected_coverage, $node_order = null,
+        $tproject_id = null, $skip_controls = 0, $create_revision = false,
+        $log_msg = null)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -443,7 +477,8 @@ class requirement_mgr extends tlObjectWithAttachments
         $srs_id = $req['srs_id'];
 
         // try to avoid function calls when data is available on caller
-        $tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot($srs_id) : $tproject_id;
+        $tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot(
+            $srs_id) : $tproject_id;
 
         if ($this->internal_links->enable) {
             $scope = req_link_replace($this->db, $scope, $tproject_id);
@@ -451,24 +486,33 @@ class requirement_mgr extends tlObjectWithAttachments
 
         $reqdoc_id = trim_and_limit($reqdoc_id, $this->fieldSize->req_docid);
         $title = trim_and_limit($title, $this->fieldSize->req_title);
-        $chk = $this->check_basic_data($srs_id, $tproject_id, $title, $reqdoc_id, $id);
+        $chk = $this->check_basic_data($srs_id, $tproject_id, $title, $reqdoc_id,
+            $id);
 
         if ($chk['status_ok'] || $skip_controls) {
             if ($create_revision) {
-                $this->create_new_revision($version_id, $user_id, $tproject_id, $req, $log_msg);
+                $this->create_new_revision($version_id, $user_id, $tproject_id,
+                    $req, $log_msg);
             }
 
             $sql = array();
 
-            $q = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " . " SET name='" . $this->db->prepare_string($title) . "'";
+            $q = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+                " SET name='" . $this->db->prepare_string($title) . "'";
             if (! is_null($node_order)) {
                 $q .= ', node_order= ' . abs(intval($node_order));
             }
             $sql[] = $q . " WHERE id={$id}";
 
-            $sql[] = "/* $debugMsg */ UPDATE {$this->tables['requirements']} " . " SET req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'" . " WHERE id={$id}";
+            $sql[] = "/* $debugMsg */ UPDATE {$this->tables['requirements']} " .
+                " SET req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'" .
+                " WHERE id={$id}";
 
-            $sql_temp = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " . " SET scope='" . $this->db->prepare_string($scope) . "', " . " status='" . $this->db->prepare_string($status) . "', " . " expected_coverage={$expected_coverage}, " . " type='" . $this->db->prepare_string($type) . "' ";
+            $sql_temp = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " .
+                " SET scope='" . $this->db->prepare_string($scope) . "', " .
+                " status='" . $this->db->prepare_string($status) . "', " .
+                " expected_coverage={$expected_coverage}, " . " type='" .
+                $this->db->prepare_string($type) . "' ";
 
             // only if no new revision is created set modifier and modification ts
             // otherwise those values are handled by function create_new_revision()
@@ -517,7 +561,8 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      * returns:
      */
-    public function delete($id, $version_id = self::ALL_VERSIONS, $user_id = null)
+    public function delete($id, $version_id = self::ALL_VERSIONS,
+        $user_id = null)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         $children = null;
@@ -557,7 +602,9 @@ class requirement_mgr extends tlObjectWithAttachments
             // From GUI if only one version exists,
             // the operation available is DELETE REQ,
             // not delete version
-            $sql = "SELECT COUNT(0) AS VQTY, parent_id FROM " . " {$this->tables['nodes_hierarchy']} " . $where['iam_parent'] . ' GROUP BY parent_id';
+            $sql = "SELECT COUNT(0) AS VQTY, parent_id FROM " .
+                " {$this->tables['nodes_hierarchy']} " . $where['iam_parent'] .
+                ' GROUP BY parent_id';
 
             $rs = $this->db->fetchRowsIntoMap($sql, 'parent_id');
             $rs = current($rs);
@@ -586,7 +633,9 @@ class requirement_mgr extends tlObjectWithAttachments
             $deleteAll = true;
 
             // I'm trying to speedup the next deletes
-            $sql = "/* $debugMsg */ " . "SELECT NH.id FROM {$this->tables['nodes_hierarchy']} NH " . "WHERE NH.parent_id ";
+            $sql = "/* $debugMsg */ " .
+                "SELECT NH.id FROM {$this->tables['nodes_hierarchy']} NH " .
+                "WHERE NH.parent_id ";
 
             if (is_array($id)) {
                 $sql .= " IN (" . implode(',', $id) . ") ";
@@ -594,13 +643,15 @@ class requirement_mgr extends tlObjectWithAttachments
                 $sql .= "  = {$id} ";
             }
 
-            $sql .= " AND node_type_id=" . $this->node_types_descr_id['requirement_version'];
+            $sql .= " AND node_type_id=" .
+                $this->node_types_descr_id['requirement_version'];
 
             $children_rs = $this->db->fetchRowsIntoMap($sql, 'id');
             $children = array_keys($children_rs);
 
             // delete dependencies with test specification
-            $sql = "DELETE FROM {$this->tables['req_coverage']} " . $where['coverage'];
+            $sql = "DELETE FROM {$this->tables['req_coverage']} " .
+                $where['coverage'];
             $result = $this->db->exec_query($sql);
 
             // also delete relations to other requirements
@@ -617,7 +668,8 @@ class requirement_mgr extends tlObjectWithAttachments
 
                 foreach ($reqVerSet as $reqID2Del => $reqVerElem) {
                     foreach ($reqVerElem as $ydx => $reqVID2Del) {
-                        $result = $this->attachmentRepository->deleteAttachmentsFor($reqVID2Del, $this->attachmentTableName);
+                        $result = $this->attachmentRepository->deleteAttachmentsFor(
+                            $reqVID2Del, $this->attachmentTableName);
                     }
                 }
             }
@@ -630,7 +682,9 @@ class requirement_mgr extends tlObjectWithAttachments
             // agregate functions need GROUP BY
             // How many versions are there?
             // we will delete req also for all with COUNT(0) == 1
-            $sql = "SELECT COUNT(0) AS VQTY, parent_id " . " FROM {$this->tables['nodes_hierarchy']} " . $where['iam_parent'] . ' GROUP BY parent_id';
+            $sql = "SELECT COUNT(0) AS VQTY, parent_id " .
+                " FROM {$this->tables['nodes_hierarchy']} " .
+                $where['iam_parent'] . ' GROUP BY parent_id';
 
             $rs = $this->db->fetchRowsIntoMap($sql, 'parent_id');
             foreach ($rs as $el) {
@@ -645,16 +699,21 @@ class requirement_mgr extends tlObjectWithAttachments
 
             // Attachments are related to VERSION
             foreach ($children as $key => $reqVID) {
-                $this->attachmentRepository->deleteAttachmentsFor($reqVID, $this->attachmentTableName);
+                $this->attachmentRepository->deleteAttachmentsFor($reqVID,
+                    $this->attachmentTableName);
             }
 
             // Going to work on REVISIONS
             $implosion = implode(',', $children);
-            $sql = "/* $debugMsg */ " . " SELECT id from {$this->tables['nodes_hierarchy']} " . " WHERE parent_id IN ( {$implosion} ) " . " AND node_type_id=" . $this->node_types_descr_id['requirement_revision'];
+            $sql = "/* $debugMsg */ " .
+                " SELECT id from {$this->tables['nodes_hierarchy']} " .
+                " WHERE parent_id IN ( {$implosion} ) " . " AND node_type_id=" .
+                $this->node_types_descr_id['requirement_revision'];
 
             $revisionSet = $this->db->fetchRowsIntoMap($sql, 'id');
             if (! is_null($revisionSet)) {
-                $this->cfield_mgr->remove_all_design_values_from_node(array_keys($revisionSet));
+                $this->cfield_mgr->remove_all_design_values_from_node(
+                    array_keys($revisionSet));
 
                 $sql = "/* $debugMsg */ DELETE FROM {$this->tables['req_revisions']}
                                 WHERE parent_id IN ( {$implosion} ) ";
@@ -663,17 +722,22 @@ class requirement_mgr extends tlObjectWithAttachments
                 $sql = "/* $debugMsg */
                DELETE FROM {$this->tables['nodes_hierarchy']}
                WHERE parent_id IN ( {$implosion} )
-               AND node_type_id=" . $this->node_types_descr_id['requirement_revision'];
+               AND node_type_id=" .
+                    $this->node_types_descr_id['requirement_revision'];
                 $this->db->exec_query($sql);
             }
-            $this->cfield_mgr->remove_all_design_values_from_node((array) $children);
+            $this->cfield_mgr->remove_all_design_values_from_node(
+                (array) $children);
 
             $where['children'] = " WHERE id IN ( {$implosion} ) ";
 
-            $sql = "DELETE FROM {$this->tables['req_versions']} " . $where['children'];
+            $sql = "DELETE FROM {$this->tables['req_versions']} " .
+                $where['children'];
             $this->db->exec_query($sql);
 
-            $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where['children'] . " AND node_type_id=" . $this->node_types_descr_id['requirement_version'];
+            $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " .
+                $where['children'] . " AND node_type_id=" .
+                $this->node_types_descr_id['requirement_version'];
             $result = $this->db->exec_query($sql);
         }
 
@@ -682,7 +746,9 @@ class requirement_mgr extends tlObjectWithAttachments
             $sql = "DELETE FROM {$this->object_table} " . $where['this'];
             $this->db->exec_query($sql);
 
-            $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where['this'] . " AND node_type_id=" . $this->node_types_descr_id['requirement'];
+            $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " .
+                $where['this'] . " AND node_type_id=" .
+                $this->node_types_descr_id['requirement'];
 
             $result = $this->db->exec_query($sql);
         }
@@ -737,14 +803,27 @@ class requirement_mgr extends tlObjectWithAttachments
         $safe_id = intval($id);
         $common = array();
 
-        $common['join'] = " FROM {$this->tables['nodes_hierarchy']} NH_TC " . " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id=NH_TC.id " . " JOIN {$this->tables['tcversions']} TCV ON TCV.id=NH_TCV.id " . " JOIN {$this->tables['req_coverage']} RC ON RC.testcase_id = NH_TC.id ";
+        $common['join'] = " FROM {$this->tables['nodes_hierarchy']} NH_TC " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id=NH_TC.id " .
+            " JOIN {$this->tables['tcversions']} TCV ON TCV.id=NH_TCV.id " .
+            " JOIN {$this->tables['req_coverage']} RC ON RC.testcase_id = NH_TC.id ";
         $common['where'] = " WHERE RC.req_id={$safe_id} ";
 
         if (is_null($context)) {
-            $sql = "/* $debugMsg - Static Coverage */ " . " SELECT DISTINCT NH_TC.id,NH_TC.name,TCV.tc_external_id,U.login,RC.creation_ts" . $common['join'] . " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = RC.author_id " . $common['where'];
+            $sql = "/* $debugMsg - Static Coverage */ " .
+                " SELECT DISTINCT NH_TC.id,NH_TC.name,TCV.tc_external_id,U.login,RC.creation_ts" .
+                $common['join'] .
+                " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = RC.author_id " .
+                $common['where'];
         } else {
 
-            $sql = "/* $debugMsg - Dynamic Coverage */ " . " SELECT DISTINCT NH_TC.id,NH_TC.name,TCV.tc_external_id" . $common['join'] . " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " . $common['where'] . " AND TPTCV.testplan_id = " . intval($context['tplan_id']) . " AND TPTCV.platform_id = " . intval($context['platform_id']);
+            $sql = "/* $debugMsg - Dynamic Coverage */ " .
+                " SELECT DISTINCT NH_TC.id,NH_TC.name,TCV.tc_external_id" .
+                $common['join'] .
+                " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
+                $common['where'] . " AND TPTCV.testplan_id = " .
+                intval($context['tplan_id']) . " AND TPTCV.platform_id = " .
+                intval($context['platform_id']);
         }
         $sql .= " ORDER BY tc_external_id ";
 
@@ -787,7 +866,8 @@ class requirement_mgr extends tlObjectWithAttachments
      * 20110206 - franciscom - add new key on retval 'failure_reason'
      * 20110108 - franciscom - check on duplicate title under same parent
      */
-    private function check_basic_data($srs_id, $tproject_id, $title, $reqdoc_id, $id = null)
+    private function check_basic_data($srs_id, $tproject_id, $title, $reqdoc_id,
+        $id = null)
     {
         $ret['status_ok'] = 1;
         $ret['msg'] = '';
@@ -812,7 +892,8 @@ class requirement_mgr extends tlObjectWithAttachments
             $ret['msg'] = 'ok';
             $rs = $this->getByDocID($reqdoc_id, $tproject_id);
             if (! is_null($rs) && (is_null($id) || ! isset($rs[$id]))) {
-                $ret['msg'] = sprintf(lang_get("warning_duplicate_reqdoc_id"), $reqdoc_id);
+                $ret['msg'] = sprintf(lang_get("warning_duplicate_reqdoc_id"),
+                    $reqdoc_id);
                 $ret['status_ok'] = 0;
                 $ret['failure_reason'] = 'duplicate_reqdoc_id';
             }
@@ -829,10 +910,12 @@ class requirement_mgr extends tlObjectWithAttachments
             $getOptions = array(
                 'output' => 'id'
             );
-            $rs = $this->getByAttribute($target, $tproject_id, $srs_id, $getOptions);
+            $rs = $this->getByAttribute($target, $tproject_id, $srs_id,
+                $getOptions);
             if (! is_null($rs) && (is_null($id) || ! isset($rs[$id]))) {
                 $ret['failure_reason'] = 'sibling_req_with_same_title';
-                $ret['msg'] = sprintf(lang_get("warning_sibling_req_with_same_title"), $title);
+                $ret['msg'] = sprintf(
+                    lang_get("warning_sibling_req_with_same_title"), $title);
                 $ret['status_ok'] = 0;
             }
         }
@@ -849,7 +932,8 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      * returns:
      */
-    public function create_tc_from_requirement($mixIdReq, $srs_id, $user_id, $tproject_id = null, $tc_count = null)
+    public function create_tc_from_requirement($mixIdReq, $srs_id, $user_id,
+        $tproject_id = null, $tc_count = null)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         $tcase_mgr = new testcase($this->db);
@@ -874,7 +958,8 @@ class requirement_mgr extends tlObjectWithAttachments
         if ($this->reqCfg->use_req_spec_as_testsuite_name) {
             $full_path = $this->tree_mgr->get_path($srs_id);
             $addition = " (" . lang_get("testsuite_title_addition") . ")";
-            $truncate_limit = $this->fieldSize->testsuite_name - strlen($addition);
+            $truncate_limit = $this->fieldSize->testsuite_name -
+                strlen($addition);
 
             // REQ_SPEC_A
             // |-- REQ_SPEC_A1
@@ -895,20 +980,27 @@ class requirement_mgr extends tlObjectWithAttachments
                 $tsuiteInfo = null;
 
                 // deal with UTF-8
-                $testsuite_name = mb_substr($node['name'], 0, $truncate_limit, mb_detect_encoding($node['name'])) . $addition;
+                $testsuite_name = mb_substr($node['name'], 0, $truncate_limit,
+                    mb_detect_encoding($node['name'])) . $addition;
 
                 if (! $deep_create) {
                     // child test suite with this name, already exists on current parent ?
                     // At first a failure we will not check anymore an proceed with deep create
-                    $sql = "/* $debugMsg */ SELECT id,name FROM {$this->tables['nodes_hierarchy']} NH " . " WHERE name='" . $this->db->prepare_string($testsuite_name) . "' " . " AND node_type_id=" . $node_descr_type['testsuite'] . " AND parent_id = {$parent_id} ";
+                    $sql = "/* $debugMsg */ SELECT id,name FROM {$this->tables['nodes_hierarchy']} NH " .
+                        " WHERE name='" .
+                        $this->db->prepare_string($testsuite_name) . "' " .
+                        " AND node_type_id=" . $node_descr_type['testsuite'] .
+                        " AND parent_id = {$parent_id} ";
 
                     // If returns more that one record use ALWAYS first
                     $tsuiteInfo = $this->db->fetchRowsIntoMap($sql, 'id');
                 }
 
                 if (is_null($tsuiteInfo)) {
-                    $tsuiteInfo = $tsuite_mgr->create($parent_id, $testsuite_name, $this->reqCfg->testsuite_details);
-                    $output[] = sprintf(lang_get('testsuite_name_created'), $testsuite_name);
+                    $tsuiteInfo = $tsuite_mgr->create($parent_id,
+                        $testsuite_name, $this->reqCfg->testsuite_details);
+                    $output[] = sprintf(lang_get('testsuite_name_created'),
+                        $testsuite_name);
                     $deep_create = true;
                 } else {
                     $tsuiteInfo = current($tsuiteInfo);
@@ -916,12 +1008,17 @@ class requirement_mgr extends tlObjectWithAttachments
                 $tsuite_id = $tsuiteInfo['id']; // last value here will be used as parent for test cases
                 $parent_id = $tsuite_id;
             }
-            $output[] = sprintf(lang_get('created_on_testsuite'), $testsuite_name);
+            $output[] = sprintf(lang_get('created_on_testsuite'),
+                $testsuite_name);
         } else {
             // don't use req_spec as testsuite name
             // Warning:
             // We are not maintaining hierarchy !!!
-            $sql = " SELECT id FROM {$this->tables['nodes_hierarchy']} NH " . " WHERE name='" . $this->db->prepare_string($auto_testsuite_name) . "' " . " AND parent_id=" . $tproject_id . " " . " AND node_type_id=" . $node_descr_type['testsuite'];
+            $sql = " SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
+                " WHERE name='" . $this->db->prepare_string(
+                    $auto_testsuite_name) . "' " . " AND parent_id=" .
+                $tproject_id . " " . " AND node_type_id=" .
+                $node_descr_type['testsuite'];
 
             $result = $this->db->exec_query($sql);
             if ($this->db->num_rows($result) == 1) {
@@ -931,7 +1028,8 @@ class requirement_mgr extends tlObjectWithAttachments
             } else {
                 // not found -> create
                 tLog('test suite:' . $auto_testsuite_name . ' was not found.');
-                $new_tsuite = $tsuite_mgr->create($tproject_id, $auto_testsuite_name, $this->reqCfg->testsuite_details);
+                $new_tsuite = $tsuite_mgr->create($tproject_id,
+                    $auto_testsuite_name, $this->reqCfg->testsuite_details);
                 $tsuite_id = $new_tsuite['id'];
                 $label = lang_get('testsuite_name_created');
             }
@@ -940,8 +1038,10 @@ class requirement_mgr extends tlObjectWithAttachments
 
         // create TC
         $createOptions = array();
-        $createOptions['check_names_for_duplicates'] = config_get('check_names_for_duplicates');
-        $createOptions['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
+        $createOptions['check_names_for_duplicates'] = config_get(
+            'check_names_for_duplicates');
+        $createOptions['action_on_duplicate_name'] = config_get(
+            'action_on_duplicate_name');
 
         $testcase_importance_default = config_get('testcase_importance_default');
 
@@ -970,7 +1070,8 @@ class requirement_mgr extends tlObjectWithAttachments
                 'check_criteria' => 'like',
                 'access_key' => 'name'
             );
-            $itemSet = $tcase_mgr->getDuplicatesByName($reqData['title'], $tsuite_id, $getOptions);
+            $itemSet = $tcase_mgr->getDuplicatesByName($reqData['title'],
+                $tsuite_id, $getOptions);
 
             $nameSet = null;
             if (! is_null($itemSet)) {
@@ -1004,10 +1105,18 @@ class requirement_mgr extends tlObjectWithAttachments
                 }
                 $nameSet[$tcase_name] = $tcase_name;
 
-                $prefix = ($this->reqCfg->use_testcase_summary_prefix_with_title_and_version) ? sprintf($this->reqCfg->testcase_summary_prefix_with_title_and_version, $reqID, $reqData['version_id'], $reqData['title'], $reqData['version']) : $this->reqCfg->testcase_summary_prefix;
-                $content = ($this->reqCfg->copy_req_scope_to_tc_summary) ? $prefix . $reqData['scope'] : $prefix;
+                $prefix = ($this->reqCfg->use_testcase_summary_prefix_with_title_and_version) ? sprintf(
+                    $this->reqCfg->testcase_summary_prefix_with_title_and_version,
+                    $reqID, $reqData['version_id'], $reqData['title'],
+                    $reqData['version']) : $this->reqCfg->testcase_summary_prefix;
+                $content = ($this->reqCfg->copy_req_scope_to_tc_summary) ? $prefix .
+                    $reqData['scope'] : $prefix;
 
-                $tcase = $tcase_mgr->create($tsuite_id, $tcase_name, $content, $empty_preconditions, $empty_steps, $user_id, null, $testcase_order, testcase::AUTOMATIC_ID, TESTCASE_EXECUTION_TYPE_MANUAL, $testcase_importance_default, $createOptions);
+                $tcase = $tcase_mgr->create($tsuite_id, $tcase_name, $content,
+                    $empty_preconditions, $empty_steps, $user_id, null,
+                    $testcase_order, testcase::AUTOMATIC_ID,
+                    TESTCASE_EXECUTION_TYPE_MANUAL, $testcase_importance_default,
+                    $createOptions);
 
                 $tcase_name = $tcase['new_name'] == '' ? $tcase_name : $tcase['new_name'];
                 $output[] = sprintf($labels['tc_created'], $tcase_name);
@@ -1081,7 +1190,11 @@ class requirement_mgr extends tlObjectWithAttachments
             $in_clause = implode(",", $reqLatestVersionIDSet);
 
             //
-            $sql = " /* $debugMsg */ " . " SELECT req_id,testcase_id,req_version_id,tcversion_id " . " FROM {$this->tables['req_coverage']} " . " WHERE req_version_id IN ({$in_clause}) " . " AND tcversion_id = {$ltcv}";
+            $sql = " /* $debugMsg */ " .
+                " SELECT req_id,testcase_id,req_version_id,tcversion_id " .
+                " FROM {$this->tables['req_coverage']} " .
+                " WHERE req_version_id IN ({$in_clause}) " .
+                " AND tcversion_id = {$ltcv}";
 
             $coverage = $this->db->fetchRowsIntoMap($sql, 'req_version_id');
 
@@ -1090,16 +1203,27 @@ class requirement_mgr extends tlObjectWithAttachments
 
             $loop2do = count($reqLatestVersionIDSet);
             for ($idx = 0; $idx < $loop2do; $idx ++) {
-                if (is_null($coverage) || ! isset($coverage[$reqLatestVersionIDSet[$idx]])) {
-                    $sql = " INSERT INTO {$this->tables['req_coverage']} " . " (req_id,testcase_id,req_version_id, tcversion_id," . " author_id,creation_ts) " . " VALUES ({$reqIDSet[$idx]},{$testcase_id}," . " $reqLatestVersionIDSet[$idx],{$ltcv}," . " {$author_id},{$now})";
+                if (is_null($coverage) ||
+                    ! isset($coverage[$reqLatestVersionIDSet[$idx]])) {
+                    $sql = " INSERT INTO {$this->tables['req_coverage']} " .
+                        " (req_id,testcase_id,req_version_id, tcversion_id," .
+                        " author_id,creation_ts) " .
+                        " VALUES ({$reqIDSet[$idx]},{$testcase_id}," .
+                        " $reqLatestVersionIDSet[$idx],{$ltcv}," .
+                        " {$author_id},{$now})";
                     $this->db->exec_query($sql);
                     if ($this->db->affected_rows() == 1) {
                         $output = 1;
 
                         // For audit
-                        $reqInfo = $this->tree_mgr->get_node_hierarchy_info($reqIDSet[$idx]);
+                        $reqInfo = $this->tree_mgr->get_node_hierarchy_info(
+                            $reqIDSet[$idx]);
                         if ($tcInfo && $reqInfo) {
-                            logAuditEvent(TLS("audit_reqv_assigned_tcv", $reqInfo['name'], $reqLatestVersionNumberSet[$idx], $tcInfo['name'], $ltcvNum), "ASSIGN", $this->object_table);
+                            logAuditEvent(
+                                TLS("audit_reqv_assigned_tcv", $reqInfo['name'],
+                                    $reqLatestVersionNumberSet[$idx],
+                                    $tcInfo['name'], $ltcvNum), "ASSIGN",
+                                $this->object_table);
                         }
                     }
                 } else {
@@ -1112,7 +1236,8 @@ class requirement_mgr extends tlObjectWithAttachments
 
     /**
      */
-    public function assignToTCaseUsingLatestVersions($req_id, $testcase_id, $author_id)
+    public function assignToTCaseUsingLatestVersions($req_id, $testcase_id,
+        $author_id)
     {
         return $this->assign_to_tcase($req_id, $testcase_id, $author_id);
     }
@@ -1125,7 +1250,11 @@ class requirement_mgr extends tlObjectWithAttachments
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $sql = " /* $debugMsg */ SELECT nodes_hierarchy.id,nodes_hierarchy.name " . " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy, " . "      {$this->tables['req_coverage']} req_coverage " . " WHERE req_coverage.testcase_id = nodes_hierarchy.id " . " AND  req_coverage.req_id={$req_id}";
+        $sql = " /* $debugMsg */ SELECT nodes_hierarchy.id,nodes_hierarchy.name " .
+            " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy, " .
+            "      {$this->tables['req_coverage']} req_coverage " .
+            " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
+            " AND  req_coverage.req_id={$req_id}";
 
         return $this->db->get_recordset($sql);
     }
@@ -1145,11 +1274,18 @@ class requirement_mgr extends tlObjectWithAttachments
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $sql = " /* $debugMsg */ SELECT REQ.id,REQ.req_doc_id,NHA.name AS title, " . " NHB.name AS req_spec_title,REQ_COVERAGE.testcase_id " . " FROM {$this->object_table} REQ, " . "      {$this->tables['req_coverage']} REQ_COVERAGE," . "      {$this->tables['nodes_hierarchy']} NHA," . "      {$this->tables['nodes_hierarchy']} NHB," . "      {$this->tables['req_specs']} RSPEC ";
+        $sql = " /* $debugMsg */ SELECT REQ.id,REQ.req_doc_id,NHA.name AS title, " .
+            " NHB.name AS req_spec_title,REQ_COVERAGE.testcase_id " .
+            " FROM {$this->object_table} REQ, " .
+            "      {$this->tables['req_coverage']} REQ_COVERAGE," .
+            "      {$this->tables['nodes_hierarchy']} NHA," .
+            "      {$this->tables['nodes_hierarchy']} NHB," .
+            "      {$this->tables['req_specs']} RSPEC ";
 
         $idList = implode(",", (array) $testcase_id);
         $sql .= " WHERE REQ_COVERAGE.testcase_id  IN (" . $idList . ")";
-        $sql .= " AND REQ.srs_id=RSPEC.id  AND REQ_COVERAGE.req_id=REQ.id " . " AND NHA.id=REQ.id AND NHB.id=RSPEC.id ";
+        $sql .= " AND REQ.srs_id=RSPEC.id  AND REQ_COVERAGE.req_id=REQ.id " .
+            " AND NHA.id=REQ.id AND NHB.id=RSPEC.id ";
 
         // if only for one specification is required
         if ($srs_id != 'all') {
@@ -1206,25 +1342,40 @@ class requirement_mgr extends tlObjectWithAttachments
      * @return string with XML code
      *
      */
-    public function exportReqToXML($id, $tproject_id = null, $inc_attachments = false)
+    public function exportReqToXML($id, $tproject_id = null,
+        $inc_attachments = false)
     {
         $req = $this->get_by_id($id, requirement_mgr::LATEST_VERSION);
         $reqData[] = $req[0];
         $req_version_id = $req[0]['version_id'];
 
-        $elemTpl = "\t" . "<requirement>" . "\n\t\t" . "<docid><![CDATA[||DOCID||]]></docid>" . "\n\t\t" . "<title><![CDATA[||TITLE||]]></title>" . "\n\t\t" . "<version>||VERSION||</version>" . "\n\t\t" . "<revision>||REVISION||</revision>" . "\n\t\t" . "<node_order>||NODE_ORDER||</node_order>" . "\n\t\t" . "<description><![CDATA[||DESCRIPTION||]]></description>" . "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" . "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" . "\n\t\t" . "<expected_coverage><![CDATA[||EXPECTED_COVERAGE||]]></expected_coverage>" . "\n\t\t" . $this->customFieldValuesAsXML($id, $req[0]['version_id'], $tproject_id);
+        $elemTpl = "\t" . "<requirement>" . "\n\t\t" .
+            "<docid><![CDATA[||DOCID||]]></docid>" . "\n\t\t" .
+            "<title><![CDATA[||TITLE||]]></title>" . "\n\t\t" .
+            "<version>||VERSION||</version>" . "\n\t\t" .
+            "<revision>||REVISION||</revision>" . "\n\t\t" .
+            "<node_order>||NODE_ORDER||</node_order>" . "\n\t\t" .
+            "<description><![CDATA[||DESCRIPTION||]]></description>" . "\n\t\t" .
+            "<status><![CDATA[||STATUS||]]></status>" . "\n\t\t" .
+            "<type><![CDATA[||TYPE||]]></type>" . "\n\t\t" .
+            "<expected_coverage><![CDATA[||EXPECTED_COVERAGE||]]></expected_coverage>" .
+            "\n\t\t" .
+            $this->customFieldValuesAsXML($id, $req[0]['version_id'],
+                $tproject_id);
 
         // add req attachment content if checked in GUI
         if ($inc_attachments) {
             $attachments = null;
 
             // id -> req_id, but I need latest req_versionid
-            $attachSet = $this->attachmentRepository->getAttachmentInfosFor($req_version_id, $this->attachmentTableName, 'id');
+            $attachSet = $this->attachmentRepository->getAttachmentInfosFor(
+                $req_version_id, $this->attachmentTableName, 'id');
             // get all attachments content and encode it in base64
             if ($attachSet) {
                 foreach ($attachSet as $attachmentInfo) {
                     $aID = $attachmentInfo["id"];
-                    $content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
+                    $content = $this->attachmentRepository->getAttachmentContent(
+                        $aID, $attachmentInfo);
 
                     if ($content != null) {
                         $attachments[$aID]["id"] = $aID;
@@ -1238,7 +1389,14 @@ class requirement_mgr extends tlObjectWithAttachments
 
                 if (! empty($attachments)) {
                     $attchRootElem = "<attachments>\n{{XMLCODE}}\t\t</attachments>\n";
-                    $attchElemTemplate = "\t\t\t<attachment>\n" . "\t\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" . "\t\t\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" . "\t\t\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" . "\t\t\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" . "\t\t\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" . "\t\t\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" . "\t\t\t</attachment>\n";
+                    $attchElemTemplate = "\t\t\t<attachment>\n" .
+                        "\t\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
+                        "\t\t\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
+                        "\t\t\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+                        "\t\t\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
+                        "\t\t\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
+                        "\t\t\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
+                        "\t\t\t</attachment>\n";
 
                     $attchDecode = array(
                         "||ATTACHMENT_ID||" => "id",
@@ -1248,7 +1406,8 @@ class requirement_mgr extends tlObjectWithAttachments
                         "||ATTACHMENT_DATE_ADDED||" => "date_added",
                         "||ATTACHMENT_CONTENT||" => "content"
                     );
-                    $elemTpl .= exportDataToXML($attachments, $attchRootElem, $attchElemTemplate, $attchDecode, true);
+                    $elemTpl .= exportDataToXML($attachments, $attchRootElem,
+                        $attchElemTemplate, $attchDecode, true);
                 }
             }
         }
@@ -1266,8 +1425,7 @@ class requirement_mgr extends tlObjectWithAttachments
             "||REVISION||" => "revision"
         );
 
-        $xmlStr = exportDataToXML($reqData, "{{XMLCODE}}", $elemTpl, $info, true);
-        return $xmlStr;
+        return exportDataToXML($reqData, "{{XMLCODE}}", $elemTpl, $info, true);
     }
 
     /**
@@ -1320,7 +1478,8 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      * @internal revisions
      */
-    public function createFromXML($xml, $tproject_id, $parent_id, $author_id, $filters = null, $options = null)
+    public function createFromXML($xml, $tproject_id, $parent_id, $author_id,
+        $filters = null, $options = null)
     {
         $reqAsMap = $this->xmlToMapRequirement($xml);
 
@@ -1333,7 +1492,8 @@ class requirement_mgr extends tlObjectWithAttachments
         // type => [empty string]
         // expected_coverage => 0
 
-        return $this->createFromMap($reqAsMap, $tproject_id, $parent_id, $author_id, $filters, $options);
+        return $this->createFromMap($reqAsMap, $tproject_id, $parent_id,
+            $author_id, $filters, $options);
     }
 
     /**
@@ -1350,7 +1510,8 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      * @internal revisions
      */
-    public function createFromMap($req, $tproject_id, $parent_id, $author_id, $filters = null, $options = null)
+    public function createFromMap($req, $tproject_id, $parent_id, $author_id,
+        $filters = null, $options = null)
     {
         static $missingCfMsg;
         static $linkedCF;
@@ -1364,12 +1525,15 @@ class requirement_mgr extends tlObjectWithAttachments
         if (is_null($linkedCF)) {
             $fieldSize = config_get('field_size');
 
-            $linkedCF = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id, cfield_mgr::CF_ENABLED, null, 'requirement', null, 'name');
+            $linkedCF = $this->cfield_mgr->get_linked_cfields_at_design(
+                $tproject_id, cfield_mgr::CF_ENABLED, null, 'requirement', null,
+                'name');
             $doProcessCF = true;
 
             $messages = array();
             $messages['cf_warning'] = lang_get('no_cf_defined_can_not_import');
-            $messages['cfield'] = lang_get('cf_value_not_imported_missing_cf_on_testproject');
+            $messages['cfield'] = lang_get(
+                'cf_value_not_imported_missing_cf_on_testproject');
 
             $labels = array(
                 'import_req_created' => '',
@@ -1454,7 +1618,8 @@ class requirement_mgr extends tlObjectWithAttachments
         // When get is done by attribute that can not be unique (like seems to happen now 20110108 with
         // title), we can get more than one hit and then on this context we can not continue
         // with requested operation
-        $check_in_reqspec = $this->getByAttribute($target, $tproject_id, $parent_id, $getByAttributeOpt);
+        $check_in_reqspec = $this->getByAttribute($target, $tproject_id,
+            $parent_id, $getByAttributeOpt);
 
         // while working on BUGID 4210, new details came to light.
         // In addition to hit criteria there are also the criteria that we use
@@ -1462,13 +1627,17 @@ class requirement_mgr extends tlObjectWithAttachments
         // checked abd fullfilled.
         //
         if (is_null($check_in_reqspec)) {
-            $check_in_tproject = $this->getByAttribute($target, $tproject_id, null, $getByAttributeOpt);
+            $check_in_tproject = $this->getByAttribute($target, $tproject_id,
+                null, $getByAttributeOpt);
 
             if (is_null($check_in_tproject)) {
                 $importMode = 'creation';
-                $newReq = $this->create($parent_id, $req['docid'], $req['title'], $req['description'], $author_id, $req['status'], $req['type'], $req['expected_coverage'], $req['node_order'], $tproject_id, array(
-                    'quickAndDirty' => true
-                ));
+                $newReq = $this->create($parent_id, $req['docid'], $req['title'],
+                    $req['description'], $author_id, $req['status'],
+                    $req['type'], $req['expected_coverage'], $req['node_order'],
+                    $tproject_id, array(
+                        'quickAndDirty' => true
+                    ));
                 // $reqID = $newReq['id'];
                 $fk_id = $newReq['version_id']; // for attachments
                 if ($status_ok = ($newReq['status_ok'] == 1)) {
@@ -1489,15 +1658,20 @@ class requirement_mgr extends tlObjectWithAttachments
             // When you
             // Need to get Last Version no matter active or not.
             $reqID = key($check_in_reqspec);
-            $last_version = $this->get_last_child_info($reqID, $getLastChildInfoOpt);
+            $last_version = $this->get_last_child_info($reqID,
+                $getLastChildInfoOpt);
             $msgID = 'frozen_req_unable_to_import';
             $status_ok = false;
 
-            if ($last_version['is_open'] == 1 || ! $my['options']['skipFrozenReq']) {
+            if ($last_version['is_open'] == 1 ||
+                ! $my['options']['skipFrozenReq']) {
                 switch ($my['options']['actionOnHit']) {
                     case 'update_last_version':
                         $importMode = 'update';
-                        $result = $this->update($reqID, $last_version['id'], $req['docid'], $req['title'], $req['description'], $author_id, $req['status'], $req['type'], $req['expected_coverage'], $req['node_order']);
+                        $result = $this->update($reqID, $last_version['id'],
+                            $req['docid'], $req['title'], $req['description'],
+                            $author_id, $req['status'], $req['type'],
+                            $req['expected_coverage'], $req['node_order']);
                         $fk_id = $last_version['id']; // for attachment management
                         $status_ok = ($result['status_ok'] == 1);
                         if ($status_ok) {
@@ -1508,9 +1682,10 @@ class requirement_mgr extends tlObjectWithAttachments
                         break;
 
                     case 'create_new_version':
-                        $newItem = $this->create_new_version($reqID, $author_id, array(
-                            'notify' => true
-                        ));
+                        $newItem = $this->create_new_version($reqID, $author_id,
+                            array(
+                                'notify' => true
+                            ));
 
                         // Set always new version to NOT Frozen
                         $this->updateOpen($newItem['id'], 1);
@@ -1525,9 +1700,13 @@ class requirement_mgr extends tlObjectWithAttachments
                         // We have to DO NOT UPDATE REQDOCID with info received from USER
                         // Because ALL VERSION HAS TO HAVE docid, or we need to improve our checks
                         // and if update fails => we need to delete new created version.
-                        $title = trim_and_limit($req['title'], $fieldSize->req_title);
+                        $title = trim_and_limit($req['title'],
+                            $fieldSize->req_title);
                         $importMode = 'update';
-                        $result = $this->update($reqID, $newItem['id'], $req['docid'], $title, $req['description'], $author_id, $req['status'], $req['type'], $req['expected_coverage'], $req['node_order']);
+                        $result = $this->update($reqID, $newItem['id'],
+                            $req['docid'], $title, $req['description'],
+                            $author_id, $req['status'], $req['type'],
+                            $req['expected_coverage'], $req['node_order']);
 
                         $status_ok = ($result['status_ok'] == 1);
                         if ($status_ok) {
@@ -1541,7 +1720,8 @@ class requirement_mgr extends tlObjectWithAttachments
                 }
             }
         }
-        $what2add = is_null($result) ? $req['docid'] : $req['docid'] . ':' . $result['msg'];
+        $what2add = is_null($result) ? $req['docid'] : $req['docid'] . ':' .
+            $result['msg'];
 
         $user_feedback[] = array(
             'doc_id' => $req['docid'],
@@ -1552,7 +1732,8 @@ class requirement_mgr extends tlObjectWithAttachments
         $hasAttachments = array_key_exists('attachments', $req);
         // process attachements for creation and update
         if ($status_ok && $hasAttachments) {
-            $addAttachResp = $this->processAttachments($importMode, $fk_id, $req['attachments']);
+            $addAttachResp = $this->processAttachments($importMode, $fk_id,
+                $req['attachments']);
         }
 
         // display only problems during attachments import
@@ -1561,12 +1742,14 @@ class requirement_mgr extends tlObjectWithAttachments
                 $user_feedback[] = array(
                     'doc_id' => $req['docid'],
                     'title' => $req['title'],
-                    'import_status' => sprintf(lang_get('import_req_attachment_skipped'), $att_name)
+                    'import_status' => sprintf(
+                        lang_get('import_req_attachment_skipped'), $att_name)
                 );
             }
         }
 
-        if ($status_ok && $doProcessCF && isset($req['custom_fields']) && ! is_null($req['custom_fields'])) {
+        if ($status_ok && $doProcessCF && isset($req['custom_fields']) &&
+            ! is_null($req['custom_fields'])) {
             $req_version_id = ! is_null($newReq) ? $newReq['version_id'] : $last_version['id'];
             $cf2insert = null;
 
@@ -1579,7 +1762,8 @@ class requirement_mgr extends tlObjectWithAttachments
                     );
                 } else {
                     if (! isset($missingCfMsg[$cfname])) {
-                        $missingCfMsg[$cfname] = sprintf($messages['cfield'], $cfname, $labels['requirement']);
+                        $missingCfMsg[$cfname] = sprintf($messages['cfield'],
+                            $cfname, $labels['requirement']);
                     }
                     $user_feedback[] = array(
                         'doc_id' => $req['docid'],
@@ -1589,7 +1773,8 @@ class requirement_mgr extends tlObjectWithAttachments
                 }
             }
             if (! is_null($cf2insert)) {
-                $this->cfield_mgr->design_values_to_db($cf2insert, $req_version_id, null, 'simple');
+                $this->cfield_mgr->design_values_to_db($cf2insert,
+                    $req_version_id, null, 'simple');
             }
         }
 
@@ -1606,10 +1791,11 @@ class requirement_mgr extends tlObjectWithAttachments
      */
     private function processAttachments($importMode, $srs_id, $attachments)
     {
-        $tables = tlObjectWithDB::getDBTables(array(
-            'req_versions',
-            'attachments'
-        ));
+        $tables = tlObjectWithDB::getDBTables(
+            array(
+                'req_versions',
+                'attachments'
+            ));
 
         $knownAttachments = array();
         foreach ($attachments as $attachment) {
@@ -1619,7 +1805,9 @@ class requirement_mgr extends tlObjectWithAttachments
                 // Check in database if the attachment with the same ID is linked to the rspec with the same internal ID
                 // The couple attachment ID + InternalID is used as a kind of signature to avoid duplicates.
                 // If signature is not precise enough, could add the use of attachment timestamp (date_added in XML file).
-                $sql = " SELECT ATT.id from {$tables['attachments']} ATT " . " WHERE ATT.id='{$this->db->prepare_string($attachment[id])}' " . " AND ATT.fk_id={$srs_id} ";
+                $sql = " SELECT ATT.id from {$tables['attachments']} ATT " .
+                    " WHERE ATT.id='{$this->db->prepare_string($attachment[id])}' " .
+                    " AND ATT.fk_id={$srs_id} ";
                 $rsx = $this->db->get_recordset($sql);
                 $addAttachment = (is_null($rsx) || count($rsx) < 1);
                 if ($addAttachment === false) { // inform user that the attachment has been skipped
@@ -1628,10 +1816,12 @@ class requirement_mgr extends tlObjectWithAttachments
             }
             if ($addAttachment) {
                 $attachRepo = tlAttachmentRepository::create($this->db);
-                $fileInfo = $attachRepo->createAttachmentTempFile($attachment['content']);
+                $fileInfo = $attachRepo->createAttachmentTempFile(
+                    $attachment['content']);
                 $fileInfo['name'] = $attachment['name'];
                 $fileInfo['type'] = $attachment['file_type'];
-                $attachRepo->insertAttachment($srs_id, $tables['req_versions'], $attachment['title'], $fileInfo);
+                $attachRepo->insertAttachment($srs_id, $tables['req_versions'],
+                    $attachment['title'], $fileInfo);
             }
         }
         return $knownAttachments;
@@ -1680,7 +1870,8 @@ class requirement_mgr extends tlObjectWithAttachments
      * node_id: requirement id
      * null if for this requirement, custom field was never edited.
      */
-    public function get_linked_cfields($id, $child_id, $parent_id = null, $opt = null)
+    public function get_linked_cfields($id, $child_id, $parent_id = null,
+        $opt = null)
     {
         $options = array(
             'access_key' => null
@@ -1695,8 +1886,9 @@ class requirement_mgr extends tlObjectWithAttachments
             unset($req_info);
         }
 
-        $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id, cfield_mgr::ENABLED, null, 'requirement', $child_id, $options['access_key']);
-        return $cf_map;
+        return $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,
+            cfield_mgr::ENABLED, null, 'requirement', $child_id,
+            $options['access_key']);
     }
 
     /*
@@ -1722,11 +1914,13 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      * returns: html string
      */
-    public function html_table_of_custom_field_inputs($id, $version_id, $parent_id = null, $name_suffix = '', $input_values = null)
+    public function html_table_of_custom_field_inputs($id, $version_id,
+        $parent_id = null, $name_suffix = '', $input_values = null)
     {
-        $cf_map = $this->get_linked_cfields($id, $version_id, $parent_id, $name_suffix);
-        $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map, $name_suffix, $input_values);
-        return $cf_smarty;
+        $cf_map = $this->get_linked_cfields($id, $version_id, $parent_id,
+            $name_suffix);
+        return $this->cfield_mgr->html_table_inputs($cf_map, $name_suffix,
+            $input_values);
     }
 
     /*
@@ -1742,7 +1936,8 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      * returns: html string
      */
-    public function html_table_of_custom_field_values($id, $child_id, $tproject_id = null)
+    public function html_table_of_custom_field_values($id, $child_id,
+        $tproject_id = null)
     {
         $NO_WARNING_IF_MISSING = true;
         $cf_smarty = '';
@@ -1756,9 +1951,13 @@ class requirement_mgr extends tlObjectWithAttachments
             foreach ($cf_map as $cf_id => $cf_info) {
                 // if user has assigned a value, then node_id is not null
                 if ($cf_info['node_id'] || $show_cf) {
-                    $label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf_info['label'], null, $NO_WARNING_IF_MISSING));
+                    $label = str_replace(TL_LOCALIZE_TAG, '',
+                        lang_get($cf_info['label'], null, $NO_WARNING_IF_MISSING));
 
-                    $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" . $this->cfield_mgr->string_custom_field_value($cf_info, $child_id) . "</td></tr>\n";
+                    $cf_smarty .= '<tr><td class="labelHolder">' .
+                        htmlspecialchars($label) . ":</td><td>" .
+                        $this->cfield_mgr->string_custom_field_value($cf_info,
+                            $child_id) . "</td></tr>\n";
                 }
             }
 
@@ -1794,9 +1993,11 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      * rev:
      */
-    public function values_to_db($hash, $node_id, $cf_map = null, $hash_type = null)
+    public function values_to_db($hash, $node_id, $cf_map = null,
+        $hash_type = null)
     {
-        $this->cfield_mgr->design_values_to_db($hash, $node_id, $cf_map, $hash_type);
+        $this->cfield_mgr->design_values_to_db($hash, $node_id, $cf_map,
+            $hash_type);
     }
 
     /**
@@ -1838,7 +2039,8 @@ class requirement_mgr extends tlObjectWithAttachments
      * title
      * scope
      */
-    public function getByDocID($doc_id, $tproject_id = null, $parent_id = null, $options = null)
+    public function getByDocID($doc_id, $tproject_id = null, $parent_id = null,
+        $options = null)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -1865,7 +2067,8 @@ class requirement_mgr extends tlObjectWithAttachments
         $sql = " /* $debugMsg */ SELECT ";
         switch ($my['options']['output']) {
             case 'standard':
-                $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id, " . " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
+                $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+                    " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
                 break;
 
             case 'minimun':
@@ -1873,7 +2076,12 @@ class requirement_mgr extends tlObjectWithAttachments
                 break;
         }
 
-        $sql .= " FROM {$this->object_table} REQ " . " /* Get Req info from NH */ " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " . " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " . " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " . " WHERE REQ.req_doc_id {$check_criteria} ";
+        $sql .= " FROM {$this->object_table} REQ " .
+            " /* Get Req info from NH */ " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+            " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+            " WHERE REQ.req_doc_id {$check_criteria} ";
 
         if (! is_null($tproject_id)) {
             $sql .= " AND REQ_SPEC.testproject_id={$tproject_id}";
@@ -1883,9 +2091,7 @@ class requirement_mgr extends tlObjectWithAttachments
             $sql .= " AND REQ.srs_id={$parent_id}";
         }
 
-        $out = $this->db->fetchRowsIntoMap($sql, $my['options']['access_key']);
-
-        return $out;
+        return $this->db->fetchRowsIntoMap($sql, $my['options']['access_key']);
     }
 
     /**
@@ -1906,7 +2112,8 @@ class requirement_mgr extends tlObjectWithAttachments
      *            map
      *
      */
-    public function copy_to($id, $parent_id, $user_id, $tproject_id = null, $options = null)
+    public function copy_to($id, $parent_id, $user_id, $tproject_id = null,
+        $options = null)
     {
         $new_item = array(
             'id' => - 1,
@@ -1926,7 +2133,9 @@ class requirement_mgr extends tlObjectWithAttachments
             );
         }
 
-        $copyReqVTCVLinks = isset($my['options']['copy_also']['testcase_assignment']) && $my['options']['copy_also']['testcase_assignment'];
+        $copyReqVTCVLinks = isset(
+            $my['options']['copy_also']['testcase_assignment']) &&
+            $my['options']['copy_also']['testcase_assignment'];
 
         $root = $tproject_id;
         if (is_null($root)) {
@@ -1949,17 +2158,22 @@ class requirement_mgr extends tlObjectWithAttachments
 
                 // If a sibling exists with same title => need to generate automatically
                 // a new one.
-                $title = $this->generateUniqueTitle($item_versions[0]['title'], $parent_id, $root);
+                $title = $this->generateUniqueTitle($item_versions[0]['title'],
+                    $parent_id, $root);
             }
 
-            $new_item = $this->create_req_only($parent_id, $target_doc, $title, $item_versions[0]['node_order']);
+            $new_item = $this->create_req_only($parent_id, $target_doc, $title,
+                $item_versions[0]['node_order']);
 
             if ($new_item['status_ok']) {
                 $ret['status_ok'] = 1;
                 $new_item['mappings']['req'][$id] = $new_item['id'];
 
                 foreach ($item_versions as &$req_version) {
-                    $op = $this->create_version($new_item['id'], $req_version['version'], $req_version['scope'], $req_version['author_id'], $req_version['status'], $req_version['type'], $req_version['expected_coverage']);
+                    $op = $this->create_version($new_item['id'],
+                        $req_version['version'], $req_version['scope'],
+                        $req_version['author_id'], $req_version['status'],
+                        $req_version['type'], $req_version['expected_coverage']);
 
                     // need to explain how this mappings are used outside this method
                     // first thing that can see here, we are mixing req id and
@@ -1971,23 +2185,27 @@ class requirement_mgr extends tlObjectWithAttachments
                     // we have some memory issue
                     // with copy_cfields().
                     // ALWAYS when we have tproject_id we have to use it!!!
-                    $this->copy_cfields(array(
-                        'id' => $req_version['id'],
-                        'version_id' => $req_version['version_id']
-                    ), array(
-                        'id' => $new_item['id'],
-                        'version_id' => $op['id']
-                    ), $tproject_id);
+                    $this->copy_cfields(
+                        array(
+                            'id' => $req_version['id'],
+                            'version_id' => $req_version['version_id']
+                        ),
+                        array(
+                            'id' => $new_item['id'],
+                            'version_id' => $op['id']
+                        ), $tproject_id);
 
                     $source = $req_version['version_id'];
                     $dest = $op['id'];
-                    $this->attachmentRepository->copyAttachments($source, $dest, $this->attachmentTableName);
+                    $this->attachmentRepository->copyAttachments($source, $dest,
+                        $this->attachmentTableName);
 
                     // Seems that when we call this function during Test Project Copy
                     // we DO NOT USE this piece
 
                     if ($copyReqVTCVLinks) {
-                        $lnk = $this->getGoodForReqVersion($req_version['version_id']);
+                        $lnk = $this->getGoodForReqVersion(
+                            $req_version['version_id']);
                         if (! is_null($lnk)) {
                             $reqAndVer = array(
                                 'id' => $new_item['id'],
@@ -1999,7 +2217,8 @@ class requirement_mgr extends tlObjectWithAttachments
                                         'id' => $value['testcase_id'],
                                         'version_id' => $value['tcversion_id']
                                     );
-                                    $this->assignReqVerToTCVer($reqAndVer, $tcAndVer, $user_id);
+                                    $this->assignReqVerToTCVer($reqAndVer,
+                                        $tcAndVer, $user_id);
                                 }
                             }
                         }
@@ -2018,9 +2237,10 @@ class requirement_mgr extends tlObjectWithAttachments
     /**
      * Copy attachments from source to target
      */
-    private function copy_attachments($source_id, $target_id)
+    private function copyAttachments($source_id, $target_id)
     {
-        $this->attachmentRepository->copyAttachments($source_id, $target_id, $this->attachmentTableName);
+        $this->attachmentRepository->copyAttachments($source_id, $target_id,
+            $this->attachmentTableName);
     }
 
     /*
@@ -2036,7 +2256,8 @@ class requirement_mgr extends tlObjectWithAttachments
      */
     private function copy_cfields($source, $destination, $tproject_id = null)
     {
-        $cfmap_from = $this->get_linked_cfields($source['id'], $source['version_id'], $tproject_id);
+        $cfmap_from = $this->get_linked_cfields($source['id'],
+            $source['version_id'], $tproject_id);
         $cfield = null;
         if (! is_null($cfmap_from)) {
             foreach ($cfmap_from as $key => $value) {
@@ -2045,7 +2266,8 @@ class requirement_mgr extends tlObjectWithAttachments
                     "cf_value" => $value['value']
                 );
             }
-            $this->cfield_mgr->design_values_to_db($cfield, $destination['version_id'], null, 'reqversion_copy_cfields');
+            $this->cfield_mgr->design_values_to_db($cfield,
+                $destination['version_id'], null, 'reqversion_copy_cfields');
         }
     }
 
@@ -2062,7 +2284,8 @@ class requirement_mgr extends tlObjectWithAttachments
             'check_criteria' => 'like',
             'access_key' => 'req_doc_id'
         );
-        $itemSet = $this->getByDocID($item_info['req_doc_id'], $tproject_id, null, $getOptions);
+        $itemSet = $this->getByDocID($item_info['req_doc_id'], $tproject_id,
+            null, $getOptions);
 
         $target_doc = $item_info['req_doc_id'];
         $instance = 1;
@@ -2073,7 +2296,8 @@ class requirement_mgr extends tlObjectWithAttachments
             // req_doc_id has limited size then we need to be sure that generated id will
             // not exceed DB size
             $nameSet = array_flip(array_keys($itemSet));
-            $prefix = trim_and_limit($item_info['req_doc_id'], $this->fieldSize->req_docid - strlen($mask) - $safety_len);
+            $prefix = trim_and_limit($item_info['req_doc_id'],
+                $this->fieldSize->req_docid - strlen($mask) - $safety_len);
 
             $target_doc = $prefix . sprintf($mask, $instance);
             while (isset($nameSet[$target_doc])) {
@@ -2086,7 +2310,8 @@ class requirement_mgr extends tlObjectWithAttachments
 
     /**
      */
-    private function create_req_only($srs_id, $reqdoc_id, $title, $node_order = 0)
+    private function create_req_only($srs_id, $reqdoc_id, $title,
+        $node_order = 0)
     {
         static $debugMsg;
 
@@ -2094,8 +2319,11 @@ class requirement_mgr extends tlObjectWithAttachments
             $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         }
 
-        $req_id = $this->tree_mgr->new_node($srs_id, $this->node_types_descr_id['requirement'], $title, $node_order);
-        $sql = "/* $debugMsg */ INSERT INTO {$this->object_table} " . " (id, srs_id, req_doc_id)" . " VALUES ({$req_id}, {$srs_id},'" . $this->db->prepare_string($reqdoc_id) . "')";
+        $req_id = $this->tree_mgr->new_node($srs_id,
+            $this->node_types_descr_id['requirement'], $title, $node_order);
+        $sql = "/* $debugMsg */ INSERT INTO {$this->object_table} " .
+            " (id, srs_id, req_doc_id)" . " VALUES ({$req_id}, {$srs_id},'" .
+            $this->db->prepare_string($reqdoc_id) . "')";
 
         if (! $this->db->exec_query($sql)) {
             $result = array(
@@ -2124,7 +2352,9 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      * returns:
      */
-    private function create_version($id, $version, $scope, $user_id, $status = TL_REQ_STATUS_VALID, $type = TL_REQ_TYPE_INFO, $expected_coverage = 1)
+    private function create_version($id, $version, $scope, $user_id,
+        $status = TL_REQ_STATUS_VALID, $type = TL_REQ_TYPE_INFO,
+        $expected_coverage = 1)
     {
         static $debugMsg;
 
@@ -2132,9 +2362,16 @@ class requirement_mgr extends tlObjectWithAttachments
             $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         }
 
-        $item_id = $this->tree_mgr->new_node($id, $this->node_types_descr_id['requirement_version']);
+        $item_id = $this->tree_mgr->new_node($id,
+            $this->node_types_descr_id['requirement_version']);
 
-        $sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_versions']} " . " (id,version,scope,status,type,expected_coverage,author_id,creation_ts) " . " VALUES({$item_id},{$version},'" . trim($this->db->prepare_string($scope)) . "','" . $this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "'," . "{$expected_coverage}," . intval($user_id) . "," . $this->db->db_now() . ")";
+        $sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_versions']} " .
+            " (id,version,scope,status,type,expected_coverage,author_id,creation_ts) " .
+            " VALUES({$item_id},{$version},'" .
+            trim($this->db->prepare_string($scope)) . "','" .
+            $this->db->prepare_string($status) . "','" .
+            $this->db->prepare_string($type) . "'," . "{$expected_coverage}," .
+            intval($user_id) . "," . $this->db->db_now() . ")";
 
         $result = $this->db->exec_query($sql);
         $ret = array(
@@ -2186,14 +2423,18 @@ class requirement_mgr extends tlObjectWithAttachments
         $notify = $my['opt']['notify'];
 
         // get a new id
-        $version_id = $this->tree_mgr->new_node($id, $this->node_types_descr_id['requirement_version']);
+        $version_id = $this->tree_mgr->new_node($id,
+            $this->node_types_descr_id['requirement_version']);
 
         // Needed to get higher version NUMBER, to generata new VERSION NUMBER
-        $sourceVersionInfo = $this->get_last_child_info($id, array(
-            'child_type' => 'version'
-        ));
+        $sourceVersionInfo = $this->get_last_child_info($id,
+            array(
+                'child_type' => 'version'
+            ));
         if (is_null($sourceVersionInfo)) {
-            throw new Exception($debugMsg . ' $this->get_last_child_info() RETURNED NULL !!! - WRONG - Open Issue on mantis.testlink.org');
+            throw new Exception(
+                $debugMsg .
+                ' $this->get_last_child_info() RETURNED NULL !!! - WRONG - Open Issue on mantis.testlink.org');
         }
 
         // Till now everything is OK
@@ -2213,10 +2454,13 @@ class requirement_mgr extends tlObjectWithAttachments
 
         // Update Link Status To Test Case Versions for Source Version
         // is done on copy_version()
-        $this->copy_version($id, $sourceVersionID, $version_id, $newVersionNumber, $user_id);
+        $this->copy_version($id, $sourceVersionID, $version_id,
+            $newVersionNumber, $user_id);
 
         // need to update log message in new created version
-        $sql = "/* $debugMsg */ " . " UPDATE {$this->tables['req_versions']} " . " SET log_message = '" . trim($this->db->prepare_string($log_msg)) . "'" . " WHERE id={$version_id}";
+        $sql = "/* $debugMsg */ " . " UPDATE {$this->tables['req_versions']} " .
+            " SET log_message = '" . trim($this->db->prepare_string($log_msg)) .
+            "'" . " WHERE id={$version_id}";
         $this->db->exec_query($sql);
 
         if ($my['opt']['freezeSourceVersion']) {
@@ -2233,7 +2477,10 @@ class requirement_mgr extends tlObjectWithAttachments
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         $info = null;
 
-        $sql = " /* $debugMsg */ SELECT MAX(version) AS version " . " FROM {$this->tables['req_versions']} REQV," . " {$this->tables['nodes_hierarchy']} NH WHERE " . " NH.id = REQV.id " . " AND NH.parent_id = {$id} ";
+        $sql = " /* $debugMsg */ SELECT MAX(version) AS version " .
+            " FROM {$this->tables['req_versions']} REQV," .
+            " {$this->tables['nodes_hierarchy']} NH WHERE " . " NH.id = REQV.id " .
+            " AND NH.parent_id = {$id} ";
 
         $max_version = $this->db->fetchFirstRowSingleColumn($sql, 'version');
         if ($max_version) {
@@ -2255,7 +2502,10 @@ class requirement_mgr extends tlObjectWithAttachments
                     $fields = ' REQV.*';
                     break;
             }
-            $sql = "/* $debugMsg */ SELECT {$fields} " . " FROM {$this->tables['req_versions']} REQV," . " {$this->tables['nodes_hierarchy']} NH " . " WHERE version = {$max_version} AND NH.id = REQV.id AND NH.parent_id = {$id}";
+            $sql = "/* $debugMsg */ SELECT {$fields} " .
+                " FROM {$this->tables['req_versions']} REQV," .
+                " {$this->tables['nodes_hierarchy']} NH " .
+                " WHERE version = {$max_version} AND NH.id = REQV.id AND NH.parent_id = {$id}";
 
             $info = $this->db->fetchFirstRow($sql);
         }
@@ -2289,22 +2539,30 @@ class requirement_mgr extends tlObjectWithAttachments
 
     /**
      */
-    private function copy_version($id, $from_version_id, $to_version_id, $as_version_number, $user_id)
+    private function copy_version($id, $from_version_id, $to_version_id,
+        $as_version_number, $user_id)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         $now = $this->db->db_now();
-        $sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_versions']} " . " (id,version,author_id,creation_ts,scope,status,type,expected_coverage) " . " SELECT {$to_version_id} AS id, {$as_version_number} AS version, " . "        {$user_id} AS author_id, {$now} AS creation_ts," . "        scope,status,type,expected_coverage " . " FROM {$this->tables['req_versions']} " . " WHERE id=" . intval($from_version_id);
+        $sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_versions']} " .
+            " (id,version,author_id,creation_ts,scope,status,type,expected_coverage) " .
+            " SELECT {$to_version_id} AS id, {$as_version_number} AS version, " .
+            "        {$user_id} AS author_id, {$now} AS creation_ts," .
+            "        scope,status,type,expected_coverage " .
+            " FROM {$this->tables['req_versions']} " . " WHERE id=" .
+            intval($from_version_id);
         $this->db->exec_query($sql);
 
-        $this->copy_cfields(array(
-            'id' => $id,
-            'version_id' => $from_version_id
-        ), array(
-            'id' => $id,
-            'version_id' => $to_version_id
-        ));
+        $this->copy_cfields(
+            array(
+                'id' => $id,
+                'version_id' => $from_version_id
+            ), array(
+                'id' => $id,
+                'version_id' => $to_version_id
+            ));
 
-        $this->copy_attachments($from_version_id, $to_version_id);
+        $this->copyAttachments($from_version_id, $to_version_id);
 
         $reqTCLinksCfg = config_get('reqTCLinks');
         $freezeLinkOnNewReqVersion = $reqTCLinksCfg->freezeLinkOnNewReqVersion;
@@ -2316,7 +2574,8 @@ class requirement_mgr extends tlObjectWithAttachments
         }
 
         if ($freezeLinkOnNewReqVersion) {
-            $this->updateTCVLinkStatus($from_version_id, LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION);
+            $this->updateTCVLinkStatus($from_version_id,
+                LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION);
         }
     }
 
@@ -2326,7 +2585,8 @@ class requirement_mgr extends tlObjectWithAttachments
     {
         $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */ ';
 
-        $commonWhere = " WHERE req_version_id = " . intval($reqVersionID) . " AND link_status = " . LINK_TC_REQ_OPEN;
+        $commonWhere = " WHERE req_version_id = " . intval($reqVersionID) .
+            " AND link_status = " . LINK_TC_REQ_OPEN;
 
         $sql = " $debugMsg UPDATE {$this->tables['tcversions']}
              SET is_open = 0
@@ -2368,7 +2628,8 @@ class requirement_mgr extends tlObjectWithAttachments
         $booleanValue = $booleanValue > 0 ? 1 : 0;
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $sql = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " . " SET {$field}={$booleanValue} WHERE id={$reqVersionID}";
+        $sql = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " .
+            " SET {$field}={$booleanValue} WHERE id={$reqVersionID}";
 
         $this->db->exec_query($sql);
     }
@@ -2385,23 +2646,28 @@ class requirement_mgr extends tlObjectWithAttachments
      */
     public function get_relations($id)
     {
-        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ .
+            ' */';
         $relations = array();
         $relations['num_relations'] = 0;
         $relations['req'] = current($this->get_by_id($id));
 
         $tproject_mgr = new testproject($this->db);
 
-        $sql = " $debugMsg SELECT id, source_id, destination_id, relation_type, author_id, creation_ts " . " FROM {$this->tables['req_relations']} " . " WHERE source_id=$id OR destination_id=$id " . " ORDER BY id ASC ";
+        $sql = " $debugMsg SELECT id, source_id, destination_id, relation_type, author_id, creation_ts " .
+            " FROM {$this->tables['req_relations']} " .
+            " WHERE source_id=$id OR destination_id=$id " . " ORDER BY id ASC ";
 
         $relations['relations'] = $this->db->get_recordset($sql);
-        if (! is_null($relations['relations']) && count($relations['relations']) > 0) {
+        if (! is_null($relations['relations']) &&
+            count($relations['relations']) > 0) {
             $labels = $this->get_all_relation_labels();
             $label_keys = array_keys($labels);
             foreach ($relations['relations'] as $key => $rel) {
 
                 // is this relation type is configured?
-                if ($relTypeAllowed = in_array($rel['relation_type'], $label_keys)) {
+                if ($relTypeAllowed = in_array($rel['relation_type'],
+                    $label_keys)) {
                     $relations['relations'][$key]['source_localized'] = $labels[$rel['relation_type']]['source'];
                     $relations['relations'][$key]['destination_localized'] = $labels[$rel['relation_type']]['destination'];
 
@@ -2417,10 +2683,13 @@ class requirement_mgr extends tlObjectWithAttachments
 
                     // only add it, if either interproject linking is on or if it is in the same project
                     $relTypeAllowed = false;
-                    if ($this->relationsCfg->interProjectLinking || ($other_req[0]['testproject_id'] == $relations['req']['testproject_id'])) {
+                    if ($this->relationsCfg->interProjectLinking ||
+                        ($other_req[0]['testproject_id'] ==
+                        $relations['req']['testproject_id'])) {
                         $relTypeAllowed = true;
                         $relations['relations'][$key]['related_req'] = $other_req[0];
-                        $other_tproject = $tproject_mgr->get_by_id($other_req[0]['testproject_id']);
+                        $other_tproject = $tproject_mgr->get_by_id(
+                            $other_req[0]['testproject_id']);
                         $relations['relations'][$key]['related_req']['testproject_name'] = $other_tproject['name'];
 
                         $user = tlUser::getByID($this->db, $rel['author_id']);
@@ -2454,8 +2723,13 @@ class requirement_mgr extends tlObjectWithAttachments
      */
     public function check_if_relation_exists($first_id, $second_id, $rel_type_id)
     {
-        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
-        $sql = " $debugMsg SELECT COUNT(0) AS qty " . " FROM {$this->tables['req_relations']} " . " WHERE ((source_id=$first_id AND destination_id=$second_id) " . " OR (source_id=$second_id AND destination_id=$first_id)) " . " AND relation_type=$rel_type_id";
+        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ .
+            ' */';
+        $sql = " $debugMsg SELECT COUNT(0) AS qty " .
+            " FROM {$this->tables['req_relations']} " .
+            " WHERE ((source_id=$first_id AND destination_id=$second_id) " .
+            " OR (source_id=$second_id AND destination_id=$first_id)) " .
+            " AND relation_type=$rel_type_id";
         $rs = $this->db->get_recordset($sql);
         return $rs[0]['qty'] > 0;
     }
@@ -2473,9 +2747,12 @@ class requirement_mgr extends tlObjectWithAttachments
      */
     public function count_relations($id)
     {
-        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ .
+            ' */';
         $safeID = intval($id);
-        $sql = " $debugMsg SELECT COUNT(*) AS qty " . " FROM {$this->tables['req_relations']} " . " WHERE source_id={$safeID} OR destination_id={$safeID} ";
+        $sql = " $debugMsg SELECT COUNT(*) AS qty " .
+            " FROM {$this->tables['req_relations']} " .
+            " WHERE source_id={$safeID} OR destination_id={$safeID} ";
         $rs = $this->db->get_recordset($sql);
         return $rs[0]['qty'];
     }
@@ -2494,11 +2771,15 @@ class requirement_mgr extends tlObjectWithAttachments
      * @param integer $author_id
      *            user's ID
      */
-    public function add_relation($source_id, $destination_id, $type_id, $author_id)
+    public function add_relation($source_id, $destination_id, $type_id,
+        $author_id)
     {
-        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ .
+            ' */';
         $time = $this->db->db_now();
-        $sql = " $debugMsg INSERT INTO {$this->tables['req_relations']} " . " (source_id, destination_id, relation_type, author_id, creation_ts) " . " values ($source_id, $destination_id, $type_id, $author_id, $time)";
+        $sql = " $debugMsg INSERT INTO {$this->tables['req_relations']} " .
+            " (source_id, destination_id, relation_type, author_id, creation_ts) " .
+            " values ($source_id, $destination_id, $type_id, $author_id, $time)";
         $this->db->exec_query($sql);
     }
 
@@ -2512,7 +2793,8 @@ class requirement_mgr extends tlObjectWithAttachments
      */
     public function delete_relation($id)
     {
-        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ .
+            ' */';
         $sql = " $debugMsg DELETE FROM {$this->tables['req_relations']} WHERE id=$id ";
         $this->db->exec_query($sql);
     }
@@ -2528,9 +2810,11 @@ class requirement_mgr extends tlObjectWithAttachments
      */
     public function delete_all_relations($id)
     {
-        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ .
+            ' */';
         $id_list = implode(",", (array) $id);
-        $sql = " $debugMsg DELETE FROM {$this->tables['req_relations']} " . " WHERE source_id IN ($id_list) OR destination_id IN ($id_list) ";
+        $sql = " $debugMsg DELETE FROM {$this->tables['req_relations']} " .
+            " WHERE source_id IN ($id_list) OR destination_id IN ($id_list) ";
         $this->db->exec_query($sql);
     }
 
@@ -2598,7 +2882,8 @@ class requirement_mgr extends tlObjectWithAttachments
         }
 
         // set "related to" as default preselected value in forms
-        if (defined('TL_REQ_REL_TYPE_RELATED') && isset($htmlSelect[TL_REQ_REL_TYPE_RELATED . "_source"])) {
+        if (defined('TL_REQ_REL_TYPE_RELATED') &&
+            isset($htmlSelect[TL_REQ_REL_TYPE_RELATED . "_source"])) {
             $selected_key = TL_REQ_REL_TYPE_RELATED . "_source";
         } else {
             // "related to" is not configured, so take last element as selected one
@@ -2616,7 +2901,8 @@ class requirement_mgr extends tlObjectWithAttachments
      * - title
      * - docid
      */
-    private function getByAttribute($attr, $tproject_id = null, $parent_id = null, $options = null)
+    private function getByAttribute($attr, $tproject_id = null,
+        $parent_id = null, $options = null)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -2648,7 +2934,8 @@ class requirement_mgr extends tlObjectWithAttachments
         $sql = " /* $debugMsg */ SELECT ";
         switch ($my['options']['output']) {
             case 'standard':
-                $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id, " . " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
+                $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+                    " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
                 break;
 
             case 'minimun':
@@ -2659,7 +2946,12 @@ class requirement_mgr extends tlObjectWithAttachments
                 $sql .= " REQ.id";
                 break;
         }
-        $sql .= " FROM {$this->object_table} REQ " . " /* Get Req info from NH */ " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " . " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " . " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " . " WHERE {$where_clause} {$check_criteria} ";
+        $sql .= " FROM {$this->object_table} REQ " .
+            " /* Get Req info from NH */ " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+            " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+            " WHERE {$where_clause} {$check_criteria} ";
 
         if (! is_null($tproject_id)) {
             $sql .= " AND REQ_SPEC.testproject_id={$tproject_id}";
@@ -2669,8 +2961,7 @@ class requirement_mgr extends tlObjectWithAttachments
             $sql .= " AND REQ.srs_id={$parent_id}";
         }
 
-        $output = $this->db->fetchRowsIntoMap($sql, $my['options']['access_key']);
-        return $output;
+        return $this->db->fetchRowsIntoMap($sql, $my['options']['access_key']);
     }
 
     /**
@@ -2707,7 +2998,10 @@ class requirement_mgr extends tlObjectWithAttachments
         $table = $target_cfg[$child_type]['table'];
         $field = $target_cfg[$child_type]['field'];
 
-        $sql = " /* $debugMsg */ SELECT COALESCE(MAX($field),-1) AS $field " . " FROM {$this->tables[$table]} CHILD," . " {$this->tables['nodes_hierarchy']} NH WHERE " . " NH.id = CHILD.id " . " AND NH.parent_id = {$id} ";
+        $sql = " /* $debugMsg */ SELECT COALESCE(MAX($field),-1) AS $field " .
+            " FROM {$this->tables[$table]} CHILD," .
+            " {$this->tables['nodes_hierarchy']} NH WHERE " .
+            " NH.id = CHILD.id " . " AND NH.parent_id = {$id} ";
 
         $max_verbose = $this->db->fetchFirstRowSingleColumn($sql, $field);
 
@@ -2728,7 +3022,9 @@ class requirement_mgr extends tlObjectWithAttachments
                     break;
             }
 
-            $sql .= " FROM {$this->tables[$table]} CHILD," . " {$this->tables['nodes_hierarchy']} NH " . " WHERE $field = {$max_verbose} AND NH.id = CHILD.id AND NH.parent_id = {$id}";
+            $sql .= " FROM {$this->tables[$table]} CHILD," .
+                " {$this->tables['nodes_hierarchy']} NH " .
+                " WHERE $field = {$max_verbose} AND NH.id = CHILD.id AND NH.parent_id = {$id}";
 
             $info = $this->db->fetchFirstRow($sql);
         }
@@ -2740,15 +3036,18 @@ class requirement_mgr extends tlObjectWithAttachments
      * @internal revision
      *           20110115 - franciscom - fixed insert of null on timestamp field
      */
-    public function create_new_revision($parent_id, $user_id, $tproject_id, $req = null, $log_msg = null)
+    public function create_new_revision($parent_id, $user_id, $tproject_id,
+        $req = null, $log_msg = null)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $item_id = $this->tree_mgr->new_node($parent_id, $this->node_types_descr_id['requirement_revision']);
+        $item_id = $this->tree_mgr->new_node($parent_id,
+            $this->node_types_descr_id['requirement_revision']);
 
         // Needed to get higher revision NUMBER, to generata new NUMBER
-        $source_info = $this->get_last_child_info($parent_id, array(
-            'child_type' => 'revision'
-        ));
+        $source_info = $this->get_last_child_info($parent_id,
+            array(
+                'child_type' => 'revision'
+            ));
         $current_rev = 0;
         if (! is_null($source_info)) {
             $current_rev = $source_info['revision'];
@@ -2761,13 +3060,20 @@ class requirement_mgr extends tlObjectWithAttachments
         $ret['revision'] = $current_rev;
         $ret['msg'] = 'ok';
 
-        $this->copy_version_as_revision($parent_id, $item_id, $current_rev, $tproject_id);
-        $sql = "/* $debugMsg */ " . " UPDATE {$this->tables['req_revisions']} " . " SET name ='" . $this->db->prepare_string($req['title']) . "'," . "     req_doc_id ='" . $this->db->prepare_string($req['req_doc_id']) . "'" . " WHERE id = {$item_id} ";
+        $this->copy_version_as_revision($parent_id, $item_id, $current_rev,
+            $tproject_id);
+        $sql = "/* $debugMsg */ " . " UPDATE {$this->tables['req_revisions']} " .
+            " SET name ='" . $this->db->prepare_string($req['title']) . "'," .
+            "     req_doc_id ='" . $this->db->prepare_string($req['req_doc_id']) .
+            "'" . " WHERE id = {$item_id} ";
         $this->db->exec_query($sql);
 
         $new_rev = $current_rev + 1;
         $db_now = $this->db->db_now();
-        $sql = " /* $debugMsg */ " . " UPDATE {$this->tables['req_versions']} " . " SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'," . " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = NULL";
+        $sql = " /* $debugMsg */ " . " UPDATE {$this->tables['req_versions']} " .
+            " SET revision = {$new_rev}, log_message=' " .
+            $this->db->prepare_string($log_msg) . "'," .
+            " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = NULL";
 
         $nullTS = $this->db->db_null_timestamp();
         if (! is_null($nullTS)) {
@@ -2781,9 +3087,19 @@ class requirement_mgr extends tlObjectWithAttachments
 
     /**
      */
-    private function copy_version_as_revision($parent_id, $item_id, $revision, $tproject_id)
+    private function copy_version_as_revision($parent_id, $item_id, $revision,
+        $tproject_id)
     {
-        $sql = '/* $debugMsg */' . " INSERT INTO {$this->tables['req_revisions']} " . " (parent_id,id,revision,scope,status,type,active,is_open, " . "  expected_coverage,author_id,creation_ts,modifier_id,modification_ts,log_message) " . " SELECT REQV.id, {$item_id}, {$revision}, " . " REQV.scope,REQV.status,REQV.type,REQV.active,REQV.is_open, " . " REQV.expected_coverage,REQV.author_id,REQV.creation_ts,REQV.modifier_id," . " REQV.modification_ts,REQV.log_message" . " FROM {$this->tables['req_versions']} REQV " . " WHERE REQV.id = {$parent_id} ";
+        $sql = '/* $debugMsg */' .
+            " INSERT INTO {$this->tables['req_revisions']} " .
+            " (parent_id,id,revision,scope,status,type,active,is_open, " .
+            "  expected_coverage,author_id,creation_ts,modifier_id,modification_ts,log_message) " .
+            " SELECT REQV.id, {$item_id}, {$revision}, " .
+            " REQV.scope,REQV.status,REQV.type,REQV.active,REQV.is_open, " .
+            " REQV.expected_coverage,REQV.author_id,REQV.creation_ts,REQV.modifier_id," .
+            " REQV.modification_ts,REQV.log_message" .
+            " FROM {$this->tables['req_versions']} REQV " .
+            " WHERE REQV.id = {$parent_id} ";
         $this->db->exec_query($sql);
 
         // need to copy Custom Fields ALSO
@@ -2821,11 +3137,24 @@ class requirement_mgr extends tlObjectWithAttachments
 
         // Two steps algorithm
         // First understand is we already have a revision
-        $sql = " /* $debugMsg */" . " SELECT COUNT(0) AS qta_rev " . " FROM {$this->tables['req_revisions']} REQRV " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQRV.parent_id " . " WHERE NH_REQV.parent_id = {$id} ";
+        $sql = " /* $debugMsg */" . " SELECT COUNT(0) AS qta_rev " .
+            " FROM {$this->tables['req_revisions']} REQRV " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQRV.parent_id " .
+            " WHERE NH_REQV.parent_id = {$id} ";
 
         $rs = $this->db->get_recordset($sql);
 
-        $sql = "/* $debugMsg */" . " SELECT REQV.id AS version_id, REQV.version," . "     REQV.creation_ts, REQV.author_id, " . "     REQV.modification_ts, REQV.modifier_id, " . self::NO_REVISION . " AS revision_id, " . "      REQV.revision, REQV.scope, " . "      REQV.status,REQV.type,REQV.expected_coverage,NH_REQ.name, REQ.req_doc_id, " . " COALESCE(REQV.log_message,'') AS log_message" . " FROM {$this->tables['req_versions']}  REQV " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " . " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " . " WHERE NH_REQV.parent_id = {$id} ";
+        $sql = "/* $debugMsg */" . " SELECT REQV.id AS version_id, REQV.version," .
+            "     REQV.creation_ts, REQV.author_id, " .
+            "     REQV.modification_ts, REQV.modifier_id, " . self::NO_REVISION .
+            " AS revision_id, " . "      REQV.revision, REQV.scope, " .
+            "      REQV.status,REQV.type,REQV.expected_coverage,NH_REQ.name, REQ.req_doc_id, " .
+            " COALESCE(REQV.log_message,'') AS log_message" .
+            " FROM {$this->tables['req_versions']}  REQV " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+            " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+            " WHERE NH_REQV.parent_id = {$id} ";
 
         if ($rs[0]['qta_rev'] > 0) {
             // Important NOTICE - MSSQL
@@ -2835,7 +3164,22 @@ class requirement_mgr extends tlObjectWithAttachments
             // UNION ALL returns ALSO duplicated rows.
             // In this situation this is NOT A PROBLEM (because we will not have dups)
             //
-            $sql .= " UNION ALL ( " . " SELECT REQV.id AS version_id, REQV.version, " . "     REQRV.creation_ts, REQRV.author_id, " . "     REQRV.modification_ts, REQRV.modifier_id, " . "     REQRV.id AS revision_id, " . "     REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " . "     REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " . "     COALESCE(REQRV.log_message,'') as log_message" . " FROM {$this->tables['req_versions']} REQV " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " . " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " . " JOIN {$this->tables['req_revisions']} REQRV " . " ON REQRV.parent_id = REQV.id " . " WHERE NH_REQV.parent_id = {$id} " . " ) " . " ORDER BY version_id DESC,version DESC,revision DESC ";
+            $sql .= " UNION ALL ( " .
+                " SELECT REQV.id AS version_id, REQV.version, " .
+                "     REQRV.creation_ts, REQRV.author_id, " .
+                "     REQRV.modification_ts, REQRV.modifier_id, " .
+                "     REQRV.id AS revision_id, " .
+                "     REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
+                "     REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
+                "     COALESCE(REQRV.log_message,'') as log_message" .
+                " FROM {$this->tables['req_versions']} REQV " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+                " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+                " JOIN {$this->tables['req_revisions']} REQRV " .
+                " ON REQRV.parent_id = REQV.id " .
+                " WHERE NH_REQV.parent_id = {$id} " . " ) " .
+                " ORDER BY version_id DESC,version DESC,revision DESC ";
         }
 
         switch ($my['options']['output']) {
@@ -2866,7 +3210,9 @@ class requirement_mgr extends tlObjectWithAttachments
                 $key4date = 'creation_ts';
                 $key4user = 'author_id';
                 $nullTS = $this->db->db_null_timestamp();
-                if (($rs[$ap]['modification_ts'] != $nullTS) && ! is_null($rs[$ap]['modification_ts']) && ! is_null($rs[$ap]['modifier_id'])) {
+                if (($rs[$ap]['modification_ts'] != $nullTS) &&
+                    ! is_null($rs[$ap]['modification_ts']) &&
+                    ! is_null($rs[$ap]['modifier_id'])) {
                     $key4date = 'modification_ts';
                     $key4user = 'modifier_id';
                 }
@@ -2896,7 +3242,19 @@ class requirement_mgr extends tlObjectWithAttachments
         );
         $my['opt'] = array_merge($my['opt'], (array) $opt);
 
-        $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . " REQV.scope,REQV.status,REQV.type,REQV.active," . " REQV.is_open,REQV.author_id,REQV.version,REQV.revision,REQV.id AS version_id," . " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," . " REQV.modification_ts,REQV.revision,NH_REQ.name AS title, REQ_SPEC.testproject_id, " . " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " . " FROM {$this->object_table} REQ " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id " . " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " . " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " . " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " . " WHERE REQV.id = " . intval($version_id);
+        $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," .
+            " REQV.scope,REQV.status,REQV.type,REQV.active," .
+            " REQV.is_open,REQV.author_id,REQV.version,REQV.revision,REQV.id AS version_id," .
+            " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+            " REQV.modification_ts,REQV.revision,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+            " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
+            " FROM {$this->object_table} REQ " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id " .
+            " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .
+            " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+            " WHERE REQV.id = " . intval($version_id);
 
         $dummy = $this->db->get_recordset($sql);
 
@@ -2925,9 +3283,23 @@ class requirement_mgr extends tlObjectWithAttachments
         );
         $my['opt'] = array_merge($my['opt'], (array) $opt);
 
-        $sql = " /* $debugMsg */ " . " SELECT REQV.id AS req_version_id,REQ.id,REQ.srs_id,
+        $sql = " /* $debugMsg */ " .
+            " SELECT REQV.id AS req_version_id,REQ.id,REQ.srs_id,
              REQ.req_doc_id,REQRV.scope,REQRV.status,REQRV.type,
-             REQRV.active," . " REQRV.is_open,REQRV.author_id,REQV.version,REQRV.parent_id AS version_id," . " REQRV.expected_coverage,REQRV.creation_ts,REQRV.modifier_id," . " REQRV.modification_ts,REQRV.revision, REQRV.id AS revision_id," . " NH_REQ.name AS title, REQ_SPEC.testproject_id, " . " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " . " FROM {$this->tables['req_revisions']} REQRV " . " JOIN {$this->tables['req_versions']} REQV ON REQV.id = REQRV.parent_id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQRV.parent_id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " . " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " . " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " . " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " . " WHERE REQRV.id = " . intval($revision_id);
+             REQRV.active," .
+            " REQRV.is_open,REQRV.author_id,REQV.version,REQRV.parent_id AS version_id," .
+            " REQRV.expected_coverage,REQRV.creation_ts,REQRV.modifier_id," .
+            " REQRV.modification_ts,REQRV.revision, REQRV.id AS revision_id," .
+            " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+            " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
+            " FROM {$this->tables['req_revisions']} REQRV " .
+            " JOIN {$this->tables['req_versions']} REQV ON REQV.id = REQRV.parent_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQRV.parent_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+            " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+            " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+            " WHERE REQRV.id = " . intval($revision_id);
         $dummy = $this->db->get_recordset($sql);
 
         if (! is_null($dummy)) {
@@ -2953,7 +3325,8 @@ class requirement_mgr extends tlObjectWithAttachments
      *
      *
      */
-    public function get_version_revision($version_id, $revision_access, $opt = null)
+    public function get_version_revision($version_id, $revision_access,
+        $opt = null)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         $my['opt'] = array(
@@ -2969,12 +3342,51 @@ class requirement_mgr extends tlObjectWithAttachments
             // we have to tables to search on
             // Req Versions -> holds LATEST revision
             // Req Revisions -> holds other revisions
-            $sql .= " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version," . "     REQV.creation_ts, REQV.author_id, " . "     REQV.modification_ts, REQV.modifier_id, " . self::NO_REVISION . " AS revision_id, " . "      REQV.revision, REQV.scope, " . "      REQV.status,REQV.type,REQV.expected_coverage,NH_REQ.name, REQ.req_doc_id, " . " COALESCE(REQV.log_message,'') AS log_message, NH_REQ.name AS title " . " FROM {$this->tables['req_versions']}  REQV " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " . " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " . " WHERE NH_REQV.id = {$version_id} AND REQV.revision = {$rev_number} ";
+            $sql .= " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version," .
+                "     REQV.creation_ts, REQV.author_id, " .
+                "     REQV.modification_ts, REQV.modifier_id, " .
+                self::NO_REVISION . " AS revision_id, " .
+                "      REQV.revision, REQV.scope, " .
+                "      REQV.status,REQV.type,REQV.expected_coverage,NH_REQ.name, REQ.req_doc_id, " .
+                " COALESCE(REQV.log_message,'') AS log_message, NH_REQ.name AS title " .
+                " FROM {$this->tables['req_versions']}  REQV " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+                " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+                " WHERE NH_REQV.id = {$version_id} AND REQV.revision = {$rev_number} ";
 
-            $sql .= " UNION ALL ( " . " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version, " . "     REQRV.creation_ts, REQRV.author_id, " . "     REQRV.modification_ts, REQRV.modifier_id, " . "     REQRV.id AS revision_id, " . "     REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " . "     REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " . "     COALESCE(REQRV.log_message,'') as log_message, NH_REQ.name AS title " . " FROM {$this->tables['req_versions']} REQV " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " . " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " . " JOIN {$this->tables['req_revisions']} REQRV " . " ON REQRV.parent_id = REQV.id " . " WHERE NH_REQV.id = {$version_id} AND REQRV.revision = {$rev_number} ) ";
+            $sql .= " UNION ALL ( " .
+                " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version, " .
+                "     REQRV.creation_ts, REQRV.author_id, " .
+                "     REQRV.modification_ts, REQRV.modifier_id, " .
+                "     REQRV.id AS revision_id, " .
+                "     REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
+                "     REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
+                "     COALESCE(REQRV.log_message,'') as log_message, NH_REQ.name AS title " .
+                " FROM {$this->tables['req_versions']} REQV " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+                " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+                " JOIN {$this->tables['req_revisions']} REQRV " .
+                " ON REQRV.parent_id = REQV.id " .
+                " WHERE NH_REQV.id = {$version_id} AND REQRV.revision = {$rev_number} ) ";
         } else {
             // revision_id is present ONLY on req revisions table, then we do not need UNION
-            $sql .= " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version, " . "     REQRV.creation_ts, REQRV.author_id, " . "     REQRV.modification_ts, REQRV.modifier_id, " . "     REQRV.id AS revision_id, " . "     REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " . "     REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " . "     COALESCE(REQRV.log_message,'') as log_message, NH_REQ.name AS title " . " FROM {$this->tables['req_versions']} REQV " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " . " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " . " JOIN {$this->tables['req_revisions']} REQRV " . " ON REQRV.parent_id = REQV.id " . " WHERE NH_REQV.id = {$version_id} AND REQRV.revision_id = " . intval($revision_access['id']);
+            $sql .= " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version, " .
+                "     REQRV.creation_ts, REQRV.author_id, " .
+                "     REQRV.modification_ts, REQRV.modifier_id, " .
+                "     REQRV.id AS revision_id, " .
+                "     REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
+                "     REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
+                "     COALESCE(REQRV.log_message,'') as log_message, NH_REQ.name AS title " .
+                " FROM {$this->tables['req_versions']} REQV " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+                " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+                " JOIN {$this->tables['req_revisions']} REQRV " .
+                " ON REQRV.parent_id = REQV.id " .
+                " WHERE NH_REQV.id = {$version_id} AND REQRV.revision_id = " .
+                intval($revision_access['id']);
         }
 
         $rs = $this->db->get_recordset($sql);
@@ -3005,7 +3417,8 @@ class requirement_mgr extends tlObjectWithAttachments
                 $rs[$key][$ukey] = '';
                 if (trim($rs[$key][$userid_field]) != "") {
                     if (! isset($userCache[$rs[$key][$userid_field]])) {
-                        $user = tlUser::getByID($this->db, $rs[$key][$userid_field]);
+                        $user = tlUser::getByID($this->db,
+                            $rs[$key][$userid_field]);
                         $rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
                         $userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
                     } else {
@@ -3046,7 +3459,8 @@ class requirement_mgr extends tlObjectWithAttachments
         );
 
         // search need to be done in like to the left
-        $itemSet = $this->getByAttribute($attr, $tproject_id, $parent_id, $getOptions);
+        $itemSet = $this->getByAttribute($attr, $tproject_id, $parent_id,
+            $getOptions);
 
         // we borrow logic (may be one day we can put it on a central place) from
         // testcase class create_tcase_only()
@@ -3066,7 +3480,8 @@ class requirement_mgr extends tlObjectWithAttachments
             // When I got siblings il will got 2 siblings, if I create new progressive using next,
             // it will be 3 => I will get duplicated name.
             while (isset($nameSet[$target])) {
-                $target = $title2check . ($suffix = sprintf($mask, ++ $siblingQty));
+                $target = $title2check .
+                    ($suffix = sprintf($mask, ++ $siblingQty));
                 $final_len = strlen($target);
                 if ($final_len > $title_max_len) {
                     $target = substr($target, strlen($suffix), $title_max_len);
@@ -3107,26 +3522,32 @@ class requirement_mgr extends tlObjectWithAttachments
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
         if (! isset($context['tproject_id'])) {
-            throw new Exception($debugMsg . ' : $context[\'tproject_id\'] is needed');
+            throw new Exception(
+                $debugMsg . ' : $context[\'tproject_id\'] is needed');
         }
 
-        $where = "WHERE RSPEC.testproject_id = " . intval($context['tproject_id']);
-        $sql = "/* $debugMsg */ " . "SELECT DISTINCT REQ.id,REQ.req_doc_id FROM {$this->tables['requirements']} REQ " . "JOIN {$this->tables['req_specs']} RSPEC ON RSPEC.id = REQ.srs_id ";
+        $where = "WHERE RSPEC.testproject_id = " .
+            intval($context['tproject_id']);
+        $sql = "/* $debugMsg */ " .
+            "SELECT DISTINCT REQ.id,REQ.req_doc_id FROM {$this->tables['requirements']} REQ " .
+            "JOIN {$this->tables['req_specs']} RSPEC ON RSPEC.id = REQ.srs_id ";
 
         if (isset($context['tplan_id'])) {
 
-            $sql .= "JOIN {$this->tables['req_coverage']} REQCOV ON REQCOV.req_id = REQ.id " . "JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = REQCOV.testcase_id " . "JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id ";
+            $sql .= "JOIN {$this->tables['req_coverage']} REQCOV ON REQCOV.req_id = REQ.id " .
+                "JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = REQCOV.testcase_id " .
+                "JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id ";
 
             $where .= " AND TPTCV.testplan_id = " . intval($context['tplan_id']);
-            if (isset($context['platform_id']) && intval($context['platform_id']) > 0) {
-                $where .= " AND TPTCV.platform_id = " . intval($context['platform_id']);
+            if (isset($context['platform_id']) &&
+                intval($context['platform_id']) > 0) {
+                $where .= " AND TPTCV.platform_id = " .
+                    intval($context['platform_id']);
             }
         }
 
         $sql .= $where;
-        $rs = $this->db->fetchRowsIntoMap($sql, 'id');
-
-        return $rs;
+        return $this->db->fetchRowsIntoMap($sql, 'id');
     }
 
     /**
@@ -3138,9 +3559,9 @@ class requirement_mgr extends tlObjectWithAttachments
         $sfReqID = intval($req_id);
         $sfVersion = intval($req_version_id);
 
-        $url = "lib/requirements/reqEdit.php" . "?doAction=fileUpload&requirement_id=" . $sfReqID . "&req_id=" . $sfReqID . "&req_version_id=" . $sfVersion;
-
-        return $url;
+        return "lib/requirements/reqEdit.php" .
+            "?doAction=fileUpload&requirement_id=" . $sfReqID . "&req_id=" .
+            $sfReqID . "&req_version_id=" . $sfVersion;
     }
 
     /**
@@ -3149,8 +3570,9 @@ class requirement_mgr extends tlObjectWithAttachments
      */
     public function getDeleteAttachmentRelativeURL($req_id, $req_version_id)
     {
-        $url = "lib/requirements/reqEdit.php?doAction=deleteFile" . "&requirement_id=" . intval($req_id) . "&req_version_id=" . intval($req_version_id) . "&file_id=";
-        return $url;
+        return "lib/requirements/reqEdit.php?doAction=deleteFile" .
+            "&requirement_id=" . intval($req_id) . "&req_version_id=" .
+            intval($req_version_id) . "&file_id=";
     }
 
     /**
@@ -3176,7 +3598,8 @@ class requirement_mgr extends tlObjectWithAttachments
      * @internal revisions
      *
      */
-    public function exportRelationToXML($relation, $tproject_id = null, $check_for_req_project = false)
+    public function exportRelationToXML($relation, $tproject_id = null,
+        $check_for_req_project = false)
     {
         $xmlStr = '';
         $source_docid = null;
@@ -3187,22 +3610,26 @@ class requirement_mgr extends tlObjectWithAttachments
         if (! is_null($relation)) {
             // FRL : interproject linking support
             $tproject_mgr = new testproject($this->db);
-            $reqs = $this->get_by_id($relation['source_id'], requirement_mgr::LATEST_VERSION);
+            $reqs = $this->get_by_id($relation['source_id'],
+                requirement_mgr::LATEST_VERSION);
             if (! empty($reqs)) {
                 $source_docid = $reqs[0]['req_doc_id'];
                 if ($check_for_req_project) {
-                    $tproject = $tproject_mgr->get_by_id($reqs[0]['testproject_id']);
+                    $tproject = $tproject_mgr->get_by_id(
+                        $reqs[0]['testproject_id']);
                     if ($tproject['id'] != $tproject_id) {
                         $source_project = $tproject['name'];
                     }
                 }
             }
 
-            $reqs = $this->get_by_id($relation['destination_id'], requirement_mgr::LATEST_VERSION);
+            $reqs = $this->get_by_id($relation['destination_id'],
+                requirement_mgr::LATEST_VERSION);
             if (! empty($reqs)) {
                 $destination_docid = $reqs[0]['req_doc_id'];
                 if ($check_for_req_project) {
-                    $tproject = $tproject_mgr->get_by_id($reqs[0]['testproject_id']);
+                    $tproject = $tproject_mgr->get_by_id(
+                        $reqs[0]['testproject_id']);
                     if ($tproject['id'] != $tproject_id) {
                         $destination_project = $tproject['name'];
                     }
@@ -3219,23 +3646,29 @@ class requirement_mgr extends tlObjectWithAttachments
                     "||TYPE||" => "relation_type"
                 );
 
-                $elemTpl = "\t" . "<relation>" . "\n\t\t" . "<source>||SOURCE||</source>";
+                $elemTpl = "\t" . "<relation>" . "\n\t\t" .
+                    "<source>||SOURCE||</source>";
                 if (! is_null($source_project)) {
-                    $elemTpl .= "\n\t\t" . "<source_project>||SRC_PROJECT||</source_project>";
+                    $elemTpl .= "\n\t\t" .
+                        "<source_project>||SRC_PROJECT||</source_project>";
                     $relation['source_project'] = $source_project;
                     $info["||SRC_PROJECT||"] = "source_project";
                 }
 
-                $elemTpl .= "\n\t\t" . "<destination>||DESTINATION||</destination>";
+                $elemTpl .= "\n\t\t" .
+                    "<destination>||DESTINATION||</destination>";
                 if (! is_null($destination_project)) {
-                    $elemTpl .= "\n\t\t" . "<destination_project>||DST_PROJECT||</destination_project>";
+                    $elemTpl .= "\n\t\t" .
+                        "<destination_project>||DST_PROJECT||</destination_project>";
                     $relation['destination_project'] = $destination_project;
                     $info["||DST_PROJECT||"] = "destination_project";
                 }
-                $elemTpl .= "\n\t\t" . "<type>||TYPE||</type>" . "\n\t" . "</relation>" . "\n";
+                $elemTpl .= "\n\t\t" . "<type>||TYPE||</type>" . "\n\t" .
+                    "</relation>" . "\n";
 
                 $relations[] = $relation;
-                $xmlStr = exportDataToXML($relations, "{{XMLCODE}}", $elemTpl, $info, true);
+                $xmlStr = exportDataToXML($relations, "{{XMLCODE}}", $elemTpl,
+                    $info, true);
             }
         }
 
@@ -3293,7 +3726,8 @@ class requirement_mgr extends tlObjectWithAttachments
         $dummy['destination_id'] = null;
         // FRL : interproject linking support
         $dummy['source_tproject'] = property_exists($xml_item, 'source_project') ? (string) $xml_item->source_project : null;
-        $dummy['destination_tproject'] = property_exists($xml_item, 'destination_project') ? (string) $xml_item->destination_project : null;
+        $dummy['destination_tproject'] = property_exists($xml_item,
+            'destination_project') ? (string) $xml_item->destination_project : null;
 
         return $dummy;
     }
@@ -3309,8 +3743,8 @@ class requirement_mgr extends tlObjectWithAttachments
     private function createRelationFromXML($xml, $tproject_id, $author_id)
     {
         $relationAsMap = $this->convertRelationXmlToRelationMap($xml);
-        $user_feedback = $this->createRelationFromMap($relationAsMap, $tproject_id, $author_id);
-        return $user_feedback;
+        return $this->createRelationFromMap($relationAsMap, $tproject_id,
+            $author_id);
     }
 
     /**
@@ -3341,48 +3775,64 @@ class requirement_mgr extends tlObjectWithAttachments
 
         // FRL : interproject linking support (look for req in defined project and req must be found
         // in current project if interproject_linking is not set)
-        $reqs = $this->getByDocIDInProject($source_doc_id, $rel['source_tproject'], $tproject_id, null, $options);
+        $reqs = $this->getByDocIDInProject($source_doc_id,
+            $rel['source_tproject'], $tproject_id, null, $options);
         $source = (! is_null($reqs)) ? $reqs[$source_doc_id] : null;
-        if (! is_null($source) && ($this->relationsCfg->interProjectLinking || $source['testproject_id'] == $tproject_id)) {
+        if (! is_null($source) &&
+            ($this->relationsCfg->interProjectLinking ||
+            $source['testproject_id'] == $tproject_id)) {
             $rel['source_id'] = $source['id'];
         }
 
         $destination_doc_id = $rel['destination_doc_id'];
-        $reqs = $this->getByDocIDInProject($destination_doc_id, $rel['destination_tproject'], $tproject_id, null, $options);
+        $reqs = $this->getByDocIDInProject($destination_doc_id,
+            $rel['destination_tproject'], $tproject_id, null, $options);
         $destination = (! is_null($reqs)) ? $reqs[$destination_doc_id] : null;
-        if (! is_null($destination) && ($this->relationsCfg->interProjectLinking || $destination['testproject_id'] == $tproject_id)) {
+        if (! is_null($destination) &&
+            ($this->relationsCfg->interProjectLinking ||
+            $destination['testproject_id'] == $tproject_id)) {
             $rel['destination_id'] = $destination['id'];
         }
 
         // 2 - check if relation is valid
         $source_id = $rel['source_id'];
         $destination_id = $rel['destination_id'];
-        $source_doc_id .= (is_null($rel['source_tproject']) ? '' : (' [' . $rel['source_tproject'] . ']'));
-        $destination_doc_id .= (is_null($rel['destination_tproject']) ? '' : (' [' . $rel['destination_tproject'] . ']'));
+        $source_doc_id .= (is_null($rel['source_tproject']) ? '' : (' [' .
+            $rel['source_tproject'] . ']'));
+        $destination_doc_id .= (is_null($rel['destination_tproject']) ? '' : (' [' .
+            $rel['destination_tproject'] . ']'));
         $rel_types_desc = config_get('req_cfg')->rel_type_description;
 
         // check if given type is a valid one for rel_type_description defined in config
-        $type_desc = array_key_exists(intval($rel['type']), $rel_types_desc) ? $rel_types_desc[intval($rel['type'])] : null;
+        $type_desc = array_key_exists(intval($rel['type']), $rel_types_desc) ? $rel_types_desc[intval(
+            $rel['type'])] : null;
         $user_feedback = array(
             'doc_id' => $source_doc_id . ' - ' . $destination_doc_id,
-            'title' => lang_get('relation_type') . ' : ' . (is_null($type_desc) ? $rel['type'] : $type_desc)
+            'title' => lang_get('relation_type') . ' : ' .
+            (is_null($type_desc) ? $rel['type'] : $type_desc)
         );
 
         if (is_null($source_id)) {
-            $user_feedback['import_status'] = lang_get('rel_add_error_src_id') . " [" . $source_doc_id . "].";
+            $user_feedback['import_status'] = lang_get('rel_add_error_src_id') .
+                " [" . $source_doc_id . "].";
         } elseif (is_null($destination_id)) {
-            $user_feedback['import_status'] = lang_get('rel_add_error_dest_id') . " [" . $destination_doc_id . "].";
+            $user_feedback['import_status'] = lang_get('rel_add_error_dest_id') .
+                " [" . $destination_doc_id . "].";
         } elseif ($source_id == $destination_id) {
             $user_feedback['import_status'] = lang_get('rel_add_error_self');
-        } elseif (($source['testproject_id'] != $tproject_id) && ($destination['testproject_id'] != $tproject_id)) {
+        } elseif (($source['testproject_id'] != $tproject_id) &&
+            ($destination['testproject_id'] != $tproject_id)) {
             $user_feedback['import_status'] = lang_get('rel_add_not_in_project');
         } elseif (is_null($type_desc)) {
             $user_feedback['import_status'] = lang_get('rel_add_invalid_type');
-        } elseif ($this->check_if_relation_exists($source_id, $destination_id, $rel['type'])) {
-            $user_feedback['import_status'] = sprintf(lang_get('rel_add_error_exists_already'), $type_desc);
+        } elseif ($this->check_if_relation_exists($source_id, $destination_id,
+            $rel['type'])) {
+            $user_feedback['import_status'] = sprintf(
+                lang_get('rel_add_error_exists_already'), $type_desc);
         } else // all checks are ok => create it
         {
-            $this->add_relation($source_id, $destination_id, $rel['type'], $authorId);
+            $this->add_relation($source_id, $destination_id, $rel['type'],
+                $authorId);
             $user_feedback['import_status'] = lang_get('new_rel_add_success');
         }
 
@@ -3406,7 +3856,8 @@ class requirement_mgr extends tlObjectWithAttachments
      * @internal revisions
      *           20110314 - kinow - Created function.
      */
-    private function getByDocIDInProject($doc_id, $req_project = null, $tproject_id = null, $parent_id = null, $options = null)
+    private function getByDocIDInProject($doc_id, $req_project = null,
+        $tproject_id = null, $parent_id = null, $options = null)
     {
         $reqs = null;
         if (! is_null($req_project)) {
@@ -3415,11 +3866,13 @@ class requirement_mgr extends tlObjectWithAttachments
             if (! is_null($info)) // is project found ?
             {
                 $tproject_id = $info[0]['id'];
-                $reqs = $this->getByDocID($doc_id, $tproject_id, $parent_id, $options);
+                $reqs = $this->getByDocID($doc_id, $tproject_id, $parent_id,
+                    $options);
             }
             // else $req = null; // project not found => no req
         } else {
-            $reqs = $this->getByDocID($doc_id, $tproject_id, $parent_id, $options);
+            $reqs = $this->getByDocID($doc_id, $tproject_id, $parent_id,
+                $options);
         }
         return $reqs;
     }
@@ -3465,7 +3918,24 @@ class requirement_mgr extends tlObjectWithAttachments
         $where_clause = " WHERE NH_REQV.parent_id " . $in_clause;
 
         // added -1 AS revision_id to make some process easier
-        $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . " REQV.scope,REQV.status,REQV.type,REQV.active," . " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," . " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," . " REQV.modification_ts,REQV.revision, -1 AS revision_id, " . " NH_REQ.name AS title, REQ_SPEC.testproject_id, " . " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " . " FROM {$this->tables['nodes_hierarchy']} NH_REQV JOIN " . "( SELECT XNH_REQV.parent_id,MAX(XNH_REQV.id) AS LATEST_VERSION_ID " . "  FROM  {$this->tables['nodes_hierarchy']} XNH_REQV " . "  WHERE XNH_REQV.parent_id {$in_clause} " . "  GROUP BY XNH_REQV.parent_id ) ZAZA ON NH_REQV.id = ZAZA.LATEST_VERSION_ID " . " JOIN {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " . " JOIN {$this->object_table} REQ ON REQ.id = NH_REQV.parent_id " . " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " . " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " . $where_clause;
+        $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," .
+            " REQV.scope,REQV.status,REQV.type,REQV.active," .
+            " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
+            " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+            " REQV.modification_ts,REQV.revision, -1 AS revision_id, " .
+            " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+            " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
+            " FROM {$this->tables['nodes_hierarchy']} NH_REQV JOIN " .
+            "( SELECT XNH_REQV.parent_id,MAX(XNH_REQV.id) AS LATEST_VERSION_ID " .
+            "  FROM  {$this->tables['nodes_hierarchy']} XNH_REQV " .
+            "  WHERE XNH_REQV.parent_id {$in_clause} " .
+            "  GROUP BY XNH_REQV.parent_id ) ZAZA ON NH_REQV.id = ZAZA.LATEST_VERSION_ID " .
+            " JOIN {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .
+            " JOIN {$this->object_table} REQ ON REQ.id = NH_REQV.parent_id " .
+            " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+            $where_clause;
 
         $sqlOpt = ($my['opt']['outputFormat'] == 'map' ? 0 : database::CUMULATIVE);
         $recordset = $this->db->fetchRowsIntoMap($sql, 'id', $sqlOpt);
@@ -3487,8 +3957,10 @@ class requirement_mgr extends tlObjectWithAttachments
                         foreach ($user_keys as $ukey => $userid_field) {
                             $rs[$flk][$key][$ukey] = '';
                             if (trim($rs[$flk][$key][$userid_field]) != "") {
-                                if (! isset($userCache[$rs[$flk][$key][$userid_field]])) {
-                                    $user = tlUser::getByID($this->db, $rs[$flk][$key][$userid_field]);
+                                if (! isset(
+                                    $userCache[$rs[$flk][$key][$userid_field]])) {
+                                    $user = tlUser::getByID($this->db,
+                                        $rs[$flk][$key][$userid_field]);
                                     $rs[$flk][$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
                                     $userCache[$rs[$flk][$key][$userid_field]] = $rs[$flk][$key][$ukey];
                                     unset($user);
@@ -3507,7 +3979,8 @@ class requirement_mgr extends tlObjectWithAttachments
                         $rs[$key][$ukey] = '';
                         if (trim($rs[$key][$userid_field]) != "") {
                             if (! isset($userCache[$rs[$key][$userid_field]])) {
-                                $user = tlUser::getByID($this->db, $rs[$key][$userid_field]);
+                                $user = tlUser::getByID($this->db,
+                                    $rs[$key][$userid_field]);
                                 $rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
                                 $userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
                                 unset($user);
@@ -3538,7 +4011,9 @@ class requirement_mgr extends tlObjectWithAttachments
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
         $safe_id = intval($id);
-        $sql = "/* $debugMsg */ " . " SELECT COUNT(0) AS qty " . " FROM {$this->tables['req_coverage']} " . " WHERE req_id = " . $safe_id;
+        $sql = "/* $debugMsg */ " . " SELECT COUNT(0) AS qty " .
+            " FROM {$this->tables['req_coverage']} " . " WHERE req_id = " .
+            $safe_id;
 
         $rs = $this->db->get_recordset($sql);
         return $rs[0]['qty'];
@@ -3553,10 +4028,11 @@ class requirement_mgr extends tlObjectWithAttachments
     private function getCoverageCounterSet($itemSet)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $sql = "/* $debugMsg */ " . " SELECT req_id, COUNT(0) AS qty " . " FROM {$this->tables['req_coverage']} " . " WHERE req_id IN (" . implode(',', $itemSet) . ")" . " GROUP BY req_id ";
+        $sql = "/* $debugMsg */ " . " SELECT req_id, COUNT(0) AS qty " .
+            " FROM {$this->tables['req_coverage']} " . " WHERE req_id IN (" .
+            implode(',', $itemSet) . ")" . " GROUP BY req_id ";
 
-        $rs = $this->db->fetchRowsIntoMap($sql, 'req_id');
-        return $rs;
+        return $this->db->fetchRowsIntoMap($sql, 'req_id');
     }
 
     /**
@@ -3566,19 +4042,24 @@ class requirement_mgr extends tlObjectWithAttachments
      */
     public function getRelationsCounters($itemSet)
     {
-        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+        $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ .
+            ' */';
         $inSet = implode(',', $itemSet);
 
-        $sqlS = " $debugMsg SELECT COUNT(*) AS qty, source_id AS req_id " . " FROM {$this->tables['req_relations']} " . " WHERE source_id IN ({$inSet}) ";
+        $sqlS = " $debugMsg SELECT COUNT(*) AS qty, source_id AS req_id " .
+            " FROM {$this->tables['req_relations']} " .
+            " WHERE source_id IN ({$inSet}) ";
         $sqlS .= (DB_TYPE == 'mssql') ? ' GROUP BY source_id ' : ' GROUP BY req_id ';
 
-        $sqlD = " $debugMsg SELECT COUNT(*) AS qty, destination_id AS req_id " . " FROM {$this->tables['req_relations']} " . " WHERE destination_id IN ({$inSet}) ";
+        $sqlD = " $debugMsg SELECT COUNT(*) AS qty, destination_id AS req_id " .
+            " FROM {$this->tables['req_relations']} " .
+            " WHERE destination_id IN ({$inSet}) ";
         $sqlD .= (DB_TYPE == 'mssql') ? ' GROUP BY destination_id ' : ' GROUP BY req_id ';
 
-        $sqlT = " SELECT SUM(qty) AS qty, req_id " . " FROM ($sqlS UNION ALL $sqlD) D " . ' GROUP BY req_id ';
+        $sqlT = " SELECT SUM(qty) AS qty, req_id " .
+            " FROM ($sqlS UNION ALL $sqlD) D " . ' GROUP BY req_id ';
 
-        $rs = $this->db->fetchColumnsIntoMap($sqlT, 'req_id', 'qty');
-        return $rs;
+        return $this->db->fetchColumnsIntoMap($sqlT, 'req_id', 'qty');
     }
 
     /**
@@ -3587,7 +4068,9 @@ class requirement_mgr extends tlObjectWithAttachments
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $sql = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " . " SET scope='" . $this->db->prepare_string($scope) . "'" . " WHERE id=" . intval($reqVersionID);
+        $sql = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " .
+            " SET scope='" . $this->db->prepare_string($scope) . "'" .
+            " WHERE id=" . intval($reqVersionID);
         $this->db->exec_query($sql);
     }
 
@@ -3600,7 +4083,8 @@ class requirement_mgr extends tlObjectWithAttachments
 
         $version_id = intval($item2render['version_id']);
         if (! $attSet || ! isset($attSet[$id])) {
-            $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor($version_id, $this->attachmentTableName, 'id');
+            $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor(
+                $version_id, $this->attachmentTableName, 'id');
             $beginTag = '[tlInlineImage]';
             $endTag = '[/tlInlineImage]';
         }
@@ -3613,7 +4097,8 @@ class requirement_mgr extends tlObjectWithAttachments
         // second \'%s\' needed if I want to use Latest as indication, need to understand
         // Javascript instead of javascript, because CKeditor sometimes complains
         $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
-        $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?id=%id%"></p>';
+        $img = '<p><img src="' . $bhref .
+            '/lib/attachments/attachmentdownload.php?id=%id%"></p>';
 
         $key2check = array(
             'scope'
@@ -3640,7 +4125,8 @@ class requirement_mgr extends tlObjectWithAttachments
                         if (($elc = count($yy)) > 0) {
                             $atx = $yy[0];
                             try {
-                                if (isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image']) {
+                                if (isset($attSet[$id][$atx]) &&
+                                    $attSet[$id][$atx]['is_image']) {
                                     $ghost .= str_replace('%id%', $atx, $img);
                                 }
                                 $lim = $elc - 1;
@@ -3674,7 +4160,8 @@ class requirement_mgr extends tlObjectWithAttachments
     private function inlineImageProcessing($idCard, $scope, $rosettaStone)
     {
         // get all attachments, then check is there are images
-        $att = $this->attachmentRepository->getAttachmentInfosFor($idCard->id, $this->attachmentTableName, 'id');
+        $att = $this->attachmentRepository->getAttachmentInfosFor($idCard->id,
+            $this->attachmentTableName, 'id');
         foreach ($rosettaStone as $oid => $nid) {
             if ($att[$nid]['is_image']) {
                 $needle = str_replace($nid, $oid, $att[$nid]['inlineString']);
@@ -3717,11 +4204,17 @@ class requirement_mgr extends tlObjectWithAttachments
 
         try {
             // check before insert
-            $sql = "/* $debugMsg */ " . " SELECT req_id FROM {$this->tables['req_monitor']} " . " WHERE req_id = {$safe['req_id']} " . " AND user_id = {$safe['user_id']} " . " AND testproject_id = {$safe['testproject_id']}";
+            $sql = "/* $debugMsg */ " .
+                " SELECT req_id FROM {$this->tables['req_monitor']} " .
+                " WHERE req_id = {$safe['req_id']} " .
+                " AND user_id = {$safe['user_id']} " .
+                " AND testproject_id = {$safe['testproject_id']}";
             $rs = $this->db->get_recordset($sql);
 
             if (is_null($rs)) {
-                $sql = "/* $debugMsg */ " . " INSERT INTO {$this->tables['req_monitor']} ($fields) " . " VALUES ({$safe['req_id']},{$safe['user_id']},{$safe['testproject_id']})";
+                $sql = "/* $debugMsg */ " .
+                    " INSERT INTO {$this->tables['req_monitor']} ($fields) " .
+                    " VALUES ({$safe['req_id']},{$safe['user_id']},{$safe['testproject_id']})";
                 $this->db->exec_query($sql);
             }
         } catch (Exception $e) {
@@ -3753,7 +4246,9 @@ class requirement_mgr extends tlObjectWithAttachments
 
         // Blind delete
         try {
-            $sql = "/* $debugMsg */ " . " DELETE FROM {$this->tables['req_monitor']} " . " WHERE req_id = {$safe['req_id']} ";
+            $sql = "/* $debugMsg */ " .
+                " DELETE FROM {$this->tables['req_monitor']} " .
+                " WHERE req_id = {$safe['req_id']} ";
 
             if ($safe['user_id'] > 0) {
                 $sql .= " AND user_id = {$safe['user_id']} ";
@@ -3770,7 +4265,8 @@ class requirement_mgr extends tlObjectWithAttachments
 
     /**
      */
-    public function getMonitoredByUser($user_id, $tproject_id, $opt = null, $filters = null)
+    public function getMonitoredByUser($user_id, $tproject_id, $opt = null,
+        $filters = null)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -3796,9 +4292,18 @@ class requirement_mgr extends tlObjectWithAttachments
         $rs = null;
 
         if (is_null($my['opt']['reqSpecID'])) {
-            $sql = "/* $debugMsg */ " . " SELECT RQM.* FROM {$this->tables['req_monitor']} RQM " . " WHERE RQM.user_id = {$safe['user_id']} " . " AND RQM.testproject_id = {$safe['tproject_id']}";
+            $sql = "/* $debugMsg */ " .
+                " SELECT RQM.* FROM {$this->tables['req_monitor']} RQM " .
+                " WHERE RQM.user_id = {$safe['user_id']} " .
+                " AND RQM.testproject_id = {$safe['tproject_id']}";
         } else {
-            $sql = "/* $debugMsg */ " . " SELECT RQM.* FROM {$this->tables['req_monitor']} RQM " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ " . " ON NH_REQ.id = RQM.req_id " . " WHERE RQM.user_id = {$safe['user_id']} " . " AND RQM.testproject_id = {$safe['tproject_id']} " . " AND NH_REQ.parent_id = " . intval($my['opt']['reqSpecID']);
+            $sql = "/* $debugMsg */ " .
+                " SELECT RQM.* FROM {$this->tables['req_monitor']} RQM " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQ " .
+                " ON NH_REQ.id = RQM.req_id " .
+                " WHERE RQM.user_id = {$safe['user_id']} " .
+                " AND RQM.testproject_id = {$safe['tproject_id']} " .
+                " AND NH_REQ.parent_id = " . intval($my['opt']['reqSpecID']);
         }
 
         try {
@@ -3827,7 +4332,11 @@ class requirement_mgr extends tlObjectWithAttachments
         $safe['req_id'] = intval($req_id);
         $safe['tproject_id'] = intval($options['tproject_id']);
 
-        $sql = "/* $debugMsg */ " . " SELECT RMON.user_id,U.login,U.email,U.locale " . " FROM {$this->tables['req_monitor']} RMON " . " JOIN {$this->tables['users']} U " . " ON U.id = RMON.user_id " . " WHERE req_id = {$safe['req_id']} ";
+        $sql = "/* $debugMsg */ " .
+            " SELECT RMON.user_id,U.login,U.email,U.locale " .
+            " FROM {$this->tables['req_monitor']} RMON " .
+            " JOIN {$this->tables['users']} U " . " ON U.id = RMON.user_id " .
+            " WHERE req_id = {$safe['req_id']} ";
 
         if ($safe['tproject_id'] > 0) {
             $sql .= " AND testproject_id = {$safe['tproject_id']}";
@@ -3873,7 +4382,13 @@ class requirement_mgr extends tlObjectWithAttachments
         $idCard = $author['login'] . " ({$author['first']} {$author['last']})";
 
         // use specific query because made things simpler
-        $sql = "/* $debugMsg */ " . " SELECT REQ.id,REQ.req_doc_id,REQV.scope," . " NH_REQ.name AS title, REQV.version " . " FROM {$this->object_table} REQ " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " . " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id " . " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " . " WHERE REQ.id = {$safe['req_id']} " . " ORDER BY REQV.version DESC ";
+        $sql = "/* $debugMsg */ " . " SELECT REQ.id,REQ.req_doc_id,REQV.scope," .
+            " NH_REQ.name AS title, REQV.version " .
+            " FROM {$this->object_table} REQ " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id " .
+            " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .
+            " WHERE REQ.id = {$safe['req_id']} " . " ORDER BY REQV.version DESC ";
 
         if (! is_null($rs = $this->db->get_recordset($sql))) {
             $req = $rs[0];
@@ -3902,15 +4417,19 @@ class requirement_mgr extends tlObjectWithAttachments
                 $mailBodyCache[$lang] = mailBodyGet($mailCfg['bodyAccessKey']);
 
                 // set values
-                $mailBodyCache[$lang] = str_replace($body['target'], $body['values'], $mailBodyCache[$lang]);
+                $mailBodyCache[$lang] = str_replace($body['target'],
+                    $body['values'], $mailBodyCache[$lang]);
 
-                $mailSubjectCache[$lang] = lang_get($mailCfg['subjectAccessKey'], $lang);
+                $mailSubjectCache[$lang] = lang_get(
+                    $mailCfg['subjectAccessKey'], $lang);
 
-                $mailSubjectCache[$lang] = str_replace($subj['target'], $subj['values'], $mailSubjectCache[$lang]);
+                $mailSubjectCache[$lang] = str_replace($subj['target'],
+                    $subj['values'], $mailSubjectCache[$lang]);
             }
 
             // send mail
-            $auditMsg = 'Requirement - ' . $action . ' - mail to user: ' . $ue["login"] . ' using address:' . $ue["email"];
+            $auditMsg = 'Requirement - ' . $action . ' - mail to user: ' .
+                $ue["login"] . ' using address:' . $ue["email"];
             try {
                 $xmail = array();
                 $xmail['cc'] = '';
@@ -3918,7 +4437,11 @@ class requirement_mgr extends tlObjectWithAttachments
                 $xmail['exit_on_error'] = false;
                 $xmail['htmlFormat'] = true;
 
-                $rmx = @email_send($from, $ue["email"], $mailSubjectCache[$ue['locale']], $mailBodyCache[$ue['locale']], $xmail['cc'], $xmail['attachment'], $xmail['exit_on_error'], $xmail['htmlFormat'], null);
+                $rmx = @email_send($from, $ue["email"],
+                    $mailSubjectCache[$ue['locale']],
+                    $mailBodyCache[$ue['locale']], $xmail['cc'],
+                    $xmail['attachment'], $xmail['exit_on_error'],
+                    $xmail['htmlFormat'], null);
                 $apx = $rmx->status_ok ? 'Succesful - ' : 'ERROR -';
             } catch (Exception $e) {
                 $apx = 'ERROR - ';
@@ -3994,12 +4517,24 @@ class requirement_mgr extends tlObjectWithAttachments
 
         // Set coverage for previous version to FROZEN & INACTIVE ?
         if ($options['freezePrevious']) {
-            $sql = " /* $debugMsg */ " . " UPDATE {$this->tables['req_coverage']} " . " SET link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION . "," . "     is_active=0 " . " WHERE req_version_id=" . $safeF;
+            $sql = " /* $debugMsg */ " .
+                " UPDATE {$this->tables['req_coverage']} " .
+                " SET link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION .
+                "," . "     is_active=0 " . " WHERE req_version_id=" . $safeF;
             $this->db->exec_query($sql);
         }
 
         // Create coverage for NEW Version
-        $sql = "/* $debugMsg */ " . " INSERT INTO {$this->tables['req_coverage']} " . " (testcase_id,tcversion_id,req_id," . "  req_version_id,author_id,creation_ts) " . " SELECT testcase_id,tcversion_id,req_id, " . "        {$safeT} AS req_version_id," . "        {$whoWhen['user_id']} AS author_id, " . "        {$whoWhen['when']} AS creation_ts" . " FROM {$this->tables['req_coverage']} " . " WHERE req_version_id=" . $safeF;
+        $sql = "/* $debugMsg */ " .
+            " INSERT INTO {$this->tables['req_coverage']} " .
+            " (testcase_id,tcversion_id,req_id," .
+            "  req_version_id,author_id,creation_ts) " .
+            " SELECT testcase_id,tcversion_id,req_id, " .
+            "        {$safeT} AS req_version_id," .
+            "        {$whoWhen['user_id']} AS author_id, " .
+            "        {$whoWhen['when']} AS creation_ts" .
+            " FROM {$this->tables['req_coverage']} " . " WHERE req_version_id=" .
+            $safeF;
         $this->db->exec_query($sql);
     }
 
@@ -4011,7 +4546,9 @@ class requirement_mgr extends tlObjectWithAttachments
 
         $safeF = intval($from_version_id);
 
-        $sql = " /* $debugMsg */ " . " UPDATE {$this->tables['req_coverage']} " . " SET link_status = " . $reason . "," . "     is_active=0 " . " WHERE req_version_id=" . $safeF;
+        $sql = " /* $debugMsg */ " . " UPDATE {$this->tables['req_coverage']} " .
+            " SET link_status = " . $reason . "," . "     is_active=0 " .
+            " WHERE req_version_id=" . $safeF;
         $this->db->exec_query($sql);
     }
 
@@ -4029,7 +4566,8 @@ class requirement_mgr extends tlObjectWithAttachments
              ON NHREQVER.parent_id = REQ.id ";
         $sql .= " WHERE REQ.id IN ($idList)";
 
-        return $this->db->fetchColumnsIntoMap($sql, 'req_id', 'req_version_id', database::CUMULATIVE);
+        return $this->db->fetchColumnsIntoMap($sql, 'req_id', 'req_version_id',
+            database::CUMULATIVE);
     }
 
     /**
@@ -4038,11 +4576,26 @@ class requirement_mgr extends tlObjectWithAttachments
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $sql = " /* $debugMsg */ " . " SELECT REQ.id,REQ.id AS req_id,REQ.req_doc_id,NHREQ.name AS title, RCOV.is_active," . " NHRS.name AS req_spec_title,RCOV.testcase_id," . " REQV.id AS req_version_id, REQV.version " . " FROM {$this->object_table} REQ " . " JOIN {$this->tables['req_specs']} RSPEC " . " ON REQ.srs_id = RSPEC.id " . " JOIN {$this->tables['req_coverage']} RCOV " . " ON RCOV.req_id = REQ.id " . " JOIN {$this->tables['nodes_hierarchy']} NHRS " . " ON NHRS.id=RSPEC.id " . " JOIN {$this->tables['nodes_hierarchy']} NHREQ " . " ON NHREQ.id=REQ.id " . " JOIN {$this->tables['req_versions']} REQV " . " ON RCOV.req_version_id=REQV.id ";
+        $sql = " /* $debugMsg */ " .
+            " SELECT REQ.id,REQ.id AS req_id,REQ.req_doc_id,NHREQ.name AS title, RCOV.is_active," .
+            " NHRS.name AS req_spec_title,RCOV.testcase_id," .
+            " REQV.id AS req_version_id, REQV.version " .
+            " FROM {$this->object_table} REQ " .
+            " JOIN {$this->tables['req_specs']} RSPEC " .
+            " ON REQ.srs_id = RSPEC.id " .
+            " JOIN {$this->tables['req_coverage']} RCOV " .
+            " ON RCOV.req_id = REQ.id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NHRS " .
+            " ON NHRS.id=RSPEC.id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NHREQ " .
+            " ON NHREQ.id=REQ.id " .
+            " JOIN {$this->tables['req_versions']} REQV " .
+            " ON RCOV.req_version_id=REQV.id ";
 
         $idList = implode(",", (array) $tcversion_id);
 
-        $sql .= " WHERE RCOV.tcversion_id IN (" . $idList . ")" . " AND RCOV.is_active=1 ";
+        $sql .= " WHERE RCOV.tcversion_id IN (" . $idList . ")" .
+            " AND RCOV.is_active=1 ";
 
         // if only for one specification is required
         if ($srs_id != 'all') {
@@ -4063,10 +4616,23 @@ class requirement_mgr extends tlObjectWithAttachments
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $sql = " /* $debugMsg */ " . " SELECT REQ.id,REQ.id AS req_id,REQ.req_doc_id,
+        $sql = " /* $debugMsg */ " .
+            " SELECT REQ.id,REQ.id AS req_id,REQ.req_doc_id,
              NHREQ.name AS title, RCOV.is_active,
              RCOV.testcase_id,RCOV.tcversion_id,
-             NHRS.name AS req_spec_title," . " REQV.id AS req_version_id, REQV.version " . " FROM {$this->object_table} REQ " . " JOIN {$this->tables['req_specs']} RSPEC " . " ON REQ.srs_id = RSPEC.id " . " JOIN {$this->tables['req_coverage']} RCOV " . " ON RCOV.req_id = REQ.id " . " JOIN {$this->tables['nodes_hierarchy']} NHRS " . " ON NHRS.id=RSPEC.id " . " JOIN {$this->tables['nodes_hierarchy']} NHREQ " . " ON NHREQ.id=REQ.id " . " JOIN {$this->tables['req_versions']} REQV " . " ON RCOV.req_version_id=REQV.id ";
+             NHRS.name AS req_spec_title," .
+            " REQV.id AS req_version_id, REQV.version " .
+            " FROM {$this->object_table} REQ " .
+            " JOIN {$this->tables['req_specs']} RSPEC " .
+            " ON REQ.srs_id = RSPEC.id " .
+            " JOIN {$this->tables['req_coverage']} RCOV " .
+            " ON RCOV.req_id = REQ.id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NHRS " .
+            " ON NHRS.id=RSPEC.id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NHREQ " .
+            " ON NHREQ.id=REQ.id " .
+            " JOIN {$this->tables['req_versions']} REQV " .
+            " ON RCOV.req_version_id=REQV.id ";
 
         $idList = implode(",", (array) $tcversion_id);
 
@@ -4087,7 +4653,19 @@ class requirement_mgr extends tlObjectWithAttachments
 
         $safe_id = intval($req_version_id);
 
-        $sql = " /* $debugMsg */ " . " SELECT NH_TC.id, NH_TC.id AS tcase_id,NH_TC.name,NH_TC.name AS tcase_name," . " TCV.tc_external_id,TCV.version,TCV.id AS tcversion_id, " . " /* Seems to be compatible with MySQL,MSSQL,POSTGRES */ " . " (CASE WHEN RC.link_status = " . LINK_TC_REQ_CLOSED_BY_EXEC . "       THEN 0 ELSE is_active END) AS can_be_deleted, " . " (CASE WHEN RC.link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_TCVERSION . "       THEN 1 ELSE 0 END) AS is_obsolete " . " FROM {$this->tables['nodes_hierarchy']} NH_TC " . " JOIN {$this->tables['nodes_hierarchy']} NH_TCV " . " ON NH_TCV.parent_id=NH_TC.id " . " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NH_TCV.id " . " JOIN {$this->tables['req_coverage']} RC ON RC.tcversion_id = NH_TCV.id ";
+        $sql = " /* $debugMsg */ " .
+            " SELECT NH_TC.id, NH_TC.id AS tcase_id,NH_TC.name,NH_TC.name AS tcase_name," .
+            " TCV.tc_external_id,TCV.version,TCV.id AS tcversion_id, " .
+            " /* Seems to be compatible with MySQL,MSSQL,POSTGRES */ " .
+            " (CASE WHEN RC.link_status = " . LINK_TC_REQ_CLOSED_BY_EXEC .
+            "       THEN 0 ELSE is_active END) AS can_be_deleted, " .
+            " (CASE WHEN RC.link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_TCVERSION .
+            "       THEN 1 ELSE 0 END) AS is_obsolete " .
+            " FROM {$this->tables['nodes_hierarchy']} NH_TC " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_TCV " .
+            " ON NH_TCV.parent_id=NH_TC.id " .
+            " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NH_TCV.id " .
+            " JOIN {$this->tables['req_coverage']} RC ON RC.tcversion_id = NH_TCV.id ";
 
         $sql .= " WHERE RC.req_version_id={$safe_id} ";
 
@@ -4103,24 +4681,38 @@ class requirement_mgr extends tlObjectWithAttachments
             'tc' => intval($bond['tc'])
         );
         $output = 0;
-        $sql = " DELETE FROM {$this->tables['req_coverage']} " . " WHERE req_version_id=" . $safeID['req'] . " AND tcversion_id=" . $safeID['tc'];
+        $sql = " DELETE FROM {$this->tables['req_coverage']} " .
+            " WHERE req_version_id=" . $safeID['req'] . " AND tcversion_id=" .
+            $safeID['tc'];
 
         $result = $this->db->exec_query($sql);
 
         if ($result && $this->db->affected_rows() == 1) {
 
             // Going to audit
-            $sql = "SELECT NHP.name,NHC.id " . " FROM {$this->tables['nodes_hierarchy']} NHP " . " JOIN {$this->tables['nodes_hierarchy']} NHC " . " ON NHP.id = NHC.parent_id " . " WHERE NHC.id IN(" . $safeID['req'] . "," . $safeID['tc'] . ")";
+            $sql = "SELECT NHP.name,NHC.id " .
+                " FROM {$this->tables['nodes_hierarchy']} NHP " .
+                " JOIN {$this->tables['nodes_hierarchy']} NHC " .
+                " ON NHP.id = NHC.parent_id " . " WHERE NHC.id IN(" .
+                $safeID['req'] . "," . $safeID['tc'] . ")";
 
             $mx = $this->db->fetchRowsIntoMap($sql, 'id');
 
-            $sql = " SELECT TCV.version " . " FROM {$this->tables['tcversions']} TCV " . " WHERE TCV.id = " . $safeID['tc'];
+            $sql = " SELECT TCV.version " .
+                " FROM {$this->tables['tcversions']} TCV " . " WHERE TCV.id = " .
+                $safeID['tc'];
             $tcv = current($this->db->fetchRowsIntoMap($sql, 'version'));
 
-            $sql = " SELECT RQV.version  " . " FROM {$this->tables['req_versions']} RQV " . " WHERE RQV.id = " . $safeID['req'];
+            $sql = " SELECT RQV.version  " .
+                " FROM {$this->tables['req_versions']} RQV " . " WHERE RQV.id = " .
+                $safeID['req'];
             $rqv = current($this->db->fetchRowsIntoMap($sql, 'version'));
 
-            logAuditEvent(TLS("audit_reqv_assignment_removed_tcv", $mx[$safeID['req']]['name'], $rqv['version'], $mx[$safeID['tc']]['name'], $tcv['version']), "ASSIGN", $this->object_table);
+            logAuditEvent(
+                TLS("audit_reqv_assignment_removed_tcv",
+                    $mx[$safeID['req']]['name'], $rqv['version'],
+                    $mx[$safeID['tc']]['name'], $tcv['version']), "ASSIGN",
+                $this->object_table);
             $output = 1;
         }
         return $output;
@@ -4133,15 +4725,29 @@ class requirement_mgr extends tlObjectWithAttachments
         $safeID = intval($link_id);
 
         // First get audit info
-        $sql = " SELECT TCV.version AS tcv_vernum, NHTC.name AS tcname, " . " RQV.version AS req_vernum, NHRQ.name AS reqname " . " FROM {$this->tables['req_coverage']} RCOV " . " JOIN {$this->tables['tcversions']} TCV " . " ON TCV.id = RCOV.tcversion_id " . " JOIN {$this->tables['req_versions']} RQV " . " ON RQV.id = RCOV.req_version_id " . " JOIN {$this->tables['nodes_hierarchy']} NHTC " . " ON NHTC.id = RCOV.testcase_id " . " JOIN {$this->tables['nodes_hierarchy']} NHRQ " . " ON NHRQ.id = RCOV.req_id " . " WHERE RCOV.id = $safeID ";
+        $sql = " SELECT TCV.version AS tcv_vernum, NHTC.name AS tcname, " .
+            " RQV.version AS req_vernum, NHRQ.name AS reqname " .
+            " FROM {$this->tables['req_coverage']} RCOV " .
+            " JOIN {$this->tables['tcversions']} TCV " .
+            " ON TCV.id = RCOV.tcversion_id " .
+            " JOIN {$this->tables['req_versions']} RQV " .
+            " ON RQV.id = RCOV.req_version_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NHTC " .
+            " ON NHTC.id = RCOV.testcase_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NHRQ " .
+            " ON NHRQ.id = RCOV.req_id " . " WHERE RCOV.id = $safeID ";
 
         $audit = current($this->db->get_recordset($sql));
 
-        $sql = " DELETE FROM {$this->tables['req_coverage']} " . " WHERE id = $safeID ";
+        $sql = " DELETE FROM {$this->tables['req_coverage']} " .
+            " WHERE id = $safeID ";
 
         $result = $this->db->exec_query($sql);
         if ($result && $this->db->affected_rows() == 1) {
-            logAuditEvent(TLS("audit_reqv_assignment_removed_tcv", $audit['reqname'], $audit['req_vernum'], $audit['tcname'], $audit['tcv_vernum']), "ASSIGN", $this->object_table);
+            logAuditEvent(
+                TLS("audit_reqv_assignment_removed_tcv", $audit['reqname'],
+                    $audit['req_vernum'], $audit['tcname'], $audit['tcv_vernum']),
+                "ASSIGN", $this->object_table);
             $output = 1;
         }
         return $output;
@@ -4152,10 +4758,14 @@ class requirement_mgr extends tlObjectWithAttachments
     public function getLatestReqVersionCoverageCounterSet($itemSet)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $sql = "/* $debugMsg */ " . " SELECT RCOV.req_id, COUNT(0) AS qty " . " FROM {$this->tables['req_coverage']} RCOV " . " JOIN {$this->views['latest_req_version_id']} LRQV " . " ON LRQV.req_version_id = RCOV.req_version_id " . " WHERE LRQV.req_version_id IN (" . implode(',', $itemSet) . ")" . " AND is_active = 1" . " GROUP BY RCOV.req_id ";
+        $sql = "/* $debugMsg */ " . " SELECT RCOV.req_id, COUNT(0) AS qty " .
+            " FROM {$this->tables['req_coverage']} RCOV " .
+            " JOIN {$this->views['latest_req_version_id']} LRQV " .
+            " ON LRQV.req_version_id = RCOV.req_version_id " .
+            " WHERE LRQV.req_version_id IN (" . implode(',', $itemSet) . ")" .
+            " AND is_active = 1" . " GROUP BY RCOV.req_id ";
 
-        $rs = $this->db->fetchRowsIntoMap($sql, 'req_id');
-        return $rs;
+        return $this->db->fetchRowsIntoMap($sql, 'req_id');
     }
 
     /*
@@ -4195,7 +4805,8 @@ class requirement_mgr extends tlObjectWithAttachments
              WHERE LRQV.req_id IN ({$inReqID})
              AND LTCV.testcase_id IN ({$inTCaseID}) ";
 
-        $coverage = (array) $this->db->fetchMapRowsIntoMap($sql, 'req_version_id', 'tcversion_id');
+        $coverage = (array) $this->db->fetchMapRowsIntoMap($sql,
+            'req_version_id', 'tcversion_id');
         $sql = " /* $debugMsg */
              SELECT * FROM {$this->views['latest_tcase_version_id']}
              WHERE testcase_id IN ({$inTCaseID}) ";
@@ -4268,10 +4879,12 @@ class requirement_mgr extends tlObjectWithAttachments
         );
         $options = array_merge($options, (array) $opt);
 
-        $sql = " /* $debugMsg */ " . " SELECT REQ.id,REQ.id AS req_id,REQ.req_doc_id,
+        $sql = " /* $debugMsg */ " .
+            " SELECT REQ.id,REQ.id AS req_id,REQ.req_doc_id,
              NHREQ.name AS title, RCOV.is_active,
              RCOV.testcase_id,RCOV.tcversion_id,
-             NHRS.name AS req_spec_title," . " REQV.id AS req_version_id, REQV.version ";
+             NHRS.name AS req_spec_title," .
+            " REQV.id AS req_version_id, REQV.version ";
 
         $addJoin = '';
         if ($options['verbose']) {

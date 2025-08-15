@@ -9,7 +9,7 @@
  * @link        http://www.testlink.org
  *
  *
-**/
+ **/
 require_once 'lib/functions/configCheck.php';
 checkConfiguration();
 require_once 'config.inc.php';
@@ -19,45 +19,44 @@ doSessionStart();
 // will be very interesting understand why we do this
 unset($_SESSION['basehref']);
 setPaths();
-list($args,$gui) = initEnv();
+list ($args, $gui) = initEnv();
 
 // verify the session during a work
 $redir2login = true;
-if( isset($_SESSION['currentUser']) ) {
-  // Session exists we need to do other checks.
-  // we use/copy Mantisbt approach
-  $securityCookie = tlUser::auth_get_current_user_cookie();
-  $redir2login = is_null($securityCookie);
+if (isset($_SESSION['currentUser'])) {
+    // Session exists we need to do other checks.
+    // we use/copy Mantisbt approach
+    $securityCookie = tlUser::auth_get_current_user_cookie();
+    $redir2login = is_null($securityCookie);
 
-  if(!$redir2login) {
-    // need to get fresh info from db, before asking for securityCookie
-    doDBConnect($db,database::ONERROREXIT);
-    $user = new tlUser();
-    $user->dbID = $_SESSION['currentUser']->dbID;
-    $user->readFromDB($db);
-    $dbSecurityCookie = $user->getSecurityCookie();
-    $redir2login = ( $securityCookie != $dbSecurityCookie );
-  }
+    if (! $redir2login) {
+        // need to get fresh info from db, before asking for securityCookie
+        doDBConnect($db, database::ONERROREXIT);
+        $user = new tlUser();
+        $user->dbID = $_SESSION['currentUser']->dbID;
+        $user->readFromDB($db);
+        $dbSecurityCookie = $user->getSecurityCookie();
+        $redir2login = ($securityCookie != $dbSecurityCookie);
+    }
 }
 
-if($redir2login) {
-  // destroy user in session as security measure
-  unset($_SESSION['currentUser']);
+if ($redir2login) {
+    // destroy user in session as security measure
+    unset($_SESSION['currentUser']);
 
-  // If session does not exists I think is better in order to
-  // manage other type of authentication method/schemas
-  // to understand that this is a sort of FIRST Access.
-  //
-  // When TL undertand that session exists but has expired
-  // is OK to call login with expired indication, but is not this case
-  //
-  // Dev Notes:
-  // may be we are going to login.php and it will call us again!
-  $urlo = TL_BASE_HREF . "login.php" . ($args->ssodisable ? '?ssodisable' : '');
-  redirect($urlo);
-  exit;
+    // If session does not exists I think is better in order to
+    // manage other type of authentication method/schemas
+    // to understand that this is a sort of FIRST Access.
+    //
+    // When TL undertand that session exists but has expired
+    // is OK to call login with expired indication, but is not this case
+    //
+    // Dev Notes:
+    // may be we are going to login.php and it will call us again!
+    $urlo = TL_BASE_HREF . "login.php" . ($args->ssodisable ? '?ssodisable' : '');
+    redirect($urlo);
+    exit();
 }
-
 
 // We arrive to these lines only if we are logged in
 //
@@ -69,55 +68,63 @@ $tplEngine = new TLSmarty();
 $tplEngine->assign('gui', $gui);
 $tplEngine->display('main.tpl');
 
-
 /**
  * Initializes the environment
  *
  * @return stdClass[] object returns the arguments for the page
  */
-function initEnv() {
-  $iParams = array("reqURI" => array(tlInputParameter::STRING_N,0,4000));
-  $pParams = G_PARAMS($iParams);
-  
-  $args = new stdClass();
-  $args->ssodisable = getSSODisable();
+function initEnv()
+{
+    $iParams = array(
+        "reqURI" => array(
+            tlInputParameter::STRING_N,
+            0,
+            4000
+        )
+    );
+    $pParams = G_PARAMS($iParams);
 
-  // CWE-79:
-  // Improper Neutralization of Input
-  // During Web Page Generation ('Cross-site Scripting')
-  //
-  // https://cxsecurity.com/issue/WLB-2019110139
-  $args->reqURI = '';
-  if ($pParams["reqURI"] != '') {
-    $args->reqURI = $pParams["reqURI"];
+    $args = new stdClass();
+    $args->ssodisable = getSSODisable();
 
-    // some sanity checks
-    // strpos ( string $haystack , mixed $needle
-    if (stripos($args->reqURI,'javascript') !== false) {
-      $args->reqURI = null;
+    // CWE-79:
+    // Improper Neutralization of Input
+    // During Web Page Generation ('Cross-site Scripting')
+    //
+    // https://cxsecurity.com/issue/WLB-2019110139
+    $args->reqURI = '';
+    if ($pParams["reqURI"] != '') {
+        $args->reqURI = $pParams["reqURI"];
+
+        // some sanity checks
+        // strpos ( string $haystack , mixed $needle
+        if (stripos($args->reqURI, 'javascript') !== false) {
+            $args->reqURI = null;
+        }
     }
-  }
-  if (null == $args->reqURI) {
-    $args->reqURI = 'lib/general/mainPage.php';
-  }
-  $args->reqURI = $_SESSION['basehref'] . $args->reqURI;
+    if (null == $args->reqURI) {
+        $args->reqURI = 'lib/general/mainPage.php';
+    }
+    $args->reqURI = $_SESSION['basehref'] . $args->reqURI;
 
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval(
+        $_REQUEST['tproject_id']) : 0;
+    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval(
+        $_REQUEST['tplan_id']) : 0;
 
+    $gui = new stdClass();
+    $gui->title = lang_get('main_page_title');
+    $gui->mainframe = $args->reqURI;
+    $gui->navbar_height = config_get('navbar_height');
 
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-  $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+    $sso = ($args->ssodisable ? '&ssodisable' : '');
+    $gui->titleframe = "lib/general/navBar.php?" .
+        "tproject_id={$args->tproject_id}&" . "tplan_id={$args->tplan_id}&" .
+        "updateMainPage=1" . $sso;
+    $gui->logout = 'logout.php?viewer=' . $sso;
 
-  $gui = new stdClass();
-  $gui->title = lang_get('main_page_title');
-  $gui->mainframe = $args->reqURI;
-  $gui->navbar_height = config_get('navbar_height');
-
-  $sso = ($args->ssodisable ? '&ssodisable' : '');
-  $gui->titleframe = "lib/general/navBar.php?" .
-                     "tproject_id={$args->tproject_id}&" .
-                     "tplan_id={$args->tplan_id}&" .
-                     "updateMainPage=1" . $sso;
-  $gui->logout = 'logout.php?viewer=' . $sso;
-
-  return array($args,$gui);
+    return array(
+        $args,
+        $gui
+    );
 }

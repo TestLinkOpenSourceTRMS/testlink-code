@@ -119,7 +119,8 @@ function tlAutoload($class_name)
 
     if (isset($tlClasses[$classFileName])) {
         $len = tlStringLen($classFileName) - $tlClassPrefixLen;
-        $classFileName = strtolower(tlSubstr($classFileName, $tlClassPrefixLen, $len));
+        $classFileName = strtolower(
+            tlSubstr($classFileName, $tlClassPrefixLen, $len));
     }
 
     if (isset($addDirToInclude[$class_name])) {
@@ -141,8 +142,6 @@ function tlAutoload($class_name)
     } catch (Exception $e) {}
 }
 
-// ----- End of loading and begin functions ---------------------------------------------
-
 /** @var integer global main DB connection identifier */
 $db = 0;
 
@@ -150,8 +149,9 @@ $db = 0;
  * TestLink connects to the database
  *
  * @param
- *            &$db reference to resource, here resource pointer will be returned.
- * @param $onErrorExit default
+ *            database &$db reference to resource, here resource pointer will be returned.
+ * @param boolean $onErrorExit
+ *            default
  *            false, true standard page will be displayed
  *
  * @return array aa['status'] = 1 -> OK , 0 -> KO
@@ -189,10 +189,12 @@ function doDBConnect(&$db, $onErrorExit = false)
             '',
             " :: "
         );
-        $logtext = ' Connect to database <b>' . DB_NAME . '</b> on Host <b>' . DB_HOST . '</b> fails <br>';
+        $logtext = ' Connect to database <b>' . DB_NAME . '</b> on Host <b>' .
+            DB_HOST . '</b> fails <br>';
         $logtext .= 'DBMS Error Message: ' . $result['dbms_msg'];
 
-        $logmsg = $logtext . ($onErrorExit ? '<br>Redirection to connection fail screen.' : '');
+        $logmsg = $logtext .
+            ($onErrorExit ? '<br>Redirection to connection fail screen.' : '');
         tLog(str_replace($search, $replace, $logmsg), 'ERROR');
         if ($onErrorExit) {
             $smarty = new TLSmarty();
@@ -234,12 +236,15 @@ function setSessionTestPlan($tplan_info)
         $ckObj = new stdClass();
 
         $ckCfg = config_get('cookie');
-        $ckObj->name = $ckCfg->prefix . 'TL_lastTestPlanForUserID_' . intval($_SESSION['userID']);
+        $ckObj->name = $ckCfg->prefix . 'TL_lastTestPlanForUserID_' .
+            intval($_SESSION['userID']);
         $ckObj->value = $tplan_info['id'];
 
         tlSetCookie($ckObj);
 
-        tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
+        tLog(
+            "Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" .
+            $tplan_info['id'] . ')', 'INFO');
     } else {
         unset($_SESSION['testplanID']);
         unset($_SESSION['testplanName']);
@@ -254,9 +259,10 @@ function setSessionTestPlan($tplan_info)
 function setPaths()
 {
     if (! isset($_SESSION['basehref'])) {
-        $_SESSION['basehref'] = get_home_url(array(
-            'force_https' => config_get('force_https')
-        ));
+        $_SESSION['basehref'] = get_home_url(
+            array(
+                'force_https' => config_get('force_https')
+            ));
     }
 }
 
@@ -274,7 +280,8 @@ function checkSessionValid(&$db, $redirect = true)
     $isValidSession = false;
     if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0) {
         $now = time();
-        if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60)) {
+        if (($now - $_SESSION['lastActivity']) <=
+            (config_get("sessionInactivityTimeout") * 60)) {
             $_SESSION['lastActivity'] = $now;
             $user = new tlUser($_SESSION['userID']);
             $user->readFromDB($db);
@@ -284,7 +291,9 @@ function checkSessionValid(&$db, $redirect = true)
     }
 
     if (! $isValidSession && $redirect) {
-        tLog('Invalid session from ' . $_SERVER["REMOTE_ADDR"] . '. Redirected to login page.', 'INFO');
+        tLog(
+            'Invalid session from ' . $_SERVER["REMOTE_ADDR"] .
+            '. Redirected to login page.', 'INFO');
 
         $fName = "login.php";
         $baseDir = dirname($_SERVER['SCRIPT_FILENAME']);
@@ -345,30 +354,43 @@ function initTopMenu(&$db)
         $idx = 1;
         foreach ($guiTopMenu as $element) {
             // check if Test Plan is available
-            $testPlanID = (isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0) ? $_SESSION['testplanID'] : null;
-            if ((! isset($element['condition'])) || ($element['condition'] == '') || (($element['condition'] == 'TestPlanAvailable') && ! is_null($testPlanID)) || (($element['condition'] == 'ReqMgmtEnabled') && isset($_SESSION['testprojectOptions']->requirementsEnabled) && $_SESSION['testprojectOptions']->requirementsEnabled)) {
+            $testPlanID = (isset($_SESSION['testplanID']) &&
+                $_SESSION['testplanID'] > 0) ? $_SESSION['testplanID'] : null;
+            if ((! isset($element['condition'])) || ($element['condition'] == '') ||
+                (($element['condition'] == 'TestPlanAvailable') &&
+                ! is_null($testPlanID)) ||
+                (($element['condition'] == 'ReqMgmtEnabled') &&
+                isset($_SESSION['testprojectOptions']->requirementsEnabled) &&
+                $_SESSION['testprojectOptions']->requirementsEnabled)) {
                 // (is_null($element['right']) => no right needed => display always
 
                 $addItem = is_null($element['right']);
                 if (! $addItem) {
                     if (is_array($element['right'])) {
                         foreach ($element['right'] as $rg) {
-                            if ($addItem = (has_rights($db, $rg, $_SESSION['testprojectID'], $testPlanID) == "yes")) {
+                            if ($addItem = (has_rights($db, $rg,
+                                $_SESSION['testprojectID'], $testPlanID) == "yes")) {
                                 break;
                             }
                         }
                     } else {
-                        $addItem = (has_rights($db, $element['right'], $_SESSION['testprojectID'], $testPlanID) == "yes");
+                        $addItem = (has_rights($db, $element['right'],
+                            $_SESSION['testprojectID'], $testPlanID) == "yes");
                     }
                 }
 
                 if ($addItem) {
-                    $_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " . "target='{$element['target']}' accesskey='{$element['shortcut']}' " . "tabindex='" . $idx ++ . "'>";
+                    $_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
+                        "target='{$element['target']}' accesskey='{$element['shortcut']}' " .
+                        "tabindex='" . $idx ++ . "'>";
 
                     if (isset($element['imgKey'])) {
-                        $_SESSION['testprojectTopMenu'] .= '<img src="' . $imageSet[$element['imgKey']] . '"' . ' title="' . lang_get($element['label']) . '">';
+                        $_SESSION['testprojectTopMenu'] .= '<img src="' .
+                            $imageSet[$element['imgKey']] . '"' . ' title="' .
+                            lang_get($element['label']) . '">';
                     } else {
-                        $_SESSION['testprojectTopMenu'] .= lang_get($element['label']);
+                        $_SESSION['testprojectTopMenu'] .= lang_get(
+                            $element['label']);
                     }
 
                     $_SESSION['testprojectTopMenu'] .= "</a>&nbsp;&nbsp;&nbsp;";
@@ -404,8 +426,10 @@ function initProject(&$db, $hash_user_sel)
         "tplan_id" => 0,
         "tproject_id" => 0
     );
-    $user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
-    $user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;
+    $user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval(
+        $hash_user_sel['testproject']) : 0;
+    $user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval(
+        $hash_user_sel['testplan']) : 0;
 
     $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
@@ -430,7 +454,8 @@ function initProject(&$db, $hash_user_sel)
     $tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
 
     // Now we need to validate the TestPlan
-    $ckObj->name = $ckCfg->prefix . "TL_user{$_SESSION['userID']}_proj{$tproject_id}_testPlanId";
+    $ckObj->name = $ckCfg->prefix .
+        "TL_user{$_SESSION['userID']}_proj{$tproject_id}_testPlanId";
 
     if ($user_sel["tplan_id"] != 0) {
         $ckObj->value = $user_sel["tplan_id"];
@@ -441,10 +466,12 @@ function initProject(&$db, $hash_user_sel)
     }
 
     // check if the specific combination of testprojectid and testplanid is valid
-    $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db, $tproject_id, $tplan_id);
+    $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,
+        $tproject_id, $tplan_id);
     if (is_null($tplan_data)) {
         // Need to get first accessible test plan for user, if any exists.
-        $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db, $tproject_id);
+        $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,
+            $tproject_id);
     }
 
     if (! is_null($tplan_data) && is_array($tplan_data)) {
@@ -474,7 +501,8 @@ function initProject(&$db, $hash_user_sel)
  *            (optional) name of function used to check user right needed
  *            to execute the page
  */
-function testlinkInitPage(&$db, $initProject = false, $dontCheckSession = false, $userRightsCheckFunction = null, $onFailureGoToLogin = false)
+function testlinkInitPage(&$db, $initProject = false, $dontCheckSession = false,
+    $userRightsCheckFunction = null, $onFailureGoToLogin = false)
 {
     static $pageStatistics = null;
 
@@ -609,7 +637,8 @@ function check_string($str2check, $regexp_forbidden_chars)
 {
     $status_ok = 1;
 
-    if (! empty($regexp_forbidden_chars) && preg_match($regexp_forbidden_chars, $str2check)) {
+    if (! empty($regexp_forbidden_chars) &&
+        preg_match($regexp_forbidden_chars, $str2check)) {
         $status_ok = 0;
     }
     return $status_ok;
@@ -644,7 +673,9 @@ function config_get($config_id, $default = null)
         }
 
         if ($t_found) {
-            $logInfo['msg'] = "config option: {$config_id} is " . ((is_object($t_value) || is_array($t_value)) ? serialize($t_value) : $t_value);
+            $logInfo['msg'] = "config option: {$config_id} is " .
+                ((is_object($t_value) || is_array($t_value)) ? serialize(
+                    $t_value) : $t_value);
             $logInfo['level'] = 'INFO';
         }
     }
@@ -688,7 +719,9 @@ function downloadContentsToFile($content, $fileName, $opt = null)
 
     ob_get_clean();
     header('Pragma: public');
-    header('Content-Type: ' . $my['opt']['Content-Type'] . "; charset={$charSet}; name={$fileName}");
+    header(
+        'Content-Type: ' . $my['opt']['Content-Type'] .
+        "; charset={$charSet}; name={$fileName}");
     header('Content-Transfer-Encoding: BASE64;');
     header('Content-Disposition: attachment; filename="' . $fileName . '"');
     echo $content;
@@ -811,7 +844,8 @@ function getFileUploadErrorMessage($fInfo, $tlInfo = null)
     if (isset($fInfo['error'])) {
         switch ($fInfo['error']) {
             case UPLOAD_ERR_INI_SIZE:
-                $msg = lang_get('error_file_size_larger_than_maximum_size_check_php_ini');
+                $msg = lang_get(
+                    'error_file_size_larger_than_maximum_size_check_php_ini');
                 break;
 
             case UPLOAD_ERR_FORM_SIZE:
@@ -852,7 +886,7 @@ function show_instructions($key, $refreshTree = 0)
 
 /**
  *
- * @param unknown $template2get
+ * @param string $template2get
  * @return stdClass with the template configuration
  */
 function templateConfiguration($template2get = null)
@@ -867,7 +901,8 @@ function templateConfiguration($template2get = null)
     $last_part = array_pop($path_parts);
     $tcfg = new stdClass();
     $tcfg->template_dir = "{$last_part}/";
-    $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
+    $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key .
+        '.tpl');
     $tcfg->template = null;
     $tcfg->tpl = $tcfg->template_dir . $tcfg->default_template;
     return $tcfg;
@@ -893,8 +928,11 @@ function isValidISODateTime($ISODateTime)
 
     $matches = null;
     $status_ok = false;
-    if (preg_match("/^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/", $ISODateTime, $matches)) {
-        $status_ok = checkdate($matches[$dateParts['MONTH']], $matches[$dateParts['DAY']], $matches[$dateParts['YEAR']]);
+    if (preg_match(
+        "/^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/",
+        $ISODateTime, $matches)) {
+        $status_ok = checkdate($matches[$dateParts['MONTH']],
+            $matches[$dateParts['DAY']], $matches[$dateParts['YEAR']]);
     }
     return $status_ok;
 }
@@ -909,7 +947,8 @@ function is_valid_date($timestamp, $dateFormat)
 
     $status_ok = false;
     if ($date_array != null) {
-        $status_ok = checkdate($date_array['month'], $date_array['day'], $date_array['year']);
+        $status_ok = checkdate($date_array['month'], $date_array['day'],
+            $date_array['year']);
     }
 
     return $status_ok;
@@ -976,7 +1015,9 @@ function checkUserRightsFor(&$db, $pfn, $onFailureGoToLogin = false)
         if (! $action) {
             $action = "any";
         }
-        logAuditEvent(TLS("audit_security_user_right_missing", $currentUser->login, $script, $action), $action, $currentUser->dbID, "users");
+        logAuditEvent(
+            TLS("audit_security_user_right_missing", $currentUser->login,
+                $script, $action), $action, $currentUser->dbID, "users");
         $doExit = true;
     }
 
@@ -1010,7 +1051,8 @@ function tlSubStr($str, $start, $length = null)
     }
     // BUGID 3951: replaced iconv_substr() by mb_substr()
     $function_call = "mb_substr";
-    if (function_exists('iconv_substr') && version_compare(PHP_VERSION, '5.2.0') >= 0) {
+    if (function_exists('iconv_substr') &&
+        version_compare(PHP_VERSION, '5.2.0') >= 0) {
         $function_call = "iconv_substr";
     }
     return $function_call($str, $start, $length, $charset);
@@ -1019,7 +1061,8 @@ function tlSubStr($str, $start, $length = null)
 /**
  * Get text from a configured item template for editor objects
  *
- * @param $itemTemplate identifies
+ * @param string $itemTemplate
+ *            identifies
  *            a TestLink item that can have
  *            templates that can be loaded when creating an item to semplify
  *            or guide user's work.
@@ -1028,21 +1071,25 @@ function tlSubStr($str, $start, $length = null)
  *            supported values:
  *            testcase_template
  *
- * @param $webEditorName webeditor
+ * @param string $webEditorName
+ *            webeditor
  *            name, that identifies a propety of $tlCfg->$itemTemplate
  *            that holds input tenmplate configuration
  *
- * @param $defaultText text
+ * @param string $defaultText
+ *            text
  *            to use if:
  *            $tlCfg->itemTemplate OR $tlCfg->itemTemplate->$webEditorName
  *            does not exists.
  *
  */
-function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText = '')
+function getItemTemplateContents($itemTemplate, $webEditorName,
+    $defaultText = '')
 {
     $editorTemplate = config_get($itemTemplate);
     $value = $defaultText;
-    if (! is_null($editorTemplate) && property_exists($editorTemplate, $webEditorName)) {
+    if (! is_null($editorTemplate) &&
+        property_exists($editorTemplate, $webEditorName)) {
         switch ($editorTemplate->$webEditorName->type) {
             case 'string':
                 $value = $editorTemplate->$webEditorName->value;
@@ -1055,7 +1102,8 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText = '
             case 'file':
                 $value = getFileContents($editorTemplate->$webEditorName->value);
                 if (is_null($value)) {
-                    $value = lang_get('problems_trying_to_access_template') . " {$editorTemplate->$webEditorName->value} ";
+                    $value = lang_get('problems_trying_to_access_template') .
+                        " {$editorTemplate->$webEditorName->value} ";
                 }
                 break;
 
@@ -1092,14 +1140,16 @@ function displayMemUsage($msg = '')
     echo "<br>{$msg} :: <b>{$dx}</b> <br>";
     ob_flush();
     flush();
-    echo "memory:" . memory_get_usage() . " - PEAK -> " . memory_get_peak_usage() . '<br>';
+    echo "memory:" . memory_get_usage() . " - PEAK -> " . memory_get_peak_usage() .
+        '<br>';
     ob_flush();
     flush();
 }
 
 /**
  */
-function setUpEnvForRemoteAccess(&$dbHandler, $apikey, $rightsCheck = null, $opt = null)
+function setUpEnvForRemoteAccess(&$dbHandler, $apikey, $rightsCheck = null,
+    $opt = null)
 {
     $my = array(
         'opt' => array(
@@ -1144,7 +1194,8 @@ function setUpEnvForRemoteAccess(&$dbHandler, $apikey, $rightsCheck = null, $opt
         if (! isset($_SESSION['basehref'])) {
             session_unset();
             session_destroy();
-            if (property_exists($rightsCheck, 'redirect_target') && ! is_null($rightsCheck->redirect_target)) {
+            if (property_exists($rightsCheck, 'redirect_target') &&
+                ! is_null($rightsCheck->redirect_target)) {
                 redirect($rightsCheck->redirect_target);
             } else {
                 // best guess for all features that live on ./lib/results/
@@ -1243,7 +1294,8 @@ function windowCloseAndOpenerReload()
 
 /**
  */
-function setUpEnvForAnonymousAccess(&$dbHandler, $apikey, $rightsCheck = null, $opt = null)
+function setUpEnvForAnonymousAccess(&$dbHandler, $apikey, $rightsCheck = null,
+    $opt = null)
 {
     $my = array(
         'opt' => array(
@@ -1313,7 +1365,8 @@ function setUpEnvForAnonymousAccess(&$dbHandler, $apikey, $rightsCheck = null, $
         if (! isset($_SESSION['basehref'])) {
             session_unset();
             session_destroy();
-            if (property_exists($rightsCheck, 'redirect_target') && ! is_null($rightsCheck->redirect_target)) {
+            if (property_exists($rightsCheck, 'redirect_target') &&
+                ! is_null($rightsCheck->redirect_target)) {
                 redirect($rightsCheck->redirect_target);
             } else {
                 // best guess for all features that live on ./lib/results/
@@ -1355,7 +1408,8 @@ function getEntityByAPIKey(&$dbHandler, $apiKey, $type)
             break;
     }
 
-    $sql = "/* $debugMsg */ " . " SELECT id FROM {$target} " . " WHERE api_key = '" . $dbHandler->prepare_string($apiKey) . "'";
+    $sql = "/* $debugMsg */ " . " SELECT id FROM {$target} " .
+        " WHERE api_key = '" . $dbHandler->prepare_string($apiKey) . "'";
 
     $rs = $dbHandler->get_recordset($sql);
     return $rs ? $rs[0] : null;
@@ -1379,15 +1433,19 @@ function checkAccess(&$dbHandler, &$userObj, $context, $rightsToCheck)
     }
 
     if ($doExit = (is_null($env) || $env['tproject_id'] == 0)) {
-        logAuditEvent(TLS("audit_security_no_environment", $script), $action, $userObj->dbID, "users");
+        logAuditEvent(TLS("audit_security_no_environment", $script), $action,
+            $userObj->dbID, "users");
     }
 
     if (! $doExit) {
         foreach ($rightsToCheck->items as $verboseRight) {
-            $status = $userObj->hasRight($dbHandler, $verboseRight, $env['tproject_id'], $env['tplan_id'], true);
+            $status = $userObj->hasRight($dbHandler, $verboseRight,
+                $env['tproject_id'], $env['tplan_id'], true);
             if (($doExit = ! $status) && ($rightsToCheck->mode == 'and')) {
                 $action = 'any';
-                logAuditEvent(TLS("audit_security_user_right_missing", $userObj->login, $script, $action), $action, $userObj->dbID, "users");
+                logAuditEvent(
+                    TLS("audit_security_user_right_missing", $userObj->login,
+                        $script, $action), $action, $userObj->dbID, "users");
                 break;
             }
         }
@@ -1439,7 +1497,8 @@ function downloadXls($fname, $xlsType, $gui, $filePrefix)
         'Content-Type' => $sets[$xlsType]['Content-Type']
     );
     $content = file_get_contents($fname);
-    $f2d = $filePrefix . $gui->tproject_name . '_' . $gui->tplan_name . $sets[$xlsType]['ext'];
+    $f2d = $filePrefix . $gui->tproject_name . '_' . $gui->tplan_name .
+        $sets[$xlsType]['ext'];
 
     downloadContentsToFile($content, $f2d, $dct);
     unlink($fname);
@@ -1453,8 +1512,10 @@ function syslogOnCloud($message, $component = "web", $program = "TestLink")
 {
     $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
     foreach (explode("\n", $message) as $line) {
-        $syslog_message = "<22>" . date('M d H:i:s ') . $program . ' ' . $component . ': ' . $line;
-        socket_sendto($sock, $syslog_message, strlen($syslog_message), 0, 'logs5.papertrailapp.com', 11613);
+        $syslog_message = "<22>" . date('M d H:i:s ') . $program . ' ' .
+            $component . ': ' . $line;
+        socket_sendto($sock, $syslog_message, strlen($syslog_message), 0,
+            'logs5.papertrailapp.com', 11613);
     }
     socket_close($sock);
 }
@@ -1476,7 +1537,8 @@ function tlSetCookie($ckObj)
         $stdCk->$prop = $value;
     }
 
-    setcookie($stdCk->name, $stdCk->value, $stdCk->expire, $stdCk->path, $stdCk->domain, $stdCk->secure, $stdCk->httponly);
+    setcookie($stdCk->name, $stdCk->value, $stdCk->expire, $stdCk->path,
+        $stdCk->domain, $stdCk->secure, $stdCk->httponly);
 }
 
 /**
@@ -1540,7 +1602,8 @@ function initUserEnv(&$dbH, $context, $opt = null)
     $gui->zeroTestProjects = ($gui->prjQtyWholeSystem == 0);
     $args->zeroTestProjects = $gui->zeroTestProjects;
 
-    $args->userIsBlindFolded = (is_null($gui->prjSet) || count($gui->prjSet) == 0) && $gui->prjQtyWholeSystem > 0;
+    $args->userIsBlindFolded = (is_null($gui->prjSet) || count($gui->prjSet) == 0) &&
+        $gui->prjQtyWholeSystem > 0;
     if ($args->userIsBlindFolded) {
         $args->current_tproject_id = 0;
         $args->tproject_id = 0;
@@ -1568,12 +1631,14 @@ function initUserEnv(&$dbH, $context, $opt = null)
         // Force to avoid lot of processing
         $gui->hasTestCases = $gui->hasKeywords = true;
 
-        $gui->num_active_tplans = $tprjMgr->getActiveTestPlansCount($args->tproject_id);
+        $gui->num_active_tplans = $tprjMgr->getActiveTestPlansCount(
+            $args->tproject_id);
 
         // get Test Plans available for the user
         // $gpOpt = array('output' => 'map');
         $gpOpt = null;
-        $gui->tplanSet = (array) $args->user->getAccessibleTestPlans($dbH, $args->tproject_id, $gpOpt);
+        $gui->tplanSet = (array) $args->user->getAccessibleTestPlans($dbH,
+            $args->tproject_id, $gpOpt);
         $gui->countPlans = count($gui->tplanSet);
 
         /*
@@ -1615,7 +1680,9 @@ function initUserEnv(&$dbH, $context, $opt = null)
     $eRoleObj = $args->user->getEffectiveRole($dbH, $gui->tproject_id, $tplan_id);
 
     $cfg = config_get('gui');
-    $gui->whoami = $args->user->getDisplayName() . ' ' . $cfg->role_separator_open . $eRoleObj->getDisplayName() . $cfg->role_separator_close;
+    $gui->whoami = $args->user->getDisplayName() . ' ' .
+        $cfg->role_separator_open . $eRoleObj->getDisplayName() .
+        $cfg->role_separator_close;
 
     $gui->launcher = $_SESSION['basehref'] . 'lib/general/frmWorkArea.php';
 
@@ -1623,7 +1690,9 @@ function initUserEnv(&$dbH, $context, $opt = null)
 
     $secCfg = config_get('config_check_warning_frequence');
     $gui->securityNotes = '';
-    if ((strcmp($secCfg, 'ALWAYS') == 0) || (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && ! isset($_SESSION['getSecurityNotesOnMainPageDone']))) {
+    if ((strcmp($secCfg, 'ALWAYS') == 0) ||
+        (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 &&
+        ! isset($_SESSION['getSecurityNotesOnMainPageDone']))) {
         $_SESSION['getSecurityNotesOnMainPageDone'] = 1;
         $gui->securityNotes = getSecurityNotes($dbH);
     }
@@ -1633,7 +1702,8 @@ function initUserEnv(&$dbH, $context, $opt = null)
 
     getActions($gui, $_SESSION['basehref']);
 
-    $gui->logo = $_SESSION['basehref'] . TL_THEME_IMG_DIR . config_get('logo_navbar');
+    $gui->logo = $_SESSION['basehref'] . TL_THEME_IMG_DIR .
+        config_get('logo_navbar');
 
     $ft = 'form_token';
     $gui->$ft = isset($args->$ft) ? $args->$ft : 0;
@@ -1671,9 +1741,11 @@ function getActions(&$gui, $baseURL)
     $actions = new stdClass();
 
     $actions->events = "$bb/events/eventviewer.php?{$ctx}";
-    $actions->usersAssign = "$bb/usermanagement/usersAssign.php?{$ctx}&featureType=testproject&featureID=" . intval($gui->tproject_id);
+    $actions->usersAssign = "$bb/usermanagement/usersAssign.php?{$ctx}&featureType=testproject&featureID=" .
+        intval($gui->tproject_id);
 
-    $actions->userMgmt = "$bb/usermanagement/usersView.php?{$ctx}" . intval($gui->tproject_id);
+    $actions->userMgmt = "$bb/usermanagement/usersView.php?{$ctx}" .
+        intval($gui->tproject_id);
 
     $actions->userInfo = "$bb/usermanagement/userInfo.php?{$ctx}";
     $actions->projectView = "$bb/project/projectView.php?{$ctx}";
@@ -1769,8 +1841,10 @@ function getGrantSetWithExit(&$dbHandler, &$argsObj, &$tprojMgr, $opt = null)
     );
     $options = array_merge($options, (array) $opt);
 
-    if ($options['forceCreateProj'] && $argsObj->zeroTestProjects && $argsObj->user->hasRight($dbHandler, 'mgt_modify_product')) {
-        redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
+    if ($options['forceCreateProj'] && $argsObj->zeroTestProjects &&
+        $argsObj->user->hasRight($dbHandler, 'mgt_modify_product')) {
+        redirect(
+            $_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
         exit();
     }
 
@@ -1851,11 +1925,13 @@ function getGrantSetWithExit(&$dbHandler, &$argsObj, &$tprojMgr, $opt = null)
     }
 
     foreach ($r2cTranslate as $humankey => $right) {
-        $grants[$humankey] = $argsObj->user->hasRight($dbHandler, $right, $argsObj->tproject_id, $argsObj->tplan_id);
+        $grants[$humankey] = $argsObj->user->hasRight($dbHandler, $right,
+            $argsObj->tproject_id, $argsObj->tplan_id);
     }
 
     foreach ($r2cSame as $right) {
-        $grants[$right] = $argsObj->user->hasRight($dbHandler, $right, $argsObj->tproject_id, $argsObj->tplan_id);
+        $grants[$right] = $argsObj->user->hasRight($dbHandler, $right,
+            $argsObj->tproject_id, $argsObj->tplan_id);
     }
 
     // check right ONLY if option is enabled
@@ -1871,7 +1947,9 @@ function getGrantSetWithExit(&$dbHandler, &$argsObj, &$tprojMgr, $opt = null)
     }
 
     $grants['tproject_user_role_assignment'] = "no";
-    if ($argsObj->user->hasRight($dbH, "testproject_user_role_assignment", $argsObj->tproject_id, - 1) == "yes" || $argsObj->user->hasRight($db, "user_role_assignment", null, - 1) == "yes") {
+    if ($argsObj->user->hasRight($dbH, "testproject_user_role_assignment",
+        $argsObj->tproject_id, - 1) == "yes" ||
+        $argsObj->user->hasRight($db, "user_role_assignment", null, - 1) == "yes") {
         $grants['tproject_user_role_assignment'] = "yes";
     }
     return (object) $grants;
@@ -1903,21 +1981,36 @@ function getMenuVisibility(&$gui)
 {
     $showMenu = getFirstLevelMenuStructure();
 
-    if ($gui->tproject_id > 0 && ($gui->grants->view_tc == "yes" || $gui->grants->reqs_view == "yes" || $gui->grants->reqs_edit == "yes")) {
+    if ($gui->tproject_id > 0 &&
+        ($gui->grants->view_tc == "yes" || $gui->grants->reqs_view == "yes" ||
+        $gui->grants->reqs_edit == "yes")) {
         $showMenu['search'] = true;
     }
 
-    if ($gui->tproject_id > 0 && ($gui->grants->cfield_assignment == "yes" || $gui->grants->cfield_management == "yes" || $gui->grants->issuetracker_management == "yes" || $gui->grants->codetracker_management == "yes" || $gui->grants->issuetracker_view == "yes" || $gui->grants->codetracker_view == "yes")) {
+    if ($gui->tproject_id > 0 &&
+        ($gui->grants->cfield_assignment == "yes" ||
+        $gui->grants->cfield_management == "yes" ||
+        $gui->grants->issuetracker_management == "yes" ||
+        $gui->grants->codetracker_management == "yes" ||
+        $gui->grants->issuetracker_view == "yes" ||
+        $gui->grants->codetracker_view == "yes")) {
         $showMenu['system'] = true;
     }
 
-    if ($gui->tproject_id > 0 && ($gui->grants->project_edit == "yes" || $gui->grants->tproject_user_role_assignment == "yes" || $gui->grants->cfield_management == "yes" || $gui->grants->platform_management == "yes" || $gui->grants->keywords_view == "yes")) {
+    if ($gui->tproject_id > 0 &&
+        ($gui->grants->project_edit == "yes" ||
+        $gui->grants->tproject_user_role_assignment == "yes" ||
+        $gui->grants->cfield_management == "yes" ||
+        $gui->grants->platform_management == "yes" ||
+        $gui->grants->keywords_view == "yes")) {
         $showMenu['projects'] = true;
     }
 
     if ($gui->tproject_id > 0 &&
-    // $gui->opt_requirements == true && TO REACTIVATE
-    ($gui->grants->reqs_view == "yes" || $gui->grants->reqs_edit == "yes" || $gui->grants->monitor_req == "yes" || $gui->grants->req_tcase_link_management == "yes")) {
+        // $gui->opt_requirements == true && TO REACTIVATE
+        ($gui->grants->reqs_view == "yes" || $gui->grants->reqs_edit == "yes" ||
+        $gui->grants->monitor_req == "yes" ||
+        $gui->grants->req_tcase_link_management == "yes")) {
         $showMenu['requirements_design'] = true;
     }
 
@@ -1925,11 +2018,17 @@ function getMenuVisibility(&$gui)
         $showMenu['tests_design'] = true;
     }
 
-    if ($gui->tproject_id > 0 && ($gui->grants->testplan_planning == "yes" || $gui->grants->mgt_testplan_create == "yes" || $gui->grants->testplan_user_role_assignment == "yes" || $gui->grants->testplan_create_build == "yes")) {
+    if ($gui->tproject_id > 0 &&
+        ($gui->grants->testplan_planning == "yes" ||
+        $gui->grants->mgt_testplan_create == "yes" ||
+        $gui->grants->testplan_user_role_assignment == "yes" ||
+        $gui->grants->testplan_create_build == "yes")) {
         $showMenu['plans'] = true;
     }
 
-    if ($gui->tproject_id > 0 && $gui->tplan_id > 0 && ($gui->grants->testplan_execute == "yes" || $gui->grants->exec_ro_access == "yes")) {
+    if ($gui->tproject_id > 0 && $gui->tplan_id > 0 &&
+        ($gui->grants->testplan_execute == "yes" ||
+        $gui->grants->exec_ro_access == "yes")) {
         $showMenu['execution'] = true;
     }
 
@@ -2041,7 +2140,8 @@ function pageAccessCheck(&$db, &$user, $context)
         // right now it seems will return
         // false or null -> for FALSE
         // 'yes' -> for TRUE !!!
-        $boolCheck = ($user->hasRight($db, $ri, $context->tproject_id, $tplan_id, true) == 'yes');
+        $boolCheck = ($user->hasRight($db, $ri, $context->tproject_id, $tplan_id,
+            true) == 'yes');
         $checkAnd &= $boolCheck;
     }
 
@@ -2049,7 +2149,8 @@ function pageAccessCheck(&$db, &$user, $context)
     if ($checkAnd) {
         $checkOr = false;
         foreach ($context->rightsAnd as $ri) {
-            $checkOr = $user->hasRight($db, $ri, $context->tproject_id, $tplan_id, true);
+            $checkOr = $user->hasRight($db, $ri, $context->tproject_id,
+                $tplan_id, true);
             if ($checkOr) {
                 break;
             }
@@ -2059,7 +2160,8 @@ function pageAccessCheck(&$db, &$user, $context)
     if (! $checkAnd && ! $checkOr) {
         $script = basename($_SERVER['PHP_SELF']);
         $action = 'Access Req Feature';
-        $msg = TLS("audit_security_user_right_missing", $user->login, $script, $action);
+        $msg = TLS("audit_security_user_right_missing", $user->login, $script,
+            $action);
         logAuditEvent($msg, $action, $user->dbID, "users");
         throw new Exception($msg, 1);
     }

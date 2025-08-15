@@ -68,7 +68,8 @@ class tlReports extends tlObjectWithDB
      *
      * @return array of array - described for array $g_reports_list in const.inc.php
      */
-    public function get_list_reports($context, $bug_interface_enabled, $req_mgmt_enabled, $format)
+    public function get_list_reports($context, $bug_interface_enabled,
+        $req_mgmt_enabled, $format)
     {
         $reportList = config_get('reports_list');
         $items = array();
@@ -83,29 +84,45 @@ class tlReports extends tlObjectWithDB
 
         foreach ($reportList as &$rptItem) {
             // check validity of report
-            if (($rptItem['enabled'] == 'all') || (($rptItem['enabled'] == 'req') && $req_mgmt_enabled) || (($rptItem['enabled'] == 'bts') && $bug_interface_enabled)) {
+            if (($rptItem['enabled'] == 'all') ||
+                (($rptItem['enabled'] == 'req') && $req_mgmt_enabled) ||
+                (($rptItem['enabled'] == 'bts') && $bug_interface_enabled)) {
                 if (strpos("," . $rptItem['format'], $format) > 0) {
-                    $reportUrl = $rptItem['url'] . (stristr($rptItem['url'], "?") ? '&' : '?');
+                    $reportUrl = $rptItem['url'] .
+                        (stristr($rptItem['url'], "?") ? '&' : '?');
                     $items[$xdx] = array(
                         'name' => lang_get($rptItem['title']),
                         'href' => $reportUrl,
                         'directLink' => ''
                     );
 
-                    if (isset($rptItem['directLink']) && trim($rptItem['directLink']) != '') {
+                    if (isset($rptItem['directLink']) &&
+                        trim($rptItem['directLink']) != '') {
                         if ($apiKeyIsValid) {
-                            $items[$xdx]['directLink'] = sprintf($rptItem['directLink'], $_SESSION['basehref'], $context->apikey, $context->tproject_id, $context->tplan_id);
+                            $items[$xdx]['directLink'] = sprintf(
+                                $rptItem['directLink'], $_SESSION['basehref'],
+                                $context->apikey, $context->tproject_id,
+                                $context->tplan_id);
                         } else {
                             $items[$xdx]['directLink'] = $canNotCreateDirectLink;
                         }
                     }
 
                     $dl = $items[$xdx]['directLink'];
-                    $mask = '<img class="clickable" title="%s" alt="%s" ' . ' onclick="showHideByClass(' . "'div','%s');event.stopPropagation();" . '" ' . ' src="' . $context->imgSet['link_to_report'] . '" align="center" />';
+                    $mask = '<img class="clickable" title="%s" alt="%s" ' .
+                        ' onclick="showHideByClass(' .
+                        "'div','%s');event.stopPropagation();" . '" ' . ' src="' .
+                        $context->imgSet['link_to_report'] .
+                        '" align="center" />';
 
                     $divClass = 'direct_link_' . $xdx;
-                    $items[$xdx]['toggle'] = sprintf($mask, $toggleMsg, $toggleMsg, $divClass);
-                    $items[$xdx]['directLinkDiv'] = '<div class="' . $divClass . '" ' . "style='display:none;border:1px solid;background-color:white;'>" . '<a href="' . $dl . '" target="_blank">' . $dl . '</a><br></div>';
+                    $items[$xdx]['toggle'] = sprintf($mask, $toggleMsg,
+                        $toggleMsg, $divClass);
+                    $items[$xdx]['directLinkDiv'] = '<div class="' . $divClass .
+                        '" ' .
+                        "style='display:none;border:1px solid;background-color:white;'>" .
+                        '<a href="' . $dl . '" target="_blank">' . $dl .
+                        '</a><br></div>';
                     $xdx ++;
                 }
             }
@@ -125,7 +142,8 @@ class tlReports extends tlObjectWithDB
      */
     public function get_count_builds($active = 1, $open = 0)
     {
-        $sql = " SELECT COUNT(0) FROM {$this->tables['builds']} builds " . " WHERE builds.testplan_id = {$this->testPlanID} ";
+        $sql = " SELECT COUNT(0) FROM {$this->tables['builds']} builds " .
+            " WHERE builds.testplan_id = {$this->testPlanID} ";
 
         if ($active) {
             $sql .= " AND active=" . intval($active) . " ";
@@ -145,7 +163,8 @@ class tlReports extends tlObjectWithDB
      */
     public function get_count_testcase4testplan()
     {
-        $sql = " SELECT COUNT(0) FROM {$this->tables['testplan_tcversions']} testplan_tcversions " . " WHERE testplan_id = {$this->testPlanID} ";
+        $sql = " SELECT COUNT(0) FROM {$this->tables['testplan_tcversions']} testplan_tcversions " .
+            " WHERE testplan_id = {$this->testPlanID} ";
         return $this->db->fetchOneValue($sql);
     }
 }

@@ -45,7 +45,9 @@ function email_send_wrapper($mailObj, $opt = null)
     // function email_send(
     // $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
     // $p_exit_on_error = false, $htmlFormat = false, $opt = null )
-    return email_send($mailObj->from_address, $mailObj->to_address, $mailObj->subject, $mailObj->message, $oops['cc'], $oops['attachment'], $oops['exit_on_error'], $oops['htmlFormat'], $opt);
+    return email_send($mailObj->from_address, $mailObj->to_address,
+        $mailObj->subject, $mailObj->message, $oops['cc'], $oops['attachment'],
+        $oops['exit_on_error'], $oops['htmlFormat'], $opt);
 }
 
 /**
@@ -57,7 +59,9 @@ function email_send_wrapper($mailObj, $opt = null)
  * @param boolean $htmlFormat
  *            specify text type true = html, false (default) = plain text
  */
-function email_send($p_from, $p_recipient, $p_subject, $p_message, $p_cc = '', $p_attachment = null, $p_exit_on_error = false, $htmlFormat = false, $opt = null)
+function email_send($p_from, $p_recipient, $p_subject, $p_message, $p_cc = '',
+    $p_attachment = null, $p_exit_on_error = false, $htmlFormat = false,
+    $opt = null)
 {
     global $g_phpMailer;
 
@@ -82,7 +86,8 @@ function email_send($p_from, $p_recipient, $p_subject, $p_message, $p_cc = '', $
     $ot->recipient = trim($p_recipient);
     $ot->subject = string_email(trim($p_subject));
     $ot->message = trim($p_message);
-    $ot->message = $options['strip_email_links'] ? string_email_links($p_message) : $p_message;
+    $ot->message = $options['strip_email_links'] ? string_email_links(
+        $p_message) : $p_message;
 
     # short-circuit if no recipient is defined, or email disabled
     # note that this may cause signup messages not to be sent

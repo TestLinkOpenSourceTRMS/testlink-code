@@ -17,7 +17,6 @@
  * @since 1.9.10
  *
  */
-
 require_once '../../config.inc.php';
 require_once 'common.php';
 require_once 'treeMenu.inc.php';
@@ -26,17 +25,16 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
-
 // selection of a controller according groupBy mode choice.
 $key = 'setting_testsgroupby';
 
 // now load info from session
 $mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : "mode_test_suite";
 
-if($mode == "mode_req_coverage"){
+if ($mode == "mode_req_coverage") {
     $control = new tlTestCaseFilterByRequirementControl($db, 'plan_add_mode');
 } else {
-   $control = new tlTestCaseFilterControl($db, 'plan_add_mode');
+    $control = new tlTestCaseFilterControl($db, 'plan_add_mode');
 }
 
 $gui = initializeGui($control);
@@ -51,7 +49,6 @@ $smarty->assign('menuUrl', $gui->menuUrl);
 
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-
 /**
  * Initialize gui object for use in templates.
  *
@@ -60,32 +57,30 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function initializeGui($control)
 {
+    $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $_REQUEST = strings_stripSlashes($_REQUEST);
+    $gui = new stdClass();
+    $gui->formAction = '';
 
-  $gui = new stdClass();
-  $gui->formAction = '';
+    $gui->req_spec_manager_url = "lib/requirements/reqSpecView.php";
+    $gui->req_manager_url = "lib/requirements/reqView.php";
 
-  $gui->req_spec_manager_url = "lib/requirements/reqSpecView.php";
-  $gui->req_manager_url = "lib/requirements/reqView.php";
-  
-  // This logic is managed from frmWorkArea.php and planAddTC.php
-  $gui->loadRightPaneAddTC = isset($_REQUEST['loadRightPaneAddTC']) ? $_REQUEST['loadRightPaneAddTC'] : true;
-  if( isset($_SESSION['loadRightPaneAddTC'][$control->form_token]) )
-  {
-    $gui->loadRightPaneAddTC = false;
-    unset($_SESSION['loadRightPaneAddTC'][$control->form_token]);
-  }
+    // This logic is managed from frmWorkArea.php and planAddTC.php
+    $gui->loadRightPaneAddTC = isset($_REQUEST['loadRightPaneAddTC']) ? $_REQUEST['loadRightPaneAddTC'] : true;
+    if (isset($_SESSION['loadRightPaneAddTC'][$control->form_token])) {
+        $gui->loadRightPaneAddTC = false;
+        unset($_SESSION['loadRightPaneAddTC'][$control->form_token]);
+    }
 
-  $gui->menuUrl = 'lib/plan/planAddTC.php';
+    $gui->menuUrl = 'lib/plan/planAddTC.php';
 
-  // DEV NOTES - CRITIC
-  // activity has to be coherent with login on frmWorkArea.php and printDocOptions.php
-  $gui->args = $control->get_argument_string() . '&activity=addTC';
-  $gui->additional_string = '';
-  $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
-                        "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;
-  
-  $gui->title_navigator = lang_get('navigator_add_remove_tcase_to_tplan');
-  return $gui;
+    // DEV NOTES - CRITIC
+    // activity has to be coherent with login on frmWorkArea.php and printDocOptions.php
+    $gui->args = $control->get_argument_string() . '&activity=addTC';
+    $gui->additional_string = '';
+    $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
+        "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;
+
+    $gui->title_navigator = lang_get('navigator_add_remove_tcase_to_tplan');
+    return $gui;
 }

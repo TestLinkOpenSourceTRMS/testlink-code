@@ -24,7 +24,8 @@
  * @param string $delimiter
  * @return string
  */
-function exportDataToCSV($data, $sourceKeys, $destKeys, $bWithHeader = 0, $delimiter = ';')
+function exportDataToCSV($data, $sourceKeys, $destKeys, $bWithHeader = 0,
+    $delimiter = ';')
 {
     $csvContent = '';
     $newLine = "\r\n";
@@ -45,7 +46,8 @@ function exportDataToCSV($data, $sourceKeys, $destKeys, $bWithHeader = 0, $delim
         $line = '';
         for ($k = 0; $k < $len; $k ++) {
             $value = $values[$sourceKeys[$k]];
-            if (strpos($value, $delimiter) !== false || strpos($value, "\n") !== false) {
+            if (strpos($value, $delimiter) !== false ||
+                strpos($value, "\n") !== false) {
                 $value = '"' . str_replace('"', '""', $value) . '"';
             }
             if ($k) {
@@ -106,10 +108,12 @@ function importCSVData($fileName, $fieldMappings, $options = null)
         $debugMsg = 'DEBUG::' . basename(__FILE__);
 
         if ($debugMe) {
-            echo $debugMsg . ' OPTIONS: processHeader=' . (($my['options']['processHeader']) ? 'true' : 'false') . '<br>';
+            echo $debugMsg . ' OPTIONS: processHeader=' .
+                (($my['options']['processHeader']) ? 'true' : 'false') . '<br>';
         }
 
-        while ($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, $my['options']['delimiter'])) {
+        while ($data = fgetcsv($handle, TL_IMPORT_ROW_MAX,
+            $my['options']['delimiter'])) {
             $lineNumber ++;
 
             // ignore line that start with comment char, leading blanks are ignored
@@ -118,7 +122,8 @@ function importCSVData($fileName, $fieldMappings, $options = null)
             $processLine = ($positionCheck === false || $positionCheck != 0);
 
             if ($debugMe) {
-                echo $debugMsg . ':: Line: ' . $lineNumber . '=>' . (($processLine) ? 'OK to process' : 'Skipped') . '<br>';
+                echo $debugMsg . ':: Line: ' . $lineNumber . '=>' .
+                    (($processLine) ? 'OK to process' : 'Skipped') . '<br>';
             }
 
             if ($processLine) {
@@ -143,13 +148,17 @@ function importCSVData($fileName, $fieldMappings, $options = null)
                 } else {
                     if ($check_syntax) {
                         $fieldsQty = count($data);
-                        if (! ($do_import = ($fieldsQty == $my['options']['fieldQty']))) {
-                            $msg = 'Field count:' . $fieldsQty . ' Required Field count: ' . $my['options']['fieldQty'];
+                        if (! ($do_import = ($fieldsQty ==
+                            $my['options']['fieldQty']))) {
+                            $msg = 'Field count:' . $fieldsQty .
+                                ' Required Field count: ' .
+                                $my['options']['fieldQty'];
 
                             $retVal['userFeedback']['syntaxError'][$lineNumber] = $msg;
 
                             if ($debugMe) {
-                                echo $debugMsg . 'Syntax Check Failure - Line  ' . $lineNumber . $msg . ' - SKIPPED ' . '<br>';
+                                echo $debugMsg . 'Syntax Check Failure - Line  ' .
+                                    $lineNumber . $msg . ' - SKIPPED ' . '<br>';
                             }
                         }
                     }

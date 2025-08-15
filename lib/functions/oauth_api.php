@@ -17,7 +17,8 @@ function oauth_link($oauthCfg)
 
     $oap['redirect_uri'] = trim($oauthCfg['redirect_uri']);
     if (isset($_SERVER['HTTPS'])) {
-        $oap['redirect_uri'] = str_replace('http://', 'https://', $oap['redirect_uri']);
+        $oap['redirect_uri'] = str_replace('http://', 'https://',
+            $oap['redirect_uri']);
     }
 
     switch ($oauthCfg['oauth_name']) {
@@ -27,7 +28,8 @@ function oauth_link($oauthCfg)
         case 'google':
         case 'microsoft':
             // @20200523 it seems that with relative can work
-            $url = 'lib/functions/oauth_providers/OAuth2Call.php?oauth2=' . trim($oauthCfg['oauth_name']);
+            $url = 'lib/functions/oauth_providers/OAuth2Call.php?oauth2=' .
+                trim($oauthCfg['oauth_name']);
             break;
 
         default:

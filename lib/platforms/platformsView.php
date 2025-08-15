@@ -9,44 +9,40 @@
  */
 require_once '../../config.inc.php';
 require_once 'common.php';
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db, false, false, "checkRights");
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = initArgs();
 
 $platform_mgr = new tlPlatform($db, $args->tproject_id);
-$gui = $platform_mgr->initViewGui($args->currentUser,$args);
+$gui = $platform_mgr->initViewGui($args->currentUser, $args);
 
 $smarty = new TLSmarty();
-$smarty->assign('gui',$gui);
+$smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-
 /**
- *
- *
  */
-function init_args() {
-	$args = new stdClass();
-	$args->currentUser = $_SESSION['currentUser'];
+function initArgs()
+{
+    $args = new stdClass();
+    $args->currentUser = $_SESSION['currentUser'];
 
-  list($context,$env) = initContext();
-  $args->tproject_id = $context->tproject_id;
-  $args->tplan_id = $context->tplan_id;
-  
-  if( 0 == $args->tproject_id ) {
-    throw new Exception("Unable Get Test Project ID => Can Not Proceed", 1);
-  }
+    list ($context,) = initContext();
+    $args->tproject_id = $context->tproject_id;
+    $args->tplan_id = $context->tplan_id;
 
-	return $args;
+    if (0 == $args->tproject_id) {
+        throw new Exception("Unable Get Test Project ID => Can Not Proceed", 1);
+    }
+
+    return $args;
 }
 
-
-
 /**
- *
- *
  */
-function checkRights(&$db,&$user) {
-	return $user->hasRightOnProj($db,'platform_management') || $user->hasRightOnProj($db,'platform_view');
+function checkRights(&$db, &$user)
+{
+    return $user->hasRightOnProj($db, 'platform_management') ||
+        $user->hasRightOnProj($db, 'platform_view');
 }

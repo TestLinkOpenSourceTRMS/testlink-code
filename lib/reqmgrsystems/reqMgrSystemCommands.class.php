@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
@@ -15,223 +16,225 @@
  * @internal revisions
  * @since 1.9.6
  **/
-
 class reqMgrSystemCommands
 {
-  private $mgr;
-  private $db;
-  private $templateCfg;
-  private $grants;
-  private $guiOpWhiteList;  // used to sanitize inputs on different pages
-  private $entitySpec;
 
+    private $mgr;
 
-  public function __construct(&$dbHandler)
-  {
-    $this->db = $dbHandler;
-    $this->mgr = new tlReqMgrSystem($dbHandler);
-    $this->entitySpec = $this->mgr->getEntitySpec();
+    private $db;
 
-    $this->grants=new stdClass();
-    $this->grants->canManage = false;
+    private $templateCfg;
 
-    $this->guiOpWhiteList = array_flip(array('checkConnection','create','edit','delete','doCreate',
-                                             'doUpdate','doDelete'));
-  }
+    private $grants;
 
-  public function setTemplateCfg($cfg)
-  {
-      $this->templateCfg = $cfg;
-  }
+    private $guiOpWhiteList;
 
-  public function getGuiOpWhiteList()
-  {
-      return $this->guiOpWhiteList;
-  }
+    // used to sanitize inputs on different pages
+    private $entitySpec;
 
-  /**
-   *
-   *
-   */
-  public function initGuiBean(&$argsObj, $caller)
-  {
-    $obj = new stdClass();
-    $obj->action = $caller;
-    $obj->typeDomain = $this->mgr->getTypes();
-    $obj->canManage = $argsObj->currentUser->hasRight($this->db,'reqmgrsystem_management');
-    $obj->user_feedback = array('type' => '', 'message' => '');
-
-    $obj->l18n = init_labels(array('reqmgrsystem_management' => null, 'btn_save' => null,
-                                   'create' => null, 'edit' => null, 'reqmgrsystem_deleted' => null));
-
-    // we experiment on way to get Action Description for GUI using __FUNCTION__
-    $obj->l18n['doUpdate'] = $obj->l18n['edit'];
-    $obj->l18n['doCreate'] = $obj->l18n['create'];
-    $obj->l18n['doDelete'] = '';
-    $obj->main_descr = $obj->l18n['reqmgrsystem_management'];
-    $obj->action_descr = ucfirst($obj->l18n[$caller]);
-
-    switch($caller)
+    public function __construct(&$dbHandler)
     {
-      case 'delete':
-      case 'doDelete':
-        $obj->submit_button_label = '';
-      break;
-      
-      default:
-        $obj->submit_button_label = $obj->l18n['btn_save'];
-      break;
+        $this->db = $dbHandler;
+        $this->mgr = new tlReqMgrSystem($dbHandler);
+        $this->entitySpec = $this->mgr->getEntitySpec();
+
+        $this->grants = new stdClass();
+        $this->grants->canManage = false;
+
+        $this->guiOpWhiteList = array_flip(
+            array(
+                'checkConnection',
+                'create',
+                'edit',
+                'delete',
+                'doCreate',
+                'doUpdate',
+                'doDelete'
+            ));
     }
 
-    return $obj;
-  }
-   
-  /**
-   *
-   *
-   */
-  public function create(&$argsObj,$request,$caller=null)
-  {
-    $guiObj = $this->initGuiBean($argsObj,(is_null($caller) ? __FUNCTION__ : $caller));
-    $templateCfg = templateConfiguration('reqMgrSystemEdit');
-    $guiObj->template = $templateCfg->default_template;
-    $guiObj->canManage = $argsObj->currentUser->hasRight($this->db,'reqmgrsystem_management');
-
-    $guiObj->item = array('id' => 0);
-    foreach($this->entitySpec as $property => $type)
+    public function setTemplateCfg($cfg)
     {
-      $guiObj->item[$property] = ($type == 'int') ? 0 :'';
+        $this->templateCfg = $cfg;
     }
-    return $guiObj;
-  }
 
-  /**
-   *
-   *
-   */
-  public function doCreate(&$argsObj,$request)
-  {
-    $guiObj = $this->create($argsObj,$request,__FUNCTION__);
-  
-    // Checks are centralized on create()
-    $it = new stdClass();
-    foreach($this->entitySpec as $property => $type)
+    public function getGuiOpWhiteList()
     {
-      $it->$property = $argsObj->$property;
-      
+        return $this->guiOpWhiteList;
     }
-    
-    // Save user input.
-    // This will be useful if create() will fail, to present values again on GUI
-    $guiObj->item = (array)$it;
-        
-    $op = $this->mgr->create($it);
-    if($op['status_ok'])
+
+    /**
+     */
+    public function initGuiBean(&$argsObj, $caller)
     {
-      $guiObj->main_descr = '';
-      $guiObj->action_descr = '';
-      $guiObj->template = "reqMgrSystemView.php";
+        $obj = new stdClass();
+        $obj->action = $caller;
+        $obj->typeDomain = $this->mgr->getTypes();
+        $obj->canManage = $argsObj->currentUser->hasRight($this->db,
+            'reqmgrsystem_management');
+        $obj->user_feedback = array(
+            'type' => '',
+            'message' => ''
+        );
+
+        $obj->l18n = init_labels(
+            array(
+                'reqmgrsystem_management' => null,
+                'btn_save' => null,
+                'create' => null,
+                'edit' => null,
+                'reqmgrsystem_deleted' => null
+            ));
+
+        // we experiment on way to get Action Description for GUI using __FUNCTION__
+        $obj->l18n['doUpdate'] = $obj->l18n['edit'];
+        $obj->l18n['doCreate'] = $obj->l18n['create'];
+        $obj->l18n['doDelete'] = '';
+        $obj->main_descr = $obj->l18n['reqmgrsystem_management'];
+        $obj->action_descr = ucfirst($obj->l18n[$caller]);
+
+        switch ($caller) {
+            case 'delete':
+            case 'doDelete':
+                $obj->submit_button_label = '';
+                break;
+
+            default:
+                $obj->submit_button_label = $obj->l18n['btn_save'];
+                break;
+        }
+
+        return $obj;
     }
-    else
+
+    /**
+     */
+    public function create(&$argsObj, $request, $caller = null)
     {
-      $templateCfg = templateConfiguration('reqMgrSystemEdit');
-      $guiObj->template=$templateCfg->default_template;
-      $guiObj->user_feedback['message'] = $op['msg'];
+        $guiObj = $this->initGuiBean($argsObj,
+            (is_null($caller) ? __FUNCTION__ : $caller));
+        $templateCfg = templateConfiguration('reqMgrSystemEdit');
+        $guiObj->template = $templateCfg->default_template;
+        $guiObj->canManage = $argsObj->currentUser->hasRight($this->db,
+            'reqmgrsystem_management');
+
+        $guiObj->item = array(
+            'id' => 0
+        );
+        foreach ($this->entitySpec as $property => $type) {
+            $guiObj->item[$property] = ($type == 'int') ? 0 : '';
+        }
+        return $guiObj;
     }
-    
-    return $guiObj;
-    }
 
-
-
-
-  /*
-    function: edit
-  
-    args:
-    
-    returns:
-  
-  */
-  public function edit(&$argsObj,$request)
-  {
-    $guiObj = $this->initGuiBean($argsObj,__FUNCTION__);
-     
-    $templateCfg = templateConfiguration('reqMgrSystemEdit');
-    $guiObj->template = $templateCfg->default_template;
-
-    $guiObj->item = $this->mgr->getByID($argsObj->id);
-    $guiObj->canManage = $argsObj->currentUser->hasRight($this->db,'reqmgrsystem_management');
-    return $guiObj;
-  }
-
-
-  /*
-    function: doUpdate
-
-    args:
-    
-    returns:
-
-  */
-    public function doUpdate(&$argsObj,$request)
-  {
-    $guiObj = $this->initGuiBean($argsObj,__FUNCTION__);
-
-    $it = new stdClass();
-    $it->id = $argsObj->id;
-    foreach($this->entitySpec as $property => $type)
+    /**
+     */
+    public function doCreate(&$argsObj, $request)
     {
-      $it->$property = $argsObj->$property;
+        $guiObj = $this->create($argsObj, $request, __FUNCTION__);
+
+        // Checks are centralized on create()
+        $it = new stdClass();
+        foreach ($this->entitySpec as $property => $type) {
+            $it->$property = $argsObj->$property;
+        }
+
+        // Save user input.
+        // This will be useful if create() will fail, to present values again on GUI
+        $guiObj->item = (array) $it;
+
+        $op = $this->mgr->create($it);
+        if ($op['status_ok']) {
+            $guiObj->main_descr = '';
+            $guiObj->action_descr = '';
+            $guiObj->template = "reqMgrSystemView.php";
+        } else {
+            $templateCfg = templateConfiguration('reqMgrSystemEdit');
+            $guiObj->template = $templateCfg->default_template;
+            $guiObj->user_feedback['message'] = $op['msg'];
+        }
+
+        return $guiObj;
     }
 
-    // Save user input.
-    // This will be useful if create() will fail, to present values again on GUI
-    $guiObj->item = (array)$it;
-        
-    $op = $this->mgr->update($it);
-    if( $op['status_ok'] )
+    /*
+     * function: edit
+     *
+     * args:
+     *
+     * returns:
+     *
+     */
+    public function edit(&$argsObj, $request)
     {
-      $guiObj->main_descr = '';
-      $guiObj->action_descr = '';
-      $guiObj->template = "reqMgrSystemView.php";
+        $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
+
+        $templateCfg = templateConfiguration('reqMgrSystemEdit');
+        $guiObj->template = $templateCfg->default_template;
+
+        $guiObj->item = $this->mgr->getByID($argsObj->id);
+        $guiObj->canManage = $argsObj->currentUser->hasRight($this->db,
+            'reqmgrsystem_management');
+        return $guiObj;
     }
-    else
+
+    /*
+     * function: doUpdate
+     *
+     * args:
+     *
+     * returns:
+     *
+     */
+    public function doUpdate(&$argsObj, $request)
     {
-      $guiObj->user_feedback['message'] = $op['msg'];
-      $guiObj->template = null;
+        $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
+
+        $it = new stdClass();
+        $it->id = $argsObj->id;
+        foreach ($this->entitySpec as $property => $type) {
+            $it->$property = $argsObj->$property;
+        }
+
+        // Save user input.
+        // This will be useful if create() will fail, to present values again on GUI
+        $guiObj->item = (array) $it;
+
+        $op = $this->mgr->update($it);
+        if ($op['status_ok']) {
+            $guiObj->main_descr = '';
+            $guiObj->action_descr = '';
+            $guiObj->template = "reqMgrSystemView.php";
+        } else {
+            $guiObj->user_feedback['message'] = $op['msg'];
+            $guiObj->template = null;
+        }
+
+        return $guiObj;
     }
-    
-    return $guiObj;
-  }
 
-  /**
-   *
-   *
-   */
-  public function doDelete(&$argsObj,$request)
-  {
-    $guiObj = $this->initGuiBean($argsObj,__FUNCTION__);
-    $op = $this->mgr->delete($argsObj->id);
-    $guiObj->action = 'doDelete';
-    $guiObj->template = "reqMgrSystemView.php?";
-    return $guiObj;
-  }
+    /**
+     */
+    public function doDelete(&$argsObj, $request)
+    {
+        $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
+        $op = $this->mgr->delete($argsObj->id);
+        $guiObj->action = 'doDelete';
+        $guiObj->template = "reqMgrSystemView.php?";
+        return $guiObj;
+    }
 
+    public function checkConnection(&$argsObj, $request)
+    {
+        $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
 
-  public function checkConnection(&$argsObj,$request)
-  {
-    $guiObj = $this->initGuiBean($argsObj,__FUNCTION__);
-    
-    $xx = $this->mgr->getByID($argsObj->id);
-    $class2create = $xx['implementation'];
-    $its = new $class2create($xx['type'],$xx['cfg']);
+        $xx = $this->mgr->getByID($argsObj->id);
+        $class2create = $xx['implementation'];
+        $its = new $class2create($xx['type'], $xx['cfg']);
 
-    
-    $guiObj->template = "reqMgrSystemView.php?";
-    $guiObj->connectionStatus = $its->isConnected() ? 'ok' : 'ko';
-    return $guiObj;
-  }
-
+        $guiObj->template = "reqMgrSystemView.php?";
+        $guiObj->connectionStatus = $its->isConnected() ? 'ok' : 'ko';
+        return $guiObj;
+    }
 }
 ?>

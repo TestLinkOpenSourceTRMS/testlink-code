@@ -10,16 +10,15 @@
  * @copyright 2009,2019 TestLink community
  *
  **/
-
 require_once '../../config.inc.php';
 require_once 'common.php';
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $gui = new stdClass();
-$gui->rightEdit = has_rights($db,"project_inventory_management");
-$gui->rightView = has_rights($db,"project_inventory_view");
+$gui->rightEdit = has_rights($db, "project_inventory_management");
+$gui->rightView = has_rights($db, "project_inventory_view");
 
 $smarty = new TLSmarty();
-$smarty->assign('gui',$gui);
+$smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);

@@ -61,7 +61,9 @@ class tinymce
             $my_cols = $this->cols;
 
         // rows must count place for toolbar !!
-        $Html = "<textarea name=\"{$this->InstanceName}\"" . "id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\">" . "{$HtmlValue}</textarea>";
+        $Html = "<textarea name=\"{$this->InstanceName}\"" .
+            "id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\">" .
+            "{$HtmlValue}</textarea>";
         return $Html;
     }
 }

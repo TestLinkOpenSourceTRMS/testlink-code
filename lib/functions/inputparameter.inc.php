@@ -157,20 +157,23 @@ function I_PARAMS($paramInfo, &$args = null)
 
             case tlInputParameter::ARRAY_STRING_N:
                 $pfnValidation = $p1;
-                $value = GPR_PARAM_ARRAY_STRING_N($source, $pName, $pfnValidation);
+                $value = GPR_PARAM_ARRAY_STRING_N($source, $pName,
+                    $pfnValidation);
                 break;
 
             case tlInputParameter::INT_N:
                 $maxVal = $p1;
                 $pfnValidation = $p2;
-                $value = GPR_PARAM_INT_N($source, $pName, $maxVal, $pfnValidation);
+                $value = GPR_PARAM_INT_N($source, $pName, $maxVal,
+                    $pfnValidation);
                 break;
 
             case tlInputParameter::INT:
                 $minVal = $p1;
                 $maxVal = $p2;
                 $pfnValidation = $p3;
-                $value = GPR_PARAM_INT($source, $pName, $minVal, $maxVal, $pfnValidation);
+                $value = GPR_PARAM_INT($source, $pName, $minVal, $maxVal,
+                    $pfnValidation);
                 break;
 
             case tlInputParameter::STRING_N:
@@ -179,7 +182,8 @@ function I_PARAMS($paramInfo, &$args = null)
                 $regExp = $p3;
                 $pfnValidation = $p4;
                 $pfnNormalization = $p5;
-                $value = GPR_PARAM_STRING_N($source, $pName, $minLen, $maxLen, $regExp, $pfnValidation, $pfnNormalization);
+                $value = GPR_PARAM_STRING_N($source, $pName, $minLen, $maxLen,
+                    $regExp, $pfnValidation, $pfnNormalization);
                 break;
 
             case tlInputParameter::CB_BOOL:
@@ -214,7 +218,8 @@ function I_PARAMS($paramInfo, &$args = null)
  *
  * @return string the value of the parameter
  */
-function GPR_PARAM_STRING_N($inputSource, $name, $minLen = null, $maxLen = null, $regExp = null, $pfnValidation = null, $pfnNormalization = null)
+function GPR_PARAM_STRING_N($inputSource, $name, $minLen = null, $maxLen = null,
+    $regExp = null, $pfnValidation = null, $pfnNormalization = null)
 {
     $vInfo = new tlStringValidationInfo();
     $vInfo->trim = tlStringValidationInfo::TRIM_BOTH;
@@ -260,7 +265,8 @@ function GPR_PARAM_STRING_N($inputSource, $name, $minLen = null, $maxLen = null,
  *
  * @return integer the value of the parameter
  */
-function GPR_PARAM_INT($inputSource, $name, $minVal = null, $maxVal = null, $pfnValidation = null)
+function GPR_PARAM_INT($inputSource, $name, $minVal = null, $maxVal = null,
+    $pfnValidation = null)
 {
     $vInfo = new tlIntegerValidationInfo();
 
@@ -294,7 +300,8 @@ function GPR_PARAM_INT($inputSource, $name, $minVal = null, $maxVal = null, $pfn
  *
  * @return integer the value of the parameter
  */
-function GPR_PARAM_INT_N($inputSource, $name, $maxVal = null, $pfnValidation = null)
+function GPR_PARAM_INT_N($inputSource, $name, $maxVal = null,
+    $pfnValidation = null)
 {
     return GPR_PARAM_INT($inputSource, $name, 0, $maxVal, $pfnValidation);
 }
@@ -313,7 +320,8 @@ function GPR_PARAM_INT_N($inputSource, $name, $maxVal = null, $pfnValidation = n
  */
 function GPR_PARAM_ARRAY_INT($inputSource, $name, $pfnValidation = null)
 {
-    return GPR_PARAM_ARRAY($inputSource, tlInputParameter::INT, $name, $pfnValidation);
+    return GPR_PARAM_ARRAY($inputSource, tlInputParameter::INT, $name,
+        $pfnValidation);
 }
 
 /**
@@ -330,7 +338,8 @@ function GPR_PARAM_ARRAY_INT($inputSource, $name, $pfnValidation = null)
  */
 function GPR_PARAM_ARRAY_STRING_N($inputSource, $name, $pfnValidation = null)
 {
-    return GPR_PARAM_ARRAY($inputSource, tlInputParameter::STRING_N, $name, $pfnValidation);
+    return GPR_PARAM_ARRAY($inputSource, tlInputParameter::STRING_N, $name,
+        $pfnValidation);
 }
 
 /**

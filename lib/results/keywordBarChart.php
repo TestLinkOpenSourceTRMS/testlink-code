@@ -27,12 +27,10 @@ $cfg->beginX = $chart_cfg['beginX'];
 $cfg->beginY = $chart_cfg['beginY'];
 $cfg->scale->legendXAngle = $chart_cfg['legendXAngle'];
 
+$args = initArgs($db);
+$info = getDataAndScale($db, $args);
 
-$args = init_args($db);
-$info = getDataAndScale($db,$args);
-
-createChart($info,$cfg);
-
+createChart($info, $cfg);
 
 /**
  *
@@ -40,71 +38,62 @@ createChart($info,$cfg);
  * @param stdClass $argsObj
  * @return stdClass
  */
-function getDataAndScale(&$dbHandler,$argsObj)
+function getDataAndScale(&$dbHandler, $argsObj)
 {
-  $resultsCfg = config_get('results');
-  $obj = new stdClass();
-  $items = array();
-  $totals = null;
+    $resultsCfg = config_get('results');
+    $obj = new stdClass();
+    $items = array();
+    $totals = null;
 
-  $metricsMgr = new tlTestPlanMetrics($dbHandler);
-  $dummy = $metricsMgr->getStatusTotalsByKeywordForRender($argsObj->tplan_id);
-  
-  $obj->canDraw = false;
-  if( !is_null($dummy) )
-  {
-    $dataSet = $dummy->info;
-    $obj->canDraw = !is_null($dataSet) && (!empty($dataSet));
-  }
-  
-  if($obj->canDraw)
-  {
-    // Process to enable alphabetical order
-    foreach($dataSet as $keyword_id => $elem)
-    {
-      $item_descr[$elem['name']] = $keyword_id;
+    $metricsMgr = new tlTestPlanMetrics($dbHandler);
+    $dummy = $metricsMgr->getStatusTotalsByKeywordForRender($argsObj->tplan_id);
+
+    $obj->canDraw = false;
+    if (! is_null($dummy)) {
+        $dataSet = $dummy->info;
+        $obj->canDraw = ! is_null($dataSet) && (! empty($dataSet));
     }
-    ksort($item_descr);
-      
-    foreach($item_descr as $name => $keyword_id)
-    {
-      $items[] = htmlspecialchars($name);
-      foreach($dataSet[$keyword_id]['details'] as $status => $value)
-      {
-        $totals[$status][] = $value['qty'];
-      }
+
+    if ($obj->canDraw) {
+        // Process to enable alphabetical order
+        foreach ($dataSet as $keyword_id => $elem) {
+            $item_descr[$elem['name']] = $keyword_id;
+        }
+        ksort($item_descr);
+
+        foreach ($item_descr as $name => $keyword_id) {
+            $items[] = htmlspecialchars($name);
+            foreach ($dataSet[$keyword_id]['details'] as $status => $value) {
+                $totals[$status][] = $value['qty'];
+            }
+        }
     }
-  }
-  
-  $obj->xAxis = new stdClass();
-  $obj->xAxis->values = $items;
-  $obj->xAxis->serieName = 'Serie8';
-  
-  $obj->series_color = null;
-  $obj->scale = new stdClass();
-  $obj->scale->maxY = 0;
-  $obj->scale->minY = 0;
-  $obj->scale->divisions = 0;
-  
-  if(!is_null($totals))
-  {
-    // in this array position we will find minimun value after an rsort
-    $minPos = count($dataSet)-1;
+
+    $obj->xAxis = new stdClass();
+    $obj->xAxis->values = $items;
+    $obj->xAxis->serieName = 'Serie8';
+
+    $obj->series_color = null;
+    $obj->scale = new stdClass();
     $obj->scale->maxY = 0;
     $obj->scale->minY = 0;
-    
-    foreach($totals as $status => $values)
-    {
-      $obj->chart_data[] = $values;
-      $obj->series_label[] = lang_get($resultsCfg['status_label'][$status]);
-      if( isset($resultsCfg['charts']['status_colour'][$status]) )
-      {
-        $obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
-      }
+    $obj->scale->divisions = 0;
+
+    if (! is_null($totals)) {
+        $obj->scale->maxY = 0;
+        $obj->scale->minY = 0;
+
+        foreach ($totals as $status => $values) {
+            $obj->chart_data[] = $values;
+            $obj->series_label[] = lang_get(
+                $resultsCfg['status_label'][$status]);
+            if (isset($resultsCfg['charts']['status_colour'][$status])) {
+                $obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
+            }
+        }
     }
-  }
-      
-  return $obj;
+
+    return $obj;
 }
 
 /**
@@ -112,48 +101,52 @@ function getDataAndScale(&$dbHandler,$argsObj)
  * @param database $dbHandler
  * @return stdClass
  */
-function init_args(&$dbHandler)
+function initArgs(&$dbHandler)
 {
-  $iParams = array("apikey" => array(tlInputParameter::STRING_N,0,64),
-                   "tproject_id" => array(tlInputParameter::INT_N),
-                   "tplan_id" => array(tlInputParameter::INT_N));
+    $iParams = array(
+        "apikey" => array(
+            tlInputParameter::STRING_N,
+            0,
+            64
+        ),
+        "tproject_id" => array(
+            tlInputParameter::INT_N
+        ),
+        "tplan_id" => array(
+            tlInputParameter::INT_N
+        )
+    );
 
-  $args = new stdClass();
-  R_PARAMS($iParams,$args);
-  
-  if( !is_null($args->apikey) )
-  {
-    $cerbero = new stdClass();
-    $cerbero->args = new stdClass();
-    $cerbero->args->tproject_id = $args->tproject_id;
-    $cerbero->args->tplan_id = $args->tplan_id;
+    $args = new stdClass();
+    R_PARAMS($iParams, $args);
 
-    if(strlen($args->apikey) == 32)
-    {
-      $cerbero->args->getAccessAttr = true;
-      $cerbero->method = 'checkRights';
-      $cerbero->redirect_target = "../../login.php?note=logout";
-      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+    if (! is_null($args->apikey)) {
+        $cerbero = new stdClass();
+        $cerbero->args = new stdClass();
+        $cerbero->args->tproject_id = $args->tproject_id;
+        $cerbero->args->tplan_id = $args->tplan_id;
+
+        if (strlen($args->apikey) == 32) {
+            $cerbero->args->getAccessAttr = true;
+            $cerbero->method = 'checkRights';
+            $cerbero->redirect_target = "../../login.php?note=logout";
+            setUpEnvForRemoteAccess($dbHandler, $args->apikey, $cerbero);
+        } else {
+            $args->addOpAccess = false;
+            $cerbero->method = null;
+            $cerbero->args->getAccessAttr = false;
+            setUpEnvForAnonymousAccess($dbHandler, $args->apikey, $cerbero);
+        }
+    } else {
+        testlinkInitPage($dbHandler, false, false, "checkRights");
+        $args->tproject_id = isset($_SESSION['testprojectID']) ? intval(
+            $_SESSION['testprojectID']) : 0;
     }
-    else
-    {
-      $args->addOpAccess = false;
-      $cerbero->method = null;
-      $cerbero->args->getAccessAttr = false;
-      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
-    }
-  }
-  else
-  {
-    testlinkInitPage($dbHandler,false,false,"checkRights");
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-  }
 
-  if( isset($_REQUEST['debug']) )
-  {
-    $args->debug = 'yes';
-  }
-  return $args;
+    if (isset($_REQUEST['debug'])) {
+        $args->debug = 'yes';
+    }
+    return $args;
 }
 
 /**
@@ -162,7 +155,7 @@ function init_args(&$dbHandler)
  * @param tlUser $user
  * @return string
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db, &$user)
 {
-  return $user->hasRight($db,'testplan_metrics');
+    return $user->hasRight($db, 'testplan_metrics');
 }

@@ -171,12 +171,13 @@ function event_callback($p_event, $p_callback, $p_plugin, $p_params = null)
         global $g_plugin_cache;
         plugin_push_current($p_plugin);
         if (method_exists($g_plugin_cache[$p_plugin], $p_callback)) {
-            $t_value = call_user_func_array(array(
-                $g_plugin_cache[$p_plugin],
-                $p_callback
-            ), array_merge(array(
-                $p_event
-            ), $p_params));
+            $t_value = call_user_func_array(
+                array(
+                    $g_plugin_cache[$p_plugin],
+                    $p_callback
+                ), array_merge(array(
+                    $p_event
+                ), $p_params));
         }
         plugin_pop_current();
     }
@@ -209,7 +210,8 @@ function event_type_output($p_event, $p_callbacks, $p_params = null)
     $t_output = array();
     foreach ($p_callbacks as $t_plugin => $t_callbacks) {
         foreach ($t_callbacks as $t_callback) {
-            $t_output[] = event_callback($p_event, $t_callback, $t_plugin, $p_params);
+            $t_output[] = event_callback($p_event, $t_callback, $t_plugin,
+                $p_params);
         }
     }
     return $t_output;

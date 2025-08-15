@@ -16,7 +16,7 @@ require_once '../../config.inc.php';
 require_once '../functions/common.php';
 testlinkInitPage($db);
 
-$args = init_args();
+$args = initArgs();
 
 $gui = new stdClass();
 $gui->pageTitle = '';
@@ -24,44 +24,45 @@ $gui->pageContent = '';
 $gui->refreshTree = $args->refreshTree;
 
 $pageKey = htmlspecialchars($args->key);
-if ($pageKey == "")
-{
-	exit ("Error: Invalid page parameter.");
+if ($pageKey == "") {
+    exit("Error: Invalid page parameter.");
 }
-	
+
 // link appropriate definition file and default to en_GB if not present in the current language
 $locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : $tlCfg->default_language;
 $language = (file_exists('../../locale/' . $locale . '/texts.php')) ? $locale : 'en_GB';
-include_once '../../locale/'. $language .'/texts.php';
+include_once '../../locale/' . $language . '/texts.php';
 
-if (isset($TLS_htmltext[$pageKey]))
-{
-	$gui->pageTitle = $TLS_htmltext_title[$pageKey];
-	$gui->pageContent =  $TLS_htmltext[$pageKey];
-}
-else
-{
-	$gui->pageContent = "Please, ask administrator to update localization file" .
-	                    "(&lt;testlink_root&gt;/locale/$locale/texts.php)" .
-	                    " - missing key: " . $pageKey;
+if (isset($TLS_htmltext[$pageKey])) {
+    $gui->pageTitle = $TLS_htmltext_title[$pageKey];
+    $gui->pageContent = $TLS_htmltext[$pageKey];
+} else {
+    $gui->pageContent = "Please, ask administrator to update localization file" .
+        "(&lt;testlink_root&gt;/locale/$locale/texts.php)" . " - missing key: " .
+        $pageKey;
 }
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display('staticPage.tpl');
 
-
 /**
  * init_args()
  *
  * @return stdClass
  */
-function init_args()
+function initArgs()
 {
-	$iParams = array("key" => array(tlInputParameter::STRING_N),
-		             "refreshTree" => array(tlInputParameter::INT_N));
-	$args = new stdClass();
-	R_PARAMS($iParams,$args);
-	return $args;
+    $iParams = array(
+        "key" => array(
+            tlInputParameter::STRING_N
+        ),
+        "refreshTree" => array(
+            tlInputParameter::INT_N
+        )
+    );
+    $args = new stdClass();
+    R_PARAMS($iParams, $args);
+    return $args;
 }
 ?>

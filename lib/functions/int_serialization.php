@@ -57,7 +57,8 @@ interface iDBBulkReadSerialization
      *
      * @return string the query
      */
-    public function getReadFromDBQuery($ids, $options = self::TLOBJ_O_SEARCH_BY_ID);
+    public function getReadFromDBQuery($ids,
+        $options = self::TLOBJ_O_SEARCH_BY_ID);
 }
 
 /**
@@ -169,10 +170,13 @@ interface iDBSerialization
      * @param
      *            resource &$db reference to database handler
      */
-    public static function getByID(&$db, $id, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
+    public static function getByID(&$db, $id,
+        $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
 
-    public static function getByIDs(&$db, $ids, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
+    public static function getByIDs(&$db, $ids,
+        $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
 
-    public static function getAll(&$db, $whereClause = null, $column = null, $orderBy = null, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
+    public static function getAll(&$db, $whereClause = null, $column = null,
+        $orderBy = null, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
 }
 ?>

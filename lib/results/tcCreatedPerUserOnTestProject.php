@@ -30,17 +30,18 @@ require_once 'exttable.class.php';
 $smarty = new TLSmarty();
 $imgSet = $smarty->getImages();
 $templateCfg = templateConfiguration();
-$args = init_args($db);
-$gui = initializeGui($db,$args,$imgSet);
+$args = initArgs($db);
+$gui = initializeGui($db, $args, $imgSet);
 $tpl = $templateCfg->default_template;
 
-$smarty->assign('gui',$gui);
+$smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
 /**
  * initialize Gui
  */
-function initializeGui(&$dbHandler,&$args,$images) {
+function initializeGui(&$dbHandler, &$args, $images)
+{
     $gui = new stdClass();
     $gui->images = $images;
     $gui->glueChar = config_get('testcase_cfg')->glue_character;
@@ -48,216 +49,244 @@ function initializeGui(&$dbHandler,&$args,$images) {
     $gui->tproject_name = $args->tproject_name;
     $gui->warning_msg = '';
     $gui->tableSet = null;
-    
+
     $gui->l18n = init_labels(
-        array('tcversion_indicator' => null,'goto_testspec' => null,
+        array(
+            'tcversion_indicator' => null,
+            'goto_testspec' => null,
             'version' => null,
-            'testplan' => null, 'assigned_tc_overview' => null,
+            'testplan' => null,
+            'assigned_tc_overview' => null,
             'testcases_created_per_user' => null,
-            'design' => null, 'execution' => null,
+            'design' => null,
+            'execution' => null,
             'execution_history' => null,
-            'testproject' => null,'generated_by_TestLink_on' => null,
+            'testproject' => null,
+            'generated_by_TestLink_on' => null,
             'no_records_found' => null,
-            'low' => null, 'medium' => null, 'high' => null));
-        
-        $gui->pageTitle = sprintf($gui->l18n['testcases_created_per_user'],$gui->tproject_name);
-        $gui->context = $gui->l18n['testproject'] . ': ' . $args->tproject_name;
-        
-        switch($args->do_action) {
-            case 'uinput':
-            default:
-                initializeGuiForInput($dbHandler,$args,$gui);
-                break;
-                
-            case 'result':
-                initializeGuiForInput($dbHandler,$args,$gui);
-                initializeGuiForResult($dbHandler,$args,$gui);
-                break;
-                
-            case 'csv':
-                initializeGuiForInput($dbHandler,$args,$gui);
-                initGuiForCSVDownload($dbHandler,$args,$gui);
-                break;
-                
-        }
-        
-        return $gui;
+            'low' => null,
+            'medium' => null,
+            'high' => null
+        ));
+
+    $gui->pageTitle = sprintf($gui->l18n['testcases_created_per_user'],
+        $gui->tproject_name);
+    $gui->context = $gui->l18n['testproject'] . ': ' . $args->tproject_name;
+
+    switch ($args->do_action) {
+        case 'uinput':
+        default:
+            initializeGuiForInput($dbHandler, $args, $gui);
+            break;
+
+        case 'result':
+            initializeGuiForInput($dbHandler, $args, $gui);
+            initializeGuiForResult($dbHandler, $args, $gui);
+            break;
+
+        case 'csv':
+            initializeGuiForInput($dbHandler, $args, $gui);
+            initGuiForCSVDownload($dbHandler, $args, $gui);
+            break;
+    }
+
+    return $gui;
 }
 
-
 /**
- *
  */
-function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj) {
+function initializeGuiForResult(&$dbHandler, $argsObj, &$guiObj)
+{
     $rcfg = config_get('results');
     $map_code_status = $rcfg['code_status'];
     $map_status_label = $rcfg['status_label'];
     $map_statuscode_css = array();
-    
-    foreach($map_code_status as $code => $status) {
+
+    foreach ($map_code_status as $code => $status) {
         if (isset($map_status_label[$status])) {
             $label = $map_status_label[$status];
             $map_statuscode_css[$code] = array();
             $map_statuscode_css[$code]['translation'] = lang_get($label);
-            $map_statuscode_css[$code]['css_class'] = $map_code_status[$code] . '_text';
+            $map_statuscode_css[$code]['css_class'] = $map_code_status[$code] .
+                '_text';
         }
     }
-    
+
     $options = array();
-    
+
     // convert starttime to iso format for database usage
     $dateFormat = config_get('date_format');
-    $k2l = array('selected_start_date' => 'startTime','selected_end_date' => 'endTime');
-    foreach($k2l as $in => $opt) {
+    $k2l = array(
+        'selected_start_date' => 'startTime',
+        'selected_end_date' => 'endTime'
+    );
+    foreach ($k2l as $in => $opt) {
         if (isset($argsObj->$in) && sizeof($argsObj->$in) > 0) {
             $dd = split_localized_date(current($argsObj->$in), $dateFormat);
             if ($dd != null) {
-                $options[$opt] = $dd['year'] . "-" . $dd['month'] . "-" . $dd['day'];
+                $options[$opt] = $dd['year'] . "-" . $dd['month'] . "-" .
+                    $dd['day'];
             }
         }
     }
-    
-    $options['startTime'] .= " " . (isset($argsObj->start_Hour) ? $argsObj->start_Hour : "00") . ":00:00";
-    $options['endTime'] .= " " . (isset($argsObj->end_Hour) ? $argsObj->end_Hour : "00") . ":59:59";
-    
+
+    $options['startTime'] .= " " .
+        (isset($argsObj->start_Hour) ? $argsObj->start_Hour : "00") . ":00:00";
+    $options['endTime'] .= " " .
+        (isset($argsObj->end_Hour) ? $argsObj->end_Hour : "00") . ":59:59";
+
     $mgr = new testproject($dbHandler);
     $guiObj->searchDone = 1;
-    $guiObj->resultSet = $mgr->getTestCasesCreatedByUser($argsObj->tproject_id,$argsObj->user_id,$options);
-    
-    if(!is_null($guiObj->resultSet)) {
+    $guiObj->resultSet = $mgr->getTestCasesCreatedByUser($argsObj->tproject_id,
+        $argsObj->user_id, $options);
+
+    if (! is_null($guiObj->resultSet)) {
         // test case can exist multiple times, due to versions
         $rows = array();
-        list($columns, $sortByColumn) = getColumnsDefinition();
+        list ($columns, $sortByColumn) = getColumnsDefinition();
         foreach ($guiObj->resultSet as $idx => $itemInfo) {
-            foreach($itemInfo as $tcase) {
+            foreach ($itemInfo as $tcase) {
                 $cuRow = array();
                 $tcase_id = $tcase['tcase_id'];
                 $tcversion_id = $tcase['tcversion_id'];
                 $cuRow[] = htmlspecialchars($tcase['login']);
                 $cuRow[] = htmlspecialchars($tcase['path']);
-                
+
                 // Create linked icons
                 $edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id},{$tcversion_id});\">" .
-                "<img title=\"{$guiObj->l18n['design']}\" src=\"{$guiObj->images['edit']}\" /></a> ";
-                
-                $cuRow[] = "<!-- " . sprintf("%010d", $tcase['external_id']) . " -->" .
-                    $edit_link . htmlspecialchars($tcase['external_id']) . " : " .
+                    "<img title=\"{$guiObj->l18n['design']}\" src=\"{$guiObj->images['edit']}\" /></a> ";
+
+                $cuRow[] = "<!-- " . sprintf("%010d", $tcase['external_id']) .
+                    " -->" . $edit_link .
+                    htmlspecialchars($tcase['external_id']) . " : " .
                     htmlspecialchars($tcase['tcase_name']) .
-                    sprintf($guiObj->l18n['tcversion_indicator'],$tcase['version']);
-                    
-                    $cuRow[] = $tcase['importance'];
-                    $cuRow[] = $tcase['creation_ts'];
-                    $cuRow[] = $tcase['modification_ts'];
-                    $rows[] = $cuRow;
+                    sprintf($guiObj->l18n['tcversion_indicator'],
+                        $tcase['version']);
+
+                $cuRow[] = $tcase['importance'];
+                $cuRow[] = $tcase['creation_ts'];
+                $cuRow[] = $tcase['modification_ts'];
+                $rows[] = $cuRow;
             }
         }
-        
+
         // Different table ID for different reports:
         $table_id = "tl_table_tc_created_per_user_";
-        
+
         // Add test plan ID to table ID
         $table_id .= $guiObj->tproject_id;
-        
+
         $matrix = new tlExtTable($columns, $rows, $table_id);
-        $matrix->title = $guiObj->l18n['testproject'] . ": " . htmlspecialchars($guiObj->tproject_name);
+        $matrix->title = $guiObj->l18n['testproject'] . ": " .
+            htmlspecialchars($guiObj->tproject_name);
         //
         // @TODO how this work ?
         // $matrix->addCustomBehaviour(arg1, arg2)
         // arg1: type that can be user defined, here we use 'importance'.
         // arg2: array with methods
-        //       'render' => javascript render method (has to be present on inc_ext_table.tpl).
-        //       'filter' => piece of name used on several files
-        //                   1. on exttable.class.php is used on buildColumns() to call build{piece}FilterOptions()
-        //                   2. on ext_extensions a method named Ext.ux.grid.filter.{piece}Filter
-        //                      has to exists or rendering will fail
+        // 'render' => javascript render method (has to be present on inc_ext_table.tpl).
+        // 'filter' => piece of name used on several files
+        // 1. on exttable.class.php is used on buildColumns() to call build{piece}FilterOptions()
+        // 2. on ext_extensions a method named Ext.ux.grid.filter.{piece}Filter
+        // has to exists or rendering will fail
         //
-        $matrix->addCustomBehaviour('importance', array('render' => 'importanceRenderer', 'filter' => 'Importance'));
-        
+        $matrix->addCustomBehaviour('importance',
+            array(
+                'render' => 'importanceRenderer',
+                'filter' => 'Importance'
+            ));
+
         // Default grouping by first column, which is user for overview, build otherwise
         $matrix->setGroupByColumnName(lang_get($columns[0]['title_key']));
-        
+
         // Define toolbar
         $matrix->showToolbar = true;
         $matrix->toolbarExpandCollapseGroupsButton = true;
         $matrix->toolbarShowAllColumnsButton = true;
-        
+
         $matrix->toolbarDefaultStateButton = false;
         $matrix->toolbarRefreshButton = false;
-        
+
         $matrix->setSortByColumnName($sortByColumn);
         $matrix->sortDirection = 'DESC';
-        
+
         $guiObj->tableSet[$guiObj->tproject_id] = $matrix;
     }
 }
 
 /**
- *
  */
-function initGuiForCSVDownload(&$dbHandler,$argsObj,&$guiObj) {
-    
+function initGuiForCSVDownload(&$dbHandler, $argsObj, &$guiObj)
+{
     $fromDate = current($argsObj->selected_start_date);
     $toDate = current($argsObj->selected_end_date);
-    
+
     $impCfg = config_get('importance');
     $impL10N = $impCfg['code_label'];
-    foreach( $impL10N as $ci => $lc ) {
+    foreach ($impL10N as $ci => $lc) {
         $impL10N[$ci] = lang_get($lc);
     }
-    
+
     $colHeaders = getCSVColumnsDefinition();
-    
+
     $options = array();
-    
+
     // convert starttime to iso format for database usage
     $dateFormat = config_get('date_format');
-    $k2l = array('selected_start_date' => 'startTime','selected_end_date' => 'endTime');
-    foreach($k2l as $in => $opt) {
+    $k2l = array(
+        'selected_start_date' => 'startTime',
+        'selected_end_date' => 'endTime'
+    );
+    foreach ($k2l as $in => $opt) {
         if (isset($argsObj->$in) && sizeof($argsObj->$in) > 0) {
             $dd = split_localized_date(current($argsObj->$in), $dateFormat);
             if ($dd != null) {
-                $options[$opt] = $dd['year'] . "-" . $dd['month'] . "-" . $dd['day'];
+                $options[$opt] = $dd['year'] . "-" . $dd['month'] . "-" .
+                    $dd['day'];
             }
         }
     }
-    
-    $options['startTime'] .= " " . (isset($argsObj->start_Hour) ? $argsObj->start_Hour : "00") . ":00:00";
-    $options['endTime'] .= " " . (isset($argsObj->end_Hour) ? $argsObj->end_Hour : "00") . ":59:59";
-    
+
+    $options['startTime'] .= " " .
+        (isset($argsObj->start_Hour) ? $argsObj->start_Hour : "00") . ":00:00";
+    $options['endTime'] .= " " .
+        (isset($argsObj->end_Hour) ? $argsObj->end_Hour : "00") . ":59:59";
+
     $mgr = new testproject($dbHandler);
     $guiObj->searchDone = 1;
-    $guiObj->resultSet = $mgr->getTestCasesCreatedByUser($argsObj->tproject_id,$argsObj->user_id,$options);
-    
-    if(!is_null($guiObj->resultSet)) {
+    $guiObj->resultSet = $mgr->getTestCasesCreatedByUser($argsObj->tproject_id,
+        $argsObj->user_id, $options);
+
+    if (! is_null($guiObj->resultSet)) {
         // test case can exist multiple times, due to versions
         $rows = array();
         foreach ($guiObj->resultSet as $idx => $itemInfo) {
-            foreach($itemInfo as $tcase) {
+            foreach ($itemInfo as $tcase) {
                 $cuRow = array();
                 $cuRow[] = htmlspecialchars($tcase['login']);
                 $cuRow[] = htmlspecialchars($tcase['path']);
-                
-                $cuRow[] = htmlspecialchars($tcase['external_id']) .
-                " : " .
-                htmlspecialchars($tcase['tcase_name']) .
-                sprintf($guiObj->l18n['tcversion_indicator'],$tcase['version']);
-                
+
+                $cuRow[] = htmlspecialchars($tcase['external_id']) . " : " .
+                    htmlspecialchars($tcase['tcase_name']) .
+                    sprintf($guiObj->l18n['tcversion_indicator'],
+                        $tcase['version']);
+
                 $cuRow[] = '(' . $tcase['importance'] . ') ' .
                     $impL10N[$tcase['importance']];
-                    
-                    $cuRow[] = $tcase['creation_ts'];
-                    $cuRow[] = $tcase['modification_ts'];
-                    $cuRow[] = $fromDate;
-                    $cuRow[] = $toDate;
-                    
-                    $rows[] = $cuRow;
+
+                $cuRow[] = $tcase['creation_ts'];
+                $cuRow[] = $tcase['modification_ts'];
+                $cuRow[] = $fromDate;
+                $cuRow[] = $toDate;
+
+                $rows[] = $cuRow;
             }
         }
-        
-        if(empty($rows)) {
+
+        if (empty($rows)) {
             return;
         }
-        
+
         $tmpfname = tempnam(sys_get_temp_dir(), "nuwow");
         unlink($tmpfname);
         $csvfile = $tmpfname . '.csv';
@@ -270,49 +299,51 @@ function initGuiForCSVDownload(&$dbHandler,$argsObj,&$guiObj) {
         $fcont = file_get_contents($csvfile);
         unlink($csvfile);
         $f2d = __FILE__ . '.csv';
-        $cty = array('Content-Type' => 'text/csv');
-        downloadContentsToFile($fcont,$f2d,$cty);
+        $cty = array(
+            'Content-Type' => 'text/csv'
+        );
+        downloadContentsToFile($fcont, $f2d, $cty);
         exit();
     }
-    
 }
 
-
-
 /**
- *
  */
-function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj) {
+function initializeGuiForInput(&$dbHandler, $argsObj, &$guiObj)
+{
     $room = config_get('gui_room');
-    $guiObj->str_option_any = sprintf($room,lang_get('any'));
-    $guiObj->str_option_none = sprintf($room,lang_get('nobody'));
+    $guiObj->str_option_any = sprintf($room, lang_get('any'));
+    $guiObj->str_option_none = sprintf($room, lang_get('nobody'));
     $guiObj->warning_msg = '';
     $guiObj->searchDone = 0;
-    
+
     $guiObj->users = new stdClass();
     $guiObj->users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER,
-        array(TL_USER_ANYBODY => $guiObj->str_option_any) );
-    
+        array(
+            TL_USER_ANYBODY => $guiObj->str_option_any
+        ));
+
     $guiObj->user_id = intval($argsObj->user_id);
-    
+
     $dateFormat = config_get('date_format');
     $cfg = config_get('reportsCfg');
     $now = time();
-    
-    if(is_null($argsObj->selected_start_date)) {
-        $guiObj->selected_start_date = @strftime($dateFormat, $now - ($cfg->start_date_offset));
+
+    if (is_null($argsObj->selected_start_date)) {
+        $guiObj->selected_start_date = @strftime($dateFormat,
+            $now - ($cfg->start_date_offset));
         $guiObj->selected_start_time = $cfg->start_time;
-        
+
         $guiObj->selected_end_date = @strftime($dateFormat, $now);
         $guiObj->selected_end_time = null;
     } else {
         $guiObj->selected_start_date = $argsObj->selected_start_date[0];
         $guiObj->selected_end_date = $argsObj->selected_end_date[0];
-        
+
         // we are using html_select_time (provided by Smarty Templates)
         // then we need to provide selected in a format she likes.
-        $guiObj->selected_start_time = sprintf('%02d:00',$argsObj->start_Hour);
-        $guiObj->selected_end_time = sprintf('%02d:59',$argsObj->end_Hour);
+        $guiObj->selected_start_time = sprintf('%02d:00', $argsObj->start_Hour);
+        $guiObj->selected_end_time = sprintf('%02d:59', $argsObj->end_Hour);
     }
 }
 
@@ -324,26 +355,50 @@ function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj) {
  * such as a Test Project Manager (testproject class) to retrieve other information
  * that is displayed on the screen (e.g.: project name).
  *
- * @param database $dbHandler handler to TestLink database
+ * @param database $dbHandler
+ *            handler to TestLink database
  *
  * @return object of stdClass
  */
-function init_args(&$dbHandler) {
+function initArgs(&$dbHandler)
+{
     $args = new stdClass();
-    
-    $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
-        "do_action" => array(tlInputParameter::STRING_N,3,6),
-        "tproject_id" => array(tlInputParameter::INT_N),
-        "user_id" => array(tlInputParameter::INT_N),
-        "selected_start_date" => array(tlInputParameter::ARRAY_STRING_N),
-        "selected_end_date" => array(tlInputParameter::ARRAY_STRING_N),
-        "start_Hour" => array(tlInputParameter::INT_N),
-        "end_Hour" => array(tlInputParameter::INT_N));
-    
-    $_REQUEST=strings_stripSlashes($_REQUEST);
-    R_PARAMS($iParams,$args);
-    
-    if( !is_null($args->apikey) ) {
+
+    $iParams = array(
+        "apikey" => array(
+            tlInputParameter::STRING_N,
+            32,
+            32
+        ),
+        "do_action" => array(
+            tlInputParameter::STRING_N,
+            3,
+            6
+        ),
+        "tproject_id" => array(
+            tlInputParameter::INT_N
+        ),
+        "user_id" => array(
+            tlInputParameter::INT_N
+        ),
+        "selected_start_date" => array(
+            tlInputParameter::ARRAY_STRING_N
+        ),
+        "selected_end_date" => array(
+            tlInputParameter::ARRAY_STRING_N
+        ),
+        "start_Hour" => array(
+            tlInputParameter::INT_N
+        ),
+        "end_Hour" => array(
+            tlInputParameter::INT_N
+        )
+    );
+
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+    R_PARAMS($iParams, $args);
+
+    if (! is_null($args->apikey)) {
         $args->show_only_active = true;
         $cerbero = new stdClass();
         $cerbero->args = new stdClass();
@@ -351,50 +406,53 @@ function init_args(&$dbHandler) {
         $cerbero->args->tplan_id = null;
         $cerbero->args->getAccessAttr = true;
         $cerbero->method = 'checkRights';
-        setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+        setUpEnvForRemoteAccess($dbHandler, $args->apikey, $cerbero);
     } else {
-        testlinkInitPage($dbHandler,false,false,"checkRights");
+        testlinkInitPage($dbHandler, false, false, "checkRights");
     }
-    
-    if($args->tproject_id < 0) {
+
+    if ($args->tproject_id < 0) {
         throw new Exception('Test project id can not be empty');
     }
     $mgr = new testproject($dbHandler);
     $info = $mgr->get_by_id($args->tproject_id);
     $args->tproject_name = $info['name'];
-    
-    
+
     // Sanitize a little bit better
     sanitizeDates($args);
-    
+
     return $args;
 }
 
 /**
  *
  * @link http://stackoverflow.com/questions/
- *              9293483/regular-expression-help-for-date-validation-dd-mm-yyyy-php
+ *       9293483/regular-expression-help-for-date-validation-dd-mm-yyyy-php
  */
-function sanitizeDates(&$obj) {
+function sanitizeDates(&$obj)
+{
     $validLenght = strlen('MM/DD/YYYY');
-    
+
     // [./-]
     // . russian,pl
     // - nl
     $validFormat = '#^\d{1,2}[./-][[0-9]{1,2}[./-][[0-9]{4}$#';
-    
-    $p2check = array('selected_end_date','selected_start_date');
-    foreach($p2check as $prop) {
-        if(!is_null($obj->$prop)) {
+
+    $p2check = array(
+        'selected_end_date',
+        'selected_start_date'
+    );
+    foreach ($p2check as $prop) {
+        if (! is_null($obj->$prop)) {
             // lenght check
             $val = $obj->$prop;
             $val = $val[0];
-            
-            if( strlen($val) != $validLenght) {
+
+            if (strlen($val) != $validLenght) {
                 $obj->$prop = null;
             } else {
                 // check if format is valid
-                if(preg_match($validFormat, $val) === 0) {
+                if (preg_match($validFormat, $val) === 0) {
                     $obj->$prop = null;
                 }
             }
@@ -407,59 +465,98 @@ function sanitizeDates(&$obj) {
  *
  * @return array containing columns and sort information
  */
-function getColumnsDefinition() {
-    
+function getColumnsDefinition()
+{
     static $labels;
-    if( is_null($labels) ) {
-        $lbl2get = array('user' => null, 'testsuite' => null,
-            'testcase' => null,'importance' => null,'status' => null,
-            'version' => null,'title_created' => null,
-            'low' => null,'medium' => null, 'high' => null);
+    if (is_null($labels)) {
+        $lbl2get = array(
+            'user' => null,
+            'testsuite' => null,
+            'testcase' => null,
+            'importance' => null,
+            'status' => null,
+            'version' => null,
+            'title_created' => null,
+            'low' => null,
+            'medium' => null,
+            'high' => null
+        );
         $labels = init_labels($lbl2get);
     }
-    
+
     $colDef = array();
     $sortByCol = $labels['testsuite'];
-    $colDef[] = array('title_key' => '', 'width' => 80);
-    $colDef[] = array('title_key' => 'testsuite', 'width' => 130);
-    $colDef[] = array('title_key' => 'testcase', 'width' => 130);
-    
-    // render and filter will be managed using customBehaviour (see $matrix->addCustomBehaviour())
-    $colDef[] = array('title_key' => 'importance', 'width' => 50, 'type' => 'importance');
-    
-    $colDef[] = array('title_key' => 'title_created', 'width' => 75);
-    $colDef[] = array('title_key' => 'title_last_mod', 'width' => 75);
-    
-    return array($colDef, $sortByCol);
-}
+    $colDef[] = array(
+        'title_key' => '',
+        'width' => 80
+    );
+    $colDef[] = array(
+        'title_key' => 'testsuite',
+        'width' => 130
+    );
+    $colDef[] = array(
+        'title_key' => 'testcase',
+        'width' => 130
+    );
 
+    // render and filter will be managed using customBehaviour (see $matrix->addCustomBehaviour())
+    $colDef[] = array(
+        'title_key' => 'importance',
+        'width' => 50,
+        'type' => 'importance'
+    );
+
+    $colDef[] = array(
+        'title_key' => 'title_created',
+        'width' => 75
+    );
+    $colDef[] = array(
+        'title_key' => 'title_last_mod',
+        'width' => 75
+    );
+
+    return array(
+        $colDef,
+        $sortByCol
+    );
+}
 
 /**
  * Gets the columns definitions used in the report table.
  *
  * @return array containing columns
  */
-function getCSVColumnsDefinition() {
-    
-    $lbl2get = array('user' => null, 'testsuite' => null,
-        'testcase' => null,'importance' => null,'status' => null,
-        'version' => null,'title_created' => null,
+function getCSVColumnsDefinition()
+{
+    $lbl2get = array(
+        'user' => null,
+        'testsuite' => null,
+        'testcase' => null,
+        'importance' => null,
+        'status' => null,
+        'version' => null,
+        'title_created' => null,
         'title_last_mod' => null,
-        'th_start_time' => null, 'th_end_time' => null,
-        'low' => null,'medium' => null, 'high' => null);
-    $lbl = init_labels($lbl2get);
-    
-    
-    // this is the row layout
-    $colDef = array($lbl['user'],$lbl['testsuite'],
-        $lbl['testcase'],$lbl['importance'],
-        $lbl['title_created'],$lbl['title_last_mod'],
-        $lbl['th_start_time'],$lbl['th_end_time']
+        'th_start_time' => null,
+        'th_end_time' => null,
+        'low' => null,
+        'medium' => null,
+        'high' => null
     );
-    
-    return $colDef;
-}
+    $lbl = init_labels($lbl2get);
 
+    // this is the row layout
+    return array(
+        $lbl['user'],
+        $lbl['testsuite'],
+        $lbl['testcase'],
+        $lbl['importance'],
+        $lbl['title_created'],
+        $lbl['title_last_mod'],
+        $lbl['th_start_time'],
+        $lbl['th_end_time']
+    );
+}
 
 /**
  *
@@ -467,6 +564,7 @@ function getCSVColumnsDefinition() {
  * @param tlUser $user
  * @return string
  */
-function checkRights(&$db,&$user) {
-    return $user->hasRight($db,'testplan_metrics');
+function checkRights(&$db, &$user)
+{
+    return $user->hasRight($db, 'testplan_metrics');
 }

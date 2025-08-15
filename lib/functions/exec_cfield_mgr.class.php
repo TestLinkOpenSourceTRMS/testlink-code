@@ -72,13 +72,18 @@ class exec_cfield_mgr extends cfield_mgr
         if (! is_null($this->cf_map)) {
             foreach ($this->cf_map as $cf_id => $cf_info) {
                 // special input size for list and multiselect list
-                if ($cf_info['type'] == $cfTypeIDSet['list'] || $cf_info['type'] == $cfTypeIDSet['multiselection list']) {
+                if ($cf_info['type'] == $cfTypeIDSet['list'] ||
+                    $cf_info['type'] == $cfTypeIDSet['multiselection list']) {
                     $inputOpt['field_size'] = $defaultSize[$cf_info['type']];
                 }
 
                 // true => do not create input in audit log
-                $label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf_info['label'], null, true));
-                $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" . $this->string_custom_field_input($cf_info, $inputOpt) . "</td></tr>\n";
+                $label = str_replace(TL_LOCALIZE_TAG, '',
+                    lang_get($cf_info['label'], null, true));
+                $cf_smarty .= '<tr><td class="labelHolder">' .
+                    htmlspecialchars($label) . "</td><td>" .
+                    $this->string_custom_field_input($cf_info, $inputOpt) .
+                    "</td></tr>\n";
             }
         }
 
@@ -103,7 +108,8 @@ class exec_cfield_mgr extends cfield_mgr
         ); // BUGID 1650 (REQ)
 
         // this is calling the parent method
-        $cf = $this->get_linked_cfields_at_design($tproject_id, $enabled, $filters, 'testcase');
+        $cf = $this->get_linked_cfields_at_design($tproject_id, $enabled,
+            $filters, 'testcase');
 
         // does not make sence to include the text area here..
         // need to strip it out of the array..

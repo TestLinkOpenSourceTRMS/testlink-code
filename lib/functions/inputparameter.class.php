@@ -185,7 +185,8 @@ class tlInputParameter extends tlObject
     {
         if ($this->isFetched()) {
             if ($this->validationInfo) {
-                $this->normalizedValue = $this->validationInfo->normalize($this->taintValue);
+                $this->normalizedValue = $this->validationInfo->normalize(
+                    $this->taintValue);
             } else {
                 $this->normalizedValue = $this->taintValue;
             }
@@ -375,7 +376,8 @@ class tlStringValidationInfo
     {
         $minLen = $this->minLen;
         if ($minLen && tlStringLen($value) < $minLen) {
-            $msg = "Input parameter validation failed [minLen - target: {$minLen} - actual: " . tlStringLen($value) . "]";
+            $msg = "Input parameter validation failed [minLen - target: {$minLen} - actual: " .
+                tlStringLen($value) . "]";
             tLog($msg, 'ERROR');
             throw new Exception($msg);
         }
@@ -384,7 +386,9 @@ class tlStringValidationInfo
         if ($regExp) {
             $dummy = null;
             if (! preg_match($regExp, $value, $dummy)) {
-                $msg = "Input parameter validation failed " . "[regExp: " . htmlspecialchars($value) . " " . htmlspecialchars($regExp) . "]";
+                $msg = "Input parameter validation failed " . "[regExp: " .
+                    htmlspecialchars($value) . " " . htmlspecialchars($regExp) .
+                    "]";
                 tLog($msg, 'ERROR');
                 throw new Exception($msg);
             }
@@ -392,7 +396,8 @@ class tlStringValidationInfo
 
         $pfnValidation = $this->pfnValidation;
         if ($pfnValidation && ! $pfnValidation($value)) {
-            $msg = "Input parameter validation failed [external function" . " - $pfnValidation]";
+            $msg = "Input parameter validation failed [external function" .
+                " - $pfnValidation]";
             tLog($msg, 'ERROR');
             throw new Exception($msg);
         }
@@ -455,13 +460,15 @@ class tlIntegerValidationInfo
         $value = intval($value);
         $minVal = $this->minVal;
         if ($value < $minVal) {
-            $msg = "{$msg} [minVal: " . htmlspecialchars($value) . " = {$minVal}]";
+            $msg = "{$msg} [minVal: " . htmlspecialchars($value) .
+                " = {$minVal}]";
             tLog($msg, 'ERROR');
             throw new Exception($msg);
         }
         $maxVal = $this->maxVal;
         if ($value > $maxVal) {
-            $msg = "{$msg} [maxVal: " . htmlspecialchars($value) . " = {$maxVal}]";
+            $msg = "{$msg} [maxVal: " . htmlspecialchars($value) .
+                " = {$maxVal}]";
             tLog($msg, 'ERROR');
             throw new Exception($msg);
         }

@@ -236,7 +236,8 @@ abstract class tlObject implements iSerialization
      */
     protected function handleNotImplementedMethod($fName = "<unknown>")
     {
-        trigger_error("Method " . $fName . " called which is not implemented", E_USER_WARNING);
+        trigger_error("Method " . $fName . " called which is not implemented",
+            E_USER_WARNING);
         return tl::E_NOT_IMPLEMENTED;
     }
 
@@ -329,7 +330,8 @@ abstract class tlObject implements iSerialization
             $tableNames = array_flip($tableNames);
             $tables = array_intersect_key($tables, $tableNames);
             if (sizeof($tables) != sizeof($tableNames)) {
-                throw new Exception("Wrong table name(s) for getDBTables() detected!");
+                throw new Exception(
+                    "Wrong table name(s) for getDBTables() detected!");
             }
         }
 
@@ -448,7 +450,8 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
      */
     public function getAttachmentInfos($id)
     {
-        return $this->attachmentRepository->getAttachmentInfosFor($id, $this->attachmentTableName);
+        return $this->attachmentRepository->getAttachmentInfosFor($id,
+            $this->attachmentTableName);
     }
 
     /**
@@ -460,7 +463,8 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
      */
     public function deleteAttachments($id)
     {
-        return $this->attachmentRepository->deleteAttachmentsFor($id, $this->attachmentTableName);
+        return $this->attachmentRepository->deleteAttachmentsFor($id,
+            $this->attachmentTableName);
     }
 
     /**
@@ -569,7 +573,9 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
      *
      * @return the newly created object on success, or null else
      */
-    public static function createObjectFromDB(&$db, $id, $className, $options = self::TLOBJ_O_SEARCH_BY_ID, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function createObjectFromDB(&$db, $id, $className,
+        $options = self::TLOBJ_O_SEARCH_BY_ID,
+        $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
         if ($id) {
             $item = new $className($id);
@@ -601,10 +607,13 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
      *
      * @return the newly created objects on success, or null else
      */
-    public static function createObjectsFromDBbySQL(&$db, $query, $column, $className, $returnAsMap = false, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL, $limit = - 1)
+    public static function createObjectsFromDBbySQL(&$db, $query, $column,
+        $className, $returnAsMap = false,
+        $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL, $limit = - 1)
     {
         $ids = $db->fetchColumnsIntoArray($query, $column, $limit);
-        return self::createObjectsFromDB($db, $ids, $className, $returnAsMap, $detailLevel);
+        return self::createObjectsFromDB($db, $ids, $className, $returnAsMap,
+            $detailLevel);
     }
 
     /**
@@ -624,16 +633,19 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
      *
      * @return mixed the newly created objects on success, or null else
      */
-    public static function createObjectsFromDB(&$db, $ids, $className, $returnAsMap = false, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function createObjectsFromDB(&$db, $ids, $className,
+        $returnAsMap = false, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
         $items = null;
 
         if (in_array("iDBBulkReadSerialization", class_implements($className))) {
-            $items = self::bulkCreateObjectsFromDB($db, $ids, $className, $returnAsMap, $detailLevel);
+            $items = self::bulkCreateObjectsFromDB($db, $ids, $className,
+                $returnAsMap, $detailLevel);
         } else {
             for ($i = 0; $i < sizeof((array) $ids); $i ++) {
                 $id = $ids[$i];
-                $item = self::createObjectFromDB($db, $id, $className, self::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
+                $item = self::createObjectFromDB($db, $id, $className,
+                    self::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
                 if ($item) {
                     if ($returnAsMap) {
                         $items[$id] = $item;
@@ -663,12 +675,14 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
      *
      * @return mixed the newly created objects on success, or null else
      */
-    public static function bulkCreateObjectsFromDB(&$db, $ids, $className, $returnAsMap = false, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function bulkCreateObjectsFromDB(&$db, $ids, $className,
+        $returnAsMap = false, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
         $items = null;
         if (null != $ids && sizeof($ids)) {
             $dummyItem = new $className();
-            $query = $dummyItem->getReadFromDBQuery($ids, self::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
+            $query = $dummyItem->getReadFromDBQuery($ids,
+                self::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
             $result = $db->exec_query($query);
             if ($result) {
                 while ($row = $db->fetch_array($result)) {
@@ -728,7 +742,8 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
     protected function removeFromCache()
     {
         if ($this->activateCaching) {
-            unset(self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID]);
+            unset(
+                self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID]);
         }
         return tl::OK;
     }
@@ -757,7 +772,8 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
             return tl::ERROR;
         }
 
-        if (isset(self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID])) {
+        if (isset(
+            self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID])) {
             $object = self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID];
             return $this->copyFromCache($object);
         }

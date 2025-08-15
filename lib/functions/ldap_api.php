@@ -56,7 +56,8 @@ function ldap_connect_bind($authCfg, $p_binddn = '', $p_password = '')
     // see https://www.php.net/manual/de/function.ldap-connect.php
     if ((is_resource($t_ds) && $t_ds > 0) || $t_ds !== false) {
         $ret->handler = $t_ds;
-        ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $authCfg['ldap_version']);
+        ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION,
+            $authCfg['ldap_version']);
         ldap_set_option($t_ds, LDAP_OPT_REFERRALS, 0);
 
         if ($authCfg['ldap_tls'] && ! ldap_start_tls($t_ds)) {
@@ -149,7 +150,8 @@ function ldap_authenticate($p_login_name, $p_password)
             $t_ds = $t_connect->handler;
 
             # Search for the user id
-            $t_sr = ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs);
+            $t_sr = ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter,
+                $t_search_attrs);
             $t_info = ldap_get_entries($t_ds, $t_sr);
 
             $t_authenticated->status_ok = false;
@@ -267,7 +269,8 @@ function ldap_get_field_from_username($authCfg, $p_username, $p_field)
         'dn'
     );
 
-    $t_sr = @ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs);
+    $t_sr = @ldap_search($t_ds, $t_ldap_root_dn, $t_search_filter,
+        $t_search_attrs);
     if ($t_sr === false) {
         ldap_unbind($t_ds);
         return null;

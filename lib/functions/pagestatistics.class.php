@@ -62,7 +62,8 @@ class tlPageStatistics extends tlObjectWithDB
      */
     public function startPerformanceCounter($title, $type)
     {
-        $this->performanceCounters[$title] = new tlPerformanceCounter($this->db, $type);
+        $this->performanceCounters[$title] = new tlPerformanceCounter($this->db,
+            $type);
     }
 
     /**
@@ -222,7 +223,8 @@ class tlPerformanceCounter extends tlObjectWithDB
     protected function updateSQL()
     {
         if ($this->counterType & self::TYPE_SQL) {
-            $this->sqlOverall = $this->db->overallDuration - $this->initialOverall;
+            $this->sqlOverall = $this->db->overallDuration -
+                $this->initialOverall;
             $this->sqlQueries = $this->db->nQuery - $this->initialQueries;
         }
     }

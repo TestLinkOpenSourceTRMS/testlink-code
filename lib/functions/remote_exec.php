@@ -10,7 +10,8 @@
  * 20110308 - franciscom - refactoring
  */
 require_once '../../config.inc.php';
-require_once TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR . 'xml-rpc/class-IXR.php';
+require_once TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR .
+    'xml-rpc/class-IXR.php';
 
 /**
  * Initiate the execution of a testcase through XML Server RPCs.
@@ -67,10 +68,11 @@ function executeTestCase($tcaseInfo, $serverCfg, $context)
         )
     );
 
-    $labels = init_labels(array(
-        'remoteExecServerConfigProblems' => null,
-        'remoteExecServerConnectionFailure' => null
-    ));
+    $labels = init_labels(
+        array(
+            'remoteExecServerConfigProblems' => null,
+            'remoteExecServerConnectionFailure' => null
+        ));
 
     $do_it = (! is_null($serverCfg) && ! is_null($serverCfg["url"]));
     if (! $do_it) {
@@ -120,7 +122,8 @@ function executeTestCase($tcaseInfo, $serverCfg, $context)
                     $resultsCfg = config_get('results');
                     $codeStatus = array_flip($resultsCfg['status_code']);
                     $dummy = trim($codeStatus[$code]);
-                    $ret['execution']['resultVerbose'] = lang_get($resultsCfg['status_label'][$dummy]);
+                    $ret['execution']['resultVerbose'] = lang_get(
+                        $resultsCfg['status_label'][$dummy]);
                 }
             }
         }

@@ -39,7 +39,7 @@ function store_in_session($key, $value)
 /**
  * Removes a key from session.
  *
- * @param unknown_type $key
+ * @param string $key
  * @return true if item was removed, otherwise false
  */
 function unset_session($key)
@@ -57,7 +57,7 @@ function unset_session($key)
  * If the session cannot be found, it
  * return false.
  *
- * @param unknown_type $key
+ * @param string $key
  * @return boolean
  */
 function get_from_session($key)
@@ -69,9 +69,9 @@ function get_from_session($key)
 /**
  * Generates a CSRF token for a unique form name
  *
- * @param unknown_type $unique_form_name
+ * @param string $unique_form_name
  *            unique form name
- * @return CSRF token
+ * @return string CSRF token
  */
 function csrfguard_generate_token($unique_form_name)
 {
@@ -128,6 +128,8 @@ function csrfguard_validate_token($unique_form_name, $token_value)
  */
 function csrfguard_replace_forms($form_data_html)
 {
+    preg_match_all("/<form(.*?)>(.*?)<\\/form>/is", $form_data_html, $matches,
+        PREG_SET_ORDER);
     if (is_array($matches)) {
         foreach ($matches as $m) {
             if (strpos($m[1], "nocsrf") !== false) {
@@ -139,9 +141,11 @@ function csrfguard_replace_forms($form_data_html)
             // because you can have multiple forms in a HTML page
             // is not possible to add a fixed ID.
             //
-            $form_data_html = str_replace($m[0], "<form{$m[1]}>
+            $form_data_html = str_replace($m[0],
+                "<form{$m[1]}>
                        <input type='hidden' name='CSRFName' value='{$name}' />
-                       <input type='hidden' name='CSRFToken' value='{$token}' />{$m[2]}</form>", $form_data_html);
+                       <input type='hidden' name='CSRFToken' value='{$token}' />{$m[2]}</form>",
+                $form_data_html);
         }
     }
     return $form_data_html;
@@ -154,7 +158,7 @@ function csrfguard_replace_forms($form_data_html)
  *
  * @param string $source
  * @param Smarty $smarty
- * @return CSRF filtered content
+ * @return string CSRF filtered content
  */
 function smarty_csrf_filter($source, $smarty)
 {

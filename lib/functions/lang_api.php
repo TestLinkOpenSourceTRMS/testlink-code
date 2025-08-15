@@ -46,7 +46,8 @@ function lang_get($p_string, $p_lang = null, $bDontFireEvents = false)
     $t_lang = $p_lang;
     if (null === $t_lang) {
         $t_lang = TL_DEFAULT_LOCALE;
-        if (isset($_SESSION['locale']) && is_string($_SESSION['locale']) && strlen($_SESSION['locale']) == 5) {
+        if (isset($_SESSION['locale']) && is_string($_SESSION['locale']) &&
+            strlen($_SESSION['locale']) == 5) {
             $t_lang = $_SESSION['locale'];
         }
     }
@@ -63,7 +64,9 @@ function lang_get($p_string, $p_lang = null, $bDontFireEvents = false)
     } else {
         $t_plugin_current = plugin_get_current();
         if (! is_null($t_plugin_current)) {
-            lang_load($t_lang, TL_PLUGIN_PATH . $t_plugin_current . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $t_lang . DIRECTORY_SEPARATOR);
+            lang_load($t_lang,
+                TL_PLUGIN_PATH . $t_plugin_current . DIRECTORY_SEPARATOR . 'lang' .
+                DIRECTORY_SEPARATOR . $t_lang . DIRECTORY_SEPARATOR);
             if (isset($g_lang_strings[$t_lang][$p_string])) {
                 $loc_str = $g_lang_strings[$t_lang][$p_string];
             }
@@ -112,7 +115,9 @@ function lang_get($p_string, $p_lang = null, $bDontFireEvents = false)
             // 20130913 - missing check for $_SESSION existence create a mess with language detection
             // via browser
             if (isset($_SESSION) && ! isset($_SESSION['missingL18N'][$p_string])) {
-                $msg = sprintf("string '%s' is not localized for locale '%s' {$addMsg}", $p_string, $t_lang);
+                $msg = sprintf(
+                    "string '%s' is not localized for locale '%s' {$addMsg}",
+                    $p_string, $t_lang);
                 $_SESSION['missingL18N'][$p_string] = $p_string;
                 logL18NWarningEvent($msg, "LOCALIZATION");
             }
@@ -209,7 +214,8 @@ function lang_load($p_lang, $p_dir = null)
     }
 
     $t_lang_dir_base = TL_ABS_PATH . 'locale' . DIRECTORY_SEPARATOR;
-    $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
+    $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR .
+        'strings.txt';
 
     if (! is_null($p_dir) && is_file($p_dir . 'strings.txt')) {
         require_once $p_dir . 'strings.txt';
@@ -218,19 +224,23 @@ function lang_load($p_lang, $p_dir = null)
     if (file_exists($lang_resource_path) && is_readable($lang_resource_path)) {
         require_once $lang_resource_path;
     } else {
-        require_once $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt';
+        require_once $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR .
+            'strings.txt';
     }
 
-    $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'description.php';
+    $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR .
+        'description.php';
     if (file_exists($lang_resource_path)) {
         require_once $lang_resource_path;
     } else {
-        require_once $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php';
+        require_once $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR .
+            'description.php';
     }
 
     // Allow overriding strings declared in the language file.
     // custom_strings_inc.php can use $g_active_language
-    $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'custom_strings.txt';
+    $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR .
+        'custom_strings.txt';
     if (file_exists($lang_resource_path)) {
         require_once $lang_resource_path;
     }
@@ -311,7 +321,8 @@ function init_labels($label2translate)
  */
 function localize_date_smarty($params, $smarty)
 {
-    return localize_dateOrTimeStamp($params, $smarty, 'date_format', $params['d']);
+    return localize_dateOrTimeStamp($params, $smarty, 'date_format',
+        $params['d']);
 }
 
 /**
@@ -321,7 +332,8 @@ function localize_date_smarty($params, $smarty)
  */
 function localize_timestamp_smarty($params, $smarty)
 {
-    return localize_dateOrTimeStamp($params, $smarty, 'timestamp_format', $params['ts']);
+    return localize_dateOrTimeStamp($params, $smarty, 'timestamp_format',
+        $params['ts']);
 }
 
 /**
@@ -399,7 +411,8 @@ function mailBodyGet($key, $locale = null)
     }
 
     $lzds = DIRECTORY_SEPARATOR;
-    $dir_base = TL_ABS_PATH . 'locale' . $lzds . $locale . $lzds . 'text_templates' . $lzds . 'mail';
+    $dir_base = TL_ABS_PATH . 'locale' . $lzds . $locale . $lzds .
+        'text_templates' . $lzds . 'mail';
 
     $rs = str_replace('/', $lzds, $key);
     $resource_path = $dir_base . $lzds . $rs;

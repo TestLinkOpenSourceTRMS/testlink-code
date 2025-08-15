@@ -95,7 +95,8 @@ class database
         $fetch_mode = ADODB_FETCH_ASSOC;
 
         $this->dbType = $db_type;
-        if ($this->dbType == 'mysql' && version_compare(phpversion(), "5.5.0", ">=")) {
+        if ($this->dbType == 'mysql' &&
+            version_compare(phpversion(), "5.5.0", ">=")) {
             $this->dbType = 'mysqli';
         }
         $adodb_driver = $this->dbType;
@@ -112,7 +113,8 @@ class database
             // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.
             //
             // PHP_VERSION_ID is available as of PHP 5.2.7
-            if (PHP_OS == 'WINNT' && defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300) {
+            if (PHP_OS == 'WINNT' && defined('PHP_VERSION_ID') &&
+                PHP_VERSION_ID >= 50300) {
                 $adodb_driver = 'mssqlnative';
             }
         }
@@ -130,7 +132,8 @@ class database
      * Make a connection to the database
      */
     # changed Connect() to NConnect() see ADODB Manuals
-    public function connect($p_dsn, $p_hostname = null, $p_username = null, $p_password = null, $p_database_name = null)
+    public function connect($p_dsn, $p_hostname = null, $p_username = null,
+        $p_password = null, $p_database_name = null)
     {
         $result = array(
             'status' => 1,
@@ -138,7 +141,8 @@ class database
         );
 
         if ($p_dsn === false) {
-            $t_result = $this->db->NConnect($p_hostname, $p_username, $p_password, $p_database_name);
+            $t_result = $this->db->NConnect($p_hostname, $p_username,
+                $p_password, $p_database_name);
         } else {
             $t_result = $this->db->IsConnected();
         }
@@ -186,17 +190,23 @@ class database
         if ($this->logQueries) {
             $t_elapsed = number_format($this->microtime_float() - $t_start, 4);
             $this->overallDuration += $t_elapsed;
-            $message = "SQL [" . $this->nQuery . "] executed [took {$t_elapsed} secs]" . "[all took {$this->overallDuration} secs]:\n\t\t";
+            $message = "SQL [" . $this->nQuery .
+                "] executed [took {$t_elapsed} secs]" .
+                "[all took {$this->overallDuration} secs]:\n\t\t";
         }
         $message .= $p_query;
 
         if (! $t_result) {
             $ec = $this->error_num();
             $emsg = $this->error_msg();
-            $message .= "\nQuery failed: errorcode[" . $ec . "]" . "\n\terrormsg:" . $emsg;
+            $message .= "\nQuery failed: errorcode[" . $ec . "]" .
+                "\n\terrormsg:" . $emsg;
             $logLevel = 'ERROR';
 
-            tLog("ERROR ON exec_query() - database.class.php <br />" . $this->error(htmlspecialchars($p_query)) . "<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");
+            tLog(
+                "ERROR ON exec_query() - database.class.php <br />" .
+                $this->error(htmlspecialchars($p_query)) .
+                "<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");
             echo "<pre> ============================================================================== </pre>";
             echo "<pre> DB Access Error - debug_print_backtrace() OUTPUT START </pre>";
             echo "<pre> ATTENTION: Enabling more debug info will produce path disclosure weakness (CWE-200) </pre>";
@@ -224,12 +234,13 @@ class database
         }
 
         if ($this->logQueries) {
-            array_push($this->queries_array, array(
-                $p_query,
-                $t_elapsed,
-                $ec,
-                $emsg
-            ));
+            array_push($this->queries_array,
+                array(
+                    $p_query,
+                    $t_elapsed,
+                    $ec,
+                    $emsg
+                ));
         }
 
         return $t_result;
@@ -643,7 +654,8 @@ class database
      * @return array an assoc array whose keys are the values from the columns
      *         of the rows
      */
-    public function fetchRowsIntoMap($sql, $column, $cumulative = 0, $limit = - 1, $col2implode = '')
+    public function fetchRowsIntoMap($sql, $column, $cumulative = 0,
+        $limit = - 1, $col2implode = '')
     {
         $items = null;
         $result = $this->exec_query($sql, $limit);
@@ -669,7 +681,8 @@ class database
                     $items[$row[$column]][] = $row;
                 } elseif ($col2implode != '') {
                     if (isset($items[$row[$column]])) {
-                        $items[$row[$column]][$col2implode] .= ',' . $row[$col2implode];
+                        $items[$row[$column]][$col2implode] .= ',' .
+                            $row[$col2implode];
                     } else {
                         $items[$row[$column]] = $row;
                     }
@@ -713,7 +726,8 @@ class database
      *         cumulative=1 => array with the values of column2
      *
      */
-    public function fetchColumnsIntoMap($sql, $column1, $column2, $cumulative = 0, $limit = - 1)
+    public function fetchColumnsIntoMap($sql, $column1, $column2,
+        $cumulative = 0, $limit = - 1)
     {
         $result = $this->exec_query($sql, $limit);
         $items = null;
@@ -745,7 +759,8 @@ class database
 
     /**
      */
-    public function get_recordset($sql, $fetch_mode = null, $limit = - 1, $start = - 1)
+    public function get_recordset($sql, $fetch_mode = null, $limit = - 1,
+        $start = - 1)
     {
         $output = null;
 
@@ -803,7 +818,8 @@ class database
      * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
      *
      */
-    public function fetchMapRowsIntoMap($sql, $main_key, $sec_key, $cumulative = 0, $limit = - 1, $col2implode = '')
+    public function fetchMapRowsIntoMap($sql, $main_key, $sec_key,
+        $cumulative = 0, $limit = - 1, $col2implode = '')
     {
         $items = null;
         $result = $this->exec_query($sql, $limit);
@@ -813,7 +829,8 @@ class database
                     $items[$row[$main_key]][$row[$sec_key]][] = $row;
                 } elseif ($col2implode != '') {
                     if (isset($items[$row[$main_key]][$row[$sec_key]])) {
-                        $items[$row[$main_key]][$row[$sec_key]][$col2implode] .= ',' . $row[$col2implode];
+                        $items[$row[$main_key]][$row[$sec_key]][$col2implode] .= ',' .
+                            $row[$col2implode];
                     } else {
                         $items[$row[$main_key]][$row[$sec_key]] = $row;
                     }
@@ -842,17 +859,20 @@ class database
 
         switch ($dbType) {
             case 'postgres':
-                $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' ";
+                $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) .
+                    '" ' . "WITH ENCODING='UNICODE' ";
                 break;
 
             case 'mssql':
             case 'mssqlnative':
-                $sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) . '] ';
+                $sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) .
+                    '] ';
                 break;
 
             case 'mysql':
             default:
-                $sql = "CREATE DATABASE `" . $this->prepare_string($db_name) . "` CHARACTER SET utf8 ";
+                $sql = "CREATE DATABASE `" . $this->prepare_string($db_name) .
+                    "` CHARACTER SET utf8 ";
                 break;
         }
         return $sql;
@@ -890,7 +910,8 @@ class database
      * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
      *
      */
-    public function fetchRowsIntoMap2l($sql, $keyCols, $cumulative = 0, $limit = - 1)
+    public function fetchRowsIntoMap2l($sql, $keyCols, $cumulative = 0,
+        $limit = - 1)
     {
         $items = null;
         $result = $this->exec_query($sql, $limit);
@@ -923,7 +944,8 @@ class database
      * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
      *
      */
-    public function fetchRowsIntoMap3l($sql, $keyCols, $cumulative = 0, $limit = - 1)
+    public function fetchRowsIntoMap3l($sql, $keyCols, $cumulative = 0,
+        $limit = - 1)
     {
         $items = null;
         $result = $this->exec_query($sql, $limit);
@@ -956,7 +978,8 @@ class database
      * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
      *
      */
-    public function fetchRowsIntoMap4l($sql, $keyCols, $cumulative = 0, $limit = - 1)
+    public function fetchRowsIntoMap4l($sql, $keyCols, $cumulative = 0,
+        $limit = - 1)
     {
         $items = null;
         $result = $this->exec_query($sql, $limit);
@@ -1023,13 +1046,15 @@ class database
      *
      * @used-by testplan.class.php
      */
-    public function fetchMapRowsIntoMapStackOnCol($sql, $column_main_key, $column_sec_key, $stackOnCol)
+    public function fetchMapRowsIntoMapStackOnCol($sql, $column_main_key,
+        $column_sec_key, $stackOnCol)
     {
         $items = null;
         $result = $this->exec_query($sql);
         if ($result) {
             while ($row = $this->fetch_array($result)) {
-                if (! isset($items[$row[$column_main_key]][$row[$column_sec_key]])) {
+                if (! isset(
+                    $items[$row[$column_main_key]][$row[$column_sec_key]])) {
                     $items[$row[$column_main_key]][$row[$column_sec_key]] = $row;
                     $items[$row[$column_main_key]][$row[$column_sec_key]][$stackOnCol] = array();
                 }

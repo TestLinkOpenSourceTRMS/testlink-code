@@ -35,7 +35,8 @@ class APIKey extends tlObjectWithDB
      */
     public function addKeyForUser($userID)
     {
-        $query = "UPDATE {$this->object_table} " . " SET script_key='" . $this->generateKey() . "' " . " WHERE id='" . intval($userID) . "'";
+        $query = "UPDATE {$this->object_table} " . " SET script_key='" .
+            $this->generateKey() . "' " . " WHERE id='" . intval($userID) . "'";
         $result = $this->db->exec_query($query);
 
         if ($result) {

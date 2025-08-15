@@ -124,7 +124,9 @@ function plugin_config_get($option, $default = null, $project = TL_ANY_PROJECT)
     $full_option = 'plugin_' . $basename . '_' . $option;
     $full_option = $dbHandler->prepare_string($full_option);
 
-    $sql = "/* $debugMsg */ " . " SELECT config_value FROM " . $tables['plugins_configuration'] . " where config_key = '" . $full_option . "' AND  testproject_id = ";
+    $sql = "/* $debugMsg */ " . " SELECT config_value FROM " .
+        $tables['plugins_configuration'] . " where config_key = '" . $full_option .
+        "' AND  testproject_id = ";
 
     $value = $dbHandler->fetchOneValue($sql . intval($project));
 
@@ -180,15 +182,25 @@ function plugin_config_set($option, $value, $project = TL_ANY_PROJECT)
     }
 
     $safe_id = intval($project);
-    $sql = " SELECT COUNT(*) from $plugin_config_table " . " WHERE config_key = '" . $dbHandler->prepare_string($full_option) . "' " . " AND testproject_id = {$safe_id} ";
+    $sql = " SELECT COUNT(*) from $plugin_config_table " .
+        " WHERE config_key = '" . $dbHandler->prepare_string($full_option) . "' " .
+        " AND testproject_id = {$safe_id} ";
     $rows_exist = $dbHandler->fetchOneValue($sql);
 
     if ($rows_exist > 0) {
         // Update the existing record
-        $sql = " UPDATE $plugin_config_table " . " SET config_value = '" . $dbHandler->prepare_string($value) . "'," . " config_type = " . $config_type . " WHERE config_key = '" . $dbHandler->prepare_string($full_option) . "' " . " AND testproject_id = {$safe_id} ";
+        $sql = " UPDATE $plugin_config_table " . " SET config_value = '" .
+            $dbHandler->prepare_string($value) . "'," . " config_type = " .
+            $config_type . " WHERE config_key = '" .
+            $dbHandler->prepare_string($full_option) . "' " .
+            " AND testproject_id = {$safe_id} ";
     } else {
         // Insert new config value
-        $sql = " INSERT INTO $plugin_config_table " . " (config_key, config_type, config_value, testproject_id, author_id) " . " VALUES (" . "'" . $dbHandler->prepare_string($full_option) . "', " . $config_type . "," . "'" . $dbHandler->prepare_string($value) . "', " . $safe_id . ", " . $_SESSION['currentUser']->dbID . ")";
+        $sql = " INSERT INTO $plugin_config_table " .
+            " (config_key, config_type, config_value, testproject_id, author_id) " .
+            " VALUES (" . "'" . $dbHandler->prepare_string($full_option) . "', " .
+            $config_type . "," . "'" . $dbHandler->prepare_string($value) . "', " .
+            $safe_id . ", " . $_SESSION['currentUser']->dbID . ")";
     }
     $dbHandler->exec_query($sql);
 }
@@ -295,7 +307,8 @@ function plugin_is_loaded($p_basename)
 {
     global $g_plugin_cache_init;
 
-    return isset($g_plugin_cache_init[$p_basename]) && $g_plugin_cache_init[$p_basename];
+    return isset($g_plugin_cache_init[$p_basename]) &&
+        $g_plugin_cache_init[$p_basename];
 }
 
 # ## Plugin management functions
@@ -313,7 +326,8 @@ function plugin_is_installed($p_basename)
         'plugins'
     ));
 
-    $sql = " SELECT COUNT(*) count FROM {$tables['plugins']} " . " WHERE basename='" . $dbHandler->prepare_string($p_basename) . "'";
+    $sql = " SELECT COUNT(*) count FROM {$tables['plugins']} " .
+        " WHERE basename='" . $dbHandler->prepare_string($p_basename) . "'";
 
     $t_result = $dbHandler->fetchFirstRow($sql);
     return 0 < $t_result['count'];
@@ -330,7 +344,8 @@ function plugin_install($p_plugin)
     $debugMsg = "Function: " . __FUNCTION__;
 
     if (plugin_is_installed($p_plugin->basename)) {
-        trigger_error('Plugin ' . $p_plugin->basename . ' already installed', E_USER_WARNING);
+        trigger_error('Plugin ' . $p_plugin->basename . ' already installed',
+            E_USER_WARNING);
         return null;
     }
 
@@ -345,7 +360,8 @@ function plugin_install($p_plugin)
     $tables = tlObjectWithDB::getDBTables(array(
         'plugins'
     ));
-    $sql = "/* $debugMsg */ INSERT INTO {$tables['plugins']} (basename,enabled) " . " VALUES ('" . $dbHandler->prepare_string($p_plugin->basename) . "',1)";
+    $sql = "/* $debugMsg */ INSERT INTO {$tables['plugins']} (basename,enabled) " .
+        " VALUES ('" . $dbHandler->prepare_string($p_plugin->basename) . "',1)";
     $dbHandler->exec_query($sql);
 
     plugin_pop_current();
@@ -366,7 +382,8 @@ function plugin_uninstall($plugin_id)
     $tables = tlObjectWithDB::getDBTables(array(
         'plugins'
     ));
-    $sql = "/* debugMsg */ " . " SELECT basename FROM {$tables['plugins']} WHERE id=" . $plugin_id;
+    $sql = "/* debugMsg */ " .
+        " SELECT basename FROM {$tables['plugins']} WHERE id=" . $plugin_id;
 
     $t_row = $dbHandler->fetchFirstRow($sql);
 
@@ -376,7 +393,8 @@ function plugin_uninstall($plugin_id)
     }
     $t_basename = $t_row['basename'];
 
-    $sql = "/* $debugMsg */ DELETE FROM {$tables['plugins']} " . " WHERE id=" . $plugin_id;
+    $sql = "/* $debugMsg */ DELETE FROM {$tables['plugins']} " . " WHERE id=" .
+        $plugin_id;
     $dbHandler->exec_query($sql);
 
     $p_plugin = $g_plugin_cache[$t_basename];
@@ -420,7 +438,8 @@ function plugin_find_all()
  */
 function plugin_include($p_basename)
 {
-    $t_plugin_file = TL_PLUGIN_PATH . $p_basename . DIRECTORY_SEPARATOR . $p_basename . '.php';
+    $t_plugin_file = TL_PLUGIN_PATH . $p_basename . DIRECTORY_SEPARATOR .
+        $p_basename . '.php';
 
     $t_included = false;
     if (is_file($t_plugin_file)) {
@@ -451,7 +470,8 @@ function plugin_register($p_basename, $p_return = false)
         }
 
         # Make sure the class exists and that it's of the right type.
-        if (class_exists($t_classname) && is_subclass_of($t_classname, 'TestlinkPlugin')) {
+        if (class_exists($t_classname) &&
+            is_subclass_of($t_classname, 'TestlinkPlugin')) {
             plugin_push_current($p_basename);
 
             doDBConnect($dbHandler);
@@ -484,7 +504,8 @@ function plugin_register_installed()
     $tables = tlObjectWithDB::getDBTables(array(
         'plugins'
     ));
-    $sql = "/* debugMsg */ " . " SELECT basename FROM {$tables['plugins']} WHERE enabled=1 ";
+    $sql = "/* debugMsg */ " .
+        " SELECT basename FROM {$tables['plugins']} WHERE enabled=1 ";
 
     $t_result = $dbHandler->exec_query($sql);
     while ($t_row = $dbHandler->fetch_array($t_result)) {
@@ -549,7 +570,8 @@ function get_all_installed_plugins()
     $tables = tlObjectWithDB::getDBTables(array(
         'plugins'
     ));
-    $sql = "/* debugMsg */ " . " SELECT id, basename, enabled FROM {$tables['plugins']}";
+    $sql = "/* debugMsg */ " .
+        " SELECT id, basename, enabled FROM {$tables['plugins']}";
 
     $t_result = $dbHandler->exec_query($sql);
     while ($t_row = $dbHandler->fetch_array($t_result)) {
@@ -592,9 +614,11 @@ function get_all_available_plugins($existing_plugins)
             if ('.' == $t_file || '..' == $t_file) {
                 continue;
             }
-            if (! in_array($t_file, $registered_plugin_names) && is_dir(TL_PLUGIN_PATH . $t_file) && plugin_include($t_file)) {
+            if (! in_array($t_file, $registered_plugin_names) &&
+                is_dir(TL_PLUGIN_PATH . $t_file) && plugin_include($t_file)) {
                 $t_classname = $t_file . 'Plugin';
-                if (class_exists($t_classname) && is_subclass_of($t_classname, 'TestlinkPlugin')) {
+                if (class_exists($t_classname) &&
+                    is_subclass_of($t_classname, 'TestlinkPlugin')) {
                     $t_plugin = new $t_classname($dbHandler, $t_file);
 
                     $available_plugins[] = array(

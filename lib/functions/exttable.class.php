@@ -155,11 +155,12 @@ class tlExtTable extends tlTable
     public function __construct($columns, $data, $tableID)
     {
         parent::__construct($columns, $data, $tableID);
-        $this->addCustomBehaviour('status', [
-            'render' => 'statusRenderer',
-            'sort' => 'statusCompare',
-            'filter' => 'Status'
-        ]);
+        $this->addCustomBehaviour('status',
+            [
+                'render' => 'statusRenderer',
+                'sort' => 'statusCompare',
+                'filter' => 'Status'
+            ]);
 
         $this->addCustomBehaviour('notes', [
             'render' => 'columnWrap'
@@ -230,10 +231,11 @@ class tlExtTable extends tlTable
         static $l18n;
 
         if (is_null($l18n)) {
-            $l18n = init_labels(array(
-                'warning_disable_user' => null,
-                'disable' => null
-            ));
+            $l18n = init_labels(
+                array(
+                    'warning_disable_user' => null,
+                    'disable' => null
+                ));
         }
 
         $s = '[';
@@ -281,7 +283,8 @@ class tlExtTable extends tlTable
                 } else {
                     $s .= ",filter: {type: '{$column['filter']}'}";
                 }
-            } elseif (isset($column['type']) && isset($this->customBehaviour[$column['type']]['filter'])) {
+            } elseif (isset($column['type']) &&
+                isset($this->customBehaviour[$column['type']]['filter'])) {
                 // do not define a filter in this case. Special filters are applied later
             } else {
                 // if no filter is specified use string filter
@@ -295,7 +298,8 @@ class tlExtTable extends tlTable
                 }
             }
 
-            if (isset($column['type']) && isset($this->customBehaviour[$column['type']])) {
+            if (isset($column['type']) &&
+                isset($this->customBehaviour[$column['type']])) {
                 $customBehaviour = $this->customBehaviour[$column['type']];
                 $filterSet = [
                     'Status',
@@ -303,7 +307,8 @@ class tlExtTable extends tlTable
                     'Importance'
                 ];
                 foreach ($filterSet as $target) {
-                    if (isset($customBehaviour['filter']) && $customBehaviour['filter'] == $target) {
+                    if (isset($customBehaviour['filter']) &&
+                        $customBehaviour['filter'] == $target) {
                         $method = 'build' . $target . 'FilterOptions';
                         $s .= ",filter: " . $this->$method();
                     }
@@ -313,7 +318,8 @@ class tlExtTable extends tlTable
                     $s .= ",renderer: {$customBehaviour['render']}";
                 }
             }
-            $s .= ",sortable: " . (isset($column['sortable']) ? $column['sortable'] : 'true');
+            $s .= ",sortable: " .
+                (isset($column['sortable']) ? $column['sortable'] : 'true');
             $s .= "},\n";
         } // loop on columns
         $s = trim($s, ",\n") . '];';
@@ -339,7 +345,9 @@ class tlExtTable extends tlTable
         for ($i = 0; $i < $n_columns; $i ++) {
             $column = $this->columns[$i];
             $s .= "{name: '{$column['col_id']}'";
-            if (isset($column['type']) && isset($this->customBehaviour[$column['type']]) && isset($this->customBehaviour[$column['type']]['sort'])) {
+            if (isset($column['type']) &&
+                isset($this->customBehaviour[$column['type']]) &&
+                isset($this->customBehaviour[$column['type']]['sort'])) {
                 $s .= ", sortType: {$this->customBehaviour[$column['type']]['sort']}";
             } elseif (isset($column['sortType'])) {
                 $s .= ", sortType: '{$column['sortType']}'";
@@ -410,7 +418,8 @@ class tlExtTable extends tlTable
         $s = '<script type="text/javascript">' . "\n\n";
         $s .= "tableData['{$this->tableID}'] = " . $this->buildContent() . "\n\n";
         $s .= "fields['{$this->tableID}'] = " . $this->buildFields() . "\n\n";
-        $s .= "columnData['{$this->tableID}'] = " . $this->buildColumns() . "\n\n";
+        $s .= "columnData['{$this->tableID}'] = " . $this->buildColumns() .
+            "\n\n";
         $s .= '</script>' . "\n\n";
         return $s;
     }
@@ -485,7 +494,8 @@ class tlExtTable extends tlTable
         $resultsCfg = config_get('results');
         $jsCode = "status_code_order = new Array();\n";
 
-        $verboseStatusOrder = array_keys($resultsCfg["status_label_for_exec_ui"]);
+        $verboseStatusOrder = array_keys(
+            $resultsCfg["status_label_for_exec_ui"]);
         foreach ($verboseStatusOrder as $order => $status) {
             $code = $resultsCfg['status_code'][$status];
             $jsCode .= "status_code_order.$code = " . $order . ";\n";
@@ -590,7 +600,8 @@ class tlExtTable extends tlTable
     public function getGridViewConfig()
     {
         $s = 'forceFit: true' . $this->moreViewConfig;
-        $s .= ',hideGroupedColumn:' . ($this->hideGroupedColumn ? 'true' : 'false');
+        $s .= ',hideGroupedColumn:' .
+            ($this->hideGroupedColumn ? 'true' : 'false');
         if ($this->showGroupItemsCount) {
             $s .= ",groupTextTpl: '{text} ({[values.rs.length]} {[values.rs.length > 1 ? \"Items\" : \"Item\"]})'";
         }
@@ -601,13 +612,29 @@ class tlExtTable extends tlTable
     {
         static $l18n;
         if (is_null($l18n)) {
-            $l18n = init_labels(array(
-                'warning_disable_user' => null,
-                'disable' => null
-            ));
+            $l18n = init_labels(
+                array(
+                    'warning_disable_user' => null,
+                    'disable' => null
+                ));
         }
 
-        $js = "{xtype: 'actioncolumn',width: 50, hideable: false,sortable: false,groupable: false," . " items: [{tooltip: 'hhh'," . " handler: function(grid, rowIndex, colIndex) \n" . "          { \n" . "           var rec = store['" . $this->tableID . "'].getAt(rowIndex); \n" . "           if( rec.get('is_special') == 0 ) \n" . "           { \n" . "             delete_confirmation(rec.get('user_id'),rec.get('login')," . "'" . $l18n['disable'] . "','" . $l18n['warning_disable_user'] . "'); \n" . "           } \n" . "           } /* end handler function() */" . ", getClass: function(v, meta, rec){" . " if(rec.get('is_special') == 1){" . " /* 0 points to the the FIRST (and only) item */ " . " this.items[0].tooltip = 'Demo mode => you can not disable me!'; return 'special_user';} " . " else { this.items[0].tooltip = 'Disable User'; return 'normal_user';} " . " } /* end getClass() */" . "}]";
+        $js = "{xtype: 'actioncolumn',width: 50, hideable: false,sortable: false,groupable: false," .
+            " items: [{tooltip: 'hhh'," .
+            " handler: function(grid, rowIndex, colIndex) \n" . "          { \n" .
+            "           var rec = store['" . $this->tableID .
+            "'].getAt(rowIndex); \n" .
+            "           if( rec.get('is_special') == 0 ) \n" . "           { \n" .
+            "             delete_confirmation(rec.get('user_id'),rec.get('login')," .
+            "'" . $l18n['disable'] . "','" . $l18n['warning_disable_user'] .
+            "'); \n" . "           } \n" .
+            "           } /* end handler function() */" .
+            ", getClass: function(v, meta, rec){" .
+            " if(rec.get('is_special') == 1){" .
+            " /* 0 points to the the FIRST (and only) item */ " .
+            " this.items[0].tooltip = 'Demo mode => you can not disable me!'; return 'special_user';} " .
+            " else { this.items[0].tooltip = 'Disable User'; return 'normal_user';} " .
+            " } /* end getClass() */" . "}]";
         $js .= "},\n";
 
         return $js;

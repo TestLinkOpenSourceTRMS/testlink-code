@@ -128,7 +128,8 @@ class tlAttachmentRepository extends tlObjectWithDB
      * @return int returns true if the information was successfully stored, false else
      *
      */
-    public function insertAttachment($fkid, $fkTableName, $title, $fInfo, $opt = null)
+    public function insertAttachment($fkid, $fkTableName, $title, $fInfo,
+        $opt = null)
     {
         $op = new stdClass();
         $op->statusOK = false;
@@ -150,7 +151,8 @@ class tlAttachmentRepository extends tlObjectWithDB
         $pattern = trim($this->attachmentCfg->allowed_filenames_regexp);
         if ('' != $pattern && ! preg_match($pattern, $fName)) {
             $op->statusCode = 'allowed_filenames_regexp';
-            $op->msg = str_replace('%filename%', $fName, lang_get('FILE_UPLOAD_' . $op->statusCode));
+            $op->msg = str_replace('%filename%', $fName,
+                lang_get('FILE_UPLOAD_' . $op->statusCode));
             return $op;
         }
 
@@ -164,7 +166,8 @@ class tlAttachmentRepository extends tlObjectWithDB
         $allowed = explode(',', $this->attachmentCfg->allowed_files);
         if (! in_array($fExt, $allowed)) {
             $op->statusCode = 'allowed_files';
-            $op->msg = str_replace('%filename%', $fName, lang_get('FILE_UPLOAD_' . $op->statusCode));
+            $op->msg = str_replace('%filename%', $fName,
+                lang_get('FILE_UPLOAD_' . $op->statusCode));
             return $op;
         }
 
@@ -174,10 +177,12 @@ class tlAttachmentRepository extends tlObjectWithDB
         $destFName = getUniqueFileName($fExt);
 
         if ($this->repositoryType == TL_REPOSITORY_TYPE_FS) {
-            $destFPath = $this->buildRepositoryFilePath($destFName, $fkTableName, $fkid);
+            $destFPath = $this->buildRepositoryFilePath($destFName, $fkTableName,
+                $fkid);
             $op->statusOK = $this->storeFileInFSRepository($fTmpName, $destFPath);
         } else {
-            $fContents = $this->getFileContentsForDBRepository($fTmpName, $destFName);
+            $fContents = $this->getFileContentsForDBRepository($fTmpName,
+                $destFName);
             $op->statusOK = sizeof($fContents);
             if ($op->statusOK) {
                 @unlink($fTmpName);
@@ -185,8 +190,11 @@ class tlAttachmentRepository extends tlObjectWithDB
         }
 
         if ($op->statusOK) {
-            $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX, '', $fkTableName);
-            $op->statusOK = ($this->attmObj->create($fkid, $stdTableUsedAsFolder, $fName, $destFPath, $fContents, $fType, $fSize, $title, $opt) >= tl::OK);
+            $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX, '',
+                $fkTableName);
+            $op->statusOK = ($this->attmObj->create($fkid, $stdTableUsedAsFolder,
+                $fName, $destFPath, $fContents, $fType, $fSize, $title, $opt) >=
+                tl::OK);
 
             if ($op->statusOK) {
                 $op->statusOK = $this->attmObj->writeToDb($this->db);
@@ -238,7 +246,8 @@ class tlAttachmentRepository extends tlObjectWithDB
             case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
                 // copy the file into a dummy file in the repository and gz it and
                 // read the file contents from this new file
-                $tmpGZName = $this->repositoryPath . DIRECTORY_SEPARATOR . $destFName . ".gz";
+                $tmpGZName = $this->repositoryPath . DIRECTORY_SEPARATOR .
+                    $destFName . ".gz";
                 gzip_compress_file($fTmpName, $tmpGZName);
                 $fTmpName = $tmpGZName;
                 break;
@@ -412,7 +421,8 @@ class tlAttachmentRepository extends tlObjectWithDB
      */
     protected function getAttachmentContentFromFS($id)
     {
-        $query = "SELECT file_size,compression_type,file_path " . " FROM {$this->tables['attachments']}
+        $query = "SELECT file_size,compression_type,file_path " .
+            " FROM {$this->tables['attachments']}
                WHERE id = {$id}";
         $row = $this->db->fetchFirstRow($query);
 
@@ -446,7 +456,8 @@ class tlAttachmentRepository extends tlObjectWithDB
     // @TODO schlundus, should be protected, but blocker is testcase::copy_attachments
     public function getAttachmentContentFromDB($id)
     {
-        $query = "SELECT content,file_size,compression_type " . " FROM {$this->tables['attachments']} WHERE id = {$id}";
+        $query = "SELECT content,file_size,compression_type " .
+            " FROM {$this->tables['attachments']} WHERE id = {$id}";
         $row = $this->db->fetchFirstRow($query);
 
         $content = null;
@@ -505,7 +516,8 @@ class tlAttachmentRepository extends tlObjectWithDB
     {
         $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX, '', $fkTableName);
         $statusOK = true;
-        $attachmentIDs = (array) $this->getAttachmentIDsFor($fkid, $stdTableUsedAsFolder);
+        $attachmentIDs = (array) $this->getAttachmentIDsFor($fkid,
+            $stdTableUsedAsFolder);
 
         for ($i = 0; $i < sizeof($attachmentIDs); $i ++) {
             $id = $attachmentIDs[$i];
@@ -513,7 +525,8 @@ class tlAttachmentRepository extends tlObjectWithDB
         }
 
         if ($statusOK) {
-            $folder = $this->buildRepositoryFolderFor($stdTableUsedAsFolder, $fkid);
+            $folder = $this->buildRepositoryFolderFor($stdTableUsedAsFolder,
+                $fkid);
             if (is_dir($folder)) {
                 rmdir($folder);
             }
@@ -548,7 +561,8 @@ class tlAttachmentRepository extends tlObjectWithDB
      *
      * @return arrays returns an array with the attachments of the objects, or null on error
      */
-    public function getAttachmentInfosFor($fkid, $fkTableName, $accessKey = 'std')
+    public function getAttachmentInfosFor($fkid, $fkTableName,
+        $accessKey = 'std')
     {
         $itemSet = null;
         $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX, '', $fkTableName);
@@ -593,7 +607,9 @@ class tlAttachmentRepository extends tlObjectWithDB
 
         $order_by = $this->attachmentCfg->order_by;
 
-        $query = "SELECT id FROM {$this->tables['attachments']} WHERE fk_id = {$fkid} " . " AND fk_table = '" . $this->db->prepare_string($stdTableUsedAsFolder) . "' " . $order_by;
+        $query = "SELECT id FROM {$this->tables['attachments']} WHERE fk_id = {$fkid} " .
+            " AND fk_table = '" .
+            $this->db->prepare_string($stdTableUsedAsFolder) . "' " . $order_by;
         $attachmentIDs = $this->db->fetchColumnsIntoArray($query, 'id');
 
         return $attachmentIDs;
@@ -611,7 +627,8 @@ class tlAttachmentRepository extends tlObjectWithDB
         $status_ok = false;
         $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX, '', $fkTableName);
 
-        $attachments = $this->getAttachmentInfosFor($source_id, $stdTableUsedAsFolder);
+        $attachments = $this->getAttachmentInfosFor($source_id,
+            $stdTableUsedAsFolder);
         if (null != $attachments && count($attachments) > 0) {
             foreach ($attachments as $key => $value) {
                 $file_contents = null;
@@ -619,15 +636,21 @@ class tlAttachmentRepository extends tlObjectWithDB
                 $mangled_fname = $f_parts[count($f_parts) - 1];
 
                 if ($this->repositoryType == TL_REPOSITORY_TYPE_FS) {
-                    $destFPath = $this->buildRepositoryFilePath($mangled_fname, $stdTableUsedAsFolder, $target_id);
-                    $status_ok = copy($this->repositoryPath . $value['file_path'], $destFPath);
+                    $destFPath = $this->buildRepositoryFilePath($mangled_fname,
+                        $stdTableUsedAsFolder, $target_id);
+                    $status_ok = copy(
+                        $this->repositoryPath . $value['file_path'], $destFPath);
                 } else {
-                    $file_contents = $this->getAttachmentContentFromDB($value['id']);
+                    $file_contents = $this->getAttachmentContentFromDB(
+                        $value['id']);
                     $status_ok = sizeof($file_contents);
                 }
 
                 if ($status_ok) {
-                    $this->attmObj->create($target_id, $stdTableUsedAsFolder, $value['file_name'], $destFPath, $file_contents, $value['file_type'], $value['file_size'], $value['title']);
+                    $this->attmObj->create($target_id, $stdTableUsedAsFolder,
+                        $value['file_name'], $destFPath, $file_contents,
+                        $value['file_type'], $value['file_size'],
+                        $value['title']);
                     $attID = 0;
                     $this->attmObj->writeToDB($this->db, $attID);
                     $mapping[$value['id']] = $attID;

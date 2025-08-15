@@ -46,7 +46,8 @@ function get_home_url($opt)
         $t_protocol = 'http';
         if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
             $t_protocol = $_SERVER['HTTP_X_FORWARDED_PROTO'];
-        } elseif (! empty($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) != 'off')) {
+        } elseif (! empty($_SERVER['HTTPS']) &&
+            (strtolower($_SERVER['HTTPS']) != 'off')) {
             $t_protocol = 'https';
         }
         $t_protocol = $opt['force_https'] ? 'https' : $t_protocol;
@@ -54,7 +55,8 @@ function get_home_url($opt)
         // $_SERVER['SERVER_PORT'] is not defined in case of php-cgi.exe
         if (isset($_SERVER['SERVER_PORT'])) {
             $t_port = ':' . $_SERVER['SERVER_PORT'];
-            if ((':80' == $t_port && 'http' == $t_protocol) || (':443' == $t_port && 'https' == $t_protocol)) {
+            if ((':80' == $t_port && 'http' == $t_protocol) ||
+                (':443' == $t_port && 'https' == $t_protocol)) {
                 $t_port = '';
             }
         } else {
@@ -113,7 +115,8 @@ function checkConfiguration()
     clearstatcache();
     $file_to_check = "config_db.inc.php";
     if (! is_file($file_to_check)) {
-        echo '<html><body onload="' . "location.href='./install/index.php'" . '"></body></html>';
+        echo '<html><body onload="' . "location.href='./install/index.php'" .
+            '"></body></html>';
         exit();
     }
 }
@@ -174,7 +177,8 @@ function checkForExtensions(&$msg)
  */
 function checkForInstallDir()
 {
-    $installerDir = TL_ABS_PATH . DIRECTORY_SEPARATOR . "install" . DIRECTORY_SEPARATOR;
+    $installerDir = TL_ABS_PATH . DIRECTORY_SEPARATOR . "install" .
+        DIRECTORY_SEPARATOR;
     clearstatcache();
     $dirExists = (is_dir($installerDir)) ? true : false;
     return $dirExists;
@@ -192,7 +196,8 @@ function checkForAdminDefaultPwd(&$db)
 
     $user = new tlUser();
     $user->login = "admin";
-    if ($user->readFromDB($db, tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK && $user->comparePassword($db, "admin") >= tl::OK) {
+    if ($user->readFromDB($db, tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK &&
+        $user->comparePassword($db, "admin") >= tl::OK) {
         $passwordHasDefaultValue = true;
     }
     return $passwordHasDefaultValue;
@@ -280,7 +285,8 @@ function getSecurityNotes(&$db)
                 }
                 $securityNotes = null;
                 if ($user_feedback == 'FILE') {
-                    $securityNotes[] = sprintf(lang_get('config_check_warnings'), $filename);
+                    $securityNotes[] = sprintf(
+                        lang_get('config_check_warnings'), $filename);
                 }
                 break;
         }
@@ -370,7 +376,8 @@ function checkSchemaVersion(&$db)
 
     $myrow = $db->fetch_array($res);
 
-    $upgrade_msg = "You need to upgrade your Testlink Database to {$latest_version} - <br>" . '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
+    $upgrade_msg = "You need to upgrade your Testlink Database to {$latest_version} - <br>" .
+        '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
 
     $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$latest_version} - Read README file!";
 
@@ -412,7 +419,10 @@ function checkSchemaVersion(&$db)
             // blocks login
             $m = $db->db->metaColumns(DB_TABLE_PREFIX . 'users');
             if ($m['PASSWORD']->max_length == 32) {
-                $result['msg'] = "It seems that you have migrated to 1.9.20" . "<br>But migration does not changed users table structure" . "<br>the password field is not able to contain " . " a bcrypt password";
+                $result['msg'] = "It seems that you have migrated to 1.9.20" .
+                    "<br>But migration does not changed users table structure" .
+                    "<br>the password field is not able to contain " .
+                    " a bcrypt password";
                 $result['status'] = tl::ERROR;
             } else {
                 $result['status'] = tl::OK;
@@ -426,7 +436,8 @@ function checkSchemaVersion(&$db)
             break;
 
         default:
-            $result['msg'] = "Unknown Schema version " . trim($myrow['version']) . ", please upgrade your Testlink Database to " . $latest_version;
+            $result['msg'] = "Unknown Schema version " . trim($myrow['version']) .
+                ", please upgrade your Testlink Database to " . $latest_version;
             break;
     }
 
@@ -482,19 +493,26 @@ function check_php_settings(&$errCounter)
 
     $final_msg = '<tr><td>Checking max. execution time (Parameter max_execution_time)</td>';
     if ($max_execution_time < $max_execution_time_recommended) {
-        $final_msg .= "<td><span class='tab-warning'>{$max_execution_time} seconds - " . "We suggest {$max_execution_time_recommended} " . "seconds in order to manage hundred of test cases (edit php.ini)</span></td>";
+        $final_msg .= "<td><span class='tab-warning'>{$max_execution_time} seconds - " .
+            "We suggest {$max_execution_time_recommended} " .
+            "seconds in order to manage hundred of test cases (edit php.ini)</span></td>";
     } else {
-        $final_msg .= '<td><span class="tab-success">OK (' . $max_execution_time . ' seconds)</span></td></tr>';
+        $final_msg .= '<td><span class="tab-success">OK (' . $max_execution_time .
+            ' seconds)</span></td></tr>';
     }
     $final_msg .= "<tr><td>Checking maximal allowed memory (Parameter memory_limit)</td>";
     if ($memory_limit < $memory_limit_recommended) {
-        $final_msg .= "<td><span class='tab-warning'>$memory_limit MegaBytes - " . "We suggest {$memory_limit_recommended} MB" . " in order to manage hundred of test cases</span></td></tr>";
+        $final_msg .= "<td><span class='tab-warning'>$memory_limit MegaBytes - " .
+            "We suggest {$memory_limit_recommended} MB" .
+            " in order to manage hundred of test cases</span></td></tr>";
     } else {
-        $final_msg .= '<td><span class="tab-success">OK (' . $memory_limit . ' MegaBytes)</span></td></tr>';
+        $final_msg .= '<td><span class="tab-success">OK (' . $memory_limit .
+            ' MegaBytes)</span></td></tr>';
     }
     $final_msg .= "<tr><td>Checking if Register Globals is disabled</td>";
     if (ini_get('register_globals')) {
-        $final_msg .= "<td><span class='tab-warning'>Failed! is enabled - " . "Please change the setting in your php.ini file</span></td></tr>";
+        $final_msg .= "<td><span class='tab-warning'>Failed! is enabled - " .
+            "Please change the setting in your php.ini file</span></td></tr>";
     } else {
         $final_msg .= "<td><span class='tab-success'>OK</span></td></tr>\n";
     }
@@ -587,7 +605,8 @@ function checkPhpExtensions(&$errCounter)
         'msg' => array(
             'feedback' => 'GD Graphic library',
             'ok' => $td_ok,
-            'ko' => " not enabled.<br>Graph rendering requires it. This feature will be disabled." . " It's recommended to install it."
+            'ko' => " not enabled.<br>Graph rendering requires it. This feature will be disabled." .
+            " It's recommended to install it."
         )
     );
 
@@ -596,7 +615,8 @@ function checkPhpExtensions(&$errCounter)
         'msg' => array(
             'feedback' => 'LDAP library',
             'ok' => $td_ok,
-            'ko' => " not enabled. LDAP authentication cannot be used. " . "(default internal authentication will works)"
+            'ko' => " not enabled. LDAP authentication cannot be used. " .
+            "(default internal authentication will works)"
         )
     );
 
@@ -624,7 +644,8 @@ function checkPhpExtensions(&$errCounter)
         if (extension_loaded($test['extension'])) {
             $msg = $test['msg']['ok'];
         } else {
-            $msg = sprintf($td_failed, $test['msg']['feedback'], $test['msg']['ko']);
+            $msg = sprintf($td_failed, $test['msg']['feedback'],
+                $test['msg']['ko']);
         }
         $out .= $msg;
     }
@@ -688,7 +709,8 @@ function check_timeout(&$errCounter)
         $res = 'Too short. It must be extended!';
         $errCounter ++;
     }
-    $out .= "<td><span class='tab-$color'>" . $gc_maxlifetime_min . " minutes and $gc_maxlifetime_sec seconds - ($res)</span></td></tr>\n";
+    $out .= "<td><span class='tab-$color'>" . $gc_maxlifetime_min .
+        " minutes and $gc_maxlifetime_sec seconds - ($res)</span></td></tr>\n";
 
     return $out;
 }
@@ -712,11 +734,14 @@ function checkDbType(&$errCounter, $type)
         case 'mysqli':
         case 'mssql':
         case 'postgres':
-            $out .= '<td><span class="tab-success">' . $type . '</span></td></tr>';
+            $out .= '<td><span class="tab-success">' . $type .
+                '</span></td></tr>';
             break;
 
         default:
-            $out .= '<td><span class="tab-warning">Unsupported type: ' . $type . '. MySQL,Postgres and MSSQL are supported DB types. Of course' . ' you can use also other ones without migration support.</span></td></tr>';
+            $out .= '<td><span class="tab-warning">Unsupported type: ' . $type .
+                '. MySQL,Postgres and MSSQL are supported DB types. Of course' .
+                ' you can use also other ones without migration support.</span></td></tr>';
             break;
     }
 
@@ -755,7 +780,9 @@ function checkPhpVersion(&$errCounter)
     $final_msg = '<tr><td>PHP version</td>';
 
     if ($php_ver_comp < 0) {
-        $final_msg .= "<td><span class='tab-error'>Failed!</span> - You are running on PHP " . $my_version . ", and TestLink requires PHP " . $min_version . ' or greater. ' . 'This is fatal problem. You must upgrade it.</td>';
+        $final_msg .= "<td><span class='tab-error'>Failed!</span> - You are running on PHP " .
+            $my_version . ", and TestLink requires PHP " . $min_version .
+            ' or greater. ' . 'This is fatal problem. You must upgrade it.</td>';
         $errCounter += 1;
     } else {
         $final_msg .= "<td><span class='tab-success'>OK ( {$min_version} [minimum version] ";
@@ -778,9 +805,12 @@ function checkPhpVersion(&$errCounter)
  * @return string html row with result
  * @author Martin Havlat
  */
-function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $isCritical = false)
+function check_file_permissions(&$errCounter, $inst_type, $checked_filename,
+    $isCritical = false)
 {
-    $checked_path = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
+    $checked_path = realpath(
+        dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
+        '..');
     $checked_file = $checked_path . DIRECTORY_SEPARATOR . $checked_filename;
     $out = '<tr><td>Access to file (' . $checked_file . ')</td>';
 
@@ -790,10 +820,13 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
                 $out .= "<td><span class='tab-success'>OK (writable)</span></td></tr>\n";
             } else {
                 if ($isCritical) {
-                    $out .= "<td><span class='tab-error'>Failed! Please fix the file " . $checked_file . " permissions and reload the page.</span></td></tr>";
+                    $out .= "<td><span class='tab-error'>Failed! Please fix the file " .
+                        $checked_file .
+                        " permissions and reload the page.</span></td></tr>";
                     $errCounter += 1;
                 } else {
-                    $out .= "<td><span class='tab-warning'>Not writable! Please fix the file " . $checked_file . " permissions.</span></td></tr>";
+                    $out .= "<td><span class='tab-warning'>Not writable! Please fix the file " .
+                        $checked_file . " permissions.</span></td></tr>";
                 }
             }
         } else {
@@ -801,10 +834,13 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
                 $out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
             } else {
                 if ($isCritical) {
-                    $out .= "<td><span class='tab-error'>Directory is not writable! Please fix " . $checked_path . " permissions and reload the page.</span></td></tr>";
+                    $out .= "<td><span class='tab-error'>Directory is not writable! Please fix " .
+                        $checked_path .
+                        " permissions and reload the page.</span></td></tr>";
                     $errCounter += 1;
                 } else {
-                    $out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " . $checked_path . " permissions.</span></td></tr>";
+                    $out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " .
+                        $checked_path . " permissions.</span></td></tr>";
                 }
             }
         }
@@ -857,9 +893,14 @@ function check_dir_permissions(&$errCounter)
     $final_msg = '';
     $msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
     $msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
-    $checked_path_base = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
+    $checked_path_base = realpath(
+        dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
+        '..');
 
-    $final_msg .= "<tr><td>For security reasons we suggest that directories tagged with [S]" . " on following messages, will be made UNREACHEABLE from browser.<br>" . "<span class='tab-success'>Give a look to README file, section 'Installation & SECURITY' " . " to understand how to change the defaults.</span>";
+    $final_msg .= "<tr><td>For security reasons we suggest that directories tagged with [S]" .
+        " on following messages, will be made UNREACHEABLE from browser.<br>" .
+        "<span class='tab-success'>Give a look to README file, section 'Installation & SECURITY' " .
+        " to understand how to change the defaults.</span>";
 
     $os = strtolower(PHP_OS);
     if ($os == 'linux') {
@@ -902,18 +943,25 @@ function reportCheckingBrowser(&$errCounter)
 {
     $browser = strtolower($_SERVER['HTTP_USER_AGENT']);
 
-    echo "\n" . '<h2>Browser compliance</h2><table class="common" style="width: 100%;">' . "\n";
+    echo "\n" .
+        '<h2>Browser compliance</h2><table class="common" style="width: 100%;">' .
+        "\n";
 
     echo '<p>' . $browser . '</p>';
     echo '<tr><td>Browser supported</td>';
 
-    if (strpos($browser, 'firefox') === false || strpos($browser, 'msie') === false) {
+    if (strpos($browser, 'firefox') === false ||
+        strpos($browser, 'msie') === false) {
         echo "<td><span class='tab-success'>OK</span></td></tr>";
     } else {
         echo "<td><span class='tab-error'>Unsupported: {$_SERVER['HTTP_USER_AGENT']}</span></td></tr>";
     }
 
-    echo '<tr><td>Javascript availability</td><td>' . '<script type="text/javascript">document.write(\'' . '<span class="tab-success">Enabled</span>\');</script>' . '<noscript><span class="tab-error">Javascript is disabled!</span></noscript>' . '</td></tr>';
+    echo '<tr><td>Javascript availability</td><td>' .
+        '<script type="text/javascript">document.write(\'' .
+        '<span class="tab-success">Enabled</span>\');</script>' .
+        '<noscript><span class="tab-error">Javascript is disabled!</span></noscript>' .
+        '</td></tr>';
 
     echo '</table>';
 }
@@ -987,7 +1035,8 @@ function reportCheckingPermissions(&$errCounter, $installationType = 'none')
     // for $installationType='upgrade' existence of config_db.inc.php is not needed
     $blockingCheck = $installationType == 'upgrade' ? false : true;
     if ($installationType == 'new') {
-        echo check_file_permissions($errCounter, $installationType, 'config_db.inc.php', $blockingCheck);
+        echo check_file_permissions($errCounter, $installationType,
+            'config_db.inc.php', $blockingCheck);
     }
     echo '</table>';
 }

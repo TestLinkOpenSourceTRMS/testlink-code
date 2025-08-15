@@ -208,10 +208,12 @@ function init_global_rights_maps()
         "mgt_plugins" => $l18n['desc_mgt_plugins']
     );
 
-    $g_propRights_global = array_merge($g_rights_users_global, $g_rights_system, $g_rights_product);
+    $g_propRights_global = array_merge($g_rights_users_global, $g_rights_system,
+        $g_rights_product);
     unset($g_propRights_global["testproject_user_role_assignment"]);
 
-    $g_propRights_product = array_merge($g_propRights_global, $g_rights_mgttc, $g_rights_kw, $g_rights_req);
+    $g_propRights_product = array_merge($g_propRights_global, $g_rights_mgttc,
+        $g_rights_kw, $g_rights_req);
 }
 
 /**
@@ -231,7 +233,8 @@ function init_global_rights_maps()
  */
 function has_rights(&$db, $roleQuestion, $tprojectID = null, $tplanID = null)
 {
-    return $_SESSION['currentUser']->hasRight($db, $roleQuestion, $tprojectID, $tplanID);
+    return $_SESSION['currentUser']->hasRight($db, $roleQuestion, $tprojectID,
+        $tplanID);
 }
 
 /**
@@ -305,7 +308,8 @@ function checkForRights($rights, $roleQuestion, $bAND = 1)
  *         effective_role_id user role for test project
  *         is_inherited
  */
-function get_tproject_effective_role(&$db, $tproject, $user_id = null, $users = null)
+function get_tproject_effective_role(&$db, $tproject, $user_id = null,
+    $users = null)
 {
     $effective_role = array();
     $tproject_id = $tproject['id'];
@@ -321,7 +325,8 @@ function get_tproject_effective_role(&$db, $tproject, $user_id = null, $users = 
             $isInherited = 1;
             $effectiveRoleID = $user->globalRoleID;
             $effectiveRole = $user->globalRole;
-            if (($user->globalRoleID != TL_ROLES_ADMIN) && ! $tproject['is_public']) {
+            if (($user->globalRoleID != TL_ROLES_ADMIN) &&
+                ! $tproject['is_public']) {
                 $isInherited = $tproject['is_public'];
                 $effectiveRoleID = TL_ROLES_NO_RIGHTS;
                 $effectiveRole = '<no rights>';
@@ -375,13 +380,15 @@ function get_tproject_effective_role(&$db, $tproject, $user_id = null, $users = 
  * @internal revisions
  *           20101111 - franciscom - BUGID 4006: test plan is_public
  */
-function get_tplan_effective_role(&$db, $tplan_id, $tproject, $user_id = null, $users = null, $inheritanceMode = null)
+function get_tplan_effective_role(&$db, $tplan_id, $tproject, $user_id = null,
+    $users = null, $inheritanceMode = null)
 {
     $tplan_mgr = new testplan($db);
     $tplan = $tplan_mgr->get_by_id($tplan_id);
     unset($tplan_mgr);
 
-    $roleInhMode = ! is_null($inheritanceMode) ? $inheritanceMode : config_get('testplan_role_inheritance_mode');
+    $roleInhMode = ! is_null($inheritanceMode) ? $inheritanceMode : config_get(
+        'testplan_role_inheritance_mode');
 
     /**
      * key: user_id
@@ -393,7 +400,8 @@ function get_tplan_effective_role(&$db, $tplan_id, $tproject, $user_id = null, $
      * effective_role_id user role for test project
      * is_inherited
      */
-    $effective_role = get_tproject_effective_role($db, $tproject, $user_id, $users);
+    $effective_role = get_tproject_effective_role($db, $tproject, $user_id,
+        $users);
 
     foreach ($effective_role as $user_id => $row) {
 
@@ -410,7 +418,8 @@ function get_tplan_effective_role(&$db, $tplan_id, $tproject, $user_id = null, $
 
         // For Private Test Plans specific role is NEEDED for users with
         // global role !? ADMIN
-        if ($doNextStep && ($row['user']->globalRoleID != TL_ROLES_ADMIN) && ! $tplan['is_public']) {
+        if ($doNextStep && ($row['user']->globalRoleID != TL_ROLES_ADMIN) &&
+            ! $tplan['is_public']) {
             $isInherited = 0;
             $doNextStep = false;
 
@@ -474,7 +483,8 @@ function deleteRole(&$db, $roleID)
     if ($role->deleteFromDB($db) < tl::OK) {
         $userFeedback = lang_get("error_role_deletion");
     } else {
-        logAuditEvent(TLS("audit_role_deleted", $role->getDisplayName()), "DELETE", $roleID, "roles");
+        logAuditEvent(TLS("audit_role_deleted", $role->getDisplayName()),
+            "DELETE", $roleID, "roles");
     }
 
     return $userFeedback;

@@ -44,7 +44,10 @@ class no_editor
             $my_cols = $this->cols;
         }
 
-        $html = ' <textarea style="resize:both;" ' . " name=\"{$this->InstanceName}\" " . " id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\" >" . "{$htmlValue}</textarea>";
+        $html = ' <textarea style="resize:both;" ' .
+            " name=\"{$this->InstanceName}\" " .
+            " id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\" >" .
+            "{$htmlValue}</textarea>";
 
         return $html;
     }

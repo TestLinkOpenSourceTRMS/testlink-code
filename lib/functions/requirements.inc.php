@@ -22,7 +22,10 @@
 function exportReqDataToXML($reqData)
 {
     $rootElem = "<requirements>{{XMLCODE}}</requirements>";
-    $elemTpl = "\t" . '<requirement><docid><![CDATA[' . "\n||DOCID||\n]]>" . '</docid><title><![CDATA[' . "\n||TITLE||\n]]>" . '</title>' . '<description><![CDATA[' . "\n||DESCRIPTION||\n]]>" . '</description>' . '</requirement>' . "\n";
+    $elemTpl = "\t" . '<requirement><docid><![CDATA[' . "\n||DOCID||\n]]>" .
+        '</docid><title><![CDATA[' . "\n||TITLE||\n]]>" . '</title>' .
+        '<description><![CDATA[' . "\n||DESCRIPTION||\n]]>" . '</description>' .
+        '</requirement>' . "\n";
     $info = array(
         "||DOCID||" => "req_doc_id",
         "||TITLE||" => "title",
@@ -39,7 +42,8 @@ function exportReqDataToXML($reqData)
  *
  *
  */
-function executeImportedReqs(&$db, $arrImportSource, $map_cur_reqdoc_id, $conflictSolution, $emptyScope, $idSRS, $tprojectID, $userID)
+function executeImportedReqs(&$db, $arrImportSource, $map_cur_reqdoc_id,
+    $conflictSolution, $emptyScope, $idSRS, $tprojectID, $userID)
 {
     define('SKIP_CONTROLS', 1);
 
@@ -60,7 +64,8 @@ function executeImportedReqs(&$db, $arrImportSource, $map_cur_reqdoc_id, $confli
             // skip rows with empty scope
             $import_status = lang_get('req_import_result_skipped');
         } else {
-            $crash = $map_cur_reqdoc_id && array_search($docID, $map_cur_reqdoc_id);
+            $crash = $map_cur_reqdoc_id &&
+                array_search($docID, $map_cur_reqdoc_id);
             if ($crash) {
                 // process conflict according to choosen solution
                 tLog('Conflict found. solution: ' . $conflictSolution);
@@ -71,20 +76,26 @@ function executeImportedReqs(&$db, $arrImportSource, $map_cur_reqdoc_id, $confli
 
                     // BUGID 0003745: CSV Requirements Import Updates Frozen Requirement
                     if ($last_version['is_open'] == 1) {
-                        $op = $req_mgr->update($item['id'], $last_version['id'], $docID, $title, $scope, $userID, $status, $type, $expected_coverage, $node_order, SKIP_CONTROLS);
+                        $op = $req_mgr->update($item['id'], $last_version['id'],
+                            $docID, $title, $scope, $userID, $status, $type,
+                            $expected_coverage, $node_order, SKIP_CONTROLS);
                         if ($op['status_ok']) {
-                            $import_status['msg'] = lang_get('req_import_result_overwritten');
+                            $import_status['msg'] = lang_get(
+                                'req_import_result_overwritten');
                         }
                     } else {
-                        $import_status['msg'] = lang_get('req_import_result_skipped_is_frozen');
+                        $import_status['msg'] = lang_get(
+                            'req_import_result_skipped_is_frozen');
                     }
                 } elseif ($conflictSolution == 'skip') {
                     // no work
-                    $import_status['msg'] = lang_get('req_import_result_skipped');
+                    $import_status['msg'] = lang_get(
+                        'req_import_result_skipped');
                 }
             } else {
                 // no conflict - just add requirement
-                $import_status = $req_mgr->create($idSRS, $docID, $title, $scope, $userID, $status, $type, $expected_coverage, $node_order);
+                $import_status = $req_mgr->create($idSRS, $docID, $title, $scope,
+                    $userID, $status, $type, $expected_coverage, $node_order);
             }
             $arrImport[] = array(
                 'doc_id' => $docID,
@@ -99,7 +110,8 @@ function executeImportedReqs(&$db, $arrImportSource, $map_cur_reqdoc_id, $confli
 /*
  * On version 1.9 is NOT USED when importing from XML format
  */
-function compareImportedReqs(&$dbHandler, $arrImportSource, $tprojectID, $reqSpecID)
+function compareImportedReqs(&$dbHandler, $arrImportSource, $tprojectID,
+    $reqSpecID)
 {
     $reqCfg = config_get('req_cfg');
     $labels = array(
@@ -147,9 +159,11 @@ function compareImportedReqs(&$dbHandler, $arrImportSource, $tprojectID, $reqSpe
             //
             //
             // 20100321 - we do not manage yet user option
-            $check_in_reqspec = $reqMgr->getByDocID($req['docid'], $tprojectID, $reqSpecID, $getOptions);
+            $check_in_reqspec = $reqMgr->getByDocID($req['docid'], $tprojectID,
+                $reqSpecID, $getOptions);
             if (is_null($check_in_reqspec)) {
-                $check_in_tproject = $reqMgr->getByDocID($req['docid'], $tprojectID, null, $getOptions);
+                $check_in_tproject = $reqMgr->getByDocID($req['docid'],
+                    $tprojectID, null, $getOptions);
                 if (! is_null($check_in_tproject)) {
                     $msgID = 'import_req_conflicts_other_branch';
                 }
@@ -160,7 +174,8 @@ function compareImportedReqs(&$dbHandler, $arrImportSource, $tprojectID, $reqSpe
             foreach ($cacheKeys as $attr) {
                 if (isset($labels[$attr][$req[$attr]])) {
                     if (! isset($cache[$attr][$req[$attr]])) {
-                        $cache[$attr][$req[$attr]] = lang_get($labels[$attr][$req[$attr]]);
+                        $cache[$attr][$req[$attr]] = lang_get(
+                            $labels[$attr][$req[$attr]]);
                     }
                     $verbose[$attr] = $cache[$attr][$req[$attr]];
                 } else {
@@ -289,7 +304,8 @@ function importReqDataFromCSV($fileName)
             foreach ($reqData[$ddx] as $fieldKey => &$fieldValue) {
                 // Adjust Lenght
                 if (isset($fieldLength[$fieldKey])) {
-                    $fieldValue = trim_and_limit($fieldValue, $fieldLength[$fieldKey]);
+                    $fieldValue = trim_and_limit($fieldValue,
+                        $fieldLength[$fieldKey]);
                 } elseif (isset($fieldDefault[$fieldKey])) {
                     // Assign default value
                     $checkKey = $fieldDefault[$fieldKey]['check'];
@@ -327,9 +343,7 @@ function importReqDataFromCSVDoors($fileName)
         'fieldQty' => count($fieldMappings),
         'processHeader' => true
     );
-    $impData = importCSVData($fileName, $fieldMappings, $options);
-
-    return $impData;
+    return importCSVData($fileName, $fieldMappings, $options);
 }
 
 /**
@@ -375,7 +389,8 @@ function getDocBookTableAsHtmlString($docTable, $parseCfg)
                         foreach ($row->children() as $entry) {
                             if (($entry->getName()) == $parseCfg->table_entry) {
                                 if ($entry->count() == 0) {
-                                    $table_row .= $cellTag['open'] . (string) $entry . $cellTag['close'];
+                                    $table_row .= $cellTag['open'] .
+                                        (string) $entry . $cellTag['close'];
                                 } else {
                                     $table_row .= $cellTag['open'];
                                     foreach ($parseCfg->table_entry_children as $ck) {
@@ -435,7 +450,8 @@ function importReqDataFromDocBook($fileName)
                         } else {
                             foreach ($docbookCfg->list_item_children as $ck) {
                                 if (property_exists($item, $ck)) {
-                                    $list .= "<li>" . (string) $item->$ck . "</li>";
+                                    $list .= "<li>" . (string) $item->$ck .
+                                        "</li>";
                                 }
                             }
                         }
@@ -455,7 +471,8 @@ function importReqDataFromDocBook($fileName)
 
         // parse Doc ID from requirement title
         // first remove any weird characters before the title. This could be probably omitted
-        $xmlData[$idx]['title'] = preg_replace("/^[^a-zA-Z_0-9]*/", "", $xmlData[$idx]['title']);
+        $xmlData[$idx]['title'] = preg_replace("/^[^a-zA-Z_0-9]*/", "",
+            $xmlData[$idx]['title']);
 
         // get Doc ID
         //
@@ -474,7 +491,8 @@ function importReqDataFromDocBook($fileName)
         // Note: Doc ID doesn't need trim_and_limit since it is parsed from Title
         // new dBug($xmlData[$idx]['title']);
 
-        if (preg_match("/[ ]*[a-zA-Z_0-9]*[ ][a-zA-Z_0-9]*/", $xmlData[$idx]['title'], $matches)) {
+        if (preg_match("/[ ]*[a-zA-Z_0-9]*[ ][a-zA-Z_0-9]*/",
+            $xmlData[$idx]['title'], $matches)) {
             $index = strtolower($matches[0]);
             if (! isset($counter[$index])) {
                 $counter[$index] = 0;
@@ -504,7 +522,8 @@ function importReqDataFromDocBook($fileName)
  * returns:
  *
  */
-function doReqImport(&$dbHandler, $tprojectID, $userID, $reqSpecID, $fileName, $importType, $emptyScope, $conflictSolution, $doImport)
+function doReqImport(&$dbHandler, $tprojectID, $userID, $reqSpecID, $fileName,
+    $importType, $emptyScope, $conflictSolution, $doImport)
 {
     $arrImportSource = loadImportedReq($fileName, $importType);
     $arrImport = null;
@@ -512,9 +531,12 @@ function doReqImport(&$dbHandler, $tprojectID, $userID, $reqSpecID, $fileName, $
     if (count($arrImportSource)) {
         $map_cur_reqdoc_id = getReqDocIDs($dbHandler, $reqSpecID);
         if ($doImport) {
-            $arrImport = executeImportedReqs($dbHandler, $arrImportSource, $map_cur_reqdoc_id, $conflictSolution, $emptyScope, $reqSpecID, $tprojectID, $userID);
+            $arrImport = executeImportedReqs($dbHandler, $arrImportSource,
+                $map_cur_reqdoc_id, $conflictSolution, $emptyScope, $reqSpecID,
+                $tprojectID, $userID);
         } else {
-            $arrImport = compareImportedReqs($dbHandler, $arrImportSource, $tprojectID, $reqSpecID);
+            $arrImport = compareImportedReqs($dbHandler, $arrImportSource,
+                $tprojectID, $reqSpecID);
         }
     }
     return $arrImport;
@@ -588,17 +610,21 @@ function getReqCoverage(&$dbHandler, $reqs, &$execMap)
                 if ($item_info['testcase_id'] > 0) {
                     $exec_status = $resultsCfg['status_code']['not_run'];
                     $tcase_path = '';
-                    if (isset($execMap[$item_info['testcase_id']]) && sizeof($execMap[$item_info['testcase_id']])) {
+                    if (isset($execMap[$item_info['testcase_id']]) &&
+                        sizeof($execMap[$item_info['testcase_id']])) {
                         $execInfo = end($execMap[$item_info['testcase_id']]);
                         $tcase_path = $execInfo['tcase_path'];
-                        if (isset($execInfo['status']) && trim($execInfo['status']) != '') {
+                        if (isset($execInfo['status']) &&
+                            trim($execInfo['status']) != '') {
                             $exec_status = $execInfo['status'];
                         }
                     } else {
-                        $path_info = $tree_mgr->get_full_path_verbose($item_info['testcase_id']);
+                        $path_info = $tree_mgr->get_full_path_verbose(
+                            $item_info['testcase_id']);
                         unset($path_info[$item_info['testcase_id']][0]); // remove test project name
                         $path_info[$item_info['testcase_id']][] = '';
-                        $tcase_path = implode(' / ', $path_info[$item_info['testcase_id']]);
+                        $tcase_path = implode(' / ',
+                            $path_info[$item_info['testcase_id']]);
                     }
                     $status_counters[$exec_status] ++;
                     $req['tcList'][] = array(
@@ -617,22 +643,28 @@ function getReqCoverage(&$dbHandler, $reqs, &$execMap)
             $go_away = 0;
             foreach ($coverageAlgorithm['checkOrder'] as $checkKey) {
                 foreach ($coverageAlgorithm['checkType'][$checkKey] as $tcase_status) {
-                    if ($checkKey == 'atLeastOne' && $status_counters[$resultsCfg['status_code'][$tcase_status]] > 0) {
+                    if ($checkKey == 'atLeastOne' &&
+                        $status_counters[$resultsCfg['status_code'][$tcase_status]] >
+                        0) {
                         $coverage['byStatus'][$tcase_status][] = $req;
                         $go_away = 1;
                         break;
                     }
                     if ($checkKey == 'all') {
-                        if ($status_counters[$resultsCfg['status_code'][$tcase_status]] == $item_qty) {
+                        if ($status_counters[$resultsCfg['status_code'][$tcase_status]] ==
+                            $item_qty) {
                             $coverage['byStatus'][$tcase_status][] = $req;
                             $go_away = 1;
                             break;
                         } // -amitkhullar - 20090331 - BUGFIX 2292
-                        elseif ($status_counters[$resultsCfg['status_code'][$tcase_status]] > 0) {
+                        elseif ($status_counters[$resultsCfg['status_code'][$tcase_status]] >
+                            0) {
                             $coverage['byStatus'][$tcase_status][] = $req;
                             $go_away = 1;
                             break;
-                        } elseif (isset($coverageAlgorithm['checkFail']) && isset($coverageAlgorithm['checkFail'][$checkKey]) && isset($req['tcList'])) {
+                        } elseif (isset($coverageAlgorithm['checkFail']) &&
+                            isset($coverageAlgorithm['checkFail'][$checkKey]) &&
+                            isset($req['tcList'])) {
 
                             // BUGID 2171
                             // ($coverageAlgorithm['checkFail'][$checkKey]==$tcase_status)
@@ -677,11 +709,14 @@ function getLastExecutions(&$db, $tcaseSet, $tplanId)
             'groupByBuild' => 0
         );
         foreach ($tcaseSet as $tcaseId => $tcInfo) {
-            $execMap[$tcaseId] = $tcase_mgr->get_last_execution($tcaseId, $tcInfo['tcversion_id'], $tplanId, testcase::ANY_BUILD, testcase::ANY_PLATFORM, $options);
+            $execMap[$tcaseId] = $tcase_mgr->getLastExecution($tcaseId,
+                $tcInfo['tcversion_id'], $tplanId, testcase::ANY_BUILD,
+                testcase::ANY_PLATFORM, $options);
 
             unset($path_info[$tcaseId][0]); // remove test project name
             $path_info[$tcaseId][] = '';
-            $execMap[$tcaseId][$tcInfo['tcversion_id']]['tcase_path'] = implode(' / ', $path_info[$tcaseId]);
+            $execMap[$tcaseId][$tcInfo['tcversion_id']]['tcase_path'] = implode(
+                ' / ', $path_info[$tcaseId]);
         }
 
         unset($tcase_mgr);
@@ -710,8 +745,7 @@ function check_syntax($fileName, $importType)
             break;
     }
     if ($pfn) {
-        $data = $pfn($fileName);
-        return $data;
+        return $pfn($fileName);
     }
 }
 
@@ -781,10 +815,11 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
         $tree_mgr = new tree($dbHandler);
         $req_mgr = new requirement_mgr($dbHandler);
 
-        $tables = tlObjectWithDB::getDBTables(array(
-            'requirements',
-            'req_specs'
-        ));
+        $tables = tlObjectWithDB::getDBTables(
+            array(
+                'requirements',
+                'req_specs'
+            ));
 
         $cfg = config_get('internal_links');
         $l18n['version'] = lang_get('tcversion_indicator');
@@ -831,8 +866,12 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
         case 'window':
         case 'frame': // open in same frame
             $target = ($cfg->target == 'window') ? 'target="_blank"' : 'target="_self"';
-            $string2replace['req'] = '<a ' . $target . ' href="lib/requirements/reqView.php?' . 'item=requirement&requirement_id=%s&req_version_id=%s#%s">%s%s%s</a>';
-            $string2replace['req_spec'] = '<a ' . $target . ' href="lib/requirements/reqSpecView.php?' . 'item=req_spec&req_spec_id=%s#%s">%s%s</a>';
+            $string2replace['req'] = '<a ' . $target .
+                ' href="lib/requirements/reqView.php?' .
+                'item=requirement&requirement_id=%s&req_version_id=%s#%s">%s%s%s</a>';
+            $string2replace['req_spec'] = '<a ' . $target .
+                ' href="lib/requirements/reqSpecView.php?' .
+                'item=req_spec&req_spec_id=%s#%s">%s%s</a>';
             break;
     }
 
@@ -861,9 +900,11 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
     );
 
     $sql2exec = array();
-    $sql2exec['req'] = " SELECT id, req_doc_id AS doc_id " . " FROM {$tables['requirements']} WHERE req_doc_id=";
+    $sql2exec['req'] = " SELECT id, req_doc_id AS doc_id " .
+        " FROM {$tables['requirements']} WHERE req_doc_id=";
 
-    $sql2exec['req_spec'] = " SELECT id, doc_id FROM {$tables['req_specs']} " . " WHERE doc_id=";
+    $sql2exec['req_spec'] = " SELECT id, doc_id FROM {$tables['req_specs']} " .
+        " WHERE doc_id=";
 
     foreach ($patterns2search as $accessKey => $pattern) {
 
@@ -886,8 +927,10 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
             if ($matches[$patternPositions['attributes']][$key] != '') {
                 foreach ($items2search[$accessKey] as $item) {
                     $matched_item = array();
-                    preg_match('/' . $item . '=([\w]+)/', $matched_string, $matched_item);
-                    $matched[$item] = (isset($matched_item[$itemPositions['item_value']])) ? $matched_item[$itemPositions['item_value']] : '';
+                    preg_match('/' . $item . '=([\w]+)/', $matched_string,
+                        $matched_item);
+                    $matched[$item] = (isset(
+                        $matched_item[$itemPositions['item_value']])) ? $matched_item[$itemPositions['item_value']] : '';
                 }
             }
             // set tproj to current project if tproj is not specified in attributes
@@ -896,7 +939,8 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
             }
 
             // get all reqs / req specs with the specified doc_id
-            $sql = $sql2exec[$accessKey] . "'{$matches[$patternPositions['doc_id']][$key]}'";
+            $sql = $sql2exec[$accessKey] .
+                "'{$matches[$patternPositions['doc_id']][$key]}'";
             $rs = $dbHandler->get_recordset($sql);
 
             if (count($rs) > 0) {
@@ -904,7 +948,8 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
                 foreach ($rs as $key => $value) {
                     // get root of linked node and check
                     $real_root = $tree_mgr->getTreeRoot($value['id']);
-                    $matched_root_info = $tproject_mgr->get_by_prefix($matched['tproj']);
+                    $matched_root_info = $tproject_mgr->get_by_prefix(
+                        $matched['tproj']);
 
                     // do only continue if project with the specified project exists and
                     // if the requirement really belongs to the specified project (requirements
@@ -916,21 +961,29 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
                             $req_version_id = 'null';
                             if ($matched['version'] != '') {
                                 // get requirement version_id of the specified version
-                                $req_version = $req_mgr->get_by_id($value['id'], null, $matched['version']);
+                                $req_version = $req_mgr->get_by_id($value['id'],
+                                    null, $matched['version']);
 
                                 // if version is not set or wrong version was set
                                 // -> show latest version by setting version_id to null
-                                $req_version_id = isset($req_version[0]['version_id']) ? $req_version[0]['version_id'] : 'null';
+                                $req_version_id = isset(
+                                    $req_version[0]['version_id']) ? $req_version[0]['version_id'] : 'null';
 
                                 // if req_version_id exists set the version to show on hyperlink text
                                 if ($req_version_id != 'null') {
-                                    $version = sprintf($l18n['version'], $matched['version']);
+                                    $version = sprintf($l18n['version'],
+                                        $matched['version']);
                                 }
                             }
-                            $urlString = sprintf($string2replace[$accessKey], $value['id'], $req_version_id, $matched['anchor'], $title[$accessKey], $value['doc_id'], $version);
+                            $urlString = sprintf($string2replace[$accessKey],
+                                $value['id'], $req_version_id,
+                                $matched['anchor'], $title[$accessKey],
+                                $value['doc_id'], $version);
                         } else {
                             // build urlString for req specs which do not have a version
-                            $urlString = sprintf($string2replace[$accessKey], $value['id'], $matched['anchor'], $title[$accessKey], $value['doc_id']);
+                            $urlString = sprintf($string2replace[$accessKey],
+                                $value['id'], $matched['anchor'],
+                                $title[$accessKey], $value['doc_id']);
                         }
                         $scope = str_replace($matched_string, $urlString, $scope);
                     }

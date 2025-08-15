@@ -101,9 +101,10 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
         // will get last revision of requested req version
         $dummy = $req_mgr->get_by_id($node['id'], $versionID, 1, $getOpt);
     } else {
-        $dummy = $req_mgr->get_version_revision($versionID, array(
-            'number' => $revision
-        ), $getOpt);
+        $dummy = $req_mgr->get_version_revision($versionID,
+            array(
+                'number' => $revision
+            ), $getOpt);
         if (! is_null($dummy)) {
             // do this way instead of using SQL alias on get_version_revision(), in order
             // to avoid issues (potential not confirmed)on different DBMS.
@@ -116,7 +117,8 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
     // update with values got from req, this is needed if user did not provide it
     $revision = $req['revision'];
 
-    $name = htmlspecialchars($req["req_doc_id"] . $title_separator . $req['title']);
+    $name = htmlspecialchars(
+        $req["req_doc_id"] . $title_separator . $req['title']);
 
     // change table style in case of single req printing to not be indented
     $table_style = "";
@@ -124,38 +126,53 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
         $table_style = "style=\"margin-left: 0;\"";
     }
 
-    $output = "<table class=\"req\" $table_style><tr><th colspan=\"$tableColspan\">" . "<span class=\"label\">{$labels['requirement']}:</span> " . $name . "</th></tr>\n";
+    $output = "<table class=\"req\" $table_style><tr><th colspan=\"$tableColspan\">" .
+        "<span class=\"label\">{$labels['requirement']}:</span> " . $name .
+        "</th></tr>\n";
 
     if ($force['displayVersion']) {
         foreach (array(
             'version',
             'revision'
         ) as $key) {
-            $output .= '<tr><td valign="top">' . '<span class="label">' . $labels[$key] . ':</span></td>' . '<td>' . $req[$key] . "</td></tr>\n";
+            $output .= '<tr><td valign="top">' . '<span class="label">' .
+                $labels[$key] . ':</span></td>' . '<td>' . $req[$key] .
+                "</td></tr>\n";
         }
     }
 
     if ($options['toc']) {
-        $options['tocCode'] .= '<p style="padding-left: ' . (15 * $reqLevel) . 'px;"><a href="#' . prefixToHTMLID('req' . $node['id']) . '">' . $name . '</a></p>';
+        $options['tocCode'] .= '<p style="padding-left: ' . (15 * $reqLevel) .
+            'px;"><a href="#' . prefixToHTMLID('req' . $node['id']) . '">' .
+            $name . '</a></p>';
         $output .= '<a name="' . prefixToHTMLID('req' . $node['id']) . '"></a>';
     }
 
     if ($options['req_author']) {
-        $output .= '<tr><td valign="top">' . '<span class="label">' . $labels['author'] . ':</span></td>' . '<td>' . htmlspecialchars(gendocGetUserName($db, $req['author_id']));
+        $output .= '<tr><td valign="top">' . '<span class="label">' .
+            $labels['author'] . ':</span></td>' . '<td>' .
+            htmlspecialchars(gendocGetUserName($db, $req['author_id']));
 
         if (isset($options['displayDates']) && $options['displayDates']) {
             $dummy = null;
-            $output .= ' - ' . localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $req['creation_ts']);
+            $output .= ' - ' .
+                localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',
+                    $req['creation_ts']);
         }
         $output .= "</td></tr>\n";
 
         // add updater if available and differs from author OR forced
-        if ($req['modifier_id'] > 0 && $force['displayLastEdit'] || ($req['modifier_id'] != $req['modifier_id'])) {
-            $output .= '<tr><td valign="top">' . '<span class="label">' . $labels['last_edit'] . ':</span></td>' . '<td>' . htmlspecialchars(gendocGetUserName($db, $req['modifier_id']));
+        if ($req['modifier_id'] > 0 && $force['displayLastEdit'] ||
+            ($req['modifier_id'] != $req['modifier_id'])) {
+            $output .= '<tr><td valign="top">' . '<span class="label">' .
+                $labels['last_edit'] . ':</span></td>' . '<td>' .
+                htmlspecialchars(gendocGetUserName($db, $req['modifier_id']));
 
             if (isset($options['displayDates']) && $options['displayDates']) {
                 $dummy = null;
-                $output .= ' - ' . localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $req['modification_ts']);
+                $output .= ' - ' .
+                    localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',
+                        $req['modification_ts']);
             }
             $output .= "</td></tr>\n";
         }
@@ -166,7 +183,9 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
         'type'
     ) as $key) {
         if ($options['req_' . $key]) {
-            $output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . $labels[$key] . "</span></td>" . "<td>" . $decodeReq[$key][$req[$key]] . "</td></tr>";
+            $output .= '<tr><td width="' . $firstColWidth .
+                '"><span class="label">' . $labels[$key] . "</span></td>" .
+                "<td>" . $decodeReq[$key][$req[$key]] . "</td></tr>";
         }
     }
 
@@ -175,7 +194,8 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
         // @since 1.9.18
         // Coverage Link REQV to TCV
         // $current = count($req_mgr->get_coverage($req['id']));
-        $current = count((array) $req_mgr->getGoodForReqVersion($req['version_id']));
+        $current = count(
+            (array) $req_mgr->getGoodForReqVersion($req['version_id']));
 
         $expected = $req['expected_coverage'];
         $coverage = $labels['not_aplicable'] . " ($current/0)";
@@ -184,11 +204,13 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
             $coverage = "{$percentage}% ({$current}/{$expected})";
         }
 
-        $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['coverage'] . "</span></td>" . "<td>$coverage</td></tr>";
+        $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+            $labels['coverage'] . "</span></td>" . "<td>$coverage</td></tr>";
     }
 
     if ($options['req_scope']) {
-        $output .= "<tr><td colspan=\"$tableColspan\"> <br/>" . $req['scope'] . "</td></tr>";
+        $output .= "<tr><td colspan=\"$tableColspan\"> <br/>" . $req['scope'] .
+            "</td></tr>";
     }
 
     if ($options['req_relations']) {
@@ -197,14 +219,22 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
         $relations = $req_mgr->get_relations($req['id']);
 
         if ($relations['num_relations']) {
-            $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['relations'] . "</span></td><td>";
+            $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+                $labels['relations'] . "</span></td><td>";
 
             $filler = str_repeat('&nbsp;', 5); // MAGIC allowed
             foreach ($relations['relations'] as $rel) {
-                $output .= "{$rel['type_localized']}: <br/>{$filler}" . htmlspecialchars($rel['related_req']['req_doc_id']) . $title_separator . htmlspecialchars($rel['related_req']['title']) . "</br>" . "{$filler}{$labels['status']}: " . "{$decodeReq['status'][$rel['related_req']['status']]} <br/>";
+                $output .= "{$rel['type_localized']}: <br/>{$filler}" .
+                    htmlspecialchars($rel['related_req']['req_doc_id']) .
+                    $title_separator .
+                    htmlspecialchars($rel['related_req']['title']) . "</br>" .
+                    "{$filler}{$labels['status']}: " .
+                    "{$decodeReq['status'][$rel['related_req']['status']]} <br/>";
 
                 if ($req_cfg->relations->interproject_linking) {
-                    $output .= "{$filler}{$labels['relation_project']}: " . htmlspecialchars($rel['related_req']['testproject_name']) . " <br/>";
+                    $output .= "{$filler}{$labels['relation_project']}: " .
+                        htmlspecialchars(
+                            $rel['related_req']['testproject_name']) . " <br/>";
                 }
             }
 
@@ -217,15 +247,21 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
         // @since 1.9.18
         // Coverage links REQV to TCV
         // $req_coverage = $req_mgr->get_coverage($req['id']);
-        $req_coverage = (array) $req_mgr->getGoodForReqVersion($req['version_id'], array(
-            'verbose' => true,
-            'tproject_id' => $tprojectID
-        ));
+        $req_coverage = (array) $req_mgr->getGoodForReqVersion(
+            $req['version_id'],
+            array(
+                'verbose' => true,
+                'tproject_id' => $tprojectID
+            ));
 
         if (! empty($req_coverage)) {
-            $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['related_tcs'] . "</span></td>" . "<td>";
+            $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+                $labels['related_tcs'] . "</span></td>" . "<td>";
             foreach ($req_coverage[$req['version_id']] as $tc) {
-                $output .= htmlspecialchars($tc['tc_external_id'] . $title_separator . $tc['testcase_name']) . " &nbsp;[{$labels['version']}:" . $tc['version'] . "]";
+                $output .= htmlspecialchars(
+                    $tc['tc_external_id'] . $title_separator .
+                    $tc['testcase_name']) . " &nbsp;[{$labels['version']}:" .
+                    $tc['version'] . "]";
             }
 
             $output .= "</td></tr>";
@@ -240,7 +276,8 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
                 $cflabel = htmlspecialchars($cf['label']);
                 $value = htmlspecialchars($cf['value']);
 
-                $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $cflabel . "</span></td>" . "<td>$value</td></tr>";
+                $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+                    $cflabel . "</span></td>" . "<td>$value</td></tr>";
             }
         }
     }
@@ -250,11 +287,13 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
     $attachSet = (array) $req_mgr->getAttachmentInfos($req['revision_id']);
 
     if (count($attachSet)) {
-        $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['attached_files'] . "</span></td><td>";
+        $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+            $labels['attached_files'] . "</span></td><td>";
 
         foreach ($attachSet as $fitem) {
             $sec = hash('sha256', $fitem['file_name']);
-            $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . '&id=' . $fitem['id'];
+            $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec .
+                '&id=' . $fitem['id'];
 
             $safeFileName = htmlspecialchars($fitem['file_name']);
             if ($fitem['is_image']) {
@@ -275,9 +314,11 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
                 }
 
                 $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
-                $output .= '<li>' . '<img ' . $iDim . ' src="' . $basehref . $cmout . '">';
+                $output .= '<li>' . '<img ' . $iDim . ' src="' . $basehref .
+                    $cmout . '">';
             } else {
-                $output .= '<li>' . '<a href="' . $basehref . $cmout . '" ' . ' target="#blank" > ' . $safeFileName . '</a>';
+                $output .= '<li>' . '<a href="' . $basehref . $cmout . '" ' .
+                    ' target="#blank" > ' . $safeFileName . '</a>';
             }
         }
         $output .= "</td></tr>";
@@ -304,7 +345,8 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
  *
  * @return string $output HTML Code
  */
-function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLevel)
+function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix,
+    $rsLevel)
 {
     static $tableColspan;
     static $firstColWidth;
@@ -343,7 +385,8 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
         $title_separator = config_get('gui_title_separator_1');
         $req_spec_mgr = new requirement_spec_mgr($db);
         $tplan_mgr = new testplan($db);
-        $nodeTypes = array_flip($tplan_mgr->tree_manager->get_available_node_types());
+        $nodeTypes = array_flip(
+            $tplan_mgr->tree_manager->get_available_node_types());
     }
 
     switch ($nodeTypes[$node['node_type_id']]) {
@@ -367,7 +410,8 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
             );
             break;
     }
-    $name = htmlspecialchars($spec['doc_id'] . $title_separator . $spec['title']);
+    $name = htmlspecialchars(
+        $spec['doc_id'] . $title_separator . $spec['title']);
 
     $docHeadingNumbering = '';
     if ($options['headerNumbering']) {
@@ -382,24 +426,34 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
     $reLevel = ($reLevel > 6) ? 6 : $reLevel;
     $reLevel = ($reLevel < 1) ? 1 : $reLevel;
 
-    $output .= "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" . "<h{$reLevel} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " . $name . "</h{$reLevel}></th></tr>\n";
+    $output .= "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
+        "<h{$reLevel} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
+        $name . "</h{$reLevel}></th></tr>\n";
 
     if ($options['toc']) {
         $spacing = ($reLevel == 2) ? "<br/>" : "";
-        $options['tocCode'] .= $spacing . '<p style="padding-left: ' . (10 * $reLevel) . 'px;"><b>' . '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></b></p>\n";
+        $options['tocCode'] .= $spacing . '<p style="padding-left: ' .
+            (10 * $reLevel) . 'px;"><b>' . '<a href="#' .
+            prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name .
+            "</a></b></p>\n";
         $output .= "<a name='" . prefixToHTMLID($tocPrefix) . "'></a>\n";
     }
-    $output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . $labels['revision'] . "</span></td><td> " . $spec['revision'] . "</td></tr>\n";
+    $output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' .
+        $labels['revision'] . "</span></td><td> " . $spec['revision'] .
+        "</td></tr>\n";
 
     if ($options['req_spec_author']) {
         // get author name for node
         $author = tlUser::getById($db, $spec['author_id']);
         $whois = (is_null($author)) ? lang_get('undefined') : $author->getDisplayName();
-        $output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . $labels['author'] . "</span></td><td> " . htmlspecialchars($whois) . "</td></tr>\n";
+        $output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' .
+            $labels['author'] . "</span></td><td> " . htmlspecialchars($whois) .
+            "</td></tr>\n";
     }
 
     if ($options['req_spec_type']) {
-        $output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . $labels['type'] . "</span></td>" . "<td>";
+        $output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' .
+            $labels['type'] . "</span></td>" . "<td>";
 
         if (isset($reqSpecTypeLabels[$spec['type']])) {
             $output .= $reqSpecTypeLabels[$spec['type']];
@@ -418,11 +472,14 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
             $coverage = "{$percentage}% ({$current}/{$expected})";
         }
 
-        $output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . $labels['overwritten_count'] . " (" . $labels['coverage'] . ")</span></td>" . "<td>" . $coverage . "</td></tr>";
+        $output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' .
+            $labels['overwritten_count'] . " (" . $labels['coverage'] .
+            ")</span></td>" . "<td>" . $coverage . "</td></tr>";
     }
 
     if ($options['req_spec_scope']) {
-        $output .= "<tr><td colspan=\"$tableColspan\">" . $spec['scope'] . "</td></tr>";
+        $output .= "<tr><td colspan=\"$tableColspan\">" . $spec['scope'] .
+            "</td></tr>";
     }
 
     if ($options['req_spec_cf']) {
@@ -433,14 +490,16 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
                 $cflabel = htmlspecialchars($cf['label']);
                 $value = htmlspecialchars($cf['value']);
 
-                $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $cflabel . "</span></td>" . "<td>$value</td></tr>";
+                $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+                    $cflabel . "</span></td>" . "<td>$value</td></tr>";
             }
         }
     }
 
     $attachSet = (array) $req_spec_mgr->getAttachmentInfos($spec_id);
     if (count($attachSet)) {
-        $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['attached_files'] . "</span></td><td><ul>";
+        $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+            $labels['attached_files'] . "</span></td><td><ul>";
 
         foreach ($attachSet as $item) {
             $fname = "";
@@ -477,7 +536,8 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
  *
  * @return string $output HTML Code
  */
-function renderReqSpecTreeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsCnt, $rstLevel, $user_id, $tplan_id = 0, $tprojectID = 0)
+function renderReqSpecTreeForPrinting(&$db, &$node, &$options, $tocPrefix,
+    $rsCnt, $rstLevel, $user_id, $tplan_id = 0, $tprojectID = 0)
 {
     static $tree_mgr;
     static $map_id_descr;
@@ -496,12 +556,14 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsCn
 
         case 'requirement_spec':
             $tocPrefix .= (! is_null($tocPrefix) ? "." : '') . $rsCnt;
-            $code .= renderReqSpecNodeForPrinting($db, $node, $options, $tocPrefix, $rstLevel, $tprojectID);
+            $code .= renderReqSpecNodeForPrinting($db, $node, $options,
+                $tocPrefix, $rstLevel, $tprojectID);
             break;
 
         case 'requirement':
             $tocPrefix .= (! is_null($tocPrefix) ? "." : '') . $rsCnt;
-            $code .= renderReqForPrinting($db, $node, $options, $rstLevel, $tprojectID);
+            $code .= renderReqForPrinting($db, $node, $options, $rstLevel,
+                $tprojectID);
             break;
     }
 
@@ -516,11 +578,14 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsCn
                 continue;
             }
 
-            if (isset($current['node_type_id']) && $map_id_descr[$current['node_type_id']] == 'requirement_spec') {
+            if (isset($current['node_type_id']) &&
+                $map_id_descr[$current['node_type_id']] == 'requirement_spec') {
                 $rsCnt ++;
             }
 
-            $code .= renderReqSpecTreeForPrinting($db, $current, $options, $tocPrefix, $rsCnt, $rstLevel + 1, $user_id, $tplan_id, $tprojectID);
+            $code .= renderReqSpecTreeForPrinting($db, $current, $options,
+                $tocPrefix, $rsCnt, $rstLevel + 1, $user_id, $tplan_id,
+                $tprojectID);
         }
     }
 
@@ -567,10 +632,12 @@ function renderHTMLHeader($title, $base_href, $doc_type, $jsSet = null)
     $output = "<!DOCTYPE HTML>\n";
 
     $output .= "<html>\n<head>\n";
-    $output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '"/>';
+    $output .= '<meta http-equiv="Content-Type" content="text/html; charset=' .
+        config_get('charset') . '"/>';
 
     $output .= '<title>' . htmlspecialchars($title) . "</title>\n";
-    $output .= '<link type="text/css" rel="stylesheet" href="' . $cssFile . "\" />\n";
+    $output .= '<link type="text/css" rel="stylesheet" href="' . $cssFile .
+        "\" />\n";
 
     // way to add CSS directly to the exported file (not used - test required)
     // $docCss = file_get_contents(TL_ABS_PATH . $docCfg->css_template);
@@ -579,9 +646,11 @@ function renderHTMLHeader($title, $base_href, $doc_type, $jsSet = null)
 
     if (! is_null($jsSet)) {
         foreach ($jsSet as $js) {
-            $output .= "\n" . '<script type="text/javascript" src="' . $base_href . $js . '"';
+            $output .= "\n" . '<script type="text/javascript" src="' . $base_href .
+                $js . '"';
             $output .= ' language="javascript"></script>' . "\n";
-            $output .= '<script type="text/javascript" language="javascript">' . "<!-- var fRoot = '" . $base_href . "'; -->" . '</script>' . "\n";
+            $output .= '<script type="text/javascript" language="javascript">' .
+                "<!-- var fRoot = '" . $base_href . "'; -->" . '</script>' . "\n";
         }
     }
 
@@ -608,15 +677,20 @@ function renderFirstPage($doc_info)
 
     // Print header
     if ($docCfg->company_name != '') {
-        $output .= '<div style="float:right;">' . htmlspecialchars($docCfg->company_name) . "</div>\n";
+        $output .= '<div style="float:right;">' .
+            htmlspecialchars($docCfg->company_name) . "</div>\n";
     }
     $output .= "<div>&nbsp;</div><hr />\n";
 
     if ($docCfg->company_logo != '') {
         // allow to configure height via config file
-        $safePName = $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo;
+        $safePName = $_SESSION['basehref'] . TL_THEME_IMG_DIR .
+            $docCfg->company_logo;
         list ($iWidth, $iHeight, ,) = getimagesize($safePName);
-        $output .= '<p style="text-align: center;"><img alt="TestLink logo" ' . 'title="configure using $tlCfg->document_generator->company_logo" ' . ' width=' . $iWidth . ' height=' . $iHeight . ' src="' . $safePName . '" /></p>';
+        $output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
+            'title="configure using $tlCfg->document_generator->company_logo" ' .
+            ' width=' . $iWidth . ' height=' . $iHeight . ' src="' . $safePName .
+            '" /></p>';
     }
     $output .= "</div>\n";
 
@@ -632,10 +706,14 @@ function renderFirstPage($doc_info)
         $output .= '<p>' . $doc_info->additional_info . '</p>';
     }
     $output .= "</div>\n";
-    $output .= '<div class="doc_title" style="text-align:left;margin: auto;">' . '<p>' . lang_get('testproject') . ": " . $doc_info->tproject_name;
+    $output .= '<div class="doc_title" style="text-align:left;margin: auto;">' .
+        '<p>' . lang_get('testproject') . ": " . $doc_info->tproject_name;
 
-    if ($doc_info->type == DOC_TEST_PLAN_DESIGN || $doc_info->type == DOC_TEST_PLAN_EXECUTION || $doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD) {
-        $output .= '<br/>' . lang_get('testplan') . ": " . $doc_info->testplan_name;
+    if ($doc_info->type == DOC_TEST_PLAN_DESIGN ||
+        $doc_info->type == DOC_TEST_PLAN_EXECUTION ||
+        $doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD) {
+        $output .= '<br/>' . lang_get('testplan') . ": " .
+            $doc_info->testplan_name;
     }
 
     if ($doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD) {
@@ -647,15 +725,19 @@ function renderFirstPage($doc_info)
     }
     $output .= '</p>' . "</div>\n";
 
-    $output .= '<div class="summary">' . '<p id="printedby">' . lang_get('printed_by_TestLink_on') . " " . @strftime($date_format_cfg, time()) . "</p></div>\n";
+    $output .= '<div class="summary">' . '<p id="printedby">' .
+        lang_get('printed_by_TestLink_on') . " " .
+        @strftime($date_format_cfg, time()) . "</p></div>\n";
 
     // Print legal notes
     if ($docCfg->company_copyright != '') {
-        $output .= '<div class="pagefooter" id="copyright">' . $docCfg->company_copyright . "</div>\n";
+        $output .= '<div class="pagefooter" id="copyright">' .
+            $docCfg->company_copyright . "</div>\n";
     }
 
     if ($docCfg->confidential_msg != '') {
-        $output .= '<div class="pagefooter" id="confidential">' . $docCfg->confidential_msg . "</div>\n";
+        $output .= '<div class="pagefooter" id="confidential">' .
+            $docCfg->confidential_msg . "</div>\n";
     }
 
     return $output;
@@ -701,7 +783,8 @@ function renderSimpleChapter($title, $content, $addToStyle = null)
  * context['prefix']
  *
  */
-function renderTestSpecTreeForPrinting(&$db, &$node, &$options, $env, $context, $tocPrefix, $indentLevel)
+function renderTestSpecTreeForPrinting(&$db, &$node, &$options, $env, $context,
+    $tocPrefix, $indentLevel)
 {
     static $tree_mgr;
     static $id_descr;
@@ -729,11 +812,13 @@ function renderTestSpecTreeForPrinting(&$db, &$node, &$options, $env, $context, 
 
         case 'testsuite':
             $tocPrefix .= (! is_null($tocPrefix) ? "." : '') . $env->tocCounter;
-            $code .= renderTestSuiteNodeForPrinting($db, $node, $env, $options, $context, $tocPrefix, $indentLevel);
+            $code .= renderTestSuiteNodeForPrinting($db, $node, $env, $options,
+                $context, $tocPrefix, $indentLevel);
             break;
 
         case 'testcase':
-            $code .= renderTestCaseForPrinting($db, $node, $options, $env, $context, $indentLevel);
+            $code .= renderTestCaseForPrinting($db, $node, $options, $env,
+                $context, $indentLevel);
             break;
     }
 
@@ -748,12 +833,14 @@ function renderTestSpecTreeForPrinting(&$db, &$node, &$options, $env, $context, 
                 continue;
             }
 
-            if (isset($current['node_type_id']) && $id_descr[$current['node_type_id']] == 'testsuite') {
+            if (isset($current['node_type_id']) &&
+                $id_descr[$current['node_type_id']] == 'testsuite') {
                 // Each time I found a contained Test Suite need to add a .x.x. to TOC
                 $TOCCounter ++;
             }
             $env->tocCounter = $TOCCounter;
-            $code .= renderTestSpecTreeForPrinting($db, $current, $options, $env, $context, $tocPrefix, $indentLevel + 1);
+            $code .= renderTestSpecTreeForPrinting($db, $current, $options, $env,
+                $context, $tocPrefix, $indentLevel + 1);
         }
     }
 
@@ -804,7 +891,8 @@ function gendocGetUserName(&$db, $userId)
  *
  * @internal revisions
  */
-function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $indentLevel)
+function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
+    $indentLevel)
 {
     static $st;
     static $statusL10N;
@@ -836,7 +924,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
         $st = new stdClass();
         $statusL10N = array();
         list ($cfg, $labels, $statusL10N) = initRenderTestCaseCfg($options);
-        $st = initStaticRenderTestCaseForPrinting($db, $node['id'], $context, $cfg);
+        $st = initStaticRenderTestCaseForPrinting($db, $node['id'], $context,
+            $cfg);
         $st->statusL10N = $statusL10N;
 
         $tcase_prefix = $st->tcase_prefix;
@@ -861,8 +950,10 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
     $getByID['filters'] = null;
 
     $opt = array();
-    $opt['step_exec_notes'] = isset($options['step_exec_notes']) && $options['step_exec_notes'];
-    $opt['step_exec_status'] = isset($options['step_exec_status']) && $options['step_exec_status'];
+    $opt['step_exec_notes'] = isset($options['step_exec_notes']) &&
+        $options['step_exec_notes'];
+    $opt['step_exec_status'] = isset($options['step_exec_status']) &&
+        $options['step_exec_status'];
 
     switch ($options["docType"]) {
         case DOC_TEST_SPEC:
@@ -872,12 +963,15 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
 
         case SINGLE_TESTCASE:
             $getByID['tcversion_id'] = $node['tcversion_id'];
-            $getExecutions = ($options['passfail'] || $options['notes'] || $opt['step_exec_notes'] || $opt['step_exec_status']);
+            $getExecutions = ($options['passfail'] || $options['notes'] ||
+                $opt['step_exec_notes'] || $opt['step_exec_status']);
             break;
 
         default:
             $getByID['tcversion_id'] = $node['tcversion_id'];
-            $getExecutions = ($options['cfields'] || $options['passfail'] || $options['notes'] || $opt['step_exec_notes'] || $opt['step_exec_status']);
+            $getExecutions = ($options['cfields'] || $options['passfail'] ||
+                $options['notes'] || $opt['step_exec_notes'] ||
+                $opt['step_exec_status']);
             break;
     }
 
@@ -905,7 +999,11 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
 
         $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts,
              E.tester_id, E.notes, E.build_id, E.tcversion_id,
-             E.tcversion_number,E.testplan_id," . " E.execution_type, E.execution_duration, " . " B.name AS build_name " . " FROM {$st->tables['executions']} E " . " JOIN {$st->tables['builds']} B ON B.id = E.build_id " . " WHERE 1 = 1 ";
+             E.tcversion_number,E.testplan_id," .
+            " E.execution_type, E.execution_duration, " .
+            " B.name AS build_name " . " FROM {$st->tables['executions']} E " .
+            " JOIN {$st->tables['builds']} B ON B.id = E.build_id " .
+            " WHERE 1 = 1 ";
 
         // Bugfix to show only active builds in Test Report view
         $sql .= "AND B.active = 1";
@@ -913,12 +1011,16 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
         if (isset($context['exec_id'])) {
             $sql .= " AND E.id=" . intval($context['exec_id']);
         } else {
-            $sql .= " AND E.testplan_id = " . intval($tplan_id) . " AND E.platform_id = " . intval($platform_id) . " AND E.tcversion_id = " . intval($linkedItem[0]['tcversion_id']);
+            $sql .= " AND E.testplan_id = " . intval($tplan_id) .
+                " AND E.platform_id = " . intval($platform_id) .
+                " AND E.tcversion_id = " . intval(
+                    $linkedItem[0]['tcversion_id']);
             if ($build_id > 0) {
                 $sql .= " AND E.build_id = " . intval($build_id);
             } else {
                 // We are looking for LATEST EXECUTION of CURRENT LINKED test case version
-                $sql .= " AND E.tcversion_number=" . intval($linkedItem[0]['version']);
+                $sql .= " AND E.tcversion_number=" .
+                    intval($linkedItem[0]['version']);
             }
             $sql .= " ORDER BY execution_id DESC";
         }
@@ -935,21 +1037,27 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
                 'version_number' => $exec_info[0]['tcversion_number']
             );
             $tbuild_id = $exec_info[0]['build_id'];
-            if (isset($options['build_cfields']) && $options['build_cfields'] && ! isset($st->buildCfields[$tbuild_id])) {
-                $st->buildCfields[$tbuild_id] = $st->build_mgr->html_table_of_custom_field_values($tbuild_id, $tprojectID);
+            if (isset($options['build_cfields']) && $options['build_cfields'] &&
+                ! isset($st->buildCfields[$tbuild_id])) {
+                $st->buildCfields[$tbuild_id] = $st->build_mgr->html_table_of_custom_field_values(
+                    $tbuild_id, $tprojectID);
             }
         }
     }
 
-    $tcInfo = (array) $st->tc_mgr->get_by_id($id, $getByID['tcversion_id'], $getByID['filters'], array(
-        'renderGhost' => true,
-        'renderImageInline' => true
-    ));
+    $tcInfo = (array) $st->tc_mgr->get_by_id($id, $getByID['tcversion_id'],
+        $getByID['filters'],
+        array(
+            'renderGhost' => true,
+            'renderImageInline' => true
+        ));
 
     if (null != $tcInfo && ! empty($tcInfo)) {
         $tcInfo = $tcInfo[0];
     } else {
-        $msg = basename(__FILE__) . ' >' . 'Line: ' . __LINE__ . ' > ' . 'Function: ' . __FUNCTION__ . ' > ' . "Failed to get Test Case Info for ID=" . $id;
+        $msg = basename(__FILE__) . ' >' . 'Line: ' . __LINE__ . ' > ' .
+            'Function: ' . __FUNCTION__ . ' > ' .
+            "Failed to get Test Case Info for ID=" . $id;
 
         if ($getByID['tcversion_id'] == testcase::ALL_VERSIONS) {
             $msg .= " ALL VERSIONS ";
@@ -977,22 +1085,31 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
         // Get custom fields that has specification scope
         // Custom Field values at Test Case VERSION Level
         foreach ($st->locationFilters as $fkey => $fvalue) {
-            $cfields['specScope'][$fkey] = $st->tc_mgr->html_table_of_custom_field_values($id, 'design', $fvalue, null, $tplan_id, $tprojectID, $st->cfieldFormatting, $tcInfo['id']);
+            $cfields['specScope'][$fkey] = $st->tc_mgr->html_table_of_custom_field_values(
+                $id, 'design', $fvalue, null, $tplan_id, $tprojectID,
+                $st->cfieldFormatting, $tcInfo['id']);
         }
 
         if (! is_null($exec_info)) {
-            $cfields['execScope'] = $st->tc_mgr->html_table_of_custom_field_values($tcInfo['id'], 'execution', null, $exec_info[0]['execution_id'], $tplan_id, $tprojectID, $st->cfieldFormatting);
+            $cfields['execScope'] = $st->tc_mgr->html_table_of_custom_field_values(
+                $tcInfo['id'], 'execution', null, $exec_info[0]['execution_id'],
+                $tplan_id, $tprojectID, $st->cfieldFormatting);
         }
     }
 
     if ($options['toc']) {
         // EXTERNAL ID added
-        $options['tocCode'] .= '<p style="padding-left: ' . (15 * $level) . 'px;"><a href="#' . prefixToHTMLID('tc' . $id) . '">' . htmlspecialchars($external_id) . ": " . $name . '</a></p>';
+        $options['tocCode'] .= '<p style="padding-left: ' . (15 * $level) .
+            'px;"><a href="#' . prefixToHTMLID('tc' . $id) . '">' .
+            htmlspecialchars($external_id) . ": " . $name . '</a></p>';
         $code .= '<a name="' . prefixToHTMLID('tc' . $id) . '"></a>';
     }
 
-    $code .= '<p>&nbsp;</p><div> <table class="tc" width="90%" ' . $st->table_style . '>';
-    $code .= '<tr><th colspan="' . $cfg['tableColspan'] . '">' . $labels['test_case'] . " " . htmlspecialchars($external_id) . ": " . $name;
+    $code .= '<p>&nbsp;</p><div> <table class="tc" width="90%" ' .
+        $st->table_style . '>';
+    $code .= '<tr><th colspan="' . $cfg['tableColspan'] . '">' .
+        $labels['test_case'] . " " . htmlspecialchars($external_id) . ": " .
+        $name;
 
     // add test case version
     switch ($env->reportType) {
@@ -1011,26 +1128,40 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
     }
 
     if ($cfg['doc']->tc_version_enabled || $force['displayVersion']) {
-        $code .= '&nbsp;<span style="font-size: 80%;">' . $cfg['gui']->version_separator_open . $labels['version'] . $cfg['gui']->title_separator_1 . $version_number . $cfg['gui']->version_separator_close . '</span>';
+        $code .= '&nbsp;<span style="font-size: 80%;">' .
+            $cfg['gui']->version_separator_open . $labels['version'] .
+            $cfg['gui']->title_separator_1 . $version_number .
+            $cfg['gui']->version_separator_close . '</span>';
     }
     $code .= "</th></tr>\n";
 
     if ($options['author']) {
-        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . '<span class="label">' . $labels['author'] . ':</span></td>' . '<td colspan="' . ($cfg['tableColspan'] - 1) . '">' . gendocGetUserName($db, $tcInfo['author_id']);
+        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' .
+            '<span class="label">' . $labels['author'] . ':</span></td>' .
+            '<td colspan="' . ($cfg['tableColspan'] - 1) . '">' .
+            gendocGetUserName($db, $tcInfo['author_id']);
 
         if (isset($options['displayDates']) && $options['displayDates']) {
             $dummy = null;
-            $code .= ' - ' . localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $tcInfo['creation_ts']);
+            $code .= ' - ' .
+                localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',
+                    $tcInfo['creation_ts']);
         }
         $code .= "</td></tr>\n";
 
         // add updater if available and differs from author OR forced
-        if ($tcInfo['updater_id'] > 0 && $force['displayLastEdit'] > 0 || ($tcInfo['updater_id'] != $tcInfo['author_id'])) {
-            $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . '<span class="label">' . $labels['last_edit'] . ':</span></td>' . '<td colspan="' . ($cfg['tableColspan'] - 1) . '">' . gendocGetUserName($db, $tcInfo['updater_id']);
+        if ($tcInfo['updater_id'] > 0 && $force['displayLastEdit'] > 0 ||
+            ($tcInfo['updater_id'] != $tcInfo['author_id'])) {
+            $code .= '<tr><td width="' . $cfg['firstColWidth'] .
+                '" valign="top">' . '<span class="label">' . $labels['last_edit'] .
+                ':</span></td>' . '<td colspan="' . ($cfg['tableColspan'] - 1) .
+                '">' . gendocGetUserName($db, $tcInfo['updater_id']);
 
             if (isset($options['displayDates']) && $options['displayDates']) {
                 $dummy = null;
-                $code .= ' - ' . localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $tcInfo['modification_ts']);
+                $code .= ' - ' .
+                    localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',
+                        $tcInfo['modification_ts']);
             }
             $code .= "</td></tr>\n";
         }
@@ -1046,7 +1177,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
         $tcase_pieces[] = 'preconditions';
     }
 
-    if ($options['body'] || $options['step_exec_notes'] || $options['step_exec_status']) {
+    if ($options['body'] || $options['step_exec_notes'] ||
+        $options['step_exec_status']) {
         $tcase_pieces[] = 'steps';
     }
 
@@ -1069,20 +1201,27 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
 
                 if (! is_null($tcInfo[$key]) && $tcInfo[$key] != '') {
                     $td_colspan = 3;
-                    $code .= '<tr>' . '<td><span class="label">' . $labels['step_number'] . ':</span></td>' . '<td><span class="label">' . $labels['step_actions'] . ':</span></td>' . '<td><span class="label">' . $labels['expected_results'] . ':</span></td>';
+                    $code .= '<tr>' . '<td><span class="label">' .
+                        $labels['step_number'] . ':</span></td>' .
+                        '<td><span class="label">' . $labels['step_actions'] .
+                        ':</span></td>' . '<td><span class="label">' .
+                        $labels['expected_results'] . ':</span></td>';
 
                     $sxni = null;
                     if ($opt['step_exec_notes'] || $opt['step_exec_status']) {
-                        $sxni = $st->tc_mgr->getStepsExecInfo($exec_info[0]['execution_id']);
+                        $sxni = $st->tc_mgr->getStepsExecInfo(
+                            $exec_info[0]['execution_id']);
 
                         if ($opt['step_exec_notes']) {
                             $td_colspan ++;
-                            $code .= '<td><span class="label">' . $labels['step_exec_notes'] . ':</span></td>';
+                            $code .= '<td><span class="label">' .
+                                $labels['step_exec_notes'] . ':</span></td>';
                         }
 
                         if ($opt['step_exec_status']) {
                             $td_colspan ++;
-                            $code .= '<td><span class="label">' . $labels['step_exec_status'] . ':</span></td>';
+                            $code .= '<td><span class="label">' .
+                                $labels['step_exec_status'] . ':</span></td>';
                         }
                     }
 
@@ -1090,13 +1229,23 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
 
                     $loop2do = count($tcInfo[$key]);
                     for ($ydx = 0; $ydx < $loop2do; $ydx ++) {
-                        $code .= '<tr>' . '<td width="5">' . $tcInfo[$key][$ydx]['step_number'] . '</td>' . '<td>' . ($stepDesignType == 'none' ? nl2br($tcInfo[$key][$ydx]['actions']) : $tcInfo[$key][$ydx]['actions']) . '</td>' . '<td>' . ($stepDesignType == 'none' ? nl2br($tcInfo[$key][$ydx]['expected_results']) : $tcInfo[$key][$ydx]['expected_results']) . '</td>';
+                        $code .= '<tr>' . '<td width="5">' .
+                            $tcInfo[$key][$ydx]['step_number'] . '</td>' . '<td>' .
+                            ($stepDesignType == 'none' ? nl2br(
+                                $tcInfo[$key][$ydx]['actions']) : $tcInfo[$key][$ydx]['actions']) .
+                            '</td>' . '<td>' .
+                            ($stepDesignType == 'none' ? nl2br(
+                                $tcInfo[$key][$ydx]['expected_results']) : $tcInfo[$key][$ydx]['expected_results']) .
+                            '</td>';
 
-                        $nike = ! is_null($sxni) && isset($sxni[$tcInfo[$key][$ydx]['id']]) && ! is_null($sxni[$tcInfo[$key][$ydx]['id']]);
+                        $nike = ! is_null($sxni) &&
+                            isset($sxni[$tcInfo[$key][$ydx]['id']]) &&
+                            ! is_null($sxni[$tcInfo[$key][$ydx]['id']]);
                         if ($opt['step_exec_notes']) {
                             $code .= '<td>';
                             if ($nike) {
-                                $code .= nl2br($sxni[$tcInfo[$key][$ydx]['id']]['notes']);
+                                $code .= nl2br(
+                                    $sxni[$tcInfo[$key][$ydx]['id']]['notes']);
                             }
                             $code .= '</td>';
                         }
@@ -1114,29 +1263,43 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
                         $code .= '</tr>';
 
                         // Attachment management
-                        if ($getExecutions && isset($sxni[$tcInfo[$key][$ydx]['id']])) {
-                            $attachInfo = getAttachmentInfos($st->docRepo, $sxni[$tcInfo[$key][$ydx]['id']]['id'], $st->tables['execution_tcsteps'], true, 1);
+                        if ($getExecutions &&
+                            isset($sxni[$tcInfo[$key][$ydx]['id']])) {
+                            $attachInfo = getAttachmentInfos($st->docRepo,
+                                $sxni[$tcInfo[$key][$ydx]['id']]['id'],
+                                $st->tables['execution_tcsteps'], true, 1);
 
                             if (! is_null($attachInfo)) {
                                 $code .= '<tr><td colspan="' . $td_colspan . '">';
-                                $code .= '<b>' . $labels['exec_attachments'] . '</b><br/>';
+                                $code .= '<b>' . $labels['exec_attachments'] .
+                                    '</b><br/>';
 
                                 foreach ($attachInfo as $fitem) {
-                                    $code .= '<form method="POST" name="fda' . $fitem['id'] . '" ' . ' id="fda' . $fitem['id'] . "' " . ' action="' . $env->base_href . 'lib/execute/execPrint.php">';
+                                    $code .= '<form method="POST" name="fda' .
+                                        $fitem['id'] . '" ' . ' id="fda' .
+                                        $fitem['id'] . "' " . ' action="' .
+                                        $env->base_href .
+                                        'lib/execute/execPrint.php">';
 
-                                    $code .= '<input type="hidden" name="id" value="' . intval($context['exec_id']) . '">';
+                                    $code .= '<input type="hidden" name="id" value="' .
+                                        intval($context['exec_id']) . '">';
 
                                     $safeItemID = intval($fitem['id']);
-                                    $code .= '<input type="hidden" name="deleteAttachmentID" value="' . $safeItemID . '">';
+                                    $code .= '<input type="hidden" name="deleteAttachmentID" value="' .
+                                        $safeItemID . '">';
 
-                                    $safeFileName = htmlspecialchars($fitem['file_name']);
+                                    $safeFileName = htmlspecialchars(
+                                        $fitem['file_name']);
                                     $sec = hash('sha256', $fitem['file_name']);
-                                    $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . '&id=' . $safeItemID;
+                                    $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' .
+                                        $sec . '&id=' . $safeItemID;
 
                                     if ($fitem['is_image']) {
                                         $code .= "<li>{$safeFileName}</li>";
-                                        $pathname = $st->repoDir . $fitem['file_path'];
-                                        list ($iWidth, $iHeight, ,) = getimagesize($pathname);
+                                        $pathname = $st->repoDir .
+                                            $fitem['file_path'];
+                                        list ($iWidth, $iHeight, ,) = getimagesize(
+                                            $pathname);
 
                                         // Sorry by MAGIC Numbers
                                         if ($iWidth > 900 || $iHeight > 700) {
@@ -1149,12 +1312,21 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
                                             $iHeight = $iHeight / $imgDiff;
                                         }
 
-                                        $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
-                                        $code .= '<li><img ' . $iDim . ' src="' . $env->base_href . $cmout . '">';
+                                        $iDim = ' width=' . $iWidth . ' height=' .
+                                            $iHeight;
+                                        $code .= '<li><img ' . $iDim . ' src="' .
+                                            $env->base_href . $cmout . '">';
                                     } else {
-                                        $code .= '<li><a href="' . $env->base_href . $cmout . '" target="#blank" > ' . $safeFileName . '</a>';
+                                        $code .= '<li><a href="' .
+                                            $env->base_href . $cmout .
+                                            '" target="#blank" > ' .
+                                            $safeFileName . '</a>';
                                     }
-                                    $code .= '<input type="image" alt="' . $labels['alt_delete_attachment'] . '"' . 'src="' . $env->base_href . TL_THEME_IMG_DIR . 'trash.png"></li></form>';
+                                    $code .= '<input type="image" alt="' .
+                                        $labels['alt_delete_attachment'] . '"' .
+                                        'src="' . $env->base_href .
+                                        TL_THEME_IMG_DIR .
+                                        'trash.png"></li></form>';
                                 }
                                 $code .= '</td></tr>';
                             }
@@ -1164,13 +1336,19 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
             } else {
                 // disable the field if it's empty
                 if ($tcInfo[$key] != '') {
-                    $code .= '<tr><td colspan="' . $cfg['tableColspan'] . '"><span class="label">' . $labels[$key] . ':</span><br />' . ($designType == 'none' ? nl2br($tcInfo[$key]) : $tcInfo[$key]) . "</td></tr>";
+                    $code .= '<tr><td colspan="' . $cfg['tableColspan'] .
+                        '"><span class="label">' . $labels[$key] .
+                        ':</span><br />' .
+                        ($designType == 'none' ? nl2br($tcInfo[$key]) : $tcInfo[$key]) .
+                        "</td></tr>";
                 }
             }
         }
     }
 
-    $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . '<span class="label">' . $labels['execution_type'] . ':</span></td>' . '<td colspan="' . ($cfg['tableColspan'] - 1) . '">';
+    $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' .
+        '<span class="label">' . $labels['execution_type'] . ':</span></td>' .
+        '<td colspan="' . ($cfg['tableColspan'] - 1) . '">';
 
     // This is what have been choosen DURING DESIGN, but may be we can choose at DESIGN
     // manual and the execute AUTO, or may be choose AUTO and execute MANUAL.
@@ -1190,11 +1368,17 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
     $code .= "</td></tr>\n";
 
     // estimated execution time
-    $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . '<span class="label">' . $labels['estimated_execution_duration'] . ':</span></td>' . '<td colspan="' . ($cfg['tableColspan'] - 1) . '">' . $tcInfo['estimated_exec_duration'];
+    $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' .
+        '<span class="label">' . $labels['estimated_execution_duration'] .
+        ':</span></td>' . '<td colspan="' . ($cfg['tableColspan'] - 1) . '">' .
+        $tcInfo['estimated_exec_duration'];
     $code .= "</td></tr>\n";
 
     if (isset($options['importance']) && $options['importance']) {
-        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . '<span class="label">' . $labels['importance'] . ':</span></td>' . '<td colspan="' . ($cfg['tableColspan'] - 1) . '">' . $cfg['importance'][$tcInfo['importance']];
+        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' .
+            '<span class="label">' . $labels['importance'] . ':</span></td>' .
+            '<td colspan="' . ($cfg['tableColspan'] - 1) . '">' .
+            $cfg['importance'][$tcInfo['importance']];
         $code .= "</td></tr>\n";
     }
 
@@ -1211,7 +1395,10 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
         $prio_info = $st->tplan_urgency->getPriority($tplan_id, $filters, $opt);
         $prio = $prio_info[$tcInfo['id']]['priority_level'];
 
-        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . '<span class="label">' . $labels['priority'] . ':</span></td>' . '<td colspan="' . ($cfg['tableColspan'] - 1) . '">' . $cfg['priority'][$prio];
+        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' .
+            '<span class="label">' . $labels['priority'] . ':</span></td>' .
+            '<td colspan="' . ($cfg['tableColspan'] - 1) . '">' .
+            $cfg['priority'][$prio];
         $code .= "</td></tr>\n";
     }
 
@@ -1232,7 +1419,9 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
 
     if (! is_null($relSet['relations'])) {
         // $fx = str_repeat('&nbsp;',5); // MAGIC allowed
-        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">' . $labels['relations'] . '</span></td>';
+        $code .= '<tr><td width="' . $cfg['firstColWidth'] .
+            '" valign="top"><span class="label">' . $labels['relations'] .
+            '</span></td>';
 
         $code .= '<td>';
         for ($rdx = 0; $rdx < $relSet['num_relations']; $rdx ++) {
@@ -1242,7 +1431,14 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
                 $ak = 'destination_localized';
             }
 
-            $code .= htmlspecialchars($relSet['relations'][$rdx][$ak]) . ' - ' . htmlspecialchars($relSet['relations'][$rdx]['related_tcase']['fullExternalID']) . ':' . htmlspecialchars($relSet['relations'][$rdx]['related_tcase']['name']) . " &nbsp;[{$labels['version']}:" . $relSet['relations'][$rdx]['related_tcase']['version'] . "]";
+            $code .= htmlspecialchars($relSet['relations'][$rdx][$ak]) . ' - ' .
+                htmlspecialchars(
+                    $relSet['relations'][$rdx]['related_tcase']['fullExternalID']) .
+                ':' .
+                htmlspecialchars(
+                    $relSet['relations'][$rdx]['related_tcase']['name']) .
+                " &nbsp;[{$labels['version']}:" .
+                $relSet['relations'][$rdx]['related_tcase']['version'] . "]";
         }
         $code .= '</td></tr>';
     }
@@ -1251,13 +1447,19 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
     // collect REQ for Test Case Version
     if ($options['requirement']) {
         // Coverage Links REQV to TCV
-        $requirements = (array) $st->req_mgr->getActiveForTCVersion($tcVersionID);
-        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">' . $labels['reqs'] . '</span>';
+        $requirements = (array) $st->req_mgr->getActiveForTCVersion(
+            $tcVersionID);
+        $code .= '<tr><td width="' . $cfg['firstColWidth'] .
+            '" valign="top"><span class="label">' . $labels['reqs'] . '</span>';
         $code .= '<td colspan="' . ($cfg['tableColspan'] - 1) . '">';
 
         if (sizeof($requirements)) {
             foreach ($requirements as $req) {
-                $code .= htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) . " " . $cfg['gui']->version_separator_open . "{$labels['version']}: {$req['version']}" . $cfg['gui']->version_separator_close . "<br />";
+                $code .= htmlspecialchars(
+                    $req['req_doc_id'] . ":  " . $req['title']) . " " .
+                    $cfg['gui']->version_separator_open .
+                    "{$labels['version']}: {$req['version']}" .
+                    $cfg['gui']->version_separator_close . "<br />";
             }
         } else {
             $code .= '&nbsp;' . $labels['none'] . '<br />';
@@ -1268,12 +1470,15 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
 
     // collect keywords for TC VERSION
     if ($options['keyword']) {
-        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">' . $labels['keywords'] . ':</span></td>';
+        $code .= '<tr><td width="' . $cfg['firstColWidth'] .
+            '" valign="top"><span class="label">' . $labels['keywords'] .
+            ':</span></td>';
         $code .= '<td colspan="' . ($cfg['tableColspan'] - 1) . '">';
 
-        $kwSet = (array) $st->tc_mgr->getKeywords($id, $tcVersionID, null, array(
-            'fields' => 'keyword_id,KW.keyword'
-        ));
+        $kwSet = (array) $st->tc_mgr->getKeywords($id, $tcVersionID, null,
+            array(
+                'fields' => 'keyword_id,KW.keyword'
+            ));
         if (sizeof($kwSet)) {
             foreach ($kwSet as $kw) {
                 $code .= htmlspecialchars($kw['keyword']) . "<br />";
@@ -1287,12 +1492,15 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
 
     // collect platforms for TC VERSION
     if ($options['platform']) {
-        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">' . $labels['platforms'] . ':</span></td>';
+        $code .= '<tr><td width="' . $cfg['firstColWidth'] .
+            '" valign="top"><span class="label">' . $labels['platforms'] .
+            ':</span></td>';
         $code .= '<td colspan="' . ($cfg['tableColspan'] - 1) . '">';
 
-        $itSet = (array) $st->tc_mgr->getPlatforms($id, $tcVersionID, null, array(
-            'fields' => 'platform_id,PL.name'
-        ));
+        $itSet = (array) $st->tc_mgr->getPlatforms($id, $tcVersionID, null,
+            array(
+                'fields' => 'platform_id,PL.name'
+            ));
         if (sizeof($itSet)) {
             foreach ($itSet as $it) {
                 $code .= htmlspecialchars($it['name']) . "<br />";
@@ -1307,7 +1515,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
     // Attachments
     $attachSet = (array) $st->tc_mgr->getAttachmentInfos($tcVersionID);
     if (count($attachSet) > 0) {
-        $code .= '<tr><td> <span class="label">' . $labels['attached_files'] . '</span></td>';
+        $code .= '<tr><td> <span class="label">' . $labels['attached_files'] .
+            '</span></td>';
         $code .= '<td colspan="' . ($cfg['tableColspan'] - 2) . '"><ul>';
 
         foreach ($attachSet as $item) {
@@ -1320,16 +1529,20 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
 
             $sec = hash('sha256', $item['file_name']);
 
-            $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . '&id=' . $item['id'];
+            $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec .
+                '&id=' . $item['id'];
 
             if ($item['is_image']) {
                 $pathname = $st->repoDir . $item['file_path'];
                 list ($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
 
                 $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
-                $code .= '<li>' . '<img ' . $iDim . ' src="' . $env->base_href . $cmout . '"> </li>';
+                $code .= '<li>' . '<img ' . $iDim . ' src="' . $env->base_href .
+                    $cmout . '"> </li>';
             } else {
-                $code .= '<li>' . '<a href="' . $env->base_href . $cmout . '" ' . ' target="#blank" > ' . htmlspecialchars($item['file_name']) . '</a></li>';
+                $code .= '<li>' . '<a href="' . $env->base_href . $cmout . '" ' .
+                    ' target="#blank" > ' . htmlspecialchars($item['file_name']) .
+                    '</a></li>';
             }
         }
         $code .= "</ul></td></tr>";
@@ -1339,7 +1552,11 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
     // generate test results data for test report
     if ($options['passfail']) {
         $tsp = ($cfg['tableColspan'] - 1);
-        $code .= '<tr style="' . "font-weight: bold;background: #EEE;text-align: left;" . '">' . '<td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['execution_details'] . '</td>' . '<td colspan="' . $tsp . '">' . "&nbsp;" . "</td></tr>\n";
+        $code .= '<tr style="' .
+            "font-weight: bold;background: #EEE;text-align: left;" . '">' .
+            '<td width="' . $cfg['firstColWidth'] . '" valign="top">' .
+            $labels['execution_details'] . '</td>' . '<td colspan="' . $tsp .
+            '">' . "&nbsp;" . "</td></tr>\n";
 
         $bn = '';
         switch ($env->reportType) {
@@ -1357,16 +1574,24 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
 
         /* Build name */
         if ($bn != '') {
-            $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] . '</td>' . '<td colspan="' . $tsp . '">' . $bn . "</td></tr>\n";
+            $code .= '<tr><td width="' . $cfg['firstColWidth'] .
+                '" valign="top">' . $labels['build'] . '</td>' . '<td colspan="' .
+                $tsp . '">' . $bn . "</td></tr>\n";
 
-            if (is_null($exec_info) && ! is_null($buildCfields) && isset($st->buildCfields[$build_id]) && $st->buildCfields[$build_id] != '') {
-                $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"></td>' . '<td colspan="' . $tsp . '">' . $st->buildCfields[$build_id] . "</td></tr>\n";
+            if (is_null($exec_info) && ! is_null($buildCfields) &&
+                isset($st->buildCfields[$build_id]) &&
+                $st->buildCfields[$build_id] != '') {
+                $code .= '<tr><td width="' . $cfg['firstColWidth'] .
+                    '" valign="top"></td>' . '<td colspan="' . $tsp . '">' .
+                    $st->buildCfields[$build_id] . "</td></tr>\n";
             }
         }
 
         if (isset($node['assigned_to'])) {
             $crew = explode(',', $node['assigned_to']);
-            $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['assigned_to'] . '</td>' . '<td colspan="' . $tsp . '">';
+            $code .= '<tr><td width="' . $cfg['firstColWidth'] .
+                '" valign="top">' . $labels['assigned_to'] . '</td>' .
+                '<td colspan="' . $tsp . '">';
 
             $xdx = 0;
             foreach ($crew as $mm) {
@@ -1388,7 +1613,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
             );
             $settings['colspan'] = $cfg['tableColspan'] - 1;
 
-            $code .= buildTestExecResults($db, $its, $exec_info, $settings, $st->buildCfields);
+            $code .= buildTestExecResults($db, $its, $exec_info, $settings,
+                $st->buildCfields);
 
             // Get Execution Attachments
             // Need to fixed in a better way
@@ -1396,7 +1622,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
             // instead of real table name.
             // Name will be different is TABLE PREFIX is configured
             //
-            $execAttachInfo = getAttachmentInfos($st->docRepo, $exec_info[0]['execution_id'], 'executions', true, 1);
+            $execAttachInfo = getAttachmentInfos($st->docRepo,
+                $exec_info[0]['execution_id'], 'executions', true, 1);
 
             if (! is_null($execAttachInfo)) {
                 $code .= '<tr><td colspan="' . $cfg['tableColspan'] . '">';
@@ -1404,14 +1631,16 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
                 foreach ($execAttachInfo as $fitem) {
                     $sec = hash('sha256', $fitem['file_name']);
 
-                    $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . '&id=' . $fitem['id'];
+                    $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' .
+                        $sec . '&id=' . $fitem['id'];
 
                     $safeFileName = htmlspecialchars($fitem['file_name']);
                     if ($fitem['is_image']) {
                         $code .= "<li>{$safeFileName}</li>";
 
                         $pathname = $st->repoDir . $item['file_path'];
-                        list ($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+                        list ($iWidth, $iHeight, $iT, $iA) = getimagesize(
+                            $pathname);
 
                         // Sorry by MAGIC Numbers
                         if ($iWidth > 900 || $iHeight > 700) {
@@ -1425,15 +1654,21 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context, $ind
                         }
 
                         $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
-                        $code .= '<li>' . '<img ' . $iDim . ' src="' . $env->base_href . $cmout . '"> </li>';
+                        $code .= '<li>' . '<img ' . $iDim . ' src="' .
+                            $env->base_href . $cmout . '"> </li>';
                     } else {
-                        $code .= '<li>' . '<a href="' . $env->base_href . $cmout . '" target="#blank" > ' . $safeFileName . '</a></li>';
+                        $code .= '<li>' . '<a href="' . $env->base_href . $cmout .
+                            '" target="#blank" > ' . $safeFileName . '</a></li>';
                     }
                 }
                 $code .= '</td></tr>';
             }
         } else {
-            $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . '<span class="label">' . $labels['report_exec_result'] . '</span></td>' . '<td colspan="' . ($cfg['tableColspan'] - 1) . '"><b>' . $labels["test_status_not_run"] . "</b></td></tr>\n";
+            $code .= '<tr><td width="' . $cfg['firstColWidth'] .
+                '" valign="top">' . '<span class="label">' .
+                $labels['report_exec_result'] . '</span></td>' . '<td colspan="' .
+                ($cfg['tableColspan'] - 1) . '"><b>' .
+                $labels["test_status_not_run"] . "</b></td></tr>\n";
         }
         $execAttachInfo = null;
         $exec_info = null;
@@ -1450,7 +1685,8 @@ function renderTOC(&$options)
     $code = '';
     $options['toc_numbers'][1] = 0;
     if ($options['toc']) {
-        $options['tocCode'] = '<h1 class="general" style="page-break-before: always">' . lang_get('title_toc') . '</h1><div class="toc">';
+        $options['tocCode'] = '<h1 class="general" style="page-break-before: always">' .
+            lang_get('title_toc') . '</h1><div class="toc">';
         $code .= "{{INSERT_TOC}}";
     }
 
@@ -1468,7 +1704,8 @@ function renderTOC(&$options)
  * because need to have LOCAL life during recursion.
  * Having added it as members of $env and $context has generated a BUG
  */
-function renderTestSuiteNodeForPrinting(&$db, &$node, $env, &$options, $context, $tocPrefix, $indentLevel)
+function renderTestSuiteNodeForPrinting(&$db, &$node, $env, &$options, $context,
+    $tocPrefix, $indentLevel)
 {
     static $tsuite_mgr;
     static $l10n;
@@ -1512,7 +1749,10 @@ function renderTestSuiteNodeForPrinting(&$db, &$node, $env, &$options, $context,
 
     if ($options['toc']) {
         $spacing = ($indentLevel == 2 && $tocPrefix != 1) ? "<br/>" : "";
-        $options['tocCode'] .= $spacing . '<p style="padding-left: ' . (10 * $indentLevel) . 'px;"><b>' . '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></b></p>\n";
+        $options['tocCode'] .= $spacing . '<p style="padding-left: ' .
+            (10 * $indentLevel) . 'px;"><b>' . '<a href="#' .
+            prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name .
+            "</a></b></p>\n";
         $code .= "<a name='" . prefixToHTMLID($tocPrefix) . "'></a>\n";
     }
 
@@ -1523,20 +1763,25 @@ function renderTestSuiteNodeForPrinting(&$db, &$node, $env, &$options, $context,
     $docHeadingLevel = ($docHeadingLevel > 6) ? 6 : $docHeadingLevel;
     $docHeadingLevel = ($docHeadingLevel < 1) ? 1 : $docHeadingLevel;
 
-    $code .= "<h{$docHeadingLevel} class='doclevel'>" . $docHeadingNumbering . $l10n['test_suite'] . $title_separator . $name . "</h{$docHeadingLevel}>\n";
+    $code .= "<h{$docHeadingLevel} class='doclevel'>" . $docHeadingNumbering .
+        $l10n['test_suite'] . $title_separator . $name .
+        "</h{$docHeadingLevel}>\n";
 
     // ----- get Test Suite text -----------------
     if ($options['header']) {
 
         $tInfo = $tsuite_mgr->get_by_id($node['id'], $getOpt['getByID']);
         if ($tInfo['details'] != '') {
-            $code .= '<div>' . ($designType == 'none' ? nl2br($tInfo['details']) : $tInfo['details']) . '</div>';
+            $code .= '<div>' .
+                ($designType == 'none' ? nl2br($tInfo['details']) : $tInfo['details']) .
+                '</div>';
         }
         $tInfo = null;
 
         $attachSet = (array) $tsuite_mgr->getAttachmentInfos($node['id']);
         if (count($attachSet) > 0) {
-            $code .= '<table><caption style="text-align:left;">' . $l10n['attached_files'] . '</caption>';
+            $code .= '<table><caption style="text-align:left;">' .
+                $l10n['attached_files'] . '</caption>';
             $code .= '<tr><td>&nbsp</td>';
             $code .= '<td><ul>';
             foreach ($attachSet as $item) {
@@ -1548,15 +1793,19 @@ function renderTestSuiteNodeForPrinting(&$db, &$node, $env, &$options, $context,
                 $code .= "<li>$fname</li>";
 
                 $sec = hash('sha256', $item['file_name']);
-                $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . '&id=' . $item['id'];
+                $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' .
+                    $sec . '&id=' . $item['id'];
 
                 if ($item['is_image']) {
                     $pathname = $repoDir . $item['file_path'];
                     list ($iWidth, $iHeight, ,) = getimagesize($pathname);
                     $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
-                    $code .= '<li>' . '<img ' . $iDim . ' src="' . $env->base_href . $cmout . '"> </li>';
+                    $code .= '<li>' . '<img ' . $iDim . ' src="' .
+                        $env->base_href . $cmout . '"> </li>';
                 } else {
-                    $code .= '<li>' . '<a href="' . $env->base_href . $cmout . '" ' . ' target="#blank" > ' . htmlspecialchars($item['file_name']) . '</a></li>';
+                    $code .= '<li>' . '<a href="' . $env->base_href . $cmout .
+                        '" ' . ' target="#blank" > ' .
+                        htmlspecialchars($item['file_name']) . '</a></li>';
                 }
             }
             $code .= "</ul></td></tr>";
@@ -1568,7 +1817,9 @@ function renderTestSuiteNodeForPrinting(&$db, &$node, $env, &$options, $context,
         // Attention: for test suites custom fields can not be edited during execution,
         // then we need to get just custom fields with scope 'design'
         foreach ($cfields as $key => $value) {
-            $cfields[$key] = $tsuite_mgr->html_table_of_custom_field_values($node['id'], $key, null, $context['tproject_id'], $cfieldFormatting);
+            $cfields[$key] = $tsuite_mgr->html_table_of_custom_field_values(
+                $node['id'], $key, null, $context['tproject_id'],
+                $cfieldFormatting);
             if ($cfields[$key] != "") {
                 $code .= '<p>' . $cfields[$key] . '</p>';
             }
@@ -1588,8 +1839,10 @@ function renderTestSuiteNodeForPrinting(&$db, &$node, $env, &$options, $context,
 function renderTestPlanForPrinting(&$db, &$node, &$options, $env, $context)
 {
     $tProjectMgr = new testproject($db);
-    $context['prefix'] = $tProjectMgr->getTestCasePrefix($context['tproject_id']);
-    $code = renderTestSpecTreeForPrinting($db, $node, $options, $env, $context, $env->tocPrefix, $context['level']);
+    $context['prefix'] = $tProjectMgr->getTestCasePrefix(
+        $context['tproject_id']);
+    $code = renderTestSpecTreeForPrinting($db, $node, $options, $env, $context,
+        $env->tocPrefix, $context['level']);
     return $code;
 }
 
@@ -1608,10 +1861,12 @@ function renderTestDuration($statistics, $platform_id = 0)
     if (! $ecfg) {
         $ecfg = config_get('exec_cfg');
     }
-    $estimatedTimeAvailable = isset($statistics['estimated_execution']) && ! is_null($statistics['estimated_execution']);
+    $estimatedTimeAvailable = isset($statistics['estimated_execution']) &&
+        ! is_null($statistics['estimated_execution']);
 
     if ($ecfg->features->exec_duration->enabled) {
-        $realTimeAvailable = isset($statistics['real_execution']) && ! is_null($statistics['real_execution']['platform'][$platform_id]);
+        $realTimeAvailable = isset($statistics['real_execution']) &&
+            ! is_null($statistics['real_execution']['platform'][$platform_id]);
     } else {
         $realTimeAvailable = null;
     }
@@ -1622,9 +1877,11 @@ function renderTestDuration($statistics, $platform_id = 0)
             $tcase_qty = $statistics['estimated_execution']['platform'][$platform_id]['tcase_qty'];
             if ($estimated_minutes > 0) {
                 if ($estimated_minutes > 60) {
-                    $estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes / 60, 2);
+                    $estimated_string = lang_get('estimated_time_hours') .
+                        round($estimated_minutes / 60, 2);
                 } else {
-                    $estimated_string = lang_get('estimated_time_min') . $estimated_minutes;
+                    $estimated_string = lang_get('estimated_time_min') .
+                        $estimated_minutes;
                 }
                 $estimated_string = sprintf($estimated_string, $tcase_qty);
                 $output .= '<p>' . $estimated_string . "</p>\n";
@@ -1636,7 +1893,8 @@ function renderTestDuration($statistics, $platform_id = 0)
             $tcase_qty = $statistics['real_execution']['platform'][$platform_id]['tcase_qty'];
             if ($real_minutes > 0) {
                 if ($real_minutes > 60) {
-                    $real_string = lang_get('real_time_hours') . round($real_minutes / 60, 2);
+                    $real_string = lang_get('real_time_hours') .
+                        round($real_minutes / 60, 2);
                 } else {
                     $real_string = lang_get('real_time_min') . $real_minutes;
                 }
@@ -1711,7 +1969,8 @@ function initRenderTestCaseCfg($options)
     foreach ($config['results']['code_status'] as $key => $value) {
         $config['status_labels'][$key] = "check your \$tlCfg->results['status_label'] configuration ";
         if (isset($config['results']['status_label'][$value])) {
-            $config['status_labels'][$key] = lang_get($config['results']['status_label'][$value]);
+            $config['status_labels'][$key] = lang_get(
+                $config['results']['status_label'][$value]);
         }
     }
 
@@ -1784,7 +2043,8 @@ function initRenderTestCaseCfg($options)
     $statusL10N = null;
     foreach ($config['results']['code_status'] as $vc => $vstat) {
         if (isset($config['results']['status_label_for_exec_ui'][$vstat])) {
-            $statusL10N[$vc] = lang_get($config['results']['status_label_for_exec_ui'][$vstat]);
+            $statusL10N[$vc] = lang_get(
+                $config['results']['status_label_for_exec_ui'][$vstat]);
         }
     }
 
@@ -1802,7 +2062,8 @@ function initRenderTestCaseCfg($options)
  *
  *
  */
-function buildTestExecResults(&$dbHandler, &$its, $exec_info, $opt, $buildCF = null)
+function buildTestExecResults(&$dbHandler, &$its, $exec_info, $opt,
+    $buildCF = null)
 {
     static $testerNameCache;
     $out = '';
@@ -1818,7 +2079,8 @@ function buildTestExecResults(&$dbHandler, &$its, $exec_info, $opt, $buildCF = n
     $testStatus = $cfg['status_labels'][$exec_info[0]['status']];
 
     if (! isset($testerNameCache[$exec_info[0]['tester_id']])) {
-        $testerNameCache[$exec_info[0]['tester_id']] = gendocGetUserName($dbHandler, $exec_info[0]['tester_id']);
+        $testerNameCache[$exec_info[0]['tester_id']] = gendocGetUserName(
+            $dbHandler, $exec_info[0]['tester_id']);
     }
 
     $executionNotes = $my['opt']['show_notes'] ? $exec_info[0]['notes'] : '';
@@ -1840,34 +2102,53 @@ function buildTestExecResults(&$dbHandler, &$its, $exec_info, $opt, $buildCF = n
     }
 
     // Check if CF exits for this BUILD
-    if (! is_null($buildCF) && isset($buildCF[$exec_info[0]['build_id']]) && $buildCF[$exec_info[0]['build_id']] != '') {
-        $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"></td>' . '<td ' . $td_colspan . '>' . $buildCF[$exec_info[0]['build_id']] . "</td></tr>\n";
+    if (! is_null($buildCF) && isset($buildCF[$exec_info[0]['build_id']]) &&
+        $buildCF[$exec_info[0]['build_id']] != '') {
+        $out .= '<tr><td width="' . $cfg['firstColWidth'] .
+            '" valign="top"></td>' . '<td ' . $td_colspan . '>' .
+            $buildCF[$exec_info[0]['build_id']] . "</td></tr>\n";
     }
-    $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['tester'] . '</td>' . '<td ' . $td_colspan . '>' . $testerNameCache[$exec_info[0]['tester_id']] . "</td></tr>\n";
+    $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' .
+        $labels['tester'] . '</td>' . '<td ' . $td_colspan . '>' .
+        $testerNameCache[$exec_info[0]['tester_id']] . "</td></tr>\n";
 
-    $out .= '<tr><td width="20%" valign="top">' . '<span class="label">' . $labels['report_exec_result'] . ':</span></td>' . '<td ' . $td_colspan . '><b>' . $testStatus . "</b></td></tr>\n" . '<tr><td width="20%">' . '<span class="label">' . $labels['execution_mode'] . ':</span></td>' . '<td ' . $td_colspan . '><b>' . $labels[$etk] . "</b></td></tr>\n";
+    $out .= '<tr><td width="20%" valign="top">' . '<span class="label">' .
+        $labels['report_exec_result'] . ':</span></td>' . '<td ' . $td_colspan .
+        '><b>' . $testStatus . "</b></td></tr>\n" . '<tr><td width="20%">' .
+        '<span class="label">' . $labels['execution_mode'] . ':</span></td>' .
+        '<td ' . $td_colspan . '><b>' . $labels[$etk] . "</b></td></tr>\n";
 
     if ($cfg['exec_cfg']->features->exec_duration->enabled) {
-        $out .= '<tr><td width="20%">' . '<span class="label">' . $labels['execution_duration'] . ':</span></td>' . '<td ' . $td_colspan . '><b>' . (isset($exec_info[0]['execution_duration']) ? $exec_info[0]['execution_duration'] : "&nbsp;") . "</b></td></tr>\n";
+        $out .= '<tr><td width="20%">' . '<span class="label">' .
+            $labels['execution_duration'] . ':</span></td>' . '<td ' .
+            $td_colspan . '><b>' .
+            (isset($exec_info[0]['execution_duration']) ? $exec_info[0]['execution_duration'] : "&nbsp;") .
+            "</b></td></tr>\n";
     }
 
     if ($executionNotes != '') // show execution notes is not empty
     {
-        $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['title_execution_notes'] . '</td>' . '<td ' . $td_colspan . '>' . nl2br($executionNotes) . "</td></tr>\n";
+        $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' .
+            $labels['title_execution_notes'] . '</td>' . '<td ' . $td_colspan .
+            '>' . nl2br($executionNotes) . "</td></tr>\n";
     }
 
     if (! is_null($its)) {
-        $bugs = get_bugs_for_exec($dbHandler, $its, $exec_info[0]['execution_id']);
+        $bugs = get_bugs_for_exec($dbHandler, $its,
+            $exec_info[0]['execution_id']);
 
         if ($bugs) {
             $bugString = '';
             foreach ($bugs as $bugID => $bugInfo) {
                 if ($bugInfo['step_number'] != '') {
-                    $bugString .= $labels['step'] . ' ' . $bugInfo['step_number'] . ' - ';
+                    $bugString .= $labels['step'] . ' ' . $bugInfo['step_number'] .
+                        ' - ';
                 }
                 $bugString .= $bugInfo['link_to_bts'] . "<br />";
             }
-            $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['bugs'] . '</td><td ' . $td_colspan . '>' . $bugString . "</td></tr>\n";
+            $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' .
+                $labels['bugs'] . '</td><td ' . $td_colspan . '>' . $bugString .
+                "</td></tr>\n";
         }
     }
 
@@ -1884,12 +2165,17 @@ function renderPlatformHeading($tocPrefix, $platform, &$options)
     $platformType = $platformCfg['type'];
     $lbl = lang_get('platform');
     $name = htmlspecialchars($platform['name']);
-    $options['tocCode'] .= '<p>&nbsp;</p><p><b><a href="#' . prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $lbl" . ':' . $name . '</a></b></p>';
+    $options['tocCode'] .= '<p>&nbsp;</p><p><b><a href="#' .
+        prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $lbl" . ':' . $name .
+        '</a></b></p>';
 
-    $out = '<h1 class="doclevel" id="' . prefixToHTMLID($tocPrefix) . "\">$tocPrefix. $lbl: $name</h1>";
+    $out = '<h1 class="doclevel" id="' . prefixToHTMLID($tocPrefix) .
+        "\">$tocPrefix. $lbl: $name</h1>";
     // platform description is enabled with test plan description option settings
     if ($options['showPlatformNotes']) {
-        $out .= '<div class="txtlevel">' . ($platformType == 'none' ? nl2br($platform['notes']) : $platform['notes']) . "</div>\n <br/>";
+        $out .= '<div class="txtlevel">' .
+            ($platformType == 'none' ? nl2br($platform['notes']) : $platform['notes']) .
+            "</div>\n <br/>";
     }
     return $out;
 }
@@ -1907,13 +2193,16 @@ function renderTestProjectItem($info)
 {
     $testProjectCfg = getWebEditorCfg('testproject');
     $testProjectType = $testProjectCfg['type'];
-    $lbl = init_labels(array(
-        'testproject' => null,
-        'context' => null,
-        'scope' => null
-    ));
+    $lbl = init_labels(
+        array(
+            'testproject' => null,
+            'context' => null,
+            'scope' => null
+        ));
     $out = '';
-    $out .= renderSimpleChapter($lbl['testproject'] . ': ' . htmlspecialchars($info->tproject_name), ($testProjectType == 'none' ? nl2br($info->tproject_scope) : $info->tproject_scope));
+    $out .= renderSimpleChapter(
+        $lbl['testproject'] . ': ' . htmlspecialchars($info->tproject_name),
+        ($testProjectType == 'none' ? nl2br($info->tproject_scope) : $info->tproject_scope));
     return $out;
 }
 
@@ -1928,7 +2217,10 @@ function renderTestPlanItem($info)
         'scope' => null
     ));
     $out = '';
-    $out .= renderSimpleChapter($lbl['testplan'] . ': ' . htmlspecialchars($info->testplan_name), ($testPlanType == 'none' ? nl2br($info->testplan_scope) : $info->testplan_scope), 'page-break-before: avoid;');
+    $out .= renderSimpleChapter(
+        $lbl['testplan'] . ': ' . htmlspecialchars($info->testplan_name),
+        ($testPlanType == 'none' ? nl2br($info->testplan_scope) : $info->testplan_scope),
+        'page-break-before: avoid;');
     return $out;
 }
 
@@ -1954,7 +2246,13 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null
         $tplanMgr = new testplan($dbHandler);
     }
 
-    $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," . " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," . " E.platform_id,E.execution_duration, " . " B.name AS build_name, B.id AS build_id " . " FROM {$st->tables['executions']} E " . " JOIN {$st->tables['builds']} B  ON B.id = E.build_id " . " WHERE E.id = " . intval($id);
+    $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
+        " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
+        " E.platform_id,E.execution_duration, " .
+        " B.name AS build_name, B.id AS build_id " .
+        " FROM {$st->tables['executions']} E " .
+        " JOIN {$st->tables['builds']} B  ON B.id = E.build_id " .
+        " WHERE E.id = " . intval($id);
 
     $exec_info = $dbHandler->get_recordset($sql);
     if (! is_null($exec_info)) {
@@ -1967,7 +2265,8 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null
         $context['build_id'] = $exec_info['build_id'];
         $context['level'] = '??'; // ???
 
-        $node = $tprojectMgr->tree_manager->get_node_hierarchy_info($context['tplan_id']);
+        $node = $tprojectMgr->tree_manager->get_node_hierarchy_info(
+            $context['tplan_id']);
         $context['prefix'] = $tprojectMgr->getTestCasePrefix($node['parent_id']);
         $context['tproject_id'] = $node['parent_id'];
         unset($tprojectMgr);
@@ -1994,12 +2293,14 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null
         // Because here we need to get data for renderTestCaseForPrinting
         //
         // The Cinematic Orchestra: To build a home Incubus: Wish you were here Mau Mau: La ola
-        $node = $tcaseMgr->tree_manager->get_node_hierarchy_info($exec_info['tcversion_id']);
+        $node = $tcaseMgr->tree_manager->get_node_hierarchy_info(
+            $exec_info['tcversion_id']);
 
         // get_by_id($id,$version_id = self::ALL_VERSIONS, $filters = null, $options=null)
-        $tcase = $tcaseMgr->get_by_id($node['parent_id'], null, array(
-            'version_number' => $exec_info['tcversion_number']
-        ));
+        $tcase = $tcaseMgr->get_by_id($node['parent_id'], null,
+            array(
+                'version_number' => $exec_info['tcversion_number']
+            ));
 
         $renderOptions = array(
             'toc' => 0,
@@ -2033,10 +2334,13 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null
         $indentLevel = 100000;
 
         $context['user'] = $userObj;
-        $out .= renderTestCaseForPrinting($dbHandler, $tcase, $renderOptions, $env, $context, $indentLevel);
+        $out .= renderTestCaseForPrinting($dbHandler, $tcase, $renderOptions,
+            $env, $context, $indentLevel);
 
         $tplanInfo = $tplanMgr->get_by_id($context['tplan_id']);
-        $out .= '<br/>' . lang_get('direct_link') . ':' . $env->base_href . 'lnl.php?type=exec&id=' . intval($id) . '&apikey=' . $tplanInfo['api_key'] . '<br/>';
+        $out .= '<br/>' . lang_get('direct_link') . ':' . $env->base_href .
+            'lnl.php?type=exec&id=' . intval($id) . '&apikey=' .
+            $tplanInfo['api_key'] . '<br/>';
         $exec_info = null;
     }
 
@@ -2056,7 +2360,9 @@ function renderBuildItem($info)
     $out = '';
 
     $title = $lbl['build'] . ': ' . htmlspecialchars($info->build_name);
-    $out .= renderSimpleChapter($title, ($buildType == 'none' ? nl2br($info->build_notes) : $info->build_notes), 'page-break-before: avoid;');
+    $out .= renderSimpleChapter($title,
+        ($buildType == 'none' ? nl2br($info->build_notes) : $info->build_notes),
+        'page-break-before: avoid;');
 
     return $out;
 }
@@ -2067,11 +2373,12 @@ function initStaticRenderTestCaseForPrinting(&$dbH, $tcaseID, $ctx, $cfg)
 {
     $things = new stdClass();
     $things->repoDir = config_get('repositoryPath');
-    $things->tables = tlDBObject::getDBTables(array(
-        'executions',
-        'builds',
-        'execution_tcsteps'
-    ));
+    $things->tables = tlDBObject::getDBTables(
+        array(
+            'executions',
+            'builds',
+            'execution_tcsteps'
+        ));
 
     $things->tc_mgr = new testcase($dbH);
     $things->tplan_urgency = new testPlanUrgency($dbH);

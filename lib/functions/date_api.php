@@ -85,7 +85,8 @@ function create_year_option_list($p_year = 0)
 /**
  * used in cfield_mgr.class.php
  */
-function create_date_selection_set($p_name, $p_format, $p_date = 0, $options = null)
+function create_date_selection_set($p_name, $p_format, $p_date = 0,
+    $options = null)
 {
     $opt = array(
         'default_disable' => false,
@@ -107,7 +108,8 @@ function create_date_selection_set($p_name, $p_format, $p_date = 0, $options = n
     $str_out = '';
     $t_chars = preg_split('//', $p_format, - 1, PREG_SPLIT_NO_EMPTY);
     if ($p_date != 0) {
-        $t_date = preg_split('/-| |:/', date('Y-m-d H:i:s', $p_date), - 1, PREG_SPLIT_NO_EMPTY);
+        $t_date = preg_split('/-| |:/', date('Y-m-d H:i:s', $p_date), - 1,
+            PREG_SPLIT_NO_EMPTY);
     } else {
         $t_date = array(
             - 1,
@@ -142,28 +144,47 @@ function create_date_selection_set($p_name, $p_format, $p_date = 0, $options = n
 
     $formatted_date = $time != 0 ? strftime($date_format, $time) : '';
 
-    $str_out .= '<input type="text" name="' . $p_name . '_input" size="10" id="' . $p_name . '_input" ' . 'value="' . $formatted_date . '" onclick=showCal(\'' . $p_name . '\',\'' . $p_name . '_input\',\'' . $date_format_without_percent . '\'); READONLY/>' . '<img title="' . lang_get('show_calender') . '" src="' . TL_THEME_IMG_DIR . '/calendar.gif" ' . 'onclick=showCal(\'' . $p_name . '\',\'' . $p_name . '_input\',\'' . $date_format_without_percent . '\'); > ' . '<img title="' . lang_get('clear_date') . '" src="' . TL_THEME_IMG_DIR . '/trash.png" ' . 'onclick="javascript:var x = document.getElementById(\'' . $p_name . '_input\'); x.value = \'\';' . 'var xh = document.getElementById(\'' . $p_name . '_hour\'); if(xh!=null) xh.selectedIndex=-1;' . 'var xm = document.getElementById(\'' . $p_name . '_minute\'); if(xm!=null) xm.selectedIndex=-1;' . 'var xs = document.getElementById(\'' . $p_name . '_second\'); if(xs!=null) xs.selectedIndex=-1;" > ' . '<div id="' . $p_name . '" style="position:' . $calender_div_position . ';z-index:1;"></div>';
+    $str_out .= '<input type="text" name="' . $p_name . '_input" size="10" id="' .
+        $p_name . '_input" ' . 'value="' . $formatted_date .
+        '" onclick=showCal(\'' . $p_name . '\',\'' . $p_name . '_input\',\'' .
+        $date_format_without_percent . '\'); READONLY/>' . '<img title="' .
+        lang_get('show_calender') . '" src="' . TL_THEME_IMG_DIR .
+        '/calendar.gif" ' . 'onclick=showCal(\'' . $p_name . '\',\'' . $p_name .
+        '_input\',\'' . $date_format_without_percent . '\'); > ' . '<img title="' .
+        lang_get('clear_date') . '" src="' . TL_THEME_IMG_DIR . '/trash.png" ' .
+        'onclick="javascript:var x = document.getElementById(\'' . $p_name .
+        '_input\'); x.value = \'\';' . 'var xh = document.getElementById(\'' .
+        $p_name . '_hour\'); if(xh!=null) xh.selectedIndex=-1;' .
+        'var xm = document.getElementById(\'' . $p_name .
+        '_minute\'); if(xm!=null) xm.selectedIndex=-1;' .
+        'var xs = document.getElementById(\'' . $p_name .
+        '_second\'); if(xs!=null) xs.selectedIndex=-1;" > ' . '<div id="' .
+        $p_name . '" style="position:' . $calender_div_position .
+        ';z-index:1;"></div>';
 
     // Here we work with the TIME PART, that exists only when we require TIMESTAMP
     foreach ($t_chars as $t_char) {
         $common = $opt['required'] . " $t_disable>";
         if (strcasecmp($t_char, "H") == 0) {
             $mask = '<select name="%s_hour" id="%s_hour" ';
-            $str_out .= sprintf($mask, $p_name, $p_name) . $common . $t_blank_line_time;
+            $str_out .= sprintf($mask, $p_name, $p_name) . $common .
+                $t_blank_line_time;
             $str_out .= create_range_option_list($t_date[3], 0, 23);
             $str_out .= "</select>\n";
         }
 
         if (strcasecmp($t_char, "i") == 0) {
             $mask = '<select name="%s_minute" id="%s_minute" ';
-            $str_out .= sprintf($mask, $p_name, $p_name) . $common . $t_blank_line_time;
+            $str_out .= sprintf($mask, $p_name, $p_name) . $common .
+                $t_blank_line_time;
             $str_out .= create_range_option_list($t_date[4], 0, 59);
             $str_out .= "</select>\n";
         }
 
         if (strcasecmp($t_char, "s") == 0) {
             $mask = '<select name="%s_second" id="%s_second" ';
-            $str_out .= sprintf($mask, $p_name, $p_name) . $common . $t_blank_line_time;
+            $str_out .= sprintf($mask, $p_name, $p_name) . $common .
+                $t_blank_line_time;
             $str_out .= create_range_option_list($t_date[5], 0, 59);
             $str_out .= "</select>\n";
         }

@@ -175,7 +175,8 @@ class tlMetaString extends tlObject
         if ($this->helper->bDontLocalize) {
             $str = $this->helper->label;
         } else {
-            $str = lang_get($this->helper->label, $locale, $this->helper->bDontFireEvent);
+            $str = lang_get($this->helper->label, $locale,
+                $this->helper->bDontFireEvent);
         }
 
         $subjects = array();

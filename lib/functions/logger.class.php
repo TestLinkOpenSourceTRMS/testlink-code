@@ -117,7 +117,8 @@ class tlLogger extends tlObject
 
         // CRITICAL - this controls logLevel that is written to db.
         // IMHO using this config we will also change what is displayed in Event Viewer GUI
-        $this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT | self::L18N);
+        $this->setLogLevelFilter(
+            self::ERROR | self::WARNING | self::AUDIT | self::L18N);
         $this->loggers['mail']->setLogLevelFilter(self::ERROR | self::WARNING);
 
         $this->eventManager = tlEventManager::create($db);
@@ -128,14 +129,20 @@ class tlLogger extends tlObject
         parent::__destruct();
     }
 
-    public function getAuditEventsFor($objectIDs = null, $objectTypes = null, $activityCodes = null, $limit = - 1, $startTime = null, $endTime = null, $users = null)
+    public function getAuditEventsFor($objectIDs = null, $objectTypes = null,
+        $activityCodes = null, $limit = - 1, $startTime = null, $endTime = null,
+        $users = null)
     {
-        return $this->eventManager->getEventsFor(tlLogger::AUDIT, $objectIDs, $objectTypes, $activityCodes, $limit, $startTime, $endTime, $users);
+        return $this->eventManager->getEventsFor(tlLogger::AUDIT, $objectIDs,
+            $objectTypes, $activityCodes, $limit, $startTime, $endTime, $users);
     }
 
-    public function getEventsFor($logLevels = null, $objectIDs = null, $objectTypes = null, $activityCodes = null, $limit = - 1, $startTime = null, $endTime = null, $users = null)
+    public function getEventsFor($logLevels = null, $objectIDs = null,
+        $objectTypes = null, $activityCodes = null, $limit = - 1,
+        $startTime = null, $endTime = null, $users = null)
     {
-        return $this->eventManager->getEventsFor($logLevels, $objectIDs, $objectTypes, $activityCodes, $limit, $startTime, $endTime, $users);
+        return $this->eventManager->getEventsFor($logLevels, $objectIDs,
+            $objectTypes, $activityCodes, $limit, $startTime, $endTime, $users);
     }
 
     public function deleteEventsFor($logLevels = null, $startTime = null)
@@ -198,7 +205,8 @@ class tlLogger extends tlObject
                 $filter = 0;
                 foreach ($dummy as $verboseLevel) {
                     if (isset(self::$logLevelsStringCode[$verboseLevel])) {
-                        $filter = $filter | self::$logLevelsStringCode[$verboseLevel];
+                        $filter = $filter |
+                            self::$logLevelsStringCode[$verboseLevel];
                     }
                 }
 
@@ -209,7 +217,8 @@ class tlLogger extends tlObject
 
                     default:
                         if (isset($this->loggerTypeDomain[$loggerType])) {
-                            $this->loggers[$loggerType]->setLogLevelFilter($filter);
+                            $this->loggers[$loggerType]->setLogLevelFilter(
+                                $filter);
                         }
                         break;
                 }
@@ -309,7 +318,8 @@ class tlLogger extends tlObject
      *
      * @internal rev: 20080216 - franciscom - entrypoint len limiting
      */
-    public function startTransaction($name = "DEFAULT", $entryPoint = null, $userID = null)
+    public function startTransaction($name = "DEFAULT", $entryPoint = null,
+        $userID = null)
     {
         // if we have already a transaction with this name, return
         if (isset($transactions[$name])) {
@@ -337,7 +347,8 @@ class tlLogger extends tlObject
         }
 
         if (is_null($userID)) {
-            $userID = isset($_SESSION['currentUser']) ? intval($_SESSION['currentUser']->dbID) : 0;
+            $userID = isset($_SESSION['currentUser']) ? intval(
+                $_SESSION['currentUser']->dbID) : 0;
         }
         $sessionID = $userID ? session_id() : null;
 
@@ -450,13 +461,16 @@ class tlTransaction extends tlDBObject
     }
 
     // add an event to the transaction the last arguments are proposed for holding information about the objects
-    public function add($logLevel, $description, $source = null, $activityCode = null, $objectID = null, $objectType = null)
+    public function add($logLevel, $description, $source = null,
+        $activityCode = null, $objectID = null, $objectType = null)
     {
         if ($source == 'GUI' && isset($_SESSION['testprojectID'])) {
-            $source = $source . ' - ' . lang_get('TestProject') . ' ID : ' . $_SESSION['testprojectID'];
+            $source = $source . ' - ' . lang_get('TestProject') . ' ID : ' .
+                $_SESSION['testprojectID'];
         }
         $e = new tlEvent();
-        $e->initialize($this->dbID, $this->userID, $this->sessionID, $logLevel, $description, $source, $activityCode, $objectID, $objectType);
+        $e->initialize($this->dbID, $this->userID, $this->sessionID, $logLevel,
+            $description, $source, $activityCode, $objectID, $objectType);
         $this->writeEvent($e);
         $this->events[] = $e;
 
@@ -466,7 +480,8 @@ class tlTransaction extends tlDBObject
     public function readFromDB(&$db, $options = self::TLOBJ_O_SEARCH_BY_ID)
     {
         $this->_clean($options);
-        $query = " SELECT id,entry_point,start_time,end_time,user_id,session_id " . " FROM {$this->tables['transactions']} ";
+        $query = " SELECT id,entry_point,start_time,end_time,user_id,session_id " .
+            " FROM {$this->tables['transactions']} ";
         $clauses = null;
 
         if ($options & self::TLOBJ_O_SEARCH_BY_ID) {
@@ -501,14 +516,18 @@ class tlTransaction extends tlDBObject
                 $sessionID = "'" . $db->prepare_string($this->sessionID) . "'";
             }
 
-            $query = "/* $debugMsg */ INSERT INTO {$this->tables['transactions']} " . "(entry_point,start_time,end_time,user_id,session_id) " . "VALUES ('{$entryPoint}',{$startTime},{$endTime},{$userID},{$sessionID})";
+            $query = "/* $debugMsg */ INSERT INTO {$this->tables['transactions']} " .
+                "(entry_point,start_time,end_time,user_id,session_id) " .
+                "VALUES ('{$entryPoint}',{$startTime},{$endTime},{$userID},{$sessionID})";
             $result = $db->exec_query($query);
             if ($result) {
                 $this->dbID = $db->insert_id($this->tables['transactions']);
             }
         } else {
             $endTime = $db->prepare_int(time());
-            $query = " /* $debugMsg */ " . " UPDATE {$this->tables['transactions']} SET end_time = {$endTime} " . " WHERE id = " . intval($this->dbID);
+            $query = " /* $debugMsg */ " .
+                " UPDATE {$this->tables['transactions']} SET end_time = {$endTime} " .
+                " WHERE id = " . intval($this->dbID);
             $result = $db->exec_query($query);
         }
         return $result ? tl::OK : tl::ERROR;
@@ -535,17 +554,21 @@ class tlTransaction extends tlDBObject
         return tl::OK;
     }
 
-    public static function getByID(&$db, $id, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function getByID(&$db, $id,
+        $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
-        return tlDBObject::createObjectFromDB($db, $id, __CLASS__, tlEvent::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
+        return tlDBObject::createObjectFromDB($db, $id, __CLASS__,
+            tlEvent::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
     }
 
-    public static function getByIDs(&$db, $ids, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function getByIDs(&$db, $ids,
+        $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
         return self::handleNotImplementedMethod(__FUNCTION__);
     }
 
-    public static function getAll(&$db, $whereClause = null, $column = null, $orderBy = null, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function getAll(&$db, $whereClause = null, $column = null,
+        $orderBy = null, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
         return self::handleNotImplementedMethod(__FUNCTION__);
     }
@@ -582,7 +605,9 @@ class tlEventManager extends tlObjectWithDB
      * returns:
      *
      */
-    public function getEventsFor($logLevels = null, $objectIDs = null, $objectTypes = null, $activityCodes = null, $limit = - 1, $startTime = null, $endTime = null, $users = null)
+    public function getEventsFor($logLevels = null, $objectIDs = null,
+        $objectTypes = null, $activityCodes = null, $limit = - 1,
+        $startTime = null, $endTime = null, $users = null)
     {
         $clauses = null;
         $usersFilter = null;
@@ -600,7 +625,8 @@ class tlEventManager extends tlObjectWithDB
 
         if (! is_null($objectTypes) && ! empty($objectTypes)) {
             $objectTypes = (array) $objectTypes;
-            $objectTypes = $this->db->prepare_string(implode("','", $objectTypes));
+            $objectTypes = $this->db->prepare_string(
+                implode("','", $objectTypes));
             $clauses[] = "object_type IN ('{$objectTypes}')";
         }
 
@@ -619,7 +645,8 @@ class tlEventManager extends tlObjectWithDB
         }
 
         if (! is_null($users)) {
-            $usersFilter = " JOIN {$this->tables['transactions']}  T " . " ON T.id = E.transaction_id AND T.user_id IN ({$users}) ";
+            $usersFilter = " JOIN {$this->tables['transactions']}  T " .
+                " ON T.id = E.transaction_id AND T.user_id IN ({$users}) ";
         }
         $query = "SELECT E.id FROM {$this->tables['events']} E {$usersFilter}";
         if ($clauses) {
@@ -628,7 +655,8 @@ class tlEventManager extends tlObjectWithDB
 
         $query .= " ORDER BY transaction_id DESC,fired_at DESC";
 
-        return tlEvent::createObjectsFromDBbySQL($this->db, $query, 'id', "tlEvent", true, tlEvent::TLOBJ_O_GET_DETAIL_FULL, $limit);
+        return tlEvent::createObjectsFromDBbySQL($this->db, $query, 'id',
+            "tlEvent", true, tlEvent::TLOBJ_O_GET_DETAIL_FULL, $limit);
     }
 
     public function deleteEventsFor($logLevels = null, $startTime = null)
@@ -671,7 +699,8 @@ class tlEventManager extends tlObjectWithDB
 
         // 20160320 - it's not clear why sometimes databaseType property does not exist
         // this is a quick & dirty fix.
-        if (property_exists($this->db, 'databaseType') && ! is_null($this->db->databaseType)) {
+        if (property_exists($this->db, 'databaseType') &&
+            ! is_null($this->db->databaseType)) {
             $alias4del = '';
             switch ($this->db->databaseType) {
                 case 'postgres7':
@@ -687,7 +716,11 @@ class tlEventManager extends tlObjectWithDB
             }
 
             // 201501114 - help by TurboP
-            $query = "/* $debugMsg */ " . " DELETE $alias4del FROM {$this->tables['transactions']} $alias4del " . " WHERE NOT EXISTS " . " (SELECT EV.id FROM {$this->tables['events']} EV " . "  WHERE EV.transaction_id = {$alias4del}.id) ";
+            $query = "/* $debugMsg */ " .
+                " DELETE $alias4del FROM {$this->tables['transactions']} $alias4del " .
+                " WHERE NOT EXISTS " .
+                " (SELECT EV.id FROM {$this->tables['events']} EV " .
+                "  WHERE EV.transaction_id = {$alias4del}.id) ";
             $this->db->exec_query($query);
         }
     }
@@ -753,7 +786,9 @@ class tlEvent extends tlDBObject
         }
     }
 
-    public function initialize($transactionID, $userID, $sessionID, $logLevel, $description, $source = null, $activityCode = null, $objectID = null, $objectType = null)
+    public function initialize($transactionID, $userID, $sessionID, $logLevel,
+        $description, $source = null, $activityCode = null, $objectID = null,
+        $objectType = null)
     {
         $this->timestamp = time();
 
@@ -771,7 +806,8 @@ class tlEvent extends tlDBObject
     public function readFromDB(&$db, $options = self::TLOBJ_O_SEARCH_BY_ID)
     {
         $this->_clean($options);
-        $query = " SELECT id,transaction_id,log_level,source,description,fired_at,object_id,object_type,activity " . " FROM {$this->tables['events']} ";
+        $query = " SELECT id,transaction_id,log_level,source,description,fired_at,object_id,object_type,activity " .
+            " FROM {$this->tables['events']} ";
         $clauses = null;
 
         if ($options & self::TLOBJ_O_SEARCH_BY_ID) {
@@ -797,8 +833,10 @@ class tlEvent extends tlDBObject
                 $this->description = $tmp;
             }
 
-            if ($this->transactionID && $options & self::TLOBJ_O_GET_DETAIL_TRANSACTION) {
-                $this->transaction = tlTransaction::getByID($db, $this->transactionID, self::TLOBJ_O_GET_DETAIL_MINIMUM);
+            if ($this->transactionID &&
+                $options & self::TLOBJ_O_GET_DETAIL_TRANSACTION) {
+                $this->transaction = tlTransaction::getByID($db,
+                    $this->transactionID, self::TLOBJ_O_GET_DETAIL_MINIMUM);
                 if ($this->transaction) {
                     $this->userID = $this->transaction->userID;
                     $this->sessionID = $this->transaction->sessionID;
@@ -821,7 +859,8 @@ class tlEvent extends tlDBObject
             $description = $db->prepare_string($dummy);
 
             $local = new stdClass();
-            $local->objectID = ! is_null($this->objectID) ? $db->prepare_int($this->objectID) : 0;
+            $local->objectID = ! is_null($this->objectID) ? $db->prepare_int(
+                $this->objectID) : 0;
 
             $str2loop = array(
                 'source',
@@ -829,10 +868,15 @@ class tlEvent extends tlDBObject
                 'activityCode'
             );
             foreach ($str2loop as $tg) {
-                $local->$tg = ! is_null($this->$tg) ? ("'" . $db->prepare_string($this->$tg) . "'") : 'NULL';
+                $local->$tg = ! is_null($this->$tg) ? ("'" .
+                    $db->prepare_string($this->$tg) . "'") : 'NULL';
             }
 
-            $query = "/* $debugMsg */ " . "INSERT INTO {$this->tables['events']} (transaction_id,log_level,description,source," . "fired_at,object_id,object_type,activity) " . "VALUES ({$transactionID},{$logLevel},'{$description}',{$local->source}," . "{$firedAt},{$local->objectID},{$local->objectType},{$local->activityCode})";
+            $query = "/* $debugMsg */ " .
+                "INSERT INTO {$this->tables['events']} (transaction_id,log_level,description,source," .
+                "fired_at,object_id,object_type,activity) " .
+                "VALUES ({$transactionID},{$logLevel},'{$description}',{$local->source}," .
+                "{$firedAt},{$local->objectID},{$local->objectType},{$local->activityCode})";
 
             $result = $db->exec_query($query);
             if ($result) {
@@ -846,17 +890,21 @@ class tlEvent extends tlDBObject
         return self::handleNotImplementedMethod(__FUNCTION__);
     }
 
-    public static function getByID(&$db, $id, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function getByID(&$db, $id,
+        $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
-        return tlDBObject::createObjectFromDB($db, $id, __CLASS__, tlEvent::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
+        return tlDBObject::createObjectFromDB($db, $id, __CLASS__,
+            tlEvent::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
     }
 
-    public static function getByIDs(&$db, $ids, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function getByIDs(&$db, $ids,
+        $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
         return self::handleNotImplementedMethod(__FUNCTION__);
     }
 
-    public static function getAll(&$db, $whereClause = null, $column = null, $orderBy = null, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+    public static function getAll(&$db, $whereClause = null, $column = null,
+        $orderBy = null, $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
     {
         return self::handleNotImplementedMethod(__FUNCTION__);
     }
@@ -1213,7 +1261,8 @@ class tlMailLogger extends tlObjectWithDB
         foreach ($key2check as $emailKey) {
             $matches = array();
             $this->$emailKey = trim($this->$emailKey);
-            if (is_blank($this->$emailKey) || ! preg_match($regex2match, $this->$emailKey, $matches)) {
+            if (is_blank($this->$emailKey) ||
+                ! preg_match($regex2match, $this->$emailKey, $matches)) {
                 $this->configIsOK = false;
                 break;
             }
@@ -1278,12 +1327,16 @@ class tlMailLogger extends tlObjectWithDB
             $description,
             $event->sessionID ? $event->sessionID : "<nosession>"
         );
-        $email_body = str_replace($subjects, $replacements, self::$eventFormatString);
+        $email_body = str_replace($subjects, $replacements,
+            self::$eventFormatString);
 
         try {
-            $mail_subject = $verboseTimeStamp . lang_get('mail_logger_email_subject');
-            $mail_subject .= isset($_SESSION['basehref']) ? $_SESSION['basehref'] : config_get('instance_name');
-            email_send($this->from_email, $this->sendto_email, $mail_subject, $email_body);
+            $mail_subject = $verboseTimeStamp .
+                lang_get('mail_logger_email_subject');
+            $mail_subject .= isset($_SESSION['basehref']) ? $_SESSION['basehref'] : config_get(
+                'instance_name');
+            email_send($this->from_email, $this->sendto_email, $mail_subject,
+                $email_body);
         } catch (Exception $exceptionObj) {
             // do nothing
             return tl::KO;
@@ -1358,10 +1411,27 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
         // work in block just to make copy and paste easier
         // Block 1 - errstr
         // Block 2 - errfile
-        if (($errno == E_NOTICE && strpos($errstr, "unserialize()") !== false) || ($errno == E_NOTICE && strpos($errstr, "ob_end_clean()") !== false) || ($errno == E_STRICT && strpos($errstr, "@strftime()") !== false) || ($errno == E_STRICT && strpos($errstr, "mktime()") !== false) || ($errno == E_STRICT && strpos($errstr, "date()") !== false) || ($errno == E_STRICT && strpos($errstr, "strtotime()") !== false) || ($errno == E_WARNING && strpos($errstr, "filemtime") !== false) || ($errno == E_STRICT && strpos($errfile, "xmlrpc.inc") !== false) || ($errno == E_STRICT && strpos($errfile, "xmlrpcs.inc") !== false) || ($errno == E_STRICT && strpos($errfile, "xmlrpc_wrappers.inc") !== false) || ($errno == E_NOTICE && strpos($errfile, "Config_File.class.php") !== false) || ($errno == E_WARNING && strpos($errfile, "smarty_internal_write_file.php") !== false) || (strpos($errfile, "Smarty_Compiler.class.php") !== false)) {
+        if (($errno == E_NOTICE && strpos($errstr, "unserialize()") !== false) ||
+            ($errno == E_NOTICE && strpos($errstr, "ob_end_clean()") !== false) ||
+            ($errno == E_STRICT && strpos($errstr, "@strftime()") !== false) ||
+            ($errno == E_STRICT && strpos($errstr, "mktime()") !== false) ||
+            ($errno == E_STRICT && strpos($errstr, "date()") !== false) ||
+            ($errno == E_STRICT && strpos($errstr, "strtotime()") !== false) ||
+            ($errno == E_WARNING && strpos($errstr, "filemtime") !== false) ||
+            ($errno == E_STRICT && strpos($errfile, "xmlrpc.inc") !== false) ||
+            ($errno == E_STRICT && strpos($errfile, "xmlrpcs.inc") !== false) ||
+            ($errno == E_STRICT &&
+            strpos($errfile, "xmlrpc_wrappers.inc") !== false) ||
+            ($errno == E_NOTICE &&
+            strpos($errfile, "Config_File.class.php") !== false) ||
+            ($errno == E_WARNING &&
+            strpos($errfile, "smarty_internal_write_file.php") !== false) ||
+            (strpos($errfile, "Smarty_Compiler.class.php") !== false)) {
             return;
         }
-        logWarningEvent($errors[$errno] . "\n" . $errstr . " - in " . $errfile . " - Line " . $errline, "PHP");
+        logWarningEvent(
+            $errors[$errno] . "\n" . $errstr . " - in " . $errfile . " - Line " .
+            $errline, "PHP");
     }
 }
 

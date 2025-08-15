@@ -77,7 +77,8 @@ function string_nl2br($p_string, $p_wrap = 100)
         // if other encoded characters are a problem
         $pre2[$x] = preg_replace("/&nbsp;/", " ", $pre2[$x]);
         if (ON == config_get('wrap_in_preformatted_text')) {
-            $pre2[$x] = preg_replace("/([^\n]{" . $p_wrap . "})(?!<\/pre>)/", "$1\n", $pre2[$x]);
+            $pre2[$x] = preg_replace("/([^\n]{" . $p_wrap . "})(?!<\/pre>)/",
+                "$1\n", $pre2[$x]);
         }
         $pre1[0][$x] = "/" . preg_quote($pre1[0][$x], "/") . "/";
     }
@@ -288,32 +289,36 @@ function string_insert_hrefs($p_string)
         $s_url_regex = "/({$t_url_protocol}({$t_url_part1}*?{$t_url_part2}+))/su";
 
         # e-mail regex
-        $s_email_regex = substr_replace(email_regex_simple(), '(?:mailto:)?', 1, 0);
+        $s_email_regex = substr_replace(email_regex_simple(), '(?:mailto:)?', 1,
+            0);
     }
 
     # Find any URL in a string and replace it with a clickable link
     # From MantisBT 2.25.2
-    $p_string = preg_replace_callback($s_url_regex, function ($p_match) {
-        $t_url_href = 'href="' . rtrim($p_match[1], '.') . '"';
-        if (config_get('html_make_links') == LINKS_NEW_WINDOW) {
-            $t_url_target = ' target="_blank"';
-        } else {
-            $t_url_target = '';
-        }
-        return "<a {$t_url_href}{$t_url_target}>{$p_match[1]}</a>";
-    }, $p_string);
+    $p_string = preg_replace_callback($s_url_regex,
+        function ($p_match) {
+            $t_url_href = 'href="' . rtrim($p_match[1], '.') . '"';
+            if (config_get('html_make_links') == LINKS_NEW_WINDOW) {
+                $t_url_target = ' target="_blank"';
+            } else {
+                $t_url_target = '';
+            }
+            return "<a {$t_url_href}{$t_url_target}>{$p_match[1]}</a>";
+        }, $p_string);
 
     # Find any email addresses in the string and replace them with a clickable
     # mailto: link, making sure that we skip processing of any existing anchor
     # tags, to avoid parts of URLs such as https://user@example.com/ or
     # http://user:password@example.com/ to be not treated as an email.
-    $t_pieces = preg_split($s_anchor_regex, $p_string, null, PREG_SPLIT_DELIM_CAPTURE);
+    $t_pieces = preg_split($s_anchor_regex, $p_string, null,
+        PREG_SPLIT_DELIM_CAPTURE);
     $p_string = '';
     foreach ($t_pieces as $piece) {
         if (preg_match($s_anchor_regex, $piece)) {
             $p_string .= $piece;
         } else {
-            $p_string .= preg_replace($s_email_regex, '<a href="mailto:\0">\0</a>', $piece);
+            $p_string .= preg_replace($s_email_regex,
+                '<a href="mailto:\0">\0</a>', $piece);
         }
     }
 
@@ -327,10 +332,13 @@ function string_strip_hrefs($p_string)
 {
     # First grab mailto: hrefs. We don't care whether the URL is actually
     # correct - just that it's inside an href attribute.
-    $p_string = preg_replace('/<a\s[^\>]*href="mailto:([^\"]+)"[^\>]*>[^\<]*<\/a>/si', '\1', $p_string);
+    $p_string = preg_replace(
+        '/<a\s[^\>]*href="mailto:([^\"]+)"[^\>]*>[^\<]*<\/a>/si', '\1',
+        $p_string);
 
     # Then grab any other href
-    $p_string = preg_replace('/<a\s[^\>]*href="([^\"]+)"[^\>]*>[^\<]*<\/a>/si', '\1', $p_string);
+    $p_string = preg_replace('/<a\s[^\>]*href="([^\"]+)"[^\>]*>[^\<]*<\/a>/si',
+        '\1', $p_string);
     return $p_string;
 }
 
@@ -341,7 +349,8 @@ function string_strip_hrefs($p_string)
  */
 function string_restore_valid_html_tags($p_string, $p_multiline = true)
 {
-    $t_html_valid_tags = config_get($p_multiline ? 'html_valid_tags' : 'html_valid_tags_single_line');
+    $t_html_valid_tags = config_get(
+        $p_multiline ? 'html_valid_tags' : 'html_valid_tags_single_line');
 
     if (OFF === $t_html_valid_tags || is_blank($t_html_valid_tags)) {
         return $p_string;
@@ -355,9 +364,12 @@ function string_restore_valid_html_tags($p_string, $p_multiline = true)
     }
     $tags = implode('|', $tags);
 
-    $p_string = preg_replace('/&lt;(' . $tags . ')\s*&gt;/ui', '<\\1>', $p_string);
-    $p_string = preg_replace('/&lt;\/(' . $tags . ')\s*&gt;/ui', '</\\1>', $p_string);
-    $p_string = preg_replace('/&lt;(' . $tags . ')\s*\/&gt;/ui', '<\\1 />', $p_string);
+    $p_string = preg_replace('/&lt;(' . $tags . ')\s*&gt;/ui', '<\\1>',
+        $p_string);
+    $p_string = preg_replace('/&lt;\/(' . $tags . ')\s*&gt;/ui', '</\\1>',
+        $p_string);
+    $p_string = preg_replace('/&lt;(' . $tags . ')\s*\/&gt;/ui', '<\\1 />',
+        $p_string);
 
     return $p_string;
 }
@@ -392,14 +404,16 @@ function string_shorten($p_string)
     $t_max = config_get('max_dropdown_length');
     if ((tlStrLen($p_string) > $t_max) && ($t_max > 0)) {
         $t_pattern = '/([\s|.|,|\-|_|\/|\?]+)/';
-        $t_bits = preg_split($t_pattern, $p_string, - 1, PREG_SPLIT_DELIM_CAPTURE);
+        $t_bits = preg_split($t_pattern, $p_string, - 1,
+            PREG_SPLIT_DELIM_CAPTURE);
 
         $t_string = '';
         $t_last = $t_bits[count($t_bits) - 1];
         $t_last_len = tlStrLen($t_last);
 
         foreach ($t_bits as $t_bit) {
-            if ((tlStrLen($t_string) + tlStrLen($t_bit) + $t_last_len + 3 <= $t_max) || (strpos($t_bit, '.,-/?') > 0)) {
+            if ((tlStrLen($t_string) + tlStrLen($t_bit) + $t_last_len + 3 <=
+                $t_max) || (strpos($t_bit, '.,-/?') > 0)) {
                 $t_string .= $t_bit;
             } else {
                 break;
@@ -447,7 +461,8 @@ function string_html_specialchars($p_string)
     # achumakov: @ added to avoid warning output in unsupported codepages
     # e.g. 8859-2, windows-1257, Korean, which are treated as 8859-1.
     # This is VERY important for Eastern European, Baltic and Korean languages
-    return preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", @htmlspecialchars($p_string, ENT_COMPAT, config_get('charset')));
+    return preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;",
+        @htmlspecialchars($p_string, ENT_COMPAT, config_get('charset')));
 }
 
 /**

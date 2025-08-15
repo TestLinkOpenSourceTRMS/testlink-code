@@ -18,29 +18,26 @@ require_once 'exec.inc.php';
 $webeditorCfg = getWebEditorCfg('execution');
 require_once require_web_editor($webeditorCfg['type']);
 
-
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tcase_mgr = new testcase($db);
-$args = init_args();
+$args = initArgs();
 
 $webeditorCfg = getWebEditorCfg('display_execution_notes');
-$map = get_execution($db,$args->exec_id);
+$map = get_execution($db, $args->exec_id);
 $notesContent = $map[0]['notes'];
 
 $readonly = $args->readonly > 0 ? 'readonly="readonly"' : '';
 $smarty = new TLSmarty();
-$smarty->assign('notes',$notesContent);
-$smarty->assign('webeditorCfg',$webeditorCfg);
-$smarty->assign('webeditorType',$webeditorCfg['type']);
-$smarty->assign('readonly',$readonly);
-$smarty->assign('editor_instance','exec_notes_' . $args->exec_id);
+$smarty->assign('notes', $notesContent);
+$smarty->assign('webeditorCfg', $webeditorCfg);
+$smarty->assign('webeditorType', $webeditorCfg['type']);
+$smarty->assign('readonly', $readonly);
+$smarty->assign('editor_instance', 'exec_notes_' . $args->exec_id);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-
-
-function createExecNotesWebEditor($id,$basehref,$editorCfg,$content=null)
+function createExecNotesWebEditor($id, $basehref, $editorCfg, $content = null)
 {
     // Important Notice:
     //
@@ -50,21 +47,25 @@ function createExecNotesWebEditor($id,$basehref,$editorCfg,$content=null)
     //
     // Rows and Cols values are useless for FCKeditor.
     //
-    $of=web_editor("exec_notes_$id",$basehref,$editorCfg) ;
+    $of = web_editor("exec_notes_$id", $basehref, $editorCfg);
     $of->Value = $content;
-    $editor=$of->CreateHTML(10,60);
+    $editor = $of->CreateHTML(10, 60);
     unset($of);
     return $editor;
 }
 
-
-
-function init_args()
+function initArgs()
 {
-    $iParams = array("exec_id" => array(tlInputParameter::INT_N),
-                     "readonly" => array(tlInputParameter::INT_N));
-	$args = new stdClass();
-	R_PARAMS($iParams,$args);
+    $iParams = array(
+        "exec_id" => array(
+            tlInputParameter::INT_N
+        ),
+        "readonly" => array(
+            tlInputParameter::INT_N
+        )
+    );
+    $args = new stdClass();
+    R_PARAMS($iParams, $args);
     return $args;
 }
 ?>

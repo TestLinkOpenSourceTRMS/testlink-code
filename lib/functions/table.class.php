@@ -118,7 +118,8 @@ abstract class tlTable
             if (is_array($column)) {
                 if (isset($column['title_key'])) {
                     if (isset($column['title'])) {
-                        throw new Exception("Both title and title_key are set: use only one of them");
+                        throw new Exception(
+                            "Both title and title_key are set: use only one of them");
                     }
                     $column['title'] = lang_get($column['title_key']);
                 }

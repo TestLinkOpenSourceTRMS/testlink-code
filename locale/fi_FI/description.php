@@ -1,32 +1,31 @@
 <?php
-/** 
- * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
- * 
- * Localization: Finnish (fi_FI) texts 
+/**
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
- * 
- * The file contains global variables with html text. These variables are used as 
- * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String" 
+ * Localization: Finnish (fi_FI) texts
+ *
+ *
+ * The file contains global variables with html text. These variables are used as
+ * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String"
  * prefix '$TLS_hlp_' or '$TLS_txt_'. This must be a reserved prefix.
- * 
+ *
  * Contributors howto:
  * Add your localization to TestLink tracker as attachment to update the next release
  * for your language.
  *
  * No revision is stored for the the file - see CVS history
- * 
- * 
+ *
+ *
  * @package 	TestLink
  * @author 		Kirsi Mäkinen, Jan-Erik Finlander, Juho Kauppi
  * @author 		Heikki Alonen, Jari Ahonen, Otto Moilanen
- * @copyright 	2003-2009, TestLink community 
+ * @copyright 	2003-2009, TestLink community
  * @version    	CVS: $Id: description.php,v 1.3 2010/06/24 17:25:55 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
 
-	
 // printFilter.html
 $TLS_hlp_generateDocOptions = "<h2>Vaihtoehtoja asiakirjan luomiseen</h2>
 
@@ -122,16 +121,16 @@ Kun sulkemalla lisätä bug sivulla, näet asiaa bug koskevat tiedot suorittaa s
 // execFilter.html
 $TLS_hlp_executeFilter = "<h2>Setup Suodatetaan ja Rakenna Testiparametrien täytäntöönpano</h2>
 
-<p>Vasemmanpuoleisessa ruudussa koostuu alkaen navigaattorin avulla testi tapauksissa osoitettu nykyinen". 
-"Test suunnitella ja taulukko, asetukset ja suodatetaan. Nämä suodattimet avulla käyttäjä ". 
-"tarkentaa tarjotaan joukko testi tapauksissa, ennen kuin ne on suoritettu." . 
-"Setup suodattimesi paina \"Käytä\" painiketta ja valitse sopiva Testitapaus" . 
-" puu-valikosta.</p>
+<p>Vasemmanpuoleisessa ruudussa koostuu alkaen navigaattorin avulla testi tapauksissa osoitettu nykyinen" .
+    "Test suunnitella ja taulukko, asetukset ja suodatetaan. Nämä suodattimet avulla käyttäjä " .
+    "tarkentaa tarjotaan joukko testi tapauksissa, ennen kuin ne on suoritettu." .
+    "Setup suodattimesi paina \"Käytä\" painiketta ja valitse sopiva Testitapaus" .
+    " puu-valikosta.</p>
 
 <h3>Build</h3>
-<p>Käyttäjien tulee valita rakentaa, jotka liittyvät testin tuloksen. ".
-" Rakentaa ovat perusasetuksen komponentin nykyinen Test Plan. Jokainen testi " .
-"voidaan käyttää useamman kerran per rakentaa. Kuitenkin viime tuloksia on laskea vain.
+<p>Käyttäjien tulee valita rakentaa, jotka liittyvät testin tuloksen. " .
+    " Rakentaa ovat perusasetuksen komponentin nykyinen Test Plan. Jokainen testi " .
+    "voidaan käyttää useamman kerran per rakentaa. Kuitenkin viime tuloksia on laskea vain.
 <br />Rakentaa voidaan luoda johtaa käyttämällä Luo uusi Rakenna sivulla.</p>
 
 <h3>Test Case ID filter</h3>
@@ -139,22 +138,23 @@ $TLS_hlp_executeFilter = "<h2>Setup Suodatetaan ja Rakenna Testiparametrien täy
 
 <h3>Priority filter</h3>
 <p>Käyttäjät voivat testata suodattimet tapauksissa testi etusijalla. Jokainen testi tapauksessa tärkeää on yhdistää" .
- "kanssa testi kiireellisissä nykyisen Test suunnitelma. Esimerkiksi 'KORKEAT' ensisijaisia testin tapauksessa" . 
-"näkyy, jos merkitystä tai kiireellisyys on KORKEA ja toisen attribuutin on vähintään 'KESKITASO' tasolla.</p>
+    "kanssa testi kiireellisissä nykyisen Test suunnitelma. Esimerkiksi 'KORKEAT' ensisijaisia testin tapauksessa" .
+    "näkyy, jos merkitystä tai kiireellisyys on KORKEA ja toisen attribuutin on vähintään 'KESKITASO' tasolla.</p>
 
 <h2>Result filter</h2>
 <p>Käyttäjät voivat testata suodattimet tapauksissa tuloksia. Tulokset ovat mitä tapahtui, että testi tapauksessa aikana erityisesti rakentaa. Testitapauksia voi kulkea, epäonnistuvat, on estetty, tai ei saa olla päällä. " .
-"Tämä suodin on oletusarvona pois päältä.</p>
+    "Tämä suodin on oletusarvona pois päältä.</p>
 
 <h3>User filter</h3>
 <p>Käyttäjät voivat testata suodattimet tapauksissa niiden siirronsaajalle. Tarkastus-box mahdollistaa sisällyttää myös " .
-"\"Vapaana\" testit osaksi johtanut asettaa lisäksi.</p>";
+    "\"Vapaana\" testit osaksi johtanut asettaa lisäksi.</p>";
 /*
-<h2>Useimmat Nykyinen tulos</h2>
-<p>Oletusarvon tai jos 'viimeisintä' valintaruutu ei ole valittu, puussa on LAJITTELE luontinumero että valitaan avattavasta laatikko. Tässä tilassa puun näyttää testin tapauksissa tila.
-<br /> Esimerkki: Käyttäjä valitsee rakentaa 2 avattavasta kentästä ja ei tarkistaaksesi 'viimeisintä' valintaruutu. Kaikki testin tapauksissa näkyy niiden tilan rakentaa 2. Joten, jos testi 1 hyväksyttiin rakentaa 2 on väritetty vihreäksi.
-<br /> Jos käyttäjä decideds tarkistaaksesi 'viimeisintä' valintaruutu puussa on värillinen, että testi tapauksissa viimeisimmän tuloksen.
-<br /> Esim: Käyttäjä valitsee rakentaa 2 avattavasta ruutuun ja tällä kertaa tarkistaa 'viimeisintä' valintaruutu. Kaikki testin tapauksissa näkyy useimpien nykyinen tila. Joten, jos testi 1 hyväksyttiin rakentaa 3, vaikka käyttäjä on myös valittu rakentaa 2, se on väritetty vihreäksi.</p>"; */
+ * <h2>Useimmat Nykyinen tulos</h2>
+ * <p>Oletusarvon tai jos 'viimeisintä' valintaruutu ei ole valittu, puussa on LAJITTELE luontinumero että valitaan avattavasta laatikko. Tässä tilassa puun näyttää testin tapauksissa tila.
+ * <br /> Esimerkki: Käyttäjä valitsee rakentaa 2 avattavasta kentästä ja ei tarkistaaksesi 'viimeisintä' valintaruutu. Kaikki testin tapauksissa näkyy niiden tilan rakentaa 2. Joten, jos testi 1 hyväksyttiin rakentaa 2 on väritetty vihreäksi.
+ * <br /> Jos käyttäjä decideds tarkistaaksesi 'viimeisintä' valintaruutu puussa on värillinen, että testi tapauksissa viimeisimmän tuloksen.
+ * <br /> Esim: Käyttäjä valitsee rakentaa 2 avattavasta ruutuun ja tällä kertaa tarkistaa 'viimeisintä' valintaruutu. Kaikki testin tapauksissa näkyy useimpien nykyinen tila. Joten, jos testi 1 hyväksyttiin rakentaa 3, vaikka käyttäjä on myös valittu rakentaa 2, se on väritetty vihreäksi.</p>";
+ */
 
 // newest_tcversions.html
 $TLS_hlp_planTcModified = "<h2>Uusimmat versiot liittyvät Test Cases</h2>

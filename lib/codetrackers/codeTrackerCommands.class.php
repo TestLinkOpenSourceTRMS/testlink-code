@@ -17,7 +17,7 @@
 class codeTrackerCommands
 {
 
-    var $codeTrackerMgr;
+    public $codeTrackerMgr;
 
     private $db;
 
@@ -30,7 +30,7 @@ class codeTrackerCommands
     // used to sanitize inputs on different pages
     private $entitySpec;
 
-    function __construct(&$dbHandler)
+    public function __construct(&$dbHandler)
     {
         $this->db = $dbHandler;
         $this->codeTrackerMgr = new tlCodeTracker($dbHandler);
@@ -51,19 +51,19 @@ class codeTrackerCommands
             ));
     }
 
-    function setTemplateCfg($cfg)
+    public function setTemplateCfg($cfg)
     {
         $this->templateCfg = $cfg;
     }
 
-    function getGuiOpWhiteList()
+    public function getGuiOpWhiteList()
     {
         return $this->guiOpWhiteList;
     }
 
     /**
      */
-    function initGuiBean(&$argsObj, $caller)
+    public function initGuiBean(&$argsObj, $caller)
     {
         $obj = new stdClass();
         $obj->action = $caller;
@@ -109,7 +109,7 @@ class codeTrackerCommands
 
     /**
      */
-    function create(&$argsObj, $request, $caller = null)
+    public function create(&$argsObj, $request, $caller = null)
     {
         $guiObj = $this->initGuiBean($argsObj,
             (is_null($caller) ? __FUNCTION__ : $caller));
@@ -129,7 +129,7 @@ class codeTrackerCommands
 
     /**
      */
-    function doCreate(&$argsObj, $request)
+    public function doCreate(&$argsObj, $request)
     {
         $guiObj = $this->create($argsObj, $request, __FUNCTION__);
 
@@ -165,7 +165,7 @@ class codeTrackerCommands
      * returns:
      *
      */
-    function edit(&$argsObj, $request)
+    public function edit(&$argsObj, $request)
     {
         $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
 
@@ -186,7 +186,7 @@ class codeTrackerCommands
      * returns:
      *
      */
-    function doUpdate(&$argsObj, $request)
+    public function doUpdate(&$argsObj, $request)
     {
         $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
 
@@ -215,7 +215,7 @@ class codeTrackerCommands
 
     /**
      */
-    function doDelete(&$argsObj, $request)
+    public function doDelete(&$argsObj, $request)
     {
         $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
 
@@ -229,7 +229,7 @@ class codeTrackerCommands
 
     /**
      */
-    function checkConnection(&$argsObj, $request)
+    public function checkConnection(&$argsObj, $request)
     {
         $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
         $guiObj->canManage = $argsObj->currentUser->hasRight($this->db,

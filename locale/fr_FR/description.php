@@ -21,7 +21,6 @@
  *
  **/
 
-
 // printFilter.html
 $TLS_hlp_generateDocOptions = "<h2>Options pour un document généré</h2>
 
@@ -34,15 +33,15 @@ $TLS_hlp_testPlan = "<h2>Campagne de test</h2>
 <p>Une campagne de test est une approche systématique pour tester un système ou un logiciel. Il est possible d’organiser l’activité de test avec des versions du produit, des plateformes pour tracer les résultats.</p>
 
 <h3>Campagne de test</h3>
-<p>Cette section permet l'administration des campagnes de test. Administrer les campagnes de test implique la création/modification/suppression de campagnes, l’ajout/modification/suppression de version du produit pour chaque campagne et l’ajout/modification/suppression d'indicateurs d'avancement.</p> 
+<p>Cette section permet l'administration des campagnes de test. Administrer les campagnes de test implique la création/modification/suppression de campagnes, l’ajout/modification/suppression de version du produit pour chaque campagne et l’ajout/modification/suppression d'indicateurs d'avancement.</p>
 
 <h3>Contenu de la campagne de test</h3>
-<p>Cette section permet la définition du contenu d'une campagne de test. Gérer le contenu d'une campagne de test implique la définition des platesformes utilisées dans la campagne, la définition des fiches de test utilisées dans la campagne, l'assignation éventuelle des fiches de test à des utilisateurs liés à la campagne et la définition de l'urgence des tests. Au cours de la réalisation, les versions de fiches de tests peuvent également être mises à jour si de nouvelles versions de fiches de tests ont été créées.</p> 
+<p>Cette section permet la définition du contenu d'une campagne de test. Gérer le contenu d'une campagne de test implique la définition des platesformes utilisées dans la campagne, la définition des fiches de test utilisées dans la campagne, l'assignation éventuelle des fiches de test à des utilisateurs liés à la campagne et la définition de l'urgence des tests. Au cours de la réalisation, les versions de fiches de tests peuvent également être mises à jour si de nouvelles versions de fiches de tests ont été créées.</p>
 
 <h3>Exécution des fiches de test</h3>
-<p>Cette section est celle où les utilisateurs peuvent exécuter les fiches de test (écrire des résultats de test) et imprimer les suites de test de la campagne de test. Cette section est où les utilisateurs peuvent tracer les résultats de leur exécution de fiches de test.</p> 
+<p>Cette section est celle où les utilisateurs peuvent exécuter les fiches de test (écrire des résultats de test) et imprimer les suites de test de la campagne de test. Cette section est où les utilisateurs peuvent tracer les résultats de leur exécution de fiches de test.</p>
 
-<p>Remarque: Il est possible que les utilisateurs puissent ne pas voir de liste déroulante avec les campagnes de test. Dans ce cas, tous les liens (sauf ceux actifs pour le test leader) seront indisponibles. Si tel est le cas, veuillez contacter le test leader ou l’administrateur pour vous donner les droits du projet qui convienne ou pour vous créer une campagne de test.</p>"; 
+<p>Remarque: Il est possible que les utilisateurs puissent ne pas voir de liste déroulante avec les campagnes de test. Dans ce cas, tous les liens (sauf ceux actifs pour le test leader) seront indisponibles. Si tel est le cas, veuillez contacter le test leader ou l’administrateur pour vous donner les droits du projet qui convienne ou pour vous créer une campagne de test.</p>";
 
 // custom_fields.html
 $TLS_hlp_customFields = "<h2>Champs personnalisés</h2>
@@ -83,7 +82,7 @@ $TLS_hlp_executeMain = "<h2>Exécution de fiches de test</h2>
 <p>Permet aux utilisateurs d’exécuter les fiches de test. L’exécution en elle-même n’est qu’une assignation à chaque version d'une fiche de test d’un résultat (réussi, en échec, bloqué) pour une version du produit (livraison) donnée.</p>
 <p>L’accès à un système de gestion d’anomalie peut être configuré. L’utilisateur peut alors ajouter directement de nouvelles anomalies et rechercher celles existantes. Voir le manuel d’installation pour d’avantage de détails.</p>";
 
-//bug_add.html
+// bug_add.html
 $TLS_hlp_btsIntegration = "<h2>Ajout d’anomalie à la fiche de test</h2>
 <p><i>(Seulement si c’est configuré)</i>
 TestLink a une intégration très simple avec les systèmes de gestion d’anomalies, qui n’est ni capable d’envoyer de requête de création au système, ni récupérer le bug id. L’intégration est faite par des liens aux pages du système de gestion d’anomalie, qui appelle les fonctionnalités suivantes:
@@ -91,7 +90,7 @@ TestLink a une intégration très simple avec les systèmes de gestion d’anoma
 	<li>Insertion d’une nouvelle anomalie;</li>
 	<li>Affichage des informations de l’anomalie. </li>
 </ul>
-</p>  
+</p>
 
 <h3>Processus d’ajout d’anomalie</h3>
 <p>
@@ -100,7 +99,7 @@ TestLink a une intégration très simple avec les systèmes de gestion d’anoma
    <li>Etape 2: retenir le BUGID assigné par le système;</li>
    <li>Etape 3: renseigner le champ de Testlink avec le BUGID récupéré;</li>
    <li>Etape 4: utiliser le bouton d’ajout d’anomalie.</li>
-   </ul>  
+   </ul>
 
 Après fermeture de la fenêtre d’ajout d’anomalie, l’anomalie apparaît dans la page d’exécution.
 </p>";
@@ -129,7 +128,7 @@ $TLS_hlp_executeFilter = "<h2>Propriétés</h2>
 <p>Il est possible de filtrer les fiches de test par mots-clés qui leurs ont été affectés. Il est possible de choisir plusieurs mots-clés en utilisant CTRL-Clic. Si vous choisissez plus d’un mot-clé, vous pouvez choisir le mode \"And\" ou \"Or\" pour le filtre.</p>
 
 <h3>Filtre de priorité</h3>
-<p>Il est possible de filtrer les fiches de test par priorité, \"Criticité de fiches de test\" combiné à \"Urgence de test\" dans la campagne de test courante.</p> 
+<p>Il est possible de filtrer les fiches de test par priorité, \"Criticité de fiches de test\" combiné à \"Urgence de test\" dans la campagne de test courante.</p>
 
 <h3>Filtre utilisateur</h3>
 <p>Il est possible de filtrer les fiches de test affectées ou non à quelqu’un, et également à un utilisateur spécifique (avec inclusion des fiches non affectés ou non - les filtres avancés sont disponibles). </p>
@@ -137,12 +136,10 @@ $TLS_hlp_executeFilter = "<h2>Propriétés</h2>
 <h3>Filtre de résultat</h3>
 <p>Il est possible de filtrer les fiches de test par résultat(les filtres avancés sont disponibles), sur la version du produit choisi pour l’exécution, sur la dernière exécution, sur tous les versions du produit, n’importe quel version du produit ou sur une version du produit spécifique. </p>";
 
-
 // newest_tcversions.html
 $TLS_hlp_planTcModified = "<h2>Dernière version des fiches de test liée</h2>
 <p>Toute la série des fiches de test liées à une campagne de test est analysée, et la liste des fiches de test qui ont une nouvelle version disponible est affichée (par rapport aux versions courantes liées à la campagne de test).
 </p>";
-
 
 // requirementsCoverage.html
 $TLS_hlp_requirementsCoverage = "<h3>Récapitulatif d'exigences</h3>
@@ -150,22 +147,21 @@ $TLS_hlp_requirementsCoverage = "<h3>Récapitulatif d'exigences</h3>
 <p>La fonctionnalité permet de cartographier la couverture des exigences utilisateur ou système par fiche de test.</p>
 
 <h3>Dossier d’exigences</h3>
-<p>Les exigences sont regroupées dans des dossiers d’exigences qui sont liés au projet de test.<br /> TestLink ne supporte pas les versions des dossiers d’exigences et en même temps des exigences: il faut d’abord faire une version d’exigence avec d’effectuer celle du dossier.<b>Titre</b>. Un utilisateur peut ajouter une simple description ou des notes au champ <b>Périmètre</b>.</p> 
+<p>Les exigences sont regroupées dans des dossiers d’exigences qui sont liés au projet de test.<br /> TestLink ne supporte pas les versions des dossiers d’exigences et en même temps des exigences: il faut d’abord faire une version d’exigence avec d’effectuer celle du dossier.<b>Titre</b>. Un utilisateur peut ajouter une simple description ou des notes au champ <b>Périmètre</b>.</p>
 
-<p><b><a name=’total_count’>Le comptage surchargé d’exigences</a></b> sert d’évaluation à la couverture d’exigences dans le cas où toutes les exigences ne sont pas ajoutées (importées). La valeur <b>0</b> signifie que le comptage courant d’exigences est utilisé pour les métriques.</p> 
+<p><b><a name=’total_count’>Le comptage surchargé d’exigences</a></b> sert d’évaluation à la couverture d’exigences dans le cas où toutes les exigences ne sont pas ajoutées (importées). La valeur <b>0</b> signifie que le comptage courant d’exigences est utilisé pour les métriques.</p>
 <p><i>Par exemple: le dossier d’exigences compte 200 exigences mais seulement 50 sont ajoutées dans Testlink. La couverture est de 25% (si toutes les exigences ajoutées sont testées).</i></p>
 
 <h3><a name=\"req\">Exigences</a></h3>
-<p>Cliquer sur le titre des dossiers d’exigences créés. il est possible de créer, modifier, supprimer ou importer les exigences du cahier de test. Chaque exigence a un titre, un contexte et un statut. Le statut peut être \"Normal\" ou \"Non testable\". Les exigences non testables ne sont pas comptées dans les métriques. Ce paramètre peut être utilisé pour des fonctionnalités non implémentées et des exigences mal conçues.</p> 
+<p>Cliquer sur le titre des dossiers d’exigences créés. il est possible de créer, modifier, supprimer ou importer les exigences du cahier de test. Chaque exigence a un titre, un contexte et un statut. Le statut peut être \"Normal\" ou \"Non testable\". Les exigences non testables ne sont pas comptées dans les métriques. Ce paramètre peut être utilisé pour des fonctionnalités non implémentées et des exigences mal conçues.</p>
 
-<p>Il est possible de créer de nouvelles fiches de test pour les exigences en utilisant l’action multiple avec les exigences sélectionnées dans l’écran du cahier. Les fiches de test sont créés dans le dossier de test avec le nom défini en configuration <i>(par défaut: &#36;tlCfg->req_cfg->default_testsuite_name = 
+<p>Il est possible de créer de nouvelles fiches de test pour les exigences en utilisant l’action multiple avec les exigences sélectionnées dans l’écran du cahier. Les fiches de test sont créés dans le dossier de test avec le nom défini en configuration <i>(par défaut: &#36;tlCfg->req_cfg->default_testsuite_name =
 \"Test suite created by Requirement - Auto\";)</i>. Le titre et le contexte sont copiés dans le cas de test.</p>
 ";
 
 $TLS_hlp_req_coverage_table = "<h3>Couverture:</h3>
 Une valeur de \"40% (8/20)\" signifie que 20 fiches de test doivent être créés pour l’exigence pour la tester entièrement, 8 de ces fiches sont déjà créés et liés à l’exigence, ce qui fait une couverture de 40%.
 ";
-
 
 // req_edit
 $TLS_hlp_req_edit = "<h3>Liens internes au contexte:</h3>
@@ -184,7 +180,6 @@ Cette syntaxe fonctionne également pour les dossiers d’exigences.</p>
 <p>Pour toute modification, Testlink demande un message de log servant à la traçabilité. Si le périmètre de l’exigence a été modifié, vous être libre de choisir de créer ou non une nouvelle révision. Quand toute autre modification est apportée, la création d’une nouvelle révision est obligatoire.</p>
 ";
 
-
 // req_view
 $TLS_hlp_req_view = "<h3>Liens directs:</h3>
 <p>Pour facilement partager le document avec d’autres personnes, cliquer tout simplement sur l’icône globe en haut du document pour créer un lien direct.</p>
@@ -198,7 +193,6 @@ $TLS_hlp_req_view = "<h3>Liens directs:</h3>
 <h3>Relations:</h3>
 <p>Les relations d’exigence sont utilisées pour modéliser les relations entre les exigences. Les relations personnalisées et l’option pour autoriser les relations entre exigences de différents projets de test peuvent être configurées dans le fichier de configuration. Si vous définissez une relation \"Exigence A est parent de Exigence B\", Testlink définit implicitement la relation \"Exigence B est enfant de Exigence A\".</p>
 ";
-
 
 // req_spec_edit
 $TLS_hlp_req_spec_edit = "<h3>Liens internes dans le contexte:</h3>
@@ -215,15 +209,13 @@ Cette syntaxe fonctionne également pour les dossiers d’exigences (l’attribu
 Si vous ne voulez pas définir une version, l’exigence avec toutes ses versions est affichée.</p>
 ";
 
-
 // planAddTC_m1.tpl
 $TLS_hlp_planAddTC = "<h2>Concernant ’Enregistrer les champs personnalisés’</h2>
-Si des champs personnalisés ont été définis et affectés au projet, avec:<br /> 
+Si des champs personnalisés ont été définis et affectés au projet, avec:<br />
  ’Afficher sur la conception de campagne de test=true’ et <br />
  ’Activer sur la conception de campagne de test=true’<br />
 Les champs sont visibles sur la page uniquement pour les fiches de test liées à la campagne de test.
 ";
-
 
 // resultsByTesterPerBuild.tpl
 $TLS_hlp_results_by_tester_per_build_table = "<b>Plus d’informations à propos des testeurs:</b><br />
@@ -232,9 +224,8 @@ Si vous cliquez sur le nom d’un testeur dans le tableau, un récapitulatif dé
 Le rapport affiche les fiches de test qui sont affectées à un utilisateur spécifique et qui ont été exécutées pour chaque version du produit active. Même si une fiche de test a été exécutée par un autre utilisateur que l’utilisateur affecté, la fiche de test est affichée comme exécutée pour l’utilisateur affecté.
 ";
 
-
 // xxx.html
-//$TLS_hlp_xxx = "";
+// $TLS_hlp_xxx = "";
 
 // ----- END ------------------------------------------------------------------
 ?>

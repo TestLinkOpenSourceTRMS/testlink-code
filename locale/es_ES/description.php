@@ -1,32 +1,32 @@
 <?php
 /** -------------------------------------------------------------------------------------
- * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
- * 
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
  * Localization: Spanish (es_ES) texts - en_GB is the default development localization (World-wide English)
  *
- * 
- * The file contains global variables with html text. These variables are used as 
- * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String" 
+ *
+ * The file contains global variables with html text. These variables are used as
+ * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String"
  * prefix '$TLS_hlp_' or '$TLS_txt_'. This must be a reserved prefix.
- * 
+ *
  * Contributors howto:
  * Add your localization to TestLink tracker as attachment to update the next release
  * for your language.
  *
  * No revision is stored for the file - see CVS history
- * 
- * 
+ *
+ *
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2003-2009, TestLink community 
+ * @copyright 	2003-2009, TestLink community
  * @version    	CVS: $Id: description.php,v 1.17 2010/09/13 09:52:42 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 20100409 - eloff - BUGID 3050 - Update execution help text
  *
- * ------------------------------------------------------------------------------------- 
+ * -------------------------------------------------------------------------------------
  * Spanish (es_ES) translation
  * -------------------------------------------------------------------------------------
  * Translated by: Jesus Hernandez
@@ -42,8 +42,8 @@ está seleccionada (marcada) la información será mostrada. Para cambiar los da
 presentados, marca o desmarca, pulsa en el Filtro y selecciona el nivel de información
 deseada desde el árbol.</p>
 
-<p><b>Cabecera del Documento:</b> Los usuarios pueden filtrar la información de la cabecera. 
-La información de la cabecera incluye: Introducción, Alcance, Referencias, 
+<p><b>Cabecera del Documento:</b> Los usuarios pueden filtrar la información de la cabecera.
+La información de la cabecera incluye: Introducción, Alcance, Referencias,
 Metodología de Pruebas y Limitaciones de Pruebas.</p>
 
 <p><b>Cuerpo del Caso de Prueba:</b> Los usuarios pueden filtrar la información del cuerpo de los Casos de Prueba. La información del cuerpo de los Casos de Prueba
@@ -58,33 +58,33 @@ de Prueba, el Resumen del Caso de Prueba estará siempre incluido.</p>
 
 <p><b>Índice de Contenidos:</b> TestLink inserta una lista con todos los títulos con enlaces internos si está seleccionado.</p>
 
-<p><b>Formato de Salida:</b> Hay dos posibilidades: HTML y MS Word. El navegador llama al componente MS Word 
+<p><b>Formato de Salida:</b> Hay dos posibilidades: HTML y MS Word. El navegador llama al componente MS Word
 en segundo caso.</p>";
 
 // testPlan.html
 $TLS_hlp_testPlan = "<h2>Plan de Pruebas</h2>
 
 <h3>General</h3>
-<p>Un plan de pruebas es una aproximación sistemática al testing de sistemas tales como el software. Puedes organizar las actividades de testing con 
+<p>Un plan de pruebas es una aproximación sistemática al testing de sistemas tales como el software. Puedes organizar las actividades de testing con
 builds particulares para cada producto en concreto con resultados trazables en el tiempo.</p>
 
 <h3>Ejecución de Pruebas</h3>
-<p>Esta sección es donde los usuarios pueden ejecutar Casos de Prueba (escribir los resultados de las pruebas) e 
-imprimir la suite de Casos de Prueba del Plan de Pruebas. Esta sección es donde los usuarios pueden realizar un seguimiento de  
-los resultados de sus ejecuciones de casos de prueba.</p> 
+<p>Esta sección es donde los usuarios pueden ejecutar Casos de Prueba (escribir los resultados de las pruebas) e
+imprimir la suite de Casos de Prueba del Plan de Pruebas. Esta sección es donde los usuarios pueden realizar un seguimiento de
+los resultados de sus ejecuciones de casos de prueba.</p>
 
 <h2>Gestión del Plan de Pruebas</h2>
-<p>Esta sección, a la que sólo pueden acceder usuarios con determinados privilegios, permite a los usuarios administrar planes de pruebas. 
-La administración de planes de pruebas incluye la crear/editar/borrar planes, 
-añadir/editar/borrar/actualizar casos de prueba en planes, crear builds así como definir quién puede 
+<p>Esta sección, a la que sólo pueden acceder usuarios con determinados privilegios, permite a los usuarios administrar planes de pruebas.
+La administración de planes de pruebas incluye la crear/editar/borrar planes,
+añadir/editar/borrar/actualizar casos de prueba en planes, crear builds así como definir quién puede
 ver cada plan.<br />
-Los usuarios con suficientes permisos pueden además establecer la prioridad/riesgo y la propiedad de 
-las suites de Casos de Prueba (categorías) y crear hitos de prueba.</p> 
+Los usuarios con suficientes permisos pueden además establecer la prioridad/riesgo y la propiedad de
+las suites de Casos de Prueba (categorías) y crear hitos de prueba.</p>
 
-<p>Nota: Es posible que los usuarios no vean ninguna lista desplegable conteniendo Planes de Pruebas. 
-En ese caso, todos los enlaces (excepto aquellos habilitados) estarán desenlazados. Si estás 
-en esa situación debes ponerte en contacto con el administrados para que te proporcione los 
-privilegios de proyecto pertinentes o para crear un Plan de Pruebas para ti.</p>"; 
+<p>Nota: Es posible que los usuarios no vean ninguna lista desplegable conteniendo Planes de Pruebas.
+En ese caso, todos los enlaces (excepto aquellos habilitados) estarán desenlazados. Si estás
+en esa situación debes ponerte en contacto con el administrados para que te proporcione los
+privilegios de proyecto pertinentes o para crear un Plan de Pruebas para ti.</p>";
 
 // custom_fields.html
 $TLS_hlp_customFields = "<h2>Campos Personalizados</h2>
@@ -98,11 +98,11 @@ $TLS_hlp_customFields = "<h2>Campos Personalizados</h2>
 <li>El número de campos personalizados no está limitado.</li>
 </ul>
 
-<p>La definición de un campo personalizado incluye los siguientes atributos 
+<p>La definición de un campo personalizado incluye los siguientes atributos
 lógicos:</p>
 <ul>
 <li>Nombre del campo personalizado</li>
-<li>Nombre de la variable (ej: Este valor es el que se 
+<li>Nombre de la variable (ej: Este valor es el que se
 proporciona a la API lang_get() , o se muestra tal y como está si no se encuentra en el fichero del idioma).</li>
 <li>Tipo de campo personalizado (cadena de caracteres, numérico, float, enumeración, email)</li>
 <li>Valores de la enumeración (ej: ROJO|AMARILLO|AZUL), aplicable los tipos lista, lista de selección múltiple
@@ -134,7 +134,7 @@ asignar un resultado a un caso de prueba (pasado,fallado,bloqueado) asociado a u
 <p>El acceso al sistema de gestión de defectos debe ser configurado. El usuario puede añadir nuevos defectos directamente
 y seleccionarlos de entre los existentes. Consulta el manual de Instalación para más detalles.</p>";
 
-//bug_add.html
+// bug_add.html
 $TLS_hlp_btsIntegration = "<h2>Añadir defectos a los Caso de Prueba</h2>
 <p><i>(sólo si está configurado)</i>
 TestLink tiene un sistema muy simple de integración con Gestores de Defectos,
@@ -144,7 +144,7 @@ La integración se realiza usando enlaces a las páginas del Gestor de Defectos 
 	<li>Insertar nuevo defecto.</li>
 	<li>Mostrar información de un defecto existente. </li>
 </ul>
-</p>  
+</p>
 
 <h3>Proceso para añadir un nuevo defecto</h3>
 <p>
@@ -153,7 +153,7 @@ La integración se realiza usando enlaces a las páginas del Gestor de Defectos 
    <li>Paso 2: apunta el ID del defecto asignado por el Gestor de Defectos.</li>
    <li>Paso 3: escribe el ID del Defecto en el campo de entrada.</li>
    <li>Paso 4: usa el botón de añadir defecto.</li>
-   </ul>  
+   </ul>
 
 Después de cerrar la pantalla para añadir un defecto verás información importante del defecto en la pantalla de ejecución.
 </p>";
@@ -185,33 +185,31 @@ usando CTRL-Clic dentro de la lista desplegable de selección múltiple</p>
 
 <h3>Filtro de Keyword</h3>
 <p>Puedes filtrar casos de prueba por las keywords asignadas. Puedes elegir " .
-"múltiples keywords usando CTRL-Clic. Si eliges más de una keyword puedes " .
-"decidir si se muestran sólo los casos de prueba que tienen asignadas todas las keywords seleccionadas " .
-"(opción \"Y\") o al memos una de las keywords seleccionadas (opción \"O\").</p>
+    "múltiples keywords usando CTRL-Clic. Si eliges más de una keyword puedes " .
+    "decidir si se muestran sólo los casos de prueba que tienen asignadas todas las keywords seleccionadas " .
+    "(opción \"Y\") o al memos una de las keywords seleccionadas (opción \"O\").</p>
 
 <h3>Filtro de Prioridad</h3>
 <p>Puedes filtrar los casos de prueba por prioridad. La prioridad de prueba es la \"importancia del caso de prueba\" " .
-"combinada con la \"urgencia de prueba\" dentro del plan de pruebas actual.</p> 
+    "combinada con la \"urgencia de prueba\" dentro del plan de pruebas actual.</p>
 
 <h3>Filtro de Usuario</h3>
 <p>Puedes filtrar casos de prueba que no están asignados (\"Nadie\") o asignados a \"Alguien\". " .
-"También puedes filtrar casos de prueba asignados a un tester en concreto. Si eliges un tester " .
-"en concreto tienes la posibilidad de mostrar además los casos de prueba sin asignar " .
-"(hay disponibles Filtros Avanzados). </p>
+    "También puedes filtrar casos de prueba asignados a un tester en concreto. Si eliges un tester " .
+    "en concreto tienes la posibilidad de mostrar además los casos de prueba sin asignar " .
+    "(hay disponibles Filtros Avanzados). </p>
 
 <h3>Filtro de Resultado</h3>
 <p>Puedes filtrar casos de prueba por resultado (hay disponibles Filtros Avanzados). Puedes filtrar por " .
-"resultado \"en la build seleccionada para ejecución\", \"en la última ejecución\", \"en TODAS las builds\", " .
-"\"en CUALQUIER build\" y \"en una build en concreto\". Si se selecciona \"en una build en concreto\" puedes " .
-"especificar la build. </p>";
-
+    "resultado \"en la build seleccionada para ejecución\", \"en la última ejecución\", \"en TODAS las builds\", " .
+    "\"en CUALQUIER build\" y \"en una build en concreto\". Si se selecciona \"en una build en concreto\" puedes " .
+    "especificar la build. </p>";
 
 // newest_tcversions.html
 $TLS_hlp_planTcModified = "<h2>Últimas versiones de los Casos de Prueba asignados</h2>
 <p>El total de casos de prueba asociados al Plan de Pruebas es analizado, y se muestra una lista de
 los Casos de Prueba con su versión más reciente (junto con la selección actual incluida en el Plan de Pruebas).
 </p>";
-
 
 // requirementsCoverage.html
 $TLS_hlp_requirementsCoverage = "<h3>Cobertura de Requisitos</h3>
@@ -220,63 +218,60 @@ $TLS_hlp_requirementsCoverage = "<h3>Cobertura de Requisitos</h3>
 casos de prueba. Puedes acceder a través del enlace \"Especificación de Requisitos\" de la pantalla principal.</p>
 
 <h3>Especificación de Requisitos</h3>
-<p>Los requisitos están agrupados por documento de 'Especificación de Requisitos', que están relacionados al 
-Proyecto de Pruebas.<br /> TestLink no soporta versiones para la Especificación de Requisitos  
-y los Requisitos en sí mismos. Por tanto, la versión del documento debe ser añadida después de 
+<p>Los requisitos están agrupados por documento de 'Especificación de Requisitos', que están relacionados al
+Proyecto de Pruebas.<br /> TestLink no soporta versiones para la Especificación de Requisitos
+y los Requisitos en sí mismos. Por tanto, la versión del documento debe ser añadida después de
 un <b>Título</b> de Especificación.
-Un usuario puede añadir una simple descripción o notas al campo <b>Descripción</b>.</p> 
+Un usuario puede añadir una simple descripción o notas al campo <b>Descripción</b>.</p>
 
-<p><b><a name='total_count'>Sobreescribir el contador de REQs</a></b> sirve para  
-evaluar la cobertura de Req. en caso de que no todos los requisitos estén añadidos (importados) a TestLink. 
-El valor <b>0</b> significa que el valor actual de requisitos es el que se usará para las métricas.</p> 
-<p><i>Ejemplo. El campo muestra un valor de 200 requisitos pero sólo 50 son añadidos a TestLink. La cobertura 
+<p><b><a name='total_count'>Sobreescribir el contador de REQs</a></b> sirve para
+evaluar la cobertura de Req. en caso de que no todos los requisitos estén añadidos (importados) a TestLink.
+El valor <b>0</b> significa que el valor actual de requisitos es el que se usará para las métricas.</p>
+<p><i>Ejemplo. El campo muestra un valor de 200 requisitos pero sólo 50 son añadidos a TestLink. La cobertura
 de pruebas es del 25% (si todos los requisitos añadidos son probados).</i></p>
 
 <h3><a name=\"req\">Requisitos</a></h3>
 <p>Pulsa en el título de una Especificación de Requisitos. Puedes crear, editar, borrar
 o importar requisitos en el documento. Cada requisito tiene título, descripción y estado.
 El estado puede ser \"Normal\" o \"No testable\". Los requisitos No testables no son tenidos en cuenta en
-las métricas. Este parámetro debería ser usado tanto para funcionalidades no implementadas como para 
-requisitos mal diseñados.</p> 
+las métricas. Este parámetro debería ser usado tanto para funcionalidades no implementadas como para
+requisitos mal diseñados.</p>
 
-<p>Puedes crear nuevos casos de prueba desde los requsititos usando la acción múltiple con los requisitos 
+<p>Puedes crear nuevos casos de prueba desde los requsititos usando la acción múltiple con los requisitos
 seleccionados en la pantalla de especificación. Estos Casos de Prueba son creados dentro de la Suite de Pruebas
-con el nombre definido en la configuración <i>(por defecto es: &#36;tlCfg->req_cfg->default_testsuite_name = 
+con el nombre definido en la configuración <i>(por defecto es: &#36;tlCfg->req_cfg->default_testsuite_name =
 \"Título del Documento de Especificación de Requisitos + (generado automáticamente desde espec. req.)\";)</i>.
 Título y Descripción son copiados a estos casos de prueba.</p>
 ";
 
 $TLS_hlp_req_coverage_table = "<h3>Cobertura:</h3>
-Un valor de, por ejemplo, \"40% (8/20)\" significa que se deben crear 20 Casos de Prueba para probar este 
-Requisito completamente. 8 de lo cuales ya han sido creados y enlazados a este Requisito, lo cual hace 
+Un valor de, por ejemplo, \"40% (8/20)\" significa que se deben crear 20 Casos de Prueba para probar este
+Requisito completamente. 8 de lo cuales ya han sido creados y enlazados a este Requisito, lo cual hace
 que la cobertura sea del 40%.
 ";
 
-
 // planAddTC_m1.tpl
 $TLS_hlp_planAddTC = "<h2>En relación con 'Guardar Campos personalizados'</h2>
-Si has definidos y asignado Campos Personalizados al<br /> 
+Si has definidos y asignado Campos Personalizados al<br />
 Proyecto de Pruebas con las opciones:<br />
  'Mostrar en plan de pruebas' y <br />
  'Habilitar en el diseño del plan de pruebas'<br />
 los verás en esta pantalla SÓLO para los Casos de Prueba asignados al Plan de Pruebas.
 ";
 
-
 // resultsByTesterPerBuild.tpl
 $TLS_hlp_results_by_tester_per_build_table = "<b>Más información sobre los testers:</b><br />
 Si pulsas en el nombre de un tester en esta tabla, verás un resumen más detallado
 de todos los Casos de Prueba asignados a ese usuario y su progreso de ejecución de pruebas.<br /><br />
 <b>Nota:</b><br />
-Este informe muestra los casos de prueba que están asignados a un usuario en concreto y que han sido ejecutados 
-en la build activa. Incluso si un caso de prueba ha sido ejecutado por un usuario diferente al que tiene asignado, 
+Este informe muestra los casos de prueba que están asignados a un usuario en concreto y que han sido ejecutados
+en la build activa. Incluso si un caso de prueba ha sido ejecutado por un usuario diferente al que tiene asignado,
 el caso de prueba will aparecerá como ejecutado por el usuario asignado.
 ";
 
-
 // req_edit
 $TLS_hlp_req_edit = "<h3>Enlaces Internos:</h3>
-<p>Los Enlaces Internos sirven para crear enlaces a otros requisitos/especificaciones de requisitos 
+<p>Los Enlaces Internos sirven para crear enlaces a otros requisitos/especificaciones de requisitos
 con una sintaxis especial. El comportamiento de los Enlaces Internos puede ser modificado en el archivo de configuración.
 <br /><br />
 <b>Uso:</b>
@@ -292,10 +287,9 @@ Si no especificas una versión, se mostrará el requisito completo incluyendo to
 
 <h3>Mensaje de registro para cambios:</h3>
 <p>Siempre que se realiza un cambio, TestLink pregunta si se desea incluir un mensaje de registro. Este mensaje sirve para mantener la trazabilidad.
-Si sólo ha cambiado la descripción del requisito eres libre de decidir si creas una nueva revisión o no. 
+Si sólo ha cambiado la descripción del requisito eres libre de decidir si creas una nueva revisión o no.
 Si se modifica algo más que la descripción se obliga a crear una nueva revisión.</p>
 ";
-
 
 // req_view
 $TLS_hlp_req_view = "<h3>Enlaces Directos:</h3>
@@ -310,17 +304,16 @@ La vista general muestra el mensaje de registro de cada revisión/versión, la f
 <p>Muestra todos los casos de prueba asignados a este requisito.</p>
 
 <h3>Relaciones:</h3>
-<p>Las Relaciones se usan para crear un modelo de relaciones entre requisitos. 
-Las relaciones personalizadas y la posibilidad de relacionar requisitos entre 
+<p>Las Relaciones se usan para crear un modelo de relaciones entre requisitos.
+Las relaciones personalizadas y la posibilidad de relacionar requisitos entre
 diferentes proyectos de prueba pueden ser configuradas en el archivo de configuración.
-Si estableces la relación \"El Requisito A es padre del Requisito B\", 
+Si estableces la relación \"El Requisito A es padre del Requisito B\",
 TestLink establecerá la relación \"El Requisito B es hijo del Requisito A\" de forma implícita.</p>
 ";
 
-
 // req_spec_edit
 $TLS_hlp_req_spec_edit = "<h3>Enlaces Internos:</h3>
-<p>Los Enlaces Internos sirven para crear enlaces a otros requisitos/especificaciones de requisitos 
+<p>Los Enlaces Internos sirven para crear enlaces a otros requisitos/especificaciones de requisitos
 con una sintaxis especial. El comportamiento de los Enlaces Internos puede ser modificado en el archivo de configuración.
 <br /><br />
 <b>Uso:</b>
@@ -335,9 +328,8 @@ Esta sintaxis también funciona para especificaciones de requisitos (el atributo
 Si no especificas una versión, se mostrará el requisito completo incluyendo todas las versiones.</p>
 ";
 
-
 // xxx.html
-//$TLS_hlp_xxx = "";
+// $TLS_hlp_xxx = "";
 
 // ----- END ------------------------------------------------------------------
 ?>

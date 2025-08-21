@@ -1,68 +1,61 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource	sysinfo.php
- * @author		Martin Havlat 
- * 
+ * @author		Martin Havlat
+ *
  * Report about system and background services
- * 
+ *
  * @todo check if custom_config, config_db are writable and remove/rewrite commented part of code
  * @todo test database (if installed only)
  *
  * @internal revisions
  * @since 1.9.4
  */
-
 require_once '../../config.inc.php';
 require_once '../../lib/functions/common.php';
 $root = dirname(__FILE__);
 define('ROOT_PATH', $root);
 
+function chk_memory($limit = 9, $recommended = 16)
+{
+    $msg = '';
+    $type = '';
 
-function chk_memory($limit=9, $recommended=16) {
+    $max_memory = ini_get('memory_limit');
 
-	$msg = '';
-	$type = '';
+    if ($max_memory == "") {
 
-	$max_memory = ini_get('memory_limit');
+        $msg = "OK (No Limit)";
+        $type = "done";
+    } elseif ($max_memory === "-1") {
 
-	if ($max_memory == "") {
+        $msg = "OK (Unlimited)";
+        $type = "done";
+    } else {
 
-		$msg = "OK (No Limit)";
-		$type = "done";
+        $max_memory = rtrim($max_memory, "M");
+        $max_memory_int = (int) $max_memory;
 
-	} else if ($max_memory === "-1") {
+        if ($max_memory_int < $limit) {
 
-		$msg = "OK (Unlimited)";
-		$type = "done";
+            $msg = "Warning at least $limit M required ($max_memory M available, Recommended $recommended M)";
+            $type = "error";
+        } elseif ($max_memory_int < $recommended) {
 
-	} else {
+            $msg = "OK (Recommended $recommended M)";
+            $type = "pending";
+        } else {
+            $msg = "OK";
+            $type = "done";
+        }
+    }
 
-		$max_memory = rtrim($max_memory, "M");
-		$max_memory_int = (int) $max_memory;
+    $msg = "<b class='$type'>" . $msg . "</b>";
 
-		if ($max_memory_int < $limit) {
-
-			$msg = "Warning at least $limit M required ($max_memory M available, Recommended $recommended M)";
-			$type = "error";
-
-		} elseif ($max_memory_int < $recommended) {
-
-				$msg = "OK (Recommended $recommended M)";
-				$type = "pending";
-
-		} else {
-				$msg = "OK";
-				$type = "done";
-		}
-
-	}
-
-	$msg = "<b class='$type'>".$msg."</b>";
-
-return $msg;
+    return $msg;
 }
 ?>
 <!DOCTYPE HTML>
@@ -84,15 +77,12 @@ function reload() {
 <h1>TestLink - System & services checking</h1>
 <p>Installation status:
 <?php
-if (checkInstallStatus())
-{
-	echo "Installed.";
+if (checkInstallStatus()) {
+    echo "Installed.";
+} else {
+    echo "Not installed.";
 }
-else
-{
-	echo "Not installed.";
-}	
-?> 
+?>
 </p>
 <div>
 	<input type="button" name="Re-check" value="Re-check" onClick="reload();" tabindex="1">
@@ -107,8 +97,7 @@ reportCheckingPermissions($errors);
 reportCheckingDatabase($errors);
 reportCheckingBrowser($errors);
 
-
-echo '<p>Error counter = '.$errors.'</p>';
+echo '<p>Error counter = ' . $errors . '</p>';
 ?>
 <hr /></div>
 

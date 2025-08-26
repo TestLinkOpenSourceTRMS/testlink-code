@@ -55,10 +55,12 @@ class tinymce
         $my_rows = $rows;
         $my_cols = $cols;
 
-        if (is_null($my_rows) || $my_rows <= 0)
+        if (is_null($my_rows) || $my_rows <= 0) {
             $my_rows = $this->rows;
-        if (is_null($my_cols) || $my_cols <= 0)
+        }
+        if (is_null($my_cols) || $my_cols <= 0) {
             $my_cols = $this->cols;
+        }
 
         // rows must count place for toolbar !!
         $Html = "<textarea name=\"{$this->InstanceName}\"" .

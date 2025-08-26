@@ -698,11 +698,6 @@ class cfield_mgr extends tlObject
             case 'list':
             case 'multiselection list':
                 $t_values = explode('|', $p_field_def['possible_values']);
-                $t_values_count = count($t_values);
-                $window_size = intval($size);
-                if ($t_values_count < $window_size) {
-                    $window_size = $t_values_count;
-                }
 
                 if ($verbose_type == 'list') {
                     // get maximum allowed window size for lists
@@ -712,13 +707,6 @@ class cfield_mgr extends tlObject
                 } else {
                     $t_name_suffix = '[]';
                     $t_multiple = ' multiple="multiple" ';
-                }
-
-                // set the list size to the number of possible values of custom field
-                // but respect the maximum window size
-                $t_list_size = $t_values_count;
-                if ($t_list_size > $window_size) {
-                    $t_list_size = $window_size;
                 }
 
                 $html_identity = $input_name . $t_name_suffix;

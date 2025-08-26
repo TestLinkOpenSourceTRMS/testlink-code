@@ -28,10 +28,11 @@ function string_preserve_spaces_at_bol($p_string)
         $t_char = substr($lines[$i], $count, 1);
         $spaces = 0;
         while (($t_char == ' ') || ($t_char == "\t")) {
-            if ($t_char == ' ')
+            if ($t_char == ' ') {
                 $spaces ++;
-            else
-                $spaces += 4; // 1 tab = 4 spaces, can be configurable.
+            } else {
+                $spaces += 4;
+            } // 1 tab = 4 spaces, can be configurable.
 
             $count ++;
             $t_char = substr($lines[$i], $count, 1);

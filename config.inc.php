@@ -73,8 +73,8 @@ $tlCfg->keywords->annotations = [
     "@TestCaseSpecDisplay:"
 ];
 
-$tlCfg->keywords->onDeleteCheckFrozenTCVersions = TRUE;
-$tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
+$tlCfg->keywords->onDeleteCheckFrozenTCVersions = true;
+$tlCfg->keywords->onDeleteCheckExecutedTCVersions = true;
 
 // main key testproject PREFIX
 // element array
@@ -125,7 +125,7 @@ $tlCfg->theme_dir = 'gui/themes/default/';
  */
 $tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' .
     DIRECTORY_SEPARATOR;
-if (($tpltmp = getenv('TESTLINK_TEMPLATES_C'))) {
+if ($tpltmp = getenv('TESTLINK_TEMPLATES_C')) {
     $tlCfg->temp_dir = trim($tpltmp);
 }
 
@@ -318,7 +318,7 @@ $tlCfg->sessionInactivityTimeout = 9900;
 // ini_set('session.gc_maxlifetime', 60*90);
 
 $tlCfg->notifications->userSignUp = new stdClass();
-$tlCfg->notifications->userSignUp->enabled = TRUE; // @see notifyGlobalAdmins()
+$tlCfg->notifications->userSignUp->enabled = true; // @see notifyGlobalAdmins()
 $tlCfg->notifications->userSignUp->to = new stdClass();
 $tlCfg->notifications->userSignUp->to->roles = array(
     TL_ROLES_ADMIN
@@ -359,7 +359,7 @@ $tlCfg->smarty_debug = false;
  *      put it out of reach via web or configure access denied.
  */
 $tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
-if (($lp = getenv('TESTLINK_LOG_PATH'))) {
+if ($lp = getenv('TESTLINK_LOG_PATH')) {
     $tlCfg->log_path = trim($lp);
 }
 
@@ -598,7 +598,7 @@ $tlCfg->authentication['ldap'][1]['ldap_firstname_field'] = 'givenname';
 $tlCfg->authentication['ldap'][1]['ldap_surname_field'] = 'sn';
 
 // Follows Mantisbt idea.
-// True if user does not exist on DB, but can be get from LDAP,
+// true if user does not exist on DB, but can be get from LDAP,
 // the user will be created AUTOMATICALLY with default user role.
 // Create user with following data from LDAP
 // mail
@@ -609,7 +609,7 @@ $tlCfg->authentication['ldap_automatic_user_creation'] = false;
 /**
  * Enable/disable Users to create accounts on login page
  */
-$tlCfg->user_self_signup = TRUE;
+$tlCfg->user_self_signup = true;
 
 /**
  * What happens when Administrator push the Reset Password Button
@@ -650,11 +650,11 @@ $tlCfg->validation_cfg->user_email_valid_regex_php = "/^([\w]+)(.[\w]+)*@([\w-]+
 
 /**
  * XML-RPC API availability - do less than promised ;)
- * FALSE => user are not able to generate and set his/her API key.
+ * false => user are not able to generate and set his/her API key.
  * XML-RPC server do not check this config in order to answer or not a call.
  */
 
-$tlCfg->api->enabled = TRUE;
+$tlCfg->api->enabled = true;
 
 // used to display API ID info in the *View pages
 $tlCfg->api->id_format = "[ID: %s ]";
@@ -923,7 +923,7 @@ $tlCfg->gui->layoutMainPageRight = array(
  */
 
 // seems that with config options that will be used on javascript via smarty template variables
-// we are having problems using FALSE/TRUE => use 0/1 (or our CONSTANT DISABLED/ENABLED)
+// we are having problems using false/true => use 0/1 (or our CONSTANT DISABLED/ENABLED)
 $tlCfg->gui->checkNotSaved = ENABLED;
 
 // ----------------------------------------------------------------------------
@@ -938,7 +938,7 @@ $tlCfg->treemenu_default_testcase_order = 1000;
 /**
  * show/hide testcase id on tree menu
  */
-$tlCfg->treemenu_show_testcase_id = TRUE;
+$tlCfg->treemenu_show_testcase_id = true;
 
 /**
  * Reorder test cases based on TC Name or External ID in tree on
@@ -1034,7 +1034,7 @@ $tlCfg->document_generator->requirement_css_template = 'css/tl_documents.css';
 // Display test case version when creating:
 // - test spec document
 // - test reports
-$tlCfg->document_generator->tc_version_enabled = TRUE;
+$tlCfg->document_generator->tc_version_enabled = true;
 
 // ----------------------------------------------------------------------------
 /* [Test Executions] */
@@ -1050,21 +1050,21 @@ $tlCfg->exec_cfg->enable_test_automation = DISABLED;
 // DESCending -> last execution on top [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->history_order = 'DESC';
 
-// TRUE -> the whole execution history for the choosen build will be showed
-// FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->history_on = FALSE;
+// true -> the whole execution history for the choosen build will be showed
+// false -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]
+$tlCfg->exec_cfg->history_on = false;
 
-// TRUE -> test case VERY LAST (i.e. in any build) execution status will be displayed [STANDARD BEHAVIOUR]
-// FALSE -> only last result on current build.
-$tlCfg->exec_cfg->show_last_exec_any_build = TRUE;
+// true -> test case VERY LAST (i.e. in any build) execution status will be displayed [STANDARD BEHAVIOUR]
+// false -> only last result on current build.
+$tlCfg->exec_cfg->show_last_exec_any_build = true;
 
-// TRUE -> History for all builds will be shown
-// FALSE -> Only history of the current build will be shown [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->show_history_all_builds = FALSE;
+// true -> History for all builds will be shown
+// false -> Only history of the current build will be shown [STANDARD BEHAVIOUR]
+$tlCfg->exec_cfg->show_history_all_builds = false;
 
-// TRUE -> History for all platforms (if any exists for test plan) will be shown
-// FALSE -> Only history of the current platform will be shown [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->show_history_all_platforms = FALSE;
+// true -> History for all platforms (if any exists for test plan) will be shown
+// false -> Only history of the current platform will be shown [STANDARD BEHAVIOUR]
+$tlCfg->exec_cfg->show_history_all_platforms = false;
 
 // different models for the attachments management on execution page
 // $att_model_m1 -> shows upload button and title
@@ -1217,10 +1217,10 @@ $tlCfg->exec_cfg->copyLatestExecIssues = new stdClass();
 // COPY OR NOT issues linked to latest execution to the new execution
 // DEAFULT false => no option on GUI
 
-$tlCfg->exec_cfg->copyLatestExecIssues->enabled = FALSE;
+$tlCfg->exec_cfg->copyLatestExecIssues->enabled = false;
 
 // value to set as default
-$tlCfg->exec_cfg->copyLatestExecIssues->default = FALSE;
+$tlCfg->exec_cfg->copyLatestExecIssues->default = false;
 
 // you can choose only between columns present on
 // (see exec.inc.php, function get_bugs_for_exec())
@@ -1259,8 +1259,8 @@ $tlCfg->exec_cfg->issues->tcstep_level->subject = '$$issue_on_step %%STEPNUMBER%
 // ----------------------------------------------------------------------
 /* [Test Specification] */
 
-// TRUE will be displayed when displayed a test case
-$tlCfg->spec_cfg->show_tplan_usage = TRUE;
+// true will be displayed when displayed a test case
+$tlCfg->spec_cfg->show_tplan_usage = true;
 
 // 'horizontal' -> step and results on the same row
 // 'vertical' -> steps on one row, results in the row bellow
@@ -1305,8 +1305,8 @@ $tlCfg->testcase_cfg->estimated_execution_duration->required = '';
 // There are some preconfigured standard types which you can use,
 // additionally you can configure your own types.
 $tlCfg->testcase_cfg->relations = new stdClass();
-$tlCfg->testcase_cfg->relations->enable = TRUE;
-$tlCfg->testcase_cfg->relations->interproject_linking = FALSE;
+$tlCfg->testcase_cfg->relations->enable = true;
+$tlCfg->testcase_cfg->relations->interproject_linking = false;
 
 /**
  * Localization identifiers for test cases relation types
@@ -1358,28 +1358,28 @@ $tlCfg->testcase_cfg->relations->type_description = [
 ];
 
 // @since 1.9.18
-// TRUE => After a test case version has been executed
+// true => After a test case version has been executed
 // attachment on test case spec can not be added/removed
 //
-// FALSE
+// false
 //
 // This means that at GUI Level, will not be possible:
 // add a new attachment to an Executed Test Case Version
 // delete an attachment from Executed Test Case Version
-$tlCfg->testcase_cfg->downloadOnlyAfterExec = TRUE;
+$tlCfg->testcase_cfg->downloadOnlyAfterExec = true;
 
 // This means that at GUI Level, will not be possible:
 // add a new req version link to an Executed Test Case Version
 // delete a req version link from Executed Test Case Version
-$tlCfg->testcase_cfg->reqLinkingDisabledAfterExec = TRUE;
+$tlCfg->testcase_cfg->reqLinkingDisabledAfterExec = true;
 
 // Effects on Linked Requirements Version after
 // execution of a Test Case Version
-$tlCfg->testcase_cfg->freezeReqVersionAfterExec = TRUE;
+$tlCfg->testcase_cfg->freezeReqVersionAfterExec = true;
 
 // Effects on TCVersion N when TCVersion N+1 is created
-$tlCfg->testcase_cfg->freezeTCVersionOnNewTCVersion = TRUE;
-$tlCfg->testcase_cfg->freezeTCVRelationsOnNewTCVersion = TRUE;
+$tlCfg->testcase_cfg->freezeTCVersionOnNewTCVersion = true;
+$tlCfg->testcase_cfg->freezeTCVRelationsOnNewTCVersion = true;
 
 // Because:
 // The Relation must be frozen (cannot be deleted) when
@@ -1389,17 +1389,17 @@ $tlCfg->testcase_cfg->freezeTCVRelationsOnNewTCVersion = TRUE;
 // this new configuration will allow this operation
 // only on latest test case version
 //
-$tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion = TRUE;
+$tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion = true;
 
 // Not Already Implemented
-// $tlCfg->testcase_cfg->allowAddTCVRelationsOnOldTCVersion = TRUE;
+// $tlCfg->testcase_cfg->allowAddTCVRelationsOnOldTCVersion = true;
 
-// $tlCfg->testcase_cfg->frozenNotExecutedTCVDelAttachtments = FALSE;
-// $tlCfg->testcase_cfg->frozenNotExecutedTCVAddAttachtments = FALSE;
-// $tlCfg->testcase_cfg->frozenNotExecutedTCVAddTCVRel = FALSE;
-// $tlCfg->testcase_cfg->frozenNotExecutedTCVDelTCVRel = FALSE;
-// $tlCfg->testcase_cfg->frozenNotExecutedTCVAddREQVLink = FALSE;
-// $tlCfg->testcase_cfg->frozenNotExecutedTCVDelREQVLink = FALSE;
+// $tlCfg->testcase_cfg->frozenNotExecutedTCVDelAttachtments = false;
+// $tlCfg->testcase_cfg->frozenNotExecutedTCVAddAttachtments = false;
+// $tlCfg->testcase_cfg->frozenNotExecutedTCVAddTCVRel = false;
+// $tlCfg->testcase_cfg->frozenNotExecutedTCVDelTCVRel = false;
+// $tlCfg->testcase_cfg->frozenNotExecutedTCVAddREQVLink = false;
+// $tlCfg->testcase_cfg->frozenNotExecutedTCVDelREQVLink = false;
 
 // Change order using CSS flexbox model
 // @used-by tcEdit.tpl
@@ -1411,7 +1411,7 @@ $tlCfg->testcase_cfg->viewerFieldsOrder->preconditions = 1;
 // Effects on Req Version to TCVersion LINK
 // when a new version of a linked Test Case is created
 // If LINK is frozen, then this means that link can not be deleted.
-// $tlCfg->reqTCLinks->freezeLinkOnNewTCVersion = FALSE;
+// $tlCfg->reqTCLinks->freezeLinkOnNewTCVersion = false;
 //
 // Important Notice:
 // Req Version to TCVersion Link can be done ONLY TO LATEST TCV.
@@ -1427,22 +1427,22 @@ $tlCfg->testcase_cfg->viewerFieldsOrder->preconditions = 1;
 // on GUI on the Assign Requirements Feature:
 // this option has EFFECT
 //
-$tlCfg->reqTCLinks->freezeLinkOnNewTCVersion = TRUE;
+$tlCfg->reqTCLinks->freezeLinkOnNewTCVersion = true;
 
 // Effects on Req Version to TCVersion LINK
 // when a new version of a linked Req Version is created
-$tlCfg->reqTCLinks->freezeLinkOnNewREQVersion = TRUE;
+$tlCfg->reqTCLinks->freezeLinkOnNewREQVersion = true;
 
 // Effects on BOTH ends of Req Version to TCVersion LINK
 // when a new version of a linked TC Version is created
-$tlCfg->reqTCLinks->freezeBothEndsOnNewTCVersion = TRUE;
+$tlCfg->reqTCLinks->freezeBothEndsOnNewTCVersion = true;
 
 // Effects on BOTH ends of Req Version to TCVersion LINK
 // when a new version of a linked REQ Version is created
-$tlCfg->reqTCLinks->freezeBothEndsOnNewREQVersion = TRUE;
+$tlCfg->reqTCLinks->freezeBothEndsOnNewREQVersion = true;
 
 // Effects on REQ Version N when REQ Version N+1 is created
-$tlCfg->req_cfg->freezeREQVersionOnNewREQVersion = TRUE;
+$tlCfg->req_cfg->freezeREQVersionOnNewREQVersion = true;
 
 /**
  * text template for a new items:
@@ -1540,12 +1540,12 @@ $tlCfg->platform_template->notes->value = '';
  * Attachment feature availability
  */
 $tlCfg->attachments = new stdClass();
-$tlCfg->attachments->enabled = TRUE;
+$tlCfg->attachments->enabled = true;
 
-// TRUE -> when you upload a file you can give no title
-$tlCfg->attachments->allow_empty_title = TRUE;
+// true -> when you upload a file you can give no title
+$tlCfg->attachments->allow_empty_title = true;
 
-// $tlCfg->attachments->allow_empty_title == TRUE, you can ask the system
+// $tlCfg->attachments->allow_empty_title == true, you can ask the system
 // to do something
 //
 // 'none' -> just write on db an empty title
@@ -1599,7 +1599,7 @@ $g_repositoryType = TL_REPOSITORY_TYPE_FS;
  * Put it out of reach via web or configure access denied.
  */
 $g_repositoryPath = '/var/testlink/upload_area/'; /* unix example */
-if (($upa = getenv('TESTLINK_UPLOAD_AREA'))) {
+if ($upa = getenv('TESTLINK_UPLOAD_AREA')) {
     $g_repositoryPath = trim($upa);
 }
 
@@ -1620,7 +1620,7 @@ $tlCfg->repository_max_filesize = 1; // MB
 // HAS TO BE REMOVED - > req_doc_id UNIQUE INSIDE test project
 // true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
 // false: you want req_doc_id UNIQUE INSIDE a SRS
-// $tlCfg->req_cfg->reqdoc_id->is_system_wide = FALSE;
+// $tlCfg->req_cfg->reqdoc_id->is_system_wide = false;
 
 $tlCfg->req_cfg->monitor_enabled = true;
 
@@ -1629,11 +1629,11 @@ $tlCfg->req_cfg->log_message_len = 200;
 
 /**
  * Test Case generation from Requirements - use_req_spec_as_testsuite_name
- * FALSE => test cases are created and assigned to a test suite
+ * false => test cases are created and assigned to a test suite
  * with name $tlCfg->req_cfg->default_testsuite_name
- * TRUE => REQuirement Specification Title is used as testsuite name
+ * true => REQuirement Specification Title is used as testsuite name
  */
-$tlCfg->req_cfg->use_req_spec_as_testsuite_name = TRUE;
+$tlCfg->req_cfg->use_req_spec_as_testsuite_name = true;
 $tlCfg->req_cfg->default_testsuite_name = "Auto-created Test cases";
 $tlCfg->req_cfg->testsuite_details = "Test Cases in the Test Suite are generated from Requirements. " .
     "A refinement of test scenario is highly recommended.";
@@ -1728,7 +1728,7 @@ $tlCfg->req_spec_cfg->log_message_len = 200;
 $tlCfg->internal_links = new stdClass();
 
 //
-// TRUE: links to other requirements/requirement specifications are
+// true: links to other requirements/requirement specifications are
 // automatically generated from the corresponding Document ID, enclosed by tags (like BBCode).
 //
 // Usage:
@@ -1740,9 +1740,9 @@ $tlCfg->internal_links = new stdClass();
 // [req tproj=<tproj_prefix> anchor=<anchor_name>]req_doc_id[/req]
 // This syntax also works for requirement specifications.
 //
-// FALSE: no links are automatically created.
+// false: no links are automatically created.
 //
-$tlCfg->internal_links->enable = TRUE;
+$tlCfg->internal_links->enable = true;
 
 // how a linked document (requirement/requirement specification) should be displayed.
 // posible values:
@@ -1775,8 +1775,8 @@ $tlCfg->internal_links->req_spec_link_title->value = '';
 // There are some preconfigured standard types which you can use,
 // additionally you can configure your own types.
 $tlCfg->req_cfg->relations = new stdClass();
-$tlCfg->req_cfg->relations->enable = TRUE;
-$tlCfg->req_cfg->relations->interproject_linking = FALSE;
+$tlCfg->req_cfg->relations->enable = true;
+$tlCfg->req_cfg->relations->interproject_linking = false;
 
 // Requirement/testcase diff
 // default value of lines to show before and after each difference
@@ -1911,8 +1911,8 @@ $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_assigned_user = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_result = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->advanced_filter_mode_choice = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->plan_mode->setting_build_inactive_out = FALSE;
-$tlCfg->tree_filter_cfg->testcases->plan_mode->setting_build_close_out = FALSE;
+$tlCfg->tree_filter_cfg->testcases->plan_mode->setting_build_inactive_out = false;
+$tlCfg->tree_filter_cfg->testcases->plan_mode->setting_build_close_out = false;
 
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_testcase_name = ENABLED;
@@ -2225,10 +2225,9 @@ if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
     }
 }
 
-if (false !== $serverLanguage) {
-    if (array_key_exists($serverLanguage, $tlCfg->locales)) {
-        $tlCfg->default_language = $serverLanguage;
-    }
+if (false !== $serverLanguage &&
+    array_key_exists($serverLanguage, $tlCfg->locales)) {
+    $tlCfg->default_language = $serverLanguage;
 }
 define('TL_DEFAULT_LOCALE', $tlCfg->default_language);
 

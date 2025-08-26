@@ -140,7 +140,6 @@ function item_opt_transf_cfg(&$opt_cfg, $right_list)
     $opt_cfg->from->name = "from_select_box";
 
     $opt_cfg->from->id_field = 'id';
-    // $opt_cfg->from->desc_field = 'keyword';
     $opt_cfg->from->desc_glue = " ";
     $opt_cfg->from->desc_html_content = true;
     $opt_cfg->from->required = false;
@@ -150,7 +149,6 @@ function item_opt_transf_cfg(&$opt_cfg, $right_list)
     $opt_cfg->to->name = "to_select_box";
     $opt_cfg->to->show_id_in_desc = true;
     $opt_cfg->to->id_field = 'id';
-    // $opt_cfg->to->desc_field = 'keyword';
     $opt_cfg->to->desc_glue = " ";
     $opt_cfg->to->desc_html_content = true;
     $opt_cfg->to->required = false;

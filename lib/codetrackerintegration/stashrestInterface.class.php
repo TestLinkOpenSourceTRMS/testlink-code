@@ -25,7 +25,7 @@ class stashrestInterface extends codeTrackerInterface
      *            (see tlCodeTracker.class.php $systems property)
      * @param xml $cfg
      */
-    function __construct($type, $config, $name)
+    public function __construct($type, $config, $name)
     {
         $this->name = $name;
         $this->interfaceViaDB = false;
@@ -45,7 +45,7 @@ class stashrestInterface extends codeTrackerInterface
      * If they are MISSING we will use 'these carved on the stone values'
      * in order to simplify configuration.
      */
-    function completeCfg()
+    private function completeCfg()
     {
         $base = trim($this->cfg->uribase, "/") . '/'; // be sure no double // at end
 
@@ -65,7 +65,7 @@ class stashrestInterface extends codeTrackerInterface
     /**
      * useful for testing
      */
-    function getAPIClient()
+    public function getAPIClient()
     {
         return $this->APIClient;
     }
@@ -76,7 +76,7 @@ class stashrestInterface extends codeTrackerInterface
      * @return string returns a complete URL
      *
      */
-    function getEnterCodeURL()
+    public function getEnterCodeURL()
     {
         return $this->cfg->uricreate . 'projects';
     }
@@ -87,7 +87,7 @@ class stashrestInterface extends codeTrackerInterface
      * @return bool
      *
      */
-    function connect()
+    public function connect()
     {
         try {
             // CRITIC NOTICE for developers
@@ -123,7 +123,7 @@ class stashrestInterface extends codeTrackerInterface
 
     /**
      */
-    function isConnected()
+    public function isConnected()
     {
         return $this->connected;
     }
@@ -333,19 +333,18 @@ class stashrestInterface extends codeTrackerInterface
      */
     public static function getCfgTemplate()
     {
-        $tpl = "<!-- Template " . __CLASS__ . " -->\n" . "<codetracker>\n" .
+        return "<!-- Template " . __CLASS__ . " -->\n" . "<codetracker>\n" .
             "<username>STASH LOGIN NAME</username>\n" .
             "<password>STASH PASSWORD</password>\n" .
             "<uribase>https://testlink.atlassian.net/</uribase>\n" .
             "<uriapi>https://testlink.atlassian.net/rest/api/1.0/</uriapi>\n" .
             "<uriview>https://testlink.atlassian.net/projects/</uriview>\n" .
             "<projectkey>STASH PROJECT KEY</projectkey>\n" . "</codetracker>\n";
-        return $tpl;
     }
 
     /**
      */
-    function checkCfg()
+    private function checkCfg()
     {
         $status_ok = true;
         if (property_exists($this->cfg, 'projectkey')) {

@@ -343,19 +343,5 @@ $TLS_hlp_results_by_tester_per_build_table = <<<'TLS_hlp_results_by_tester_per_b
 このレポートは、指定の担当者に割り当てられ、活性化中の各ビルドに基づいて実行されたテストケースを表示します。<br/>
 ただし、割り当てられたのとは別のユーザーが実施したテストケースは、別のユーザーの実施ケースとして表示されます。
 TLS_hlp_results_by_tester_per_build_table;
-/*
- * "<b>More information about testers:</b><br />
- * If you click on a tester name in this table, you will get a more detailed overview
- * about all Test Cases assigned to that user and his testing progress.<br /><br />
- * <b>Note:</b><br />
- * This Report shows those test cases, which are assigned to a specific user and have been executed
- * based on each active build. Even if a test case has been executed by another user than the assigned user,
- * the test case will appear as executed for the assigned user.
- * ";
- */
 
-// xxx.html
-// $TLS_hlp_xxx = "";
-
-// ----- END ------------------------------------------------------------------
 ?>

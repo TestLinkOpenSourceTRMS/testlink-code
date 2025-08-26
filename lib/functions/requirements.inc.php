@@ -38,7 +38,7 @@ function exportReqDataToXML($reqData)
  * Process CVS file contents with requirements into TL
  * and creates an array with reports
  *
- * @return array_of_strings list of particular REQ data with resolution comment
+ * @return array of strings list of particular REQ data with resolution comment
  *
  *
  */
@@ -217,7 +217,7 @@ function getReqDocIDs(&$db, $srs_id)
 /**
  * load imported data from file and parse it to array
  *
- * @return array_of_array each inner array include fields title and scope (and more)
+ * @return array of array each inner array include fields title and scope (and more)
  */
 function loadImportedReq($fileName, $importType)
 {

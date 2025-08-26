@@ -94,8 +94,7 @@ class APIKey extends tlObjectWithDB
         }
         $query .= $whereClause;
 
-        $rs = $this->db->fetchColumnsIntoMap($query, 'id', 'script_key');
-        return $rs;
+        return $this->db->fetchColumnsIntoMap($query, 'id', 'script_key');
     }
 }
 ?>

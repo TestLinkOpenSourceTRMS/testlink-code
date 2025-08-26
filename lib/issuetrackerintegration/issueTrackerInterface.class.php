@@ -30,30 +30,30 @@ abstract class issueTrackerInterface
 
     // members to store the bugtracking information.
     // Values are set in the actual subclasses
-    var $cfg = null;
+    private $cfg = null;
 
     // simpleXML object
-    var $xmlCfg = null;
+    private $xmlCfg = null;
 
     // xml string
-    var $name = null;
+    private $name = null;
 
-    var $tlCharSet = null;
+    private $tlCharSet = null;
 
     // private vars don't touch
     // usable only if interface is done via direct DB access.
-    var $dbConnection = null;
+    private $dbConnection = null;
 
-    var $dbMsg = '';
+    private $dbMsg = '';
 
     // useful for connect/disconnect methods
-    var $interfaceViaDB = false;
+    private $interfaceViaDB = false;
 
-    var $connected = false;
+    private $connected = false;
 
-    var $resolvedStatus;
+    private $resolvedStatus;
 
-    var $methodOpt = array(
+    private $methodOpt = array(
         'buildViewBugLink' => array(
             'addSummary' => false,
             'colorByStatus' => false,
@@ -62,21 +62,21 @@ abstract class issueTrackerInterface
         )
     );
 
-    var $guiCfg = array();
+    private $guiCfg = array();
 
-    var $summaryLengthLimit = 120;
+    private $summaryLengthLimit = 120;
 
     // Mantis max is 128.
-    var $forbidden_chars = '/[!|�%&()\/=?]/';
+    private $forbidden_chars = '/[!|�%&()\/=?]/';
 
     /**
      * Construct and connect to BTS.
      * Can be overloaded in specialized class
      *
-     * @param str $type
+     * @param string $type
      *            (see tlIssueTracker.class.php $systems property)
      */
-    function __construct($type, $config, $name)
+    public function __construct($type, $config, $name)
     {
         $this->tlCharSet = config_get('charset');
         $this->guiCfg = array(
@@ -97,28 +97,28 @@ abstract class issueTrackerInterface
 
     /**
      */
-    function canCreateViaAPI()
+    public function canCreateViaAPI()
     {
         return false;
     }
 
     /**
      */
-    function canAddNoteViaAPI()
+    public function canAddNoteViaAPI()
     {
         return false;
     }
 
     /**
      */
-    function getCfg()
+    public function getCfg()
     {
         return $this->cfg;
     }
 
     /**
      */
-    function setCfg($xmlString)
+    public function setCfg($xmlString)
     {
         $msg = null;
         $signature = 'Source:' . __METHOD__;
@@ -180,7 +180,7 @@ abstract class issueTrackerInterface
 
     /**
      */
-    function getMyInterface()
+    public function getMyInterface()
     {
         return $this->cfg->interfacePHP;
     }
@@ -191,7 +191,7 @@ abstract class issueTrackerInterface
      *
      * @return int the maximum length of a bugID
      */
-    function getBugIDMaxLength()
+    public function getBugIDMaxLength()
     {
         // CRITIC:
         // related to execution_bugs table, you can not make it
@@ -207,7 +207,7 @@ abstract class issueTrackerInterface
      *         db could be selected, false else
      *
      */
-    function connect()
+    public function connect()
     {
         if (is_null($this->cfg->dbhost) || is_null($this->cfg->dbuser)) {
             return false;
@@ -235,14 +235,14 @@ abstract class issueTrackerInterface
             tLog($msg . $result['dbms_msg'], 'ERROR');
         } elseif ($this->cfg->dbtype == 'mysql') {
             if ($this->cfg->dbcharset == 'UTF-8') {
-                $r = $this->dbConnection->exec_query("SET CHARACTER SET utf8");
-                $r = $this->dbConnection->exec_query("SET NAMES utf8");
-                $r = $this->dbConnection->exec_query(
+                $this->dbConnection->exec_query("SET CHARACTER SET utf8");
+                $this->dbConnection->exec_query("SET NAMES utf8");
+                $this->dbConnection->exec_query(
                     "SET collation_connection = 'utf8_general_ci'");
             } else {
-                $r = $this->dbConnection->exec_query(
+                $this->dbConnection->exec_query(
                     "SET CHARACTER SET " . $this->cfg->dbcharset);
-                $r = $this->dbConnection->exec_query(
+                $this->dbConnection->exec_query(
                     "SET NAMES " . $this->cfg->dbcharset);
             }
         }
@@ -258,7 +258,7 @@ abstract class issueTrackerInterface
      * @return bool returns true if connection with BTS is established, false else
      *
      */
-    function isConnected()
+    public function isConnected()
     {
         return $this->connected &&
             ((! $this->interfaceViaDB) || is_object($this->dbConnection)) ? 1 : 0;
@@ -267,7 +267,7 @@ abstract class issueTrackerInterface
     /**
      * Closes the db connection (if any)
      */
-    function disconnect()
+    public function disconnect()
     {
         if ($this->isConnected() && $this->interfaceViaDB) {
             $this->dbConnection->close();
@@ -281,7 +281,7 @@ abstract class issueTrackerInterface
      *
      * @return bool returns true if the bugid has the right format, false else
      */
-    function checkBugIDSyntaxNumeric($issueID)
+    public function checkBugIDSyntaxNumeric($issueID)
     {
         $valid = true;
         $blackList = '/\D/i';
@@ -301,9 +301,9 @@ abstract class issueTrackerInterface
      *
      * @return bool returns true if the bugid has the right format, false else
      */
-    function checkBugIDSyntaxString($issueID)
+    public function checkBugIDSyntaxString($issueID)
     {
-        $status_ok = ! (trim($issueID) == "");
+        $status_ok = (trim($issueID) != "");
         if ($status_ok && preg_match($this->forbidden_chars, $issueID)) {
             $status_ok = false;
         }
@@ -320,7 +320,7 @@ abstract class issueTrackerInterface
      * @return string returns a complete HTML HREF to view the bug (if found in db)
      *
      */
-    function buildViewBugLink($issueID, $opt = null)
+    public function buildViewBugLink($issueID, $opt = null)
     {
         static $l10n;
 
@@ -437,7 +437,7 @@ abstract class issueTrackerInterface
      * @return string returns a complete URL
      *
      */
-    function getEnterBugURL()
+    public function getEnterBugURL()
     {
         return $this->cfg->uricreate;
     }
@@ -452,7 +452,7 @@ abstract class issueTrackerInterface
      *
      * @return string
      */
-    function buildViewBugURL($issueID)
+    public function buildViewBugURL($issueID)
     {
         return $this->cfg->uriview . urlencode($issueID);
     }
@@ -480,7 +480,7 @@ abstract class issueTrackerInterface
      * @return string
      *
      */
-    function getIssueStatusVerbose($issueID)
+    public function getIssueStatusVerbose($issueID)
     {
         $issue = $this->getIssue($issueID);
         return (! is_null($issue) && is_object($issue)) ? $issue->statusVerbose : false;
@@ -493,7 +493,7 @@ abstract class issueTrackerInterface
      *
      * @return string returns the bug summary if bug is found, else null
      */
-    function getIssueSummary($issueID)
+    public function getIssueSummary($issueID)
     {
         $issue = $this->getIssue($issueID);
         return (! is_null($issue) && is_object($issue)) ? $issue->summary : null;
@@ -551,7 +551,7 @@ abstract class issueTrackerInterface
      *
      * @return string returns the status of the given bug (if found in the db), or false else
      */
-    function getBugStatus($id)
+    public function getBugStatus($id)
     {
         if (! $this->isConnected()) {
             return false;
@@ -567,7 +567,7 @@ abstract class issueTrackerInterface
      *
      * @return bool true if issue exists on BTS
      */
-    function checkBugIDExistence($issueID)
+    public function checkBugIDExistence($issueID)
     {
         if ($status_ok = $this->checkBugIDSyntax($issueID)) {
             $issue = $this->getIssue($issueID);
@@ -578,7 +578,7 @@ abstract class issueTrackerInterface
 
     /**
      */
-    function buildStatusHTMLString($statusCode)
+    public function buildStatusHTMLString($statusCode)
     {
         $str = $statusCode;
         if ($this->guiCfg['use_decoration']) {
@@ -593,14 +593,14 @@ abstract class issueTrackerInterface
      *
      * @return int
      */
-    function getBugSummaryMaxLength()
+    public function getBugSummaryMaxLength()
     {
         return $this->summaryLengthLimit;
     }
 
     /**
      */
-    function normalizeBugID($issueID)
+    public function normalizeBugID($issueID)
     {
         return $issueID;
     }

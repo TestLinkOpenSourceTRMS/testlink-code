@@ -28,13 +28,10 @@ function ldap_connect_bind($authCfg, $p_binddn = '', $p_password = '')
     $ret->handler = null;
     $ret->info = 'LDAP CONNECT OK';
 
-    $t_message = "Attempting connection to LDAP ";
     $t_ldap_uri = parse_url($authCfg['ldap_server']);
     if (count($t_ldap_uri) > 1) {
-        $t_message .= "URI {$authCfg['ldap_server']}.";
         $t_ds = ldap_connect($authCfg['ldap_server']);
     } else {
-        $t_message .= "server {$authCfg['ldap_server']} port {$authCfg['ldap_port']}.";
         if (is_numeric($authCfg['ldap_port'])) {
             $t_ds = ldap_connect($authCfg['ldap_server'], $authCfg['ldap_port']);
         }
@@ -216,9 +213,7 @@ function ldap_escape_string($p_string)
         '\00'
     );
 
-    $t_string = str_replace($t_find, $t_replace, $p_string);
-
-    return $t_string;
+    return str_replace($t_find, $t_replace, $p_string);
 }
 
 /**

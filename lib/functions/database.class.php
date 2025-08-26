@@ -753,8 +753,7 @@ class database
      */
     private function get_version_info()
     {
-        $version = $this->db->ServerInfo();
-        return $version;
+        return $this->db->ServerInfo();
     }
 
     /**

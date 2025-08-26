@@ -24,21 +24,8 @@ $args = array();
 $args["devKey"] = $devKey;
 $args["testplanid"] = 2808;
 $args["testcaseexternalid"] = 'DSM-1';
-// $args["platformname"] = 'Apache Derby';
-// $args["platformname"] = 'Informix';
 $args["buildname"] = '1.0';
 $args["user"] = 'David.Gilmour';
-// $args["user"] = 'Nick.Mason';
-
-/*
- * $args=array();
- * $args["devKey"] = $devKey;
- * $args["testplanid"] = 278;
- * $args["testcaseexternalid"] = 'APX-1';
- * $args["platformname"] = 'Informix';
- * $args["buildname"] = '2.0';
- * $args["user"] = 'giskard';
- */
 
 $debug = true;
 $client = new IXR_Client($server_url);
@@ -77,7 +64,7 @@ $unitTestDescription = "Test #{$utc} - {$method} - Missing argument - Test Plan 
 
 $args = array();
 $args["devKey"] = $devKey;
-// $args["testplanid"] = 9;
+
 $args["testcaseexternalid"] = 'GK-1';
 $args["platformname"] = 'P2';
 
@@ -95,7 +82,6 @@ $unitTestDescription = "Test #{$utc} - {$method} - Missing argument - Test Case 
 $args = array();
 $args["devKey"] = $devKey;
 $args["testplanid"] = 9;
-// $args["testcaseexternalid"] = 'GK-1';
 $args["platformname"] = 'P2';
 
 $debug = true;
@@ -114,7 +100,6 @@ $args["devKey"] = $devKey;
 
 $args["testplanid"] = 9;
 $args["testcaseexternalid"] = 'GK-1';
-// $args["buildname"] = '1.0';
 $args["platformname"] = 'P2';
 
 $debug = true;

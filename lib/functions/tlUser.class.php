@@ -574,9 +574,7 @@ class tlUser extends tlDBObject
         );
 
         $fmt = is_null($format) ? $this->usernameFormat : $format;
-        $displayName = trim(str_replace($keys, $values, $fmt));
-
-        return $displayName;
+        return trim(str_replace($keys, $values, $fmt));
     }
 
     /**
@@ -742,9 +740,7 @@ class tlUser extends tlDBObject
             " {$this->tables['user_testplan_roles']} user_testplan_roles " .
             " WHERE  users.id = user_testplan_roles.user_id";
         $sql .= " AND user_testplan_roles.role_id = " . intval($this->dbID);
-        $idSet = $db->fetchColumnsIntoArray($sql, "id");
-
-        return $idSet;
+        return $db->fetchColumnsIntoArray($sql, "id");
     }
 
     /**
@@ -771,8 +767,6 @@ class tlUser extends tlDBObject
             tLog($debugMsg . ' requires Test Project ID defined', 'ERROR');
             return null;
         }
-
-        $output = array();
 
         // get users for default roles
         $sql = "/* $debugMsg */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
@@ -806,9 +800,7 @@ class tlUser extends tlDBObject
         // {
         // $output[] = $v;
         // }
-        $output = array_values($defaultRoles);
-
-        return $output;
+        return array_values($defaultRoles);
     }
 
     /**
@@ -828,8 +820,7 @@ class tlUser extends tlDBObject
             $inClause = " WHERE id IN (" . implode(',', (array) $idSet) . ") ";
         }
 
-        $output = $db->fetchRowsIntoMap($sql . $inClause, 'id');
-        return $output;
+        return $db->fetchRowsIntoMap($sql . $inClause, 'id');
     }
 
     /**
@@ -936,9 +927,7 @@ class tlUser extends tlDBObject
             }
         }
 
-        $what = checkForRights($allRights, $roleQuestion);
-
-        return $what;
+        return checkForRights($allRights, $roleQuestion);
     }
 
     /**
@@ -1314,8 +1303,7 @@ class tlUser extends tlDBObject
             // that can create infinite loop
             die(__METHOD__);
         }
-        $status = ($rs['hits'] == 0);
-        return $status;
+        return ($rs['hits'] == 0);
     }
 
     /**
@@ -1346,8 +1334,7 @@ class tlUser extends tlDBObject
     public static function auth_get_current_user_cookie()
     {
         $t_cookie_name = config_get('auth_cookie');
-        $t_cookie = isset($_COOKIE[$t_cookie_name]) ? $_COOKIE[$t_cookie_name] : null;
-        return $t_cookie;
+        return isset($_COOKIE[$t_cookie_name]) ? $_COOKIE[$t_cookie_name] : null;
     }
 
     /**
@@ -1369,8 +1356,8 @@ class tlUser extends tlDBObject
         if ($status) {
             # look up cookie in the database to see if it is valid
             $sql = "SELECT COUNT(0) AS hits FROM $this->object_table " .
-                "WHERE cookie_string = '" . $db->prepare_string(
-                    $p_cookie_string) . "'";
+                "WHERE cookie_string = '" .
+                $db->prepare_string($p_cookie_string) . "'";
             $rs = $db->fetchFirstRow($sql);
 
             if (! is_array($rs)) {
@@ -1430,8 +1417,7 @@ class tlUser extends tlDBObject
         $sql = "SELECT * FROM {$tables['users']} WHERE script_key='" .
             $dbHandler->prepare_string($target) . "'";
 
-        $rs = $dbHandler->fetchRowsIntoMap($sql, "id");
-        return $rs;
+        return $dbHandler->fetchRowsIntoMap($sql, "id");
     }
 
     /**

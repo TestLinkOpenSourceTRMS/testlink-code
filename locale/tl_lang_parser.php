@@ -45,8 +45,9 @@ $do_backup_file = false;
 if ($argc < 1) {
     echo 'Usage: #tl_lang_parser.php <localization_file_to_be_updated>';
     exit();
-} else
+} else {
     $file_lang_old = $argv[1];
+}
 
 $out = ''; // data for output file
 $var_counter = 0;
@@ -101,8 +102,9 @@ for ($i = 0; $i < $lines_old_count; $i ++) {
         $out .= " * Scripted update according en_GB string file (version: " .
             $revision_comment . ") \n";
         $out .= " *\n **/\n";
-    } else
+    } else {
         $out .= $lines_lang_old[$i];
+    }
 }
 
 // compile output array based on english file
@@ -177,11 +179,10 @@ for ($i = $begin_line; $i < $lines_eng_count; $i ++) {
         $out .= "?>";
     } // skip unused multiline values
       // must be a multiline value if it is no variable/comment/empty line/end of file
-    elseif (preg_match('/^.*/', $lines_eng[$i]))
+    elseif (preg_match('/^.*/', $lines_eng[$i])) {
         echo "\n\n=line " . ($i + 1) .
             "=\nSkipped line (expected unused multiline value on master file)\n";
-
-    // something wrong?
+    } // something wrong?
     else {
         echo "\n\n=line " . ($i + 1) . "=\nERROR: please fix this line\n" .
             $lines_eng[$i];
@@ -190,8 +191,9 @@ for ($i = $begin_line; $i < $lines_eng_count; $i ++) {
 }
 
 // create backup if defined
-if ($do_backup_file)
+if ($do_backup_file) {
     rename($file_lang_old, $file_lang_old . '.bck');
+}
 
 // save output
 $fp = fopen($file_lang_old, "w");

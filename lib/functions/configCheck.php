@@ -81,9 +81,7 @@ function get_home_url($opt)
             $t_path = '';
         }
 
-        $t_url = $t_protocol . '://' . $t_host . $t_path . '/';
-
-        return $t_url;
+        return $t_protocol . '://' . $t_host . $t_path . '/';
     }
 }
 
@@ -129,8 +127,7 @@ function checkConfiguration()
  */
 function checkInstallStatus()
 {
-    $status = defined('DB_TYPE') ? true : false;
-    return $status;
+    return defined('DB_TYPE') ? true : false;
 }
 
 /**
@@ -180,8 +177,7 @@ function checkForInstallDir()
     $installerDir = TL_ABS_PATH . DIRECTORY_SEPARATOR . "install" .
         DIRECTORY_SEPARATOR;
     clearstatcache();
-    $dirExists = (is_dir($installerDir)) ? true : false;
-    return $dirExists;
+    return (is_dir($installerDir)) ? true : false;
 }
 
 /**
@@ -320,8 +316,7 @@ function checkForBTSConnection()
 function isMSWindowsServer()
 {
     $osID = strtoupper(substr(PHP_OS, 0, 3));
-    $isWindows = (strcmp('WIN', $osID) == 0) ? true : false;
-    return $isWindows;
+    return (strcmp('WIN', $osID) == 0) ? true : false;
 }
 
 /*
@@ -893,9 +888,6 @@ function check_dir_permissions(&$errCounter)
     $final_msg = '';
     $msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
     $msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
-    $checked_path_base = realpath(
-        dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
-        '..');
 
     $final_msg .= "<tr><td>For security reasons we suggest that directories tagged with [S]" .
         " on following messages, will be made UNREACHEABLE from browser.<br>" .

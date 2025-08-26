@@ -17,7 +17,7 @@
 class issueTrackerCommands
 {
 
-    var $issueTrackerMgr;
+    private $issueTrackerMgr;
 
     private $db;
 
@@ -55,21 +55,21 @@ class issueTrackerCommands
 
     /**
      */
-    function setTemplateCfg($cfg)
+    public function setTemplateCfg($cfg)
     {
         $this->templateCfg = $cfg;
     }
 
     /**
      */
-    function getGuiOpWhiteList()
+    public function getGuiOpWhiteList()
     {
         return $this->guiOpWhiteList;
     }
 
     /**
      */
-    function initGuiBean(&$argsObj, $caller)
+    public function initGuiBean(&$argsObj, $caller)
     {
         $obj = new stdClass();
         $obj->action = $caller;
@@ -116,7 +116,7 @@ class issueTrackerCommands
 
     /**
      */
-    function create(&$argsObj, $request, $caller = null)
+    public function create(&$argsObj, $request, $caller = null)
     {
         $guiObj = $this->initGuiBean($argsObj,
             (is_null($caller) ? __FUNCTION__ : $caller));
@@ -136,7 +136,7 @@ class issueTrackerCommands
 
     /**
      */
-    function doCreate(&$argsObj, $request)
+    public function doCreate(&$argsObj, $request)
     {
         $guiObj = $this->create($argsObj, $request, __FUNCTION__);
 
@@ -172,7 +172,7 @@ class issueTrackerCommands
      * returns:
      *
      */
-    function edit(&$argsObj, $request)
+    public function edit(&$argsObj, $request)
     {
         $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
 
@@ -193,7 +193,7 @@ class issueTrackerCommands
      * returns:
      *
      */
-    function doUpdate(&$argsObj, $request)
+    public function doUpdate(&$argsObj, $request)
     {
         $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
 
@@ -226,7 +226,7 @@ class issueTrackerCommands
 
     /**
      */
-    function doDelete(&$argsObj, $request)
+    public function doDelete(&$argsObj, $request)
     {
         $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
 
@@ -253,7 +253,7 @@ class issueTrackerCommands
 
     /**
      */
-    function checkConnection(&$argsObj, $request)
+    public function checkConnection(&$argsObj, $request)
     {
         $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
         $guiObj->canManage = $argsObj->currentUser->hasRight($this->db,

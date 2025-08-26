@@ -463,8 +463,7 @@ class tlCodeTracker extends tlObject
             $sql .= ' AND NHTPR.id IS NULL AND NHTPR.name IS NULL ';
         }
 
-        $ret = $this->db->fetchRowsIntoMap($sql, 'testproject_id');
-        return $ret;
+        return $this->db->fetchRowsIntoMap($sql, 'testproject_id');
     }
 
     /*
@@ -481,8 +480,7 @@ class tlCodeTracker extends tlObject
             " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
             " ON NHTPR.id = TPCT.testproject_id ";
 
-        $ret = $this->db->fetchRowsIntoMap($sql, 'testproject_id');
-        return $ret;
+        return $this->db->fetchRowsIntoMap($sql, 'testproject_id');
     }
 
     /*
@@ -597,8 +595,7 @@ class tlCodeTracker extends tlObject
                     $_SESSION['cts'][$name] = new $cname($cname, $ctd['cfg'],
                         $ctd['name']);
                 } else {
-                    $cxx = new $cname($cname, $ctd['cfg'], $ctd['name']);
-                    return $cxx;
+                    return new $cname($cname, $ctd['cfg'], $ctd['name']);
                 }
             } else {
                 $_SESSION['cts'][$name] = null;

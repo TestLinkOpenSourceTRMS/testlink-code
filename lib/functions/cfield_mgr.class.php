@@ -369,10 +369,8 @@ class cfield_mgr extends tlObject
      */
     public function get_enable_on_cfg($ui_mode)
     {
-        $mgmt_cfg = array();
-        $mgmt_cfg = $this->_get_ui_mgtm_cfg_for_node_type(
+        return $this->_get_ui_mgtm_cfg_for_node_type(
             $this->enable_on_cfg[$ui_mode]);
-        return $mgmt_cfg;
     }
 
     /**
@@ -382,10 +380,8 @@ class cfield_mgr extends tlObject
      */
     public function get_show_on_cfg($ui_mode)
     {
-        $mgmt_cfg = array();
-        $mgmt_cfg = $this->_get_ui_mgtm_cfg_for_node_type(
+        return $this->_get_ui_mgtm_cfg_for_node_type(
             $this->show_on_cfg[$ui_mode]);
-        return $mgmt_cfg;
     }
 
     /*
@@ -1078,8 +1074,7 @@ class cfield_mgr extends tlObject
             " CF.enable_on_testplan_design desc," .
             " CFTP.display_order, CF.name";
 
-        $map = $this->db->fetchRowsIntoMap($sql, 'id');
-        return $map;
+        return $this->db->fetchRowsIntoMap($sql, 'id');
     }
 
     /*
@@ -1565,8 +1560,7 @@ class cfield_mgr extends tlObject
                     // must remove %
                     $t_date_format = str_replace("%", "",
                         config_get('date_format'));
-                    $xdate = date($t_date_format, $cfValue);
-                    return $xdate;
+                    return date($t_date_format, $cfValue);
                 }
                 break;
 
@@ -1580,8 +1574,7 @@ class cfield_mgr extends tlObject
                     $cfg = config_get('gui');
                     $datetime_format = $t_date_format . " " .
                         $cfg->custom_fields->time_format;
-                    $xdate = date($datetime_format, $cfValue);
-                    return $xdate;
+                    return date($datetime_format, $cfValue);
                 }
                 break;
 
@@ -2363,8 +2356,7 @@ class cfield_mgr extends tlObject
             " AND   CFTP.active=1     " .
             " AND   CF.enable_on_testplan_design={$enabled} " . $order_by_clause;
 
-        $map = $this->db->$fetchMethod($sql, $access_key);
-        return $map;
+        return $this->db->$fetchMethod($sql, $access_key);
     }
 
     /*
@@ -2510,9 +2502,8 @@ class cfield_mgr extends tlObject
             "||NAME||" => "name",
             "||VALUE||" => "value"
         );
-        $cfXML = exportDataToXML($cfMap, $cfRootElem, $cfElemTemplate, $cfDecode,
+        return exportDataToXML($cfMap, $cfRootElem, $cfElemTemplate, $cfDecode,
             true);
-        return $cfXML;
     }
 
     /**
@@ -2554,8 +2545,7 @@ class cfield_mgr extends tlObject
             " WHERE CFTP.testproject_id=NH.id " .
             " AND CFTP.field_id = {$id} ORDER BY NH.name ";
 
-        $rs = $this->db->fetchRowsIntoMap($sql, 'id');
-        return $rs;
+        return $this->db->fetchRowsIntoMap($sql, 'id');
     }
 
     /**
@@ -2625,9 +2615,7 @@ class cfield_mgr extends tlObject
                     " WHERE execution_id = {$linkID} ";
                 break;
         }
-        $rs = $this->db->get_recordset($sql);
-
-        return $rs;
+        return $this->db->get_recordset($sql);
     }
 
     /**
@@ -2936,9 +2924,7 @@ class cfield_mgr extends tlObject
             $sql .= " AND field_id IN(" . implode(',', $cfSet) . ")";
         }
 
-        $rs = $this->db->fetchRowsIntoMap($sql, 'field_id');
-
-        return $rs;
+        return $this->db->fetchRowsIntoMap($sql, 'field_id');
     }
 
     /**

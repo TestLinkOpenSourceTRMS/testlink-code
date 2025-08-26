@@ -137,7 +137,7 @@ De integratie wordt gedaan met behulp van links naar pagina's op BTS, die de vol
 <li>Nieuwe bug toevoegen.</li>
 <li>Toon bestaande bug info.</li>
 <ul>
-</p> 
+</p>
 
 <h3> Proces om een bug toe te voegen </h3>
 </p>
@@ -146,7 +146,7 @@ De integratie wordt gedaan met behulp van links naar pagina's op BTS, die de vol
    <li>Stap 2: Noteer de BUGID toegewezen door BTS</li>
    <li>Stap 3: Schrijf BUGID in het invoerveld</li>
    <li>Stap 4: Gebruik bug  toevoegen knop</li>
-   <ul> 
+   <ul>
 
 Na het sluiten van de bug toevoegen pagina vindt u de relevante bug gegevens op de tests uitvoeren pagina te zien.
 </p> ";
@@ -212,7 +212,7 @@ testcases Openen via link \"Vereisten specificatie\" in het hoofdscherm.</p>
 
 <h3>Vereisten specificatie</h3>
 <p>Vereisten worden gegroepeerd door een 'Vereisten specificatie' document dat betrekking heeft op het
-testproject. <br /> TestLink ondersteunt geen versiebeheer voor vereisten specificaties 
+testproject. <br /> TestLink ondersteunt geen versiebeheer voor vereisten specificaties
 of vereisten. Dus moet de versie van document worden toegevoegd na
 een specificatie <b>Titel</b>.
 Een gebruiker kan eenvoudige beschrijvingen of opmerkingen toevoegen aan het <b>Bereik</b> veld.</p>

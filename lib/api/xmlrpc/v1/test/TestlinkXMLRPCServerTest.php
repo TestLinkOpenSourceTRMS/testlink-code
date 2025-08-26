@@ -32,10 +32,10 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 
     protected $SERVER_URL = "http://localhost/testlink_trunk/lib/api/xmlrpc.php";
 
-    function setUp()
+    private function setUp()
     {
         // This is the path to the server and will vary from machine to machine
-        $this->client = $client = new IXR_Client($this->SERVER_URL);
+        $this->client = new IXR_Client($this->SERVER_URL);
         // run IXR_Client in debug mode showing verbose output
         $this->client->debug = true;
     }
@@ -160,7 +160,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         return $suite;
     }
 
-    function testSayHello()
+    private function testSayHello()
     {
         if (! $this->client->query('tl.sayHello')) {
             die(
@@ -171,7 +171,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Hello!', $this->client->getResponse());
     }
 
-    function testReportTCResultWithInvalidDevKey()
+    private function testReportTCResultWithInvalidDevKey()
     {
         $data = array();
         $data["devKey"] = "wrongKey";
@@ -189,7 +189,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $this->client->getResponse());
     }
 
-    function testReportTCResultWithInsufficientRights()
+    private function testReportTCResultWithInsufficientRights()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::noRightsDevKey;
@@ -211,7 +211,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    function testReportTCResultWithoutDevKey()
+    private function testReportTCResultWithoutDevKey()
     {
         $data = array();
 
@@ -228,7 +228,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $this->client->getResponse());
     }
 
-    function testReportTCResultWithEmptyDevKey()
+    private function testReportTCResultWithEmptyDevKey()
     {
         $data = array();
         $data["devKey"] = "";
@@ -246,7 +246,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $this->client->getResponse());
     }
 
-    function testReportTCResultWithoutTCID()
+    private function testReportTCResultWithoutTCID()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -268,7 +268,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $this->client->getResponse());
     }
 
-    function testReportTCResultWithInvalidTCID()
+    private function testReportTCResultWithInvalidTCID()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -290,7 +290,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    function testReportTCResultWithoutNonIntTCID()
+    private function testReportTCResultWithoutNonIntTCID()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -308,13 +308,12 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $expectedResult[1]["code"] = constant("INVALID_TCASEID");
         $expectedResult[1]["message"] = constant("INVALID_TCASEID_STR");
 
-        $result = $this->client->getResponse();
+        $this->client->getResponse();
 
         $this->assertEquals($expectedResult, $this->client->getResponse());
     }
 
-    // TODO: Implement
-    function testReportTCResultWithoutTPID()
+    private function testReportTCResultWithoutTPID()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -335,7 +334,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $response);
     }
 
-    function testReportTCResultRequestWithoutStatus()
+    private function testReportTCResultRequestWithoutStatus()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -357,7 +356,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $response);
     }
 
-    function testReportTCResultRequestWithInvalidStatus()
+    private function testReportTCResultRequestWithInvalidStatus()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -380,7 +379,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $response);
     }
 
-    function testReportTCResultRequestWithBlockedStatus()
+    private function testReportTCResultRequestWithBlockedStatus()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -401,7 +400,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3, sizeof($response[0]));
     }
 
-    function testReportTCResultRequestWithPassedStatus()
+    private function testReportTCResultRequestWithPassedStatus()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -421,7 +420,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3, sizeof($response[0]));
     }
 
-    function testReportTCResultRequestWithFailedStatus()
+    private function testReportTCResultRequestWithFailedStatus()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -441,7 +440,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3, sizeof($response[0]));
     }
 
-    function testReportTCResultWithNoParams()
+    private function testReportTCResultWithNoParams()
     {
         $data = array();
 
@@ -457,14 +456,14 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
     }
 
     // TODO: Implement
-    function testReportTCResultWithInvalidTCIDAndTPIDCombo()
+    private function testReportTCResultWithInvalidTCIDAndTPIDCombo()
     {
         // TCID_NOT_IN_TPID, TCID_NOT_IN_TPID_STR
         throw new PHPUnit_Framework_IncompleteTestError(
             'This test is not yet implemented');
     }
 
-    function testReportTCResultValidRequest()
+    private function testReportTCResultValidRequest()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -483,7 +482,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3, sizeof($response[0]));
     }
 
-    function testGetLastTestResult()
+    private function testGetLastTestResult()
     {
         // Setup a Known Response by reporting a block
         $data = array();
@@ -516,7 +515,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('b', $response[0]['status']);
     }
 
-    function testReportTCResultRequestWithValidBuildID()
+    private function testReportTCResultRequestWithValidBuildID()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -536,7 +535,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3, sizeof($response[0]));
     }
 
-    function testReportTCResultNotGuessingBuildID()
+    private function testReportTCResultNotGuessingBuildID()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -562,13 +561,13 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $response);
     }
 
-    function testReportTCResultWithTimestamp()
+    private function testReportTCResultWithTimestamp()
     {
         throw new PHPUnit_Framework_IncompleteTestError(
             'This test is not yet implemented');
     }
 
-    function testReportTCResultWithNotes()
+    private function testReportTCResultWithNotes()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -590,7 +589,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3, sizeof($response[0]));
     }
 
-    function testCreateBuildWithInsufficientRights()
+    private function testCreateBuildWithInsufficientRights()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::noRightsDevKey;
@@ -609,7 +608,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    function testCreateBuildWithoutNotes()
+    private function testCreateBuildWithoutNotes()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -625,7 +624,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3, sizeof($response[0]));
     }
 
-    function testCreateBuildWithNotes()
+    private function testCreateBuildWithNotes()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -642,7 +641,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3, sizeof($response[0]));
     }
 
-    function testCreateBuildWithInvalidTPID()
+    private function testCreateBuildWithInvalidTPID()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -666,7 +665,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    function testValidDevKeyWorks()
+    private function testValidDevKeyWorks()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -677,7 +676,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         }
 
         // The response should not have any errors related to the devKey
-        $response = $this->client->getResponse();
+        $this->client->getResponse();
 
         $expectedResult = array();
         $expectedResult[0]["code"] = constant("INVALID_AUTH");
@@ -690,7 +689,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertNotEquals($expectedResult, $this->client->getResponse());
     }
 
-    function testGetProjects()
+    private function testGetProjects()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -723,7 +722,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $response);
     }
 
-    function testGetProjectsWithInsufficientRights()
+    private function testGetProjectsWithInsufficientRights()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::noRightsDevKey;
@@ -741,21 +740,21 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    function testGetProjectTestPlansWithInvalidID()
+    private function testGetProjectTestPlansWithInvalidID()
     {
         // TODO: Implement
         throw new PHPUnit_Framework_IncompleteTestError(
             'This test is not yet implemented');
     }
 
-    function testGetProjectTestPlansWithoutTestProjectID()
+    private function testGetProjectTestPlansWithoutTestProjectID()
     {
         // TODO: Implement
         throw new PHPUnit_Framework_IncompleteTestError(
             'This test is not yet implemented');
     }
 
-    function testGetProjectTestPlans()
+    private function testGetProjectTestPlans()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -784,21 +783,21 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $response);
     }
 
-    function testGetTestSuitesForTestPlan()
+    private function testGetTestSuitesForTestPlan()
     {
         // TODO: Implement
         throw new PHPUnit_Framework_IncompleteTestError(
             'This test is not yet implemented');
     }
 
-    function testGetTestSuitesForTestPlanWithoutTestPlanID()
+    private function testGetTestSuitesForTestPlanWithoutTestPlanID()
     {
         // TODO: Implement
         throw new PHPUnit_Framework_IncompleteTestError(
             'This test is not yet implemented');
     }
 
-    function testGetTestCasesForTestSuite()
+    private function testGetTestCasesForTestSuite()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -831,7 +830,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $response, "arrays do not match");
     }
 
-    function testGetTestCasesForTestSuiteWithInsufficientRights()
+    private function testGetTestCasesForTestSuiteWithInsufficientRights()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::noRightsDevKey;
@@ -849,7 +848,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    function testGetTestCasesForTestSuiteDeepFalse()
+    private function testGetTestCasesForTestSuiteDeepFalse()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -877,7 +876,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $response, "arrays do not match");
     }
 
-    function testGetTestCasesForTestSuiteWithoutSuiteID()
+    private function testGetTestCasesForTestSuiteWithoutSuiteID()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -888,14 +887,14 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
                 $this->client->getErrorCode() . $this->client->getErrorMessage();
         }
 
-        $response = $this->client->getResponse();
+        $this->client->getResponse();
 
         // TODO: Implement
         throw new PHPUnit_Framework_IncompleteTestError(
             'This test is not yet implemented');
     }
 
-    function testGetTestCasesForTestSuiteWithInvalidSuiteID()
+    private function testGetTestCasesForTestSuiteWithInvalidSuiteID()
     {
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -906,14 +905,14 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
                 $this->client->getErrorCode() . $this->client->getErrorMessage();
         }
 
-        $response = $this->client->getResponse();
+        $this->client->getResponse();
 
         // TODO: Implement
         throw new PHPUnit_Framework_IncompleteTestError(
             'This test is not yet implemented');
     }
 
-    function testGetTestCaseIDByName()
+    private function testGetTestCaseIDByName()
     {
         $tcName = "First test case version 3";
 
@@ -938,7 +937,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $response);
     }
 
-    function testGetTestCaseIDByNameWithInsufficientRights()
+    private function testGetTestCaseIDByNameWithInsufficientRights()
     {
         $tcName = "First test case version 3";
 
@@ -958,7 +957,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    function testGetTestCaseIDByNameWithInvalidName()
+    private function testGetTestCaseIDByNameWithInvalidName()
     {
         $tcName = "A Test case that does not exist";
 
@@ -981,7 +980,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResult, $response);
     }
 
-    function testRepeat()
+    private function testRepeat()
     {
         $data = array();
         $data["str"] = "I like to talk to myself";
@@ -995,7 +994,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
             $this->client->getResponse());
     }
 
-    function testAbout()
+    private function testAbout()
     {
         if (! $this->client->query('tl.about', null)) {
             echo "\n\n" . $this->getName() . "something went really wrong - " .
@@ -1005,7 +1004,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    function testNonExistantMethod()
+    private function testNonExistantMethod()
     {
         $this->assertFalse($this->client->query('tl.noSuchMethodExists'));
     }

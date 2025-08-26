@@ -83,9 +83,8 @@ function generateTestSpecTree(&$db, $tproject_id, $tproject_name, $linkto,
             $filters['filter_keywords'] = array_keys($usedKeywordsByKeyID);
         }
 
-        $rr = generateTestSpecTreeNew($db, $tproject_id, $tproject_name, $linkto,
-            $filters, $options);
-        return $rr;
+        return generateTestSpecTreeNew($db, $tproject_id, $tproject_name,
+            $linkto, $filters, $options);
     }
 
     // OK - Go ahead here we have other type of features
@@ -1716,7 +1715,6 @@ function generateTestReqCoverageTree(&$db, $tproject_id, $tproject_name,
  */
 function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters)
 {
-    $filtered_map = null;
     $tables = tlObjectWithDB::getDBTables(
         array(
             'nodes_hierarchy',
@@ -1861,8 +1859,7 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
     }
 
     $sql .= " ORDER BY RV.version DESC ";
-    $filtered_map = $db->fetchRowsIntoMap($sql, 'id');
-    return $filtered_map;
+    return $db->fetchRowsIntoMap($sql, 'id');
 }
 
 /**
@@ -2539,9 +2536,7 @@ function getTestSpecTree($tprojectID, &$tprojectMgr, &$fObj)
         'recursive' => true,
         'exclude_testcases' => false
     );
-    $items = $tprojectMgr->getTestSpec($tprojectID, $flt, $opt);
-
-    return $items;
+    return $tprojectMgr->getTestSpec($tprojectID, $flt, $opt);
 }
 
 /**

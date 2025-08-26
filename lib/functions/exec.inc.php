@@ -545,8 +545,7 @@ function get_execution(&$dbHandler, $execution_id, $opt = null)
             break;
     }
     tLog(__FUNCTION__ . ':' . $sql, "DEBUG");
-    $rs = $dbHandler->get_recordset($sql);
-    return $rs;
+    return $dbHandler->get_recordset($sql);
 }
 
 /**

@@ -26,13 +26,12 @@ $prefixlen = strlen('client');
 if ($handle = opendir($target_dir)) {
     while (false !== ($file = readdir($handle))) {
         clearstatcache();
-        if (($file != ".") && ($file != "..")) {
-            if (is_file($target_dir . DIRECTORY_SEPARATOR . $file)) {
-                $pinfo = pathinfo($file);
-                if ($pinfo['extension'] == 'php' &&
-                    substr($pinfo['basename'], 0, $prefixlen) == $prefix2get) {
-                    $examples[] = $file;
-                }
+        if (($file != ".") && ($file != "..") &&
+            is_file($target_dir . DIRECTORY_SEPARATOR . $file)) {
+            $pinfo = pathinfo($file);
+            if ($pinfo['extension'] == 'php' &&
+                substr($pinfo['basename'], 0, $prefixlen) == $prefix2get) {
+                $examples[] = $file;
             }
         }
     }

@@ -280,8 +280,6 @@ class assignment_mgr extends tlObjectWithDB
     public function get_count_of_assignments_for_build_id($build_id,
         $count_all_types = false, $user_id = 0)
     {
-        $count = 0;
-
         $types = $this->get_available_types();
         $tc_execution_type = $types['testcase_execution']['id'];
         $type_sql = ($count_all_types) ? "" : " AND type = {$tc_execution_type} ";
@@ -291,9 +289,7 @@ class assignment_mgr extends tlObjectWithDB
         $sql = " SELECT COUNT(id) AS count FROM {$this->tables['user_assignments']} " .
             " WHERE build_id = {$build_id} {$user_sql} {$type_sql} ";
 
-        $count = $this->db->fetchOneValue($sql);
-
-        return $count;
+        return $this->db->fetchOneValue($sql);
     }
 
     /**
@@ -414,7 +410,6 @@ class assignment_mgr extends tlObjectWithDB
     private function getExecAssignmentsCountByBuild($buildID)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $rs = null;
         $types = $this->get_available_types();
         $execAssign = $types['testcase_execution']['id'];
 
@@ -422,9 +417,7 @@ class assignment_mgr extends tlObjectWithDB
             " FROM {$this->tables['user_assignments']} " .
             " WHERE build_id IN ( " . implode(",", (array) $buildID) . " ) " .
             " AND type = {$execAssign} " . " GROUP BY build_id ";
-        $rs = $this->db->fetchRowsIntoMap($sql, 'build_id');
-
-        return $rs;
+        return $this->db->fetchRowsIntoMap($sql, 'build_id');
     }
 
     /**
@@ -439,7 +432,6 @@ class assignment_mgr extends tlObjectWithDB
     private function getNotRunAssignmentsCountByBuild($buildID)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $rs = null;
         $types = $this->get_available_types();
         $execAssign = $types['testcase_execution']['id'];
 
@@ -457,9 +449,7 @@ class assignment_mgr extends tlObjectWithDB
             implode(",", (array) $buildID) . " ) " . " AND E.status IS NULL " .
             " AND type = {$execAssign} " . " GROUP BY UA.build_id ";
 
-        $rs = $this->db->fetchRowsIntoMap($sql, 'build_id');
-
-        return $rs;
+        return $this->db->fetchRowsIntoMap($sql, 'build_id');
     }
 
     /**
@@ -473,8 +463,6 @@ class assignment_mgr extends tlObjectWithDB
         $assignmentType)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $rs = null;
-
         if (is_null($assignmentType) || ! is_numeric($assignmentType)) {
             throw new Exception(
                 __METHOD__ . ' assignmentType can not be NULL or not numeric ');
@@ -485,9 +473,7 @@ class assignment_mgr extends tlObjectWithDB
             implode(",", (array) $featureSet) . " )" . " AND type = " .
             intval($assignmentType);
 
-        $rs = $this->db->fetchMapRowsIntoMap($sql, 'feature_id', 'user_id');
-
-        return $rs;
+        return $this->db->fetchMapRowsIntoMap($sql, 'feature_id', 'user_id');
     }
 
     /**

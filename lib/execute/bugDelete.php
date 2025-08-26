@@ -17,29 +17,28 @@ testlinkInitPage($db, false, false, "checkRights");
 $templateCfg = templateConfiguration();
 $args = initArgs();
 $msg = "";
-if ($args->exec_id && $args->bug_id != "") {
-    if (write_execution_bug($db, $args->exec_id, $args->bug_id, $args->tcstep_id,
+if ($args->exec_id && $args->bug_id != "" &&
+    write_execution_bug($db, $args->exec_id, $args->bug_id, $args->tcstep_id,
         true)) {
-        // get audit info
-        $ainfo = get_execution($db, $args->exec_id, array(
-            'output' => 'audit'
-        ));
-        $ainfo = $ainfo[0];
+    // get audit info
+    $ainfo = get_execution($db, $args->exec_id, array(
+        'output' => 'audit'
+    ));
+    $ainfo = $ainfo[0];
 
-        $msg = lang_get('bugdeleting_was_ok');
-        if ($ainfo['platform_name'] == '') {
-            $auditMsg = TLS('audit_executionbug_deleted_no_platform',
-                $args->bug_id, $ainfo['exec_id'], $ainfo['testcase_name'],
-                $ainfo['testproject_name'], $ainfo['testplan_name'],
-                $ainfo['build_name']);
-        } else {
-            $auditMsg = TLS('audit_executionbug_deleted', $args->bug_id,
-                $ainfo['exec_id'], $ainfo['testcase_name'],
-                $ainfo['testproject_name'], $ainfo['testplan_name'],
-                $ainfo['platform_name'], $ainfo['build_name']);
-        }
-        logAuditEvent($auditMsg, "DELETE", $args->exec_id, "executions");
+    $msg = lang_get('bugdeleting_was_ok');
+    if ($ainfo['platform_name'] == '') {
+        $auditMsg = TLS('audit_executionbug_deleted_no_platform', $args->bug_id,
+            $ainfo['exec_id'], $ainfo['testcase_name'],
+            $ainfo['testproject_name'], $ainfo['testplan_name'],
+            $ainfo['build_name']);
+    } else {
+        $auditMsg = TLS('audit_executionbug_deleted', $args->bug_id,
+            $ainfo['exec_id'], $ainfo['testcase_name'],
+            $ainfo['testproject_name'], $ainfo['testplan_name'],
+            $ainfo['platform_name'], $ainfo['build_name']);
     }
+    logAuditEvent($auditMsg, "DELETE", $args->exec_id, "executions");
 }
 
 $smarty = new TLSmarty();

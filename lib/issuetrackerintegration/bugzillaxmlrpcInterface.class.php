@@ -28,7 +28,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      *            (see tlIssueTracker.class.php $systems property)
      * @param xml $cfg
      */
-    function __construct($type, $config, $name)
+    public function __construct($type, $config, $name)
     {
         $this->interfaceViaDB = false;
         $this->methodOpt['buildViewBugLink'] = array(
@@ -72,7 +72,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      * If they are MISSING we will use 'these carved on the stone values'
      * in order to simplify configuration.
      */
-    function completeCfg()
+    private function completeCfg()
     {
         $base = trim($this->cfg->uribase, "/") . '/'; // be sure no double // at end
         if (! property_exists($this->cfg, 'urixmlrpc')) {
@@ -102,7 +102,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     /**
      * useful for testing
      */
-    function getAPIClient()
+    public function getAPIClient()
     {
         return $this->APIClient;
     }
@@ -114,7 +114,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      *            string issueID
      * @return bool returns true if the bugid has the right format, false else
      */
-    function checkBugIDSyntax($issueID)
+    public function checkBugIDSyntax($issueID)
     {
         return $this->checkBugIDSyntaxNumeric($issueID);
     }
@@ -125,7 +125,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      * @return bool
      *
      */
-    function connect()
+    public function connect()
     {
         try {
             // CRITIC NOTICE for developers
@@ -149,7 +149,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 
     /**
      */
-    function isConnected()
+    public function isConnected()
     {
         return $this->connected;
     }
@@ -207,7 +207,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      *            string issueID
      * @return
      */
-    function getIssueStatusCode($issueID)
+    public function getIssueStatusCode($issueID)
     {
         $issue = $this->getIssue($issueID);
         return ! is_null($issue) ? $issue->statusCode : false;
@@ -222,7 +222,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      * @return string
      *
      */
-    function getIssueStatusVerbose($issueID)
+    public function getIssueStatusVerbose($issueID)
     {
         return $this->getIssueStatusCode($issueID);
     }
@@ -234,7 +234,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      * @return string
      *
      */
-    function getIssueSummaryHTMLString($issueID)
+    public function getIssueSummaryHTMLString($issueID)
     {
         $issue = $this->getIssue($issueID);
         $str = $issue->summaryHTMLString;
@@ -250,7 +250,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      *            string issueID
      * @return bool true if issue exists on BTS
      */
-    function checkBugIDExistence($issueID)
+    public function checkBugIDExistence($issueID)
     {
         if ($status_ok = $this->checkBugIDSyntax($issueID)) {
             $issue = $this->getIssue($issueID);
@@ -261,7 +261,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 
     /**
      */
-    function createAPIClient()
+    private function createAPIClient()
     {
         try {
             $this->APIClient = new Zend_XmlRpc_Client(
@@ -281,7 +281,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
      */
     public static function getCfgTemplate()
     {
-        $template = "<!-- Template " . __CLASS__ . " -->\n" . "<issuetracker>\n" .
+        return "<!-- Template " . __CLASS__ . " -->\n" . "<issuetracker>\n" .
             "<username>USERNAME</username>\n" . "<password>PASSWORD</password>\n" .
             "<uribase>http://bugzilla.mozilla.org/</uribase>\n" .
             "<!-- In order to create issues from TestLink, you need to provide this MANDATORY info -->\n" .
@@ -293,11 +293,9 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
             "<version>unspecified</version>\n" . "<severity>Trivial</severity>\n" .
             "<op_sys>All</op_sys>\n" . "<priority>Normal</priority>\n" .
             "<platform>All</platform> --> \n" . "</issuetracker>\n";
-
-        return $template;
     }
 
-    function getAccessibleProducts()
+    private function getAccessibleProducts()
     {
         $resp = array();
         $login = $this->login();
@@ -320,7 +318,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 
     /**
      */
-    function getProduct($id)
+    private function getProduct($id)
     {
         $resp = array();
         $login = $this->login();
@@ -379,7 +377,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     // Either the QA Contact, Assignee, or CC lists have some invalid user in them.
     // The error message will have more details.
     //
-    function addIssue($summary, $description)
+    public function addIssue($summary, $description)
     {
         $issue = null;
         $resp = array();
@@ -427,7 +425,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
 
     /**
      */
-    function canCreateViaAPI()
+    public function canCreateViaAPI()
     {
         return property_exists($this->cfg, 'product') &&
             property_exists($this->cfg, 'component');

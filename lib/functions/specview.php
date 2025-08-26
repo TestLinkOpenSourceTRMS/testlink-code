@@ -211,7 +211,6 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
         $id, $spec_view_type, $pfFilters);
 
     $platforms = getPlatforms($db, $tproject_id, $testplan_id);
-    $idx = 0;
     $a_tcid = array();
     $a_tsuite_idx = array();
     if (count($test_spec)) {
@@ -385,7 +384,6 @@ function gen_coverage_view(&$db, $specViewType, $tobj_id, $id, $name,
         $id, $spec_view_type, $pfFilters, 'req_order');
 
     $platforms = getPlatforms($db, $tproject_id, $testplan_id);
-    $idx = 0;
     $a_tcid = array();
     $a_tsuite_idx = array();
     if (count($test_spec)) {
@@ -678,10 +676,9 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
         $genSpecFilters['cfields'] = $my['filters']['cfieldsFilter'];
     }
 
-    $out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id,
+    return gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id,
         $argsObj->id, $tsuite_data['name'], $tplan_linked_tcversions, null,
         $genSpecFilters, $my['options']);
-    return $out;
 }
 
 /**
@@ -909,19 +906,16 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems,
                             }
                         }
 
-                        if (! is_null($item)) {
-                            if ($useFilter['execution_type'] &&
-                                ($item['execution_type'] !=
-                                $filters['execution_type']) ||
-                                $useFilter['importance'] &&
-                                (! isset(
-                                    $filtersByValue['importance'][$item['importance']])) ||
-                                $useFilter['status'] &&
-                                (! isset(
-                                    $filtersByValue['status'][$item['status']]))) {
-                                $tspecKey = $itemSet[$targetTestCase];
-                                $test_spec[$tspecKey] = null;
-                            }
+                        if (! is_null($item) && $useFilter['execution_type'] &&
+                            ($item['execution_type'] !=
+                            $filters['execution_type']) ||
+                            $useFilter['importance'] &&
+                            (! isset(
+                                $filtersByValue['importance'][$item['importance']])) ||
+                            $useFilter['status'] &&
+                            (! isset($filtersByValue['status'][$item['status']]))) {
+                            $tspecKey = $itemSet[$targetTestCase];
+                            $test_spec[$tspecKey] = null;
                         }
                     }
                     break;
@@ -1107,23 +1101,22 @@ function addCustomFieldsToView(&$testSuiteSet, $tprojectId, &$tcaseMgr)
     // testplan_tcversions.id value, that is used to link to manage custom fields that are used
     // during testplan_design is present on key 'feature_id' (only is linked_version_id != 0)
     foreach ($testSuiteSet as $key => $value) {
-        if (! is_null($value)) {
-            if (isset($value['testcases']) && count($value['testcases']) > 0) {
-                foreach ($value['testcases'] as $skey => $svalue) {
-                    if (($linked_version_id = $svalue['linked_version_id']) > 0) {
-                        $platformSet = array_keys($svalue['feature_id']);
-                        foreach ($platformSet as $platform_id) {
-                            $testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id] = '';
-                            if ($linked_version_id != 0) {
-                                $cf_name_suffix = "_" .
-                                    $svalue['feature_id'][$platform_id];
-                                $cf_map = $tcaseMgr->html_table_of_custom_field_inputs(
-                                    $linked_version_id, null, 'testplan_design',
-                                    $cf_name_suffix,
-                                    $svalue['feature_id'][$platform_id], null,
-                                    $tprojectId);
-                                $testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id] = $cf_map;
-                            }
+        if (! is_null($value) && isset($value['testcases']) &&
+            ! empty($value['testcases'])) {
+            foreach ($value['testcases'] as $skey => $svalue) {
+                if (($linked_version_id = $svalue['linked_version_id']) > 0) {
+                    $platformSet = array_keys($svalue['feature_id']);
+                    foreach ($platformSet as $platform_id) {
+                        $testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id] = '';
+                        if ($linked_version_id != 0) {
+                            $cf_name_suffix = "_" .
+                                $svalue['feature_id'][$platform_id];
+                            $cf_map = $tcaseMgr->html_table_of_custom_field_inputs(
+                                $linked_version_id, null, 'testplan_design',
+                                $cf_name_suffix,
+                                $svalue['feature_id'][$platform_id], null,
+                                $tprojectId);
+                            $testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id] = $cf_map;
                         }
                     }
                 }
@@ -1542,10 +1535,9 @@ function getFilteredSpecViewFlat(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
         $genSpecFilters['cfields'] = $my['filters']['cfieldsFilter'];
     }
 
-    $out = genSpecViewFlat($dbHandler, 'testplan', $argsObj->tplan_id,
+    return genSpecViewFlat($dbHandler, 'testplan', $argsObj->tplan_id,
         $argsObj->id, $tsuite_data['name'], $tplan_linked_tcversions, null,
         $genSpecFilters, $my['options']);
-    return $out;
 }
 
 /**
@@ -1619,7 +1611,6 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name,
         $id, $spec_view_type, $pfFilters);
 
     $platforms = getPlatforms($db, $tproject_id, $testplan_id);
-    $idx = 0;
     $a_tcid = array();
     $a_tsuite_idx = array();
     if (count($test_spec)) {

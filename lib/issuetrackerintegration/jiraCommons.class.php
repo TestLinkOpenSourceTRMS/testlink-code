@@ -32,7 +32,7 @@ class jiraCommons
      *
      * @return bool true if issue exists on BTS
      */
-    function checkBugIDExistence($issueID)
+    public function checkBugIDExistence($issueID)
     {
         if ($status_ok = $this->checkBugIDSyntax($issueID)) {
             $issue = $this->getIssue($issueID);
@@ -58,7 +58,7 @@ class jiraCommons
 
     /**
      */
-    function buildStatusHTMLString($statusCode)
+    public function buildStatusHTMLString($statusCode)
     {
         $str = $statusCode;
         if ($this->guiCfg['use_decoration']) {
@@ -69,7 +69,7 @@ class jiraCommons
 
     /**
      */
-    function buildSummaryHTMLString($issue)
+    public function buildSummaryHTMLString($issue)
     {
         $summary = $issue->summary;
         if (property_exists($issue, 'duedate')) {
@@ -83,7 +83,7 @@ class jiraCommons
 
     /**
      */
-    function initDefaultResolvedStatus($statusDomain)
+    public function initDefaultResolvedStatus($statusDomain)
     {
         $domain = array();
         $itemSet = array(

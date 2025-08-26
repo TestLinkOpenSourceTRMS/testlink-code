@@ -104,23 +104,22 @@ function lang_get($p_string, $p_lang = null, $bDontFireEvents = false)
             $addMsg = '';
         }
 
-        if (! $bDontFireEvents) {
-            // When testing with a user with locale = italian, found
-            // 1. missing localized string was replaced with version present on english strings
-            // 2. no log written to event viewer
-            // 3. detected a call to lang_get() with language en_GB
-            //
+        // When testing with a user with locale = italian, found
+        // 1. missing localized string was replaced with version present on english strings
+        // 2. no log written to event viewer
+        // 3. detected a call to lang_get() with language en_GB
+        //
 
-            // try to report just one per user session
-            // 20130913 - missing check for $_SESSION existence create a mess with language detection
-            // via browser
-            if (isset($_SESSION) && ! isset($_SESSION['missingL18N'][$p_string])) {
-                $msg = sprintf(
-                    "string '%s' is not localized for locale '%s' {$addMsg}",
-                    $p_string, $t_lang);
-                $_SESSION['missingL18N'][$p_string] = $p_string;
-                logL18NWarningEvent($msg, "LOCALIZATION");
-            }
+        // try to report just one per user session
+        // 20130913 - missing check for $_SESSION existence create a mess with language detection
+        // via browser
+        if (! $bDontFireEvents && isset($_SESSION) &&
+            ! isset($_SESSION['missingL18N'][$p_string])) {
+            $msg = sprintf(
+                "string '%s' is not localized for locale '%s' {$addMsg}",
+                $p_string, $t_lang);
+            $_SESSION['missingL18N'][$p_string] = $p_string;
+            logL18NWarningEvent($msg, "LOCALIZATION");
         }
     }
     return $the_str;
@@ -190,8 +189,7 @@ function lang_get_smarty($params, $smarty)
         }
         $smarty->assign($params['var'], $myLabels);
     } else {
-        $the_ret = lang_get($params['s'], $myLocale);
-        return $the_ret;
+        return lang_get($params['s'], $myLocale);
     }
 }
 
@@ -417,8 +415,6 @@ function mailBodyGet($key, $locale = null)
     $rs = str_replace('/', $lzds, $key);
     $resource_path = $dir_base . $lzds . $rs;
 
-    $str = file_get_contents($resource_path);
-
-    return $str;
+    return file_get_contents($resource_path);
 }
 

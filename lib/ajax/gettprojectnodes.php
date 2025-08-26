@@ -31,18 +31,21 @@ require_once '../../config.inc.php';
 require_once 'common.php';
 testlinkInitPage($db);
 
-$root_node = isset($_REQUEST['root_node']) ? intval($_REQUEST['root_node']): null;
+$root_node = isset($_REQUEST['root_node']) ? intval($_REQUEST['root_node']) : null;
 $node = isset($_REQUEST['node']) ? intval($_REQUEST['node']) : $root_node;
-$filter_node = isset($_REQUEST['filter_node']) ? intval($_REQUEST['filter_node']) : null;
-$show_tcases = isset($_REQUEST['show_tcases']) ? intval($_REQUEST['show_tcases']) : 1;
+$filter_node = isset($_REQUEST['filter_node']) ? intval(
+    $_REQUEST['filter_node']) : null;
+$show_tcases = isset($_REQUEST['show_tcases']) ? intval(
+    $_REQUEST['show_tcases']) : 1;
 
 $tcprefix = isset($_REQUEST['tcprefix']) ? $_REQUEST['tcprefix'] : '';
-$operation = isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
+$operation = isset($_REQUEST['operation']) ? $_REQUEST['operation'] : 'manage';
 
 $helpText = array();
 $helpText['testproject'] = isset($_REQUEST['tprojectHelp']) ? $_REQUEST['tprojectHelp'] : '';
 $helpText['testsuite'] = isset($_REQUEST['tsuiteHelp']) ? $_REQUEST['tsuiteHelp'] : '';
-$nodes = display_children($db,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation,$helpText);
+$nodes = display_children($db, $root_node, $node, $filter_node, $tcprefix,
+    $show_tcases, $operation, $helpText);
 echo json_encode($nodes);
 
 /**
@@ -57,146 +60,160 @@ echo json_encode($nodes);
  * @param array $helpText
  * @return NULL|string
  */
-function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix,$show_tcases = 1,$operation = 'manage',$helpText=array())
+function display_children($dbHandler, $root_node, $parent, $filter_node,
+    $tcprefix, $show_tcases = 1, $operation = 'manage', $helpText = array())
 {
     static $showTestCaseID;
-    
-    $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','node_types'));
-    
-    $forbidden_parent = array('testproject' => 'none','testcase' => 'testproject', 'testsuite' => 'none');
+
+    $tables = tlObjectWithDB::getDBTables(
+        array(
+            'tcversions',
+            'nodes_hierarchy',
+            'node_types'
+        ));
+
+    $forbidden_parent = array(
+        'testproject' => 'none',
+        'testcase' => 'testproject',
+        'testsuite' => 'none'
+    );
     $external = '';
     $nodes = null;
     $filter_node_type = $show_tcases ? '' : ",'testcase'";
-    
-    switch($operation)
-    {
+
+    switch ($operation) {
         case 'print':
-            $js_function = array('testproject' => 'TPROJECT_PTP', 'testsuite' =>'TPROJECT_PTS', 'testcase' => 'TPROJECT_PTS');
+            $js_function = array(
+                'testproject' => 'TPROJECT_PTP',
+                'testsuite' => 'TPROJECT_PTS',
+                'testcase' => 'TPROJECT_PTS'
+            );
             break;
-            
+
         case 'manage':
         default:
-            $js_function = array('testproject' => 'EP','testsuite' =>'ETS', 'testcase' => 'ET');
+            $js_function = array(
+                'testproject' => 'EP',
+                'testsuite' => 'ETS',
+                'testcase' => 'ET'
+            );
             break;
     }
-    
+
     $sql = " SELECT NHA.*, NT.description AS node_type " .
         " FROM {$tables['nodes_hierarchy']} NHA, {$tables['node_types']} NT " .
-        " WHERE NHA.node_type_id = NT.id " .
-        " AND parent_id = " . intval($parent) .
-        " AND NT.description NOT IN " .
+        " WHERE NHA.node_type_id = NT.id " . " AND parent_id = " .
+        intval($parent) . " AND NT.description NOT IN " .
         " ('testcase_version','testplan','requirement_spec','requirement'{$filter_node_type}) ";
-    
-    if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
-    {
-        $sql .=" AND NHA.id = " . intval($filter_node);
+
+    if (! is_null($filter_node) && $filter_node > 0 && $parent == $root_node) {
+        $sql .= " AND NHA.id = " . intval($filter_node);
     }
     $sql .= " ORDER BY NHA.node_order ";
-    
-    
+
     $nodeSet = $dbHandler->get_recordset($sql);
-    
-    if($show_tcases) {
+
+    if ($show_tcases) {
         // Get external id, used on test case nodes
-        $sql =  " SELECT DISTINCT tc_external_id,NHA.parent_id " .
+        $sql = " SELECT DISTINCT tc_external_id,NHA.parent_id " .
             " FROM {$tables['tcversions']} TCV " .
             " JOIN {$tables['nodes_hierarchy']} NHA  ON NHA.id = TCV.id  " .
             " JOIN {$tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
-            " WHERE NHB.parent_id = " . intval($parent) . " AND NHA.node_type_id = 4";
-        $external = $dbHandler->fetchRowsIntoMap($sql,'parent_id');
+            " WHERE NHB.parent_id = " . intval($parent) .
+            " AND NHA.node_type_id = 4";
+        $external = $dbHandler->fetchRowsIntoMap($sql, 'parent_id');
     }
-    
-    if(!is_null($nodeSet)) {
-        foreach($nodeSet as $key => $row) {
+
+    if (! is_null($nodeSet)) {
+        foreach ($nodeSet as $key => $row) {
             $path['text'] = htmlspecialchars($row['name']);
             $path['id'] = $row['id'];
-            
+
             // this attribute/property is used on custom code on drag and drop
             $path['position'] = $row['node_order'];
             $path['leaf'] = false;
             $path['cls'] = 'folder';
-            
+
             // customs key will be accessed using node.attributes.[key name]
             $path['testlink_node_type'] = $row['node_type'];
             $path['testlink_node_name'] = $path['text']; // already htmlspecialchars() done
             $path['forbidden_parent'] = 'none';
-            
+
             $tcase_qty = null;
-            switch($row['node_type'])
-            {
+            switch ($row['node_type']) {
                 case 'testproject':
                     // at least on Test Specification seems that we do not execute this piece of code.
                     $path['href'] = "javascript:EP({$path['id']})";
                     $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
                     break;
-                    
+
                 case 'testsuite':
                     $items = array();
-                    getAllTCasesID($row['id'],$items);
+                    getAllTCasesID($row['id'], $items);
                     $tcase_qty = sizeof($items);
-                    
-                    $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+
+                    $path['href'] = "javascript:" .
+                        $js_function[$row['node_type']] . "({$path['id']})";
                     $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
                     break;
-                    
+
                 case 'testcase':
-                    $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+                    $path['href'] = "javascript:" .
+                        $js_function[$row['node_type']] . "({$path['id']})";
                     $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
-                    if(is_null($showTestCaseID))
-                    {
-                        $showTestCaseID = config_get('treemenu_show_testcase_id');
+                    if (is_null($showTestCaseID)) {
+                        $showTestCaseID = config_get(
+                            'treemenu_show_testcase_id');
                     }
-                    if($showTestCaseID)
-                    {
-                        $path['text'] = htmlspecialchars($tcprefix . $external[$row['id']]['tc_external_id'] . ":") . $path['text'];
+                    if ($showTestCaseID) {
+                        $path['text'] = htmlspecialchars(
+                            $tcprefix . $external[$row['id']]['tc_external_id'] .
+                            ":") . $path['text'];
                     }
                     $path['leaf'] = true;
                     break;
             }
-            
-            if(!is_null($tcase_qty))
-            {
+
+            if (! is_null($tcase_qty)) {
                 $path['text'] .= " ({$tcase_qty})";
             }
-            
-            switch($row['node_type'])
-            {
+
+            switch ($row['node_type']) {
                 case 'testproject':
                 case 'testsuite':
-                    if( isset($helpText[$row['node_type']]) )
-                    {
-                        $path['text'] = '<span title="' . $helpText[$row['node_type']] . '">' . $path['text'] . '</span>';
+                    if (isset($helpText[$row['node_type']])) {
+                        $path['text'] = '<span title="' .
+                            $helpText[$row['node_type']] . '">' . $path['text'] .
+                            '</span>';
                     }
                     break;
             }
-            
+
             $nodes[] = $path;
         }
     }
     return $nodes;
 }
 
-
 /**
  *
  * @param string $idList
  * @param array $tcIDs
  */
-function getAllTCasesID($idList,&$tcIDs) {
-    
-    global $db;  // I'm sorry for the global coupling
+function getAllTCasesID($idList, &$tcIDs)
+{
+    global $db; // I'm sorry for the global coupling
     $tcNodeTypeID = 3;
-    // $tsuiteNodeTypeID = 2;
-    
+
     $tbl = DB_TABLE_PREFIX . 'nodes_hierarchy';
     $sql = " SELECT id,node_type_id FROM $tbl
            WHERE parent_id IN ($idList)
            AND node_type_id IN (3,2) ";
-    
+
     $result = $db->exec_query($sql);
     if ($result) {
         $suiteIDs = array();
-        while($row = $db->fetch_array($result)) {
+        while ($row = $db->fetch_array($result)) {
             if ($row['node_type_id'] == $tcNodeTypeID) {
                 $tcIDs[] = $row['id'];
             } else {
@@ -204,8 +221,8 @@ function getAllTCasesID($idList,&$tcIDs) {
             }
         }
         if (sizeof($suiteIDs)) {
-            $suiteIDs  = implode(",",$suiteIDs);
-            getAllTCasesID($suiteIDs,$tcIDs);
+            $suiteIDs = implode(",", $suiteIDs);
+            getAllTCasesID($suiteIDs, $tcIDs);
         }
     }
 }

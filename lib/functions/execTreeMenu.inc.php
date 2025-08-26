@@ -894,8 +894,7 @@ function helperInitCounters()
     $resultsCfg = config_get('results');
     $items = array_keys($resultsCfg['status_code']);
     $items[] = 'testcase_count';
-    $cc = array_fill_keys($items, 0);
-    return $cc;
+    return array_fill_keys($items, 0);
 }
 
 /**

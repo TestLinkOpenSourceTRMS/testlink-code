@@ -1977,7 +1977,6 @@ function processTestSuite(&$dbHandler, &$guiObj, &$argsObj, $testSet, &$treeMgr,
     $cf_filters = array(
         'show_on_execution' => 1
     );
-    $tsuite_mgr = new testsuite($dbHandler);
 
     // Get the path for every test case, grouping test cases that have same parent.
     $testCaseQty = count($testSet->tcase_id);

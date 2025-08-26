@@ -624,8 +624,7 @@ class tlIssueTracker extends tlObject
             $sql .= ' AND NHTPR.id IS NULL AND NHTPR.name IS NULL ';
         }
 
-        $ret = $this->db->fetchRowsIntoMap($sql, 'testproject_id');
-        return $ret;
+        return $this->db->fetchRowsIntoMap($sql, 'testproject_id');
     }
 
     /*
@@ -642,8 +641,7 @@ class tlIssueTracker extends tlObject
             " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
             " ON NHTPR.id = TPIT.testproject_id ";
 
-        $ret = $this->db->fetchRowsIntoMap($sql, 'testproject_id');
-        return $ret;
+        return $this->db->fetchRowsIntoMap($sql, 'testproject_id');
     }
 
     /*
@@ -758,8 +756,7 @@ class tlIssueTracker extends tlObject
                     $_SESSION['its'][$name] = new $iname($iname, $itd['cfg'],
                         $itd['name']);
                 } else {
-                    $ixx = new $iname($iname, $itd['cfg'], $itd['name']);
-                    return $ixx;
+                    return new $iname($iname, $itd['cfg'], $itd['name']);
                 }
             } else {
                 $_SESSION['its'][$name] = null;

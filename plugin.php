@@ -41,5 +41,5 @@ if (! is_file($plugin_page_qualified)) {
 }
 
 plugin_push_current($plugin_name);
-include $plugin_page_qualified;
+include_once $plugin_page_qualified;
 

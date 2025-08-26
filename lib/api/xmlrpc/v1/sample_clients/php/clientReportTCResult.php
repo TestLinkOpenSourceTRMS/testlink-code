@@ -33,7 +33,6 @@ $exec->status = $tcaseStatusCode['blocked'];
 $exec->notes = "Call using all EXTERNAL ID ({$context->testcaseexternalid}) - status={$exec->status}";
 $exec->customfields = null;
 $exec->bugid = null;
-// $exec->user = 'QQ';
 $exec->overwrite = false;
 
 $debug = false;

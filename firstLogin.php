@@ -31,7 +31,7 @@ if (! config_get('user_self_signup')) {
 }
 doDBConnect($db, database::ONERROREXIT);
 
-$message = ''; // lang_get('your_info_please');
+$message = '';
 if (! is_null($args->doEditUser)) {
     if (strcmp($args->password, $args->password2)) {
         $message = lang_get('passwd_dont_match');

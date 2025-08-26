@@ -25,27 +25,4 @@ $client = new IXR_Client($server_url);
 $client->debug = true;
 runTest($client, $method, $args);
 
-/*
- * $args=array();
- * $args["devKey"]=DEV_KEY;
- * $args["testprojectid"]=32989;
- * $args["testcaseexternalid"]='APF-1';
- * $args["version"]=1;
- * $args["executiontype"]=2;
- * $client = new IXR_Client($server_url);
- * $client->debug=true;
- * runTest($client,$method,$args);
- */
-
-/*
- * $args=array();
- * $args["devKey"]=DEV_KEY;
- * $args["testprojectid"]=32989;
- * $args["testcaseexternalid"]='APF-1';
- * $args["version"]=1;
- * $args["executiontype"]=10;
- * $client = new IXR_Client($server_url);
- * $client->debug=true;
- * runTest($client,$method,$args);
- */
 ?>

@@ -144,7 +144,7 @@ abstract class codeTrackerInterface
 
     /**
      */
-    private function getMyInterface()
+    public function getMyInterface()
     {
         return $this->cfg->interfacePHP;
     }

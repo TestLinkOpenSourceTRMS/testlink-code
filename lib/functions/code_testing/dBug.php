@@ -74,12 +74,11 @@ class dBug
 
     var $arrHistory = array();
 
-    // constructor
-    function dBug($var, $forceType = "")
+    public function __construct($var, $forceType = "")
     {
         // include js and css scripts
         if (! defined('BDBUGINIT')) {
-            define("BDBUGINIT", TRUE);
+            define("BDBUGINIT", true);
             $this->initJSandCSS();
         }
         $arrAccept = array(
@@ -93,8 +92,7 @@ class dBug
             $this->checkType($var);
     }
 
-    // get variable name
-    function getVariableName()
+    private function getVariableName()
     {
         $arrBacktrace = debug_backtrace();
 
@@ -232,7 +230,7 @@ class dBug
                 // check for recursion
                 if (is_array($value)) {
                     $var_ser = serialize($value);
-                    if (in_array($var_ser, $this->arrHistory, TRUE))
+                    if (in_array($var_ser, $this->arrHistory, true))
                         $value = "*RECURSION*";
                 }
 
@@ -268,7 +266,7 @@ class dBug
                 // check for recursion
                 if (is_object($value) || is_array($value)) {
                     $var_ser = serialize($value);
-                    if (in_array($var_ser, $this->arrHistory, TRUE)) {
+                    if (in_array($var_ser, $this->arrHistory, true)) {
                         $value = (is_object($value)) ? "*RECURSION* -> $" .
                             get_class($value) : "*RECURSION*";
                     }
@@ -358,7 +356,6 @@ class dBug
             echo "<tr>\n";
             echo "<td class=\"dBug_resourceKey\">" . ($i + 1) . "</td>";
             for ($k = 0; $k < $numfields; $k ++) {
-                $tempField = $field[$k]->name;
                 $fieldrow = $row[($field[$k]->name)];
                 $fieldrow = ($fieldrow == "") ? "[empty string]" : $fieldrow;
                 echo "<td>" . $fieldrow . "</td>\n";
@@ -406,10 +403,11 @@ class dBug
                 &$this,
                 "xmlCharacterData"
             ));
-        xml_set_default_handler($xml_parser, array(
-            &$this,
-            "xmlDefaultHandler"
-        ));
+        xml_set_default_handler($xml_parser,
+            array(
+                &$this,
+                "xmlDefaultHandler"
+            ));
 
         $this->makeTableHeader("xml", "xml document", 2);
         $this->makeTDHeader("xml", "xmlRoot");
@@ -564,12 +562,12 @@ class dBug
         				.dBug_objectHeader,
         				.dBug_resourceHeader,
         				.dBug_resourceCHeader,
-        				.dBug_xmlHeader 
+        				.dBug_xmlHeader
         					{ font-weight:bold; color:#FFFFFF; cursor:pointer; }
         				
         				.dBug_arrayKey,
         				.dBug_objectKey,
-        				.dBug_xmlKey 
+        				.dBug_xmlKey
         					{ cursor:pointer; }
         					
         				/* array */

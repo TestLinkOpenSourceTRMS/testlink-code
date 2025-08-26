@@ -14,7 +14,6 @@ show_api_db_sample_msg();
 
 $tcCounter = 1;
 
-// -------------------------------------------------------------------------------
 $method = 'createTestCase';
 $tcCounter ++;
 
@@ -23,7 +22,6 @@ $args["devKey"] = '985978c915f50e47a4b1a54a943d1b76';
 $args["testprojectid"] = 50;
 $args["testsuiteid"] = 90;
 $args["testcasename"] = 'ZZ - TEST CASE NAME IS LONGER ';
-;
 $args["summary"] = 'Test Case created via API';
 $args["preconditions"] = 'Test Link API Up & Running';
 $args["authorlogin"] = 'admin';
@@ -44,7 +42,6 @@ $client = new IXR_Client($server_url);
 $client->debug = $debug;
 runTest($client, $method, $args);
 
-// ---------------------------------------------------------------------------------
 $method = 'createTestCase';
 $unitTestDescription = "Test #{$tcCounter}- {$method} - With NAME exceeding limit";
 $tcCounter ++;
@@ -70,7 +67,6 @@ $client = new IXR_Client($server_url);
 $client->debug = $debug;
 runTest($client, $method, $args);
 
-// ----------------------------------------------------------------------------------------------------
 $method = 'createTestCase';
 $unitTestDescription = "Test #{$tcCounter}- {$method}";
 $tcCounter ++;
@@ -91,7 +87,6 @@ $client = new IXR_Client($server_url);
 $client->debug = $debug;
 runTest($client, $method, $args);
 
-// ----------------------------------------------------------------------------------------------------
 $method = 'createTestCase';
 $unitTestDescription = "Test #{$tcCounter}- {$method}";
 $tcCounter ++;
@@ -121,7 +116,6 @@ $client = new IXR_Client($server_url);
 $client->debug = $debug;
 runTest($client, $method, $args);
 
-// ----------------------------------------------------------------------------------------------------
 $method = 'createTestCase';
 $unitTestDescription = "Test #{$tcCounter}- {$method}";
 $tcCounter ++;
@@ -141,5 +135,5 @@ echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug = $debug;
 runTest($client, $method, $args);
-// ----------------------------------------------------------------------------------------------------
+
 ?>

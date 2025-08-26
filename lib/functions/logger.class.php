@@ -270,8 +270,7 @@ class tlLogger extends tlObject
      */
     public function getEnableLoggingStatus($logger = null)
     {
-        $status = is_null($logger) ? $this->doLogging : $this->loggers[$logger]->getEnableLoggingStatus();
-        return $status;
+        return is_null($logger) ? $this->doLogging : $this->loggers[$logger]->getEnableLoggingStatus();
     }
 
     /**

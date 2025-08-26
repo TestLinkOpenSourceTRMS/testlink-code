@@ -459,9 +459,8 @@ class tlKeyword extends tlDBObject implements iSerialization,
             "{{NAME}}" => "keyword",
             "||NOTES||" => "notes"
         );
-        $xml = exportDataToXML($keywords, $rootElem, $elemXMLTemplate,
+        return exportDataToXML($keywords, $rootElem, $elemXMLTemplate,
             $keywordInfo, $noHeader);
-        return $xml;
     }
 
     /*

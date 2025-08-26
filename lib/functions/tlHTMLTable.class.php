@@ -89,7 +89,6 @@ class tlHTMLTable extends tlTable
 
     public function renderPriority($prio)
     {
-        $label = lang_get($this->prio_code_label[$prio]);
-        return $label;
+        return lang_get($this->prio_code_label[$prio]);
     }
 }

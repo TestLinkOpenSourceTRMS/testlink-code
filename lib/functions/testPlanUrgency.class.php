@@ -79,7 +79,6 @@ class testPlanUrgency extends testplan
 
         $result = $this->db->exec_query($sql);
         return $result ? OK : ERROR;
-        ;
     }
 
     /**

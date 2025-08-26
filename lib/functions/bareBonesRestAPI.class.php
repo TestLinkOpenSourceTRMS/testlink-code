@@ -57,9 +57,7 @@ class bareBonesRestAPI
      * @return void
      */
     public function __construct()
-    {
-        // $this->initCurl();
-    }
+    {}
 
     /**
      */
@@ -250,12 +248,11 @@ class bareBonesRestAPI
                 json_encode($response) . ' - content: ' . json_encode($content));
         }
 
-        $rr = [
+        return [
             'content' => $content,
             'response' => $response,
             'curlError' => $curlError
         ];
-        return $rr;
     }
 
     /**

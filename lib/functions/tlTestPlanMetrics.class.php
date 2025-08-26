@@ -725,9 +725,8 @@ class tlTestPlanMetrics extends testplan
     public function getStatusTotalsByKeywordForRender($id, $filters = null,
         $opt = null)
     {
-        $renderObj = $this->getStatusTotalsByItemForRender($id, 'keyword',
-            $filters, $opt);
-        return $renderObj;
+        return $this->getStatusTotalsByItemForRender($id, 'keyword', $filters,
+            $opt);
     }
 
     /**
@@ -786,9 +785,8 @@ class tlTestPlanMetrics extends testplan
     public function getStatusTotalsByPlatformForRender($id, $filters = null,
         $opt = null)
     {
-        $renderObj = $this->getStatusTotalsByItemForRender($id, 'platform',
-            $filters, $opt);
-        return $renderObj;
+        return $this->getStatusTotalsByItemForRender($id, 'platform', $filters,
+            $opt);
     }
 
     /**
@@ -982,9 +980,8 @@ class tlTestPlanMetrics extends testplan
     public function getStatusTotalsByPriorityForRender($id, $filters = null,
         $opt = null)
     {
-        $renderObj = $this->getStatusTotalsByItemForRender($id, 'priority_level',
+        return $this->getStatusTotalsByItemForRender($id, 'priority_level',
             $filters, $opt);
-        return $renderObj;
     }
 
     /**
@@ -2514,8 +2511,7 @@ class tlTestPlanMetrics extends testplan
             $inClause = " WHERE id IN ({$dummy}) ";
         }
 
-        $rs = $this->db->fetchRowsIntoMap($sql . $inClause, 'id');
-        return $rs;
+        return $this->db->fetchRowsIntoMap($sql . $inClause, 'id');
     }
 
     /**
@@ -2605,8 +2601,7 @@ class tlTestPlanMetrics extends testplan
 
         $sql = $sex . $where;
 
-        $rs = $this->db->get_recordset($sql);
-        return $rs;
+        return $this->db->get_recordset($sql);
     }
 
     /*
@@ -3137,10 +3132,8 @@ class tlTestPlanMetrics extends testplan
             'platform_id'
         );
         $cumulative = true;
-        $dummy = (array) $this->db->fetchRowsIntoMap3l($sql, $keyColumns,
+        return (array) $this->db->fetchRowsIntoMap3l($sql, $keyColumns,
             $cumulative);
-
-        return $dummy;
     }
 
     /**

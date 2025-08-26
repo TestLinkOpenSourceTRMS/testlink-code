@@ -443,8 +443,7 @@ class tlReqMgrSystem extends tlObject
             $sql .= ' AND NHTPR.id IS NULL AND NHTPR.name IS NULL ';
         }
 
-        $ret = $this->db->fetchRowsIntoMap($sql, 'testproject_id');
-        return $ret;
+        return $this->db->fetchRowsIntoMap($sql, 'testproject_id');
     }
 
     /*
@@ -461,8 +460,7 @@ class tlReqMgrSystem extends tlObject
             " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
             " ON NHTPR.id = TPIT.testproject_id ";
 
-        $ret = $this->db->fetchRowsIntoMap($sql, 'testproject_id');
-        return $ret;
+        return $this->db->fetchRowsIntoMap($sql, 'testproject_id');
     }
 
     /*

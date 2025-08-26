@@ -811,7 +811,6 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $case_analysis = self::CASE_SENSITIVE)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $output = null;
         $title = trim($title);
         $the_title = $this->db->prepare_string($title);
         $sql = "/* $debugMsg */ " .
@@ -1106,7 +1105,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
                 }
             }
 
-            if (! is_null($attachments) && count($attachments) > 0) {
+            if (! empty($attachments)) {
                 $attchRootElem = "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
                 $attchElemTemplate = "\t\t<attachment>\n" .
                     "\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .

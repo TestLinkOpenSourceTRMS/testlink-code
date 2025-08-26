@@ -218,7 +218,7 @@ class reqMgrSystemCommands
     public function doDelete(&$argsObj, $request)
     {
         $guiObj = $this->initGuiBean($argsObj, __FUNCTION__);
-        $op = $this->mgr->delete($argsObj->id);
+        $this->mgr->delete($argsObj->id);
         $guiObj->action = 'doDelete';
         $guiObj->template = "reqMgrSystemView.php?";
         return $guiObj;

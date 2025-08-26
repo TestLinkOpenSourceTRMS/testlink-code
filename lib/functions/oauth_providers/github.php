@@ -41,7 +41,6 @@ function oauth_get_token($authCfg, $code)
     // Check given state ($_GET) against previously stored one
     // ($_SESSION) to mitigate CSRF attack
     if (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
-        $msg = "OAuth CSRF Check using \$_SESSION['oauth2state'] -> Failed!";
         throw new Exception("OAuth CSRF Check using ", 1);
     }
 

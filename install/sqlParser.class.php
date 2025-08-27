@@ -12,15 +12,15 @@
 class SqlParser
 {
 
-    private $sql_errors;
+    public $sql_errors;
 
-    private $install_failed;
+    public $install_failed;
 
     private $db_conn;
 
-    private $db_type;
+    public $db_type;
 
-    private $db_table_prefix;
+    public $db_table_prefix;
 
     public function __construct(&$db_conn, $db_type, $db_table_prefix = '')
     {
@@ -112,13 +112,13 @@ class SqlParser
         }
     }
 
-    private function only_good_mysql($v)
+    protected function only_good_mysql($v)
     {
         $comment_char = '#';
         return $this->only_good_sql($v, $comment_char);
     }
 
-    private function only_good_sql($v, $comment_char = '-')
+    protected function only_good_sql($v, $comment_char = '-')
     {
         $use_v = true;
         $findme = $comment_char;

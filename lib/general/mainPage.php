@@ -278,8 +278,7 @@ function getGrants($dbHandler, $user, $tproject_id, $forceToNo = false)
         'exec_ro_access' => 'exec_ro_access'
     );
     if ($forceToNo) {
-        $grants = array_fill_keys(array_keys($right2check), 'no');
-        return $grants;
+        return array_fill_keys(array_keys($right2check), 'no');
     }
 
     $grants['project_edit'] = $user->hasRight($dbHandler,

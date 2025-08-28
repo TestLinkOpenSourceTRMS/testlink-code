@@ -21,9 +21,9 @@ class jiraCommons
         'duedate' => 'its_duedate_with_separator'
     );
 
-    private $defaultResolvedStatus;
+    public $defaultResolvedStatus;
 
-    var $guiCfg;
+    public $guiCfg;
 
     /**
      *

@@ -81,14 +81,14 @@ abstract class codeTrackerInterface
 
     /**
      */
-    private function getCfg()
+    public function getCfg()
     {
         return $this->cfg;
     }
 
     /**
      */
-    private function setCfg($xmlString)
+    public function setCfg($xmlString)
     {
         $msg = null;
         $signature = 'Source:' . __METHOD__;
@@ -156,7 +156,7 @@ abstract class codeTrackerInterface
      *         db could be selected, false else
      *
      */
-    private function connect()
+    public function connect()
     {
         if (is_null($this->cfg->dbhost) || is_null($this->cfg->dbuser)) {
             return false;
@@ -215,7 +215,7 @@ abstract class codeTrackerInterface
     /**
      * Closes the db connection (if any)
      */
-    private function disconnect()
+    public function disconnect()
     {
         if ($this->isConnected() && $this->interfaceViaDB) {
             $this->dbConnection->close();

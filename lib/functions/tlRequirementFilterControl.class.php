@@ -553,8 +553,7 @@ class tlRequirementFilterControl extends tlFilterControl
             $this->cfield_mgr = &$this->req_mgr->cfield_mgr;
         }
 
-        $cfields = $this->req_mgr->get_linked_cfields(null, null,
+        return $this->req_mgr->get_linked_cfields(null, null,
             $this->args->testproject_id);
-        return $cfields;
     }
 }

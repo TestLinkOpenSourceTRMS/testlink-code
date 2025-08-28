@@ -16,7 +16,7 @@ class trellorestInterface extends issueTrackerInterface
 
     private $options = [];
 
-    private $defaultResolvedStatus;
+    public $defaultResolvedStatus;
 
     // for trello we allow /
     private $forbidden_chars = '/[!|�%&()=?]/';

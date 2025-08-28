@@ -29,13 +29,13 @@
 class tinymce
 {
 
-    var $InstanceName;
+    private $InstanceName;
 
-    var $Value;
+    private $Value;
 
-    var $rows = 12;
+    public $rows = 12;
 
-    var $cols = 80;
+    public $cols = 80;
 
     public function __construct($instanceName)
     {
@@ -43,12 +43,12 @@ class tinymce
         $this->Value = '';
     }
 
-    function Create($rows = null, $cols = null)
+    public function Create($rows = null, $cols = null)
     {
         echo $this->CreateHtml($rows, $cols);
     }
 
-    function CreateHtml($rows = null, $cols = null)
+    private function CreateHtml($rows = null, $cols = null)
     {
         $HtmlValue = htmlspecialchars($this->Value);
 
@@ -63,10 +63,9 @@ class tinymce
         }
 
         // rows must count place for toolbar !!
-        $Html = "<textarea name=\"{$this->InstanceName}\"" .
+        return "<textarea name=\"{$this->InstanceName}\"" .
             "id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\">" .
             "{$HtmlValue}</textarea>";
-        return $Html;
     }
 }
 ?>

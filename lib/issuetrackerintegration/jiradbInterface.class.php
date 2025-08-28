@@ -12,11 +12,11 @@
 class jiradbInterface extends issueTrackerInterface
 {
 
-    private $defaultResolvedStatus;
+    public $defaultResolvedStatus;
 
     private $dbSchema;
 
-    private $support;
+    public $support;
 
     /**
      * Construct and connect to BTS.

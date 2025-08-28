@@ -98,7 +98,7 @@ class testcase extends tlObjectWithAttachments
 
     private $node_types_id_descr;
 
-    private $my_node_type;
+    public $my_node_type;
 
     private $assignment_mgr;
 

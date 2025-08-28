@@ -189,8 +189,8 @@ if ($doIt) {
                 (count($opt_cfg->to->map) > 0);
 
             $gui->cancelActionJS = 'location.href=fRoot+' .
-                "'lib/testcases/archiveData.php?id=" .
-                intval($args->containerID);
+                "'lib/testcases/archiveData.php?id=" . intval(
+                    $args->containerID);
             switch ($level) {
                 case 'testproject':
                     $gui->cancelActionJS .= "&edit=testproject&level=testproject'";
@@ -283,8 +283,8 @@ if ($doIt) {
             $gui->containerType = $level;
             $gui->refreshTree = $args->refreshTree;
             $gui->cancelActionJS = 'location.href=fRoot+' .
-                "'lib/testcases/archiveData.php?id=" .
-                intval($args->containerID);
+                "'lib/testcases/archiveData.php?id=" . intval(
+                    $args->containerID);
 
             switch ($level) {
                 case 'testproject':
@@ -657,12 +657,11 @@ function initArgs(&$dbHandler, &$tprojectMgr, &$tsuiteMgr, $optionTransferCfg)
  */
 function writeCustomFieldsToDB(&$db, $tprojectID, $tsuiteID, &$hash)
 {
-    $ENABLED = 1;
     $NO_FILTERS = null;
 
     $cfield_mgr = new cfield_mgr($db);
-    $cf_map = $cfield_mgr->get_linked_cfields_at_design($tprojectID, $ENABLED,
-        $NO_FILTERS, 'testsuite');
+    $cf_map = $cfield_mgr->get_linked_cfields_at_design($tprojectID,
+        cfield_mgr::ENABLED, $NO_FILTERS, 'testsuite');
     $cfield_mgr->design_values_to_db($hash, $tsuiteID, $cf_map);
 }
 
@@ -1498,7 +1497,8 @@ function doBulkSet(&$dbHandler, $argsObj, $tcaseSet, &$tcaseMgr)
 
         // second round, on Custom Fields
         $cf_map = $tcaseMgr->cfield_mgr->get_linked_cfields_at_design(
-            $argsObj->tprojectID, ENABLED, NO_FILTER_SHOW_ON_EXEC, 'testcase');
+            $argsObj->tprojectID, cfield_mgr::ENABLED, NO_FILTER_SHOW_ON_EXEC,
+            'testcase');
         if (! is_null($cf_map)) {
             // get checkboxes from $_REQUEST
             $k2i = array_keys($_REQUEST);

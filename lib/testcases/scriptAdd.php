@@ -436,8 +436,8 @@ function writeCfieldTestscript(&$dbHandler, &$user, $field_id, $node_id, $value)
          * modified, i.e. has no baseline, is not status "Accepted"
          * and is active and open
          */
-        if ($rs['active'] == 1 && $rs['is_open'] == 1 && is_null(
-            $rs['baseline']) && is_null($rs['reviewer_id'])) {
+        if ($rs['active'] == 1 && $rs['is_open'] == 1 &&
+            is_null($rs['baseline']) && is_null($rs['reviewer_id'])) {
             $sql = " SELECT id FROM `{$tbl['executions']}` " .
                 " WHERE `tcversion_id` = '{$node_id}'";
 

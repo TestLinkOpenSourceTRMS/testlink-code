@@ -74,11 +74,6 @@ function initializeGui(&$dbHandler, &$args, $images)
     $gui->context = $gui->l18n['testproject'] . ': ' . $args->tproject_name;
 
     switch ($args->do_action) {
-        case 'uinput':
-        default:
-            initializeGuiForInput($dbHandler, $args, $gui);
-            break;
-
         case 'result':
             initializeGuiForInput($dbHandler, $args, $gui);
             initializeGuiForResult($dbHandler, $args, $gui);
@@ -87,6 +82,11 @@ function initializeGui(&$dbHandler, &$args, $images)
         case 'csv':
             initializeGuiForInput($dbHandler, $args, $gui);
             initGuiForCSVDownload($dbHandler, $args, $gui);
+            break;
+
+        case 'uinput':
+        default:
+            initializeGuiForInput($dbHandler, $args, $gui);
             break;
     }
 
@@ -157,8 +157,8 @@ function initializeGuiForResult(&$dbHandler, $argsObj, &$guiObj)
                     "<img title=\"{$guiObj->l18n['design']}\" src=\"{$guiObj->images['edit']}\" /></a> ";
 
                 $cuRow[] = "<!-- " . sprintf("%010d", $tcase['external_id']) .
-                    " -->" . $edit_link .
-                    htmlspecialchars($tcase['external_id']) . " : " .
+                    " -->" . $edit_link . htmlspecialchars(
+                        $tcase['external_id']) . " : " .
                     htmlspecialchars($tcase['tcase_name']) .
                     sprintf($guiObj->l18n['tcversion_indicator'],
                         $tcase['version']);

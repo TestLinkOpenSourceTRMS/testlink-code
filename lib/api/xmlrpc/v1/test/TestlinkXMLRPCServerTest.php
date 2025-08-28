@@ -497,8 +497,6 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
                 $this->client->getErrorCode() . $this->client->getErrorMessage();
         }
 
-        $response = $this->client->getResponse();
-
         // Now Building our get last test result
         $data = array();
         $data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;

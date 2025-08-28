@@ -610,9 +610,7 @@ class tlAttachmentRepository extends tlObjectWithDB
         $query = "SELECT id FROM {$this->tables['attachments']} WHERE fk_id = {$fkid} " .
             " AND fk_table = '" .
             $this->db->prepare_string($stdTableUsedAsFolder) . "' " . $order_by;
-        $attachmentIDs = $this->db->fetchColumnsIntoArray($query, 'id');
-
-        return $attachmentIDs;
+        return $this->db->fetchColumnsIntoArray($query, 'id');
     }
 
     /*

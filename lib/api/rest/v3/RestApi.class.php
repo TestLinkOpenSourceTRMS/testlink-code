@@ -32,8 +32,6 @@ require_once 'common.php';
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-
-use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Response;
 
 /**

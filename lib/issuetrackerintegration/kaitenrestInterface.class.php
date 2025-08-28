@@ -21,7 +21,7 @@ class kaitenrestInterface extends issueTrackerInterface
         '3' => 'deleted'
     ];
 
-    private $defaultResolvedStatus;
+    public $defaultResolvedStatus;
 
     /**
      * Construct and connect to BTS.

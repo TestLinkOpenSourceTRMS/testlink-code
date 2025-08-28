@@ -3562,7 +3562,7 @@ class testplan extends tlObjectWithAttachments
             }
         }
         $linked_platforms = exportDataToXML($mm, $xml_root, $xml_template,
-            $xml_mapping, ('noXMLHeader' == 'noXMLHeader'));
+            $xml_mapping, true);
 
         // Linked test cases
         $xml_root = "\n<executables>{{XMLCODE}}\n</executables>";
@@ -3586,7 +3586,7 @@ class testplan extends tlObjectWithAttachments
             'output' => 'array'
         ));
         $linked_testcases = exportDataToXML($mm, $xml_root, $xml_template,
-            $xml_mapping, ('noXMLHeader' == 'noXMLHeader'));
+            $xml_mapping, true);
 
         $item_info['linked_platforms'] = $linked_platforms;
         $item_info['linked_testcases'] = $linked_testcases;
@@ -3696,7 +3696,7 @@ class testplan extends tlObjectWithAttachments
             'id' => $context['tproject_id']
         );
         $item_info['testproject'] = exportDataToXML($mm, $xml_root,
-            $xml_template, $xml_mapping, ('noXMLHeader' == 'noXMLHeader'));
+            $xml_template, $xml_mapping, true);
 
         // get target platform (if exists)
         $target_platform = '';
@@ -3725,7 +3725,7 @@ class testplan extends tlObjectWithAttachments
                 'id' => $context['platform_id']
             );
             $item_info['target_platform'] = exportDataToXML($mm, $xml_root,
-                $xml_template, $xml_mapping, ('noXMLHeader' == 'noXMLHeader'));
+                $xml_template, $xml_mapping, true);
             $target_platform = "\t\t||TARGET_PLATFORM||\n";
         }
 
@@ -3758,7 +3758,7 @@ class testplan extends tlObjectWithAttachments
                 'id' => $context['build_id']
             );
             $item_info['target_build'] = exportDataToXML($mm, $xml_root,
-                $xml_template, $xml_mapping, ('noXMLHeader' == 'noXMLHeader'));
+                $xml_template, $xml_mapping, true);
             $target_build = "\t\t||TARGET_BUILD||\n";
         }
 
@@ -7041,7 +7041,7 @@ class testplan extends tlObjectWithAttachments
         );
 
         $linked_testcases = exportDataToXML($mm, $xml_root, $xml_template,
-            $xml_mapping, ('noXMLHeader' == 'noXMLHeader'));
+            $xml_mapping, true);
         return $xmlString .= $linked_testcases . "\n</results>\n";
     }
 

@@ -369,7 +369,6 @@ function initArgs(&$tprojectMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    $args = new stdClass();
     $iParams = array(
         "doAction" => array(
             tlInputParameter::STRING_N,

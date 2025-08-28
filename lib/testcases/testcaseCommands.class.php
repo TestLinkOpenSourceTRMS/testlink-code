@@ -321,8 +321,8 @@ class testcaseCommands
             $guiObj->actionOK = true;
             if ($argsObj->stay_here) {
                 $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design(
-                    $argsObj->testproject_id, ENABLED, NO_FILTER_SHOW_ON_EXEC,
-                    'testcase');
+                    $argsObj->testproject_id, cfield_mgr::ENABLED,
+                    NO_FILTER_SHOW_ON_EXEC, 'testcase');
 
                 $this->tcaseMgr->cfield_mgr->design_values_to_db($_REQUEST,
                     $tcase['tcversion_id'], $cf_map);

@@ -925,7 +925,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler, &$xml, $parentID,
                     $tsuite['details'], $tsuite['node_order']);
                 $tsuite['id'] = $ret['id'];
             } else {
-                $ret = $tsuiteMgr->update(($tsuite['id'] = $info[0]['id']),
+                $tsuiteMgr->update(($tsuite['id'] = $info[0]['id']),
                     $tsuite['name'], $tsuite['details'], null,
                     $tsuite['node_order']);
             }

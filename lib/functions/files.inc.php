@@ -21,9 +21,7 @@
  */
 function getUniqueFileName($fExt)
 {
-    $destFName = md5(uniqid(rand(), true)) . "." . $fExt;
-
-    return $destFName;
+    return md5(uniqid(rand(), true)) . "." . $fExt;
 }
 
 /**

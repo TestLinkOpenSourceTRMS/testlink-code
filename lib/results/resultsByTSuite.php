@@ -48,7 +48,9 @@ if (is_null($tsInf)) {
 
             // Get labels
             // !!double current because main key is PLATFORM
-            $dummy = current(current($gui->statistics->$item));
+            if ($gui->statistics->$item) {
+                $dummy = current(current($gui->statistics->$item));
+            }
             if (isset($dummy['details'])) {
                 foreach ($dummy['details'] as $status_verbose => $value) {
                     $dummy['details'][$status_verbose]['qty'] = lang_get(

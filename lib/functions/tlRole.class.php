@@ -197,8 +197,8 @@ class tlRole extends tlDBObject
                 $result = $this->deleteRightsFromDB($db);
                 if ($result >= tl::OK) {
                     $sql = "UPDATE {$this->object_table} " .
-                        " SET description = '" . $db->prepare_string(
-                            $this->name) . "'," . " notes ='" .
+                        " SET description = '" .
+                        $db->prepare_string($this->name) . "'," . " notes ='" .
                         $db->prepare_string($this->description) . "'" .
                         " WHERE id = {$this->dbID}";
                     $result = $db->exec_query($sql);
@@ -356,8 +356,7 @@ class tlRole extends tlDBObject
             $sql .= ' and active = ' . (intval($my['opt']['active']) > 0 ? 1 : 0);
         }
 
-        $idSet = $db->fetchColumnsIntoArray($sql, "id");
-        return $idSet;
+        return $db->fetchColumnsIntoArray($sql, "id");
     }
 
     /**
@@ -373,9 +372,7 @@ class tlRole extends tlDBObject
             " {$this->tables['user_testproject_roles']} user_testproject_roles " .
             " WHERE users.id = user_testproject_roles.user_id";
         $sql .= " AND user_testproject_roles.role_id = {$this->dbID} ";
-        $idSet = $db->fetchColumnsIntoArray($sql, "id");
-
-        return $idSet;
+        return $db->fetchColumnsIntoArray($sql, "id");
     }
 
     /**
@@ -391,9 +388,7 @@ class tlRole extends tlDBObject
             " {$this->tables['user_testplan_roles']} user_testplan_roles " .
             " WHERE  users.id = user_testplan_roles.user_id";
         $sql .= " AND user_testplan_roles.role_id = {$this->dbID}";
-        $idSet = $db->fetchColumnsIntoArray($sql, "id");
-
-        return $idSet;
+        return $db->fetchColumnsIntoArray($sql, "id");
     }
 
     /**

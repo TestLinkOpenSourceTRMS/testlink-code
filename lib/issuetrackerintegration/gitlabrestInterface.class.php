@@ -22,7 +22,7 @@ class gitlabrestInterface extends issueTrackerInterface
 
     private $translate = null;
 
-    private $defaultResolvedStatus;
+    public $defaultResolvedStatus;
 
     /**
      * Construct and connect to BTS.

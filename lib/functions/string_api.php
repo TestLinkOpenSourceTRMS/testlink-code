@@ -213,12 +213,10 @@ function string_url($p_string)
 function string_sanitize_url($p_url)
 {
     $t_url = strip_tags(urldecode($p_url));
-    if (preg_match('?http(s)*://?', $t_url) > 0) {
-        // no embedded addresses
-        if (preg_match('?^' . config_get('path') . '?', $t_url) == 0) {
-            // url is ok if it begins with our path, if not, replace it
-            $t_url = 'index.php';
-        }
+    if (preg_match('?http(s)*://?', $t_url) > 0 &&
+        preg_match('?^' . config_get('path') . '?', $t_url) == 0) {
+        // url is ok if it begins with our path, if not, replace it
+        $t_url = 'index.php';
     }
     if ($t_url == '') {
         $t_url = 'index.php';
@@ -462,7 +460,7 @@ function string_html_specialchars($p_string)
     # achumakov: @ added to avoid warning output in unsupported codepages
     # e.g. 8859-2, windows-1257, Korean, which are treated as 8859-1.
     # This is VERY important for Eastern European, Baltic and Korean languages
-    return preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;",
+    return preg_replace("/&amp;(#[\d]+|[a-z]+);/i", "&$1;",
         @htmlspecialchars($p_string, ENT_COMPAT, config_get('charset')));
 }
 

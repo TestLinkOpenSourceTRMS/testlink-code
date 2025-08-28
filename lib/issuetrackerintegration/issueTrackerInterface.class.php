@@ -30,10 +30,10 @@ abstract class issueTrackerInterface
 
     // members to store the bugtracking information.
     // Values are set in the actual subclasses
-    private $cfg = null;
+    public $cfg = null;
 
     // simpleXML object
-    private $xmlCfg = null;
+    public $xmlCfg = null;
 
     // xml string
     private $name = null;

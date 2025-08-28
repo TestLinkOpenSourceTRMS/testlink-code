@@ -41,9 +41,9 @@ class jirasoapInterface extends issueTrackerInterface
 
     private $issueAttr = null;
 
-    private $defaultResolvedStatus;
+    public $defaultResolvedStatus;
 
-    private $support;
+    public $support;
 
     /**
      * Construct and connect to BTS.

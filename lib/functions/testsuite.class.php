@@ -40,6 +40,8 @@ class testsuite extends tlObjectWithAttachments
 
     private $object_table;
 
+    protected $debugMsg;
+
     /** @var database handler */
     public $db;
 
@@ -98,6 +100,8 @@ class testsuite extends tlObjectWithAttachments
 
         // Must be setted AFTER call to parent constructor
         $this->object_table = $this->tables['testsuites'];
+
+        $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
     }
 
     /*
@@ -248,7 +252,7 @@ class testsuite extends tlObjectWithAttachments
     public function update($id, $name, $details, $parent_id = null,
         $node_order = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $ret['status_ok'] = 0;
         $ret['msg'] = '';
 
@@ -366,7 +370,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function get_by_name($name, $parent_id = null, $opt = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $my = array();
         $my['opt'] = array(
             'output' => 'full',
@@ -421,7 +425,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function get_by_id($id, $opt = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $my['opt'] = array(
             'orderByClause' => '',
             'renderImageInline' => false,
@@ -1061,7 +1065,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function getKeywords($id, $kw_id = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
 
         $sql = "/* $debugMsg */ SELECT keyword_id,keywords.keyword, notes " .
             " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " .
@@ -1095,7 +1099,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function get_keywords_map($id, $opt = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
 
         $options = array(
             'order_by_clause' => '',
@@ -1137,7 +1141,7 @@ class testsuite extends tlObjectWithAttachments
      */
     private function addKeyword($id, $kw_id)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $status = 1;
         $kw = $this->getKeywords($id, $kw_id);
         if (empty($kw)) {
@@ -1537,7 +1541,7 @@ class testsuite extends tlObjectWithAttachments
      */
     private function copy_cfields_values($source_id, $target_id)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         // Get source_id cfields assignment
         $sourceItems = $this->cfield_mgr->getByLinkID($source_id,
             array(
@@ -1799,7 +1803,7 @@ class testsuite extends tlObjectWithAttachments
      */
     private function updateDetails($id, $details)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
             " SET details = '" . $this->db->prepare_string($details) . "'" .
             " WHERE id = " . intval($id);
@@ -1882,7 +1886,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function getTSuitesFilteredByKWSet($id, $opt = null, $filters = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $options = array(
             'output' => 'std'
         );
@@ -2010,7 +2014,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function deleteKeywordByLinkID($kwLinkID)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $sql = " /* {$debugMsg} */
              DELETE FROM {$this->tables['object_keywords']}
              WHERE id = {$kwLinkID} ";
@@ -2021,7 +2025,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function addKeywordsDeep($rootTestSuiteID, $kwSet)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
 
         // Get tree of Test Suites
         $tsList = $rootTestSuiteID;
@@ -2072,7 +2076,7 @@ class testsuite extends tlObjectWithAttachments
      */
     private function getKeywordsForTSSet($tsuiteIDSet)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
 
         $idSet = implode(',', $tsuiteIDSet);
         $sql = " /* $debugMsg */
@@ -2091,7 +2095,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function keywordIsLinked($id, $kw)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
 
         $idSet = $id;
         $safeKW = "'" . $this->db->prepare_string(trim($kw)) . "'";

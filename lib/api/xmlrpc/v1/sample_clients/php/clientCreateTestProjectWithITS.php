@@ -39,7 +39,6 @@ echo $unitTestDescription . ' ' . $additionalInfo;
 $debug = true;
 $client = new IXR_Client($server_url);
 $client->debug = $debug;
-// runTest($client,$method,$args);
 
 $test_num ++;
 $unitTestDescription = "Test {$test_num} - {$method}() ::: ";

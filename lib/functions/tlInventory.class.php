@@ -337,8 +337,7 @@ class tlInventory extends tlObjectWithDB
      */
     public function getAll($options = null)
     {
-        $data = self::readDB(null, $options);
-        return $data;
+        return self::readDB(null, $options);
     }
 
     /**
@@ -402,7 +401,6 @@ class tlInventory extends tlObjectWithDB
         $sql = " /* $debugMsg */ " .
             " SELECT id, name AS tproject_name FROM {$this->tables['nodes_hierarchy']} " .
             " WHERE id = {$this->testProjectID} ";
-        $info = $this->db->fetchRowsIntoMap($sql, 'id');
-        return $info;
+        return $this->db->fetchRowsIntoMap($sql, 'id');
     }
 }

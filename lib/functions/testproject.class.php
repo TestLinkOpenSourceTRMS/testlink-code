@@ -3196,11 +3196,10 @@ class testproject extends tlObjectWithAttachments
                     $tcversionFilter[$target];
             }
 
-            if (! is_null($my['options']['remove_empty_nodes_of_type'])) {
-                // this way I can manage code or description
-                if (! is_numeric($my['options']['remove_empty_nodes_of_type'])) {
-                    $my['options']['remove_empty_nodes_of_type'] = $this->tree_manager->node_descr_id[$my['options']['remove_empty_nodes_of_type']];
-                }
+            // this way I can manage code or description
+            if (! is_null($my['options']['remove_empty_nodes_of_type']) &&
+                ! is_numeric($my['options']['remove_empty_nodes_of_type'])) {
+                $my['options']['remove_empty_nodes_of_type'] = $this->tree_manager->node_descr_id[$my['options']['remove_empty_nodes_of_type']];
             }
 
             // Create invariant sql sentences

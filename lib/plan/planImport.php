@@ -63,15 +63,14 @@ if ($args->do_upload) {
 
     $doIt = false;
     $gui->file_check = null;
-    if (($source != 'none') && ($source != '')) {
-        // ATTENTION:
-        // MAX_FILE_SIZE hidden input is defined on form, but anyway we do not get error at least using
-        // Firefox and Chrome.
-        if (! ($doIt = $_FILES['uploadedFile']['size'] <= $gui->importLimitBytes)) {
-            $gui->file_check['status_ok'] = 0;
-            $gui->file_check['msg'] = sprintf(lang_get('file_size_exceeded'),
-                $_FILES['uploadedFile']['size'], $gui->importLimitBytes);
-        }
+    // ATTENTION:
+    // MAX_FILE_SIZE hidden input is defined on form, but anyway we do not get error at least using
+    // Firefox and Chrome.
+    if (($source != 'none') && ($source != '') &&
+        ! ($doIt = $_FILES['uploadedFile']['size'] <= $gui->importLimitBytes)) {
+        $gui->file_check['status_ok'] = 0;
+        $gui->file_check['msg'] = sprintf(lang_get('file_size_exceeded'),
+            $_FILES['uploadedFile']['size'], $gui->importLimitBytes);
     }
     if ($doIt) {
         $gui->file_check['status_ok'] = 1;

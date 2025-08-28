@@ -24,9 +24,9 @@ class jirarestInterface extends issueTrackerInterface
 
     private $jiraCfg;
 
-    private $defaultResolvedStatus;
+    public $defaultResolvedStatus;
 
-    private $support;
+    public $support;
 
     /**
      * Construct and connect to BTS.

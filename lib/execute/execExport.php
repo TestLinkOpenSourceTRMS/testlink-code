@@ -180,8 +180,7 @@ function contextAsXML(&$dbHandler, $contextSet, &$tplanMgr)
     $mm = array(
         $contextInfo
     );
-    return exportDataToXML($mm, $xml_root, $xml_template, $xml_mapping,
-        ('noXMLHeader' == 'noXMLHeader'));
+    return exportDataToXML($mm, $xml_root, $xml_template, $xml_mapping, true);
 }
 
 /**

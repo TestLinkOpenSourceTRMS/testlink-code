@@ -29,7 +29,7 @@ class mantissoapInterface extends issueTrackerInterface
         'exceptions' => 1
     );
 
-    private $defaultResolvedStatus;
+    public $defaultResolvedStatus;
 
     // field is nvarchar(128) at least on 1.2.14
     private $summaryLengthLimit = 120;

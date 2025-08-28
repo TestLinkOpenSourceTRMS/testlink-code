@@ -289,6 +289,5 @@ function locateDateToISO($localeDateString, $dateFormat)
     }
 
     $pieces = explode($sepa, $localeDateString);
-    $iso = $pieces[$y] . $pieces[$m] . $pieces[$d];
-    return $iso;
+    return $pieces[$y] . $pieces[$m] . $pieces[$d];
 }

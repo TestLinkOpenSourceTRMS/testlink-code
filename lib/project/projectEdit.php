@@ -553,14 +553,13 @@ function doUpdate($argsObj, &$tprojectMgr, $sessionTprojectID)
                 }
             }
 
-            if (! $argsObj->is_public) {
-                // does user have an SPECIFIC role on Test Project ?
-                // if answer is yes => do nothing
-                if (! tlUser::hasRoleOnTestProject($tprojectMgr->db,
+            // does user have an SPECIFIC role on Test Project ?
+            // if answer is yes => do nothing
+            if (! $argsObj->is_public &&
+                ! tlUser::hasRoleOnTestProject($tprojectMgr->db,
                     $argsObj->userID, $argsObj->tprojectID)) {
-                    $tprojectMgr->addUserRole($argsObj->userID,
-                        $argsObj->tprojectID, $argsObj->user->globalRole->dbID);
-                }
+                $tprojectMgr->addUserRole($argsObj->userID, $argsObj->tprojectID,
+                    $argsObj->user->globalRole->dbID);
             }
 
             $event = new stdClass();

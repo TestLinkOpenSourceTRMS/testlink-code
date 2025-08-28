@@ -49,6 +49,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
     private $requirement_child_ids = array();
 
+    protected $debugMsg;
+
     /*
      * contructor
      *
@@ -77,6 +79,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
         $this->relationsCfg = new stdClass();
         $this->relationsCfg->interProjectLinking = config_get('req_cfg')->relations->interproject_linking;
+
+        $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
     }
 
     /*
@@ -136,7 +140,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $countReq, $user_id, $type = TL_REQ_SPEC_TYPE_FEATURE,
         $node_order = null, $options = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $result = array(
             'status_ok' => 0,
             'msg' => 'ko',
@@ -203,7 +207,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     public function get_by_id($id, $options = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
 
         $my['options'] = array(
             'output' => 'full'
@@ -337,7 +341,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             'covered' => 0,
             'uncovered' => 0
         );
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $getFilters = array(
             'status' => NON_TESTABLE_REQ
         );
@@ -393,7 +397,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     public function get_all_in_testproject($tproject_id,
         $order_by = " ORDER BY title")
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $sql = "/* $debugMsg */ " .
             " SELECT RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
             " RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
@@ -514,7 +518,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     public function delete($unsafe_id)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $id = intval($unsafe_id);
 
         // ATTENTION: CF linked to REVISION
@@ -599,7 +603,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     public function get_requirements($id, $range = 'all', $testcase_id = null,
         $options = null, $filters = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $my['options'] = array(
             'order_by' => " ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id",
             'output' => 'standard',
@@ -775,7 +779,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     private function get_requirement_child_by_id_req($id)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $sql = "/* $debugMsg */ SELECT REQ_REL.destination_id, REQ.req_doc_id, NH.name FROM req_relations REQ_REL INNER
 	JOIN nodes_hierarchy NH ON REQ_REL.destination_id = NH.id
 	JOIN {$this->tables['requirements']} REQ ON REQ_REL.destination_id = REQ.id where REQ_REL.source_id={$id}";
@@ -810,7 +814,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     private function get_by_title($title, $tproject_id = null, $parent_id = null,
         $case_analysis = self::CASE_SENSITIVE)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $title = trim($title);
         $the_title = $this->db->prepare_string($title);
         $sql = "/* $debugMsg */ " .
@@ -1393,8 +1397,6 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $tproject_id = null, $parent_id = null, $name_suffix = '',
         $input_values = null)
     {
-        $cf_smarty = '';
-
         $idCard = array(
             'parent_id' => $id,
             'item_id' => $child_id,
@@ -1761,7 +1763,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     public function getByDocID($doc_id, $tproject_id = null, $parent_id = null,
         $options = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $my['options'] = array(
             'check_criteria' => '=',
             'access_key' => 'id',
@@ -2084,7 +2086,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     public function getFirstLevelInTestProject($tproject_id)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $sql = "/* $debugMsg */ SELECT * from {$this->tables['nodes_hierarchy']} " .
             " WHERE parent_id = {$tproject_id} " .
             " AND node_type_id = {$this->node_types_descr_id['requirement_spec']} " .
@@ -2100,7 +2102,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     private function create_revision($rspecID, $item)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $ret = array(
             'msg' => 'ok',
             'status_ok' => 1,
@@ -2182,7 +2184,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     private function get_last_child_info($id, $options = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
 
         $my['options'] = array(
             'child_type' => 'revision',
@@ -2242,7 +2244,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     public function getRevisionsCount($id)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
 
         $sql = " /* $debugMsg */ SELECT COUNT(0) AS qty" .
             " FROM {$this->tables['req_specs_revisions']} RSPEC_REV" .
@@ -2257,7 +2259,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     private function get_history($id, $options = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $my['options'] = array(
             'output' => "map",
             'decode_user' => false,
@@ -2466,7 +2468,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     public function get_all_id_in_testproject($tproject_id, $options = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $my['options'] = array(
             'output' => 'classic'
         );
@@ -2495,7 +2497,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     private function getAssignedCoverage($id, $options = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $my['options'] = array(
             'order_by' => " ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id",
             'output' => 'standard'
@@ -2561,7 +2563,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             $tcMgr = new testcase($this->db);
         }
 
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $my['options'] = array(
             'order_by' => ' ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id ',
             'output' => 'standard',
@@ -2644,7 +2646,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             $tcMgr = new testcase($this->db);
         }
 
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $my['options'] = array(
             'order_by' => ' ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id ',
             'output' => 'standard',
@@ -2703,7 +2705,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     private function getReqsOnRSpecForLTCVOnTSuite($id, $tsuite_id,
         $options = null, $filters = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
         $my['options'] = array(
             'order_by' => ' ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id ',
             'output' => 'standard',
@@ -2781,7 +2783,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      */
     public function getAllLatestRQVOnReqSpec($reqSpecID, $opt = null)
     {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $debugMsg = $this->debugMsg . __FUNCTION__;
 
         $options = array(
             'output' => 'mapOnReqID'

@@ -263,8 +263,8 @@ function initArgs()
             $args->hint = lang_get('link_report_total_bugs_all_exec');
             break;
 
-        default:
         case 0:
+        default:
             $args->verboseType = 'latest';
             $args->title = lang_get('link_report_total_bugs');
             $args->hint = '';

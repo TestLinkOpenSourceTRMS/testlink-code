@@ -1534,7 +1534,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
 
             if ($item['is_image']) {
                 $pathname = $st->repoDir . $item['file_path'];
-                list ($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+                list ($iWidth, $iHeight, ,) = getimagesize($pathname);
 
                 $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
                 $code .= '<li>' . '<img ' . $iDim . ' src="' . $env->base_href .
@@ -1841,9 +1841,8 @@ function renderTestPlanForPrinting(&$db, &$node, &$options, $env, $context)
     $tProjectMgr = new testproject($db);
     $context['prefix'] = $tProjectMgr->getTestCasePrefix(
         $context['tproject_id']);
-    $code = renderTestSpecTreeForPrinting($db, $node, $options, $env, $context,
+    return renderTestSpecTreeForPrinting($db, $node, $options, $env, $context,
         $env->tocPrefix, $context['level']);
-    return $code;
 }
 
 /**

@@ -81,50 +81,46 @@ class tlReports extends tlObjectWithDB
         $apiKeyIsValid = ($apiKeyLen == 32 || $apiKeyLen == 64); // I'm sorry for MAGIC
 
         $xdx = 0;
-
         foreach ($reportList as &$rptItem) {
             // check validity of report
             if (($rptItem['enabled'] == 'all') ||
                 (($rptItem['enabled'] == 'req') && $req_mgmt_enabled) ||
-                (($rptItem['enabled'] == 'bts') && $bug_interface_enabled)) {
-                if (strpos("," . $rptItem['format'], $format) > 0) {
-                    $reportUrl = $rptItem['url'] .
-                        (stristr($rptItem['url'], "?") ? '&' : '?');
-                    $items[$xdx] = array(
-                        'name' => lang_get($rptItem['title']),
-                        'href' => $reportUrl,
-                        'directLink' => ''
-                    );
+                (($rptItem['enabled'] == 'bts') && $bug_interface_enabled) &&
+                strpos("," . $rptItem['format'], $format) > 0) {
+                $reportUrl = $rptItem['url'] .
+                    (stristr($rptItem['url'], "?") ? '&' : '?');
+                $items[$xdx] = array(
+                    'name' => lang_get($rptItem['title']),
+                    'href' => $reportUrl,
+                    'directLink' => ''
+                );
 
-                    if (isset($rptItem['directLink']) &&
-                        trim($rptItem['directLink']) != '') {
-                        if ($apiKeyIsValid) {
-                            $items[$xdx]['directLink'] = sprintf(
-                                $rptItem['directLink'], $_SESSION['basehref'],
-                                $context->apikey, $context->tproject_id,
-                                $context->tplan_id);
-                        } else {
-                            $items[$xdx]['directLink'] = $canNotCreateDirectLink;
-                        }
+                if (isset($rptItem['directLink']) &&
+                    trim($rptItem['directLink']) != '') {
+                    if ($apiKeyIsValid) {
+                        $items[$xdx]['directLink'] = sprintf(
+                            $rptItem['directLink'], $_SESSION['basehref'],
+                            $context->apikey, $context->tproject_id,
+                            $context->tplan_id);
+                    } else {
+                        $items[$xdx]['directLink'] = $canNotCreateDirectLink;
                     }
-
-                    $dl = $items[$xdx]['directLink'];
-                    $mask = '<img class="clickable" title="%s" alt="%s" ' .
-                        ' onclick="showHideByClass(' .
-                        "'div','%s');event.stopPropagation();" . '" ' . ' src="' .
-                        $context->imgSet['link_to_report'] .
-                        '" align="center" />';
-
-                    $divClass = 'direct_link_' . $xdx;
-                    $items[$xdx]['toggle'] = sprintf($mask, $toggleMsg,
-                        $toggleMsg, $divClass);
-                    $items[$xdx]['directLinkDiv'] = '<div class="' . $divClass .
-                        '" ' .
-                        "style='display:none;border:1px solid;background-color:white;'>" .
-                        '<a href="' . $dl . '" target="_blank">' . $dl .
-                        '</a><br></div>';
-                    $xdx ++;
                 }
+
+                $dl = $items[$xdx]['directLink'];
+                $mask = '<img class="clickable" title="%s" alt="%s" ' .
+                    ' onclick="showHideByClass(' .
+                    "'div','%s');event.stopPropagation();" . '" ' . ' src="' .
+                    $context->imgSet['link_to_report'] . '" align="center" />';
+
+                $divClass = 'direct_link_' . $xdx;
+                $items[$xdx]['toggle'] = sprintf($mask, $toggleMsg, $toggleMsg,
+                    $divClass);
+                $items[$xdx]['directLinkDiv'] = '<div class="' . $divClass . '" ' .
+                    "style='display:none;border:1px solid;background-color:white;'>" .
+                    '<a href="' . $dl . '" target="_blank">' . $dl .
+                    '</a><br></div>';
+                $xdx ++;
             }
         }
         return $items;

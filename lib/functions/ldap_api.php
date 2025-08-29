@@ -66,12 +66,12 @@ function ldap_connect_bind($authCfg, $p_binddn = '', $p_password = '')
 
         # If no Bind DN and Password is set, attempt to login as the configured
         # Bind DN.
-        if (is_blank($p_binddn) && is_blank($p_password)) {
+        if (isBlank($p_binddn) && isBlank($p_password)) {
             $p_binddn = $authCfg['ldap_bind_dn'];
             $p_password = $authCfg['ldap_bind_passwd'];
         }
 
-        if (! is_blank($p_binddn) && ! is_blank($p_password)) {
+        if (! isBlank($p_binddn) && ! isBlank($p_password)) {
             $t_br = ldap_bind($t_ds, $p_binddn, $p_password);
         } else {
             # Either the Bind DN or the Password are empty, so attempt an anonymous bind.
@@ -116,7 +116,7 @@ function ldap_authenticate($p_login_name, $p_password)
     # if password is empty and ldap allows anonymous login, then
     # the user will be able to login, hence, we need to check
     # for this special case.
-    if (is_blank($p_password)) {
+    if (isBlank($p_password)) {
         return false;
     }
 

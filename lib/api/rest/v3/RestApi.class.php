@@ -232,7 +232,7 @@ class RestApi
 
     /**
      */
-    public function whoAmI(Request $request, Response $response, $args)
+    public function whoAmI(Response $response)
     {
         $msg = json_encode(
             array(
@@ -254,16 +254,10 @@ class RestApi
      *            }
      *
      */
-    public function testprojects(Request $request, Response $response, $args)
+    public function testprojects(Response $response, $args)
     {
         $itemSet = $this->getProjects($args);
 
-        // $data = array('name' => 'Bob', 'age' => 40);
-        // $payload = json_encode($data)//////;
-        //
-        // $response->getBody()->write($payload);
-        // return $response
-        // ->withHeader('Content-Type', 'application/json');
         $payload = json_encode($itemSet);
         $response->getBody()->write($payload);
         return $response;
@@ -279,14 +273,14 @@ class RestApi
      *
      *
      */
-    private function getProjects($idCard = null, $opt = null)
+    private function getProjects($idCard = null)
     {
         $op = array(
             'status' => 'ok',
             'message' => 'ok',
             'item' => null
         );
-        if (is_null($idCard) || empty($idCard)) {
+        if (empty($idCard)) {
             $opOptions = array(
                 'output' => 'array_of_map',
                 'order_by' => " ORDER BY name ",
@@ -339,17 +333,14 @@ class RestApi
      *            'name' ->
      *            'prefix' ->
      */
-    public function getProjectTestCases(Request $request, Response $response,
-        $idCard)
+    public function getProjectTestCases(Response $response, $idCard)
     {
         $op = array(
             'status' => 'ok',
             'message' => 'ok',
             'items' => null
         );
-        $tproject = $this->getProjects($idCard, array(
-            'output' => 'internal'
-        ));
+        $tproject = $this->getProjects($idCard);
 
         if (! is_null($tproject)) {
             $tcaseIDSet = array();
@@ -390,8 +381,7 @@ class RestApi
      * $item->options->automationEnabled
      * $item->options->inventoryEnabled
      */
-    public function createTestProject(Request $request, Response $response,
-        $args)
+    public function createTestProject(Request $request, Response $response)
     {
         $op = array(
             'status' => 'ko',
@@ -438,8 +428,7 @@ class RestApi
      *            'name' ->
      *            'prefix' ->
      */
-    public function getProjectTestPlans(Request $request, Response $response,
-        $idCard)
+    public function getProjectTestPlans(Response $response, $idCard)
     {
         $op = [
             'status' => 'ok',
@@ -447,9 +436,7 @@ class RestApi
             'items' => null
         ];
 
-        $tproj = $this->getProjects($idCard, array(
-            'output' => 'internal'
-        ));
+        $tproj = $this->getProjects($idCard);
 
         if (! is_null($tproj)) {
             $items = $this->tprojectMgr->get_all_testplans($tproj['id']);
@@ -472,7 +459,7 @@ class RestApi
      *            map idCard[tplanApiKey]
      *
      */
-    public function getPlanBuilds(Request $request, Response $response, $idCard)
+    public function getPlanBuilds(Response $response, $idCard)
     {
         $op = $this->getStdOp();
         $tplan = $this->tplanMgr->getByAPIKey($idCard['tplanApiKey']);
@@ -531,7 +518,7 @@ class RestApi
      *            if check is OK, tester assignments will be copied.
      *
      */
-    public function createBuild(Request $request, Response $response, $args)
+    public function createBuild(Request $request, Response $response)
     {
         $op = array(
             'status' => 'ko',
@@ -872,7 +859,7 @@ class RestApi
      * 'active'
      * 'is_public'
      */
-    public function createTestPlan(Request $request, Response $response, $args)
+    public function createTestPlan(Request $request, Response $response)
     {
         $op = $this->getStdIDKO();
         try {
@@ -982,8 +969,7 @@ class RestApi
      * We are not going to check for other mandatory info
      * like: mandatory custom fields. (if we will be able in future to manage it)
      */
-    public function createTestCaseExecution(Request $request, Response $response,
-        $args)
+    public function createTestCaseExecution(Request $request, Response $response)
     {
         $op = $this->getStdIDKO();
 
@@ -1030,7 +1016,7 @@ class RestApi
      * 'notes'
      * 'order'
      */
-    public function createTestSuite(Request $request, Response $response, $args)
+    public function createTestSuite(Request $request, Response $response)
     {
         $op = $this->getStdIDKO();
         try {
@@ -1218,7 +1204,7 @@ class RestApi
      * }
      * ]
      */
-    public function createTestCase(Request $request, Response $response, $args)
+    public function createTestCase(Request $request, Response $response)
     {
         $op = $this->getStdIDKO();
         try {
@@ -1269,7 +1255,7 @@ class RestApi
      * "notes"
      * "testProject": {"prefix":"APR"}
      */
-    public function createKeyword(Request $request, Response $response, $args)
+    public function createKeyword(Request $request, Response $response)
     {
         $op = $this->getStdIDKO();
 
@@ -1773,4 +1759,4 @@ class RestApi
     {
         return $e->getMessage() . ' - offending line number: ' . $e->getLine();
     }
-} // class end
+}

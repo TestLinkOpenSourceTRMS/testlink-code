@@ -265,7 +265,7 @@ if (! is_null($metrics) && ! empty($metrics)) {
 
 switch ($args->format) {
     case FORMAT_XLS:
-        createSpreadsheet($gui, $args, $args->getSpreadsheetBy, $cfSet);
+        createSpreadsheet($gui, $args, $cfSet);
         break;
 
     default:
@@ -715,7 +715,7 @@ function getWarning($targetStatus, $statusCfg)
  * @param string $media
  * @param array $customFieldColumns
  */
-function createSpreadsheet($gui, $args, $media, $customFieldColumns = null)
+function createSpreadsheet($gui, $args, $customFieldColumns = null)
 {
     $lbl = initLblSpreadsheet();
     $cellRange = range('A', 'Z');

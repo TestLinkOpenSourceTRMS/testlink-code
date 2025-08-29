@@ -162,7 +162,9 @@ if ($doIt) {
                 $lexec = $tcase_mgr->getLastExecution($tcase_id, $tcversion_id,
                     $tplan_id, $tcase['build_id'], $tcase['platform_id'],
                     $leOptions);
-                $status = $lexec[$tcversion_id]['status'];
+                if (isset($lexec[$tcversion_id]['status'])) {
+                    $status = $lexec[$tcversion_id]['status'];
+                }
                 if (! $status) {
                     $status = $statusGui->status_code['not_run'];
                 }

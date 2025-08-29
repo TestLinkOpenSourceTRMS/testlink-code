@@ -997,7 +997,7 @@ class testproject extends tlObjectWithAttachments
             $ret['msg'] = lang_get('info_product_name_empty');
             $ret['status_ok'] = 0;
         }
-        if ($ret['status_ok'] && ! check_string($name, $forbidden_pattern)) {
+        if ($ret['status_ok'] && ! checkString($name, $forbidden_pattern)) {
             $ret['msg'] = lang_get('string_contains_bad_chars');
             $ret['status_ok'] = 0;
         }
@@ -1021,7 +1021,7 @@ class testproject extends tlObjectWithAttachments
             $ret['msg'] = lang_get('info_product_name_empty');
             $ret['status_ok'] = 0;
         }
-        if ($ret['status_ok'] && ! check_string($name, $forbidden_pattern)) {
+        if ($ret['status_ok'] && ! checkString($name, $forbidden_pattern)) {
             $ret['msg'] = lang_get('string_contains_bad_chars');
             $ret['status_ok'] = 0;
         }
@@ -2840,21 +2840,21 @@ class testproject extends tlObjectWithAttachments
     /**
      * function to get an array with all requirement IDs in testproject
      *
-     * @param string $IDList
+     * @param string $idList
      *            commaseparated list of Container-IDs - can be testproject ID or reqspec IDs
      * @return array $reqIDs result IDs
      *
      * @internal revisions:
      *           20100310 - asimon - removed recursion logic
      */
-    public function get_all_requirement_ids($IDList)
+    public function get_all_requirement_ids($idList)
     {
         $coupleTypes = array();
         $coupleTypes['target'] = $this->tree_manager->node_descr_id['requirement'];
         $coupleTypes['container'] = $this->tree_manager->node_descr_id['requirement_spec'];
 
         $reqIDs = array();
-        $this->tree_manager->getAllItemsID($IDList, $reqIDs, $coupleTypes);
+        $this->tree_manager->getAllItemsID($idList, $reqIDs, $coupleTypes);
 
         return $reqIDs;
     }

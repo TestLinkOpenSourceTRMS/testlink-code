@@ -1260,7 +1260,7 @@ class tlMailLogger extends tlObjectWithDB
         foreach ($key2check as $emailKey) {
             $matches = array();
             $this->$emailKey = trim($this->$emailKey);
-            if (is_blank($this->$emailKey) ||
+            if (isBlank($this->$emailKey) ||
                 ! preg_match($regex2match, $this->$emailKey, $matches)) {
                 $this->configIsOK = false;
                 break;

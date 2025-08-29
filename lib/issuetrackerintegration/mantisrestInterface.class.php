@@ -146,8 +146,8 @@ class mantisrestInterface extends issueTrackerInterface
 
             // to undestand if connection is OK, I will ask for users.
             try {
-                $ValarMorghulis = $this->APIClient->getMyUserInfo();
-                $this->connected = ! is_null($ValarMorghulis);
+                $valarMorghulis = $this->APIClient->getMyUserInfo();
+                $this->connected = ! is_null($valarMorghulis);
             } catch (Exception $e) {
                 $processCatch = true;
             }

@@ -1494,12 +1494,14 @@ class tlTestPlanMetrics extends testplan
                 }
 
                 // Loop to get executions counters
-                foreach ($rx->info[$tsuite_id]['details'] as $code => &$elem) {
-                    $renderObj->info[$topSuiteID]['details'][$code]['qty'] += $elem['qty'];
-                    $renderObj->info[$topSuiteID]['total_tc'] += $elem['qty'];
+                if (isset($rx->info[$tsuite_id]['details'])) {
+                    foreach ($rx->info[$tsuite_id]['details'] as $code => &$elem) {
+                        $renderObj->info[$topSuiteID]['details'][$code]['qty'] += $elem['qty'];
+                        $renderObj->info[$topSuiteID]['total_tc'] += $elem['qty'];
 
-                    if ($code != 'not_run') {
-                        $execQty[$topSuiteID] += $elem['qty'];
+                        if ($code != 'not_run') {
+                            $execQty[$topSuiteID] += $elem['qty'];
+                        }
                     }
                 }
             }

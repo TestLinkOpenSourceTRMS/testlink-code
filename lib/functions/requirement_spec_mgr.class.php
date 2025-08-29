@@ -437,8 +437,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         );
         $my['options'] = array_merge($my['options'], (array) $options);
 
-        $title = trim_and_limit($item['name']);
-        $doc_id = trim_and_limit($item['doc_id']);
+        $title = trimAndLimit($item['name']);
+        $doc_id = trimAndLimit($item['doc_id']);
 
         $path = $this->tree_mgr->get_path($item['id']);
         $tproject_id = $path[0]['parent_id'];
@@ -2071,7 +2071,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             $nameSet = array_flip(array_keys($itemSet));
 
             // 6 magic from " [xxx]"
-            $prefix = trim_and_limit($item_info['doc_id'],
+            $prefix = trimAndLimit($item_info['doc_id'],
                 $this->field_size->docid - 6);
             $target_doc = $prefix . " [{$instance}]";
             while (isset($nameSet[$target_doc])) {

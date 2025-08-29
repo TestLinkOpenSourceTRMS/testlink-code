@@ -88,7 +88,7 @@ list ($oWebEditor, $webEditorHtmlNames, $webEditorTemplateKey) = initWebEditors(
 if ($get_c_data) {
     $name_ok = 1;
     $c_data = getValuesFromPost($webEditorHtmlNames);
-    if ($name_ok && ! check_string($c_data['container_name'], $g_ereg_forbidden)) {
+    if ($name_ok && ! checkString($c_data['container_name'], $g_ereg_forbidden)) {
         $msg = $args->l10n['string_contains_bad_chars'];
         $name_ok = 0;
     }
@@ -189,8 +189,8 @@ if ($doIt) {
                 (count($opt_cfg->to->map) > 0);
 
             $gui->cancelActionJS = 'location.href=fRoot+' .
-                "'lib/testcases/archiveData.php?id=" . intval(
-                    $args->containerID);
+                "'lib/testcases/archiveData.php?id=" .
+                intval($args->containerID);
             switch ($level) {
                 case 'testproject':
                     $gui->cancelActionJS .= "&edit=testproject&level=testproject'";
@@ -283,8 +283,8 @@ if ($doIt) {
             $gui->containerType = $level;
             $gui->refreshTree = $args->refreshTree;
             $gui->cancelActionJS = 'location.href=fRoot+' .
-                "'lib/testcases/archiveData.php?id=" . intval(
-                    $args->containerID);
+                "'lib/testcases/archiveData.php?id=" .
+                intval($args->containerID);
 
             switch ($level) {
                 case 'testproject':
@@ -455,7 +455,7 @@ function build_del_testsuite_warning_msg(&$tree_mgr, &$tcase_mgr, &$testcases,
         $getOptions = array(
             'addExecIndicator' => true
         );
-        foreach ($testcases as $the_key => $elem) {
+        foreach ($testcases as $key => $elem) {
             $verbose[] = $tree_mgr->get_path($elem['id'], $tsuite_id);
             $xx = $tcase_mgr->get_exec_status($elem['id'], null, $getOptions);
             $status = 'no_links';
@@ -473,10 +473,10 @@ function build_del_testsuite_warning_msg(&$tree_mgr, &$tcase_mgr, &$testcases,
         $idx = 0;
         if ($show_warning) {
             $msg['warning'] = array();
-            foreach ($verbose as $the_key => $elem) {
+            foreach ($verbose as $key => $elem) {
                 $msg['warning'][$idx] = '';
                 $bSlash = false;
-                foreach ($elem as $tkey => $telem) {
+                foreach ($elem as $key2 => $telem) {
                     if ($bSlash) {
                         $msg['warning'][$idx] .= "\\";
                     }

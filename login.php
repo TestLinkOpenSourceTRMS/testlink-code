@@ -295,7 +295,7 @@ function initGui(&$db, $args)
             $name = $oauth_prov['oauth_name'];
             $gui->oauth[$name] = new stdClass();
             $gui->oauth[$name]->name = ucfirst($name);
-            $gui->oauth[$name]->link = oauth_link($oauth_prov);
+            $gui->oauth[$name]->link = oauthLink($oauth_prov);
             $gui->oauth[$name]->icon = $name . '.png';
         }
     }

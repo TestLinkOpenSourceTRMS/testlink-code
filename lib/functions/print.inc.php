@@ -824,7 +824,7 @@ function renderTestSpecTreeForPrinting(&$db, &$node, &$options, $env, $context,
 
     if (isset($node['childNodes']) && $node['childNodes']) {
         // Need to be a LOCAL COUNTER for each PARENT
-        $TOCCounter = 0;
+        $tocCounter = 0;
         $childNodes = $node['childNodes'];
         $children_qty = sizeof($childNodes);
         for ($idx = 0; $idx < $children_qty; $idx ++) {
@@ -836,9 +836,9 @@ function renderTestSpecTreeForPrinting(&$db, &$node, &$options, $env, $context,
             if (isset($current['node_type_id']) &&
                 $id_descr[$current['node_type_id']] == 'testsuite') {
                 // Each time I found a contained Test Suite need to add a .x.x. to TOC
-                $TOCCounter ++;
+                $tocCounter ++;
             }
-            $env->tocCounter = $TOCCounter;
+            $env->tocCounter = $tocCounter;
             $code .= renderTestSpecTreeForPrinting($db, $current, $options, $env,
                 $context, $tocPrefix, $indentLevel + 1);
         }
@@ -1445,7 +1445,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
     $relSet = null;
 
     // collect REQ for Test Case Version
-    if ($options['requirement']) {
+    if (isset($options['requirement'])) {
         // Coverage Links REQV to TCV
         $requirements = (array) $st->req_mgr->getActiveForTCVersion(
             $tcVersionID);
@@ -1469,7 +1469,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
     $requirements = null;
 
     // collect keywords for TC VERSION
-    if ($options['keyword']) {
+    if (isset($options['keyword'])) {
         $code .= '<tr><td width="' . $cfg['firstColWidth'] .
             '" valign="top"><span class="label">' . $labels['keywords'] .
             ':</span></td>';
@@ -1491,7 +1491,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
     $kwSet = null;
 
     // collect platforms for TC VERSION
-    if ($options['platform']) {
+    if (isset($options['platform'])) {
         $code .= '<tr><td width="' . $cfg['firstColWidth'] .
             '" valign="top"><span class="label">' . $labels['platforms'] .
             ':</span></td>';
@@ -1514,7 +1514,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
 
     // Attachments
     $attachSet = (array) $st->tc_mgr->getAttachmentInfos($tcVersionID);
-    if (count($attachSet) > 0) {
+    if (! empty($attachSet)) {
         $code .= '<tr><td> <span class="label">' . $labels['attached_files'] .
             '</span></td>';
         $code .= '<td colspan="' . ($cfg['tableColspan'] - 2) . '"><ul>';
@@ -1639,8 +1639,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
                         $code .= "<li>{$safeFileName}</li>";
 
                         $pathname = $st->repoDir . $item['file_path'];
-                        list ($iWidth, $iHeight, $iT, $iA) = getimagesize(
-                            $pathname);
+                        list ($iWidth, $iHeight, ,) = getimagesize($pathname);
 
                         // Sorry by MAGIC Numbers
                         if ($iWidth > 900 || $iHeight > 700) {

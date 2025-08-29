@@ -76,7 +76,7 @@ function email_send($p_from, $p_recipient, $p_subject, $p_message, $p_cc = '',
 
     // Check fatal Error
     $smtp_host = config_get('smtp_host');
-    if (is_blank($smtp_host)) {
+    if (isBlank($smtp_host)) {
         $op->status_ok = false;
         $op->msg = lang_get('stmp_host_unconfigured');
         return $op; // >>>---->
@@ -119,14 +119,14 @@ function email_send($p_from, $p_recipient, $p_subject, $p_message, $p_cc = '',
             $mail->SMTPKeepAlive = true;
 
             # Copied from last mantis version
-            if (! is_blank(config_get('smtp_username'))) {
+            if (! isBlank(config_get('smtp_username'))) {
                 # Use SMTP Authentication
                 $mail->SMTPAuth = true;
                 $mail->Username = config_get('smtp_username');
                 $mail->Password = config_get('smtp_password');
             }
 
-            if (! is_blank(config_get('smtp_connection_mode'))) {
+            if (! isBlank(config_get('smtp_connection_mode'))) {
                 $mail->SMTPSecure = config_get('smtp_connection_mode');
             }
 
@@ -154,7 +154,7 @@ function email_send($p_from, $p_recipient, $p_subject, $p_message, $p_cc = '',
     $mail->FromName = '';
 
     $mail->From = config_get('from_email');
-    if (! is_blank($p_from)) {
+    if (! isBlank($p_from)) {
         $mail->From = $p_from;
     }
 
@@ -162,14 +162,14 @@ function email_send($p_from, $p_recipient, $p_subject, $p_message, $p_cc = '',
     $t_recipient_list = explode(',', $ot->recipient);
 
     foreach ($t_recipient_list as $t_recipient) {
-        if (! is_blank($t_recipient)) {
+        if (! isBlank($t_recipient)) {
             $mail->AddAddress($t_recipient, '');
         }
     }
 
     $t_cc_list = explode(',', $p_cc);
     foreach ($t_cc_list as $t_cc) {
-        if (! is_blank($t_cc)) {
+        if (! isBlank($t_cc)) {
             $mail->AddCC($t_cc, '');
         }
     }
@@ -227,7 +227,7 @@ function make_lf_crlf($p_string)
 function email_append_domain($p_email)
 {
     $t_limit_email_domain = config_get('limit_email_domain');
-    if ($t_limit_email_domain && ! is_blank($p_email)) {
+    if ($t_limit_email_domain && ! isBlank($p_email)) {
         $p_email = "$p_email@$t_limit_email_domain";
     }
 

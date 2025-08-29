@@ -461,7 +461,7 @@ function getTestCaseSetFromIssueSimpleXMLObj($xmlObj)
     $xmlIssue = $xmlObj->issue;
     $loops2do = sizeof($xmlIssue);
 
-    $XMLDef['elements'] = array(
+    $xmlDef['elements'] = array(
         'string' => array(
             'summary' => null,
             'description' => null,
@@ -476,7 +476,7 @@ function getTestCaseSetFromIssueSimpleXMLObj($xmlObj)
     for ($idx = 0; $idx < $loops2do; $idx ++) {
         $dummy = getItemsFromSimpleXMLObj(array(
             $xmlIssue[$idx]
-        ), $XMLDef);
+        ), $xmlDef);
         $dummy = $dummy[0];
 
         $isum = $l18n['issue_description'] . $nl . $dummy['description'];

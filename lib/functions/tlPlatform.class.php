@@ -614,7 +614,7 @@ class tlPlatform extends tlObjectWithDB
 
     /**
      */
-    private function initViewGUI(&$userObj, &$argsObj)
+    public function initViewGUI(&$userObj, &$argsObj)
     {
         $gaga = new stdClass();
 

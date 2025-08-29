@@ -351,13 +351,13 @@ function string_restore_valid_html_tags($p_string, $p_multiline = true)
     $t_html_valid_tags = config_get(
         $p_multiline ? 'html_valid_tags' : 'html_valid_tags_single_line');
 
-    if (OFF === $t_html_valid_tags || is_blank($t_html_valid_tags)) {
+    if (OFF === $t_html_valid_tags || isBlank($t_html_valid_tags)) {
         return $p_string;
     }
 
     $tags = explode(',', $t_html_valid_tags);
     foreach ($tags as $key => $value) {
-        if (! is_blank($value)) {
+        if (! isBlank($value)) {
             $tags[$key] = trim($value);
         }
     }

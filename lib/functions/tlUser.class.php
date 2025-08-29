@@ -1117,7 +1117,7 @@ class tlUser extends tlDBObject
      */
     public static function checkEmailAddress($email)
     {
-        $result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
+        $result = isBlank($email) ? self::E_EMAILLENGTH : tl::OK;
         if ($result == tl::OK) {
             $matches = array();
             $email_regex = config_get('validation_cfg')->user_email_valid_regex_php;
@@ -1130,12 +1130,12 @@ class tlUser extends tlDBObject
 
     public static function checkFirstName($first)
     {
-        return is_blank($first) ? self::E_FIRSTNAMELENGTH : tl::OK;
+        return isBlank($first) ? self::E_FIRSTNAMELENGTH : tl::OK;
     }
 
     public static function checkLastName($last)
     {
-        return is_blank($last) ? self::E_LASTNAMELENGTH : tl::OK;
+        return isBlank($last) ? self::E_LASTNAMELENGTH : tl::OK;
     }
 
     /**
@@ -1521,20 +1521,20 @@ class tlUser extends tlDBObject
 
     /**
      */
-    public static function setExpirationDate(&$dbHandler, $userID, $ISODate)
+    public static function setExpirationDate(&$dbHandler, $userID, $isoDate)
     {
         $sch = tlObject::getDBTables(array(
             'users'
         ));
 
         $setClause = " SET expiration_date = ";
-        if (is_null($ISODate) || trim($ISODate) == '') {
+        if (is_null($isoDate) || trim($isoDate) == '') {
             $setClause .= " NULL ";
         } else {
             // it's really a date?
             // if not => do nothing
             try {
-                $setClause .= "'" . $dbHandler->prepare_string($ISODate) . "'";
+                $setClause .= "'" . $dbHandler->prepare_string($isoDate) . "'";
             } catch (Exception $e) {
                 return;
             }

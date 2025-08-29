@@ -408,15 +408,15 @@ function initArgs(&$dbHandler)
  * @uses init_checkboxes() - printDocOptions.php
  *
  */
-function initPrintOpt(&$UIhash, &$docInfo)
+function initPrintOpt(&$uiHash, &$docInfo)
 {
     $optObj = new printDocOptions();
     $pOpt = $optObj->getAllOptVars();
 
-    $lightOn = isset($UIhash['allOptionsOn']);
+    $lightOn = isset($uiHash['allOptionsOn']);
     foreach ($pOpt as $opt => $val) {
         $pOpt[$opt] = $lightOn ||
-            (isset($UIhash[$opt]) && ($UIhash[$opt] == 'y'));
+            (isset($uiHash[$opt]) && ($uiHash[$opt] == 'y'));
     }
     $pOpt['docType'] = $docInfo->type;
     $pOpt['tocCode'] = ''; // to avoid warning because of undefined index

@@ -98,11 +98,10 @@ if ($args->doAction == 'saveForBaseline') {
                 'baseline_l1l2_context',
                 'baseline_l1l2_details'
             ));
-        $sql = "INSERT INTO {$tables['baseline_l1l2_context']}
-            (testplan_id,platform_id,begin_exec_ts,end_exec_ts)
-            VALUES({$span['testplan_id']},
-                   {$platID}," . "'" . $span['begin'] . "'," . "'" . $span['end'] .
-            "')";
+        $sql = "INSERT INTO {$tables['baseline_l1l2_context']} " .
+            " (testplan_id,platform_id,begin_exec_ts,end_exec_ts) " .
+            " VALUES({$span['testplan_id']}, {$platID}, '" . $span['begin'] .
+            "', '" . $span['end'] . "')";
         $db->exec_query($sql);
         $context_id = $db->insert_id($tables['baseline_l1l2_context']);
 
@@ -112,13 +111,10 @@ if ($args->doAction == 'saveForBaseline') {
         foreach ($elem as $l2_id => $info) {
             foreach ($info['details'] as $verbose => $figures) {
                 $exec_status = "'" . $verboseCode[$verbose] . "'";
-
-                $sql = "INSERT INTO {$tables['baseline_l1l2_details']}
-                (context_id,top_tsuite_id,child_tsuite_id,
-                 status,qty,total_tc)
-                VALUES($context_id,{$info['parent_id']},$l2_id,
-                       $exec_status,{$figures['qty']},
-                       {$info['total_tc']})";
+                $sql = "INSERT INTO {$tables['baseline_l1l2_details']} " .
+                    " (context_id,top_tsuite_id,child_tsuite_id,status,qty,total_tc) " .
+                    " VALUES($context_id,{$info['parent_id']},$l2_id,$exec_status,{$figures['qty']}, " .
+                    " {$info['total_tc']})";
                 $db->exec_query($sql);
             }
         }
@@ -252,7 +248,7 @@ function createSpreadsheet($gui, &$tplanMgr)
     $execStatusDomain = $tplanMgr->getStatusForReports();
     $dataHeaderMetrics = array();
     $ccc = 0;
-    foreach ($execStatusDomain as $code => $human) {
+    foreach ($execStatusDomain as $key => $human) {
         $dataHeaderMetrics[] = lang_get('test_status_' . $human);
         $ccc ++;
         $dataHeaderMetrics[] = '[%]';

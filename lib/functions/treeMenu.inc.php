@@ -613,7 +613,7 @@ function prepareNode(&$db, &$node, &$map_node_tccount, $attr_map = null,
             $tcase_counters[$key] = 0;
         }
 
-        if (isset($tpNode['exec_status'])) {
+        if (isset($decoding_info['status_code_descr'][$tpNode['exec_status']])) {
             $tc_status_descr = $decoding_info['status_code_descr'][$tpNode['exec_status']];
         } else {
             $tc_status_descr = "not_run";
@@ -2220,6 +2220,9 @@ function render_reqspeccoverage_treenode(&$db, &$node, &$filtered_map,
 }
 
 /**
+ *
+ * @todo delete if necessary
+ * @deprecated
  */
 function apply_status_filters($tplan_id, &$items, &$fobj, &$tplan_mgr,
     $statusCfg)

@@ -395,8 +395,8 @@ class requirement_mgr extends tlObjectWithAttachments
         $my['options'] = array_merge($my['options'], (array) $options);
 
         if (! $my['options']['quickAndDirty']) {
-            $reqdoc_id = trim_and_limit($reqdoc_id, $this->fieldSize->req_docid);
-            $title = trim_and_limit($title, $this->fieldSize->req_title);
+            $reqdoc_id = trimAndLimit($reqdoc_id, $this->fieldSize->req_docid);
+            $title = trimAndLimit($title, $this->fieldSize->req_title);
             $op = $this->check_basic_data($srs_id, $tproject_id, $title,
                 $reqdoc_id);
         } else {
@@ -484,8 +484,8 @@ class requirement_mgr extends tlObjectWithAttachments
             $scope = req_link_replace($this->db, $scope, $tproject_id);
         }
 
-        $reqdoc_id = trim_and_limit($reqdoc_id, $this->fieldSize->req_docid);
-        $title = trim_and_limit($title, $this->fieldSize->req_title);
+        $reqdoc_id = trimAndLimit($reqdoc_id, $this->fieldSize->req_docid);
+        $title = trimAndLimit($title, $this->fieldSize->req_title);
         $chk = $this->check_basic_data($srs_id, $tproject_id, $title, $reqdoc_id,
             $id);
 
@@ -1015,9 +1015,9 @@ class requirement_mgr extends tlObjectWithAttachments
             // Warning:
             // We are not maintaining hierarchy !!!
             $sql = " SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
-                " WHERE name='" . $this->db->prepare_string(
-                    $auto_testsuite_name) . "' " . " AND parent_id=" .
-                $tproject_id . " " . " AND node_type_id=" .
+                " WHERE name='" .
+                $this->db->prepare_string($auto_testsuite_name) . "' " .
+                " AND parent_id=" . $tproject_id . " " . " AND node_type_id=" .
                 $node_descr_type['testsuite'];
 
             $result = $this->db->exec_query($sql);
@@ -1698,7 +1698,7 @@ class requirement_mgr extends tlObjectWithAttachments
                         // We have to DO NOT UPDATE REQDOCID with info received from USER
                         // Because ALL VERSION HAS TO HAVE docid, or we need to improve our checks
                         // and if update fails => we need to delete new created version.
-                        $title = trim_and_limit($req['title'],
+                        $title = trimAndLimit($req['title'],
                             $fieldSize->req_title);
                         $importMode = 'update';
                         $result = $this->update($reqID, $newItem['id'],
@@ -2293,7 +2293,7 @@ class requirement_mgr extends tlObjectWithAttachments
             // req_doc_id has limited size then we need to be sure that generated id will
             // not exceed DB size
             $nameSet = array_flip(array_keys($itemSet));
-            $prefix = trim_and_limit($item_info['req_doc_id'],
+            $prefix = trimAndLimit($item_info['req_doc_id'],
                 $this->fieldSize->req_docid - strlen($mask) - $safety_len);
 
             $target_doc = $prefix . sprintf($mask, $instance);

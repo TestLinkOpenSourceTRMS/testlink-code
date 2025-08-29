@@ -11,7 +11,7 @@
  */
 
 // Create correct link for oauth
-function oauth_link($oauthCfg)
+function oauthLink($oauthCfg)
 {
     $oap = array();
 
@@ -44,8 +44,8 @@ function oauth_link($oauthCfg)
  */
 function getOAuthProviderCfg($provider)
 {
-    $OAuthProviders = config_get('OAuthServers');
-    foreach ($OAuthProviders as $providerCfg) {
+    $oAuthProviders = config_get('OAuthServers');
+    foreach ($oAuthProviders as $providerCfg) {
         if ($provider == trim($providerCfg['oauth_name'])) {
             return $providerCfg;
         }

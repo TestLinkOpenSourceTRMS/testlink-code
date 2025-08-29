@@ -100,7 +100,7 @@ if ($args->id) {
                 // is SVG?
                 if (strripos($content, "<!DOCTYPE svg") !== false ||
                     strripos($content, "<svg") !== false &&
-                    ! XSS_StringScriptSafe($content)) {
+                    ! xssStringScriptSafe($content)) {
                     $what2do = "Content-Disposition: attachment;";
                 }
 

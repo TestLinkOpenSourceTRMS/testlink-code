@@ -221,9 +221,9 @@ class githubrestInterface extends issueTrackerInterface
                     (string) $jsonObj->body;
                 $issue->summary = (string) $jsonObj->title . ":\n" .
                     (string) $jsonObj->body;
-                $Notes = $this->APIClient->getNotes((int) $issueID);
-                if (is_array($Notes) && count($Notes) > 0) {
-                    foreach ($Notes as $key => $note) {
+                $notes = $this->APIClient->getNotes((int) $issueID);
+                if (is_array($notes) && count($notes) > 0) {
+                    foreach ($notes as $key => $note) {
                         $issue->summaryHTMLString .= "</br>[Note $key]:$note->body";
                         $issue->summary .= "\n[Note $key]: $note->body";
                     }

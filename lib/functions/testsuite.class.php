@@ -38,7 +38,7 @@ class testsuite extends tlObjectWithAttachments
 
     const MAXLEN_NAME = 100;
 
-    private $object_table;
+    private $objectTable;
 
     protected $debugMsg;
 
@@ -49,17 +49,17 @@ class testsuite extends tlObjectWithAttachments
 
     public $node_types_descr_id;
 
-    private $node_types_id_descr;
+    private $nodeTypesIdDescr;
 
     public $my_node_type;
 
     public $cfield_mgr;
 
-    private $import_file_types = array(
+    private $importFileTypes = array(
         "XML" => "XML"
     );
 
-    private $export_file_types = array(
+    private $exportFileTypes = array(
         "XML" => "XML"
     );
 
@@ -70,7 +70,7 @@ class testsuite extends tlObjectWithAttachments
         'requirement' => 'exclude_me'
     );
 
-    private $nt2exclude_children = array(
+    private $nt2excludeChildren = array(
         'testcase' => 'exclude_my_children',
         'requirement_spec' => 'exclude_my_children'
     );
@@ -87,7 +87,7 @@ class testsuite extends tlObjectWithAttachments
 
         $this->tree_manager = new tree($this->db);
         $this->node_types_descr_id = $this->tree_manager->get_available_node_types();
-        $this->node_types_id_descr = array_flip($this->node_types_descr_id);
+        $this->nodeTypesIdDescr = array_flip($this->node_types_descr_id);
         $this->my_node_type = $this->node_types_descr_id['testsuite'];
 
         $this->cfield_mgr = new cfield_mgr($this->db);
@@ -99,7 +99,7 @@ class testsuite extends tlObjectWithAttachments
         parent::__construct($this->db, "nodes_hierarchy");
 
         // Must be setted AFTER call to parent constructor
-        $this->object_table = $this->tables['testsuites'];
+        $this->objectTable = $this->tables['testsuites'];
 
         $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
     }
@@ -111,7 +111,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function get_export_file_types()
     {
-        return $this->export_file_types;
+        return $this->exportFileTypes;
     }
 
     /*
@@ -127,7 +127,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function get_import_file_types()
     {
-        return $this->import_file_types;
+        return $this->importFileTypes;
     }
 
     /*
@@ -331,7 +331,7 @@ class testsuite extends tlObjectWithAttachments
 
         $testcases = $this->get_children_testcases($id);
         if (! is_null($testcases)) {
-            foreach ($testcases as $the_key => $elem) {
+            foreach ($testcases as $key => $elem) {
                 $tcase_mgr->delete($elem['id']);
             }
         }
@@ -341,7 +341,7 @@ class testsuite extends tlObjectWithAttachments
         $this->deleteAttachments($id); // inherited
         $this->deleteKeywords($id);
 
-        $sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
+        $sql = "DELETE FROM {$this->objectTable} WHERE id={$id}";
         $this->db->exec_query($sql);
 
         $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " .
@@ -630,7 +630,7 @@ class testsuite extends tlObjectWithAttachments
         $pnode_info = $this->tree_manager->get_node_hierarchy_info($parent_id);
 
         $parent_info['description'] = lang_get(
-            $this->node_types_id_descr[$pnode_info['node_type_id']]);
+            $this->nodeTypesIdDescr[$pnode_info['node_type_id']]);
         $parent_info['name'] = $pnode_info['name'];
 
         $a_tpl = array(
@@ -667,7 +667,7 @@ class testsuite extends tlObjectWithAttachments
             ($action == 'new_testsuite' || $action == 'add_testsuite') &&
             ! is_null($userTemplateKey)) {
             // need to understand if need to use templates
-            $webEditorData = $this->_initializeWebEditors($webEditorHtmlNames,
+            $webEditorData = $this->initializeWebEditors($webEditorHtmlNames,
                 $userTemplateKey);
         }
 
@@ -764,9 +764,9 @@ class testsuite extends tlObjectWithAttachments
 
         if ($my['options']['copyKeywords']) {
             $kmap = isset($my['mappings']['keywords']) ? $my['mappings']['keywords'] : null;
-            $this->copy_keyword_assignment($id, $new_tsuite_id, $kmap);
+            $this->copyKeywordAssignment($id, $new_tsuite_id, $kmap);
         }
-        $this->copy_cfields_values($id, $new_tsuite_id);
+        $this->copyCfieldsValues($id, $new_tsuite_id);
 
         $my['filters'] = array(
             'exclude_children_of' => array(
@@ -777,7 +777,7 @@ class testsuite extends tlObjectWithAttachments
         if (! is_null($subtree)) {
             $parent_decode = array();
             $parent_decode[$id] = $new_tsuite_id;
-            foreach ($subtree as $the_key => $elem) {
+            foreach ($subtree as $key => $elem) {
                 $the_parent_id = $parent_decode[$elem['parent_id']];
                 switch ($elem['node_type_id']) {
                     case $this->node_types_descr_id['testcase']:
@@ -804,10 +804,10 @@ class testsuite extends tlObjectWithAttachments
                         }
 
                         if ($my['options']['copyKeywords']) {
-                            $this->copy_keyword_assignment($elem['id'],
-                                $ret['id'], $kmap);
+                            $this->copyKeywordAssignment($elem['id'], $ret['id'],
+                                $kmap);
                         }
-                        $this->copy_cfields_values($elem['id'], $ret['id']);
+                        $this->copyCfieldsValues($elem['id'], $ret['id']);
 
                         break;
                 }
@@ -840,7 +840,7 @@ class testsuite extends tlObjectWithAttachments
 
         $my['filters'] = array(
             'exclude_node_types' => $this->nt2exclude,
-            'exclude_children_of' => $this->nt2exclude_children
+            'exclude_children_of' => $this->nt2excludeChildren
         );
 
         if ($my['options']['excludeTC']) {
@@ -901,7 +901,7 @@ class testsuite extends tlObjectWithAttachments
             $testcases = array();
             $tcNodeType = $this->node_types_descr_id['testcase'];
             $prefix = null;
-            foreach ($subtree as $the_key => $elem) {
+            foreach ($subtree as $key => $elem) {
                 if ($elem['node_type_id'] == $tcNodeType) {
                     if ($only_id) {
                         $testcases[] = $elem['id'];
@@ -972,7 +972,7 @@ class testsuite extends tlObjectWithAttachments
             $tsuite = $this->get_by_id($id);
             $tsuiteName = $tsuite['name'];
             $testcases = array();
-            foreach ($subtree as $the_key => $elem) {
+            foreach ($subtree as $key => $elem) {
                 if ($only_id) {
                     $testcases[] = $elem['id'];
                 } else {
@@ -1039,10 +1039,10 @@ class testsuite extends tlObjectWithAttachments
      * returns:
      *
      */
-    private function _initializeWebEditors($WebEditors, $itemTemplateCfgKey)
+    private function initializeWebEditors($webEditors, $itemTemplateCfgKey)
     {
         $wdata = array();
-        foreach ($WebEditors as $key => $html_name) {
+        foreach ($webEditors as $key => $html_name) {
             $wdata[$html_name] = getItemTemplateContents($itemTemplateCfgKey,
                 $html_name, '');
         }
@@ -1520,7 +1520,7 @@ class testsuite extends tlObjectWithAttachments
      * Because keywords are defined INSIDE a Test Project, ID will be different for same keyword
      * in a different Test Project
      */
-    private function copy_keyword_assignment($source_id, $target_id, $mappings)
+    private function copyKeywordAssignment($source_id, $target_id, $mappings)
     {
         // Get source_id keyword assignment
         $sourceItems = $this->getKeywords($source_id);
@@ -1539,7 +1539,7 @@ class testsuite extends tlObjectWithAttachments
     /**
      * Copy Custom Fields values
      */
-    private function copy_cfields_values($source_id, $target_id)
+    private function copyCfieldsValues($source_id, $target_id)
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
         // Get source_id cfields assignment
@@ -1575,7 +1575,7 @@ class testsuite extends tlObjectWithAttachments
                 'testcase' => 'exclude_me'
             ));
         if (! empty($subtree)) {
-            foreach ($subtree as $the_key => $elem) {
+            foreach ($subtree as $key => $elem) {
                 $itemKeys[] = $elem['id'];
             }
 
@@ -1626,8 +1626,7 @@ class testsuite extends tlObjectWithAttachments
             $pinfo = $this->tree_manager->get_node_hierarchy_info(
                 $item->testProjectID);
             if (is_null($pinfo) ||
-                $this->node_types_id_descr[$pinfo['node_type_id']] !=
-                'testproject') {
+                $this->nodeTypesIdDescr[$pinfo['node_type_id']] != 'testproject') {
                 throw new Exception('Test project ID does not exist');
             }
 
@@ -1640,9 +1639,8 @@ class testsuite extends tlObjectWithAttachments
                 throw new Exception('Parent ID does not exist');
             }
 
-            if ($this->node_types_id_descr[$pinfo['node_type_id']] !=
-                'testproject' &&
-                $this->node_types_id_descr[$pinfo['node_type_id']] != 'testsuite') {
+            if ($this->nodeTypesIdDescr[$pinfo['node_type_id']] != 'testproject' &&
+                $this->nodeTypesIdDescr[$pinfo['node_type_id']] != 'testsuite') {
                 throw new Exception('Node Type for Parent ID is not valid');
             }
 
@@ -1864,7 +1862,7 @@ class testsuite extends tlObjectWithAttachments
         if ($doit) {
             $this->get_by_id($id);
             $testcases = array();
-            foreach ($subtree as $the_key => $elem) {
+            foreach ($subtree as $key => $elem) {
                 $testcases[] = $elem['id'];
             }
             $doit = ! empty($testcases);

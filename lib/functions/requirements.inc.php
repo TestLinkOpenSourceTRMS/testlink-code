@@ -52,8 +52,8 @@ function executeImportedReqs(&$db, $arrImportSource, $map_cur_reqdoc_id,
     $field_size = config_get('field_size');
 
     foreach ($arrImportSource as $data) {
-        $docID = trim_and_limit($data['docid'], $field_size->req_docid);
-        $title = trim_and_limit($data['title'], $field_size->req_title);
+        $docID = trimAndLimit($data['docid'], $field_size->req_docid);
+        $title = trimAndLimit($data['title'], $field_size->req_title);
         $scope = $data['description'];
         $type = $data['type'];
         $status = $data['status'];
@@ -304,7 +304,7 @@ function importReqDataFromCSV($fileName)
             foreach ($reqData[$ddx] as $fieldKey => &$fieldValue) {
                 // Adjust Lenght
                 if (isset($fieldLength[$fieldKey])) {
-                    $fieldValue = trim_and_limit($fieldValue,
+                    $fieldValue = trimAndLimit($fieldValue,
                         $fieldLength[$fieldKey]);
                 } elseif (isset($fieldDefault[$fieldKey])) {
                     // Assign default value
@@ -467,7 +467,7 @@ function importReqDataFromDocBook($fileName)
             }
         }
         $xmlData[$idx]['description'] = $description;
-        $xmlData[$idx]['title'] = trim_and_limit($title, $field_size->req_title);
+        $xmlData[$idx]['title'] = trimAndLimit($title, $field_size->req_title);
 
         // parse Doc ID from requirement title
         // first remove any weird characters before the title. This could be probably omitted

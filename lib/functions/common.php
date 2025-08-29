@@ -633,7 +633,7 @@ function to_boolean($alt_boolean)
  *
  * @todo havlatm: remove as obsolete or move to inputparam.inc.php
  */
-function check_string($str2check, $regexp_forbidden_chars)
+function checkString($str2check, $regexp_forbidden_chars)
 {
     $status_ok = 1;
 
@@ -690,7 +690,7 @@ function config_get($config_id, $default = null)
  *         containing only whitespace, false otherwise
  * @author Copyright (C) 2000 - 2004 Mantis Team, Kenzaburo Ito
  */
-function is_blank($p_var)
+function isBlank($p_var)
 {
     $p_var = trim($p_var);
     $str_len = strlen($p_var);
@@ -799,7 +799,7 @@ function ini_get_bool($p_name)
  *
  * @author Francisco Mancardi - 20050905 - refactoring
  */
-function trim_and_limit($s, $len = 100)
+function trimAndLimit($s, $len = 100)
 {
     $s = trim($s);
     if (tlStringLen($s) > $len) {
@@ -912,13 +912,13 @@ function templateConfiguration($template2get = null)
  * Check if an string is a valid ISO date/time
  * accepted format: YYYY-MM-DD HH:MM:SS
  *
- * @param string $ISODateTime
+ * @param string $isoDateTime
  *            datetime to check
  * @return boolean True if string has correct format
  *
  * @internal rev: 20080907 - franciscom - Code taked form PHP manual
  */
-function isValidISODateTime($ISODateTime)
+function isValidISODateTime($isoDateTime)
 {
     $dateParts = array(
         'YEAR' => 1,
@@ -930,7 +930,7 @@ function isValidISODateTime($ISODateTime)
     $status_ok = false;
     if (preg_match(
         "/^(\d{4})-(\d{2})-(\d{2}) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/",
-        $ISODateTime, $matches)) {
+        $isoDateTime, $matches)) {
         $status_ok = checkdate($matches[$dateParts['MONTH']],
             $matches[$dateParts['DAY']], $matches[$dateParts['YEAR']]);
     }
@@ -2169,7 +2169,7 @@ function pageAccessCheck(&$db, &$user, $context)
 
 /**
  */
-function XSS_StringScriptSafe($content)
+function xssStringScriptSafe($content)
 {
     $needle = [];
     $needle[] = "<script";

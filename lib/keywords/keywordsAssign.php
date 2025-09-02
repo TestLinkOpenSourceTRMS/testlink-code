@@ -31,7 +31,7 @@ if ($args->edit == 'testproject') {
 
 $smarty = new TLSmarty();
 $tproject_mgr = new testproject($db);
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 
 $result = null;
 
@@ -69,11 +69,11 @@ switch ($args->edit) {
             }
         }
 
-        if ($args->onlyDirectChildren && $args->useFilteredSet) {
-            // intersect
+        if ($args->onlyDirectChildren && $args->useFilteredSet &&
+            ! empty($tsChildren) && ! empty($filteredTC)) {
             $tcs = array_intersect($tsChildren, $filteredTC);
         } else {
-            if ($args->useFilteredSet) {
+            if ($args->useFilteredSet && ! empty($filteredTC)) {
                 $tcs = &$filteredTC;
             } elseif ($args->onlyDirectChildren) {
                 $tcs = &$tsChildren;
@@ -106,15 +106,15 @@ switch ($args->edit) {
                 );
 
                 for ($idx = 0; $idx < $loop2do; $idx ++) {
-                    $ltcv = $tcase_mgr->get_last_version_info($tcs[$idx], $glOpt);
+                    $ltcv = $tcaseMgr->getLastVersionInfo($tcs[$idx], $glOpt);
                     $latestActiveVersionID = $ltcv['tcversion_id'];
                     $statusQuo = current(
-                        $tcase_mgr->getVersionsStatusQuo($tcs[$idx],
+                        $tcaseMgr->getVersionsStatusQuo($tcs[$idx],
                             $latestActiveVersionID));
 
                     $hasBeenExecuted = intval($statusQuo['executed']) > 0;
                     if ($gui->canAddRemoveKWFromExecuted || ! $hasBeenExecuted) {
-                        $tcase_mgr->$method($tcs[$idx], $latestActiveVersionID,
+                        $tcaseMgr->$method($tcs[$idx], $latestActiveVersionID,
                             $args->keywordArray);
                     }
                 }
@@ -126,7 +126,7 @@ switch ($args->edit) {
         $doRecall = true;
         $gui->can_do = 1;
 
-        $tcName = $tcase_mgr->getName($args->id);
+        $tcName = $tcaseMgr->getName($args->id);
         $gui->keyword_assignment_subtitle = lang_get('test_case') . TITLE_SEP .
             $tcName;
 
@@ -136,25 +136,25 @@ switch ($args->edit) {
             'output' => 'thin',
             'active' => 1
         );
-        $ltcv = $tcase_mgr->get_last_version_info($args->id, $glOpt);
+        $ltcv = $tcaseMgr->getLastVersionInfo($args->id, $glOpt);
         $latestActiveVersionID = $ltcv['tcversion_id'];
 
         $statusQuo = current(
-            $tcase_mgr->getVersionsStatusQuo($args->id, $latestActiveVersionID));
+            $tcaseMgr->getVersionsStatusQuo($args->id, $latestActiveVersionID));
         $gui->hasBeenExecuted = intval($statusQuo['executed']) > 0;
 
         if ($gui->canAddRemoveKWFromExecuted || ! $gui->hasBeenExecuted) {
             $kwQty = ! is_null($args->keywordArray) ? count($args->keywordArray) : 0;
             if ($args->assignToTestCase && $kwQty > 0) {
                 $result = 'ok';
-                $tcase_mgr->setKeywords($args->id, $latestActiveVersionID,
+                $tcaseMgr->setKeywords($args->id, $latestActiveVersionID,
                     $args->keywordArray);
                 $doRecall = ! is_null($args->keywordArray);
             }
         }
 
         $opt_cfg->to->lbl = lang_get('assigned_kword');
-        $opt_cfg->to->map = $doRecall ? $tcase_mgr->get_keywords_map($args->id,
+        $opt_cfg->to->map = $doRecall ? $tcaseMgr->get_keywords_map($args->id,
             $latestActiveVersionID,
             array(
                 'orderByClause' => " ORDER BY keyword ASC "

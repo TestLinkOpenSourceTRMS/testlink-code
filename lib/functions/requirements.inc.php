@@ -72,7 +72,7 @@ function executeImportedReqs(&$db, $arrImportSource, $map_cur_reqdoc_id,
                 $import_status['msg'] = 'Error';
                 if ($conflictSolution == 'overwrite') {
                     $item = current($req_mgr->getByDocID($docID, $tprojectID));
-                    $last_version = $req_mgr->get_last_version_info($item['id']);
+                    $last_version = $req_mgr->getLastVersionInfo($item['id']);
 
                     // BUGID 0003745: CSV Requirements Import Updates Frozen Requirement
                     if ($last_version['is_open'] == 1) {
@@ -695,21 +695,21 @@ function getReqCoverage(&$dbHandler, $reqs, &$execMap)
  *
  * returns:
  *
- * rev: 20090716 - franciscom - get_last_execution() interface changes
+ * rev: 20090716 - franciscom - getLastExecution() interface changes
  */
 function getLastExecutions(&$db, $tcaseSet, $tplanId)
 {
     $execMap = array();
     if (sizeof($tcaseSet)) {
-        $tcase_mgr = new testcase($db);
+        $tcaseMgr = new testcase($db);
         $items = array_keys($tcaseSet);
-        $path_info = $tcase_mgr->tree_manager->get_full_path_verbose($items);
+        $path_info = $tcaseMgr->tree_manager->get_full_path_verbose($items);
         $options = array(
             'getNoExecutions' => 1,
             'groupByBuild' => 0
         );
         foreach ($tcaseSet as $tcaseId => $tcInfo) {
-            $execMap[$tcaseId] = $tcase_mgr->getLastExecution($tcaseId,
+            $execMap[$tcaseId] = $tcaseMgr->getLastExecution($tcaseId,
                 $tcInfo['tcversion_id'], $tplanId, testcase::ANY_BUILD,
                 testcase::ANY_PLATFORM, $options);
 
@@ -719,7 +719,7 @@ function getLastExecutions(&$db, $tcaseSet, $tplanId)
                 ' / ', $path_info[$tcaseId]);
         }
 
-        unset($tcase_mgr);
+        unset($tcaseMgr);
     }
     return $execMap;
 }

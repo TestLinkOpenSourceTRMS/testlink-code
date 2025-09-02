@@ -22,12 +22,12 @@ testlinkInitPage($db, false, false);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 
 $templateCfg = templateConfiguration();
 
 $args = initArgs($tplan_mgr);
-$gui = initializeGui($args, $tcase_mgr);
+$gui = initializeGui($args, $tcaseMgr);
 
 $context = new stdClass();
 $context->tproject_id = $args->tproject_id;
@@ -63,7 +63,7 @@ switch ($args->level) {
 
     case 'testsuite':
         $out = processTestSuite($db, $args, $keywordsFilter, $tplan_mgr,
-            $tcase_mgr);
+            $tcaseMgr);
         break;
 
     case 'testplan':

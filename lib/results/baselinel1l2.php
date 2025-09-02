@@ -60,9 +60,9 @@ foreach ($statusDisplayOrder as $x => $code) {
 }
 
 // foreach ($gui->platformSet as $plat_id => $plat_name) {
-$sql = "SELECT context_id,BLDT.id AS detail_id," . " testplan_id,platform_id, " .
-    " begin_exec_ts, end_exec_ts, creation_ts, " .
-    " top_tsuite_id, child_tsuite_id, status, qty, total_tc, " .
+$sql = "SELECT context_id,BLDT.id AS detail_id,testplan_id,platform_id," .
+    " begin_exec_ts, end_exec_ts, creation_ts," .
+    " top_tsuite_id, child_tsuite_id, status, qty, total_tc," .
     " TS_TOP.name AS top_name, TS_CHI.name AS child_name " .
     " FROM {$tables['baseline_l1l2_context']} BLC " .
     " JOIN  {$tables['baseline_l1l2_details']} BLDT " .
@@ -84,58 +84,60 @@ $rsu = $db->fetchRowsIntoMap4l($sql, $keyCols, true);
 
 // Generate statistics for each platform
 // Platforms are ordered by name
-foreach ($rsu as $plat_id => $dataByContext) {
-    $gui->statistics = array();
+if (! empty($rsu)) {
+    foreach ($rsu as $plat_id => $dataByContext) {
+        $gui->statistics = array();
 
-    $gui->statistics[$plat_id] = array();
-    $gui->span[$plat_id] = array();
+        $gui->statistics[$plat_id] = array();
+        $gui->span[$plat_id] = array();
 
-    $rx = 0;
-    foreach ($dataByContext as $context_id => $dataByTop) {
-        $gui->statistics[$plat_id][$rx] = array();
-        $gui->span[$plat_id][$rx] = null;
+        $rx = 0;
+        foreach ($dataByContext as $context_id => $dataByTop) {
+            $gui->statistics[$plat_id][$rx] = array();
+            $gui->span[$plat_id][$rx] = null;
 
-        $rrr = current(current($dataByTop))[0];
-        reset($dataByTop);
-        $gui->span[$plat_id][$rx] = array(
-            'begin' => $rrr['begin_exec_ts'],
-            'end' => $rrr['end_exec_ts'],
-            'baseline_ts' => $rrr['creation_ts']
-        );
+            $rrr = current(current($dataByTop))[0];
+            reset($dataByTop);
+            $gui->span[$plat_id][$rx] = array(
+                'begin' => $rrr['begin_exec_ts'],
+                'end' => $rrr['end_exec_ts'],
+                'baseline_ts' => $rrr['creation_ts']
+            );
 
-        foreach ($dataByTop as $top_id => $dataByChild) {
-            foreach ($dataByChild as $child_id => $dataX) {
-                $gui->statistics[$plat_id][$rx][$child_id] = array();
-                $hand = &$gui->statistics[$plat_id][$rx][$child_id];
+            foreach ($dataByTop as $top_id => $dataByChild) {
+                foreach ($dataByChild as $child_id => $dataX) {
+                    $gui->statistics[$plat_id][$rx][$child_id] = array();
+                    $hand = &$gui->statistics[$plat_id][$rx][$child_id];
 
-                $dfx = $dataX[0];
-                $hand['name'] = $dfx['top_name'] . ':' . $dfx['child_name'];
-                $hand['total_tc'] = $dfx['total_tc'];
-                $hand['percentage_completed'] = - 1;
-                $hand['details'] = $data_tpl;
-                $hand['parent_id'] = $top_id;
+                    $dfx = $dataX[0];
+                    $hand['name'] = $dfx['top_name'] . ':' . $dfx['child_name'];
+                    $hand['total_tc'] = $dfx['total_tc'];
+                    $hand['percentage_completed'] = - 1;
+                    $hand['details'] = $data_tpl;
+                    $hand['parent_id'] = $top_id;
 
-                foreach ($dataX as $xx => $xmen) {
-                    $pp = ($hand['total_tc'] > 0) ? (round(
-                        ($xmen['qty'] / $hand['total_tc']) * 100, 1)) : 0;
-                    $hand['details'][$codeToStatus[$xmen['status']]] = array(
-                        'qty' => $xmen['qty'],
-                        'percentage' => $pp
-                    );
-                }
+                    foreach ($dataX as $xx => $xmen) {
+                        $pp = ($hand['total_tc'] > 0) ? (round(
+                            ($xmen['qty'] / $hand['total_tc']) * 100, 1)) : 0;
+                        $hand['details'][$codeToStatus[$xmen['status']]] = array(
+                            'qty' => $xmen['qty'],
+                            'percentage' => $pp
+                        );
+                    }
 
-                // Calculate percentage completed, using all exec status
-                // other than not run
-                if ($hand['total_tc'] > 0) {
-                    $hand['percentage_completed'] = $hand['total_tc'] -
-                        $hand['details']['not_run']['qty'];
-                    $hand['percentage_completed'] = round(
-                        ($hand['percentage_completed'] / $hand['total_tc']) * 100,
-                        1);
+                    // Calculate percentage completed, using all exec status
+                    // other than not run
+                    if ($hand['total_tc'] > 0) {
+                        $hand['percentage_completed'] = $hand['total_tc'] -
+                            $hand['details']['not_run']['qty'];
+                        $hand['percentage_completed'] = round(
+                            ($hand['percentage_completed'] / $hand['total_tc']) *
+                            100, 1);
+                    }
                 }
             }
+            $rx ++;
         }
-        $rx ++;
     }
 }
 

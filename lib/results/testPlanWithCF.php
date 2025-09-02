@@ -22,7 +22,7 @@ $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 $tplan_mgr = new testplan($db);
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 $args = initArgs($tplan_mgr);
 
 $gui = new stdClass();
@@ -82,7 +82,7 @@ if ($tplan_mgr->count_testcases($args->tplan_id) > 0) {
     }
 }
 
-$table = buildExtTable($gui, $tcase_mgr, $labels, $imgSet['edit_icon']);
+$table = buildExtTable($gui, $tcaseMgr, $labels, $imgSet['edit_icon']);
 
 if (! is_null($table)) {
     $gui->tableSet[] = $table;
@@ -93,12 +93,12 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  *
  * @param stdClass $gui
- * @param testcase $tcase_mgr
+ * @param testcase $tcaseMgr
  * @param array $labels
  * @param string $edit_icon
  * @return tlExtTable
  */
-function buildExtTable($gui, $tcase_mgr, $labels, $edit_icon)
+function buildExtTable($gui, $tcaseMgr, $labels, $edit_icon)
 {
     $charset = config_get('charset');
     $title_sep = config_get('gui_title_separator_1');
@@ -131,7 +131,7 @@ function buildExtTable($gui, $tcase_mgr, $labels, $edit_icon)
             $rowData = array();
 
             // Get test suite path
-            $dummy = $tcase_mgr->getPathLayered(array(
+            $dummy = $tcaseMgr->getPathLayered(array(
                 $item['tcase_id']
             ));
             $dummy = end($dummy);

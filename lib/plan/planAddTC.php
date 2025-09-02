@@ -23,13 +23,13 @@ $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 $req_mgr = new requirement_mgr($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
 
 $templateCfg = templateConfiguration();
 $args = initArgs($tproject_mgr);
-$gui = initializeGui($db, $args, $tplan_mgr, $tcase_mgr);
+$gui = initializeGui($db, $args, $tplan_mgr, $tcaseMgr);
 
 $keywordsFilter = null;
 if (is_array($args->keyword_id)) {
@@ -64,7 +64,7 @@ switch ($args->doAction) {
         $gui->itemQty = count((array) $args->testcases2add);
 
         if (! is_null($args->testcases2add)) {
-            addToTestPlan($db, $args, $gui, $tplan_mgr, $tcase_mgr);
+            addToTestPlan($db, $args, $gui, $tplan_mgr, $tcaseMgr);
         }
 
         if (! is_null($args->testcases2remove)) {
@@ -92,7 +92,7 @@ switch ($args->doAction) {
         break;
 
     case 'doSaveCustomFields':
-        doSaveCustomFields($args, $_REQUEST, $tplan_mgr, $tcase_mgr);
+        doSaveCustomFields($args, $_REQUEST, $tplan_mgr, $tcaseMgr);
         break;
 
     default:
@@ -105,7 +105,7 @@ if ($do_display) {
     $tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
     // see development documentation on [INSTALL DIR]/docs/development/planAddTC.php.txt
     $tplan_linked_tcversions = getFilteredLinkedVersions($db, $args, $tplan_mgr,
-        $tcase_mgr, array(
+        $tcaseMgr, array(
             'addImportance' => true
         ));
 
@@ -257,7 +257,7 @@ if ($do_display) {
     // Need to check what I've done
     //
     $tplan_linked_tcversions = getFilteredLinkedVersions($db, $args, $tplan_mgr,
-        $tcase_mgr, null, false);
+        $tcaseMgr, null, false);
 
     // Add Test Cases to Test plan - Right pane does not honor custom field filter
     $testCaseSet = $args->control_panel['filter_tc_id'];

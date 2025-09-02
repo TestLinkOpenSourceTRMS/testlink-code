@@ -432,7 +432,7 @@ class testcase extends tlObjectWithAttachments
                 // useful when importing test cases. Need to get last version number.
                 // I do not use create_new_version() because it does a copy ot last version
                 // and do not allow to set new values in different fields while doing this operation.
-                $last_version_info = $this->get_last_version_info($ret['id'],
+                $last_version_info = $this->getLastVersionInfo($ret['id'],
                     array(
                         'output' => 'minimun'
                     ));
@@ -2294,7 +2294,7 @@ class testcase extends tlObjectWithAttachments
                         }
 
                         // ATTENTION: NEED TO UNDERSTAND HOW TO MANAGE COPY TO OTHER TEST PROJECTS
-                        $this->copy_cfields_design_values(
+                        $this->copyCfieldsDesignValues(
                             array(
                                 'id' => $id,
                                 'tcversion_id' => $tcversion['id']
@@ -2442,7 +2442,7 @@ class testcase extends tlObjectWithAttachments
             $this->node_types_descr_id['testcase_version']);
 
         // get last version for this test case (need to get new version number)
-        $last_version_info = $this->get_last_version_info($id,
+        $last_version_info = $this->getLastVersionInfo($id,
             array(
                 'output' => 'minimun'
             ));
@@ -2484,7 +2484,7 @@ class testcase extends tlObjectWithAttachments
         if ($this->cfg->testcase->relations->enable &&
             $freezeTCVRelationsOnNewTCVersion) {
             $oldVerRel = $this->getTCVRelationsRaw($source['version_id']);
-            if (null != $oldVerRel && count($oldVerRel) > 0) {
+            if (! empty($oldVerRel)) {
                 $i2c = array_keys($oldVerRel);
                 $this->closeOpenTCVRelation($i2c,
                     LINK_TC_RELATION_CLOSED_BY_NEW_TCVERSION);
@@ -2516,7 +2516,7 @@ class testcase extends tlObjectWithAttachments
     }
 
     /*
-     * function: get_last_version_info
+     * function: getLastVersionInfo
      * Get information about last version (greater number) of a testcase.
      *
      * args : id: testcase id
@@ -2538,7 +2538,7 @@ class testcase extends tlObjectWithAttachments
      * @since 1.9.9
      * 'active' => values 1,0, null => do not apply filter
      */
-    public function get_last_version_info($id, $options = null)
+    public function getLastVersionInfo($id, $options = null)
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
         $my['options'] = array(
@@ -2624,7 +2624,7 @@ class testcase extends tlObjectWithAttachments
         $this->db->exec_query($sql);
 
         // copy custom fields values JUST DESIGN AREA
-        $this->copy_cfields_design_values(
+        $this->copyCfieldsDesignValues(
             array(
                 'id' => $id,
                 'tcversion_id' => $from_tcversion_id
@@ -2639,7 +2639,7 @@ class testcase extends tlObjectWithAttachments
             'renderImageInline' => false
         );
         $stepsSet = $this->get_steps($from_tcversion_id, 0, $gso);
-        if (! is_null($stepsSet) && count($stepsSet) > 0) {
+        if (! empty($stepsSet)) {
             foreach ($stepsSet as $key => $step) {
                 $this->create_step($to_tcversion_id, $step['step_number'],
                     $step['actions'], $step['expected_results'],
@@ -3991,7 +3991,7 @@ class testcase extends tlObjectWithAttachments
         if (! is_null($my['options']['exec_to_exclude'])) {
 
             if (is_array($my['options']['exec_to_exclude'])) {
-                if (count($my['options']['exec_to_exclude']) > 0) {
+                if (! empty($my['options']['exec_to_exclude'])) {
                     $exec_id_list = implode(",",
                         $my['options']['exec_to_exclude']);
                     $where_clause .= " AND e.id NOT IN ({$exec_id_list}) ";
@@ -4030,7 +4030,7 @@ class testcase extends tlObjectWithAttachments
     }
 
     /*
-     * function: get_last_execution
+     * function: getLastExecution
      *
      * args :
      *
@@ -4384,7 +4384,7 @@ class testcase extends tlObjectWithAttachments
             // Need to get only for test case version
             $req4version = $reqMgr->getGoodForTCVersion($testCaseVersionID);
 
-            if (! is_null($req4version) && count($req4version) > 0) {
+            if (! empty($req4version)) {
                 $tc_data[0]['xmlrequirements'] = exportDataToXML($req4version,
                     $this->XMLCfg->req->root, $this->XMLCfg->req->elemTPL,
                     $this->XMLCfg->req->decode, true);
@@ -5392,7 +5392,7 @@ class testcase extends tlObjectWithAttachments
     }
 
     /*
-     * function: copy_cfields_design_values
+     * function: copyCfieldsDesignValues
      * Get all cfields linked to any testcase of this testproject
      * with the values presents for $from_id, testcase we are using as
      * source for our copy.
@@ -5401,7 +5401,7 @@ class testcase extends tlObjectWithAttachments
      * destination: map('id' => testcase id, 'tcversion_id' => testcase id)
      *
      */
-    public function copy_cfields_design_values($source, $destination)
+    public function copyCfieldsDesignValues($source, $destination)
     {
         // Get all cfields linked to any testcase of this test project
         // with the values presents for $from_id, testcase we are using as
@@ -5626,7 +5626,7 @@ class testcase extends tlObjectWithAttachments
 
         // get all testcases on test project with this name and parent test suite
         $recordset = $this->get_by_name($tcaseName, $tsuiteName, $tprojectName);
-        if (! is_null($recordset) && count($recordset) > 0) {
+        if (! empty($recordset)) {
             foreach ($recordset as $value) {
                 $dummy = $this->tree_manager->get_full_path_verbose(
                     $value['id']);
@@ -5665,7 +5665,7 @@ class testcase extends tlObjectWithAttachments
         } else {
             $tcase_prefix = $prefix;
         }
-        $info = $this->get_last_version_info($id, array(
+        $info = $this->getLastVersionInfo($id, array(
             'output' => 'minimun'
         ));
         if (is_null($info)) {
@@ -6276,7 +6276,7 @@ class testcase extends tlObjectWithAttachments
                 'fields2get' => 'id',
                 'accessKey' => 'id'
             ));
-        if (count($stepSet) > 0) {
+        if (! empty($stepSet)) {
             $this->delete_step_by_id(array_keys($stepSet));
         }
 
@@ -6617,7 +6617,7 @@ class testcase extends tlObjectWithAttachments
                                             $dx['Version']) : 0;
                                         if ($vn == 0) {
                                             // User wants to follow latest ACTIVE VERSION
-                                            $yy = $this->get_last_version_info(
+                                            $yy = $this->getLastVersionInfo(
                                                 $xid,
                                                 array(
                                                     'output' => 'full',
@@ -6625,7 +6625,7 @@ class testcase extends tlObjectWithAttachments
                                                 ));
                                             if (is_null($yy)) {
                                                 // seems all versions are inactive, in this situation will get latest
-                                                $yy = $this->get_last_version_info(
+                                                $yy = $this->getLastVersionInfo(
                                                     $xid,
                                                     array(
                                                         'output' => 'full'
@@ -7187,7 +7187,7 @@ class testcase extends tlObjectWithAttachments
         $pathInfo = current($pathInfo);
         $path = '/' . implode('/', $pathInfo['name']) . '/';
         $tcase_prefix = $this->getPrefix($safeID['id'], $pathInfo['node_id'][0]);
-        $info = $this->get_last_version_info($safeID['id'],
+        $info = $this->getLastVersionInfo($safeID['id'],
             array(
                 'output' => 'medium'
             ));
@@ -7374,7 +7374,7 @@ class testcase extends tlObjectWithAttachments
             array(
                 'plan_status' => 1
             ));
-        $goo->has_testplans = ! is_null($testplans) && count($testplans) > 0 ? 1 : 0;
+        $goo->has_testplans = ! empty($testplans) ? 1 : 0;
 
         $platformMgr = new tlPlatform($this->db, $goo->tproject_id);
 
@@ -7435,7 +7435,7 @@ class testcase extends tlObjectWithAttachments
      * render Ghost Test Case
      *
      *
-     * @used by this.get_by_id(), this.get_last_execution()
+     * @used by this.get_by_id(), this.getLastExecution()
      * @used by this.renderGhostSteps()
      */
     public function renderGhost(&$item2render)
@@ -7506,8 +7506,7 @@ class testcase extends tlObjectWithAttachments
                                         $dx['Version']) : 0;
                                     if ($vn == 0) {
                                         // User wants to follow latest ACTIVE VERSION
-                                        $zorro = $this->get_last_version_info(
-                                            $xid,
+                                        $zorro = $this->getLastVersionInfo($xid,
                                             array(
                                                 'output' => 'full',
                                                 'active' => 1
@@ -7515,7 +7514,7 @@ class testcase extends tlObjectWithAttachments
                                         $linkFeedback = " to Latest ACTIVE Version)";
                                         if (is_null($zorro)) {
                                             // seems all versions are inactive, in this situation will get latest
-                                            $zorro = $this->get_last_version_info(
+                                            $zorro = $this->getLastVersionInfo(
                                                 $xid,
                                                 array(
                                                     'output' => 'full'
@@ -7793,7 +7792,7 @@ class testcase extends tlObjectWithAttachments
 
         $relSet['relations'] = $this->db->get_recordset($sql);
 
-        if (! is_null($relSet['relations']) && count($relSet['relations']) > 0) {
+        if (! empty($relSet['relations'])) {
             $labels = $this->getRelationLabels();
             $label_keys = array_keys($labels);
             foreach ($relSet['relations'] as $key => $rel) {
@@ -7877,7 +7876,7 @@ class testcase extends tlObjectWithAttachments
 
         $relSet['relations'] = $this->db->get_recordset($sql);
 
-        if (! is_null($relSet['relations']) && count($relSet['relations']) > 0) {
+        if (! empty($relSet['relations'])) {
             $labels = $this->getRelationLabels();
             $label_keys = array_keys($labels);
 
@@ -8518,7 +8517,7 @@ class testcase extends tlObjectWithAttachments
      *
      * <p> </p> added by web rich editor create some layout issues
      *
-     * @used by this.get_by_id(), this.get_last_execution()
+     * @used by this.get_by_id(), this.getLastExecution()
      *
      */
     public function renderVariables(&$item2render, $tproj_id)
@@ -8690,7 +8689,7 @@ class testcase extends tlObjectWithAttachments
 
         $pfx = $this->tproject_mgr->getTestCasePrefix($pathInfo['node_id'][0]);
 
-        $info = $this->get_last_version_info($tcase_id,
+        $info = $this->getLastVersionInfo($tcase_id,
             array(
                 'output' => 'medium'
             ));
@@ -8876,8 +8875,6 @@ class testcase extends tlObjectWithAttachments
             LINK_TC_RELATION_OPEN;
 
         $this->db->exec_query($sql);
-
-        // No audit yet
     }
 
     /**
@@ -8899,7 +8896,7 @@ class testcase extends tlObjectWithAttachments
             " link_status,author_id) ";
 
         $values = array();
-        if (null != $relSource && count($relSource) > 0) {
+        if (! empty($relSource)) {
             foreach ($relSource as $key => $elem) {
                 $stm = "($dest_id,{$elem['destination_id']}," .
                     "{$elem['relation_type']},{$elem['link_status']}," .
@@ -8908,7 +8905,7 @@ class testcase extends tlObjectWithAttachments
             }
         }
 
-        if (null != $relDest && count($relDest) > 0) {
+        if (! empty($relDest)) {
             foreach ($relDest as $key => $elem) {
                 $stm = "({$elem['source_id']},$dest_id," .
                     "{$elem['relation_type']},{$elem['link_status']}," .
@@ -8923,8 +8920,6 @@ class testcase extends tlObjectWithAttachments
 
             $this->db->exec_query($sql);
         }
-
-        // public function addRelation($source_id, $destination_id, $type_id, $author_id, $ts=null) {
     }
 
     /**
@@ -9466,7 +9461,7 @@ class testcase extends tlObjectWithAttachments
 
         $tcvSet = $this->db->fetchRowsIntoMap($sqlA, 'id');
 
-        if (count($linkSet) > 0) {
+        if (! empty($linkSet)) {
 
             $safeTP = intval($tplanID);
             $linkItems = array_keys($linkSet);
@@ -9648,14 +9643,13 @@ class testcase extends tlObjectWithAttachments
     public function getStepsPartialExec($stepsIds, $context)
     {
         $rs = null;
-        if (! is_null($stepsIds) && count($stepsIds) > 0) {
-
+        if (! empty($stepsIds)) {
             $fields2get = "tcstep_id,testplan_id,platform_id,build_id,
                      tester_id,notes,status,creation_ts";
 
-            $sql = "SELECT {$fields2get}
-              FROM {$this->tables['execution_tcsteps_wip']}
-              WHERE tcstep_id IN (" . implode(",", $stepsIds) . ") " .
+            $sql = "SELECT {$fields2get} " .
+                " FROM {$this->tables['execution_tcsteps_wip']} " .
+                " WHERE tcstep_id IN (" . implode(",", $stepsIds) . ") " .
                 " AND testplan_id = " .
                 $this->db->prepare_int($context->testplan_id) .
                 " AND platform_id = " .
@@ -9675,8 +9669,9 @@ class testcase extends tlObjectWithAttachments
             // Security
             $inClause = $this->db->prepare_string(implode(",", $stepsIds));
 
-            $sql = " DELETE FROM {$this->tables['execution_tcsteps_wip']}
-               WHERE tcstep_id IN (" . $inClause . ") " . " AND testplan_id = " .
+            $sql = " DELETE FROM {$this->tables['execution_tcsteps_wip']} " .
+                " WHERE tcstep_id IN (" . $inClause . ") " .
+                " AND testplan_id = " .
                 $this->db->prepare_int($context->testplan_id) .
                 " AND platform_id = " .
                 $this->db->prepare_int($context->platform_id) .
@@ -9701,12 +9696,11 @@ class testcase extends tlObjectWithAttachments
             }
         }
 
-        $sql = "SELECT id
-            FROM {$this->views['latest_exec_by_context']}
-            WHERE tcversion_id= $tcversion_id
-            AND testplan_id = $tplan_id
-            AND platform_id = $ctx->platform_id
-            AND build_id = $ctx->build_id";
+        $sql = "SELECT id " . " FROM {$this->views['latest_exec_by_context']} " .
+            " WHERE tcversion_id= $tcversion_id " .
+            " AND testplan_id = $tplan_id " .
+            " AND platform_id = $ctx->platform_id " .
+            " AND build_id = $ctx->build_id";
 
         $rs = $this->db->get_recordset($sql);
 
@@ -9743,17 +9737,14 @@ class testcase extends tlObjectWithAttachments
         }
         $tproject_id = intval($tproject_id);
 
-        $sql = " SELECT PL.id AS platform_id, PL.name AS platform
-             FROM {$this->tables['platforms']} PL
-             WHERE PL.testproject_id = {$tproject_id}
-             AND PL.enable_on_design = 1
-             AND PL.id NOT IN
-             (
-               SELECT TCPL.platform_id
-               FROM {$this->tables['testcase_platforms']} TCPL
-               WHERE TCPL.testcase_id = {$safe['tcase_id']}
-               AND TCPL.tcversion_id = {$safe['tcversion_id']}
-             ) ";
+        $sql = " SELECT PL.id AS platform_id, PL.name AS platform " .
+            " FROM {$this->tables['platforms']} PL " .
+            " WHERE PL.testproject_id = {$tproject_id} " .
+            " AND PL.enable_on_design = 1 " . " AND PL.id NOT IN " .
+            " ( SELECT TCPL.platform_id " .
+            " FROM {$this->tables['testcase_platforms']} TCPL " .
+            " WHERE TCPL.testcase_id = {$safe['tcase_id']} " .
+            " AND TCPL.tcversion_id = {$safe['tcversion_id']} ) ";
 
         if (! is_null($my['opt']['orderBy'])) {
             $sql .= ' ' . $my['opt']['orderBy'];
@@ -9790,11 +9781,10 @@ class testcase extends tlObjectWithAttachments
         $links = (array) $linkID;
         $inClause = implode(',', $links);
 
-        $sql = " /* $debugMsg */
-             SELECT TCPL.tcversion_id, TCPL.platform_id
-             FROM {$this->tables['testcase_platforms']} TCPL
-             WHERE TCPL.testcase_id = {$safeTCID}
-             AND TCPL.id IN ($inClause) ";
+        $sql = " /* $debugMsg */ SELECT TCPL.tcversion_id, TCPL.platform_id " .
+            " FROM {$this->tables['testcase_platforms']} TCPL " .
+            " WHERE TCPL.testcase_id = {$safeTCID} " .
+            " AND TCPL.id IN ($inClause) ";
 
         $rs = $this->db->get_recordset($sql);
 
@@ -9809,15 +9799,14 @@ class testcase extends tlObjectWithAttachments
     public function deletePlatforms($tcID, $versionID, $platID = null,
         $audit = null)
     {
-        $sql = " DELETE FROM {$this->tables['testcase_platforms']} " .
-            " WHERE testcase_id = " . intval($tcID) . " AND tcversion_id = " .
-            intval($versionID);
-
         $adt = array(
             'on' => self::AUDIT_ON
         );
         $adt = array_merge($adt, (array) $audit);
 
+        $sql = " DELETE FROM {$this->tables['testcase_platforms']} " .
+            " WHERE testcase_id = " . intval($tcID) . " AND tcversion_id = " .
+            intval($versionID);
         if (! is_null($platID)) {
             if (is_array($platID)) {
                 $sql .= " AND platform_id IN (" . implode(',', $platID) . ")";

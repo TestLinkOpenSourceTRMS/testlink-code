@@ -1142,7 +1142,7 @@ class cfield_mgr extends tlObject
 
     /**
      */
-    private function setRequired($tproject_id, $cfieldSet, $val)
+    public function setRequired($tproject_id, $cfieldSet, $val)
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
 
@@ -2842,7 +2842,7 @@ class cfield_mgr extends tlObject
 
     /**
      */
-    private function setMonitorable($tproject_id, $cfieldSet, $val)
+    public function setMonitorable($tproject_id, $cfieldSet, $val)
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
 

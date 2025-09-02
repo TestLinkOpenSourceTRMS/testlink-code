@@ -163,10 +163,10 @@ if ($args->user_action == 'create') {
             $tScriptFieldID = null;
             $tScriptFieldValue = null;
 
-            $tcase_mgr = new testcase($db);
-            $linked_cfields = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design(
+            $tcaseMgr = new testcase($db);
+            $linked_cfields = $tcaseMgr->cfield_mgr->get_linked_cfields_at_design(
                 $args->tproject_id, 1, null, 'testcase', $args->tcversion_id);
-            unset($tcase_mgr);
+            unset($tcaseMgr);
             foreach ($linked_cfields as $cfieldID => $cfieldValue) {
                 if (is_null($tScriptFieldValue) &&
                     strpos(

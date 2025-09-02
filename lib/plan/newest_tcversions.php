@@ -17,7 +17,7 @@ $testcase_cfg = config_get('testcase_cfg');
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 
 $args = initArgs();
 $context = new stdClass();
@@ -31,10 +31,10 @@ $gui->can_manage_testplans = $_SESSION['currentUser']->hasRight($db,
 $gui->tplans = array();
 $gui->show_details = 0;
 $gui->user_feedback = '';
-$gui->tcasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix(
+$gui->tcasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix(
     $args->tproject_id) . $testcase_cfg->glue_character;
 
-$tplan_info = $tcase_mgr->get_by_id($args->tplan_id);
+$tplan_info = $tcaseMgr->get_by_id($args->tplan_id);
 $gui->tplan_name = $tplan_info['name'];
 $gui->tplan_id = $args->tplan_id;
 $gui->tproject_name = $args->tproject_name;

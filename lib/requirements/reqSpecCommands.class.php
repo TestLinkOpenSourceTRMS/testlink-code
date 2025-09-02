@@ -145,7 +145,7 @@ class reqSpecCommands
      *
      */
     // following req command model
-    private function edit(&$argsObj, $request, $overwriteArgs = true)
+    public function edit(&$argsObj, $request, $overwriteArgs = true)
     {
         $guiObj = $this->initGuiBean();
 

@@ -89,7 +89,7 @@ class reqCommands
 
         $obj->req_id = 0;
         $obj->canAddCoverage = true;
-        if (null != $argsObj) {
+        if (! empty($argsObj)) {
             $obj->refreshTree = $argsObj->refreshTree;
             $obj->tproject_name = $argsObj->tproject_name;
             $obj->showAllVersions = $argsObj->showAllVersions;
@@ -117,7 +117,7 @@ class reqCommands
                 $nuOpt = array(
                     'output' => 'id'
                 );
-                $nu = $this->reqMgr->get_last_version_info($obj->req_id, $nuOpt);
+                $nu = $this->reqMgr->getLastVersionInfo($obj->req_id, $nuOpt);
                 $obj->canAddCoverage = ($nu['id'] == $obj->req_version_id);
             }
         }
@@ -747,7 +747,7 @@ class reqCommands
                 $op['msg'] = sprintf(lang_get('rel_add_error_exists_already'),
                     $this->reqRelationTypeDescr[$relTypeID]);
             }
-            $dest_last_version_info = $this->reqMgr->get_last_version_info(
+            $dest_last_version_info = $this->reqMgr->getLastVersionInfo(
                 $destination_id);
             if (! $dest_last_version_info['is_open']) {
                 $op['ok'] = false;

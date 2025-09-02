@@ -347,10 +347,10 @@ class RestApi
             $this->tprojectMgr->get_all_testcases_id($tproject['id'],
                 $tcaseIDSet);
 
-            if (! is_null($tcaseIDSet) && count($tcaseIDSet) > 0) {
+            if (! empty($tcaseIDSet)) {
                 $op['items'] = array();
                 foreach ($tcaseIDSet as $key => $tcaseID) {
-                    $item = $this->tcaseMgr->get_last_version_info($tcaseID);
+                    $item = $this->tcaseMgr->getLastVersionInfo($tcaseID);
                     $item['keywords'] = $this->tcaseMgr->get_keywords_map(
                         $tcaseID, $item['tcversion_id']);
                     $item['customfields'] = $this->tcaseMgr->get_linked_cfields_at_design(
@@ -440,7 +440,7 @@ class RestApi
 
         if (! is_null($tproj)) {
             $items = $this->tprojectMgr->get_all_testplans($tproj['id']);
-            $op['items'] = (! is_null($items) && count($items) > 0) ? $items : null;
+            $op['items'] = (! empty($items)) ? $items : null;
         } else {
             $op['message'] = "No Test Project identified by '" . $idCard . "'!";
             $op['status'] = 'error';
@@ -466,7 +466,7 @@ class RestApi
 
         if (! is_null($tplan)) {
             $items = $this->tplanMgr->get_builds($tplan['id']);
-            $op['items'] = (! is_null($items) && count($items) > 0) ? $items : null;
+            $op['items'] = (! empty($items)) ? $items : null;
         } else {
             $op['message'] = "No Test Plan identified by API KEY:" .
                 $idCard['tplanApiKey'] . "";

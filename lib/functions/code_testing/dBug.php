@@ -453,7 +453,7 @@ class dBug
         $this->xmlSData[$this->xmlCount] .= 'echo "<strong>' .
             $this->xmlName[$this->xmlCount] . '</strong>".$this->closeTDRow();';
         $this->xmlSData[$this->xmlCount] .= '$this->makeTDHeader("xml","xmlAttributes");';
-        if (count($attribs) > 0)
+        if (! empty($attribs))
             $this->xmlSData[$this->xmlCount] .= '$this->varIsArray($this->xmlAttrib[' .
                 $this->xmlCount . ']);';
         else

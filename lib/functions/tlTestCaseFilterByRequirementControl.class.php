@@ -777,7 +777,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function initSettingRefreshTreeOnAction()
+    public function init_setting_refresh_tree_on_action()
     {
         $key = 'setting_refresh_tree_on_action';
         $hidden_key = 'hidden_setting_refresh_tree_on_action';
@@ -805,7 +805,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function initSettingGetParentChildRelation()
+    public function init_setting_get_parent_child_relation()
     {
         $key = 'setting_get_parent_child_relation';
         $hidden_key = 'hidden_setting_get_parent_child_relation';
@@ -832,7 +832,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function initSettingTestplan()
+    public function init_setting_testplan()
     {
         if (is_null($this->testplan_mgr)) {
             $this->testplan_mgr = new testplan($this->db);
@@ -912,7 +912,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
     /*
      *
      */
-    private function init_filter_tc_id()
+    public function init_filter_tc_id()
     {
         $key = 'filter_tc_id';
         $selection = $this->args->{$key};
@@ -941,7 +941,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_testcase_name()
+    public function init_filter_testcase_name()
     {
         $key = 'filter_testcase_name';
         $selection = $this->args->{$key};
@@ -960,7 +960,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_toplevel_testsuite()
+    public function init_filter_toplevel_testsuite()
     {
         if (! $this->testproject_mgr) {
             $this->testproject_mgr = new testproject($this->db);
@@ -1008,7 +1008,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
      * @since 1.9.13
      *        mode this affect domain
      */
-    private function initFilterKeywords()
+    public function init_filter_keywords()
     {
         $key = 'filter_keywords';
         $type = 'filter_keywords_filter_type';
@@ -1112,7 +1112,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
     }
 
     // TICKET 4353: added active/inactive filter
-    private function initFilterActiveInactive()
+    public function init_filter_active_inactive()
     {
         $key = 'filter_active_inactive';
 
@@ -1139,7 +1139,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_importance()
+    public function init_filter_importance()
     {
         // show this filter only if test priority management is enabled
         $key = 'filter_importance';
@@ -1181,7 +1181,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_priority()
+    public function init_filter_priority()
     {
         // This is a special case of filter: the menu items don't get initialized here,
         // they are available as a global smarty variable. So the only thing to be managed
@@ -1216,7 +1216,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_execution_type()
+    public function init_filter_execution_type()
     {
         if (! $this->tc_mgr) {
             $this->tc_mgr = new testcase($this->db);
@@ -1248,7 +1248,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_assigned_user()
+    public function init_filter_assigned_user()
     {
         if (! $this->testproject_mgr) {
             $this->testproject_mgr = new testproject($this->db);
@@ -1339,7 +1339,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_result()
+    public function init_filter_result()
     {
         $result_key = 'filter_result_result';
         $method_key = 'filter_result_method';
@@ -1450,7 +1450,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_bugs()
+    public function init_filter_bugs()
     {
         $key = str_replace('init_', '', __FUNCTION__);
         $selection = $this->args->{$key};
@@ -1473,7 +1473,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
      * @since 1.9.14
      *        allow multiple selection (if advanced mode)
      */
-    private function initFilterWorkflowStatus()
+    public function init_filter_workflow_status()
     {
         $key = 'filter_workflow_status';
         if (! $this->tc_mgr) {
@@ -1517,7 +1517,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
      *
      * @used-by __construct
      */
-    private function initTreeOptions()
+    public function initTreeOptions()
     {
         $this->treeOpt['plan_mode'] = new stdClass();
         $this->treeOpt['plan_mode']->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
@@ -1544,7 +1544,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_doc_id()
+    public function init_filter_doc_id()
     {
         $key = 'filter_doc_id';
         $selection = $this->args->{$key};
@@ -1563,7 +1563,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_title()
+    public function init_filter_title()
     {
         $key = 'filter_title';
         $selection = $this->args->{$key};
@@ -1583,7 +1583,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
     /*
      *
      */
-    private function init_filter_status()
+    public function init_filter_status()
     {
         $key = 'filter_status';
         $selection = $this->args->{$key};
@@ -1610,7 +1610,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function initFilterType()
+    public function init_filter_type()
     {
         $key = 'filter_type';
         $selection = $this->args->{$key};
@@ -1636,7 +1636,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_spec_type()
+    public function init_filter_spec_type()
     {
         $key = 'filter_spec_type';
         $selection = $this->args->{$key};
@@ -1662,7 +1662,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_coverage()
+    public function init_filter_coverage()
     {
         $key = 'filter_coverage';
         $this->filters[$key] = false;
@@ -1688,7 +1688,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_relation()
+    public function init_filter_relation()
     {
         $key = 'filter_relation';
 

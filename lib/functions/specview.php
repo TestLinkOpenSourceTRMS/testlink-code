@@ -174,8 +174,8 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
 
     $testplan_id = $is_tplan_view_type ? $tobj_id : null;
 
-    $tcase_mgr = new testcase($db);
-    $hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
+    $tcaseMgr = new testcase($db);
+    $hash_descr_id = $tcaseMgr->tree_manager->get_available_node_types();
     $hash_id_descr = array_flip($hash_descr_id);
 
     $key2map = array(
@@ -207,7 +207,7 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
         }
     }
 
-    $test_spec = getTestSpecFromNode($db, $tcase_mgr, $linked_items, $tobj_id,
+    $test_spec = getTestSpecFromNode($db, $tcaseMgr, $linked_items, $tobj_id,
         $id, $spec_view_type, $pfFilters);
 
     $platforms = getPlatforms($db, $tproject_id, $testplan_id);
@@ -254,7 +254,7 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
             'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC "
         );
 
-        $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid, testcase::ALL_VERSIONS,
+        $tcaseVersionSet = $tcaseMgr->get_by_id($a_tcid, testcase::ALL_VERSIONS,
             null, $optGBI);
         $result = addLinkedVersionsInfo($tcaseVersionSet, $a_tsuite_idx, $out,
             $linked_items, $options);
@@ -263,15 +263,15 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
     // Try to prune empty test suites, to reduce memory usage and
     // to remove elements
     // that do not need to be displayed on user interface.
-    if (count($result['spec_view']) > 0) {
-        removeEmptyTestSuites($result['spec_view'], $tcase_mgr->tree_manager,
+    if (! empty($result['spec_view'])) {
+        removeEmptyTestSuites($result['spec_view'], $tcaseMgr->tree_manager,
             ($my['options']['prune_unlinked_tcversions'] && $is_tplan_view_type),
             $hash_descr_id);
     }
 
     // Remove empty branches
     // Loop to compute test case qty ($tsuite_tcqty) on every level and prune test suite branchs that are empty
-    if (count($result['spec_view']) > 0) {
+    if (! empty($result['spec_view'])) {
         removeEmptyBranches($result['spec_view'], $tsuite_tcqty);
     }
 
@@ -305,10 +305,10 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
     // }
 
     // #1650 We want to manage custom fields when user is doing test case execution assigment
-    if (count($result['spec_view']) > 0 && $my['options']['add_custom_fields']) {
-        addCustomFieldsToView($result['spec_view'], $tproject_id, $tcase_mgr);
+    if (! empty($result['spec_view']) && $my['options']['add_custom_fields']) {
+        addCustomFieldsToView($result['spec_view'], $tproject_id, $tcaseMgr);
     }
-    unset($tcase_mgr);
+    unset($tcaseMgr);
 
     // with array_values() we reindex array to avoid "holes"
     $result['spec_view'] = array_values($result['spec_view']);
@@ -360,8 +360,8 @@ function gen_coverage_view(&$db, $specViewType, $tobj_id, $id, $name,
 
     $testplan_id = $is_tplan_view_type ? $tobj_id : null;
 
-    $tcase_mgr = new testcase($db);
-    $hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
+    $tcaseMgr = new testcase($db);
+    $hash_descr_id = $tcaseMgr->tree_manager->get_available_node_types();
     $hash_id_descr = array_flip($hash_descr_id);
 
     $key2map = array(
@@ -380,7 +380,7 @@ function gen_coverage_view(&$db, $specViewType, $tobj_id, $id, $name,
         $pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
     }
 
-    $test_spec = getTestSpecFromNode($db, $tcase_mgr, $linked_items, $tobj_id,
+    $test_spec = getTestSpecFromNode($db, $tcaseMgr, $linked_items, $tobj_id,
         $id, $spec_view_type, $pfFilters, 'req_order');
 
     $platforms = getPlatforms($db, $tproject_id, $testplan_id);
@@ -426,7 +426,7 @@ function gen_coverage_view(&$db, $specViewType, $tobj_id, $id, $name,
             'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC "
         );
 
-        $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid, testcase::ALL_VERSIONS,
+        $tcaseVersionSet = $tcaseMgr->get_by_id($a_tcid, testcase::ALL_VERSIONS,
             null, $optGBI);
         $result = addLinkedVersionsInfo($tcaseVersionSet, $a_tsuite_idx, $out,
             $linked_items);
@@ -463,10 +463,10 @@ function gen_coverage_view(&$db, $specViewType, $tobj_id, $id, $name,
 
     // #1650 We want to manage custom fields when user is doing test case execution assigment
     if (count($result['spec_view']) > 0 && $my['options']['add_custom_fields']) {
-        addCustomFieldsToView($result['spec_view'], $tproject_id, $tcase_mgr);
+        addCustomFieldsToView($result['spec_view'], $tproject_id, $tcaseMgr);
     }
     // --------------------------------------------------------------------------------------------
-    unset($tcase_mgr);
+    unset($tcaseMgr);
 
     // with array_values() we reindex array to avoid "holes"
     $result['spec_view'] = array_values($result['spec_view']);
@@ -987,16 +987,16 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems,
                     }
 
                     $setToRemove = array_diff_key($tcversionSet, $allowedSet);
-                    if (! is_null($setToRemove) && count($setToRemove) > 0) {
+                    if (! empty($setToRemove)) {
                         foreach ($setToRemove as $key => $value) {
                             $tspecKey = $itemSet[$value['testcase_id']];
                             $test_spec[$tspecKey] = null;
                         }
                     }
                     break;
-            } // end switch
+            }
         }
-    } // if apply filters
+    }
     return $test_spec;
 }
 
@@ -1031,7 +1031,7 @@ function removeEmptyTestSuites(&$testSuiteSet, &$treeMgr,
             } else {
                 // Only if test suite has children test cases we need to understand
                 // if they are linked or not
-                if (isset($value['testcases']) && count($value['testcases']) > 0) {
+                if (! empty($value['testcases'])) {
                     foreach ($value['testcases'] as $skey => $svalue) {
                         if ($svalue['linked_version_id'] == 0) {
                             unset($testSuiteSet[$key]['testcases'][$skey]);
@@ -1586,8 +1586,8 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name,
 
     $testplan_id = $is_tplan_view_type ? $tobj_id : null;
 
-    $tcase_mgr = new testcase($db);
-    $hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
+    $tcaseMgr = new testcase($db);
+    $hash_descr_id = $tcaseMgr->tree_manager->get_available_node_types();
     $hash_id_descr = array_flip($hash_descr_id);
 
     $key2map = array(
@@ -1607,7 +1607,7 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name,
         $pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
     }
 
-    $test_spec = getTestSpecFromNode($db, $tcase_mgr, $linked_items, $tobj_id,
+    $test_spec = getTestSpecFromNode($db, $tcaseMgr, $linked_items, $tobj_id,
         $id, $spec_view_type, $pfFilters);
 
     $platforms = getPlatforms($db, $tproject_id, $testplan_id);
@@ -1638,10 +1638,10 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name,
         );
 
         if (isset($options['onlyLatestTCV']) && $options['onlyLatestTCV']) {
-            $tcaseVersionSet = $tcase_mgr->getLTCVInfo($a_tcid);
+            $tcaseVersionSet = $tcaseMgr->getLTCVInfo($a_tcid);
         } else {
             $whatSet = testcase::ALL_VERSIONS;
-            $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid, $whatSet, null,
+            $tcaseVersionSet = $tcaseMgr->get_by_id($a_tcid, $whatSet, null,
                 $optGBI);
         }
         $result = addLinkedVersionsInfo($tcaseVersionSet, $a_tsuite_idx, $out,
@@ -1649,7 +1649,7 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name,
     }
 
     if (count($result['spec_view']) > 0 && $my['options']['add_custom_fields']) {
-        addCustomFieldsToView($result['spec_view'], $tproject_id, $tcase_mgr);
+        addCustomFieldsToView($result['spec_view'], $tproject_id, $tcaseMgr);
     }
 
     // with array_values() we reindex array to avoid "holes"

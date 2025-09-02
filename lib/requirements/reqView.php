@@ -74,7 +74,7 @@ function initArgs(&$reqMgr)
 
     if ($args->req_version_id == 0) {
         $args->showAllVersions = true;
-        $lv = $reqMgr->get_last_version_info($args->req_id);
+        $lv = $reqMgr->getLastVersionInfo($args->req_id);
         $args->req_version_id = intval($lv['id']);
     }
 

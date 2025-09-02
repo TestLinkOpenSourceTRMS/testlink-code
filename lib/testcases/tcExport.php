@@ -14,7 +14,7 @@ require_once '../functions/xml.inc.php';
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
-$tcase_mgr = null;
+$tcaseMgr = null;
 $tree_mgr = new tree($db);
 
 $args = initArgs($db);
@@ -46,8 +46,8 @@ if ($args->useRecursion) {
     // All test cases in test suite.
     // One test case.
     if ($gui->oneTestCaseExport) {
-        $tcase_mgr = new testcase($db);
-        $tcinfo = $tcase_mgr->get_by_id($args->tcase_id, $args->tcversion_id,
+        $tcaseMgr = new testcase($db);
+        $tcinfo = $tcaseMgr->get_by_id($args->tcase_id, $args->tcversion_id,
             null, array(
                 'output' => 'essential'
             ));
@@ -84,8 +84,8 @@ if ($check_children) {
 $node = $tree_mgr->get_node_hierarchy_info($node_id);
 
 if ($args->doExport || ($args->doExportSkel && ! $gui->oneTestCaseExport)) {
-    if (is_null($tcase_mgr)) {
-        $tcase_mgr = new testcase($db);
+    if (is_null($tcaseMgr)) {
+        $tcaseMgr = new testcase($db);
     }
     $tsuite_mgr = new testsuite($db);
 
@@ -103,7 +103,7 @@ if ($args->doExport || ($args->doExportSkel && ! $gui->oneTestCaseExport)) {
         if ($gui->oneTestCaseExport) {
             $args->optExport['RELATIONS'] = true;
             $args->optExport['ROOTELEM'] = "<testcases>{{XMLCODE}}</testcases>";
-            $content = $tcase_mgr->$pfn($args->tcase_id, $args->tcversion_id,
+            $content = $tcaseMgr->$pfn($args->tcase_id, $args->tcversion_id,
                 $args->tproject_id, null, $args->optExport);
         } else {
 

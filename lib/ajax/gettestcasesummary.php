@@ -16,7 +16,7 @@ testlinkInitPage($db);
 // take care of proper escaping when magic_quotes_gpc is enabled
 $_REQUEST = strings_stripSlashes($_REQUEST);
 
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 $tcase_id = intval(isset($_REQUEST['tcase_id']) ? $_REQUEST['tcase_id'] : 0);
 $tcversion_id = intval(
     isset($_REQUEST['tcversion_id']) ? $_REQUEST['tcversion_id'] : 0);
@@ -24,12 +24,12 @@ $tcversion_id = intval(
 $info = '';
 if ($tcase_id > 0) {
     if ($tcversion_id > 0) {
-        $tcase = $tcase_mgr->get_by_id($tcase_id, $tcversion_id);
+        $tcase = $tcaseMgr->get_by_id($tcase_id, $tcversion_id);
         if (! is_null($tcase)) {
             $tcase = $tcase[0];
         }
     } else {
-        $tcase = $tcase_mgr->get_last_version_info($tcase_id);
+        $tcase = $tcaseMgr->getLastVersionInfo($tcase_id);
     }
     $info = $tcase['summary'];
 

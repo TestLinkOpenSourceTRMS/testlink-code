@@ -1052,7 +1052,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
             'renderImageInline' => true
         ));
 
-    if (null != $tcInfo && ! empty($tcInfo)) {
+    if (! empty($tcInfo)) {
         $tcInfo = $tcInfo[0];
     } else {
         $msg = basename(__FILE__) . ' >' . 'Line: ' . __LINE__ . ' > ' .
@@ -1778,7 +1778,7 @@ function renderTestSuiteNodeForPrinting(&$db, &$node, $env, &$options, $context,
         $tInfo = null;
 
         $attachSet = (array) $tsuite_mgr->getAttachmentInfos($node['id']);
-        if (count($attachSet) > 0) {
+        if (! empty($attachSet)) {
             $code .= '<table><caption style="text-align:left;">' .
                 $l10n['attached_files'] . '</caption>';
             $code .= '<tr><td>&nbsp</td>';

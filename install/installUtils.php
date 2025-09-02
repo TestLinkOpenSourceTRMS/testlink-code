@@ -252,7 +252,7 @@ function create_user_for_db($db_type, $db_name, $db_server, $db_admin_name,
         $msg = "ko - fatal error - can't get db server user list !!!";
     }
 
-    if ($try_create_user == 1 && ! is_null($user_list) && count($user_list) > 0) {
+    if ($try_create_user == 1 && ! empty($user_list)) {
 
         $user_list = array_map('strtolower', $user_list);
         $user_exists = in_array($login_lc, $user_list);

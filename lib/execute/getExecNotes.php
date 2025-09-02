@@ -21,7 +21,7 @@ require_once require_web_editor($webeditorCfg['type']);
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 $args = initArgs();
 
 $webeditorCfg = getWebEditorCfg('display_execution_notes');

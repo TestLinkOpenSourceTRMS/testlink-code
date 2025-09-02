@@ -59,7 +59,7 @@ class testplan extends tlObjectWithAttachments
 
     public $cfield_mgr;
 
-    public $tcase_mgr;
+    public $tcaseMgr;
 
     public $tproject_mgr;
 
@@ -113,7 +113,7 @@ class testplan extends tlObjectWithAttachments
         $this->assignment_status = $this->assignment_mgr->get_available_status();
 
         $this->cfield_mgr = new cfield_mgr($this->db);
-        $this->tcase_mgr = new testcase($this->db);
+        $this->tcaseMgr = new testcase($this->db);
         $this->platform_mgr = new tlPlatform($this->db);
         $this->tproject_mgr = new testproject($this->db);
 
@@ -644,7 +644,7 @@ class testplan extends tlObjectWithAttachments
         $ret = array();
         $dummy = reset($items);
 
-        list ($ret['tcasePrefix'],) = $this->tcase_mgr->getPrefix($dummy);
+        list ($ret['tcasePrefix'],) = $this->tcaseMgr->getPrefix($dummy);
         $ret['tcasePrefix'] .= $this->tcaseCfg->glue_character;
 
         $sql = "/* $debugMsg */ " .
@@ -1604,7 +1604,7 @@ class testplan extends tlObjectWithAttachments
 
         $rs = $this->db->get_recordset($sql);
         if (! is_null($rs)) {
-            $tcase_mgr = new testcase($this->db);
+            $tcaseMgr = new testcase($this->db);
             $doMappings = ! is_null($mappings);
             $already_linked_versions = array();
 
@@ -1616,7 +1616,7 @@ class testplan extends tlObjectWithAttachments
                     $rs2 = $this->db->get_recordset($sql);
                     // Ticket 4696 - if tcversion_type is set to latest -> update linked version
                     if ($my['options']['tcversion_type'] == 'latest') {
-                        $last_version_info = $tcase_mgr->get_last_version_info(
+                        $last_version_info = $tcaseMgr->getLastVersionInfo(
                             $rs2[0]['parent_id']);
                         $tcversion_id = $last_version_info ? $last_version_info['id'] : $tcversion_id;
                     }
@@ -1706,9 +1706,8 @@ class testplan extends tlObjectWithAttachments
                 }
 
                 $sql = "INSERT INTO {$this->tables['milestones']} (name,a,b,c,target_date,{$add2fields} testplan_id)";
-                $sql .= " VALUES ('" .
-                    $this->db->prepare_string($mstone['name']) . "'," .
-                    $mstone['high_percentage'] . "," .
+                $sql .= " VALUES ('" . $this->db->prepare_string(
+                    $mstone['name']) . "'," . $mstone['high_percentage'] . "," .
                     $mstone['medium_percentage'] . "," .
                     $mstone['low_percentage'] . ",'" . $mstone['target_date'] .
                     "', {$add2values}{$new_tplan_id})";
@@ -1818,7 +1817,7 @@ class testplan extends tlObjectWithAttachments
      *            the testplan id
      * @return tl::OK on success, tl::FALSE else
      */
-    private function deleteUserRoles($id, $users = null, $opt = null)
+    public function deleteUserRoles($id, $users = null, $opt = null)
     {
         $my['opt'] = array(
             'auditlog' => true
@@ -5517,7 +5516,7 @@ class testplan extends tlObjectWithAttachments
         // $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         $io = $this->tree_manager->get_node_hierarchy_info($id);
 
-        list ($prefix, $garbage) = $this->tcase_mgr->getPrefix(null,
+        list ($prefix, $garbage) = $this->tcaseMgr->getPrefix(null,
             $io['parent_id']);
         $prefix .= $this->tcaseCfg->glue_character;
         $concat = $this->db->db->concat("'{$prefix}'", 'TCV.tc_external_id');
@@ -6324,7 +6323,7 @@ class testplan extends tlObjectWithAttachments
                         $safe_id['tplan_id']);
                     $my['opt']['tproject_id'] = $dummy['parent_id'];
                 }
-                $pp = $this->tcase_mgr->getPrefix($safe_id['tcase_id'],
+                $pp = $this->tcaseMgr->getPrefix($safe_id['tcase_id'],
                     $my['opt']['tproject_id']);
                 $prefix = $pp[0] . $this->tcaseCfg->glue_character;
                 $more_cols = ', NHTC.name, NHTC.id AS tc_id, ' .
@@ -6413,7 +6412,7 @@ class testplan extends tlObjectWithAttachments
 
         $safe['tplan'] = intval($id);
         $io = $this->tree_manager->get_node_hierarchy_info($safe['tplan']);
-        list ($prefix,) = $this->tcase_mgr->getPrefix(null, $io['parent_id']);
+        list ($prefix,) = $this->tcaseMgr->getPrefix(null, $io['parent_id']);
         unset($io);
         $prefix .= $this->tcaseCfg->glue_character;
         $feid = $this->db->db->concat("'{$prefix}'", 'TCV.tc_external_id');
@@ -6888,8 +6887,8 @@ class testplan extends tlObjectWithAttachments
                 'renderGhostSteps' => false,
                 'renderImageInline' => false
             ];
-            $stepsSpec = $this->tcase_mgr->getStepsSimple(
-                $ex->testCaseVersionID, $allsteps, $gssOpt);
+            $stepsSpec = $this->tcaseMgr->getStepsSimple($ex->testCaseVersionID,
+                $allsteps, $gssOpt);
 
             foreach ($ex->steps as $stepExec) {
                 // if step number does not exist -> ignore it in silence
@@ -6959,8 +6958,8 @@ class testplan extends tlObjectWithAttachments
         // get target platform (if exists)
         if ($context['platform_id'] > 0) {
             $info = $this->platform_mgr->getByID($context['platform_id']);
-            $xmlString .= "\t<platform name=\"" .
-                htmlspecialchars($info['name']) . "\" />\n";
+            $xmlString .= "\t<platform name=\"" . htmlspecialchars(
+                $info['name']) . "\" />\n";
             $my['filters']['platform_id'] = $context['platform_id'];
         }
 
@@ -7008,7 +7007,7 @@ class testplan extends tlObjectWithAttachments
             );
 
             for ($gdx = 0; $gdx < $tcaseQty; $gdx ++) {
-                $mm[$gdx]['steps'] = $this->tcase_mgr->getStepsSimple(
+                $mm[$gdx]['steps'] = $this->tcaseMgr->getStepsSimple(
                     $mm[$gdx]['tcversion_id'], 0, $gso);
                 if (! is_null($mm[$gdx]['steps'])) {
                     $qs = count($mm[$gdx]['steps']);

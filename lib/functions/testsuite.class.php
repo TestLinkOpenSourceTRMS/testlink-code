@@ -325,14 +325,14 @@ class testsuite extends tlObjectWithAttachments
      */
     public function delete($unsafe_id)
     {
-        $tcase_mgr = new testcase($this->db);
+        $tcaseMgr = new testcase($this->db);
         $id = intval($unsafe_id);
         $this->get_by_id($id);
 
         $testcases = $this->get_children_testcases($id);
         if (! is_null($testcases)) {
             foreach ($testcases as $key => $elem) {
-                $tcase_mgr->delete($elem['id']);
+                $tcaseMgr->delete($elem['id']);
             }
         }
 
@@ -741,7 +741,7 @@ class testsuite extends tlObjectWithAttachments
             )
         );
 
-        $tcase_mgr = new testcase($this->db);
+        $tcaseMgr = new testcase($this->db);
         $tsuite_info = $this->get_by_id($id);
 
         $op = $this->create($parent_id, $tsuite_info['name'],
@@ -782,7 +782,7 @@ class testsuite extends tlObjectWithAttachments
                 switch ($elem['node_type_id']) {
                     case $this->node_types_descr_id['testcase']:
                         // forgotten parameter $mappings caused requirement assignments to use wrong IDs
-                        $tcOp = $tcase_mgr->copy_to($elem['id'], $the_parent_id,
+                        $tcOp = $tcaseMgr->copy_to($elem['id'], $the_parent_id,
                             $user_id, $copyTCaseOpt, $my['mappings']);
                         $op['mappings'] += $tcOp['mappings'];
                         break;
@@ -884,7 +884,7 @@ class testsuite extends tlObjectWithAttachments
      */
     public function get_testcases_deep($id, $details = 'simple', $options = null)
     {
-        $tcase_mgr = new testcase($this->db);
+        $tcaseMgr = new testcase($this->db);
         $testcases = null;
 
         $opt = array(
@@ -908,7 +908,7 @@ class testsuite extends tlObjectWithAttachments
                     } else {
                         // After first call passing $prefix with right value, avoids a function call
                         // inside of getExternalID();
-                        list ($identity, $prefix, ,) = $tcase_mgr->getExternalID(
+                        list ($identity, $prefix, ,) = $tcaseMgr->getExternalID(
                             $elem['id'], null, $prefix);
                         $elem['external_id'] = $identity;
                         $testcases[] = $elem;
@@ -925,7 +925,7 @@ class testsuite extends tlObjectWithAttachments
 
             $rs = array();
             foreach ($testcases as $idx => $value) {
-                $item = $tcase_mgr->get_last_version_info($value['id'],
+                $item = $tcaseMgr->getLastVersionInfo($value['id'],
                     array(
                         'output' => 'full',
                         'get_steps' => true
@@ -934,7 +934,7 @@ class testsuite extends tlObjectWithAttachments
                 $tsuite['tsuite_name'] = $parentNodes[$value['parent_id']]['name'];
 
                 if ($opt['getKeywords']) {
-                    $kw = $tcase_mgr->getKeywords($value['id']);
+                    $kw = $tcaseMgr->getKeywords($value['id']);
                     if (! is_null($kw)) {
                         $item['keywords'] = $kw;
                     }
@@ -984,9 +984,9 @@ class testsuite extends tlObjectWithAttachments
 
         if ($doit && $details == 'full') {
             $rs = array();
-            $tcase_mgr = new testcase($this->db);
+            $tcaseMgr = new testcase($this->db);
             foreach ($testcases as $idx => $value) {
-                $item = $tcase_mgr->get_last_version_info($value['id'],
+                $item = $tcaseMgr->getLastVersionInfo($value['id'],
                     array(
                         'output' => 'full',
                         'get_steps' => true
@@ -995,7 +995,7 @@ class testsuite extends tlObjectWithAttachments
                 $parent['tsuite_name'] = $tsuiteName;
 
                 if ($opt['getKeywords']) {
-                    $kw = $tcase_mgr->getKeywords($value['id']);
+                    $kw = $tcaseMgr->getKeywords($value['id']);
                     if (! is_null($kw)) {
                         $item['keywords'] = $kw;
                     }
@@ -1196,7 +1196,7 @@ class testsuite extends tlObjectWithAttachments
         $optExport = array())
     {
         static $keywordMgr;
-        static $tcase_mgr;
+        static $tcaseMgr;
 
         if (is_null($keywordMgr)) {
             $keywordMgr = new tlKeyword();
@@ -1210,6 +1210,7 @@ class testsuite extends tlObjectWithAttachments
         if ($doRecursion) {
             $cfXML = null;
             $kwXML = null;
+            $attachXML = '';
 
             if ($container_id == $tproject_id) {
                 $$tsuiteData = [
@@ -1304,7 +1305,7 @@ class testsuite extends tlObjectWithAttachments
         $test_spec = $this->get_subtree($container_id, $topt);
 
         $childNodes = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
-        $tcase_mgr = null;
+        $tcaseMgr = null;
         $relXmlData = '';
         if (! is_null($childNodes)) {
             $loop_qty = sizeof($childNodes);
@@ -1315,20 +1316,20 @@ class testsuite extends tlObjectWithAttachments
                     $xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],
                         $tproject_id, $optExport);
                 } elseif ($nTable == 'testcases') {
-                    if (is_null($tcase_mgr)) {
-                        $tcase_mgr = new testcase($this->db);
+                    if (is_null($tcaseMgr)) {
+                        $tcaseMgr = new testcase($this->db);
                     }
-                    $xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],
+                    $xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],
                         testcase::LATEST_VERSION, $tproject_id, true, $optExport);
 
                     // 20140816
                     // Collect and do cache of all test case relations that exists inside this test suite.
-                    $relSet = $tcase_mgr->getRelations($cNode['id']);
+                    $relSet = $tcaseMgr->getRelations($cNode['id']);
                     if ($relSet['num_relations'] > 0) {
                         foreach ($relSet['relations'] as $key => $rel) {
                             // If we have already found this relation, skip it.
                             if (! in_array($rel['id'], $relCache)) {
-                                $relXmlData .= $tcase_mgr->exportRelationToXML(
+                                $relXmlData .= $tcaseMgr->exportRelationToXML(
                                     $rel, $relSet['item']);
                                 $relCache[] = $rel['id'];
                             }

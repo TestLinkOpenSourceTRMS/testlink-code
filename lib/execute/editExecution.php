@@ -18,7 +18,7 @@ require_once require_web_editor($editorCfg['type']);
 
 testlinkInitPage($db, false, false, "checkRights");
 $templateCfg = templateConfiguration();
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 
 $args = initArgs();
 
@@ -28,14 +28,14 @@ switch ($args->doAction) {
         break;
 
     case 'doUpdate':
-        doUpdate($db, $args, $tcase_mgr, $_REQUEST);
+        doUpdate($db, $args, $tcaseMgr, $_REQUEST);
         break;
 }
 $map = get_execution($db, $args->exec_id);
 $owebeditor->Value = $map[0]['notes'];
 
 // order on script is critic
-$gui = initializeGui($args, $tcase_mgr);
+$gui = initializeGui($args, $tcaseMgr);
 $cols = intval(isset($editorCfg['cols']) ? $editorCfg['cols'] : 60);
 $rows = intval(isset($editorCfg['rows']) ? $editorCfg['rows'] : 10);
 $gui->notes = $owebeditor->CreateHTML($rows, $cols);

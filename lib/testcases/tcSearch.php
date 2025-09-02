@@ -24,7 +24,7 @@ $smarty = new TLSmarty();
 
 $tpl = 'tcSearchResults.tpl';
 $tproject_mgr = new testproject($db);
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
@@ -32,7 +32,7 @@ $filter = null;
 list ($args, $filter) = initArgs($tproject_mgr);
 
 $ga = initializeGui($args, $tproject_mgr);
-$gx = $tcase_mgr->getTcSearchSkeleton($args);
+$gx = $tcaseMgr->getTcSearchSkeleton($args);
 $gui = (object) array_merge((array) $ga, (array) $gx);
 
 initSearch($gui, $args, $tproject_mgr);
@@ -71,7 +71,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
             $args->targetTestCase = $gui->tcasePrefix . $args->targetTestCase;
         }
 
-        $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase);
+        $tcaseID = $tcaseMgr->getInternalID($args->targetTestCase);
         $filter['by_tc_id'] = " AND NH_TCV.parent_id = " . intval($tcaseID);
     } else {
         $tproject_mgr->get_all_testcases_id($args->tprojectID, $a_tcid);
@@ -264,7 +264,7 @@ if ($gui->doSearch) {
 
 if ($gui->row_qty > 0) {
     if ($map) {
-        $tcase_mgr = new testcase($db);
+        $tcaseMgr = new testcase($db);
         $tcase_set = array_keys($map);
         $options = array(
             'output_format' => 'path_as_string'

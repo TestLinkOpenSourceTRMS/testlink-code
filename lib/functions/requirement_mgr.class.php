@@ -936,7 +936,7 @@ class requirement_mgr extends tlObjectWithAttachments
         $tproject_id = null, $tc_count = null)
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
-        $tcase_mgr = new testcase($this->db);
+        $tcaseMgr = new testcase($this->db);
         $tsuite_mgr = new testsuite($this->db);
 
         $auto_testsuite_name = $this->reqCfg->default_testsuite_name;
@@ -1070,7 +1070,7 @@ class requirement_mgr extends tlObjectWithAttachments
                 'check_criteria' => 'like',
                 'access_key' => 'name'
             );
-            $itemSet = $tcase_mgr->getDuplicatesByName($reqData['title'],
+            $itemSet = $tcaseMgr->getDuplicatesByName($reqData['title'],
                 $tsuite_id, $getOptions);
 
             $nameSet = null;
@@ -1112,7 +1112,7 @@ class requirement_mgr extends tlObjectWithAttachments
                 $content = ($this->reqCfg->copy_req_scope_to_tc_summary) ? $prefix .
                     $reqData['scope'] : $prefix;
 
-                $tcase = $tcase_mgr->create($tsuite_id, $tcase_name, $content,
+                $tcase = $tcaseMgr->create($tsuite_id, $tcase_name, $content,
                     $empty_preconditions, $empty_steps, $user_id, null,
                     $testcase_order, testcase::AUTOMATIC_ID,
                     TESTCASE_EXECUTION_TYPE_MANUAL, $testcase_importance_default,
@@ -1180,7 +1180,7 @@ class requirement_mgr extends tlObjectWithAttachments
             $reqLatestVersionIDSet = array();
             $reqLatestVersionNumberSet = array();
             foreach ($reqIDSet as $req) {
-                $isofix = $this->get_last_version_info($req, $gopt);
+                $isofix = $this->getLastVersionInfo($req, $gopt);
                 $reqLatestVersionIDSet[] = $isofix['id'];
                 $reqLatestVersionNumberSet[] = $isofix['version'];
             }
@@ -2013,7 +2013,7 @@ class requirement_mgr extends tlObjectWithAttachments
     {
         $xml = null;
         $cfMap = $this->get_linked_cfields($id, $version_id, $tproject_id);
-        if (! is_null($cfMap) && count($cfMap) > 0) {
+        if (! empty($cfMap)) {
             $xml = $this->cfield_mgr->exportValueAsXML($cfMap);
         }
         return $xml;
@@ -2458,7 +2458,7 @@ class requirement_mgr extends tlObjectWithAttachments
 
     /**
      */
-    public function get_last_version_info($id, $opt = null)
+    public function getLastVersionInfo($id, $opt = null)
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
         $info = null;
@@ -2513,7 +2513,7 @@ class requirement_mgr extends tlObjectWithAttachments
         $tproject_mgr = new testproject($this->db);
         $all_reqs = $tproject_mgr->get_all_requirement_ids($tproj_id);
 
-        if (count($all_reqs) > 0) {
+        if (! empty($all_reqs)) {
             // only use maximum value of all reqs array
             $last_req = max($all_reqs);
             $last_req = $this->get_by_id($last_req);
@@ -2637,8 +2637,7 @@ class requirement_mgr extends tlObjectWithAttachments
             " WHERE source_id=$id OR destination_id=$id " . " ORDER BY id ASC ";
 
         $relations['relations'] = $this->db->get_recordset($sql);
-        if (! is_null($relations['relations']) &&
-            count($relations['relations']) > 0) {
+        if (! empty($relations['relations'])) {
             $labels = $this->get_all_relation_labels();
             $label_keys = array_keys($labels);
             foreach ($relations['relations'] as $key => $rel) {
@@ -4090,14 +4089,14 @@ class requirement_mgr extends tlObjectWithAttachments
                         // Theorically can be just ONE, but it depends
                         // is user had not messed things.
                         $yy = explode($endTag, $xx[$xdx]);
-                        if (($elc = count($yy)) > 0) {
+                        if (! empty($yy)) {
                             $atx = $yy[0];
                             try {
                                 if (isset($attSet[$id][$atx]) &&
                                     $attSet[$id][$atx]['is_image']) {
                                     $ghost .= str_replace('%id%', $atx, $img);
                                 }
-                                $lim = $elc - 1;
+                                $lim = count($yy) - 1;
                                 for ($cpx = 1; $cpx <= $lim; $cpx ++) {
                                     $ghost .= $yy[$cpx];
                                 }

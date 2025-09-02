@@ -23,7 +23,7 @@ testlinkInitPage($db);
 $tree_mgr = new tree($db);
 $tproject_mgr = new testproject($db);
 $tsuite_mgr = new testsuite($db);
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 
 $template_dir = 'testcases/';
 $refreshTree = false;
@@ -189,8 +189,8 @@ if ($doIt) {
                 (count($opt_cfg->to->map) > 0);
 
             $gui->cancelActionJS = 'location.href=fRoot+' .
-                "'lib/testcases/archiveData.php?id=" .
-                intval($args->containerID);
+                "'lib/testcases/archiveData.php?id=" . intval(
+                    $args->containerID);
             switch ($level) {
                 case 'testproject':
                     $gui->cancelActionJS .= "&edit=testproject&level=testproject'";
@@ -210,7 +210,7 @@ if ($doIt) {
 
         case 'delete_testsuite':
             $refreshTree = deleteTestSuite($smarty, $args, $tsuite_mgr,
-                $tree_mgr, $tcase_mgr, $level);
+                $tree_mgr, $tcaseMgr, $level);
             break;
 
         case 'move_testsuite_viewer':
@@ -223,15 +223,15 @@ if ($doIt) {
 
         case 'testcases_table_view':
             $cf = null;
-            $cf_map = $tcase_mgr->get_linked_cfields_at_design(0, null, null,
+            $cf_map = $tcaseMgr->get_linked_cfields_at_design(0, null, null,
                 null, $args->tprojectID);
             if (! is_null($cf_map)) {
                 $cfOpt = array(
                     'addCheck' => true,
                     'forceOptional' => true
                 );
-                $cf = $tcase_mgr->cfield_mgr->html_table_inputs($cf_map, '',
-                    null, $cfOpt);
+                $cf = $tcaseMgr->cfield_mgr->html_table_inputs($cf_map, '', null,
+                    $cfOpt);
             }
 
             moveTestCasesViewer($db, $smarty, $tproject_mgr, $tree_mgr, $args,
@@ -283,8 +283,8 @@ if ($doIt) {
             $gui->containerType = $level;
             $gui->refreshTree = $args->refreshTree;
             $gui->cancelActionJS = 'location.href=fRoot+' .
-                "'lib/testcases/archiveData.php?id=" .
-                intval($args->containerID);
+                "'lib/testcases/archiveData.php?id=" . intval(
+                    $args->containerID);
 
             switch ($level) {
                 case 'testproject':
@@ -311,7 +311,7 @@ if ($doIt) {
         case 'do_copy_tcase_set':
         case 'do_copy_tcase_set_ghost':
             $args->stepAsGhost = ($action == 'do_copy_tcase_set_ghost');
-            $op = copyTestCases($smarty, $template_dir, $tsuite_mgr, $tcase_mgr,
+            $op = copyTestCases($smarty, $template_dir, $tsuite_mgr, $tcaseMgr,
                 $args);
 
             $refreshTree = $op['refreshTree'];
@@ -322,14 +322,14 @@ if ($doIt) {
         case 'delete_testcases':
             $args->refreshTree = false;
             deleteTestCasesViewer($db, $smarty, $tproject_mgr, $tree_mgr,
-                $tsuite_mgr, $tcase_mgr, $args);
+                $tsuite_mgr, $tcaseMgr, $args);
             break;
 
         case 'do_delete_testcases':
             $args->refreshTree = true;
-            doDeleteTestCases($db, $args->tcaseSet, $tcase_mgr);
+            doDeleteTestCases($db, $args->tcaseSet, $tcaseMgr);
             deleteTestCasesViewer($db, $smarty, $tproject_mgr, $tree_mgr,
-                $tsuite_mgr, $tcase_mgr, $args,
+                $tsuite_mgr, $tcaseMgr, $args,
                 lang_get('all_testcases_have_been_deleted'));
             break;
 
@@ -359,18 +359,18 @@ if ($doIt) {
 
         case 'doBulkSet':
             $args->refreshTree = true;
-            doBulkSet($db, $args, $args->tcaseSet, $tcase_mgr);
+            doBulkSet($db, $args, $args->tcaseSet, $tcaseMgr);
 
             $cf = null;
-            $cf_map = $tcase_mgr->get_linked_cfields_at_design(0, null, null,
+            $cf_map = $tcaseMgr->get_linked_cfields_at_design(0, null, null,
                 null, $args->tprojectID);
             if (! is_null($cf_map)) {
                 $cfOpt = array(
                     'addCheck' => true,
                     'forceOptional' => true
                 );
-                $cf = $tcase_mgr->cfield_mgr->html_table_inputs($cf_map, '',
-                    null, $cfOpt);
+                $cf = $tcaseMgr->cfield_mgr->html_table_inputs($cf_map, '', null,
+                    $cfOpt);
             }
 
             moveTestCasesViewer($db, $smarty, $tproject_mgr, $tree_mgr, $args,
@@ -427,7 +427,7 @@ function getValuesFromPost($akeys2get)
  * returns:
  *
  */
-function build_del_testsuite_warning_msg(&$tree_mgr, &$tcase_mgr, &$testcases,
+function build_del_testsuite_warning_msg(&$tree_mgr, &$tcaseMgr, &$testcases,
     $tsuite_id)
 {
     $msg = null;
@@ -457,7 +457,7 @@ function build_del_testsuite_warning_msg(&$tree_mgr, &$tcase_mgr, &$testcases,
         );
         foreach ($testcases as $key => $elem) {
             $verbose[] = $tree_mgr->get_path($elem['id'], $tsuite_id);
-            $xx = $tcase_mgr->get_exec_status($elem['id'], null, $getOptions);
+            $xx = $tcaseMgr->get_exec_status($elem['id'], null, $getOptions);
             $status = 'no_links';
             if (! is_null($xx)) {
                 $status = $xx['executed'] ? 'linked_and_executed' : 'linked_but_not_executed';

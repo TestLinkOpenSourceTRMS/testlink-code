@@ -16,14 +16,14 @@ require_once 'web_editor.php';
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 $args = initArgs();
 $gui = new stdClass();
 $gui->exec_cfg = config_get('exec_cfg');
 
-$node['basic'] = $tcase_mgr->tree_manager->get_node_hierarchy_info(
+$node['basic'] = $tcaseMgr->tree_manager->get_node_hierarchy_info(
     $args->tcase_id);
-$node['specific'] = $tcase_mgr->getExternalID($args->tcase_id);
+$node['specific'] = $tcaseMgr->getExternalID($args->tcase_id);
 $idCard = $node['specific'][0] . ' : ' . $node['basic']['name'];
 
 $gui->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -50,7 +50,7 @@ foreach ($testPlanSet as $rx) {
     $gui->grants->exec_edit_notes[$rx['id']] = $args->user->hasRight($db,
         'exec_edit_notes', $gui->tproject_id, $rx['id']);
 }
-$gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id, null, $filters);
+$gui->execSet = $tcaseMgr->getExecutionSet($args->tcase_id, null, $filters);
 
 $gui->warning_msg = (! is_null($gui->execSet)) ? '' : lang_get(
     'tcase_never_executed');
@@ -61,7 +61,7 @@ $gui->cfexec = null;
 $gui->attachments = null;
 
 if (! is_null($gui->execSet)) {
-    $gui->execPlatformSet = $tcase_mgr->getExecutedPlatforms($args->tcase_id);
+    $gui->execPlatformSet = $tcaseMgr->getExecutedPlatforms($args->tcase_id);
 
     // get issue tracker config and object to manage TestLink - BTS integration
     $its = null;
@@ -71,7 +71,7 @@ if (! is_null($gui->execSet)) {
         $gui->bugs = getIssues($db, $gui->execSet, $gui->tproject_id);
     }
     // get custom fields brute force => do not check if this call is needed
-    $gui->cfexec = getCustomFields($tcase_mgr, $gui->execSet);
+    $gui->cfexec = getCustomFields($tcaseMgr, $gui->execSet);
     $gui->attachments = getAttachments($db, $gui->execSet);
 }
 
@@ -137,7 +137,7 @@ function getIssues(&$dbHandler, &$execSet, $tprojectID)
         for ($idx = 0; $idx < $execQty; $idx ++) {
             $exec_id = $execSet[$tcvid][$idx]['execution_id'];
             $dummy = get_bugs_for_exec($dbHandler, $its, $exec_id);
-            if (count($dummy) > 0) {
+            if (! empty($dummy)) {
                 $issues[$exec_id] = $dummy;
             }
         }
@@ -162,7 +162,7 @@ function getCustomFields(&$tcaseMgr, &$execSet)
             $tplan_id = $execSet[$tcvid][$idx]['testplan_id'];
             $dummy = (array) $tcaseMgr->html_table_of_custom_field_values(
                 $tcvid, 'execution', null, $exec_id, $tplan_id);
-            $cf[$exec_id] = (count($dummy) > 0) ? $dummy : '';
+            $cf[$exec_id] = (! empty($dummy)) ? $dummy : '';
         }
     }
     return $cf;

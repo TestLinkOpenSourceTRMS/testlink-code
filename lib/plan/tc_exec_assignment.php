@@ -26,11 +26,11 @@ $objMgr['assign'] = new assignment_mgr($db);
 
 $tree_mgr = &$objMgr['tree'];
 $tplan_mgr = &$objMgr['tplan'];
-$tcase_mgr = &$objMgr['tcase'];
+$tcaseMgr = &$objMgr['tcase'];
 $assignment_mgr = &$objMgr['assign'];
 
 $args = initArgs();
-$gui = initializeGui($db, $args, $tplan_mgr, $tcase_mgr);
+$gui = initializeGui($db, $args, $tplan_mgr, $tcaseMgr);
 $context = new stdClass();
 $context->tproject_id = $args->tproject_id;
 $context->tplan_id = $args->tplan_id;
@@ -99,7 +99,7 @@ switch ($args->doAction) {
             if ($args->send_mail) {
                 foreach ($called as $ope => $ope_status) {
                     if ($ope_status) {
-                        sendMailToTesters($db, $tcase_mgr, $gui, $args,
+                        sendMailToTesters($db, $tcaseMgr, $gui, $args,
                             $features2[$ope], $ope);
                     }
                 }
@@ -138,7 +138,7 @@ switch ($args->doAction) {
                 $feature['tcversion_id']);
             $items[intval($feature['platform_id'])] = $lnk;
 
-            sendMailToTesters($db, $tcase_mgr, $gui, $args, $items, 'del');
+            sendMailToTesters($db, $tcaseMgr, $gui, $args, $items, 'del');
         }
         break;
 
@@ -160,7 +160,7 @@ switch ($args->doAction) {
 switch ($args->level) {
     case 'testcase':
         // build the data need to call gen_spec_view
-        $xx = $tcase_mgr->getPathLayered(array(
+        $xx = $tcaseMgr->getPathLayered(array(
             $args->id
         ));
         $yy = array_keys($xx); // done to silence warning on end()
@@ -218,9 +218,9 @@ switch ($args->level) {
         $opt['tlFeature'] = 'testCaseExecTaskAssignment';
 
         // platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
-        // $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
+        // $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcaseMgr, $filters, $opt);
 
-        $out = getFilteredSpecViewFlat($db, $args, $tplan_mgr, $tcase_mgr,
+        $out = getFilteredSpecViewFlat($db, $args, $tplan_mgr, $tcaseMgr,
             $filters, $opt);
         break;
 

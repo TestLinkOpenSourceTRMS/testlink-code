@@ -33,7 +33,7 @@ list ($tplan_mgr, $args) = initArgsForReports($db);
 $statusCode = $args->statusCode;
 
 $tplan_mgr = new testplan($db);
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 
 $gui = initializeGui($db, $args, $tplan_mgr);
 $its = &$gui->its;
@@ -67,12 +67,12 @@ if (! is_null($metrics) && ! empty($metrics)) {
 
     if ($args->type != $statusCode['not_run']) {
         // get Custom fields definition to understand columns to be added
-        $cfSet = $tcase_mgr->cfield_mgr->get_linked_cfields_at_execution(
+        $cfSet = $tcaseMgr->cfield_mgr->get_linked_cfields_at_execution(
             $args->tproject_id, true, 'testcase');
         $execSet = array_keys($metrics);
 
         // go for Custom fields values of all executions on ONE SHOT!
-        $cfOnExec = $tcase_mgr->cfield_mgr->get_linked_cfields_at_execution(
+        $cfOnExec = $tcaseMgr->cfield_mgr->get_linked_cfields_at_execution(
             $args->tproject_id, true, 'testcase', null, $execSet);
     }
 
@@ -80,7 +80,7 @@ if (! is_null($metrics) && ! empty($metrics)) {
         // ---------------------------------------------------------------------
         // do some decode work, using caches
         if (! isset($pathCache[$exec['tcase_id']])) {
-            $dummy = $tcase_mgr->getPathLayered(array(
+            $dummy = $tcaseMgr->getPathLayered(array(
                 $exec['tcase_id']
             ));
             $pathCache[$exec['tcase_id']] = $dummy[$exec['tsuite_id']]['value'];
@@ -211,7 +211,7 @@ if (! is_null($metrics) && ! empty($metrics)) {
                 foreach ($cfSet as $cfID => $cfValue) {
                     if (isset($cfOnExec[$execID][$cfID]) &&
                         ! is_null($cfOnExec[$execID][$cfID])) {
-                        $out[$odx][$cfID] = $tcase_mgr->cfield_mgr->string_custom_field_value(
+                        $out[$odx][$cfID] = $tcaseMgr->cfield_mgr->string_custom_field_value(
                             $cfOnExec[$execID][$cfID], null);
                     } else {
                         $out[$odx][$cfID] = '';

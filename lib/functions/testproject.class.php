@@ -37,6 +37,10 @@ class testproject extends tlObjectWithAttachments
 
     const GET_EMPTY_REQSPEC = 0;
 
+    const ERROR = 0;
+
+    const OK = 1;
+
     /** @var database handler */
     public $db;
 
@@ -1209,7 +1213,7 @@ class testproject extends tlObjectWithAttachments
         $op['status'] = $kw->writeToDB($this->db);
         $op['id'] = $kw->dbID;
 
-        if ($op['status'] >= tl::OK) {
+        if ($op['status'] >= self::OK) {
             logAuditEvent(TLS("audit_keyword_created", $keyword), "CREATE",
                 $op['id'], "keywords");
         } else {
@@ -1233,7 +1237,7 @@ class testproject extends tlObjectWithAttachments
         $kw = new tlKeyword($id);
         $kw->initialize($id, $testprojectID, $keyword, $notes);
         $result = $kw->writeToDB($this->db);
-        if ($result >= tl::OK) {
+        if ($result >= self::OK) {
             logAuditEvent(TLS("audit_keyword_saved", $keyword), "SAVE",
                 $kw->dbID, "keywords");
         }
@@ -1279,7 +1283,7 @@ class testproject extends tlObjectWithAttachments
      */
     public function deleteKeyword($id, $opt = null)
     {
-        $result = tl::ERROR;
+        $result = self::ERROR;
         $my['opt'] = array(
             'checkBeforeDelete' => true,
             'nameForAudit' => null,
@@ -1314,7 +1318,7 @@ class testproject extends tlObjectWithAttachments
             $result = tlDBObject::deleteObjectFromDB($this->db, $id, "tlKeyword");
         }
 
-        if ($result >= tl::OK && $this->auditCfg->logEnabled) {
+        if ($result >= self::OK && $this->auditCfg->logEnabled) {
 
             switch ($my['opt']['context']) {
                 case 'getTestProjectName':
@@ -1338,7 +1342,7 @@ class testproject extends tlObjectWithAttachments
      */
     public function deleteKeywords($tproject_id, $tproject_name = null)
     {
-        $result = tl::OK;
+        $result = self::OK;
 
         $itemSet = (array) $this->getKeywordSet($tproject_id);
         $kwIDs = array_keys($itemSet);
@@ -1353,7 +1357,7 @@ class testproject extends tlObjectWithAttachments
             $opt['nameForAudit'] = $itemSet[$kwIDs[$idx]]['keyword'];
 
             $resultKw = $this->deleteKeyword($kwIDs[$idx], $opt);
-            if ($resultKw != tl::OK) {
+            if ($resultKw != self::OK) {
                 $result = $resultKw;
             }
         }
@@ -1440,16 +1444,16 @@ class testproject extends tlObjectWithAttachments
             while ($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, $delim)) {
                 $kw = new tlKeyword();
                 $kw->initialize(null, $testproject_id, null, null);
-                if ($kw->readFromCSV(implode($delim, $data)) >= tl::OK &&
-                    $kw->writeToDB($this->db) >= tl::OK) {
+                if ($kw->readFromCSV(implode($delim, $data)) >= self::OK &&
+                    $kw->writeToDB($this->db) >= self::OK) {
                     logAuditEvent(TLS("audit_keyword_created", $kw->name),
                         "CREATE", $kw->dbID, "keywords");
                 }
             }
             fclose($handle);
-            return tl::OK;
+            return self::OK;
         } else {
-            return ERROR;
+            return self::ERROR;
         }
     }
 
@@ -1488,19 +1492,19 @@ class testproject extends tlObjectWithAttachments
      */
     public function importKeywordsFromSimpleXML($testproject_id, $simpleXMLObj)
     {
-        $status = tl::OK;
+        $status = self::OK;
         if (! $simpleXMLObj || $simpleXMLObj->getName() != 'keywords') {
             $status = tlKeyword::E_WRONGFORMAT;
         }
 
-        if (($status == tl::OK) && $simpleXMLObj->keyword) {
+        if (($status == self::OK) && $simpleXMLObj->keyword) {
             foreach ($simpleXMLObj->keyword as $keyword) {
                 $kw = new tlKeyword();
                 $kw->initialize(null, $testproject_id, null, null);
                 $status = tlKeyword::E_WRONGFORMAT;
-                if ($kw->readFromSimpleXML($keyword) >= tl::OK) {
-                    $status = tl::OK;
-                    if ($kw->writeToDB($this->db) >= tl::OK) {
+                if ($kw->readFromSimpleXML($keyword) >= self::OK) {
+                    $status = self::OK;
+                    if ($kw->writeToDB($this->db) >= self::OK) {
                         logAuditEvent(TLS("audit_keyword_created", $kw->name),
                             "CREATE", $kw->dbID, "keywords");
                     }
@@ -1905,7 +1909,7 @@ class testproject extends tlObjectWithAttachments
      * Deletes all testproject related role assignments for a given testproject
      *
      * @param integer $tproject_id
-     * @return integer tl::OK on success, tl::ERROR else
+     * @return integer self::OK on success, self::ERROR else
      */
     public function deleteUserRoles($tproject_id, $users = null, $opt = null)
     {
@@ -1933,10 +1937,10 @@ class testproject extends tlObjectWithAttachments
                     // TBD
                 }
             }
-            return tl::OK;
+            return self::OK;
         }
 
-        return tl::ERROR;
+        return self::ERROR;
     }
 
     /**
@@ -1961,7 +1965,7 @@ class testproject extends tlObjectWithAttachments
      * @param integer $roleID
      *            the role id
      *
-     * @return integer tl::OK on success, tl::ERROR else
+     * @return integer self::OK on success, self::ERROR else
      */
     public function addUserRole($userID, $tproject_id, $roleID)
     {
@@ -1983,9 +1987,9 @@ class testproject extends tlObjectWithAttachments
             unset($user);
             unset($role);
             unset($testProject);
-            return tl::OK;
+            return self::OK;
         }
-        return tl::ERROR;
+        return self::ERROR;
     }
 
     /**
@@ -2094,7 +2098,7 @@ class testproject extends tlObjectWithAttachments
             }
         }
 
-        if ($this->deleteUserRoles($id) < tl::OK) {
+        if ($this->deleteUserRoles($id) < self::OK) {
             $error .= lang_get('info_deleting_project_roles_fails');
         }
 
@@ -3806,7 +3810,7 @@ class testproject extends tlObjectWithAttachments
      *
      * @used-by containerEdit.php
      */
-    private function getFileUploadRelativeURL($id)
+    public function getFileUploadRelativeURL($id)
     {
         // I've to use testsuiteID because this is how is name on containerEdit.php
         return "lib/testcases/containerEdit.php?containerType=testproject&doAction=fileUpload&tprojectID=" .
@@ -3817,7 +3821,7 @@ class testproject extends tlObjectWithAttachments
      *
      * @used-by containerEdit.php
      */
-    private function getDeleteAttachmentRelativeURL($id)
+    public function getDeleteAttachmentRelativeURL($id)
     {
         // I've to use testsuiteID because this is how is name on containerEdit.php
         return "lib/testcases/containerEdit.php?containerType=testproject&doAction=deleteFile&tprojectID=" .

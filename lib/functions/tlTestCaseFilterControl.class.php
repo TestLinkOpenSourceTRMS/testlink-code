@@ -356,6 +356,10 @@ class tlTestCaseFilterControl extends tlFilterControl
      */
     public $form_token = null;
 
+    const DISABLED = 0;
+
+    const ENABLED = 1;
+
     /**
      *
      * @param database $dbHandler
@@ -437,7 +441,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 
             default:
                 if (isset($this->configuration->advanced_filter_mode_choice) &&
-                    $this->configuration->advanced_filter_mode_choice == ENABLED) {
+                    $this->configuration->advanced_filter_mode_choice ==
+                    self::ENABLED) {
                     $this->filter_mode_choice_enabled = true;
                 }
                 break;
@@ -657,9 +662,9 @@ class tlTestCaseFilterControl extends tlFilterControl
         foreach ($this->all_filters as $name => $info) {
             $init_method = "init_$name";
 
-            if ($this->configuration->show_filters == ENABLED &&
+            if ($this->configuration->show_filters == self::ENABLED &&
                 property_exists($this->configuration, $name) &&
-                $this->configuration->{$name} == ENABLED &&
+                $this->configuration->{$name} == self::ENABLED &&
                 in_array($name, $this->mode_filter_mapping[$this->mode]) &&
                 method_exists($this, $init_method)) {
 
@@ -1207,7 +1212,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_setting_refresh_tree_on_action()
+    public function init_setting_refresh_tree_on_action()
     {
         $key = 'setting_refresh_tree_on_action';
         $hidden_key = 'hidden_setting_refresh_tree_on_action';
@@ -1235,7 +1240,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_setting_build()
+    public function init_setting_build()
     {
         $key = 'setting_build';
         if (is_null($this->testplan_mgr)) {
@@ -1288,8 +1293,8 @@ class tlTestCaseFilterControl extends tlFilterControl
             (array) $tplan_builds)) ? $this->args->$key : $newest_build_id;
 
         // still no build selected? take first one from selection.
-        if (! $this->settings[$key]['selected'] &&
-            sizeof($this->settings[$key]['items'])) {
+        if (empty($this->settings[$key]['selected']) &&
+            empty($this->settings[$key]['items'])) {
             $this->settings[$key]['selected'] = end($tplan_builds);
         }
 
@@ -1300,7 +1305,7 @@ class tlTestCaseFilterControl extends tlFilterControl
      *
      * @used-by: tlTestCaseFilterControl->init_settings()
      */
-    private function initSettingTestplan()
+    public function init_setting_testplan()
     {
         if (is_null($this->testplan_mgr)) {
             $this->testplan_mgr = new testplan($this->db);
@@ -1362,7 +1367,7 @@ class tlTestCaseFilterControl extends tlFilterControl
      * according mode we need to add [Any] option
      * it's really a filter?
      */
-    private function init_setting_platform()
+    public function init_setting_platform()
     {
         if (! $this->platform_mgr) {
             $this->platform_mgr = new tlPlatform($this->db);
@@ -1437,7 +1442,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_tc_id()
+    public function init_filter_tc_id()
     {
         $key = 'filter_tc_id';
         $selection = $this->args->{$key};
@@ -1475,7 +1480,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_testcase_name()
+    public function init_filter_testcase_name()
     {
         $key = 'filter_testcase_name';
         $selection = $this->args->{$key};
@@ -1494,7 +1499,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_toplevel_testsuite()
+    public function init_filter_toplevel_testsuite()
     {
         if (! $this->testproject_mgr) {
             $this->testproject_mgr = new testproject($this->db);
@@ -1539,7 +1544,7 @@ class tlTestCaseFilterControl extends tlFilterControl
     /**
      * mode this affect domain
      */
-    private function init_filter_keywords()
+    public function init_filter_keywords()
     {
         $key = 'filter_keywords';
         $type = 'filter_keywords_filter_type';
@@ -1653,7 +1658,7 @@ class tlTestCaseFilterControl extends tlFilterControl
     }
 
     // TICKET 4353: added active/inactive filter
-    private function init_filter_active_inactive()
+    public function init_filter_active_inactive()
     {
         $key = 'filter_active_inactive';
 
@@ -1680,7 +1685,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_importance()
+    public function init_filter_importance()
     {
         // show this filter only if test priority management is enabled
         $key = 'filter_importance';
@@ -1722,7 +1727,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_priority()
+    public function init_filter_priority()
     {
         // This is a special case of filter: the menu items don't get initialized here,
         // they are available as a global smarty variable. So the only thing to be managed
@@ -1757,7 +1762,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_execution_type()
+    public function init_filter_execution_type()
     {
         if (! $this->tc_mgr) {
             $this->tc_mgr = new testcase($this->db);
@@ -1789,7 +1794,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_assigned_user()
+    public function init_filter_assigned_user()
     {
         if (! $this->testproject_mgr) {
             $this->testproject_mgr = new testproject($this->db);
@@ -1880,7 +1885,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_result()
+    public function init_filter_result()
     {
         $result_key = 'filter_result_result';
         $method_key = 'filter_result_method';
@@ -1991,7 +1996,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_bugs()
+    public function init_filter_bugs()
     {
         $key = str_replace('init_', '', __FUNCTION__);
         $selection = $this->args->{$key};
@@ -2014,7 +2019,7 @@ class tlTestCaseFilterControl extends tlFilterControl
      * @since 1.9.14
      *        allow multiple selection (if advanced mode)
      */
-    private function init_filter_workflow_status()
+    public function init_filter_workflow_status()
     {
         $key = 'filter_workflow_status';
         if (! $this->tc_mgr) {
@@ -2063,12 +2068,12 @@ class tlTestCaseFilterControl extends tlFilterControl
      *
      * @used-by __construct
      */
-    private function initTreeOptions()
+    public function initTreeOptions()
     {
         $this->treeOpt['plan_mode'] = new stdClass();
         $this->treeOpt['plan_mode']->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
         $this->treeOpt['plan_mode']->useColours = COLOR_BY_TC_STATUS_OFF;
-        $this->treeOpt['plan_mode']->testcases_colouring_by_selected_build = DISABLED;
+        $this->treeOpt['plan_mode']->testcases_colouring_by_selected_build = self::DISABLED;
         $this->treeOpt['plan_mode']->absolute_last_execution = true; // hmm probably useless
     }
 
@@ -2279,7 +2284,7 @@ class tlTestCaseFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_platforms()
+    public function init_filter_platforms()
     {
         if (! $this->platform_mgr) {
             $this->platform_mgr = new tlPlatform($this->db);

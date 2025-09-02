@@ -59,12 +59,12 @@ $smarty->assign('tsuite_info', null);
 
 $tree_mgr = new tree($db);
 $tplan_mgr = new testplan($db);
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 $exec_cfield_mgr = new exec_cfield_mgr($db, $args->tproject_id);
 $fileRepo = tlAttachmentRepository::create($db);
 $req_mgr = new requirement_mgr($db);
 
-$gui = initializeGui($db, $args, $cfg, $tplan_mgr, $tcase_mgr, $its, $cts);
+$gui = initializeGui($db, $args, $cfg, $tplan_mgr, $tcaseMgr, $its, $cts);
 
 $_SESSION['history_on'] = $gui->history_on;
 $attachmentInfos = null;
@@ -80,7 +80,7 @@ if ($do_show_instructions) {
 if ($args->doExec == 1 && ! is_null($args->tc_versions) &&
     count($args->tc_versions)) {
     $gui->remoteExecFeedback = launchRemoteExec($db, $args, $gui->tcasePrefix,
-        $tplan_mgr, $tcase_mgr);
+        $tplan_mgr, $tcaseMgr);
 }
 
 // link Update will be done on Context
@@ -90,13 +90,13 @@ if ($args->doExec == 1 && ! is_null($args->tc_versions) &&
 // because we do not allow different versions on different platforms
 // for same test plan -> platform MUST NOT BE USED
 if ($args->linkLatestVersion && $args->level == 'testcase') {
-    $args->version_id = $tcase_mgr->updateTPlanLinkToLatestTCV(
+    $args->version_id = $tcaseMgr->updateTPlanLinkToLatestTCV(
         $args->TCVToUpdate, $args->tplan_id);
 }
 
 // LOAD What To Display
 list ($linked_tcversions, $itemSet) = getLinkedItems($args, $gui->history_on,
-    $cfg, $tcase_mgr, $tplan_mgr);
+    $cfg, $tcaseMgr, $tplan_mgr);
 
 $tcase_id = 0;
 $userid_array = null;
@@ -109,10 +109,10 @@ if (! is_null($linked_tcversions)) {
         // $gui, $args
         $tcase = null;
         list ($tcase_id, $tcversion_id, $latestExecIDInContext, $hasCFOnExec) = processTestCase(
-            $tcase, $gui, $args, $cfg, $linked_tcversions, $tree_mgr, $tcase_mgr,
+            $tcase, $gui, $args, $cfg, $linked_tcversions, $tree_mgr, $tcaseMgr,
             $fileRepo);
     } else {
-        processTestSuite($db, $gui, $args, $itemSet, $tree_mgr, $tcase_mgr,
+        processTestSuite($db, $gui, $args, $itemSet, $tree_mgr, $tcaseMgr,
             $fileRepo);
         $tcase_id = $itemSet->tcase_id;
         $tcversion_id = $itemSet->tcversion_id;
@@ -152,7 +152,7 @@ if (! is_null($linked_tcversions)) {
             // Need to get Latest execution ID before writing
             $lexidSysWide = 0;
             if ($args->copyIssues && $args->level == 'testcase') {
-                $lexidSysWide = $tcase_mgr->getSystemWideLastestExecutionID(
+                $lexidSysWide = $tcaseMgr->getSystemWideLastestExecutionID(
                     $args->version_id);
             }
 
@@ -165,7 +165,7 @@ if (! is_null($linked_tcversions)) {
                 $ctx->platform_id = $args->platform_id;
                 $ctx->build_id = $args->build_id;
 
-                $tcase_mgr->deleteStepsPartialExec(
+                $tcaseMgr->deleteStepsPartialExec(
                     array_keys($_REQUEST['step_notes']), $ctx);
             }
 
@@ -239,7 +239,7 @@ if (! is_null($linked_tcversions)) {
                     'directLink' => $args->direct_link
                 );
                 event_signal('EVENT_EXECUTE_TEST', $ctx);
-                $tc_info = $tcase_mgr->getExternalID($tcase_id);
+                $tc_info = $tcaseMgr->getExternalID($tcase_id);
                 $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
                 $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,
                     $args->build_id);
@@ -261,7 +261,7 @@ if (! is_null($linked_tcversions)) {
                     );
                     $filters['build_id'] = $args->build_id;
 
-                    $xx = $tcase_mgr->getAssignedToUser($args->user_id,
+                    $xx = $tcaseMgr->getAssignedToUser($args->user_id,
                         $args->tproject_id, array(
                             $args->tplan_id
                         ), $optz, $filters);
@@ -353,9 +353,9 @@ if (! is_null($linked_tcversions)) {
                     'version_id' => $nextItem['tcversion_id']
                 );
                 list ($lt, $xdm) = getLinkedItems($args, $gui->history_on, $cfg,
-                    $tcase_mgr, $tplan_mgr, $identity);
+                    $tcaseMgr, $tplan_mgr, $identity);
                 processTestCase($nextItem, $gui, $args, $cfg, $lt, $tree_mgr,
-                    $tcase_mgr, $fileRepo);
+                    $tcaseMgr, $fileRepo);
             }
         } elseif ($args->save_and_exit) {
             $args->reload_caller = true;
@@ -370,7 +370,7 @@ if (! is_null($linked_tcversions)) {
             $ctx->platform_id = $args->platform_id;
             $ctx->build_id = $args->build_id;
             $ctx->tester_id = $args->user_id;
-            $tcase_mgr->saveStepsPartialExec($partialExec, $ctx);
+            $tcaseMgr->saveStepsPartialExec($partialExec, $ctx);
         }
     }
 
@@ -378,7 +378,7 @@ if (! is_null($linked_tcversions)) {
         if ($args->doDelete) {
             $dummy = delete_execution($db, $args->exec_to_delete);
             if ($dummy) {
-                $tc_info = $tcase_mgr->getExternalID($tcase_id);
+                $tc_info = $tcaseMgr->getExternalID($tcase_id);
                 $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
                 $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,
                     $args->build_id);
@@ -397,7 +397,7 @@ if (! is_null($linked_tcversions)) {
         }
 
         $gui->map_last_exec = getLatestExec($db, $tcase_id, $tcversion_id, $gui,
-            $args, $tcase_mgr);
+            $args, $tcaseMgr);
 
         $gui->map_last_exec_any_build = null;
 
@@ -418,7 +418,7 @@ if (! is_null($linked_tcversions)) {
             $ctx->platform_id = $args->platform_id;
             $ctx->build_id = $args->build_id;
 
-            $gui->stepsPartialExec = $tcase_mgr->getStepsPartialExec($stepSet,
+            $gui->stepsPartialExec = $tcaseMgr->getStepsPartialExec($stepSet,
                 $ctx);
 
             if (null != $gui->stepsPartialExec) {
@@ -447,7 +447,7 @@ if (! is_null($linked_tcversions)) {
                     'getNoExecutions' => 1,
                     'groupByBuild' => 0
                 );
-                $gui->map_last_exec_any_build = $tcase_mgr->getLastExecution(
+                $gui->map_last_exec_any_build = $tcaseMgr->getLastExecution(
                     $tcase_id, $tcversion_id, $args->tplan_id,
                     testcase::ANY_BUILD, $args->platform_id, $options);
 
@@ -469,20 +469,20 @@ if (! is_null($linked_tcversions)) {
                 'tcase_id' => $tcase_id,
                 'tcversion_id' => $tcversion_id
             );
-            $gui->relations = $tcase_mgr->getTCVersionRelations($idCard);
+            $gui->relations = $tcaseMgr->getTCVersionRelations($idCard);
 
-            $gui->kw = $tcase_mgr->getKeywordsByIdCard($idCard,
+            $gui->kw = $tcaseMgr->getKeywordsByIdCard($idCard,
                 array(
                     'output' => 'kwfull'
                 ));
 
             if (! is_null($cts)) {
-                $gui->scripts[$tcversion_id] = $tcase_mgr->getScriptsForTestCaseVersion(
+                $gui->scripts[$tcversion_id] = $tcaseMgr->getScriptsForTestCaseVersion(
                     $cts, $tcversion_id);
             }
 
             $gui->other_execs = getOtherExecutions($db, $tcase_id, $tcversion_id,
-                $gui, $args, $cfg, $tcase_mgr);
+                $gui, $args, $cfg, $tcaseMgr);
 
             // Get attachment,bugs, etc
             if (! is_null($gui->other_execs)) {
@@ -493,7 +493,7 @@ if (! is_null($linked_tcversions)) {
                         $userid_array[$testerid] = $testerid;
                     }
                 }
-                $other_info = execAdditionalInfo($db, $fileRepo, $tcase_mgr,
+                $other_info = execAdditionalInfo($db, $fileRepo, $tcaseMgr,
                     $gui->other_execs, $args->tplan_id, $args->tproject_id,
                     $args->issue_tracker_enabled, $its);
 
@@ -553,7 +553,7 @@ if ($args->reload_caller) {
         $cfg->exec_cfg->exec_mode->new_exec == 'latest') {
 
         list ($tcase_id, $tcversion_id, $latestExecIDInContext, $hasCFOnExec) = processTestCase(
-            $tcase, $gui, $args, $cfg, $linked_tcversions, $tree_mgr, $tcase_mgr,
+            $tcase, $gui, $args, $cfg, $linked_tcversions, $tree_mgr, $tcaseMgr,
             $fileRepo);
 
         if ($latestExecIDInContext > 0) {
@@ -929,7 +929,7 @@ function getTestsuiteNameDetails(&$db, $tcase_id)
                {$tables['nodes_hierarchy']} NHB
           WHERE TS.id=NHA.parent_id
           AND   NHB.id=NHA.parent_id ";
-    if (is_array($tcase_id) && count($tcase_id) > 0) {
+    if (is_array($tcase_id) && ! empty($tcase_id)) {
         $in_list = implode(",", $tcase_id);
         $sql .= "AND NHA.id IN (" . $in_list . ")";
     } elseif (! is_null($tcase_id)) {
@@ -1051,8 +1051,8 @@ function smartyAssignTestsuiteInfo(&$smarty, &$tree_mgr, $tcase_id, $tproject_id
  *
  * @internal revisions:
  */
-function execAdditionalInfo(&$db, $fileRepo, &$tcase_mgr, $other_execs,
-    $tplan_id, $tproject_id, $bugInterfaceOn, $bugInterface)
+function execAdditionalInfo(&$db, $fileRepo, &$tcaseMgr, $other_execs, $tplan_id,
+    $tproject_id, $bugInterfaceOn, $bugInterface)
 {
     $attachmentInfos = null;
     $bugs = null;
@@ -1070,13 +1070,13 @@ function execAdditionalInfo(&$db, $fileRepo, &$tcase_mgr, $other_execs,
 
             if ($bugInterfaceOn) {
                 $the_bugs = get_bugs_for_exec($db, $bugInterface, $exec_id);
-                if (count($the_bugs) > 0) {
+                if (! empty($the_bugs)) {
                     $bugs[$exec_id] = $the_bugs;
                 }
             }
 
             // Custom fields
-            $cfexec_values[$exec_id] = $tcase_mgr->html_table_of_custom_field_values(
+            $cfexec_values[$exec_id] = $tcaseMgr->html_table_of_custom_field_values(
                 $tcversion_id, 'execution', null, $exec_id, $tplan_id,
                 $tproject_id);
         }
@@ -1227,7 +1227,7 @@ function initializeExecMode(&$db, $exec_cfg, $userObj, $tproject_id, $tplan_id)
  * returns:
  *
  */
-function setTesterAssignment(&$db, $exec_info, &$tcase_mgr, $tplan_id,
+function setTesterAssignment(&$db, $exec_info, &$tcaseMgr, $tplan_id,
     $platform_id, $build_id)
 {
     foreach ($exec_info as $version_id => $value) {
@@ -1235,7 +1235,7 @@ function setTesterAssignment(&$db, $exec_info, &$tcase_mgr, $tplan_id,
         $exec_info[$version_id]['assigned_user_id'] = null;
 
         // map of map: main key version_id, secondary key: platform_id
-        $p3 = $tcase_mgr->get_version_exec_assignment($version_id, $tplan_id,
+        $p3 = $tcaseMgr->getVersionExecAssignment($version_id, $tplan_id,
             $build_id);
         if (! is_null($p3)) {
             foreach ($p3[$version_id][$platform_id] as $uu) {
@@ -1865,7 +1865,7 @@ function getLatestExec(&$dbHandler, $tcase_id, $tcversion_id, $guiObj, $argsObj,
         'getStepsExecInfo' => 1
     );
 
-    $last_exec = $tcaseMgr->get_last_execution($tcase_id, $tcversion_id,
+    $last_exec = $tcaseMgr->getLastExecution($tcase_id, $tcversion_id,
         $argsObj->tplan_id, $argsObj->build_id, $argsObj->platform_id, $options);
 
     if (! is_null($last_exec)) {
@@ -1946,9 +1946,9 @@ function getOtherExecutions(&$dbHandler, $tcase_id, $tcversion_id, $guiObj,
             $execContext, $options);
     } else {
         // Warning!!!:
-        // we can't use the data we have got with previous call to get_last_execution()
+        // we can't use the data we have got with previous call to getLastExecution()
         // because if user have asked to save results last execution data may be has changed
-        $aux_map = $tcaseMgr->get_last_execution($tcase_id, $tcversion_id,
+        $aux_map = $tcaseMgr->getLastExecution($tcase_id, $tcversion_id,
             $argsObj->tplan_id, $argsObj->build_id, $argsObj->platform_id);
         if (! is_null($aux_map)) {
             $other_execs = array();

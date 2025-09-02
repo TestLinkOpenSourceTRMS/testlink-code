@@ -27,7 +27,7 @@ $labels = init_labels(
         'execution_history' => null
     ));
 
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 $args = initArgs($db);
 $gui = initializeGui($db, $args);
 
@@ -45,7 +45,7 @@ if ($args->doIt) {
         $rowData = array();
 
         // Get test suite path
-        $dummy = $tcase_mgr->getPathLayered(array(
+        $dummy = $tcaseMgr->getPathLayered(array(
             $item['tcase_id']
         ));
         $dummy = end($dummy);

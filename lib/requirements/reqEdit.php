@@ -310,7 +310,7 @@ function renderGui(&$argsObj, $guiObj, $opObj, $templateCfg, $editorCfg,
                 $tpl = $tplDir . $tpl;
             } else {
                 $renderType = 'redirect';
-                if (null != $guiObj->uploadOp && ! $guiObj->uploadOp->statusOK) {
+                if (! empty($guiObj->uploadOp) && ! $guiObj->uploadOp->statusOK) {
                     $tpl .= "&uploadOPStatusCode=" .
                         $guiObj->uploadOp->statusCode;
                 }

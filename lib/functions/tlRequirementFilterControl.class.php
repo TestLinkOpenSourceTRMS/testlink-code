@@ -302,7 +302,7 @@ class tlRequirementFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_setting_refresh_tree_on_action()
+    public function init_setting_refresh_tree_on_action()
     {
         $key = 'setting_refresh_tree_on_action';
         $hidden_key = 'hidden_setting_refresh_tree_on_action';
@@ -329,7 +329,7 @@ class tlRequirementFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_doc_id()
+    public function init_filter_doc_id()
     {
         $key = 'filter_doc_id';
         $selection = $this->args->{$key};
@@ -346,7 +346,7 @@ class tlRequirementFilterControl extends tlFilterControl
         $this->active_filters[$key] = $selection;
     }
 
-    private function init_filter_title()
+    public function init_filter_title()
     {
         $key = 'filter_title';
         $selection = $this->args->{$key};
@@ -363,7 +363,7 @@ class tlRequirementFilterControl extends tlFilterControl
         $this->active_filters[$key] = $selection;
     }
 
-    private function init_filter_status()
+    public function init_filter_status()
     {
         $key = 'filter_status';
         $selection = $this->args->{$key};
@@ -390,7 +390,7 @@ class tlRequirementFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_type()
+    public function init_filter_type()
     {
         $key = 'filter_type';
         $selection = $this->args->{$key};
@@ -416,7 +416,7 @@ class tlRequirementFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_spec_type()
+    public function init_filter_spec_type()
     {
         $key = 'filter_spec_type';
         $selection = $this->args->{$key};
@@ -442,7 +442,7 @@ class tlRequirementFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_coverage()
+    public function init_filter_coverage()
     {
         $key = 'filter_coverage';
         $this->filters[$key] = false;
@@ -468,7 +468,7 @@ class tlRequirementFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_relation()
+    public function init_filter_relation()
     {
         $key = 'filter_relation';
 
@@ -517,7 +517,7 @@ class tlRequirementFilterControl extends tlFilterControl
 
     /**
      */
-    private function init_filter_tc_id()
+    public function init_filter_tc_id()
     {
         $key = 'filter_tc_id';
         $selection = $this->args->{$key};

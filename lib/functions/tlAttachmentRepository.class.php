@@ -69,9 +69,10 @@ class tlAttachmentRepository extends tlObjectWithDB
     /**
      * Creates the one and only repository object
      *
-     * @param $db [ref]
+     * @param database $db
+     *            [ref]
      *            resource the database connection
-     * @return tlAttachmenRepository
+     * @return tlAttachmentRepository
      */
     public static function create(&$db)
     {
@@ -316,12 +317,12 @@ class tlAttachmentRepository extends tlObjectWithDB
         // use always the STANDARD table name i.e. WITHOUT PREFIX
         $leafFolder = str_replace(DB_TABLE_PREFIX, '', $tableName);
         $path = $this->repositoryPath . DIRECTORY_SEPARATOR . $leafFolder;
-        if ($mkDir && ! file_exists($path)) {
+        if (! empty($path) && $mkDir && ! file_exists($path)) {
             mkdir($path);
         }
 
         $path .= DIRECTORY_SEPARATOR . $id;
-        if ($mkDir && ! file_exists($path)) {
+        if (! empty($path) && $mkDir && ! file_exists($path)) {
             mkdir($path);
         }
 
@@ -451,7 +452,7 @@ class tlAttachmentRepository extends tlObjectWithDB
      * @param int $id
      *            the id of the attachment (attachments.id)
      *
-     * @return string returns the contents of the attachment
+     * @return string the contents of the attachment
      */
     // @TODO schlundus, should be protected, but blocker is testcase::copy_attachments
     public function getAttachmentContentFromDB($id)
@@ -505,10 +506,10 @@ class tlAttachmentRepository extends tlObjectWithDB
     /**
      * Deletes all attachments of a certain object of a given type
      *
-     * @param $fkid integer
+     * @param int $fkid
      *            the id of the object whose attachments should be deleted
-     * @param $fkTableName the
-     *            "type" of the object, or the table the object is stored in
+     * @param string $fkTableName
+     *            the "type" of the object, or the table the object is stored in
      *
      * @return boolean returns bSuccess if all attachments are deleted, false else
      */
@@ -554,12 +555,14 @@ class tlAttachmentRepository extends tlObjectWithDB
     /**
      * Reads all attachments for a certain object of a given type
      *
-     * @param $fkid integer
+     * @param int $fkid
+     *            integer
      *            the id of the object whose attachments should be read
-     * @param $fkTableName the
+     * @param string $fkTableName
+     *            the
      *            "type" of the object, or the table the object is stored in
      *
-     * @return arrays returns an array with the attachments of the objects, or null on error
+     * @return array with the attachments of the objects, or null on error
      */
     public function getAttachmentInfosFor($fkid, $fkTableName,
         $accessKey = 'std')
@@ -594,12 +597,12 @@ class tlAttachmentRepository extends tlObjectWithDB
     /**
      * Yields all attachmentids for a certain object of a given type
      *
-     * @param $fkid integer
+     * @param int $fkid
      *            the id of the object whose attachments should be read
-     * @param $fkTableName the
-     *            "type" of the object, or the table the object is stored in
+     * @param string $fkTableName
+     *            the "type" of the object, or the table the object is stored in
      *
-     * @return arrays returns an array with the attachments of the objects, or null on error
+     * @return array with the attachments of the objects, or null on error
      */
     public function getAttachmentIDsFor($fkid, $fkTableName)
     {
@@ -627,7 +630,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 
         $attachments = $this->getAttachmentInfosFor($source_id,
             $stdTableUsedAsFolder);
-        if (null != $attachments && count($attachments) > 0) {
+        if (! empty($attachments)) {
             foreach ($attachments as $key => $value) {
                 $file_contents = null;
                 $f_parts = explode(DIRECTORY_SEPARATOR, $value['file_path']);

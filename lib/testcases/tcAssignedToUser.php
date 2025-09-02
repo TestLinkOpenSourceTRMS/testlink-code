@@ -31,8 +31,8 @@ $tplan_param = ($args->tplan_id) ? array(
     $args->tplan_id
 ) : testcase::ALL_TESTPLANS;
 
-$tcase_mgr = new testcase($db);
-$gui->resultSet = $tcase_mgr->getAssignedToUser($args->user_id,
+$tcaseMgr = new testcase($db);
+$gui->resultSet = $tcaseMgr->getAssignedToUser($args->user_id,
     $args->tproject_id, $tplan_param, $opt, $filters);
 
 $doIt = ! is_null($gui->resultSet);
@@ -159,7 +159,7 @@ if ($doIt) {
                 $leOptions = array(
                     'getSteps' => 0
                 );
-                $lexec = $tcase_mgr->getLastExecution($tcase_id, $tcversion_id,
+                $lexec = $tcaseMgr->getLastExecution($tcase_id, $tcversion_id,
                     $tplan_id, $tcase['build_id'], $tcase['platform_id'],
                     $leOptions);
                 if (isset($lexec[$tcversion_id]['status'])) {

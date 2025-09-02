@@ -21,7 +21,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
     protected $db;
 
-    private $cfield_mgr;
+    public $cfield_mgr;
 
     private $tree_mgr;
 
@@ -1148,8 +1148,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
                         $tproject_id, $optForExport['ATTACHMENTS']);
 
                     $relations = $this->req_mgr->get_relations($cNode['id']);
-                    if (! is_null($relations['relations']) &&
-                        count($relations['relations']) > 0) {
+                    if (! empty($relations['relations'])) {
                         foreach ($relations['relations'] as $key => $rel) {
                             // If we have already found this relation, skip it.
                             if (! in_array($rel['id'], $relationsCache)) {
@@ -1507,7 +1506,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             'tproject_id' => $tproject_id
         );
         $cfMap = $this->get_linked_cfields($idCard);
-        if (! is_null($cfMap) && count($cfMap) > 0) {
+        if (! empty($cfMap)) {
             $xml = $this->cfield_mgr->exportValueAsXML($cfMap);
         }
         return $xml;

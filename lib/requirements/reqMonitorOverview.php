@@ -96,10 +96,12 @@ if (! empty($gui->reqIDSet)) {
             " ({$req['author']})";
 
         $action = 'on';
-        foreach ($monitoredSet as $monReqID => $dummy) {
-            if ($req["id"] == $monReqID) {
-                $action = 'off';
-                break;
+        if (! empty($monitoredSet)) {
+            foreach ($monitoredSet as $monReqID => $dummy) {
+                if ($req["id"] == $monReqID) {
+                    $action = 'off';
+                    break;
+                }
             }
         }
         $result[] = $onClick[$action]['open'] . $req["id"] .

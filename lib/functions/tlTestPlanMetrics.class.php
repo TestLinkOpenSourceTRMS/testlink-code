@@ -3520,13 +3520,10 @@ class tlTestPlanMetrics extends testplan
      */
     public function getExecTimeSpan($id, $context)
     {
-        $fieldList .= implode(',', $context);
-
-        $sql = "SELECT MIN(execution_ts) AS begin,
-            MAX(execution_ts) AS end, {$fieldList}
-            FROM {$this->tables['executions']}
-            WHERE testplan_id = $id
-            GROUP BY {$fieldList}";
+        $fieldList = implode(',', $context);
+        $sql = "SELECT MIN(execution_ts) AS begin, MAX(execution_ts) AS end, {$fieldList}" .
+            " FROM {$this->tables['executions']} WHERE testplan_id = $id " .
+            " GROUP BY {$fieldList}";
 
         $levels = count($context);
         switch ($levels) {

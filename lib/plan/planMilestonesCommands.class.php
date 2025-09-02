@@ -46,7 +46,7 @@ class planMilestonesCommands
      * returns:
      *
      */
-    private function create(&$argsObj)
+    public function create(&$argsObj)
     {
         $guiObj = new stdClass();
         $guiObj->main_descr = lang_get('testplan') . TITLE_SEP;
@@ -75,7 +75,7 @@ class planMilestonesCommands
      * returns:
      *
      */
-    private function edit(&$argsObj)
+    public function edit(&$argsObj)
     {
         $guiObj = new stdClass();
         $dummy = $this->milestone_mgr->get_by_id($argsObj->id);

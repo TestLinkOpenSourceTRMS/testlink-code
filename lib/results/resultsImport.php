@@ -203,7 +203,7 @@ function saveImportedResultData(&$db, $resultData, $context, $options)
     $user = new tlUser($context->userID);
     $user->readFromDB($db);
 
-    $tcase_mgr = new testcase($db);
+    $tcaseMgr = new testcase($db);
 
     $resultMap = array();
     $tplan_mgr = null;
@@ -346,7 +346,7 @@ function saveImportedResultData(&$db, $resultData, $context, $options)
         // New attribute "execution type" makes old XML import files incompatible
         // Important NOTICE:
         // tcase_exec is passed BY REFERENCE to allow check_exec_values()change execution type if needed
-        $checks = checkExecValues($db, $tcase_mgr, $user_mgr, $tcaseCfg,
+        $checks = checkExecValues($db, $tcaseMgr, $user_mgr, $tcaseCfg,
             $tcase_exec, $columnDef['execution_bugs']);
         $status_ok = $checks['status_ok'];
         if ($status_ok) {
@@ -403,7 +403,7 @@ function saveImportedResultData(&$db, $resultData, $context, $options)
 
                 $lexid = 0;
                 if ($options->copyIssues) {
-                    $lexid = $tcase_mgr->getSystemWideLastestExecutionID(
+                    $lexid = $tcaseMgr->getSystemWideLastestExecutionID(
                         $tcversion_id);
                 }
 
@@ -416,7 +416,7 @@ function saveImportedResultData(&$db, $resultData, $context, $options)
                     'platform_id' => $context->platformID,
                     'build_id' => $context->buildID
                 );
-                $lexInfo = $tcase_mgr->getLatestExecSingleContext($idCard, $exco,
+                $lexInfo = $tcaseMgr->getLatestExecSingleContext($idCard, $exco,
                     array(
                         'output' => 'timestamp'
                     ));
@@ -447,7 +447,7 @@ function saveImportedResultData(&$db, $resultData, $context, $options)
 
                     if (isset($tcase_exec['steps']) &&
                         ! is_null($tcase_exec['steps']) && $execution_id > 0) {
-                        $stepSet = $tcase_mgr->getStepsSimple($tcversion_id, 0,
+                        $stepSet = $tcaseMgr->getStepsSimple($tcversion_id, 0,
                             array(
                                 'fields2get' => 'TCSTEPS.step_number,TCSTEPS.id',
                                 'accessKey' => 'step_number'
@@ -743,7 +743,7 @@ function initArgs(&$dbHandler)
  *
  * @internal revisions
  */
-function checkExecValues(&$db, &$tcase_mgr, &$user_mgr, $tcaseCfg, &$execValues,
+function checkExecValues(&$db, &$tcaseMgr, &$user_mgr, $tcaseCfg, &$execValues,
     &$columnDef)
 {
     $tables = tlObjectWithDB::getDBTables(array(
@@ -762,7 +762,7 @@ function checkExecValues(&$db, &$tcase_mgr, &$user_mgr, $tcaseCfg, &$execValues,
 
     if ($using_external_id) {
         // need to get internal id
-        $checks['tcase_id'] = $tcase_mgr->getInternalID($tcase_external_id);
+        $checks['tcase_id'] = $tcaseMgr->getInternalID($tcase_external_id);
         $checks['status_ok'] = intval($checks['tcase_id']) > 0 ? true : false;
         if (! $checks['status_ok']) {
             $checks['msg'][] = sprintf(
@@ -821,7 +821,7 @@ function checkExecValues(&$db, &$tcase_mgr, &$user_mgr, $tcaseCfg, &$execValues,
 
     if ($checks['status_ok'] && isset($execValues['execution_type'])) {
         $execValues['execution_type'] = intval($execValues['execution_type']);
-        $execDomain = $tcase_mgr->get_execution_types();
+        $execDomain = $tcaseMgr->get_execution_types();
         if ($execValues['execution_type'] == 0) {
             $execValues['execution_type'] = TESTCASE_EXECUTION_TYPE_MANUAL;
             // right now this is useless, but may be in future can be used, then I choose to leave it.

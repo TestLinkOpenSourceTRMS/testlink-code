@@ -191,7 +191,7 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
     static $messages;
     static $fieldSizeCfg;
     static $feedbackMsg;
-    static $tcase_mgr;
+    static $tcaseMgr;
     static $tproject_mgr;
     static $req_mgr;
     static $safeSizeCfg;
@@ -219,8 +219,8 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
         $messages = array();
         $fieldSizeCfg = config_get('field_size');
 
-        $tcase_mgr = new testcase($db);
-        $tcase_mgr->setTestProject($tproject_id);
+        $tcaseMgr = new testcase($db);
+        $tcaseMgr->setTestProject($tproject_id);
 
         $tproject_mgr = new testproject($db);
         $req_mgr = new requirement_mgr($db);
@@ -274,7 +274,7 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
         $safeSizeCfg->testcase_name = ($fieldSizeCfg->testcase_name) * 0.8;
 
         // Get CF with scope design time and allowed for test cases linked to this test project
-        $linkedCustomFields = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design(
+        $linkedCustomFields = $tcaseMgr->cfield_mgr->get_linked_cfields_at_design(
             $tproject_id, 1, null, 'testcase', null, 'name');
         $tprojectHas['customFields'] = ! is_null($linkedCustomFields);
 
@@ -311,12 +311,12 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
 
             switch ($duplicatedLogic['hitCriteria']) {
                 case 'name':
-                    $dupInfo = $tcase_mgr->getDuplicatesByName($name,
+                    $dupInfo = $tcaseMgr->getDuplicatesByName($name,
                         $container_id);
                     break;
 
                 case 'internalID':
-                    $dummy = $tcase_mgr->tree_manager->get_node_hierarchy_info(
+                    $dummy = $tcaseMgr->tree_manager->get_node_hierarchy_info(
                         $internalid, $container_id);
                     if (! is_null($dummy)) {
                         $dupInfo = null;
@@ -325,7 +325,7 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
                     break;
 
                 case 'externalID':
-                    $dupInfo = $tcase_mgr->get_by_external($externalid,
+                    $dupInfo = $tcaseMgr->get_by_external($externalid,
                         $container_id);
                     break;
             }
@@ -437,10 +437,10 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
                 case 1:
                     $doCreate = false;
                     $tcase_id = key($dupInfo);
-                    $last_version = $tcase_mgr->get_last_version_info($tcase_id,
+                    $last_version = $tcaseMgr->getLastVersionInfo($tcase_id,
                         $getVersionOpt);
                     $tcversion_id = $last_version['id'];
-                    $ret = $tcase_mgr->update($tcase_id, $tcversion_id, $name,
+                    $ret = $tcaseMgr->update($tcase_id, $tcversion_id, $name,
                         $summary, $preconditions, $steps, $personID, $kwIDs,
                         $node_order, $exec_type, $importance, $attr, $updOpt);
 
@@ -482,17 +482,17 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
         if ($doCreate) {
             // Want to block creation of with existent EXTERNAL ID, if containers ARE DIFFERENT.
             $item_id = intval(
-                $tcase_mgr->getInternalID($externalid,
+                $tcaseMgr->getInternalID($externalid,
                     array(
                         'tproject_id' => $tproject_id
                     )));
 
             if ($item_id > 0) {
                 // who is his parent ?
-                $owner = $tcase_mgr->getTestSuite($item_id);
+                $owner = $tcaseMgr->getTestSuite($item_id);
                 if ($owner != $container_id) {
                     // Get full path of existent Test Cases
-                    $stain = $tcase_mgr->tree_manager->get_path($item_id, null,
+                    $stain = $tcaseMgr->tree_manager->get_path($item_id, null,
                         'name');
                     $n = count($stain);
                     $stain[$n - 1] = $tcasePrefix .
@@ -521,7 +521,7 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
                 $createOptions += $attr;
             }
 
-            if ($ret = $tcase_mgr->create($container_id, $name, $summary,
+            if ($ret = $tcaseMgr->create($container_id, $name, $summary,
                 $preconditions, $steps, $personID, $kwIDs, $node_order,
                 testcase::AUTOMATIC_ID, $exec_type, $importance, $createOptions)) {
                 $resultMap[] = array(
@@ -541,7 +541,7 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
 
         if ($hasCFieldsInfo && ! is_null($ret)) {
             if ($tprojectHas['customFields']) {
-                $msg = processCustomFields($tcase_mgr, $name,
+                $msg = processCustomFields($tcaseMgr, $name,
                     $ret['tcversion_id'], $tc['customfields'],
                     $linkedCustomFields, $feedbackMsg);
                 if (! is_null($msg)) {

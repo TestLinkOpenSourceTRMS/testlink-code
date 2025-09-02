@@ -120,7 +120,7 @@ if ($hasTestCases) {
 
 // Render Results
 if (! is_null($mapTC)) {
-    $tcase_mgr = new testcase($db);
+    $tcaseMgr = new testcase($db);
     $tcase_set = array_keys($mapTC);
     $options = array(
         'output_format' => 'path_as_string'

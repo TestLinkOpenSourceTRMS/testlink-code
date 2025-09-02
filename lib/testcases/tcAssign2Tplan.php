@@ -19,7 +19,7 @@ require_once 'common.php';
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 
@@ -33,7 +33,7 @@ $getOpt = array(
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id, $getOpt);
 
 $options['output'] = 'essential';
-$tcase_all_info = $tcase_mgr->get_by_id($args->tcase_id, testcase::ALL_VERSIONS,
+$tcase_all_info = $tcaseMgr->get_by_id($args->tcase_id, testcase::ALL_VERSIONS,
     null, $options);
 
 if (! is_null($tcase_all_info)) {
@@ -51,7 +51,7 @@ if (! is_null($tcase_all_info)) {
     }
 }
 
-$link_info = $tcase_mgr->get_linked_versions($args->tcase_id);
+$link_info = $tcaseMgr->get_linked_versions($args->tcase_id);
 if (! is_null(
     $tplanSet = $tproject_mgr->get_all_testplans($args->tproject_id,
         array(

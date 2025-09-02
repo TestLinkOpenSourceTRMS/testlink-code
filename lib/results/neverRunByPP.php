@@ -30,7 +30,7 @@ list ($tplan_mgr, $args) = initArgsForReports($db);
 if (null == $tplan_mgr) {
     $tplan_mgr = new testplan($db);
 }
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 
 $gui = initializeGui($db, $args, $tplan_mgr);
 $labels = &$gui->labels;
@@ -68,7 +68,7 @@ if ($args->doAction == 'result' && ! empty($metrics)) {
     foreach ($metrics as &$elem) {
         // do some decode work, using caches
         if (! isset($pathCache[$elem['tcase_id']])) {
-            $du = $tcase_mgr->getPathLayered(array(
+            $du = $tcaseMgr->getPathLayered(array(
                 $elem['tcase_id']
             ));
             $pathCache[$elem['tcase_id']] = $du[$elem['tsuite_id']]['value'];

@@ -22,12 +22,12 @@ $cfg = getCfg();
 $optionTransferName = 'ot';
 
 testlinkInitPage($db);
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
-$args = initArgs($cfg, $optionTransferName, $tcase_mgr);
+$args = initArgs($cfg, $optionTransferName, $tcaseMgr);
 require_once require_web_editor($cfg->webEditorCfg['type']);
 
 $templateCfg = templateConfiguration('tcEdit');
@@ -41,7 +41,7 @@ $testCaseEditorKeys = array(
 );
 $init_inputs = true;
 $opt_cfg = initializeOptionTransferCfg($optionTransferName, $args, $tproject_mgr);
-$gui = initializeGui($db, $args, $cfg, $tcase_mgr, $tproject_mgr);
+$gui = initializeGui($db, $args, $cfg, $tcaseMgr, $tproject_mgr);
 
 $smarty = new TLSmarty();
 
@@ -128,7 +128,7 @@ switch ($args->doAction) {
 
     case "fileUpload":
         $args->uploadOp = fileUploadManagement($db, $args->tcversion_id,
-            $args->fileTitle, $tcase_mgr->getAttachmentTableName());
+            $args->fileTitle, $tcaseMgr->getAttachmentTableName());
         $commandMgr->show($args, $_REQUEST, array(
             'status_ok' => true
         ), [
@@ -156,8 +156,8 @@ if ($doRender) {
 
 // Things that one day will be managed by command file
 if ($args->delete_tc_version) {
-    $status_quo_map = $tcase_mgr->getVersionsStatusQuo($args->tcase_id);
-    $exec_status_quo = $tcase_mgr->getExecStatus($args->tcase_id);
+    $status_quo_map = $tcaseMgr->getVersionsStatusQuo($args->tcase_id);
+    $exec_status_quo = $tcaseMgr->getExecStatus($args->tcase_id);
     $gui->delete_mode = 'single';
     $gui->delete_enabled = 1;
 
@@ -177,7 +177,7 @@ if ($args->delete_tc_version) {
         $msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');
     }
 
-    $tcinfo = $tcase_mgr->get_by_id($args->tcase_id, $args->tcversion_id);
+    $tcinfo = $tcaseMgr->get_by_id($args->tcase_id, $args->tcversion_id);
 
     $gui->main_descr = lang_get('title_del_tc') . TITLE_SEP_TYPE3 .
         lang_get('version') . " " . $tcinfo[0]['version'];
@@ -194,13 +194,13 @@ if ($args->delete_tc_version) {
         $templateCfg->template_dir . $templateCfg->default_template);
 } elseif ($args->move_copy_tc) {
     // need to get the testproject for the test case
-    $tproject_id = $tcase_mgr->get_testproject($args->tcase_id);
+    $tproject_id = $tcaseMgr->get_testproject($args->tcase_id);
     $the_tc_node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
     $tc_parent_id = $the_tc_node['parent_id'];
     $the_xx = $tproject_mgr->gen_combo_test_suites($tproject_id);
 
     $the_xx[$the_tc_node['parent_id']] .= ' (' . lang_get('current') . ')';
-    $tc_info = $tcase_mgr->get_by_id($args->tcase_id);
+    $tc_info = $tcaseMgr->get_by_id($args->tcase_id);
 
     $container_qty = count($the_xx);
     $gui->move_enabled = 1;
@@ -217,7 +217,7 @@ if ($args->delete_tc_version) {
     $gui->testsuite_id = $the_tc_node['parent_id'];
     $gui->testcase_id = $args->tcase_id;
     $gui->name = $tc_info[0]['name'];
-    $gui->testcase_name = $tcase_mgr->generateTimeStampName($gui->name);
+    $gui->testcase_name = $tcaseMgr->generateTimeStampName($gui->name);
 
     $smarty->assign('gui', $gui);
     $templateCfg = templateConfiguration('tcMove');
@@ -245,7 +245,7 @@ if ($args->delete_tc_version) {
         'copyOnlyLatest' => $args->copyOnlyLatestVersion
     );
 
-    $result = $tcase_mgr->copy_to($args->tcase_id, $args->new_container_id,
+    $result = $tcaseMgr->copy_to($args->tcase_id, $args->new_container_id,
         $args->user_id, $options);
     $msg = $result['msg'];
     if ($result['status_ok']) {
@@ -253,7 +253,7 @@ if ($args->delete_tc_version) {
             $args->target_position, $cfg->exclude_node_types);
 
         $ts_sep = config_get('testsuite_sep');
-        $tc_info = $tcase_mgr->get_by_id($args->tcase_id);
+        $tc_info = $tcaseMgr->get_by_id($args->tcase_id);
         $container_info = $tree_mgr->get_node_hierarchy_info(
             $args->new_container_id);
         $container_path = $tree_mgr->get_path($args->new_container_id);
@@ -279,12 +279,12 @@ if ($args->delete_tc_version) {
     $identity->tproject_id = $args->tproject_id;
     $identity->version_id = $args->tcversion_id;
 
-    $tcase_mgr->show($smarty, $gui, $identity, $gui->grants);
+    $tcaseMgr->show($smarty, $gui, $identity, $gui->grants);
 } elseif ($args->do_create_new_version) {
-    createNewVersion($smarty, $args, $gui, $tcase_mgr, $args->tcversion_id);
+    createNewVersion($smarty, $args, $gui, $tcaseMgr, $args->tcversion_id);
 } elseif ($args->do_create_new_version_from_latest) {
-    $ltcv = $tcase_mgr->getLatestVersionID($args->tcase_id);
-    createNewVersion($smarty, $args, $gui, $tcase_mgr, $ltcv);
+    $ltcv = $tcaseMgr->getLatestVersionID($args->tcase_id);
+    createNewVersion($smarty, $args, $gui, $tcaseMgr, $ltcv);
 } elseif ($args->do_activate_this || $args->do_deactivate_this) {
     $commandMgr->setActiveAttr($args, $_REQUEST);
     exit();

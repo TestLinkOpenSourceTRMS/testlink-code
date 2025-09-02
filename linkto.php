@@ -272,8 +272,8 @@ function process_testcase(&$dbHandler, $externalID, $tprojectID, $tprojectPrefix
     $ret['msg'] = sprintf(lang_get('testcase_not_found'), $externalID,
         $tprojectPrefix);
 
-    $tcase_mgr = new testcase($dbHandler);
-    $tcaseID = $tcase_mgr->getInternalID($externalID);
+    $tcaseMgr = new testcase($dbHandler);
+    $tcaseID = $tcaseMgr->getInternalID($externalID);
     if ($tcaseID > 0) {
         $ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}";
         $ret['msg'] = 'ok';

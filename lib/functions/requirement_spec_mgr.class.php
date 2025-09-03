@@ -309,7 +309,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             $getOptions, $getFilters);
 
         // get coverage
-        if (sizeof($validReq)) {
+        if (count($validReq)) {
             foreach ($validReq as $req) {
                 // collect TC for REQ
                 $arrCoverage = $this->req_mgr->get_coverage($req['id']);
@@ -690,7 +690,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
         if (! is_null($itemSetAllFolder)) {
 
-            foreach ($itemSetAllFolder as $key => $value) {
+            foreach ($itemSetAllFolder as $value) {
 
                 $sql = '';
                 $tcase_filter = '';
@@ -764,7 +764,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     public function get_requirement_child_by_id($id)
     {
         $children = $this->get_requirement_child_by_id_req($id);
-        foreach ($children as $key => $child) {
+        foreach ($children as $child) {
             array_push($this->requirement_child_ids, $child);
             $this->get_requirement_child_by_id($child["destination_id"]);
         }
@@ -1136,7 +1136,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $req_spec = $this->getReqTree($id);
         $childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null;
         if (! is_null($childNodes)) {
-            $loop_qty = sizeof($childNodes);
+            $loop_qty = count($childNodes);
             for ($idx = 0; $idx < $loop_qty; $idx ++) {
                 $cNode = $childNodes[$idx];
                 if ($optForExport['RECURSIVE'] &&
@@ -1149,7 +1149,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
                     $relations = $this->req_mgr->get_relations($cNode['id']);
                     if (! empty($relations['relations'])) {
-                        foreach ($relations['relations'] as $key => $rel) {
+                        foreach ($relations['relations'] as $rel) {
                             // If we have already found this relation, skip it.
                             if (! in_array($rel['id'], $relationsCache)) {
                                 // otherwise export it to XML.
@@ -1434,7 +1434,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
 
         if (! is_null($cf_map)) {
-            foreach ($cf_map as $cf_id => $cf_info) {
+            foreach ($cf_map as $cf_info) {
                 // if user has assigned a value, then node_id is not null
                 if ($cf_info['node_id'] || $show_cf) {
                     $label = str_replace(TL_LOCALIZE_TAG, '',

@@ -611,7 +611,7 @@ function getReqCoverage(&$dbHandler, $reqs, &$execMap)
                     $exec_status = $resultsCfg['status_code']['not_run'];
                     $tcase_path = '';
                     if (isset($execMap[$item_info['testcase_id']]) &&
-                        sizeof($execMap[$item_info['testcase_id']])) {
+                        count($execMap[$item_info['testcase_id']])) {
                         $execInfo = end($execMap[$item_info['testcase_id']]);
                         $tcase_path = $execInfo['tcase_path'];
                         if (isset($execInfo['status']) &&
@@ -700,7 +700,7 @@ function getReqCoverage(&$dbHandler, $reqs, &$execMap)
 function getLastExecutions(&$db, $tcaseSet, $tplanId)
 {
     $execMap = array();
-    if (sizeof($tcaseSet)) {
+    if (count($tcaseSet)) {
         $tcaseMgr = new testcase($db);
         $items = array_keys($tcaseSet);
         $path_info = $tcaseMgr->tree_manager->get_full_path_verbose($items);
@@ -945,7 +945,7 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 
             if (count($rs) > 0) {
 
-                foreach ($rs as $key => $value) {
+                foreach ($rs as $value) {
                     // get root of linked node and check
                     $real_root = $tree_mgr->getTreeRoot($value['id']);
                     $matched_root_info = $tproject_mgr->get_by_prefix(

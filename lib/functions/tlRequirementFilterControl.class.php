@@ -485,7 +485,7 @@ class tlRequirementFilterControl extends tlFilterControl
             // special case here:
             // for equal type relations (where it doesn't matter if we find source or destination)
             // we have to remove the source identficator from the array key
-            foreach ($req_relations['equal_relations'] as $array_key => $old_key) {
+            foreach ($req_relations['equal_relations'] as $old_key) {
                 // set new key in array and delete old one
                 $new_key = (int) str_replace("_source", "", $old_key);
                 $req_relations['items'][$new_key] = $req_relations['items'][$old_key];

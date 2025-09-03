@@ -232,7 +232,7 @@ function createSpreadsheet($gui, &$tplanMgr)
     $startingRow ++;
 
     // 'The meat!!'
-    foreach ($gui->statistics->exec as $timestamp => $elem) {
+    foreach ($gui->statistics->exec as $elem) {
         $ldx = 0;
         foreach ($elem as $field) {
             $cellID = $cellRange[$ldx ++] . $startingRow;

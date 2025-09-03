@@ -47,7 +47,7 @@ if (! empty($gui->tplan_metrics)) {
     $matrixData = array();
     if (isset($gui->tplan_metrics['testplans'])) {
         foreach ($gui->tplan_metrics['testplans'] as $tplan_metrics) {
-            foreach ($tplan_metrics['platforms'] as $key => $platform_metric) {
+            foreach ($tplan_metrics['platforms'] as $platform_metric) {
                 $rowData = array();
 
                 // if test plan does not use platforms a overall status is not necessary

@@ -84,7 +84,7 @@ function initializeGui(&$dbHandler, &$argsObj)
         array(
             'output' => 'plain'
         ));
-    $tsuites_qty = sizeOf($argsObj->testsuitesSelected);
+    $tsuites_qty = count($argsObj->testsuitesSelected);
 
     $filters['top_level_tsuites'] = ($tsuites_qty == 0 ||
         $tsuites_qty == count($everest)) ? null : $argsObj->testsuitesSelected;
@@ -94,7 +94,7 @@ function initializeGui(&$dbHandler, &$argsObj)
     }
 
     $filters['builds'] = null;
-    if (sizeof($argsObj->buildsSelected)) {
+    if (count($argsObj->buildsSelected)) {
         $filters['builds'] = implode(",", $argsObj->buildsSelected);
     }
 
@@ -148,7 +148,7 @@ function initializeGui(&$dbHandler, &$argsObj)
     }
 
     $lastStatus_localized = null;
-    foreach ($argsObj->lastStatus as $key => $status_code) {
+    foreach ($argsObj->lastStatus as $status_code) {
         $verbose = $gui->resultsCfg['code_status'][$status_code];
         $gui->displayResults[$status_code] = true;
         $lastStatus_localized[] = lang_get(

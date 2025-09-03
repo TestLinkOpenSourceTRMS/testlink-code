@@ -485,7 +485,7 @@ function _mysql_make_user($dbhandler, $db_host, $db_name, $login, $passwd)
 
     $isMariaDB = false;
     $isMySQL = false;
-    foreach ($vg as $vn => $vv) {
+    foreach ($vg as $vv) {
         if (strripos($vv, 'MariaDB') !== false) {
             $isMariaDB = true;
             break;

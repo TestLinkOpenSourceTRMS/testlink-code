@@ -142,7 +142,7 @@ $rights2check = array(
     'testplan_show_testcases_newest_versions'
 );
 
-foreach ($rights2check as $key => $the_right) {
+foreach ($rights2check as $the_right) {
     $gui->grants[$the_right] = $userIsBlindFolded ? 'no' : $currentUser->hasRight(
         $db, $the_right, $testprojectID, $testplanID);
 }

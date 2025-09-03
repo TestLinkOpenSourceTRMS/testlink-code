@@ -1720,7 +1720,7 @@ class tlTestCaseFilterControl extends tlFilterControl
                 LOW => lang_get('low_importance')
             );
 
-            $this->filters[$key]['size'] = sizeof($this->filters[$key]['items']);
+            $this->filters[$key]['size'] = count($this->filters[$key]['items']);
             $this->active_filters[$key] = $selection;
         }
     }

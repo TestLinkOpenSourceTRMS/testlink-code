@@ -117,7 +117,7 @@ if ($do_display) {
         $keywordsTestCases = $tproject_mgr->getKeywordsLatestTCV(
             $args->tproject_id, $keywordsFilter->items, $keywordsFilter->type);
 
-        if (sizeof($keywordsTestCases)) {
+        if (count($keywordsTestCases)) {
             $testCaseSet = array_keys($keywordsTestCases);
         }
     }
@@ -267,7 +267,7 @@ if ($do_display) {
         $keywordsTestCases = $tproject_mgr->getKeywordsLatestTCV(
             $args->tproject_id, $keywordsFilter->items, $keywordsFilter->type);
 
-        if (sizeof($keywordsTestCases)) {
+        if (count($keywordsTestCases)) {
             $testCaseSet = array_keys($keywordsTestCases);
         }
     }
@@ -306,7 +306,7 @@ if ($do_display) {
             // get parent name.
             $parentName = $requirement_data_name;
 
-            foreach ($requirements_child as $key => $req) {
+            foreach ($requirements_child as $req) {
                 $requirement_data_name = $req['req_doc_id'] . ' : ' .
                     $req['name'] . " " . lang_get('req_rel_is_child_of') . " " .
                     $parentName;
@@ -331,7 +331,7 @@ if ($do_display) {
     } elseif ($args->item_level == 'reqspeccoverage') {
 
         $out = array();
-        foreach ($requirements as $key => $req) {
+        foreach ($requirements as $req) {
             if (empty($req['req_doc_id'])) {
                 $coverage_name = $req['doc_id'] . " : " . $req['title'];
             } else {
@@ -357,7 +357,7 @@ if ($do_display) {
 
     // count nb testcases selected in view.
     $nbTestCaseSelected = 0;
-    foreach ($out['spec_view'][1]['testcases'] as $key => $value) {
+    foreach ($out['spec_view'][1]['testcases'] as $value) {
         if ($value['linked_version_id'] != 0) {
             $nbTestCaseSelected ++;
         }
@@ -768,7 +768,7 @@ function doSaveCustomFields(&$argsObj, &$userInput, &$tplanMgr, &$tcaseMgr)
  */
 function doSavePlatforms(&$argsObj, &$tplanMgr)
 {
-    foreach ($argsObj->feature2fix as $feature_id => $tcversion_platform) {
+    foreach ($argsObj->feature2fix as $tcversion_platform) {
         $tcversion_id = key($tcversion_platform);
         $platform_id = current($tcversion_platform);
         if ($platform_id != 0) {
@@ -809,7 +809,7 @@ function sendMailToTesters(&$dbHandler, &$tcaseMgr, &$guiObj, &$argsObj,
         '<br /><br />';
 
     // Get testers id
-    foreach ($features as $feature_id => $value) {
+    foreach ($features as $value) {
         if ($use_testers['new']) {
             $testers['new'][$value['user_id']][$value['tcase_id']] = $value['tcase_id'];
         }

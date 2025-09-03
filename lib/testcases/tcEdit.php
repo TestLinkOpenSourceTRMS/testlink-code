@@ -259,7 +259,7 @@ if ($args->delete_tc_version) {
         $container_path = $tree_mgr->get_path($args->new_container_id);
         $path = '';
 
-        foreach ($container_path as $key => $value) {
+        foreach ($container_path as $value) {
             $path .= $value['name'] . $ts_sep;
         }
         $path = trim($path, $ts_sep);

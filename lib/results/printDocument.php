@@ -209,7 +209,7 @@ if ($treeForPlatform) {
         $actionContext['platform_id'] = $platform_id;
 
         if (isset($tree2work['childNodes']) &&
-            sizeof($tree2work['childNodes']) > 0) {
+            count($tree2work['childNodes']) > 0) {
             $tree2work['name'] = $args->tproject_name;
             $tree2work['id'] = $args->tproject_id;
             $tree2work['node_type_id'] = $decode['node_descr_id']['testproject'];

@@ -125,7 +125,7 @@ function display_children($dbHandler, $root_node, $parent, $filter_node,
     }
 
     if (! is_null($nodeSet)) {
-        foreach ($nodeSet as $key => $row) {
+        foreach ($nodeSet as $row) {
             $path['text'] = htmlspecialchars($row['name']);
             $path['id'] = $row['id'];
 
@@ -150,7 +150,7 @@ function display_children($dbHandler, $root_node, $parent, $filter_node,
                 case 'testsuite':
                     $items = array();
                     getAllTCasesID($row['id'], $items);
-                    $tcase_qty = sizeof($items);
+                    $tcase_qty = count($items);
 
                     $path['href'] = "javascript:" .
                         $js_function[$row['node_type']] . "({$path['id']})";
@@ -220,7 +220,7 @@ function getAllTCasesID($idList, &$tcIDs)
                 $suiteIDs[] = $row['id'];
             }
         }
-        if (sizeof($suiteIDs)) {
+        if (count($suiteIDs)) {
             $suiteIDs = implode(",", $suiteIDs);
             getAllTCasesID($suiteIDs, $tcIDs);
         }

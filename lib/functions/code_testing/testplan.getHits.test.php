@@ -46,7 +46,7 @@ TC-100      B1      1 / FAILED
 <b>TC-200      B1      1/FAILED</b>
 <b>TC-200       B2      1/FAILED</b>
 <b>TC-200        B3      1/BLOCKED</b>
-	 
+
 <b>TC-300      B1      3/Passed</b>
 TC-300      B1      2/Passed
 TC-300      B1      1/Passed
@@ -57,7 +57,7 @@ TC-300       B2      1/Passed
 TC-300        B3      3/BLOCKED
 TC-300        B3      2/Passed
 TC-300        B3      1/FAILED
-	 
+
 <b>TC-400      B1      2/FAILED =</b>
 TC-400      B1      1/BLOCKED
 <b>TC-400       B2      1/FAILED =</b>

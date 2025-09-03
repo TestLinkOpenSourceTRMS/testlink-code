@@ -17,6 +17,9 @@
  * Preserve spaces at beginning of lines.
  * Lines must be separated by \n rather than < br / >
  */
+use const Collator\OFF;
+use const Collator\ON;
+
 function string_preserve_spaces_at_bol($p_string)
 {
     $lines = explode("\n", $p_string);
@@ -222,9 +225,9 @@ function string_sanitize_url($p_url)
         $t_url = 'index.php';
     }
 
-    // split and encode parameters
+    // explode and encode parameters
     if (strpos($t_url, '?') !== false) {
-        list ($t_path, $t_param) = split('\?', $t_url, 2);
+        list ($t_path, $t_param) = explode('\?', $t_url, 2);
         if ($t_param !== "") {
             $t_vals = array();
             parse_str($t_param, $t_vals);

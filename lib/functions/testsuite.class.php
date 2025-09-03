@@ -331,7 +331,7 @@ class testsuite extends tlObjectWithAttachments
 
         $testcases = $this->get_children_testcases($id);
         if (! is_null($testcases)) {
-            foreach ($testcases as $key => $elem) {
+            foreach ($testcases as $elem) {
                 $tcaseMgr->delete($elem['id']);
             }
         }
@@ -777,7 +777,7 @@ class testsuite extends tlObjectWithAttachments
         if (! is_null($subtree)) {
             $parent_decode = array();
             $parent_decode[$id] = $new_tsuite_id;
-            foreach ($subtree as $key => $elem) {
+            foreach ($subtree as $elem) {
                 $the_parent_id = $parent_decode[$elem['parent_id']];
                 switch ($elem['node_type_id']) {
                     case $this->node_types_descr_id['testcase']:
@@ -901,7 +901,7 @@ class testsuite extends tlObjectWithAttachments
             $testcases = array();
             $tcNodeType = $this->node_types_descr_id['testcase'];
             $prefix = null;
-            foreach ($subtree as $key => $elem) {
+            foreach ($subtree as $elem) {
                 if ($elem['node_type_id'] == $tcNodeType) {
                     if ($only_id) {
                         $testcases[] = $elem['id'];
@@ -924,7 +924,7 @@ class testsuite extends tlObjectWithAttachments
                 $parentSet);
 
             $rs = array();
-            foreach ($testcases as $idx => $value) {
+            foreach ($testcases as $value) {
                 $item = $tcaseMgr->getLastVersionInfo($value['id'],
                     array(
                         'output' => 'full',
@@ -972,7 +972,7 @@ class testsuite extends tlObjectWithAttachments
             $tsuite = $this->get_by_id($id);
             $tsuiteName = $tsuite['name'];
             $testcases = array();
-            foreach ($subtree as $key => $elem) {
+            foreach ($subtree as $elem) {
                 if ($only_id) {
                     $testcases[] = $elem['id'];
                 } else {
@@ -985,7 +985,7 @@ class testsuite extends tlObjectWithAttachments
         if ($doit && $details == 'full') {
             $rs = array();
             $tcaseMgr = new testcase($this->db);
-            foreach ($testcases as $idx => $value) {
+            foreach ($testcases as $value) {
                 $item = $tcaseMgr->getLastVersionInfo($value['id'],
                     array(
                         'output' => 'full',
@@ -1042,7 +1042,7 @@ class testsuite extends tlObjectWithAttachments
     private function initializeWebEditors($webEditors, $itemTemplateCfgKey)
     {
         $wdata = array();
-        foreach ($webEditors as $key => $html_name) {
+        foreach ($webEditors as $html_name) {
             $wdata[$html_name] = getItemTemplateContents($itemTemplateCfgKey,
                 $html_name, '');
         }
@@ -1163,7 +1163,7 @@ class testsuite extends tlObjectWithAttachments
     public function addKeywords($id, $kw_ids)
     {
         $status = 1;
-        $num_kws = sizeof($kw_ids);
+        $num_kws = count($kw_ids);
         for ($idx = 0; $idx < $num_kws; $idx ++) {
             $status = $status && $this->addKeyword($id, $kw_ids[$idx]);
         }
@@ -1308,7 +1308,7 @@ class testsuite extends tlObjectWithAttachments
         $tcaseMgr = null;
         $relXmlData = '';
         if (! is_null($childNodes)) {
-            $loop_qty = sizeof($childNodes);
+            $loop_qty = count($childNodes);
             for ($idx = 0; $idx < $loop_qty; $idx ++) {
                 $cNode = $childNodes[$idx];
                 $nTable = $cNode['node_table'];
@@ -1326,7 +1326,7 @@ class testsuite extends tlObjectWithAttachments
                     // Collect and do cache of all test case relations that exists inside this test suite.
                     $relSet = $tcaseMgr->getRelations($cNode['id']);
                     if ($relSet['num_relations'] > 0) {
-                        foreach ($relSet['relations'] as $key => $rel) {
+                        foreach ($relSet['relations'] as $rel) {
                             // If we have already found this relation, skip it.
                             if (! in_array($rel['id'], $relCache)) {
                                 $relXmlData .= $tcaseMgr->exportRelationToXML(
@@ -1485,7 +1485,7 @@ class testsuite extends tlObjectWithAttachments
         }
 
         if (! is_null($cf_map)) {
-            foreach ($cf_map as $cf_id => $cf_info) {
+            foreach ($cf_map as $cf_info) {
                 // if user has assigned a value, then node_id is not null
                 // BUGID 3989
                 if ($cf_info['node_id'] || $show_cf) {
@@ -1576,7 +1576,7 @@ class testsuite extends tlObjectWithAttachments
                 'testcase' => 'exclude_me'
             ));
         if (! empty($subtree)) {
-            foreach ($subtree as $key => $elem) {
+            foreach ($subtree as $elem) {
                 $itemKeys[] = $elem['id'];
             }
 
@@ -1863,7 +1863,7 @@ class testsuite extends tlObjectWithAttachments
         if ($doit) {
             $this->get_by_id($id);
             $testcases = array();
-            foreach ($subtree as $key => $elem) {
+            foreach ($subtree as $elem) {
                 $testcases[] = $elem['id'];
             }
             $doit = ! empty($testcases);

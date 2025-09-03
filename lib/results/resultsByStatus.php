@@ -582,7 +582,7 @@ function buildMatrix($dataSet, &$args, $options = [], $platforms = null,
         ];
 
         if (! is_null($customFieldColumns)) {
-            foreach ($customFieldColumns as $id => $def) {
+            foreach ($customFieldColumns as $def) {
                 $columns[] = [
                     'title' => $def['label'],
                     'width' => 60
@@ -780,7 +780,7 @@ function createSpreadsheet($gui, $args, $customFieldColumns = null)
     }
 
     if (! is_null($customFieldColumns)) {
-        foreach ($customFieldColumns as $id => $def) {
+        foreach ($customFieldColumns as $def) {
             $dataHeader[] = $def['label'];
         }
     }

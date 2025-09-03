@@ -124,7 +124,7 @@ function remoteExecTestcaseSet(&$db, $parent_id, $msg)
                     $xmlResponse .= "<tr><td>" . $_key . ":</td><td>" . $_value .
                         "</td></tr>";
                 } else {
-                    $serverTest = $serverTest + 1;
+                    $serverTest += 1;
                 }
             }
             if ($serverTest != 1) {

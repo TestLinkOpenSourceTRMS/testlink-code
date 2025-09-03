@@ -99,7 +99,7 @@ class SqlParser
             $sql_dodo = trim(trim($sql_do, "\r\n "));
 
             if (strlen($sql_dodo) > 0) {
-                $num = $num + 1;
+                $num += 1;
                 $status_ok = $this->db_conn->exec_query($sql_dodo);
                 if (! $status_ok) {
                     $this->sql_errors[] = array(

@@ -70,7 +70,7 @@ class exec_cfield_mgr extends cfield_mgr
         );
 
         if (! is_null($this->cf_map)) {
-            foreach ($this->cf_map as $cf_id => $cf_info) {
+            foreach ($this->cf_map as $cf_info) {
                 // special input size for list and multiselect list
                 if ($cf_info['type'] == $cfTypeIDSet['list'] ||
                     $cf_info['type'] == $cfTypeIDSet['multiselection list']) {
@@ -164,7 +164,7 @@ class exec_cfield_mgr extends cfield_mgr
         $input_name = array();
 
         if (! is_null($this->cf_map)) {
-            foreach ($this->cf_map as $cf_id => $cf_info) {
+            foreach ($this->cf_map as $cf_info) {
                 $t_id = $cf_info['id'];
                 $t_type = $cf_info['type'];
                 $verbose_type = $this->custom_field_types[$t_type];
@@ -214,7 +214,7 @@ class exec_cfield_mgr extends cfield_mgr
                         $firstPass = 1;
                         $cf_seperator = '';
 
-                        foreach ($cf_selected_name as $key => $selectedValue) {
+                        foreach ($cf_selected_name as $selectedValue) {
                             $cf_string .= $cf_seperator . $selectedValue;
                             if ($firstPass) {
                                 $cf_seperator = '|';

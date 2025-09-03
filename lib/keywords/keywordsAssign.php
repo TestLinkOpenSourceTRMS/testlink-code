@@ -82,7 +82,7 @@ switch ($args->edit) {
             }
         }
 
-        if ($loop2do = sizeof($tcs)) {
+        if ($loop2do = count($tcs)) {
             $gui->can_do = 1;
 
             $method = null;

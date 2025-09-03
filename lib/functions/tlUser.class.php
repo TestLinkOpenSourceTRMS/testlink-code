@@ -378,7 +378,7 @@ class tlUser extends tlDBObject
         }
         $allRoles = $db->fetchColumnsIntoMap($sql, 'testproject_id', 'role_id');
         $this->tprojectRoles = null;
-        if (null != $allRoles && sizeof($allRoles)) {
+        if (null != $allRoles && count($allRoles)) {
             $roleCache = null;
             foreach ($allRoles as $tprojectID => $roleID) {
                 if (! isset($roleCache[$roleID])) {
@@ -419,7 +419,7 @@ class tlUser extends tlDBObject
 
         $allRoles = $db->fetchColumnsIntoMap($sql, 'testplan_id', 'role_id');
         $this->tplanRoles = null;
-        if (null != $allRoles && sizeof($allRoles)) {
+        if (null != $allRoles && count($allRoles)) {
             $roleCache = null;
             foreach ($allRoles as $tplanID => $roleID) {
                 if (! isset($roleCache[$roleID])) {
@@ -1182,7 +1182,7 @@ class tlUser extends tlDBObject
             return null;
         }
 
-        for ($idx = 0; $idx < sizeof($ids); $idx ++) {
+        for ($idx = 0; $idx < count($ids); $idx ++) {
             $id = $ids[$idx];
             $user = tlDBObject::createObjectFromDB($db, $id, __CLASS__,
                 self::TLOBJ_O_SEARCH_BY_ID, $detailLevel);
@@ -1356,8 +1356,8 @@ class tlUser extends tlDBObject
         if ($status) {
             # look up cookie in the database to see if it is valid
             $sql = "SELECT COUNT(0) AS hits FROM $this->object_table " .
-                "WHERE cookie_string = '" . $db->prepare_string(
-                    $p_cookie_string) . "'";
+                "WHERE cookie_string = '" .
+                $db->prepare_string($p_cookie_string) . "'";
             $rs = $db->fetchFirstRow($sql);
 
             if (! is_array($rs)) {

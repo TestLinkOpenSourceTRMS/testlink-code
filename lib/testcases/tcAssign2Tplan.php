@@ -60,7 +60,7 @@ if (! is_null(
     $has_links = array_fill_keys(array_keys($tplanSet), false);
     $linked_tplans = null;
     if (! is_null($link_info)) {
-        foreach ($link_info as $tcversion_id => $info) {
+        foreach ($link_info as $info) {
             foreach ($info as $tplan_id => $platform_info) {
                 $has_links[$tplan_id] = true;
                 foreach ($platform_info as $platform_id => $value) {

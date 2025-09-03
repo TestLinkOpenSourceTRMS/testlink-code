@@ -12,6 +12,8 @@
  * @link        http://www.testlink.org
  *
  */
+use const Psr\Log\LogLevel\ERROR;
+
 require_once 'common.php';
 
 /**
@@ -64,7 +66,7 @@ function setUserSession(&$db, $user, $id, $roleID, $email, $locale = null)
     }
     if (! $_SESSION['testprojectID']) {
         $tpID = null;
-        if (sizeof($arrProducts)) {
+        if (count($arrProducts)) {
             $tpID = key($arrProducts);
         }
         $_SESSION['testprojectID'] = $tpID;

@@ -272,7 +272,7 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
         $childID = (is_null($revision) || $req['revision_id'] < 0) ? $req['version_id'] : $req['revision_id'];
         $linked_cf = $req_mgr->get_linked_cfields($req['id'], $childID);
         if ($linked_cf) {
-            foreach ($linked_cf as $key => $cf) {
+            foreach ($linked_cf as $cf) {
                 $cflabel = htmlspecialchars($cf['label']);
                 $value = htmlspecialchars($cf['value']);
 
@@ -309,8 +309,8 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
                     } else {
                         $imgDiff = round($iHeight / 450);
                     }
-                    $iWidth = $iWidth / $imgDiff;
-                    $iHeight = $iHeight / $imgDiff;
+                    $iWidth /= $imgDiff;
+                    $iHeight /= $imgDiff;
                 }
 
                 $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
@@ -486,7 +486,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix,
 
         $linked_cf = $req_spec_mgr->get_linked_cfields($who);
         if ($linked_cf) {
-            foreach ($linked_cf as $key => $cf) {
+            foreach ($linked_cf as $cf) {
                 $cflabel = htmlspecialchars($cf['label']);
                 $value = htmlspecialchars($cf['value']);
 
@@ -571,7 +571,7 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options, $tocPrefix,
 
         $childNodes = $node['childNodes'];
         $rsCnt = 0;
-        $children_qty = sizeof($childNodes);
+        $children_qty = count($childNodes);
         for ($i = 0; $i < $children_qty; $i ++) {
             $current = $childNodes[$i];
             if (is_null($current)) {
@@ -826,7 +826,7 @@ function renderTestSpecTreeForPrinting(&$db, &$node, &$options, $env, $context,
         // Need to be a LOCAL COUNTER for each PARENT
         $tocCounter = 0;
         $childNodes = $node['childNodes'];
-        $children_qty = sizeof($childNodes);
+        $children_qty = count($childNodes);
         for ($idx = 0; $idx < $children_qty; $idx ++) {
             $current = $childNodes[$idx];
             if (is_null($current) || $current == REMOVEME) {
@@ -1308,8 +1308,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
                                             } else {
                                                 $imgDiff = round($iHeight / 450);
                                             }
-                                            $iWidth = $iWidth / $imgDiff;
-                                            $iHeight = $iHeight / $imgDiff;
+                                            $iWidth /= $imgDiff;
+                                            $iHeight /= $imgDiff;
                                         }
 
                                         $iDim = ' width=' . $iWidth . ' height=' .
@@ -1453,7 +1453,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
             '" valign="top"><span class="label">' . $labels['reqs'] . '</span>';
         $code .= '<td colspan="' . ($cfg['tableColspan'] - 1) . '">';
 
-        if (sizeof($requirements)) {
+        if (count($requirements)) {
             foreach ($requirements as $req) {
                 $code .= htmlspecialchars(
                     $req['req_doc_id'] . ":  " . $req['title']) . " " .
@@ -1479,7 +1479,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
             array(
                 'fields' => 'keyword_id,KW.keyword'
             ));
-        if (sizeof($kwSet)) {
+        if (count($kwSet)) {
             foreach ($kwSet as $kw) {
                 $code .= htmlspecialchars($kw['keyword']) . "<br />";
             }
@@ -1501,7 +1501,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
             array(
                 'fields' => 'platform_id,PL.name'
             ));
-        if (sizeof($itSet)) {
+        if (count($itSet)) {
             foreach ($itSet as $it) {
                 $code .= htmlspecialchars($it['name']) . "<br />";
             }
@@ -1648,8 +1648,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
                             } else {
                                 $imgDiff = round($iHeight / 450);
                             }
-                            $iWidth = $iWidth / $imgDiff;
-                            $iHeight = $iHeight / $imgDiff;
+                            $iWidth /= $imgDiff;
+                            $iHeight /= $imgDiff;
                         }
 
                         $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
@@ -2137,7 +2137,7 @@ function buildTestExecResults(&$dbHandler, &$its, $exec_info, $opt,
 
         if ($bugs) {
             $bugString = '';
-            foreach ($bugs as $bugID => $bugInfo) {
+            foreach ($bugs as $bugInfo) {
                 if ($bugInfo['step_number'] != '') {
                     $bugString .= $labels['step'] . ' ' . $bugInfo['step_number'] .
                         ' - ';

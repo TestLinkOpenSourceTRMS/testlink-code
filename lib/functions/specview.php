@@ -888,7 +888,7 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems,
             switch ($specViewType) {
                 case 'testPlanLinking':
                     // We need to analise linked items and spec
-                    foreach ($targetSet as $idx => $key) {
+                    foreach ($targetSet as $key) {
                         $targetTestCase = isset($tcversionSet[$key]) ? $tcversionSet[$key]['testcase_id'] : null;
 
                         if (is_null($targetTestCase)) {
@@ -934,7 +934,7 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems,
                     // a first clean will not be bad, ok may be we are going to do more
                     // loops that needed, but think logic will be more clear
                     // (at least @20130426 is a little bit confusing ;) )
-                    foreach ($targetSet as $idx => $key) {
+                    foreach ($targetSet as $key) {
                         if (! isset($tcidSet[$key])) {
                             $test_spec[$itemSet[$key]] = null;
                         }
@@ -975,7 +975,7 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems,
                     }
 
                     if ($doFilter && ! empty($allowedSet)) {
-                        foreach ($allowedSet as $key => $value) {
+                        foreach ($allowedSet as $value) {
                             $tspecKey = $itemSet[$value['testcase_id']];
                             $test_spec[$tspecKey]['version'] = $value['version'];
                         }
@@ -988,7 +988,7 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems,
 
                     $setToRemove = array_diff_key($tcversionSet, $allowedSet);
                     if (! empty($setToRemove)) {
-                        foreach ($setToRemove as $key => $value) {
+                        foreach ($setToRemove as $value) {
                             $tspecKey = $itemSet[$value['testcase_id']];
                             $test_spec[$tspecKey] = null;
                         }
@@ -1315,7 +1315,7 @@ function addLinkedVersionsInfo($testCaseVersionSet, $a_tsuite_idx, &$out,
     $pivot_id = - 1;
     $firstElemIDX = key($out);
 
-    foreach ($testCaseVersionSet as $the_k => $testCase) {
+    foreach ($testCaseVersionSet as $testCase) {
         $tc_id = $testCase['testcase_id'];
 
         // Needed when having multiple platforms

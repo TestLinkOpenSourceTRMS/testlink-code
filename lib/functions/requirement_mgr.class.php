@@ -666,8 +666,8 @@ class requirement_mgr extends tlObjectWithAttachments
                 $reqIDSet = (array) $id;
                 $reqVerSet = $this->getAllReqVersionIDForReq($reqIDSet);
 
-                foreach ($reqVerSet as $reqID2Del => $reqVerElem) {
-                    foreach ($reqVerElem as $ydx => $reqVID2Del) {
+                foreach ($reqVerSet as $reqVerElem) {
+                    foreach ($reqVerElem as $reqVID2Del) {
                         $result = $this->attachmentRepository->deleteAttachmentsFor(
                             $reqVID2Del, $this->attachmentTableName);
                     }
@@ -698,7 +698,7 @@ class requirement_mgr extends tlObjectWithAttachments
             }
 
             // Attachments are related to VERSION
-            foreach ($children as $key => $reqVID) {
+            foreach ($children as $reqVID) {
                 $this->attachmentRepository->deleteAttachmentsFor($reqVID,
                     $this->attachmentTableName);
             }
@@ -975,7 +975,7 @@ class requirement_mgr extends tlObjectWithAttachments
             // First search: we use test project
             $parent_id = $tproject_id;
             $deep_create = false;
-            foreach ($full_path as $key => $node) {
+            foreach ($full_path as $node) {
                 // follow hierarchy of test suites to create
                 $tsuiteInfo = null;
 
@@ -1946,7 +1946,7 @@ class requirement_mgr extends tlObjectWithAttachments
         $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
 
         if (! is_null($cf_map)) {
-            foreach ($cf_map as $cf_id => $cf_info) {
+            foreach ($cf_map as $cf_info) {
                 // if user has assigned a value, then node_id is not null
                 if ($cf_info['node_id'] || $show_cf) {
                     $label = str_replace(TL_LOCALIZE_TAG, '',

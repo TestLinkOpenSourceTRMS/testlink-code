@@ -120,7 +120,7 @@ function R_PARAMS($paramInfo, &$args = null)
  */
 function GPR_PARAMS($source, $paramInfo, &$args = null)
 {
-    foreach ($paramInfo as $pName => &$info) {
+    foreach ($paramInfo as &$info) {
         array_unshift($info, $source);
     }
     return I_PARAMS($paramInfo, $args);

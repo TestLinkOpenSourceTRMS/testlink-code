@@ -121,7 +121,7 @@ function initializeGuiForResult(&$dbHandler, $argsObj, &$guiObj)
         'selected_end_date' => 'endTime'
     );
     foreach ($k2l as $in => $opt) {
-        if (isset($argsObj->$in) && sizeof($argsObj->$in) > 0) {
+        if (isset($argsObj->$in) && count($argsObj->$in) > 0) {
             $dd = split_localized_date(current($argsObj->$in), $dateFormat);
             if ($dd != null) {
                 $options[$opt] = $dd['year'] . "-" . $dd['month'] . "-" .
@@ -144,7 +144,7 @@ function initializeGuiForResult(&$dbHandler, $argsObj, &$guiObj)
         // test case can exist multiple times, due to versions
         $rows = array();
         list ($columns, $sortByColumn) = getColumnsDefinition();
-        foreach ($guiObj->resultSet as $idx => $itemInfo) {
+        foreach ($guiObj->resultSet as $itemInfo) {
             foreach ($itemInfo as $tcase) {
                 $cuRow = array();
                 $tcase_id = $tcase['tcase_id'];
@@ -157,8 +157,8 @@ function initializeGuiForResult(&$dbHandler, $argsObj, &$guiObj)
                     "<img title=\"{$guiObj->l18n['design']}\" src=\"{$guiObj->images['edit']}\" /></a> ";
 
                 $cuRow[] = "<!-- " . sprintf("%010d", $tcase['external_id']) .
-                    " -->" . $edit_link . htmlspecialchars(
-                        $tcase['external_id']) . " : " .
+                    " -->" . $edit_link .
+                    htmlspecialchars($tcase['external_id']) . " : " .
                     htmlspecialchars($tcase['tcase_name']) .
                     sprintf($guiObj->l18n['tcversion_indicator'],
                         $tcase['version']);
@@ -238,7 +238,7 @@ function initGuiForCSVDownload(&$dbHandler, $argsObj, &$guiObj)
         'selected_end_date' => 'endTime'
     );
     foreach ($k2l as $in => $opt) {
-        if (isset($argsObj->$in) && sizeof($argsObj->$in) > 0) {
+        if (isset($argsObj->$in) && count($argsObj->$in) > 0) {
             $dd = split_localized_date(current($argsObj->$in), $dateFormat);
             if ($dd != null) {
                 $options[$opt] = $dd['year'] . "-" . $dd['month'] . "-" .
@@ -260,7 +260,7 @@ function initGuiForCSVDownload(&$dbHandler, $argsObj, &$guiObj)
     if (! is_null($guiObj->resultSet)) {
         // test case can exist multiple times, due to versions
         $rows = array();
-        foreach ($guiObj->resultSet as $idx => $itemInfo) {
+        foreach ($guiObj->resultSet as $itemInfo) {
             foreach ($itemInfo as $tcase) {
                 $cuRow = array();
                 $cuRow[] = htmlspecialchars($tcase['login']);

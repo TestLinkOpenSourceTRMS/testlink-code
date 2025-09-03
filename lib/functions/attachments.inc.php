@@ -112,7 +112,7 @@ function checkAttachmentID(&$db, $id, $attachmentInfo)
     $isValid = false;
     if ($attachmentInfo) {
         $sLastAttachmentInfos = isset($_SESSION['s_lastAttachmentInfos']) ? $_SESSION['s_lastAttachmentInfos'] : null;
-        for ($i = 0; $i < sizeof($sLastAttachmentInfos); $i ++) {
+        for ($i = 0; $i < count($sLastAttachmentInfos); $i ++) {
             $info = $sLastAttachmentInfos[$i];
             if ($info['id'] == $id) {
                 $isValid = true;

@@ -453,7 +453,7 @@ if (! is_null($linked_tcversions)) {
 
                 // Get UserID and Updater ID for current Version
                 $tc_current = $gui->map_last_exec_any_build;
-                foreach ($tc_current as $key => $value) {
+                foreach ($tc_current as $value) {
                     $testerid = $value[$testerIdKey];
                     $userid_array[$testerid] = $testerid;
                 }
@@ -487,7 +487,7 @@ if (! is_null($linked_tcversions)) {
             // Get attachment,bugs, etc
             if (! is_null($gui->other_execs)) {
                 // Get the Tester ID for all previous executions
-                foreach ($gui->other_execs as $key => $execution) {
+                foreach ($gui->other_execs as $execution) {
                     foreach ($execution as $singleExecution) {
                         $testerid = $singleExecution[$testerIdKey];
                         $userid_array[$testerid] = $testerid;
@@ -1059,7 +1059,7 @@ function execAdditionalInfo(&$db, $fileRepo, &$tcaseMgr, $other_execs, $tplan_id
     $cfexec_values = null;
 
     foreach ($other_execs as $tcversion_id => $execInfo) {
-        $num_elem = sizeof($execInfo);
+        $num_elem = count($execInfo);
         for ($idx = 0; $idx < $num_elem; $idx ++) {
             $exec_id = $execInfo[$idx]['execution_id'];
             $aInfo = getAttachmentInfos($fileRepo, $exec_id, 'executions', true,
@@ -1357,7 +1357,7 @@ function createExecNotesWebEditor(&$tcversions, $basehref, $editorCfg, $execCfg,
             'notes', null);
     }
 
-    foreach ($tcversions as $key => $tcv) {
+    foreach ($tcversions as $tcv) {
         $tcversion_id = $tcv['id'];
         $tcase_id = $tcv['testcase_id'];
 
@@ -1999,7 +1999,7 @@ function processTestSuite(&$dbHandler, &$guiObj, &$argsObj, $testSet, &$treeMgr,
         $gdx = 0;
         foreach ($testSet->tcase_id as $testcase_id) {
             $path_f = $treeMgr->get_path($testcase_id, null, 'full');
-            foreach ($path_f as $key => $path_elem) {
+            foreach ($path_f as $path_elem) {
                 if ($path_elem['parent_id'] == $argsObj->id) {
                     // Can be added because is present in the branch the user wants to view
                     // ID of branch starting node is in $argsObj->id
@@ -2060,7 +2060,7 @@ function buildExecContext(&$argsObj, $tcasePrefix, &$tplanMgr, &$tcaseMgr)
         'user_id' => null
     );
 
-    foreach ($ret as $area => &$value) {
+    foreach ($ret as &$value) {
         foreach ($value as $key => $dummy) {
             if (property_exists($argsObj, $key)) {
                 $value[$key] = $argsObj->$key;

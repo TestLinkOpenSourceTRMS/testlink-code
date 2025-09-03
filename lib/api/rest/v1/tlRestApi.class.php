@@ -125,7 +125,7 @@ class tlRestApi
 
         // test route with anonymous function
         $this->app->get('/who',
-            function () {
+            function (): void {
                 echo __CLASS__ . ' : Get Route /who';
             });
 
@@ -317,7 +317,7 @@ class tlRestApi
                 }
             } else {
                 // Will consider id = name
-                foreach ($zx as $key => $value) {
+                foreach ($zx as $value) {
                     if (strcmp($value['name'], $idCard) == 0) {
                         $safeString = $this->db->prepare_string($idCard);
                         $op['item'] = $this->tprojectMgr->get_by_name(
@@ -397,7 +397,7 @@ class tlRestApi
                 $tcaseIDSet);
             if (! empty($tcaseIDSet)) {
                 $op['items'] = array();
-                foreach ($tcaseIDSet as $key => $tcaseID) {
+                foreach ($tcaseIDSet as $tcaseID) {
                     $item = $this->tcaseMgr->getLastVersionInfo($tcaseID);
                     $item['keywords'] = $this->tcaseMgr->get_keywords_map(
                         $tcaseID);

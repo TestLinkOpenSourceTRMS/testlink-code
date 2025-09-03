@@ -208,7 +208,7 @@ function saveImportedResultData(&$db, $resultData, $context, $options)
     $resultMap = array();
     $tplan_mgr = null;
 
-    $tc_qty = sizeof($resultData);
+    $tc_qty = count($resultData);
     if ($tc_qty) {
         $tplan_mgr = new testplan($db);
         $tproject_mgr = new testproject($db);
@@ -578,7 +578,7 @@ function importExecutionsFromXML($xmlTCExecSet)
     $execInfoSet = null;
     if ($xmlTCExecSet) {
         $jdx = 0;
-        $exec_qty = sizeof($xmlTCExecSet);
+        $exec_qty = count($xmlTCExecSet);
         for ($idx = 0; $idx < $exec_qty; $idx ++) {
             $xmlTCExec = $xmlTCExecSet[$idx];
             $execInfo = importExecutionFromXML($xmlTCExec);

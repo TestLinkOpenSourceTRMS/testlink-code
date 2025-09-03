@@ -62,7 +62,7 @@ foreach ($matrix as $build_id => $build_execution_map) {
     $build_statistics[$build_id]['executed'] = 0;
     $build_statistics[$build_id]['total_time'] = 0;
 
-    foreach ($build_execution_map as $user_id => $statistics) {
+    foreach ($build_execution_map as $statistics) {
         // total assigned test cases
         $build_statistics[$build_id]['total'] += $statistics['total'];
 

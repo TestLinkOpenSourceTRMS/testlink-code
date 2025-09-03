@@ -15,8 +15,6 @@
  *
  * @package TestLink
  */
-use function tlRole\buildRightsArray;
-
 class tlRole extends tlDBObject
 {
 
@@ -199,8 +197,8 @@ class tlRole extends tlDBObject
                 $result = $this->deleteRightsFromDB($db);
                 if ($result >= tl::OK) {
                     $sql = "UPDATE {$this->object_table} " .
-                        " SET description = '" . $db->prepare_string(
-                            $this->name) . "'," . " notes ='" .
+                        " SET description = '" .
+                        $db->prepare_string($this->name) . "'," . " notes ='" .
                         $db->prepare_string($this->description) . "'" .
                         " WHERE id = {$this->dbID}";
                     $result = $db->exec_query($sql);
@@ -235,7 +233,7 @@ class tlRole extends tlDBObject
         $this->description = trim($this->description);
 
         $result = tl::OK;
-        if (! sizeof($this->rights)) {
+        if (! count($this->rights)) {
             $result = self::E_EMPTYROLE;
         }
 
@@ -509,7 +507,7 @@ class tlRole extends tlDBObject
     protected function buildRightsArray($rightInfo)
     {
         $rights = null;
-        for ($i = 0; $i < sizeof($rightInfo); $i ++) {
+        for ($i = 0; $i < count($rightInfo); $i ++) {
             $id = $rightInfo[$i];
             $right = new tlRight($id['right_id']);
             $right->name = $id['description'];

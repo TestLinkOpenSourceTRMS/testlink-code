@@ -213,7 +213,7 @@ class jirasoapInterface extends issueTrackerInterface
                 $this->authToken = $this->APIClient->login($this->cfg->username,
                     $this->cfg->password);
                 $statusSet = $op['client']->getStatuses($this->authToken);
-                foreach ($statusSet as $key => $pair) {
+                foreach ($statusSet as $pair) {
                     $this->statusDomain[$pair->name] = $pair->id;
                 }
 

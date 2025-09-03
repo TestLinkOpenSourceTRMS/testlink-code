@@ -237,7 +237,7 @@ function checkRights(&$db, &$user)
 
     foreach ($answers as $key => $value) {
         $answers->$key = $value == "yes" ? true : false;
-        $result = $result | $answers->$key;
+        $result |= $answers->$key;
     }
 
     if (! $result && ($args->featureType == 'testproject')) {
@@ -341,7 +341,7 @@ function getTestProjectEffectiveRoles($dbHandler, &$objMgr, &$argsObj, $users)
     if (! $argsObj->featureID) {
         if ($argsObj->testprojectID) {
             $argsObj->featureID = $argsObj->testprojectID;
-        } elseif (sizeof($features)) {
+        } elseif (count($features)) {
             $xx = current($features);
             $argsObj->featureID = $xx['id'];
         }
@@ -427,7 +427,7 @@ function getTestPlanEffectiveRoles(&$dbHandler, &$tplanMgr, $tprojectMgr,
 
         // if nothing special was selected,
         // use the one in the session or the first
-        if (! $argsObj->featureID && sizeof($features)) {
+        if (! $argsObj->featureID && count($features)) {
             if ($argsObj->testplanID) {
                 $key2loop = array_keys($features);
                 foreach ($key2loop as $idx) {
@@ -510,7 +510,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler, &$tplanMgr, $tprojectMgr,
         if ($argsObj->user->hasRight($dbHandler, "mgt_users")) {
             $features = $activeTestplans;
         } else {
-            // $loop2do = sizeof($activeTestplans);
+            // $loop2do = count($activeTestplans);
             // for($idx = 0; $idx < $loop2do; $idx++)
             $features = array();
             $key2loop = array_keys($activeTestplans);
@@ -525,7 +525,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler, &$tplanMgr, $tprojectMgr,
         }
 
         // if nothing special was selected, use the one in the session or the first
-        if (! $argsObj->featureID && sizeof($features)) {
+        if (! $argsObj->featureID && count($features)) {
             if ($argsObj->testplanID) {
                 $key2loop = array_keys($features);
                 foreach ($key2loop as $idx) {

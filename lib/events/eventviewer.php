@@ -283,7 +283,7 @@ function buildExtTable($gui, $show_icon, $charset)
         // Extract the relevant data and build a matrix
         $matrixData = array();
 
-        foreach ($gui->events as $event_key => $event) {
+        foreach ($gui->events as $event) {
             $rowData = array();
 
             // necessary as localize_dateOrTimeStamp expects 2nd parameter to pass by reference

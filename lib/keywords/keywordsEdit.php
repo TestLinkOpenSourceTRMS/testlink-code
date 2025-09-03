@@ -12,6 +12,8 @@
  * @link       http://www.testlink.org/
  *
  **/
+use const Psr\Log\LogLevel\ERROR;
+
 require_once '../../config.inc.php';
 require_once 'common.php';
 require_once 'csv.inc.php';
@@ -88,7 +90,7 @@ $tplEngine->display($tplCfg->template_dir . $tpl);
 function initEnv(&$dbHandler)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
-    $source = sizeof($_POST) ? "POST" : "GET";
+    $source = count($_POST) ? "POST" : "GET";
 
     $ipcfg = array(
         "doAction" => array(
@@ -345,9 +347,10 @@ function do_cfl(&$args, &$guiObj, &$tproject_mgr)
             WHERE id=" . intval($args->tcversion_id);
         $rs = $tproject_mgr->db->get_recordset($sql);
         $tcase_id = intval($rs[0]['parent_id']);
-        $tcaseMgr->addKeywords($tcase_id, $args->tcversion_id, array(
-            $op['id']
-        ));
+        $tcaseMgr->addKeywords($tcase_id, $args->tcversion_id,
+            array(
+                $op['id']
+            ));
     }
     $ret->status = $op['status'];
     return $ret;

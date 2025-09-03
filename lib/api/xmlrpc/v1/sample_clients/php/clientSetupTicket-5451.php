@@ -55,7 +55,7 @@ $dummy->name = 'Renault';
 $dummy->notes = 'France';
 $platformSet[$dummy->name] = $dummy;
 
-foreach ($platformSet as $name => &$item) {
+foreach ($platformSet as &$item) {
     $op = createPlatform($server_url, $cfg, $args4call, $item);
     $item->id = $op['id'];
 }

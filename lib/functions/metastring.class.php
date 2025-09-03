@@ -182,7 +182,7 @@ class tlMetaString extends tlObject
         $subjects = array();
         $replacements = array();
         $params = (array) $this->helper->params;
-        for ($i = 0; $i < sizeof($params); $i ++) {
+        for ($i = 0; $i < count($params); $i ++) {
             $param = $params[$i];
             if (is_array($param)) {
                 $item = null;

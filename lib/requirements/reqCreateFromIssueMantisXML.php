@@ -217,7 +217,7 @@ function getFromMantisIssueSimpleXMLObj($xmlObj)
 
     $jdx = 0;
     $xmlIssue = $xmlObj->issue;
-    $loops2do = sizeof($xmlIssue);
+    $loops2do = count($xmlIssue);
 
     $xmlDef['elements'] = array(
         'string' => array(

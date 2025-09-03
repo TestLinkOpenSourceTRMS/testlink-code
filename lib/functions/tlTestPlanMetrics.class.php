@@ -132,7 +132,7 @@ class tlTestPlanMetrics extends testplan
 
                 // parse results into three levels of priority
                 $priority = priority_to_level($urgency * $importance);
-                $output[$priority] = $output[$priority] + $tmpResult;
+                $output[$priority] += $tmpResult;
             }
         }
 
@@ -168,7 +168,7 @@ class tlTestPlanMetrics extends testplan
 
                 // clean up priority usage
                 $priority = priority_to_level($urgency * $importance);
-                $output[$priority] = $output[$priority] + $tmpResult;
+                $output[$priority] += $tmpResult;
             }
         }
 
@@ -380,12 +380,12 @@ class tlTestPlanMetrics extends testplan
             // - Add info for ACTIVE BUILD WITHOUT any execution. ???
             // Hmm, think about Need to check is this way is better that request DBMS to do it.
             // - Execution status that have not happened
-            foreach ($exec as $dum => &$elem) {
+            foreach ($exec as &$elem) {
                 $platSet = array_keys($elem);
                 foreach ($platSet as $platId) {
                     $itemSet = array_keys($elem[$platId]);
                     foreach ($itemSet as $itemID) {
-                        foreach ($this->statusCode as $verbose => $code) {
+                        foreach ($this->statusCode as $code) {
                             if (! isset($elem[$platId][$itemID][$code])) {
                                 $elem[$platId][$itemID][$code] = array(
                                     'build_id' => $itemID,
@@ -407,7 +407,7 @@ class tlTestPlanMetrics extends testplan
             foreach ($exec as &$elem) {
                 $itemSet = array_keys($elem);
                 foreach ($itemSet as $itemID) {
-                    foreach ($this->statusCode as $verbose => $code) {
+                    foreach ($this->statusCode as $code) {
                         if (! isset($elem[$itemID][$code])) {
                             $elem[$itemID][$code] = array(
                                 'build_id' => $itemID,
@@ -1099,7 +1099,7 @@ class tlTestPlanMetrics extends testplan
                 $itemSet = array_keys($topLevelElem[$topLevelItemID]);
                 foreach ($itemSet as $itemID) {
                     $elem = &$topLevelElem[$topLevelItemID];
-                    foreach ($this->statusCode as $verbose => $code) {
+                    foreach ($this->statusCode as $code) {
                         if (! isset($elem[$itemID][$code])) {
                             $elem[$itemID][$code] = array(
                                 'build_id' => $topLevelItemID,
@@ -1456,7 +1456,7 @@ class tlTestPlanMetrics extends testplan
                             1);
                     }
                     if ($elem['total_tc'] > 0) {
-                        foreach ($elem['details'] as $code => &$yumyum) {
+                        foreach ($elem['details'] as &$yumyum) {
                             $yumyum['percentage'] = number_format(
                                 100 * ($yumyum['qty'] / $elem['total_tc']), 1);
                         }
@@ -1514,7 +1514,7 @@ class tlTestPlanMetrics extends testplan
                 }
 
                 if ($elem['total_tc'] > 0) {
-                    foreach ($elem['details'] as $code => &$yumyum) {
+                    foreach ($elem['details'] as &$yumyum) {
                         $yumyum['percentage'] = number_format(
                             100 * ($yumyum['qty'] / $elem['total_tc']), 1);
                     }
@@ -1703,7 +1703,7 @@ class tlTestPlanMetrics extends testplan
                         'status' => $this->notRunStatusCode
                     );
                     $rf = &$dummy[$item_id][$tcase_id][$platform_id];
-                    foreach ($rf as $build_id => &$exec) {
+                    foreach ($rf as &$exec) {
                         $exec['suiteName'] = $pathway[$item_id];
                         if ($exec['executions_id'] >
                             $latestExec[$platform_id][$tcase_id]['id']) {
@@ -1890,7 +1890,7 @@ class tlTestPlanMetrics extends testplan
             $itemSet = array_keys($elem);
             foreach ($itemSet as $itemID) {
                 $totalByItemID[$itemID]['qty'] = 0;
-                foreach ($this->statusCode as $verbose => $code) {
+                foreach ($this->statusCode as $code) {
                     if (! isset($elem[$itemID][$code])) {
                         $elem[$itemID][$code] = array(
                             $key => $itemID,
@@ -2764,7 +2764,7 @@ class tlTestPlanMetrics extends testplan
                 $colSet = array_keys($elem[$rowID]);
                 foreach ($colSet as $colID) {
                     $totalByMatrix[$rowID][$colID]['qty'] = 0;
-                    foreach ($this->statusCode as $verbose => $code) {
+                    foreach ($this->statusCode as $code) {
                         if (! isset($elem[$rowID][$colID][$code])) {
                             $elem[$rowID][$colID][$code] = array(
                                 $rowKey => $rowID,
@@ -2846,7 +2846,7 @@ class tlTestPlanMetrics extends testplan
                         $totalRun = 0;
                         $rf = &$renObj->info[$platID][$itemID]['details'];
                         $doPerc = ($renObj->info[$platID][$itemID][$tk] > 0);
-                        foreach ($codeSet as $sCode => $c4human) {
+                        foreach ($codeSet as $c4human) {
                             $totalRun += ($c4human == 'not_run' ? 0 : $rf[$c4human]['qty']);
                         }
                         if ($doPerc) {
@@ -3391,7 +3391,7 @@ class tlTestPlanMetrics extends testplan
                             1);
                     }
                     if ($elem['total_tc'] > 0) {
-                        foreach ($elem['details'] as $code => &$yumyum) {
+                        foreach ($elem['details'] as &$yumyum) {
                             $yumyum['percentage'] = number_format(
                                 100 * ($yumyum['qty'] / $elem['total_tc']), 1);
                         }
@@ -3409,7 +3409,7 @@ class tlTestPlanMetrics extends testplan
                             1);
                     }
                     if ($elem['total_tc'] > 0) {
-                        foreach ($elem['details'] as $code => &$yumyum) {
+                        foreach ($elem['details'] as &$yumyum) {
                             $yumyum['percentage'] = number_format(
                                 100 * ($yumyum['qty'] / $elem['total_tc']), 1);
                         }

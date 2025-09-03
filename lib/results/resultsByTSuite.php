@@ -248,7 +248,7 @@ function createSpreadsheet($gui, &$tplanMgr)
     $execStatusDomain = $tplanMgr->getStatusForReports();
     $dataHeaderMetrics = array();
     $ccc = 0;
-    foreach ($execStatusDomain as $key => $human) {
+    foreach ($execStatusDomain as $human) {
         $dataHeaderMetrics[] = lang_get('test_status_' . $human);
         $ccc ++;
         $dataHeaderMetrics[] = '[%]';
@@ -313,7 +313,7 @@ function createSpreadsheet($gui, &$tplanMgr)
         $nameKey = $target['nameKey'];
         $tcQtyKey = $target['tcQtyKey'];
 
-        foreach ($infoSet as $itemID => $fieldSet) {
+        foreach ($infoSet as $fieldSet) {
 
             $whatCell = 0;
             $cellID = $cellRange[$whatCell] . $startingRow;
@@ -325,7 +325,7 @@ function createSpreadsheet($gui, &$tplanMgr)
             $field = $fieldSet[$tcQtyKey];
             $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
 
-            foreach ($fieldSet['details'] as $human => $metrics) {
+            foreach ($fieldSet['details'] as $metrics) {
                 $whatCell ++;
                 $cellID = $cellRange[$whatCell] . $startingRow;
                 $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID,
@@ -429,7 +429,7 @@ function createSpreadsheet($gui, &$tplanMgr)
 
             $infoSet = isset($target['source'][$platID]) ? $target['source'][$platID] : array();
 
-            foreach ($infoSet as $itemID => $fieldSet) {
+            foreach ($infoSet as $fieldSet) {
                 $whatCell = 0;
 
                 if ($gui->hasPlatforms) {
@@ -452,7 +452,7 @@ function createSpreadsheet($gui, &$tplanMgr)
                 $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID,
                     $field);
 
-                foreach ($fieldSet['details'] as $human => $metrics) {
+                foreach ($fieldSet['details'] as $metrics) {
                     $whatCell ++;
                     $cellID = $cellRange[$whatCell] . $startingRow;
                     $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID,

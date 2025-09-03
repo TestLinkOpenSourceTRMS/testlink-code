@@ -106,7 +106,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     $treeMgr = new tree($dbHandler);
     $ntypes = $treeMgr->get_available_node_types();
     $peerTypes = array('target' => $ntypes['requirement'], 'container' => $ntypes['requirement_spec']);
-    foreach($nodeSet as $key => $row)
+    foreach($nodeSet as $row)
     {
       $path['text'] = htmlspecialchars($row['name']);
       $path['id'] = $row['id'];

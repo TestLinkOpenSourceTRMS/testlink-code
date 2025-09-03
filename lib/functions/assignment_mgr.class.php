@@ -120,7 +120,7 @@ class assignment_mgr extends tlObjectWithDB
         // build_id is the same for all entries because of assignment form
         // -> skip foreach after first iteration
         $build_id = 0;
-        foreach ($feature_map as $key => $feature) {
+        foreach ($feature_map as $feature) {
             $build_id = $feature['build_id'];
             break;
         }
@@ -252,7 +252,7 @@ class assignment_mgr extends tlObjectWithDB
                 }
             }
 
-            foreach ($date_fields as $idx => $field) {
+            foreach ($date_fields as $field) {
                 if (isset($elem[$field])) {
                     $sql .= $sepa . "$field=" . $elem[$field] . " ";
                     $sepa = ",";

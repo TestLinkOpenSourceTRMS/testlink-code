@@ -112,7 +112,7 @@ function initializeGui(&$db, &$args)
     $gui->TestProjects = $tproject_mgr->get_accessible_for_user(
         $args->user->dbID, $opx);
 
-    $gui->TestProjectCount = sizeof($gui->TestProjects);
+    $gui->TestProjectCount = count($gui->TestProjects);
     if ($gui->TestProjectCount == 0) {
         $gui->TestProjects = null;
     }
@@ -168,7 +168,7 @@ function initializeGui(&$db, &$args)
     if ($gui->tproject_id) {
         $testPlanSet = (array) $args->user->getAccessibleTestPlans($db,
             $gui->tproject_id);
-        $gui->TestPlanCount = sizeof($testPlanSet);
+        $gui->TestPlanCount = count($testPlanSet);
 
         $tplanID = isset($_SESSION['testplanID']) ? intval(
             $_SESSION['testplanID']) : null;
@@ -199,8 +199,8 @@ function initializeGui(&$db, &$args)
         }
     }
 
-    if ($gui->tproject_id && isset(
-        $args->user->tprojectRoles[$gui->tproject_id])) {
+    if ($gui->tproject_id &&
+        isset($args->user->tprojectRoles[$gui->tproject_id])) {
         // test project specific role applied
         $role = $args->user->tprojectRoles[$gui->tprojectID];
         $testprojectRole = $role->getDisplayName();

@@ -147,7 +147,7 @@ function importTestCaseDataFromXML(&$db, $fileName, $parentID, $tproject_id,
             $kwMap = null;
             if ($xmlKeywords) {
                 $tproject = new testproject($db);
-                $loop2do = sizeof($xmlKeywords);
+                $loop2do = count($xmlKeywords);
                 for ($idx = 0; $idx < $loop2do; $idx ++) {
                     $tproject->importKeywordsFromSimpleXML($tproject_id,
                         $xmlKeywords[$idx]);
@@ -268,7 +268,7 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
     }
 
     $resultMap = array();
-    $tc_qty = sizeof($tcData);
+    $tc_qty = count($tcData);
     $userIDCache = array();
 
     for ($idx = 0; $idx < $tc_qty; $idx ++) {
@@ -485,7 +485,7 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
 function buildKeywordList($kwMap, $keywords)
 {
     $items = array();
-    $loop2do = sizeof($keywords);
+    $loop2do = count($keywords);
     for ($jdx = 0; $jdx < $loop2do; $jdx ++) {
         $items[] = $kwMap[trim($keywords[$jdx]['name'])];
     }
@@ -637,7 +637,7 @@ function processRequirements(&$dbHandler, &$reqMgr, $tcaseName, $tcaseId, $tcReq
         'requirements'
     ));
 
-    foreach ($tcReq as $ydx => $value) {
+    foreach ($tcReq as $value) {
         $cachedReqSpec = array();
         $doit = false;
         if ($doit = isset($reqSpecSet[$value['doc_id']]) &&
@@ -727,7 +727,7 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
     }
 
     $jdx = 0;
-    $loops2do = sizeof($xmlTCs);
+    $loops2do = count($xmlTCs);
     $tcaseSet = array();
 
     // TICKET 4963: Test case / Tes suite XML format, new element to set author
@@ -956,7 +956,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler, &$xml, $parentID,
         }
 
         $childrenNodes = $xml->children();
-        $loop2do = sizeof($childrenNodes);
+        $loop2do = count($childrenNodes);
 
         for ($idx = 0; $idx < $loop2do; $idx ++) {
             $target = $childrenNodes[$idx];

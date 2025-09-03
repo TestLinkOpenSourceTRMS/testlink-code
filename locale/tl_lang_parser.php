@@ -73,8 +73,8 @@ if (file_exists($file_lang_old) && is_readable($file_lang_old)) {
     exit();
 }
 
-$lines_eng_count = sizeof($lines_eng);
-$lines_old_count = sizeof($lines_lang_old);
+$lines_eng_count = count($lines_eng);
+$lines_old_count = count($lines_lang_old);
 echo "Master file lines = " . ($lines_eng_count + 1) . "\n";
 echo "File to update lines = " . ($lines_old_count + 1) . "\n";
 

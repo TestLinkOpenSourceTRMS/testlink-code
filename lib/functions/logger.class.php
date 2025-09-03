@@ -205,8 +205,7 @@ class tlLogger extends tlObject
                 $filter = 0;
                 foreach ($dummy as $verboseLevel) {
                     if (isset(self::$logLevelsStringCode[$verboseLevel])) {
-                        $filter = $filter |
-                            self::$logLevelsStringCode[$verboseLevel];
+                        $filter |= self::$logLevelsStringCode[$verboseLevel];
                     }
                 }
 
@@ -240,7 +239,7 @@ class tlLogger extends tlObject
             $this->doLogging = false;
         } else {
             $loggerSet = explode(",", $logger);
-            foreach ($loggerSet as $idx => $loggerKey) {
+            foreach ($loggerSet as $loggerKey) {
                 $this->loggers[$loggerKey]->disableLogging();
             }
         }
@@ -260,7 +259,7 @@ class tlLogger extends tlObject
             $this->doLogging = false;
         } else {
             $loggerSet = explode(",", $logger);
-            foreach ($loggerSet as $idx => $loggerKey) {
+            foreach ($loggerSet as $loggerKey) {
                 $this->loggers[$loggerKey]->enableLogging();
             }
         }
@@ -1166,7 +1165,7 @@ class tlFileLogger extends tlObject
         // @see http://mantis.testlink.org/view.php?id=4906
         @$fd = fopen($fileName, 'a+');
         if ($fd) {
-            fputs($fd, $line);
+            fwrite($fd, $line);
             fclose($fd);
         }
     }

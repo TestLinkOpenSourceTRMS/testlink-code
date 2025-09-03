@@ -636,7 +636,7 @@ class reqSpecCommands
 
         $childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null;
         if (! is_null($childNodes)) {
-            $loop_qty = sizeof($childNodes);
+            $loop_qty = count($childNodes);
             for ($idx = 0; $idx < $loop_qty; $idx ++) {
                 $cNode = $childNodes[$idx];
                 if ($cNode['node_table'] == 'req_specs') {
@@ -915,7 +915,7 @@ class reqSpecCommands
 
         $obj->enable_start_btn = false;
         $obj->enable_stop_btn = false;
-        foreach ($obj->items as $xdx => &$itx) {
+        foreach ($obj->items as &$itx) {
             $onOff = isset($monSet[$itx['id']]) ? true : false;
             $itx['monitor'] = $onOff ? 'On' : 'Off';
             $obj->enable_start_btn |= ! $onOff;

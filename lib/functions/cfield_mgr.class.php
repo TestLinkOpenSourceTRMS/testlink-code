@@ -2644,7 +2644,7 @@ class cfield_mgr extends tlObject
                 'basket_put.png">';
 
             $cf_smarty = '';
-            foreach ($cf_map as $cf_id => $cf_info) {
+            foreach ($cf_map as $cf_info) {
                 $label = str_replace(TL_LOCALIZE_TAG, '',
                     lang_get($cf_info['label'], null, $NO_WARNING_IF_MISSING));
 
@@ -2791,7 +2791,7 @@ class cfield_mgr extends tlObject
                 $input_values);
 
             $NO_WARNING_IF_MISSING = true;
-            foreach ($cf_map as $cf_id => $cf_info) {
+            foreach ($cf_map as $cf_info) {
                 $label = str_replace(TL_LOCALIZE_TAG, '',
                     lang_get($cf_info['label'], null, $NO_WARNING_IF_MISSING));
 

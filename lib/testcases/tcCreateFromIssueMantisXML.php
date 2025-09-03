@@ -220,7 +220,7 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
     }
 
     $resultMap = array();
-    $tc_qty = sizeof($tcData);
+    $tc_qty = count($tcData);
     $userIDCache = array();
 
     for ($idx = 0; $idx < $tc_qty; $idx ++) {
@@ -459,7 +459,7 @@ function getTestCaseSetFromIssueSimpleXMLObj($xmlObj)
 
     $jdx = 0;
     $xmlIssue = $xmlObj->issue;
-    $loops2do = sizeof($xmlIssue);
+    $loops2do = count($xmlIssue);
 
     $xmlDef['elements'] = array(
         'string' => array(

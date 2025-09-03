@@ -184,7 +184,7 @@ class tlAttachmentRepository extends tlObjectWithDB
         } else {
             $fContents = $this->getFileContentsForDBRepository($fTmpName,
                 $destFName);
-            $op->statusOK = sizeof($fContents);
+            $op->statusOK = count($fContents);
             if ($op->statusOK) {
                 @unlink($fTmpName);
             }
@@ -520,7 +520,7 @@ class tlAttachmentRepository extends tlObjectWithDB
         $attachmentIDs = (array) $this->getAttachmentIDsFor($fkid,
             $stdTableUsedAsFolder);
 
-        for ($i = 0; $i < sizeof($attachmentIDs); $i ++) {
+        for ($i = 0; $i < count($attachmentIDs); $i ++) {
             $id = $attachmentIDs[$i];
             $statusOK = ($this->deleteAttachment($id) && $statusOK);
         }
@@ -571,7 +571,7 @@ class tlAttachmentRepository extends tlObjectWithDB
         $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX, '', $fkTableName);
 
         $idSet = (array) $this->getAttachmentIDsFor($fkid, $stdTableUsedAsFolder);
-        $loop2do = sizeof($idSet);
+        $loop2do = count($idSet);
         for ($idx = 0; $idx < $loop2do; $idx ++) {
             $attachmentInfo = $this->getAttachmentInfo($idSet[$idx]);
             if (null != $attachmentInfo) {
@@ -631,7 +631,7 @@ class tlAttachmentRepository extends tlObjectWithDB
         $attachments = $this->getAttachmentInfosFor($source_id,
             $stdTableUsedAsFolder);
         if (! empty($attachments)) {
-            foreach ($attachments as $key => $value) {
+            foreach ($attachments as $value) {
                 $file_contents = null;
                 $f_parts = explode(DIRECTORY_SEPARATOR, $value['file_path']);
                 $mangled_fname = $f_parts[count($f_parts) - 1];
@@ -644,7 +644,7 @@ class tlAttachmentRepository extends tlObjectWithDB
                 } else {
                     $file_contents = $this->getAttachmentContentFromDB(
                         $value['id']);
-                    $status_ok = sizeof($file_contents);
+                    $status_ok = count($file_contents);
                 }
 
                 if ($status_ok) {

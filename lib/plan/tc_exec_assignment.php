@@ -89,7 +89,7 @@ switch ($args->doAction) {
 
             foreach ($features2 as $key => $featByPlatform) {
                 if (count($features2[$key]) > 0) {
-                    foreach ($featByPlatform as $plat => $values) {
+                    foreach ($featByPlatform as $values) {
                         $assignment_mgr->assign($values);
                     }
                     $called[$key] = true;

@@ -99,7 +99,7 @@ function initArgs()
     $args = new stdClass();
     I_PARAMS($iParams, $args);
 
-    $args->bPostBack = sizeof($_POST);
+    $args->bPostBack = count($_POST);
 
     return $args;
 }

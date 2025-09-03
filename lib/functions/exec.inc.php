@@ -674,7 +674,7 @@ function getBugsForExecutions(&$db, &$bug_interface, $execSet, $raw = null)
             $opt['raw'] = $raw;
             $addAttr = ! is_null($raw);
             foreach ($rs as $key => $bugElem) {
-                foreach ($bugElem as $bugID => $elem) {
+                foreach ($bugElem as $elem) {
                     if (! isset($bugCache[$elem['bug_id']])) {
                         $dummy = $bug_interface->buildViewBugLink(
                             $elem['bug_id'], $opt);

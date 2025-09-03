@@ -278,7 +278,7 @@ class dBug
                 echo $this->closeTDRow();
             }
             $arrObjMethods = get_class_methods(get_class($var));
-            foreach ($arrObjMethods as $key => $value) {
+            foreach ($arrObjMethods as $value) {
                 $this->makeTDHeader("object", $value);
                 echo "[function]" . $this->closeTDRow();
             }

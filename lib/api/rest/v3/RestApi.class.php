@@ -349,7 +349,7 @@ class RestApi
 
             if (! empty($tcaseIDSet)) {
                 $op['items'] = array();
-                foreach ($tcaseIDSet as $key => $tcaseID) {
+                foreach ($tcaseIDSet as $tcaseID) {
                     $item = $this->tcaseMgr->getLastVersionInfo($tcaseID);
                     $item['keywords'] = $this->tcaseMgr->get_keywords_map(
                         $tcaseID, $item['tcversion_id']);

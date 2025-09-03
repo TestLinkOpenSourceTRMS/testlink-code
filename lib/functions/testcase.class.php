@@ -87,46 +87,57 @@ class testcase extends tlObjectWithAttachments
     const GHOSTPRECONDITIONSMASK = self::GHOSTBEGIN . '"Preconditions":"x",' .
         self::GHOST_TC_VERSION . self::GHOSTEND;
 
-    /** @var database handler */
+    /**
+     *
+     * @var database handler
+     */
     protected $db;
 
     public $tree_manager;
 
+    /**
+     *
+     * @var \testproject
+     */
     public $tproject_mgr;
 
-    private $node_types_descr_id;
+    private array $node_types_descr_id;
 
-    private $node_types_id_descr;
+    private array $node_types_id_descr;
 
     public $my_node_type;
 
-    private $assignment_mgr;
+    private \assignment_mgr $assignment_mgr;
 
-    private $assignment_types;
+    private array $assignment_types;
 
-    private $assignment_status;
+    private array $assignment_status;
 
+    /**
+     *
+     * @var \cfield_mgr
+     */
     public $cfield_mgr;
 
-    private $import_file_types = array(
+    private array $import_file_types = array(
         "XML" => "XML"
     );
 
-    private $export_file_types = array(
+    private array $export_file_types = array(
         "XML" => "XML"
     );
 
     private $execution_types = array();
 
-    private $cfg;
+    private \stdClass $cfg;
 
-    private $debugMsg;
+    private string $debugMsg;
 
     private $layout;
 
-    private $XMLCfg;
+    private \stdClass $XMLCfg;
 
-    private $tproject_id;
+    private int $tproject_id;
 
     private $keywordAnnotations = [];
 
@@ -178,15 +189,19 @@ class testcase extends tlObjectWithAttachments
     }
 
     /**
+     *
+     * @param int $tproject_id
      */
-    public function setTestProject($tproject_id)
+    public function setTestProject($tproject_id): void
     {
         $this->tproject_id = intval($tproject_id);
     }
 
     /**
+     *
+     * @return array
      */
-    private static function getExecutionTypes()
+    private static function getExecutionTypes(): array
     {
         $stdSet = array(
             self::EXECUTION_TYPE_MANUAL => lang_get('manual'),
@@ -232,7 +247,7 @@ class testcase extends tlObjectWithAttachments
     /**
      */
     private function getDeleteAttachmentByIDRelativeURL($identity,
-        &$guiObj = null)
+        &$guiObj = null): string
     {
         $url = "lib/testcases/tcEdit.php?doAction=deleteFile&tcase_id=" .
             intval($identity->tcase_id) . "&tproject_id=" .
@@ -257,7 +272,7 @@ class testcase extends tlObjectWithAttachments
 
     /**
      */
-    private function getDeleteTCVRelationRelativeURL(&$guiObj = null)
+    private function getDeleteTCVRelationRelativeURL(&$guiObj = null): string
     {
         $url = "lib/testcases/tcEdit.php?doAction=doDeleteRelation";
 
@@ -281,7 +296,7 @@ class testcase extends tlObjectWithAttachments
 
     /**
      */
-    private function getDeleteTCVKeywordRelativeURL(&$guiObj = null)
+    private function getDeleteTCVKeywordRelativeURL(&$guiObj = null): string
     {
         $url = "lib/testcases/tcEdit.php?doAction=removeKeyword";
 
@@ -1050,7 +1065,7 @@ class testcase extends tlObjectWithAttachments
 
         $userIDSet = array();
 
-        if ($status_ok && sizeof($idSet)) {
+        if ($status_ok && count($idSet)) {
 
             $cfPlaces = $this->buildCFLocationMap();
             $gui->linked_versions = null;
@@ -1068,7 +1083,7 @@ class testcase extends tlObjectWithAttachments
             $gui->otherVersionsKeywords = array();
 
             $gui->fileUploadURL = array();
-            foreach ($idSet as $key => $tc_id) {
+            foreach ($idSet as $tc_id) {
                 // IMPORTANT NOTICE
                 // Deep Analysis is need to understand if there is an use case
                 // where this method really receive an array of test case ID.
@@ -1247,7 +1262,7 @@ class testcase extends tlObjectWithAttachments
                 if ($gui->testcase_other_versions[0]) {
 
                     // Get author and updater id for each version
-                    foreach ($gui->testcase_other_versions[0] as $key => $version) {
+                    foreach ($gui->testcase_other_versions[0] as $version) {
 
                         $userIDSet[$version['author_id']] = null;
                         $userIDSet[$version['updater_id']] = null;
@@ -1769,7 +1784,7 @@ class testcase extends tlObjectWithAttachments
                         foreach ($testplan as $tplanKey => $testcases) {
                             // Use a temporary array to avoid key collisions
                             $newArray = array();
-                            foreach ($testcases as $elemKey => $element) {
+                            foreach ($testcases as $element) {
                                 $platform_id = $element['platform_id'];
                                 $newArray[$platform_id] = $element;
                             }
@@ -2321,7 +2336,7 @@ class testcase extends tlObjectWithAttachments
                                     $this->cfg->testcase->glue_character .
                                     $tcversion['tc_external_id'];
 
-                                foreach ($stepsSet as $key => $step) {
+                                foreach ($stepsSet as $step) {
                                     $act = sprintf(self::GHOSTSTEPMASK,
                                         $step['step_number'], $pfx,
                                         $tcversion['version']);
@@ -2331,7 +2346,7 @@ class testcase extends tlObjectWithAttachments
                                         $step['execution_type']);
                                 }
                             } else {
-                                foreach ($stepsSet as $key => $step) {
+                                foreach ($stepsSet as $step) {
                                     // update inline references
                                     if ($doInline) {
                                         foreach ($inlineImg as $elem) {
@@ -2640,7 +2655,7 @@ class testcase extends tlObjectWithAttachments
         );
         $stepsSet = $this->get_steps($from_tcversion_id, 0, $gso);
         if (! empty($stepsSet)) {
-            foreach ($stepsSet as $key => $step) {
+            foreach ($stepsSet as $step) {
                 $this->create_step($to_tcversion_id, $step['step_number'],
                     $step['actions'], $step['expected_results'],
                     $step['execution_type']);
@@ -3238,7 +3253,7 @@ class testcase extends tlObjectWithAttachments
         $link_info = null;
         $in_set = null;
 
-        if (sizeof($rs)) {
+        if (count($rs)) {
             foreach ($rs as $idx => $elem) {
                 if ($elem['tcversion_number'] != $elem['version']) {
                     // Save to generate record for linked but not executed if needed
@@ -3732,7 +3747,7 @@ class testcase extends tlObjectWithAttachments
         $audit = self::AUDIT_ON)
     {
         $result = $this->deleteKeywords($id, $version_id);
-        if ($result && sizeof((array) $kw_ids)) {
+        if ($result && count((array) $kw_ids)) {
             $result = $this->addKeywords($id, $version_id, $kw_ids);
         }
         return $result;
@@ -4458,7 +4473,7 @@ class testcase extends tlObjectWithAttachments
             $addElemTpl .= "||RELATIONS||";
             $relSet = $this->getRelations($tcase_id);
             if ($relSet['num_relations'] > 0) {
-                foreach ($relSet['relations'] as $rk => $rv) {
+                foreach ($relSet['relations'] as $rv) {
                     $xmlRel .= $this->exportRelationToXML($rv, $relSet['item']);
                 }
                 $tc_data[0]['xmlrelations'] = $xmlRel;
@@ -4484,7 +4499,7 @@ class testcase extends tlObjectWithAttachments
         // table with all users assigned to an execution
         if (isset($optExport['ASSIGNED_USER'])) {
             $elemTpl .= "\t<assigned_users>\n";
-            foreach ($optExport['ASSIGNED_USER'] as $key => $username) {
+            foreach ($optExport['ASSIGNED_USER'] as $username) {
                 $elemTpl .= "\t\t<assigned_user><![CDATA[" . $username .
                     "]]></assigned_user>\n";
             }
@@ -5308,7 +5323,7 @@ class testcase extends tlObjectWithAttachments
         }
 
         if (! is_null($cf_map)) {
-            foreach ($cf_map as $cf_id => $cf_info) {
+            foreach ($cf_map as $cf_info) {
                 // if user has assigned a value, then node_id is not null
                 if (isset($cf_info['node_id']) ||
                     $this->cfg->cfield->show_custom_fields_without_value) {
@@ -6053,7 +6068,7 @@ class testcase extends tlObjectWithAttachments
             " AND TCV.tc_external_id=$external_id ";
 
         $add_filters = ' ';
-        foreach ($my['filters'] as $field => $value) {
+        foreach ($my['filters'] as $value) {
             switch ($my['filters']) {
                 case 'version':
                     if (! is_null($value)) {
@@ -7160,7 +7175,7 @@ class testcase extends tlObjectWithAttachments
             'id'
         );
         $safeID = array();
-        foreach ($key2check as $idx => $key) {
+        foreach ($key2check as $key) {
             if (property_exists($context, $key)) {
                 $safeID[$key] = intval($context->$key);
             } else {
@@ -8565,7 +8580,7 @@ class testcase extends tlObjectWithAttachments
                                 // Step #1 Look in Custom Fields
                                 // look for the custom field
                                 if (! is_null($cfSet)) {
-                                    foreach ($cfSet as $cfID => $cfDef) {
+                                    foreach ($cfSet as $cfDef) {
                                         if ($cfDef['name'] === $variableName) {
                                             $duckTape = $this->cfield_mgr->string_custom_field_value(
                                                 $cfDef, $tcversion_id);
@@ -8897,7 +8912,7 @@ class testcase extends tlObjectWithAttachments
 
         $values = array();
         if (! empty($relSource)) {
-            foreach ($relSource as $key => $elem) {
+            foreach ($relSource as $elem) {
                 $stm = "($dest_id,{$elem['destination_id']}," .
                     "{$elem['relation_type']},{$elem['link_status']}," .
                     "{$elem['author_id']})";
@@ -8906,7 +8921,7 @@ class testcase extends tlObjectWithAttachments
         }
 
         if (! empty($relDest)) {
-            foreach ($relDest as $key => $elem) {
+            foreach ($relDest as $elem) {
                 $stm = "({$elem['source_id']},$dest_id," .
                     "{$elem['relation_type']},{$elem['link_status']}," .
                     "{$elem['author_id']})";
@@ -9271,7 +9286,7 @@ class testcase extends tlObjectWithAttachments
         //
         $searchSet = null;
         $replaceSet = null;
-        foreach ($skwSet as $xdx => $eSet) {
+        foreach ($skwSet as $eSet) {
             foreach ($eSet as $dm) {
                 if (null != $dm['data_management']) {
                     foreach ($dm['data_management'] as $search => $replace) {
@@ -10021,8 +10036,8 @@ class testcase extends tlObjectWithAttachments
      * ID will be different for same keyword
      * in a different Test Project.
      */
-    private function copyPlatformsTo($source, $dest, $platMap,
-        $auditContext = null, $opt = null)
+    private function copyPlatformsTo(array $source, $dest, $platMap,
+        $auditContext = null, $opt = null): bool
     {
         $adt = array(
             'on' => self::AUDIT_ON

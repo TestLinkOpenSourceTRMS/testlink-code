@@ -484,7 +484,7 @@ function createSpreadsheet($gui, $args, $media)
     for ($idx = 0; $idx < $qta_loops; $idx ++) {
         $line2write = $gui->dataSet[$idx];
         $colCounter = 0;
-        foreach ($line2write as $ldx => $field) {
+        foreach ($line2write as $field) {
             $cellID = $cellRange[$colCounter] . $startingRow;
             $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID,
                 html_entity_decode($field));

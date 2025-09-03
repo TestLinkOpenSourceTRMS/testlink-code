@@ -64,7 +64,7 @@ if ($tplan_mgr->count_testcases($args->tplan_id) > 0) {
         $data = array();
         foreach ($metrics as &$item) {
             $row = array();
-            $row[] = join(" / ", $path_info[$item['tcase_id']]);
+            $row[] = implode(" / ", $path_info[$item['tcase_id']]);
 
             $row[] = "<!-- " . sprintf("%010d", $item['external_id']) . " -->" .
                 sprintf($links['full'], $item['tcase_id'], $item['tcase_id']) .

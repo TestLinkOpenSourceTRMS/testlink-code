@@ -529,7 +529,7 @@ class tlArrayValidationInfo
     public function validate($valueArray)
     {
         $valueArray = (array) $valueArray;
-        foreach ($valueArray as $key => $value) {
+        foreach ($valueArray as $value) {
             $this->validationInfo->validate($value);
         }
 

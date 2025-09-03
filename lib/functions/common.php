@@ -586,7 +586,7 @@ function strings_stripSlashes($parameter, $bGPC = true)
 
     if (is_array($parameter)) {
         $retParameter = null;
-        if (sizeof($parameter)) {
+        if (count($parameter)) {
             foreach ($parameter as $key => $value) {
                 if (is_array($value)) {
                     $retParameter[$key] = strings_stripSlashes($value, $bGPC);
@@ -819,7 +819,7 @@ function transform_nodes_order($nodes_order, $node_to_exclude = null)
 {
     $fa = explode(',', $nodes_order);
 
-    foreach ($fa as $key => $value) {
+    foreach ($fa as $value) {
         // $value= X-Y
         $fb = explode('-', $value);
 

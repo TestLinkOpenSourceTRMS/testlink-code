@@ -29,7 +29,7 @@ function opt_transf_cfg(&$opt_cfg, $right_list, $js_ot_name = 'ot')
         }
     } else {
         $a_k = explode(",", trim($right_list));
-        foreach ($a_k as $key => $code) {
+        foreach ($a_k as $code) {
             $a_right[$code] = $opt_cfg->from->map[$code];
         }
     }

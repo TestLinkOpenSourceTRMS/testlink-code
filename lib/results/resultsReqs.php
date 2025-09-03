@@ -92,7 +92,7 @@ if (count($rspecSet)) {
             // add coverage for more detailed evaluation
             $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']['expected_coverage'] = $rspecSet[$rspec_id]['requirements'][$req_id]['expected_coverage'];
 
-            foreach ($req_info['linked_testcases'] as $key => $tc_info) {
+            foreach ($req_info['linked_testcases'] as $tc_info) {
                 $tc_id = $tc_info['id'];
                 $plat2loop = array_keys($testcases[$tc_id]);
                 $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']['total'] ++;
@@ -211,7 +211,7 @@ if (count($rspecSet)) {
 
     // data for rows
     $rows = array();
-    foreach ($rspecSet as $rspec_id => $req_spec_info) {
+    foreach ($rspecSet as $req_spec_info) {
 
         // build the evaluation data string and attache it to req spec name for table group feature
         $req_spec_description = buildReqSpecDescription($eval_status_map,
@@ -467,7 +467,7 @@ function evaluateReq(&$status_code, &$algorithm_cfg, &$counters)
     // if there are linked test cases and ALL are not run => Req. takes status 'not run'
     // how many status counters are set ?
     $hmc = 0;
-    foreach ($status_code as $verbose => $code) {
+    foreach ($status_code as $code) {
         $hmc += isset($counters[$code]);
     }
 

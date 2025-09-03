@@ -66,7 +66,7 @@ if ($qty_linked) {
 
 $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($db,
     $args->tproject_id);
-foreach ($tplans as $key => $value) {
+foreach ($tplans as $value) {
     $gui->tplans[$value['id']] = $value['name'];
 }
 

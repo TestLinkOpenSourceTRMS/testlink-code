@@ -64,7 +64,7 @@ $gui->reqStatus = init_labels($reqCfg->status_labels);
 
 $gui->filter_by['relation_type'] = $reqCfg->relations->enable;
 $gui->req_relation_select = $req_mgr->init_relation_type_select();
-foreach ($gui->req_relation_select['equal_relations'] as $key => $oldkey) {
+foreach ($gui->req_relation_select['equal_relations'] as $oldkey) {
     // set new key in array and delete old one
     $new_key = (int) str_replace("_source", "", $oldkey);
     $gui->req_relation_select['items'][$new_key] = $gui->req_relation_select['items'][$oldkey];

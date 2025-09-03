@@ -46,7 +46,7 @@ $statusDisplayOrder = $cfg['status_order'];
 $statusCols = array();
 $gui->columnsDefinition = array();
 
-foreach ($statusDisplayOrder as $x => $code) {
+foreach ($statusDisplayOrder as $code) {
     $statusCols[$code] = $statusToLabel[$codeToStatus[$code]];
     $gui->columnsDefinition[$codeToStatus[$code]] = array(
         'qty' => lang_get($statusCols[$code]),
@@ -92,7 +92,7 @@ if (! empty($rsu)) {
         $gui->span[$plat_id] = array();
 
         $rx = 0;
-        foreach ($dataByContext as $context_id => $dataByTop) {
+        foreach ($dataByContext as $dataByTop) {
             $gui->statistics[$plat_id][$rx] = array();
             $gui->span[$plat_id][$rx] = null;
 
@@ -116,7 +116,7 @@ if (! empty($rsu)) {
                     $hand['details'] = $data_tpl;
                     $hand['parent_id'] = $top_id;
 
-                    foreach ($dataX as $xx => $xmen) {
+                    foreach ($dataX as $xmen) {
                         $pp = ($hand['total_tc'] > 0) ? (round(
                             ($xmen['qty'] / $hand['total_tc']) * 100, 1)) : 0;
                         $hand['details'][$codeToStatus[$xmen['status']]] = array(
@@ -269,7 +269,7 @@ function createSpreadsheet($gui, &$tplanMgr)
     $execStatusDomain = $tplanMgr->getStatusForReports();
     $dataHeaderMetrics = array();
     $ccc = 0;
-    foreach ($execStatusDomain as $code => $human) {
+    foreach ($execStatusDomain as $human) {
         $dataHeaderMetrics[] = lang_get('test_status_' . $human);
         $ccc ++;
         $dataHeaderMetrics[] = '[%]';
@@ -334,7 +334,7 @@ function createSpreadsheet($gui, &$tplanMgr)
         $nameKey = $target['nameKey'];
         $tcQtyKey = $target['tcQtyKey'];
 
-        foreach ($infoSet as $itemID => $fieldSet) {
+        foreach ($infoSet as $fieldSet) {
 
             $whatCell = 0;
             $cellID = $cellRange[$whatCell] . $startingRow;
@@ -346,7 +346,7 @@ function createSpreadsheet($gui, &$tplanMgr)
             $field = $fieldSet[$tcQtyKey];
             $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);
 
-            foreach ($fieldSet['details'] as $human => $metrics) {
+            foreach ($fieldSet['details'] as $metrics) {
                 $whatCell ++;
                 $cellID = $cellRange[$whatCell] . $startingRow;
                 $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID,
@@ -450,7 +450,7 @@ function createSpreadsheet($gui, &$tplanMgr)
 
             $infoSet = isset($target['source'][$platID]) ? $target['source'][$platID] : array();
 
-            foreach ($infoSet as $itemID => $fieldSet) {
+            foreach ($infoSet as $fieldSet) {
                 $whatCell = 0;
 
                 if ($gui->hasPlatforms) {
@@ -473,7 +473,7 @@ function createSpreadsheet($gui, &$tplanMgr)
                 $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID,
                     $field);
 
-                foreach ($fieldSet['details'] as $human => $metrics) {
+                foreach ($fieldSet['details'] as $metrics) {
                     $whatCell ++;
                     $cellID = $cellRange[$whatCell] . $startingRow;
                     $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID,

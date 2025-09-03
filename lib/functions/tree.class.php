@@ -679,7 +679,7 @@ class tree extends tlObject
             case 'top':
                 $no[] = $node_id;
                 if (! is_null($children)) {
-                    foreach ($children as $key => $value) {
+                    foreach ($children as $value) {
                         $no[] = $value['id'];
                     }
                 }
@@ -1568,7 +1568,7 @@ class tree extends tlObject
                     $containerSet[] = $row['id'];
                 }
             }
-            if (sizeof($containerSet)) {
+            if (count($containerSet)) {
                 $containerSet = implode(",", $containerSet);
                 $this->getAllItemsID($containerSet, $itemSet, $coupleTypes);
             }

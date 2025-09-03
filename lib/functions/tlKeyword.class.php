@@ -545,7 +545,7 @@ class tlKeyword extends tlDBObject implements iSerialization,
         $this->name = isset($data[0]) ? $data[0] : null;
         $this->notes = isset($data[1]) ? $data[1] : null;
 
-        return sizeof($data) ? tl::OK : tl::ERROR;
+        return count($data) ? tl::OK : tl::ERROR;
     }
 
     // END interface iSerializationToCSV

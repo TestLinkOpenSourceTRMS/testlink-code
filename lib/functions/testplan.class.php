@@ -696,7 +696,7 @@ class testplan extends tlObjectWithAttachments
             "(testplan_id,author_id,creation_ts,tcversion_id,platform_id) " .
             " VALUES ({$id},{$userId},{$this->db->db_now()},";
         $features = null;
-        foreach ($items_to_link['items'] as $tcase_id => $items) {
+        foreach ($items_to_link['items'] as $items) {
             foreach ($items as $platform_id => $tcversion) {
                 $addInfo = '';
                 $result = $this->db->exec_query(
@@ -1257,7 +1257,7 @@ class testplan extends tlObjectWithAttachments
             " WHERE testplan_id={$id} AND {$where_clause} ";
         $this->db->exec_query($sql);
 
-        foreach ($items['items'] as $tcase_id => $elem) {
+        foreach ($items['items'] as $elem) {
             foreach ($elem as $platform_id => $tcversion) {
                 $addInfo = '';
                 if (isset($platformInfo[$platform_id])) {
@@ -1706,8 +1706,9 @@ class testplan extends tlObjectWithAttachments
                 }
 
                 $sql = "INSERT INTO {$this->tables['milestones']} (name,a,b,c,target_date,{$add2fields} testplan_id)";
-                $sql .= " VALUES ('" . $this->db->prepare_string(
-                    $mstone['name']) . "'," . $mstone['high_percentage'] . "," .
+                $sql .= " VALUES ('" .
+                    $this->db->prepare_string($mstone['name']) . "'," .
+                    $mstone['high_percentage'] . "," .
                     $mstone['medium_percentage'] . "," .
                     $mstone['low_percentage'] . ",'" . $mstone['target_date'] .
                     "', {$add2values}{$new_tplan_id})";
@@ -2530,7 +2531,7 @@ class testplan extends tlObjectWithAttachments
         }
 
         if (! is_null($cf_map)) {
-            foreach ($cf_map as $cf_id => $cf_info) {
+            foreach ($cf_map as $cf_info) {
                 // if user has assigned a value, then node_id is not null
                 // BUGID 3989
                 if (isset($cf_info['node_id']) || $cf_info['node_id'] || $show_cf) {
@@ -3168,7 +3169,7 @@ class testplan extends tlObjectWithAttachments
             }
         }
         $new_set = array();
-        foreach ($recordset as $key => $val) {
+        foreach ($recordset as $val) {
             $new_set[$val['tcase_id']] = $val;
         }
 
@@ -3838,7 +3839,7 @@ class testplan extends tlObjectWithAttachments
         }
         $childNodes = isset($container['childNodes']) ? $container['childNodes'] : null;
         if (! is_null($childNodes)) {
-            $loop_qty = sizeof($childNodes);
+            $loop_qty = count($childNodes);
             for ($idx = 0; $idx < $loop_qty; $idx ++) {
                 $cNode = $childNodes[$idx];
                 switch ($cNode['node_table']) {
@@ -6958,8 +6959,8 @@ class testplan extends tlObjectWithAttachments
         // get target platform (if exists)
         if ($context['platform_id'] > 0) {
             $info = $this->platform_mgr->getByID($context['platform_id']);
-            $xmlString .= "\t<platform name=\"" . htmlspecialchars(
-                $info['name']) . "\" />\n";
+            $xmlString .= "\t<platform name=\"" .
+                htmlspecialchars($info['name']) . "\" />\n";
             $my['filters']['platform_id'] = $context['platform_id'];
         }
 
@@ -7733,7 +7734,7 @@ class testplan extends tlObjectWithAttachments
             $filters);
         $cf = [];
         if (! is_null($cf_map)) {
-            foreach ($cf_map as $cf_id => $cf_info) {
+            foreach ($cf_map as $cf_info) {
                 $value = '';
                 if (isset($cf_info['node_id']) || $cf_info['node_id']) {
                     $value = $this->cfield_mgr->string_custom_field_value(
@@ -7789,7 +7790,7 @@ class build_mgr extends tlObject
             $filters);
         $cf = [];
         if (! is_null($cf_map)) {
-            foreach ($cf_map as $cf_id => $cf_info) {
+            foreach ($cf_map as $cf_info) {
                 $value = '';
                 if (isset($cf_info['node_id']) || $cf_info['node_id']) {
                     $value = $this->cfield_mgr->string_custom_field_value(
@@ -8375,7 +8376,7 @@ class build_mgr extends tlObject
             $filters);
 
         if (! is_null($cf_map)) {
-            foreach ($cf_map as $cf_id => $cf_info) {
+            foreach ($cf_map as $cf_info) {
                 if (isset($cf_info['node_id']) || $cf_info['node_id'] || $show_cf) {
                     $label = str_replace(TL_LOCALIZE_TAG, '',
                         lang_get($cf_info['label'], null, true));

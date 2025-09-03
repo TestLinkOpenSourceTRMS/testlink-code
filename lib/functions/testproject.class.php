@@ -909,7 +909,7 @@ class testproject extends tlObjectWithAttachments
     {
         $tcIDs = array();
         $this->get_all_testcases_id($id, $tcIDs);
-        return sizeof($tcIDs);
+        return count($tcIDs);
     }
 
     /*
@@ -1352,7 +1352,7 @@ class testproject extends tlObjectWithAttachments
             'context' => $tproject_name
         );
 
-        $loop2do = sizeof($kwIDs);
+        $loop2do = count($kwIDs);
         for ($idx = 0; $idx < $loop2do; $idx ++) {
             $opt['nameForAudit'] = $itemSet[$kwIDs[$idx]]['keyword'];
 
@@ -1409,7 +1409,7 @@ class testproject extends tlObjectWithAttachments
             $xmlCode .= TL_XMLEXPORT_HEADER . "\n";
         }
         $xmlCode .= "<keywords>";
-        for ($idx = 0; $idx < sizeof($kwIDs); $idx ++) {
+        for ($idx = 0; $idx < count($kwIDs); $idx ++) {
             $keyword = new tlKeyword($kwIDs[$idx]);
             $keyword->readFromDb($this->db);
             $keyword->writeToXML($xmlCode, true);
@@ -1428,7 +1428,7 @@ class testproject extends tlObjectWithAttachments
     {
         $kwIDs = $this->getKeywordIDsFor($testproject_id);
         $csv = null;
-        for ($idx = 0; $idx < sizeof($kwIDs); $idx ++) {
+        for ($idx = 0; $idx < count($kwIDs); $idx ++) {
             $keyword = new tlKeyword($kwIDs[$idx]);
             $keyword->readFromDb($this->db);
             $keyword->writeToCSV($csv, $delim);
@@ -2224,7 +2224,7 @@ class testproject extends tlObjectWithAttachments
                     $suiteIDs[] = $row['id'];
                 }
             }
-            if (sizeof($suiteIDs)) {
+            if (count($suiteIDs)) {
                 $suiteIDs = implode(",", $suiteIDs);
                 $this->get_all_testcases_id($suiteIDs, $tcIDs, $options);
             }
@@ -2543,7 +2543,7 @@ class testproject extends tlObjectWithAttachments
 
             case 'smarty_html_options':
                 if (! empty($fl)) {
-                    foreach ($fl as $idx => $map) {
+                    foreach ($fl as $map) {
                         $dummy[$map['id']] = $map['name'];
                     }
                     $fl = null;
@@ -2771,7 +2771,7 @@ class testproject extends tlObjectWithAttachments
 
             if (! is_null($rel)) {
                 $totti = $this->db->db_now();
-                foreach ($rel as $okey => $ir) {
+                foreach ($rel as $ir) {
                     if (! is_null($ir)) {
                         foreach ($ir as $rval) {
                             if (isset($done[$rval['id']])) {

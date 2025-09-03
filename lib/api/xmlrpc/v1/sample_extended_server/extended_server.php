@@ -34,7 +34,7 @@ class SampleXMLRPCServer extends TestlinkXMLRPCServer
 
         $result = $this->tsuiteMgr->get_by_name($testSuiteName);
 
-        $num = sizeof($result);
+        $num = count($result);
         if ($num == 0) {
             $msg = $msg_prefix .
                 sprintf(

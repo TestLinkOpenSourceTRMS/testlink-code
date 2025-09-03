@@ -55,7 +55,7 @@ $platforms_active = ! is_null($gui->platforms);
 $gui->buildInfoSet = $tplan_mgr->get_builds($args->tplan_id, 1); // only active builds
 if ($gui->buildInfoSet) {
     $buildIDSet = array_keys($gui->buildInfoSet);
-    $buildQty = sizeOf($buildIDSet);
+    $buildQty = count($buildIDSet);
 }
 
 // Get Results on map with access key = test case's parent test suite id
@@ -128,16 +128,16 @@ if ($lastResultMap != null && $platforms_active) {
 
                     $suiteExecutions = $executionsMap[$suiteId];
 
-                    foreach ($buildIDSet as $idx => $buildId) {
+                    foreach ($buildIDSet as $buildId) {
                         $resultsForBuild = null;
                         $lastStatus = $resultsCfg['status_code']['not_run'];
 
                         // iterate over executions for this suite, look for
                         // entries that match current:
                         // test case id,build id ,platform id
-                        $qta_suites = sizeOf($suiteExecutions);
+                        $qta_suites = count($suiteExecutions);
 
-                        foreach ($suiteExecutions as $jdx => $execution_array) {
+                        foreach ($suiteExecutions as $execution_array) {
                             if (($execution_array['testcaseID'] == $testCaseId) &&
                                 ($execution_array['build_id'] == $buildId) &&
                                 ($execution_array['platform_id'] == $platformId) &&

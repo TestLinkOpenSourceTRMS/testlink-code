@@ -396,7 +396,7 @@ abstract class tlFilterControl extends tlObjectWithDB
                 'remove_required' => true
             );
 
-            foreach ($cfields as $cf_id => $cf) {
+            foreach ($cfields as $cf) {
                 // has a value been selected?
                 $id = $cf['id'];
                 $type = $cf['type'];

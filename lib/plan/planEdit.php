@@ -537,7 +537,7 @@ function getItemData(&$itemMgr, &$guiObj, &$ofObj, $itemID,
     $updateAttachments = false)
 {
     $dummy = $itemMgr->get_by_id($itemID);
-    if (sizeof($dummy)) {
+    if (count($dummy)) {
         $ofObj->Value = $dummy['notes'];
         $guiObj->testplan_name = $dummy['name'];
         $guiObj->is_active = $dummy['active'];

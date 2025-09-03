@@ -263,7 +263,7 @@ function doUpdateAllToLatest(&$dbObj, $argsObj, &$tplanMgr)
 
     $items = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
     if (! is_null($items)) {
-        foreach ($items as $key => $value) {
+        foreach ($items as $value) {
             if ($value['newest_tcversion_id'] != $value['tcversion_id']) {
                 $newtcversion = $value['newest_tcversion_id'];
                 $tcversionID = $value['tcversion_id'];

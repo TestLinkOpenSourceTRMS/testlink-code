@@ -776,7 +776,7 @@ function renderTreeNode($level, &$node, $hash_id_descr, $linkto, $testCasePrefix
         // in order to change it's values using reference .
         // Can not assign anymore to intermediate variables.
         //
-        $nChildren = sizeof($node['childNodes']);
+        $nChildren = count($node['childNodes']);
         for ($idx = 0; $idx < $nChildren; $idx ++) {
             // asimon - replaced is_null by !isset because of warnings in event log
             if (! isset($node['childNodes'][$idx])) {
@@ -955,7 +955,7 @@ function renderExecTreeNode($level, &$node, &$tcase_node, $hash_id_descr,
     if (isset($node['childNodes']) && $node['childNodes']) {
         // need to work always original object in order to change it's values using reference .
         // Can not assign anymore to intermediate variables.
-        $nodes_qty = sizeof($node['childNodes']);
+        $nodes_qty = count($node['childNodes']);
         for ($idx = 0; $idx < $nodes_qty; $idx ++) {
             if (is_null($node['childNodes'][$idx]) ||
                 $node['childNodes'][$idx] == REMOVEME) {
@@ -1837,7 +1837,7 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
     if (isset($filters['filter_relation'])) {
         $sql .= " AND ( ";
         $count = 1;
-        foreach ($filters['filter_relation'] as $key => $rel_filter) {
+        foreach ($filters['filter_relation'] as $rel_filter) {
             $relation_info = explode('_', $rel_filter);
             $relation_type = $db->prepare_int($relation_info[0]);
             $relation_side = isset($relation_info[1]) ? $relation_info[1] : null;
@@ -2644,8 +2644,8 @@ function prepareTestSpecNode(&$db, &$tprojectMgr, $tprojectID, &$node,
         }
 
         if ($my['options']['hideTestCases'] || $remove_node ||
-            ($doFilterOn['keywords'] && ! isset(
-                $tcFilterByKeywords[$node['id']])) ||
+            ($doFilterOn['keywords'] &&
+            ! isset($tcFilterByKeywords[$node['id']])) ||
             ($doFilterOn['platforms'] &&
             ! isset($tcFilterByPlatforms[$node['id']]))) {
             $node = REMOVEME;

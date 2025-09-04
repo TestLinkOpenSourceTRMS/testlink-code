@@ -1015,9 +1015,9 @@ class requirement_mgr extends tlObjectWithAttachments
             // Warning:
             // We are not maintaining hierarchy !!!
             $sql = " SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
-                " WHERE name='" .
-                $this->db->prepare_string($auto_testsuite_name) . "' " .
-                " AND parent_id=" . $tproject_id . " " . " AND node_type_id=" .
+                " WHERE name='" . $this->db->prepare_string(
+                    $auto_testsuite_name) . "' " . " AND parent_id=" .
+                $tproject_id . " " . " AND node_type_id=" .
                 $node_descr_type['testsuite'];
 
             $result = $this->db->exec_query($sql);
@@ -4044,7 +4044,7 @@ class requirement_mgr extends tlObjectWithAttachments
     /**
      * render Image Attachments INLINE
      */
-    private function renderImageAttachments($id, &$item2render, $basehref = null)
+    public function renderImageAttachments($id, &$item2render, $basehref = null)
     {
         static $attSet;
 

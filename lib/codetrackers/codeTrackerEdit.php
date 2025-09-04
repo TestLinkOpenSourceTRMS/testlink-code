@@ -196,10 +196,10 @@ function initializeGui(&$dbHandler, &$argsObj, &$commandMgr)
 
 /**
  *
- * @param $db resource
+ * @param database $db
  *            the database connection handle
- * @param $user the
- *            current active user
+ * @param tlUser $user
+ *            the current active user
  *
  * @return boolean returns true if the page can be accessed
  */

@@ -42,18 +42,18 @@ abstract class issueTrackerInterface
 
     // private vars don't touch
     // usable only if interface is done via direct DB access.
-    private $dbConnection = null;
+    public $dbConnection = null;
 
     private $dbMsg = '';
 
     // useful for connect/disconnect methods
-    private $interfaceViaDB = false;
+    public $interfaceViaDB = false;
 
-    private $connected = false;
+    public $connected = false;
 
-    private $resolvedStatus;
+    public $resolvedStatus;
 
-    private $methodOpt = array(
+    public $methodOpt = array(
         'buildViewBugLink' => array(
             'addSummary' => false,
             'colorByStatus' => false,

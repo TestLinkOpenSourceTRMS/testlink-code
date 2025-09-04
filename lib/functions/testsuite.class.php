@@ -1715,7 +1715,7 @@ class testsuite extends tlObjectWithAttachments
      * <img alt="" src="http://localhost/development/tl/testlink-ga-testlink-code/lib/attachments/attachmentdownload.php?id=1"
      * style="width: 1223px; height: 666px;" />
      */
-    private function renderImageAttachments($id, &$item2render, $basehref = null)
+    public function renderImageAttachments($id, &$item2render, $basehref = null)
     {
         static $attSet;
         if (! $attSet || ! isset($attSet[$id])) {

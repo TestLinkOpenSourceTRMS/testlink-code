@@ -12,9 +12,6 @@ define("SCALE_ADDALLSTART0", 4);
 require_once '../../config.inc.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-use pChart\pChart;
-use pChart\pData;
-
 /**
  *
  * @param stdClass $info

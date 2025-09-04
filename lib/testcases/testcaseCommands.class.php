@@ -77,7 +77,7 @@ class testcaseCommands
 
     /**
      */
-    private function initGuiBean(&$argsObj)
+    public function initGuiBean(&$argsObj)
     {
         $obj = new stdClass();
         $obj->action = '';
@@ -149,7 +149,7 @@ class testcaseCommands
     /**
      * initialize common test case information, useful when working on steps
      */
-    private function initTestCaseBasicInfo(&$argsObj, &$guiObj, $opt = null)
+    public function initTestCaseBasicInfo(&$argsObj, &$guiObj, $opt = null)
     {
         $my['opt'] = array(
             'accessByStepID' => true

@@ -1664,7 +1664,7 @@ function initializeGui(&$dbHandler, &$argsObj, &$cfgObj, &$tplanMgr, &$tcaseMgr,
             $gui->issueTrackerCfg->editIssueAttr = (intval(
                 $itsCfg->userinteraction) > 0);
             $gui->issueTrackerCfg->crudIssueViaAPI = (intval(
-                $itsCfg->createissueviaapi) > 0);
+                $itsCfg->createissueviaapi) > 0) ?? false;
 
             $gui->issueTrackerIntegrationOn = true;
             $gui->accessToIssueTracker = lang_get('link_bts_create_bug') .

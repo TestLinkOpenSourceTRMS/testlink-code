@@ -17,8 +17,9 @@
  * Preserve spaces at beginning of lines.
  * Lines must be separated by \n rather than < br / >
  */
-use const Collator\OFF;
-use const Collator\ON;
+use function database\db_unixtimestamp;
+
+require_once 'common.php';
 
 function string_preserve_spaces_at_bol($p_string)
 {
@@ -79,8 +80,8 @@ function string_nl2br($p_string, $p_wrap = 100)
         $pre2[$x] = preg_replace("/<br[^>]*?>/", "", $pre1[0][$x]);
         // this may want to be replaced by html_entity_decode (or equivalent)
         // if other encoded characters are a problem
-        $pre2[$x] = preg_replace("/&nbsp;/", " ", $pre2[$x]);
-        if (ON == config_get('wrap_in_preformatted_text')) {
+        $pre2[$x] = str_replace("/&nbsp;/", " ", $pre2[$x]);
+        if (tl::ON == config_get('wrap_in_preformatted_text')) {
             $pre2[$x] = preg_replace("/([^\n]{" . $p_wrap . "})(?!<\/pre>)/",
                 "$1\n", $pre2[$x]);
         }
@@ -354,7 +355,7 @@ function string_restore_valid_html_tags($p_string, $p_multiline = true)
     $t_html_valid_tags = config_get(
         $p_multiline ? 'html_valid_tags' : 'html_valid_tags_single_line');
 
-    if (OFF === $t_html_valid_tags || isBlank($t_html_valid_tags)) {
+    if (0 === $t_html_valid_tags || isBlank($t_html_valid_tags)) {
         return $p_string;
     }
 

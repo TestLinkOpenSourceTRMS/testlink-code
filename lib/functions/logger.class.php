@@ -228,7 +228,7 @@ class tlLogger extends tlObject
     /**
      * disable logging
      *
-     * @param TBD $logger
+     * @param string $logger
      *            (optional) default null = all loggers
      *            string representing a list of keys to access loggers map.
      *
@@ -248,7 +248,7 @@ class tlLogger extends tlObject
     /**
      * enable logging
      *
-     * @param TBD $logger
+     * @param string $logger
      *            (optional) default null = all loggers
      *            string representing a list of keys to access loggers map.
      *

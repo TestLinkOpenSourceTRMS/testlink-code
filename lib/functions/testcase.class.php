@@ -9141,7 +9141,7 @@ class testcase extends tlObjectWithAttachments
      *
      * <p> </p> added by web rich editor create some layout issues
      */
-    private function renderBuildExecVars($context, &$item2render)
+    public function renderBuildExecVars($context, &$item2render)
     {
         static $execVars;
 

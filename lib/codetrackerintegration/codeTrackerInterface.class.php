@@ -33,10 +33,10 @@ abstract class codeTrackerInterface
 
     // members to store the codetracking information.
     // Values are set in the actual subclasses
-    private $cfg = null;
+    public $cfg = null;
 
     // simpleXML object
-    private $name = null;
+    public $name = null;
 
     private $tlCharSet = null;
 
@@ -46,12 +46,12 @@ abstract class codeTrackerInterface
     // usable only if interface is done via direct DB access.
     private $dbMsg = '';
 
-    private $connected = false;
+    public $connected = false;
 
-    private $interfaceViaDB = false;
+    public $interfaceViaDB = false;
 
     // useful for connect/disconnect methods
-    private $guiCfg = array();
+    public $guiCfg = array();
 
     /**
      * Construct and connect to CTS.

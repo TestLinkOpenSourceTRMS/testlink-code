@@ -233,7 +233,7 @@ class bareBonesRestAPI
                 break;
 
             default:
-                throw new exception("Unknown method $method!");
+                throw new exception("Unknown method {$method}!");
                 break;
         }
 

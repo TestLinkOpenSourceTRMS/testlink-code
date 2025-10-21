@@ -490,7 +490,7 @@ function createSpreadsheet($gui, &$tplanMgr)
                     $fieldSet['percentage_completed']);
 
                 $cellZone = "A{$startingRow}:" . $cellRange[$whatCell] .
-                    "$startingRow";
+                    "{$startingRow}";
 
                 $objPHPExcel->getActiveSheet()
                     ->getStyle($cellZone)

@@ -1398,7 +1398,7 @@ function getReqSpecSet(&$dbHandler, $tproject_id)
         ));
 
     // get always Latest Revision Req. Spec Title
-    $sql = "/* $debugMsg */ " .
+    $sql = "/* {$debugMsg} */ " .
         " SELECT RSPEC.id, NHRSPEC.name AS title, RSPEC.doc_id AS rspec_doc_id, REQ.req_doc_id " .
         " FROM {$tables['req_specs']} RSPEC " .
         " JOIN {$tables['nodes_hierarchy']} NHRSPEC ON NHRSPEC.id = RSPEC.id " .

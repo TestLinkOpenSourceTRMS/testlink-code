@@ -224,7 +224,7 @@ class testPlanUrgency extends testplan
             $sqlFilter .= " AND TPTCV.tcversion_id IN ({$dummy}) ";
         }
 
-        $sql = "/* $debugMsg */ ";
+        $sql = "/* {$debugMsg} */ ";
         $sql .= " SELECT (urgency * importance) AS priority,  " .
             " urgency,importance, " . LOW .
             " AS priority_level, TPTCV.tcversion_id %CLAUSE%" .

@@ -171,7 +171,7 @@ class jirasoapInterface extends issueTrackerInterface
                     $this->resolvedStatus->byCode[$issue->statusCode]);
             }
         } catch (Exception $e) {
-            tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
+            tLog("JIRA Ticket ID {$issueID} - " . $e->getMessage(), 'WARNING');
             $issue = null;
         }
 

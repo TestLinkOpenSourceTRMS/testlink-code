@@ -500,7 +500,7 @@ function createSpreadsheet($gui, $args, $media)
     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, $xlsType);
 
     $codex = 'neverRunByPP';
-    $tmpfname = tempnam(config_get('temp_dir'), "$codex.tmp");
+    $tmpfname = tempnam(config_get('temp_dir'), "{$codex}.tmp");
     $objWriter->save($tmpfname);
 
     if ($args->getSpreadsheetBy == 'email') {
@@ -512,7 +512,7 @@ function createSpreadsheet($gui, $args, $media)
         $ema->subject = $gui->mailCfg->subject;
         $ema->message = $gui->mailCfg->subject;
 
-        $dum = uniqid("$codex_") . '.xls';
+        $dum = uniqid("{$codex_}") . '.xls';
         $oops = array(
             'attachment' => array(
                 'file' => $tmpfname,
@@ -525,7 +525,7 @@ function createSpreadsheet($gui, $args, $media)
         unlink($tmpfname);
         exit();
     } else {
-        downloadXls($tmpfname, $xlsType, $gui, "$codex_");
+        downloadXls($tmpfname, $xlsType, $gui, "{$codex_}");
     }
 }
 

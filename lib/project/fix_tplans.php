@@ -24,7 +24,7 @@ if ($can_manage_tprojects) {
     if ($_POST !== []) {
         foreach ($_POST as $testPlan => $testProject) {
             if ($testProject != "none") {
-                echo "<br />changing test plan $testPlan to go with test project $testProject";
+                echo "<br />changing test plan {$testPlan} to go with test project {$testProject}";
                 changeTestProjectForTestPlan($db, $testPlan, $testProject);
             }
         }

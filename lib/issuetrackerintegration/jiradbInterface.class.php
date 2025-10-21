@@ -109,7 +109,7 @@ class jiradbInterface extends issueTrackerInterface
             $where = " WHERE ISSUES.pkey='{$this->dbConnection->prepare_string($issueID)}'";
         }
 
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT ISSUES.ID AS id, ISSUES.summary,ISSUES.issuestatus AS status_code, " .
             " ST.pname AS status_verbose " . $addFields .
             " FROM {$this->dbSchema->issues} ISSUES " .
@@ -120,7 +120,7 @@ class jiradbInterface extends issueTrackerInterface
             $rs = $this->dbConnection->fetchRowsIntoMap($sql, 'id');
         } catch (Exception $e) {
             $rs = null;
-            $msg = "JIRA DB - Ticket ID $issueID - " . $e->getMessage();
+            $msg = "JIRA DB - Ticket ID {$issueID} - " . $e->getMessage();
             tLog($msg, 'WARNING');
         }
 
@@ -163,7 +163,7 @@ class jiradbInterface extends issueTrackerInterface
 
         // ATTENTION:
         // Field names on Jira tables seems to be sometimes on CAPITALS
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT ST.ID AS id,ST.pname AS name FROM {$this->dbSchema->status} ST";
         try {
             $rs = $this->dbConnection->fetchRowsIntoMap($sql, 'id');

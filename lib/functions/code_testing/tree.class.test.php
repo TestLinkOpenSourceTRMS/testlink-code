@@ -47,14 +47,14 @@ new dBug($available_node_types);
 echo "<pre> tree - get_node_hierarchy_info(\$node_id)";
 echo "</pre>";
 $node_id = 1;
-echo "<pre> get_node_hierarchy_info($node_id)";
+echo "<pre> get_node_hierarchy_info({$node_id})";
 echo "</pre>";
 $node_hierachy_info = $tree_mgr->get_node_hierarchy_info($node_id);
 new dBug($node_hierachy_info);
 
 echo "<pre> tree - get_subtree(\$node_id)";
 echo "</pre>";
-echo "<pre> get_subtree($node_id)";
+echo "<pre> get_subtree({$node_id})";
 echo "</pre>";
 $subtree = $tree_mgr->get_subtree($node_id);
 new dBug($subtree);
@@ -65,19 +65,19 @@ echo "<pre> tree - get_subtree(\$node_id,\$exclude_node_types=null," . "<br>" .
     "                              \$and_not_in_clause='',\$bRecursive = false)";
 echo "</pre>";
 
-echo "<pre> get_subtree($node_id,null,null,null,'',false)";
+echo "<pre> get_subtree({$node_id},null,null,null,'',false)";
 echo "</pre>";
 $subtree = $tree_mgr->get_subtree($node_id, null, null, null, '', false);
 new dBug($subtree);
 
-echo "<pre> get_subtree($node_id,null,null,null,'',true)";
+echo "<pre> get_subtree({$node_id},null,null,null,'',true)";
 echo "</pre>";
 $subtree = $tree_mgr->get_subtree($node_id, null, null, null, '', true);
 new dBug($subtree);
 
 echo "<pre> tree - get_subtree_list(\$node_id)";
 echo "</pre>";
-echo "<pre> get_subtree_list($node_id)";
+echo "<pre> get_subtree_list({$node_id})";
 echo "</pre>";
 $subtree_list = $tree_mgr->get_subtree_list($node_id);
 new dBug($subtree_list);
@@ -90,24 +90,24 @@ define('FORMAT_SIMPLE', 'simple');
 
 echo "<pre> tree - get_path(\$node_id,\$to_node_id = null,\$format = 'full') ";
 echo "</pre>";
-echo "<pre> tree - get_path($path_begin_node_id) ";
+echo "<pre> tree - get_path({$path_begin_node_id}) ";
 echo "</pre>";
 $path = $tree_mgr->get_path($path_begin_node_id);
 new dBug($path);
 
 echo "<pre> tree - get_path(\$node_id,\$to_node_id = null,\$format = 'full') ";
 echo "</pre>";
-echo "<pre> tree - get_path($path_begin_node_id,TREE_ROOT,FORMAT_FULL) ";
+echo "<pre> tree - get_path({$path_begin_node_id},TREE_ROOT,FORMAT_FULL) ";
 echo "</pre>";
 $path = $tree_mgr->get_path($path_begin_node_id, TREE_ROOT, FORMAT_FULL);
 new dBug($path);
 
-echo "<pre> tree - get_path($path_begin_node_id,TREE_ROOT,FORMAT_SIMPLE) ";
+echo "<pre> tree - get_path({$path_begin_node_id},TREE_ROOT,FORMAT_SIMPLE) ";
 echo "</pre>";
 $path = $tree_mgr->get_path($path_begin_node_id, TREE_ROOT, FORMAT_SIMPLE);
 new dBug($path);
 
-echo "<pre> tree - get_path($path_begin_node_id,$path_end_node_id,FORMAT_FULL) ";
+echo "<pre> tree - get_path({$path_begin_node_id},{$path_end_node_id},FORMAT_FULL) ";
 echo "</pre>";
 $path = $tree_mgr->get_path($path_begin_node_id, $path_end_node_id, FORMAT_FULL);
 new dBug($path);
@@ -115,14 +115,14 @@ new dBug($path);
 $node_id = 1;
 echo "<pre> tree - get_children(\$node_id)";
 echo "</pre>";
-echo "<pre> get_children($node_id)";
+echo "<pre> get_children({$node_id})";
 echo "</pre>";
 $children = $tree_mgr->get_children($node_id);
 new dBug($children);
 
 echo "<pre> tree - get_node_hierarchy_info(\$node_id) ";
 echo "</pre>";
-echo "<pre> get_node_hierarchy_info($node_id) ";
+echo "<pre> get_node_hierarchy_info({$node_id}) ";
 echo "</pre>";
 $node_hierachy_info = $tree_mgr->get_node_hierarchy_info($node_id);
 new dBug($node_hierachy_info);

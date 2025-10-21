@@ -424,7 +424,7 @@ class tlIssueTracker extends tlObject
         // check if ID is linked
         $links = $this->getLinks($safeID);
         if (is_null($links)) {
-            $sql = " /* $debugMsg */ DELETE FROM {$this->tables['issuetrackers']}  " .
+            $sql = " /* {$debugMsg} */ DELETE FROM {$this->tables['issuetrackers']}  " .
                 " WHERE id = " . intval($safeID);
             $this->db->exec_query($sql);
             $ret['msg'] .= sprintf($msg['ok'], $safeID);
@@ -566,11 +566,11 @@ class tlIssueTracker extends tlObject
         $statusQuo = $this->getLinkedTo($tprojectID);
 
         if (is_null($statusQuo)) {
-            $sql = "/* $debugMsg */ INSERT INTO {$this->tables['testproject_issuetracker']} " .
+            $sql = "/* {$debugMsg} */ INSERT INTO {$this->tables['testproject_issuetracker']} " .
                 " (testproject_id,issuetracker_id) " . " VALUES(" .
                 intval($tprojectID) . "," . intval($id) . ")";
         } else {
-            $sql = "/* $debugMsg */ UPDATE {$this->tables['testproject_issuetracker']} " .
+            $sql = "/* {$debugMsg} */ UPDATE {$this->tables['testproject_issuetracker']} " .
                 " SET issuetracker_id = " . intval($id) .
                 " WHERE testproject_id = " . intval($tprojectID);
         }
@@ -588,7 +588,7 @@ class tlIssueTracker extends tlObject
         if (is_null($id)) {
             return;
         }
-        $sql = "/* $debugMsg */ DELETE FROM {$this->tables['testproject_issuetracker']} " .
+        $sql = "/* {$debugMsg} */ DELETE FROM {$this->tables['testproject_issuetracker']} " .
             " WHERE testproject_id = " . intval($tprojectID) .
             " AND issuetracker_id = " . intval($id);
         $this->db->exec_query($sql);
@@ -613,7 +613,7 @@ class tlIssueTracker extends tlObject
             return;
         }
 
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name " .
             " FROM {$this->tables['testproject_issuetracker']} TPIT" .
             " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
@@ -635,7 +635,7 @@ class tlIssueTracker extends tlObject
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name, TPIT.issuetracker_id " .
             " FROM {$this->tables['testproject_issuetracker']} TPIT" .
             " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
@@ -714,7 +714,7 @@ class tlIssueTracker extends tlObject
         if (is_null($tprojectID)) {
             return;
         }
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name, " .
             " TPIT.issuetracker_id,ITRK.name AS issuetracker_name, ITRK.type" .
             " FROM {$this->tables['testproject_issuetracker']} TPIT" .

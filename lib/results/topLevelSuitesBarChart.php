@@ -81,7 +81,7 @@ function getDataAndScale(&$dbHandler, $argsObj)
                 // make things work, but create log this is not ok
                 tlog(
                     __FILE__ . '::' . __FUNCTION__ . 'Missing item: name/id:' .
-                    "$name/$tsuite_id", 'DEBUG');
+                    "{$name}/{$tsuite_id}", 'DEBUG');
             }
         }
     }

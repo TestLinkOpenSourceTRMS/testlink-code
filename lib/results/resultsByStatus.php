@@ -1017,7 +1017,7 @@ function xlsStepOne($oj, $style, $lbl, $gui)
             ->setCellValue("A{$cdx}", current($fields))
             ->setCellValue("B{$cdx}", end($fields));
     }
-    $cellArea .= "A[$cdx]";
+    $cellArea .= "A[{$cdx}]";
     $oj->getActiveSheet()
         ->getStyle($cellArea)
         ->applyFromArray($style['ReportContext']);

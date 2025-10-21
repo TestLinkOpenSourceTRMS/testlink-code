@@ -51,7 +51,7 @@ $series_color = array();
 foreach ($totals as $key => $value) {
     $value = $value['qty'];
     $values[] = $value;
-    $labels[] = lang_get($resultsCfg['status_label'][$key]) . " ($value)";
+    $labels[] = lang_get($resultsCfg['status_label'][$key]) . " ({$value})";
     if (isset($resultsCfg['charts']['status_colour'][$key])) {
         $series_color[] = $resultsCfg['charts']['status_colour'][$key];
     }

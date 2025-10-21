@@ -215,11 +215,11 @@ if (count($gui->reqIDs) > 0) {
                 $tc_coverage = isset($coverageSet[$id]) ? $coverageSet[$id]['qty'] : 0;
                 $expected = $version['expected_coverage'];
                 $coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] .
-                    " ($tc_coverage/0)";
+                    " ({$tc_coverage}/0)";
                 if ($expected > 0) {
                     $percentage = round(100 / $expected * $tc_coverage, 2);
                     $padded_data = sprintf("%010d", $percentage); // bring all percentages to same length
-                    $coverage_string = "<!-- $padded_data --> {$percentage}% ({$tc_coverage}/{$expected})";
+                    $coverage_string = "<!-- {$padded_data} --> {$percentage}% ({$tc_coverage}/{$expected})";
                 }
                 $result[] = $coverage_string;
             }

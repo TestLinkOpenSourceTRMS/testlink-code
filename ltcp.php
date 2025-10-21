@@ -96,7 +96,7 @@ function process(&$dbHandler)
     // Trying to mitigate SQL injection I will get prefix of
     // all test projects then check array
     $tbl = DB_TABLE_PREFIX . 'testprojects';
-    $sql = "SELECT prefix,id FROM $tbl ";
+    $sql = "SELECT prefix,id FROM {$tbl} ";
     $rs = $dbHandler->fetchRowsIntoMap($sql, 'prefix');
     $testCasePieces = explode('-', $args->testcase);
 
@@ -131,9 +131,9 @@ function process(&$dbHandler)
     $idSet = implode(',', $allTCVID);
     $tcaseVersionNumber = intval($testCasePieces[2]);
     $tbl = DB_TABLE_PREFIX . 'tcversions';
-    $sql = " SELECT version,id FROM $tbl
-           WHERE id IN ($idSet)
-           AND version = $tcaseVersionNumber";
+    $sql = " SELECT version,id FROM {$tbl}
+           WHERE id IN ({$idSet})
+           AND version = {$tcaseVersionNumber}";
     $rs = (array) $dbHandler->fetchRowsIntoMap($sql, 'version');
     if (count($rs) != 1) {
         die();
@@ -149,7 +149,7 @@ function process(&$dbHandler)
         $tcversion_id
     ], $url2call);
 
-    $what2launch = "/lib/testcases/tcPrint.php?$url2call";
+    $what2launch = "/lib/testcases/tcPrint.php?{$url2call}";
     header('Location:' . TL_BASE_HREF . $what2launch);
     exit();
 }

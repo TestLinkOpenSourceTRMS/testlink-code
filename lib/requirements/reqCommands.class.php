@@ -803,7 +803,7 @@ class reqCommands
         }
 
         $obj = $this->initGuiBean();
-        $obj->template = "reqView.php?requirement_id=$requirement_id&relation_add_result_msg=" .
+        $obj->template = "reqView.php?requirement_id={$requirement_id}&relation_add_result_msg=" .
             $op['msg'];
 
         return $obj;

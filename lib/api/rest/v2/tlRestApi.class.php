@@ -1175,7 +1175,7 @@ class tlRestApi
         $run = false;
         $uid = - 1;
 
-        $sql = "/* $debugMsg */ SELECT id FROM {$this->tables['users']} ";
+        $sql = "/* {$debugMsg} */ SELECT id FROM {$this->tables['users']} ";
         if (property_exists($user, 'login')) {
             $run = true;
             $sql .= " WHERE login='" .

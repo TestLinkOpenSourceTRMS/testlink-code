@@ -21,7 +21,7 @@ show_api_db_sample_msg();
 
 $method = 'createTestSuite';
 
-$unitTestDescription = "Test - $method";
+$unitTestDescription = "Test - {$method}";
 $test_num = 0;
 $tlDevKey = '985978c915f50e47a4b1a54a943d1b76';
 $tlDevKey = isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : $tlDevKey;

@@ -220,7 +220,7 @@ function validateBuildAvailability(&$db, &$tplanMgr, $context, $attrFilter)
         if (has_rights($db, "testplan_create_build") == 'yes') {
             // final url will be composed adding to $basehref
             // (one TL variable available on smarty templates) to $link_to_op
-            $link_to_op = "lib/plan/buildEdit.php?do_action=create&tplan_id=$tpID";
+            $link_to_op = "lib/plan/buildEdit.php?do_action=create&tplan_id={$tpID}";
             $hint_text = lang_get('create_a_build');
         } else {
             $message .= '</p><p>' . lang_get('no_build_warning_part2') . '</p>';

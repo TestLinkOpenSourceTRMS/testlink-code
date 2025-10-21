@@ -457,7 +457,7 @@ function get_bugs_for_exec(&$db, &$bug_interface, $execution_id, $raw = null)
 
     $debugMsg = 'FILE:: ' . __FILE__ . ' :: FUNCTION:: ' . __FUNCTION__;
     if (is_object($bug_interface)) {
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT execution_id,bug_id,tcstep_id,step_number," .
             " builds.name AS build_name " . " FROM {$tables['execution_bugs']} " .
             " JOIN {$tables['executions']} executions " .
@@ -661,7 +661,7 @@ function getBugsForExecutions(&$db, &$bug_interface, $execSet, $raw = null)
 
     $debugMsg = 'FILE:: ' . __FILE__ . ' :: FUNCTION:: ' . __FUNCTION__;
     if (is_object($bug_interface)) {
-        $sql = "/* $debugMsg */ SELECT EB.execution_id,EB.bug_id,B.name AS build_name " .
+        $sql = "/* {$debugMsg} */ SELECT EB.execution_id,EB.bug_id,B.name AS build_name " .
             " FROM {$tables['execution_bugs']} EB " .
             " JOIN {$tables['executions']} E ON E.id = EB.execution_id " .
             " JOIN {$tables['builds']} B  ON B.id = E.build_id " .
@@ -795,7 +795,7 @@ function copyIssues(&$dbHandler, $source, $dest)
     ));
     $blist = array();
 
-    $sql = "/* $debugMsg */ SELECT bug_id FROM {$tables['execution_bugs']} " .
+    $sql = "/* {$debugMsg} */ SELECT bug_id FROM {$tables['execution_bugs']} " .
         " WHERE execution_id = " . intval($source);
 
     $linkedIssues = $dbHandler->fetchRowsIntoMap($sql, 'bug_id');
@@ -804,7 +804,7 @@ function copyIssues(&$dbHandler, $source, $dest)
         $safeDest = intval($dest);
 
         $blist = implode("','", $idSet);
-        $sql = "/* $debugMsg */ DELETE FROM {$tables['execution_bugs']} " .
+        $sql = "/* {$debugMsg} */ DELETE FROM {$tables['execution_bugs']} " .
             " WHERE execution_id=" . $safeDest . " AND bug_id IN ('" . $blist .
             "')";
 

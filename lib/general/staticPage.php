@@ -38,7 +38,7 @@ if (isset($TLS_htmltext[$pageKey])) {
     $gui->pageContent = $TLS_htmltext[$pageKey];
 } else {
     $gui->pageContent = "Please, ask administrator to update localization file" .
-        "(&lt;testlink_root&gt;/locale/$locale/texts.php)" . " - missing key: " .
+        "(&lt;testlink_root&gt;/locale/{$locale}/texts.php)" . " - missing key: " .
         $pageKey;
 }
 

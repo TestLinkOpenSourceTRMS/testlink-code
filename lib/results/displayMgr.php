@@ -261,7 +261,7 @@ function flushHttpHeader($format, $doc_kind = 0)
         "Content-Description: TestLink - Generated Document (see " . __FUNCTION__ .
         ")");
     if ((! is_null($format) && $format != '') && $format != FORMAT_HTML) {
-        header("Content-Disposition: attachment; filename=$filename");
+        header("Content-Disposition: attachment; filename={$filename}");
     }
     flush();
 }

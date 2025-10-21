@@ -558,8 +558,8 @@ if ($args->reload_caller) {
 
         if ($latestExecIDInContext > 0) {
             $tbl = DB_TABLE_PREFIX . 'executions';
-            $sql = "SELECT notes FROM $tbl
-                WHERE id = $latestExecIDInContext";
+            $sql = "SELECT notes FROM {$tbl}
+                WHERE id = {$latestExecIDInContext}";
             $rs = $db->get_recordset($sql);
             $gui->lexNotes = $rs != null ? $rs[0]['notes'] : null;
         }
@@ -1119,7 +1119,7 @@ function doRemoteExecution(&$dbHandler, $context)
 
     $ret = null;
 
-    $sql = " /* $debugMsg */ INSERT INTO {$tables['executions']} " .
+    $sql = " /* {$debugMsg} */ INSERT INTO {$tables['executions']} " .
         " (testplan_id,platform_id,build_id,tester_id,execution_type," .
         "  tcversion_id,execution_ts,status,notes) " .
         " VALUES ({$context['context']['tplan_id']}, " .
@@ -1713,7 +1713,7 @@ function initializeGui(&$dbHandler, &$argsObj, &$cfgObj, &$tplanMgr, &$tcaseMgr,
                 } else {
                     /* Provide warning */
                     tLog(
-                        "Issue Tracker Config Issue? - Attribute:$kj doesn't exist",
+                        "Issue Tracker Config Issue? - Attribute:{$kj} doesn't exist",
                         "WARNING");
                 }
                 $forStep = $attr . 'ForStep';
@@ -1731,7 +1731,7 @@ function initializeGui(&$dbHandler, &$argsObj, &$cfgObj, &$tplanMgr, &$tcaseMgr,
                 } else {
                     /* Provide warning */
                     tLog(
-                        "Issue Tracker Config Issue? - Attribute:$kj doesn't exist",
+                        "Issue Tracker Config Issue? - Attribute:{$kj} doesn't exist",
                         "WARNING");
                 }
                 $forStep = $attr . 'ForStep';

@@ -123,7 +123,7 @@ class tlPlatform extends tlObjectWithDB
 
         $sql = " SELECT {$options['fields']}
               FROM {$this->tables['platforms']}
-              WHERE id IN ($idSet) ";
+              WHERE id IN ({$idSet}) ";
 
         switch ($options['accessKey']) {
             case 'id':
@@ -240,7 +240,7 @@ class tlPlatform extends tlObjectWithDB
             foreach ($idSet as $platform_id) {
                 $sql = " INSERT INTO {$this->tables['testplan_platforms']} " .
                     " (testplan_id, platform_id) " .
-                    " VALUES ($testplan_id, $platform_id)";
+                    " VALUES ({$testplan_id}, {$platform_id})";
                 $result = $this->db->exec_query($sql);
                 if (! $result) {
                     break;
@@ -323,7 +323,7 @@ class tlPlatform extends tlObjectWithDB
                 continue;
             }
             if (is_bool($options[$ena]) || is_int($options[$ena])) {
-                $filterEnableOn .= " AND $ena = " . ($options[$ena] ? 1 : 0);
+                $filterEnableOn .= " AND {$ena} = " . ($options[$ena] ? 1 : 0);
             }
         }
 
@@ -395,12 +395,12 @@ class tlPlatform extends tlObjectWithDB
                 continue;
             }
             if (is_bool($options[$ena]) || is_int($options[$ena])) {
-                $filterEnableOn .= " AND $ena = " . ($options[$ena] ? 1 : 0);
+                $filterEnableOn .= " AND {$ena} = " . ($options[$ena] ? 1 : 0);
             }
         }
 
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $sql = "/* $debugMsg */
+        $sql = "/* {$debugMsg} */
              SELECT {$this->stdFields}
              FROM {$this->tables['platforms']}
              WHERE testproject_id = {$this->tproject_id}
@@ -423,7 +423,7 @@ class tlPlatform extends tlObjectWithDB
     public function platformsActiveForTestplan($testplan_id)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $sql = "/* $debugMsg */ SELECT COUNT(0) AS num " .
+        $sql = "/* {$debugMsg} */ SELECT COUNT(0) AS num " .
             " FROM {$this->tables['testplan_platforms']} " .
             " WHERE testplan_id = {$testplan_id}";
         $num_tplans = $this->db->fetchOneValue($sql);
@@ -453,7 +453,7 @@ class tlPlatform extends tlObjectWithDB
 
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         $rs = null;
-        $sql = "/* $debugMsg */
+        $sql = "/* {$debugMsg} */
             SELECT P.id, P.name, P.notes,
                    P.enable_on_design,
                    P.enable_on_execution,
@@ -512,12 +512,12 @@ class tlPlatform extends tlObjectWithDB
             }
 
             if (is_bool($options[$ena]) || is_int($options[$ena])) {
-                $filterEnableOn .= " AND $ena = " . ($options[$ena] ? 1 : 0);
+                $filterEnableOn .= " AND {$ena} = " . ($options[$ena] ? 1 : 0);
             }
         }
 
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $sql = "/* $debugMsg */ SELECT P.id, P.name, P.is_open " .
+        $sql = "/* {$debugMsg} */ SELECT P.id, P.name, P.is_open " .
             " FROM {$this->tables['platforms']} P " .
             " JOIN {$this->tables['testplan_platforms']} TP " .
             " ON P.id = TP.platform_id " .
@@ -657,7 +657,7 @@ class tlPlatform extends tlObjectWithDB
     {
         $sql = "UPDATE {$this->tables['platforms']}
             SET enable_on_design = 1
-            WHERE id = $id";
+            WHERE id = {$id}";
         $this->db->exec_query($sql);
     }
 
@@ -667,7 +667,7 @@ class tlPlatform extends tlObjectWithDB
     {
         $sql = "UPDATE {$this->tables['platforms']}
             SET enable_on_design = 0
-            WHERE id = $id";
+            WHERE id = {$id}";
         $this->db->exec_query($sql);
     }
 
@@ -677,7 +677,7 @@ class tlPlatform extends tlObjectWithDB
     {
         $sql = "UPDATE {$this->tables['platforms']}
             SET enable_on_execution = 1
-            WHERE id = $id";
+            WHERE id = {$id}";
         $this->db->exec_query($sql);
     }
 
@@ -687,7 +687,7 @@ class tlPlatform extends tlObjectWithDB
     {
         $sql = "UPDATE {$this->tables['platforms']}
             SET enable_on_execution = 0
-            WHERE id = $id";
+            WHERE id = {$id}";
         $this->db->exec_query($sql);
     }
 
@@ -697,7 +697,7 @@ class tlPlatform extends tlObjectWithDB
     {
         $sql = "UPDATE {$this->tables['platforms']}
             SET is_open = 1
-            WHERE id = $id";
+            WHERE id = {$id}";
         $this->db->exec_query($sql);
     }
 
@@ -707,7 +707,7 @@ class tlPlatform extends tlObjectWithDB
     {
         $sql = "UPDATE {$this->tables['platforms']}
             SET is_open = 0
-            WHERE id = $id";
+            WHERE id = {$id}";
         $this->db->exec_query($sql);
     }
 
@@ -719,7 +719,7 @@ class tlPlatform extends tlObjectWithDB
         ));
         $adodbXML = new ADODB_XML("1.0", "UTF-8");
 
-        $sql = "/* $debugMsg */
+        $sql = "/* {$debugMsg} */
             SELECT name,notes,enable_on_design,
             enable_on_execution
             FROM {$tables['platforms']} PLAT

@@ -41,11 +41,11 @@ function chk_memory($limit = 9, $recommended = 16)
 
         if ($max_memory_int < $limit) {
 
-            $msg = "Warning at least $limit M required ($max_memory M available, Recommended $recommended M)";
+            $msg = "Warning at least {$limit} M required ({$max_memory} M available, Recommended {$recommended} M)";
             $type = "error";
         } elseif ($max_memory_int < $recommended) {
 
-            $msg = "OK (Recommended $recommended M)";
+            $msg = "OK (Recommended {$recommended} M)";
             $type = "pending";
         } else {
             $msg = "OK";
@@ -53,7 +53,7 @@ function chk_memory($limit = 9, $recommended = 16)
         }
     }
 
-    $msg = "<b class='$type'>" . $msg . "</b>";
+    $msg = "<b class='{$type}'>" . $msg . "</b>";
 
     return $msg;
 }

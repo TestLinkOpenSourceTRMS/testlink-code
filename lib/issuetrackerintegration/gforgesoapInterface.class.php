@@ -184,7 +184,7 @@ class gforgesoapInterface extends issueTrackerInterface
                 $issue->statusCode);
             $issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);
         } catch (Exception $e) {
-            tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
+            tLog("JIRA Ticket ID {$issueID} - " . $e->getMessage(), 'WARNING');
             $issue = null;
         }
 
@@ -348,7 +348,7 @@ class gforgesoapInterface extends issueTrackerInterface
         $summary = $issue->summary;
         $strDueDate = $this->helperParseDate($issue->duedate);
         if (! is_null($strDueDate)) {
-            $summary .= "<b> [$strDueDate] </b> ";
+            $summary .= "<b> [{$strDueDate}] </b> ";
         }
         return $summary;
     }

@@ -71,7 +71,7 @@ class assignment_mgr extends tlObjectWithDB
     {
         if (is_array($feature_id)) {
             $feature_id_list = implode(",", $feature_id);
-            $where_clause = " WHERE feature_id IN ($feature_id_list) ";
+            $where_clause = " WHERE feature_id IN ({$feature_id_list}) ";
         } else {
             $where_clause = " WHERE feature_id={$feature_id}";
         }
@@ -113,7 +113,7 @@ class assignment_mgr extends tlObjectWithDB
     public function delete_by_feature_id_and_build_id($feature_map)
     {
         $feature_id_list = implode(",", array_keys($feature_map));
-        $where_clause = " WHERE feature_id IN ($feature_id_list) ";
+        $where_clause = " WHERE feature_id IN ({$feature_id_list}) ";
 
         $sql = " DELETE FROM {$this->tables['user_assignments']}  {$where_clause} ";
 
@@ -140,7 +140,7 @@ class assignment_mgr extends tlObjectWithDB
         foreach ($items as $signature) {
             $sql = " DELETE FROM {$this->tables['user_assignments']} WHERE 1=1 ";
             foreach ($signature as $column => $val) {
-                $sql .= " AND $column = " . intval($val);
+                $sql .= " AND {$column} = " . intval($val);
             }
             $this->db->exec_query($sql);
         }
@@ -179,7 +179,7 @@ class assignment_mgr extends tlObjectWithDB
                 $safe['user_id'] = intval($user_id);
 
                 // Check if exists before adding
-                $check = "/* $debugMsg */ ";
+                $check = "/* {$debugMsg} */ ";
                 $check .= " SELECT id FROM {$this->tables['user_assignments']} " .
                     " WHERE feature_id = " . $safe['feature_id'] .
                     " AND build_id = " . $safe['build_id'] . " AND type = " .
@@ -247,14 +247,14 @@ class assignment_mgr extends tlObjectWithDB
 
             foreach ($simple_fields as $field) {
                 if (isset($elem[$field])) {
-                    $sql .= $sepa . "$field={$elem[$field]} ";
+                    $sql .= $sepa . "{$field}={$elem[$field]} ";
                     $sepa = ",";
                 }
             }
 
             foreach ($date_fields as $field) {
                 if (isset($elem[$field])) {
-                    $sql .= $sepa . "$field=" . $elem[$field] . " ";
+                    $sql .= $sepa . "{$field}=" . $elem[$field] . " ";
                     $sepa = ",";
                 }
             }
@@ -413,7 +413,7 @@ class assignment_mgr extends tlObjectWithDB
         $types = $this->get_available_types();
         $execAssign = $types['testcase_execution']['id'];
 
-        $sql = "/* $debugMsg */ " . " SELECT COUNT(id) AS qty, build_id " .
+        $sql = "/* {$debugMsg} */ " . " SELECT COUNT(id) AS qty, build_id " .
             " FROM {$this->tables['user_assignments']} " .
             " WHERE build_id IN ( " . implode(",", (array) $buildID) . " ) " .
             " AND type = {$execAssign} " . " GROUP BY build_id ";
@@ -435,7 +435,7 @@ class assignment_mgr extends tlObjectWithDB
         $types = $this->get_available_types();
         $execAssign = $types['testcase_execution']['id'];
 
-        $sql = "/* $debugMsg */ " . " SELECT count(0) as qty, UA.build_id " .
+        $sql = "/* {$debugMsg} */ " . " SELECT count(0) as qty, UA.build_id " .
             " FROM {$this->tables['user_assignments']} UA " .
             " JOIN {$this->tables['builds']}  BU ON UA.build_id = BU.id " .
             " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
@@ -467,7 +467,7 @@ class assignment_mgr extends tlObjectWithDB
             throw new Exception(
                 __METHOD__ . ' assignmentType can not be NULL or not numeric ');
         }
-        $sql = "/* $debugMsg */ " . " SELECT UA.user_id,UA.feature_id " .
+        $sql = "/* {$debugMsg} */ " . " SELECT UA.user_id,UA.feature_id " .
             " FROM {$this->tables['user_assignments']} UA " .
             " WHERE UA.build_id = " . intval($buildID) . " AND UA.feature_id IN(" .
             implode(",", (array) $featureSet) . " )" . " AND type = " .
@@ -488,7 +488,7 @@ class assignment_mgr extends tlObjectWithDB
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
         if (is_null($targetUsers)) {
-            $sql = "/* $debugMsg */ " .
+            $sql = "/* {$debugMsg} */ " .
                 " SELECT id FROM {$this->tables['users']} ";
             $targetUsers = $this->db->fetchColumnsIntoArray($sql, 'id');
         }
@@ -500,7 +500,7 @@ class assignment_mgr extends tlObjectWithDB
 
         $tplan_id = intval($context['tplan_id']);
         $build_id = intval($context['build_id']);
-        $sql = "/* $debugMsg */ " . " SELECT UA.user_id, U.email " .
+        $sql = "/* {$debugMsg} */ " . " SELECT UA.user_id, U.email " .
             " FROM {$this->tables['user_assignments']} UA " .
             " JOIN {$this->tables['builds']} B " . " ON UA.build_id = B.id " .
             " LEFT JOIN {$this->tables['users']} U " . " ON U.id = UA.user_id " .

@@ -416,7 +416,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
         $at_least_one_active = false;
 
         foreach ($this->all_settings as $name => $info) {
-            $init_method = "init_$name";
+            $init_method = "init_{$name}";
             if (in_array($name, $this->mode_setting_mapping[$this->mode]) &&
                 method_exists($this, $init_method)) {
                 // is valid, configured, exists and therefore can be used, so initialize this setting
@@ -456,7 +456,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
         // iterate through all filters and activate the needed ones
         if ($this->configuration->show_filters == ENABLED) {
             foreach ($this->all_filters as $name => $info) {
-                $init_method = "init_$name";
+                $init_method = "init_{$name}";
                 if (method_exists($this, $init_method) &&
                     $this->configuration->{$name} == ENABLED) {
                     $this->$init_method();
@@ -758,7 +758,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
                         $root_node->href = "javascript:EP({$this->args->testproject_id})";
                         $root_node->id = $this->args->testproject_id;
                         $root_node->name = $this->args->testproject_name .
-                            " ($req_qty)";
+                            " ({$req_qty})";
                         $root_node->testlink_node_type = 'testproject';
                     }
                 }

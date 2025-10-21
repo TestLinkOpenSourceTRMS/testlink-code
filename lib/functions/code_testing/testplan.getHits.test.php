@@ -19,14 +19,14 @@ echo '<b>Database:' . DB_NAME . '</b><br>';
 $object_item = "Testplan Manager";
 $object_class = "testplan";
 
-echo "<pre>Poor's Man - $object_item - code inspection tool<br>";
+echo "<pre>Poor's Man - {$object_item} - code inspection tool<br>";
 echo "<pre>Scope of this page is allow you to understand with live<br>";
-echo "examples how to use object: $object_item (implemented in file $object_class_file.class.php)<br>";
+echo "examples how to use object: {$object_item} (implemented in file {$object_class_file}.class.php)<br>";
 echo "Important:";
 echo "You are using your testlink DB to do all operations";
 echo "</pre>";
 echo "<hr>";
-echo "<pre> $object_item - constructor - $object_class(&\$db)";
+echo "<pre> {$object_item} - constructor - {$object_class}(&\$db)";
 echo "</pre>";
 
 echo "<hr>";
@@ -84,7 +84,7 @@ echo '<hr>';
 
 // -----------------------------------------------------------------------------
 $method2call = 'getHitsStatusSetOnLatestExecution';
-echo "<h1> TESTING:$method2call </h1>";
+echo "<h1> TESTING:{$method2call} </h1>";
 // -----------------------------------------------------------------------------
 
 $statusMixed = 'n';
@@ -130,7 +130,7 @@ echo '<hr>';
 
 // -----------------------------------------------------------------------------
 $method2call = 'getHitsStatusSetOnBuild';
-echo "<h1> TESTING:$method2call </h1>";
+echo "<h1> TESTING:{$method2call} </h1>";
 // -----------------------------------------------------------------------------
 $build_id = 26; // 26,27,28
 echo 'Build ID:' . $build_id . '<br>';
@@ -169,7 +169,7 @@ echo '<hr>';
 
 // -----------------------------------------------------------------------------
 $method2call = 'getHitsNotRunOnBuild';
-echo "<h1> TESTING:$method2call </h1>";
+echo "<h1> TESTING:{$method2call} </h1>";
 // -----------------------------------------------------------------------------
 
 $build_id = 26; // 26,27,28
@@ -199,7 +199,7 @@ echo '<hr>';
 
 // -----------------------------------------------------------------------------
 $method2call = 'getHitsSameStatusFull';
-echo "<h1> TESTING:$method2call </h1>";
+echo "<h1> TESTING:{$method2call} </h1>";
 // -----------------------------------------------------------------------------
 
 $statusMixed = 'n';
@@ -242,7 +242,7 @@ echo '<hr>';
 
 // -----------------------------------------------------------------------------
 $method2call = 'getHitsNotRunFull';
-echo "<h1> TESTING:$method2call </h1>";
+echo "<h1> TESTING:{$method2call} </h1>";
 // -----------------------------------------------------------------------------
 
 $$method2call = $obj_mgr->$method2call($tplan_id, $platform_id);
@@ -253,26 +253,26 @@ echo '<hr>';
 
 // -----------------------------------------------------------------------------
 $method2call = 'getHitsSingleStatusFull';
-echo "<h1> TESTING:$method2call </h1>";
+echo "<h1> TESTING:{$method2call} </h1>";
 // -----------------------------------------------------------------------------
 
 $status = 'p';
 $$method2call = $obj_mgr->$method2call($tplan_id, $platform_id, $status);
 echo '<br>' . $method2call . '()' . '<br>';
-echo '<br>' . "status=$status" . '<br>';
+echo '<br>' . "status={$status}" . '<br>';
 new dBug($$method2call);
 echo '<hr>';
 
 $status = 'b';
 $$method2call = $obj_mgr->$method2call($tplan_id, $platform_id, $status);
 echo '<br>' . $method2call . '()' . '<br>';
-echo '<br>' . "status=$status" . '<br>';
+echo '<br>' . "status={$status}" . '<br>';
 new dBug($$method2call);
 echo '<hr>';
 
 $status = 'f';
 $$method2call = $obj_mgr->$method2call($tplan_id, $platform_id, $status);
-echo '<br>' . "status=$status" . '<br>';
+echo '<br>' . "status={$status}" . '<br>';
 echo '<br>' . $method2call . '()' . '<br>';
 new dBug($$method2call);
 echo '<hr>';
@@ -280,7 +280,7 @@ echo '<hr>';
 
 // -----------------------------------------------------------------------------
 $method2call = 'getHitsStatusSetFull';
-echo "<h1> TESTING:$method2call </h1>";
+echo "<h1> TESTING:{$method2call} </h1>";
 // -----------------------------------------------------------------------------
 
 $statusSet = array(
@@ -306,7 +306,7 @@ echo '<hr>';
 
 // -----------------------------------------------------------------------------
 $method2call = 'getHitsNotRunPartial';
-echo "<h1> TESTING:$method2call </h1>";
+echo "<h1> TESTING:{$method2call} </h1>";
 // -----------------------------------------------------------------------------
 
 $$method2call = $obj_mgr->$method2call($tplan_id, $platform_id);
@@ -317,7 +317,7 @@ echo '<hr>';
 
 // -----------------------------------------------------------------------------
 $method2call = 'getHitsStatusSetPartial';
-echo "<h1> TESTING:$method2call </h1>";
+echo "<h1> TESTING:{$method2call} </h1>";
 // -----------------------------------------------------------------------------
 $statusSet = array(
     'b',

@@ -34,7 +34,7 @@ $cfg = "<issuetracker>\n" . "<apikey>{$apiKey[$redmineHost]['user']}</apikey>\n"
     "<projectidentifier>{$projectidentifier[$redmineHost]}</projectidentifier>\n" .
     "<attributes><fixed_version_id>2</fixed_version_id><category_id>1</category_id>\n" .
     "<estimated_hours>12.6</estimated_hours>\n" . "</attributes>\n" .
-    "<uribase>http://$redmineHost/redmine/</uribase>\n" . "</issuetracker>\n";
+    "<uribase>http://{$redmineHost}/redmine/</uribase>\n" . "</issuetracker>\n";
 
 echo '<hr><br>';
 echo "<b>Testing  Issue Tracker Integration - redminerestInterface </b>";
@@ -47,7 +47,7 @@ echo 'Creating INTERFACE<br>';
 
 $its[$user] = new redminerestInterface(15, $cfg);
 
-echo "<br>Connection OK? (using apikey for user: $user)<br>";
+echo "<br>Connection OK? (using apikey for user: {$user})<br>";
 var_dump($its[$user]->isConnected());
 if ($its[$user]->isConnected()) {
 

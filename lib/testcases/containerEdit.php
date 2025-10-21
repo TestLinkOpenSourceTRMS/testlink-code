@@ -1071,7 +1071,7 @@ function moveTestCasesViewer(&$dbHandler, &$smartyObj, &$tprojectMgr, &$treeMgr,
     $sqlB = " SELECT SQLA.id AS tcid, SQLA.name AS tcname," .
         " SQLA.node_order AS tcorder, SQLA.tcexternalid," .
         " MTCV.summary,MTCV.status,MTCV.importance,MTCV.execution_type," .
-        " MTCV.id AS tcversion_id FROM ($sqlA) SQLA " .
+        " MTCV.id AS tcversion_id FROM ({$sqlA}) SQLA " .
         " JOIN {$tables['nodes_hierarchy']} MNHTCV ON MNHTCV.parent_id = SQLA.id " .
         " JOIN {$tables['tcversions']} MTCV ON MTCV.id = MNHTCV.id AND MTCV.version = SQLA.lvnum";
     $orderClause = " ORDER BY TCORDER,TCNAME";

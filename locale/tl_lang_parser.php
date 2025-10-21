@@ -58,10 +58,10 @@ echo "===== Start TestLink lang_parser =====\n";
 
 // read english file
 if (file_exists($file_eng) && is_readable($file_eng)) {
-    echo "Master file ($file_eng) is readable OK.\n";
+    echo "Master file ({$file_eng}) is readable OK.\n";
     $lines_eng = file($file_eng);
 } else {
-    echo "Master File ($file_eng) is not readable. Exit.\n";
+    echo "Master File ({$file_eng}) is not readable. Exit.\n";
     exit();
 }
 // read language file
@@ -129,14 +129,14 @@ for ($i = $begin_line; $i < $lines_eng_count; $i ++) {
         $bLocalized = false;
         $localizedLine = '';
         echo "\n\n=line " . ($i + 1) .
-            "=\nFound variable '$var_name' on master file\n";
+            "=\nFound variable '{$var_name}' on master file\n";
 
         // get localized value if defined - parse old localized strings
         for ($k = $begin_line_old; $k < $lines_old_count; $k ++) {
             if (preg_match(
                 '/^\\' . addcslashes($var_name, '\'\[\]') . '[\s]*=[\s]*.+$/',
                 $lines_lang_old[$k])) {
-                echo "Found localization for variable '$var_name' on file to be updated (line " .
+                echo "Found localization for variable '{$var_name}' on file to be updated (line " .
                     ($k + 1) . ")\n";
                 $bLocalized = true;
                 $localizedLine = $lines_lang_old[$k];
@@ -201,7 +201,7 @@ fwrite($fp, $out);
 fclose($fp);
 
 echo "\n\nUpdated file: " . $file_lang_old;
-echo "\nCompleted! The script has parsed $var_counter strings and add $var_counter_new new variables.\n";
+echo "\nCompleted! The script has parsed {$var_counter} strings and add {$var_counter_new} new variables.\n";
 echo implode("\n", $new_vars);
 echo "\n\n===== Bye =====\n";
 

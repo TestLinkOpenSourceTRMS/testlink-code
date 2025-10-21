@@ -183,7 +183,7 @@ function email_send($p_from, $p_recipient, $p_subject, $p_message, $p_cc = '',
 
     if (! $mail->Send()) {
         if ($p_exit_on_error) {
-            print "PROBLEMS SENDING MAIL TO: $p_recipient<br />";
+            print "PROBLEMS SENDING MAIL TO: {$p_recipient}<br />";
             print 'Mailer Error: ' . $mail->ErrorInfo . '<br />';
             exit();
         } else {
@@ -228,7 +228,7 @@ function email_append_domain($p_email)
 {
     $t_limit_email_domain = config_get('limit_email_domain');
     if ($t_limit_email_domain && ! isBlank($p_email)) {
-        $p_email = "$p_email@$t_limit_email_domain";
+        $p_email = "{$p_email}@{$t_limit_email_domain}";
     }
 
     return $p_email;

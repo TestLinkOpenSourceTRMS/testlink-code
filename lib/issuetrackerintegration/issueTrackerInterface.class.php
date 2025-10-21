@@ -345,7 +345,7 @@ abstract class issueTrackerInterface
         $ret->op = false;
 
         if (is_null($issue) || ! is_object($issue)) {
-            $ret->link = "TestLink Internal Message: getIssue($issueID) FAILURE on " .
+            $ret->link = "TestLink Internal Message: getIssue({$issueID}) FAILURE on " .
                 __METHOD__;
             return $ret;
         }
@@ -413,7 +413,7 @@ abstract class issueTrackerInterface
 
         if ($my['opt']['colorByStatus'] && property_exists($issue, 'statusColor')) {
             $title = lang_get('access_to_bts');
-            $link = "<div  title=\"{$title}\" style=\"display: inline; background: $issue->statusColor;\">$link</div>";
+            $link = "<div  title=\"{$title}\" style=\"display: inline; background: $issue->statusColor;\">{$link}</div>";
         }
 
         $ret = new stdClass();

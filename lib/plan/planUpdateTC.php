@@ -185,7 +185,7 @@ function doUpdate(&$dbObj, &$argsObj)
         foreach ($argsObj->checkedTestCaseSet as $tcaseID => $tcversionID) {
             $newtcversion = $argsObj->newVersionSet[$tcaseID];
             foreach ($tables as $table2update) {
-                $sql = "/* $debugMsg */ UPDATE $table2update " .
+                $sql = "/* {$debugMsg} */ UPDATE {$table2update} " .
                     " SET tcversion_id={$newtcversion} " .
                     " WHERE tcversion_id={$tcversionID} " .
                     " AND testplan_id={$argsObj->tplan_id}";

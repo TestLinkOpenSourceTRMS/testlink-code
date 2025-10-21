@@ -237,7 +237,7 @@ function string_sanitize_url($p_url)
                 if ($t_param != '') {
                     $t_param .= '&';
                 }
-                $t_param .= "$k=" . urlencode(strip_tags(urldecode($v)));
+                $t_param .= "{$k}=" . urlencode(strip_tags(urldecode($v)));
             }
             return $t_path . '?' . $t_param;
         } else {

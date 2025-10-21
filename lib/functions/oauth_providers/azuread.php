@@ -71,7 +71,7 @@ function oauth_get_token($authCfg, $code)
             if (isset($authCfg['oauth_domain'])) {
                 $domain = substr(strrchr($userInfo['email'], "@"), 1);
                 if ($domain !== $authCfg['oauth_domain']) {
-                    $result->status['msg'] = "TestLink Oauth policy - User email domain:$domain does not
+                    $result->status['msg'] = "TestLink Oauth policy - User email domain:{$domain} does not
            match \$authCfg['oauth_domain']:{$authCfg['oauth_domain']} ";
                     $result->status['status'] = tl::ERROR;
                 }

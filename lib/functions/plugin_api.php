@@ -124,7 +124,7 @@ function plugin_config_get($option, $default = null, $project = TL_ANY_PROJECT)
     $full_option = 'plugin_' . $basename . '_' . $option;
     $full_option = $dbHandler->prepare_string($full_option);
 
-    $sql = "/* $debugMsg */ " . " SELECT config_value FROM " .
+    $sql = "/* {$debugMsg} */ " . " SELECT config_value FROM " .
         $tables['plugins_configuration'] . " where config_key = '" . $full_option .
         "' AND  testproject_id = ";
 
@@ -182,21 +182,21 @@ function plugin_config_set($option, $value, $project = TL_ANY_PROJECT)
     }
 
     $safe_id = intval($project);
-    $sql = " SELECT COUNT(*) from $plugin_config_table " .
+    $sql = " SELECT COUNT(*) from {$plugin_config_table} " .
         " WHERE config_key = '" . $dbHandler->prepare_string($full_option) . "' " .
         " AND testproject_id = {$safe_id} ";
     $rows_exist = $dbHandler->fetchOneValue($sql);
 
     if ($rows_exist > 0) {
         // Update the existing record
-        $sql = " UPDATE $plugin_config_table " . " SET config_value = '" .
+        $sql = " UPDATE {$plugin_config_table} " . " SET config_value = '" .
             $dbHandler->prepare_string($value) . "'," . " config_type = " .
             $config_type . " WHERE config_key = '" .
             $dbHandler->prepare_string($full_option) . "' " .
             " AND testproject_id = {$safe_id} ";
     } else {
         // Insert new config value
-        $sql = " INSERT INTO $plugin_config_table " .
+        $sql = " INSERT INTO {$plugin_config_table} " .
             " (config_key, config_type, config_value, testproject_id, author_id) " .
             " VALUES (" . "'" . $dbHandler->prepare_string($full_option) . "', " .
             $config_type . "," . "'" . $dbHandler->prepare_string($value) . "', " .
@@ -360,7 +360,7 @@ function plugin_install($p_plugin)
     $tables = tlObjectWithDB::getDBTables(array(
         'plugins'
     ));
-    $sql = "/* $debugMsg */ INSERT INTO {$tables['plugins']} (basename,enabled) " .
+    $sql = "/* {$debugMsg} */ INSERT INTO {$tables['plugins']} (basename,enabled) " .
         " VALUES ('" . $dbHandler->prepare_string($p_plugin->basename) . "',1)";
     $dbHandler->exec_query($sql);
 
@@ -393,7 +393,7 @@ function plugin_uninstall($plugin_id)
     }
     $t_basename = $t_row['basename'];
 
-    $sql = "/* $debugMsg */ DELETE FROM {$tables['plugins']} " . " WHERE id=" .
+    $sql = "/* {$debugMsg} */ DELETE FROM {$tables['plugins']} " . " WHERE id=" .
         $plugin_id;
     $dbHandler->exec_query($sql);
 

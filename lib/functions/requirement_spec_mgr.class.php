@@ -163,7 +163,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             $req_spec_id = $this->tree_mgr->new_node($parent_id,
                 $this->my_node_type, $title, $node_order);
 
-            $sql = "/* $debugMsg */ INSERT INTO {$this->object_table} " .
+            $sql = "/* {$debugMsg} */ INSERT INTO {$this->object_table} " .
                 " (id, testproject_id, doc_id) " . " VALUES (" . $req_spec_id .
                 "," . $tproject_id . ",'" . $this->db->prepare_string($doc_id) .
                 "')";
@@ -221,7 +221,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             ));
         $childID = $info['id'];
 
-        $sql = "/* $debugMsg */ SELECT RSPEC.id,RSPEC.doc_id, RSPEC.testproject_id, " .
+        $sql = "/* {$debugMsg} */ SELECT RSPEC.id,RSPEC.doc_id, RSPEC.testproject_id, " .
             " RSPEC_REV.id AS revision_id, RSPEC_REV.revision ";
 
         switch ($my['options']['output']) {
@@ -348,17 +348,17 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $output['notTestable'] = $this->get_requirements_count($id, 'all', null,
             $getFilters);
 
-        $sql = "/* $debugMsg */ SELECT count(0) AS cnt FROM {$this->tables['requirements']} WHERE srs_id={$id}";
+        $sql = "/* {$debugMsg} */ SELECT count(0) AS cnt FROM {$this->tables['requirements']} WHERE srs_id={$id}";
         $output['total'] = $this->db->fetchFirstRowSingleColumn($sql, 'cnt');
 
-        $sql = "/* $debugMsg */ SELECT total_req FROM {$this->object_table} WHERE id={$id}";
+        $sql = "/* {$debugMsg} */ SELECT total_req FROM {$this->object_table} WHERE id={$id}";
         $output['expectedTotal'] = $this->db->fetchFirstRowSingleColumn($sql,
             'total_req');
         if ($output['expectedTotal'] == 0) {
             $output['expectedTotal'] = $output['total'];
         }
 
-        $sql = "/* $debugMsg */ SELECT DISTINCT REQ.id " .
+        $sql = "/* {$debugMsg} */ SELECT DISTINCT REQ.id " .
             " FROM {$this->tables['requirements']} REQ " .
             " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ.id=REQ_COV.req_id" .
             " WHERE REQ.srs_id={$id} ";
@@ -398,7 +398,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $order_by = " ORDER BY title")
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
             " RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
             " RSPEC.modification_ts,NH.name AS title,NH.node_order " .
@@ -547,7 +547,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             $this->node_types_descr_id['requirement_spec_revision'];
 
         foreach ($sqlx as $sql) {
-            $result = $this->db->exec_query("/* $debugMsg */" . $sql);
+            $result = $this->db->exec_query("/* {$debugMsg} */" . $sql);
         }
 
         // delete specification itself
@@ -558,7 +558,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             $this->node_types_descr_id['requirement_spec'];
 
         foreach ($sqlx as $sql) {
-            $result = $this->db->exec_query("/* $debugMsg */" . $sql);
+            $result = $this->db->exec_query("/* {$debugMsg} */" . $sql);
         }
 
         // This is a poor implementation
@@ -634,7 +634,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $tcase_filter = '';
 
         // First Step - get only req info
-        $sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
+        $sql = "/* {$debugMsg} */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
         $addFields = '';
         switch ($range) {
             case 'all':
@@ -658,7 +658,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
         if (! is_null($itemSet)) {
             $reqSet = array_keys($itemSet);
-            $sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" .
+            $sql = "/* {$debugMsg} */ SELECT MAX(NH_REQV.id) AS version_id" .
                 " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
                 " WHERE NH_REQV.parent_id IN (" . implode(",", $reqSet) . ") " .
                 " GROUP BY NH_REQV.parent_id ";
@@ -696,7 +696,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
                 $tcase_filter = '';
 
                 // First Step - get only req info
-                $sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
+                $sql = "/* {$debugMsg} */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
                 $addFields = '';
                 switch ($range) {
                     case 'all':
@@ -718,7 +718,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
                 if (! is_null($itemSet)) {
                     $reqSet = array_keys($itemSet);
-                    $sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" .
+                    $sql = "/* {$debugMsg} */ SELECT MAX(NH_REQV.id) AS version_id" .
                         " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
                         " WHERE NH_REQV.parent_id IN (" . implode(",", $reqSet) .
                         ") " . " GROUP BY NH_REQV.parent_id ";
@@ -780,7 +780,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     private function get_requirement_child_by_id_req($id)
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
-        $sql = "/* $debugMsg */ SELECT REQ_REL.destination_id, REQ.req_doc_id, NH.name FROM req_relations REQ_REL INNER
+        $sql = "/* {$debugMsg} */ SELECT REQ_REL.destination_id, REQ.req_doc_id, NH.name FROM req_relations REQ_REL INNER
 	JOIN nodes_hierarchy NH ON REQ_REL.destination_id = NH.id
 	JOIN {$this->tables['requirements']} REQ ON REQ_REL.destination_id = REQ.id where REQ_REL.source_id={$id}";
         return $this->db->get_recordset($sql);
@@ -817,7 +817,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $debugMsg = $this->debugMsg . __FUNCTION__;
         $title = trim($title);
         $the_title = $this->db->prepare_string($title);
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT RSPEC.id,testproject_id,RSPEC.doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
             " RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
             " RSPEC.modification_ts,NH.name AS title " .
@@ -1802,7 +1802,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         // will trust in this that max(revision) has also always max(revision_id)
         // ( but really can be on a differente way ? ), in order to use a simple logic.
         //
-        $sql_max = " /* $debugMsg */ SELECT MAX(RSPEC_REV.id) AS rev_id" .
+        $sql_max = " /* {$debugMsg} */ SELECT MAX(RSPEC_REV.id) AS rev_id" .
             " FROM {$this->tables['req_specs']} RSPEC " .
             " JOIN {$this->tables['req_specs_revisions']} RSPEC_REV " .
             " ON RSPEC_REV.parent_id = RSPEC.id " .
@@ -1812,7 +1812,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
         $maxi = (array) $this->db->fetchRowsIntoMap($sql_max, 'rev_id');
         if ($maxi !== []) {
-            $sql = " /* $debugMsg */ SELECT RSPEC.id,RSPEC.testproject_id,RSPEC.doc_id,NH_RSPEC.name AS title, " .
+            $sql = " /* {$debugMsg} */ SELECT RSPEC.id,RSPEC.testproject_id,RSPEC.doc_id,NH_RSPEC.name AS title, " .
                 " RSPEC_REV.revision ";
 
             switch ($my['options']['output']) {
@@ -2086,7 +2086,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     public function getFirstLevelInTestProject($tproject_id)
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
-        $sql = "/* $debugMsg */ SELECT * from {$this->tables['nodes_hierarchy']} " .
+        $sql = "/* {$debugMsg} */ SELECT * from {$this->tables['nodes_hierarchy']} " .
             " WHERE parent_id = {$tproject_id} " .
             " AND node_type_id = {$this->node_types_descr_id['requirement_spec']} " .
             " ORDER BY node_order,id";
@@ -2131,8 +2131,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             $item[$field] = isset($item[$field]) ? $item[$field] : $default;
         }
 
-        $sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_specs_revisions']} " .
-            " ($fields2insert) " . " VALUES({$rspecID}" . "," . $ret['id'] . "," .
+        $sql = "/* {$debugMsg} */ INSERT INTO {$this->tables['req_specs_revisions']} " .
+            " ({$fields2insert}) " . " VALUES({$rspecID}" . "," . $ret['id'] . "," .
             intval($item['revision']) . "," . intval($item['status']) . ",'" .
             $this->db->prepare_string($item['doc_id']) . "','" .
             $this->db->prepare_string($item['name']) . "','" .
@@ -2143,7 +2143,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
         $result = $this->db->exec_query($sql);
         if ($result) {
-            $sql = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+            $sql = "/* {$debugMsg} */ UPDATE {$this->tables['nodes_hierarchy']} " .
                 " SET name='" . $this->db->prepare_string($item['name']) . "' " .
                 " WHERE id={$ret['id']} ";
             $this->db->exec_query($sql);
@@ -2203,14 +2203,14 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $table = $target_cfg[$child_type]['table'];
         $field = $target_cfg[$child_type]['field'];
 
-        $sql = " /* $debugMsg */ SELECT COALESCE(MAX($field),-1) AS $field " .
+        $sql = " /* {$debugMsg} */ SELECT COALESCE(MAX({$field}),-1) AS {$field} " .
             " FROM {$this->tables[$table]} CHILD," .
             " {$this->tables['nodes_hierarchy']} NH WHERE " .
             " NH.id = CHILD.id " . " AND NH.parent_id = {$id} ";
 
         $max_verbose = $this->db->fetchFirstRowSingleColumn($sql, $field);
         if ($max_verbose >= 0) {
-            $sql = "/* $debugMsg */ SELECT ";
+            $sql = "/* {$debugMsg} */ SELECT ";
 
             switch ($my['options']['output']) {
                 case 'credentials':
@@ -2225,7 +2225,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
             $sql .= " FROM {$this->tables[$table]} CHILD," .
                 " {$this->tables['nodes_hierarchy']} NH " .
-                " WHERE $field = {$max_verbose} AND NH.id = CHILD.id AND NH.parent_id = {$id}";
+                " WHERE {$field} = {$max_verbose} AND NH.id = CHILD.id AND NH.parent_id = {$id}";
 
             $info = $this->db->fetchFirstRow($sql);
         }
@@ -2245,7 +2245,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
 
-        $sql = " /* $debugMsg */ SELECT COUNT(0) AS qty" .
+        $sql = " /* {$debugMsg} */ SELECT COUNT(0) AS qty" .
             " FROM {$this->tables['req_specs_revisions']} RSPEC_REV" .
             " WHERE RSPEC_REV.parent_id = {$id} ";
 
@@ -2267,7 +2267,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $my['options'] = array_merge($my['options'], (array) $options);
 
         $labels['undefined'] = lang_get('undefined');
-        $sql = "/* $debugMsg */" .
+        $sql = "/* {$debugMsg} */" .
             " SELECT RSREV.id AS revision_id, RSREV.revision," .
             "		 RSREV.creation_ts, RSREV.author_id, " .
             "		 RSREV.modification_ts, RSREV.modifier_id, " .
@@ -2473,7 +2473,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         );
         $my['options'] = array_merge($my['options'], (array) $options);
 
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT RSPEC.id FROM {$this->object_table} RSPEC WHERE testproject_id={$tproject_id}";
 
         $rs = $this->db->get_recordset($sql);
@@ -2503,7 +2503,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         );
         $my['options'] = array_merge($my['options'], (array) $options);
 
-        $sql = "/* $debugMsg */ SELECT NH_REQ.id,U.login, REQ_COV.creation_ts " .
+        $sql = "/* {$debugMsg} */ SELECT NH_REQ.id,U.login, REQ_COV.creation_ts " .
             " FROM {$this->tables['nodes_hierarchy']} NH_REQ " .
             " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ_COV.req_id=NH_REQ.id " .
             " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = REQ_COV.author_id ";
@@ -2607,7 +2607,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
         // Postgres => USER is reserved keyword !!
         $lblVersion = $my['options']['version_string'];
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT RCOV.id as link_id, NH_REQ.id,RCOV.req_version_id," .
             " REQVER.scope, " .
             " CONCAT(NH_REQ.name,' [{$lblVersion}',REQVER.version ,'] ' ) AS title," .
@@ -2681,7 +2681,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         // I'm doing this because I'm calling this function from
         // the Test Spec Tree and in this context I CAN NOT choose
         // test case version
-        $sql = "/* $debugMsg */ " . " SELECT NH_REQ.id,REQVER.scope, " .
+        $sql = "/* {$debugMsg} */ " . " SELECT NH_REQ.id,REQVER.scope, " .
             " CONCAT(NH_REQ.name,' [v', REQVER.version ,'] ' ) AS title," .
             " REQ.req_doc_id, REQVER.version," .
             " (CASE WHEN REQVER.version IS NULL " .
@@ -2742,10 +2742,10 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         ON NHX_TCV.parent_id = NHX_TC.id
         JOIN {$this->views['latest_tcase_version_id']} LTCV
         ON LTCV.tcversion_id = NHX_TCV.id
-        WHERE NHX_TC.parent_id = $tsuite_id ";
+        WHERE NHX_TC.parent_id = {$tsuite_id} ";
 
         // Postgres => USER is reserved keyword !!
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT RCOV.id as link_id, NH_REQ.id,RCOV.req_version_id," .
             " REQVER.scope, " .
             " CONCAT(NH_REQ.name,' [v', REQVER.version ,'] ' ) AS title," .
@@ -2758,7 +2758,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             " FROM {$this->tables['nodes_hierarchy']} NH_REQ " .
             " JOIN {$this->tables['req_coverage']} RCOV " .
             " ON RCOV.req_id = NH_REQ.id " .
-            " AND RCOV.tcversion_id IN ( $getLatestTCVersion ) " .
+            " AND RCOV.tcversion_id IN ( {$getLatestTCVersion} ) " .
             " JOIN {$this->tables['req_versions']} REQVER " .
             " ON REQVER.id = RCOV.req_version_id " .
             " JOIN {$this->tables['requirements']} REQ " .
@@ -2790,7 +2790,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $options = array_merge($options, (array) $opt);
 
         $reqNode = $this->node_types_descr_id['requirement'];
-        $sql = "/* $debugMsg */
+        $sql = "/* {$debugMsg} */
             SELECT NH_REQ.id,REQV.id AS req_version_id,
             REQV.version, REQV.scope, NH_REQ.name AS title,
             CONCAT(REQ.req_doc_id,' [', REQV.version, '] ') AS req_doc_id
@@ -2805,7 +2805,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             ON REQV.id = LRQV.req_version_id
 
             WHERE NH_REQ.parent_id = {$reqSpecID}
-            AND NH_REQ.node_type_id = $reqNode ";
+            AND NH_REQ.node_type_id = {$reqNode} ";
 
         switch ($options['output']) {
             case 'array':

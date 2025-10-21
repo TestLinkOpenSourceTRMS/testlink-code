@@ -11,7 +11,7 @@ $method = 'createTestPlan';
 $tlIdx ++;
 if (! isset($tlTestCasePrefix) || is_null($tlTestCasePrefix)) {
     throw new Exception(
-        "This is intended to be used with $tlTestCasePrefix provided", 1);
+        "This is intended to be used with {$tlTestCasePrefix} provided", 1);
 }
 
 $args = array();

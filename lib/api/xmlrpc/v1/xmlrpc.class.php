@@ -9835,11 +9835,11 @@ class TestlinkXMLRPCServer extends IXR_Server
                         " tcstep_id=" . intval($steps[$spnum]['id']);
 
                     // Manage Insert
-                    $sql = "SELECT id FROM $target $where";
+                    $sql = "SELECT id FROM {$target} {$where}";
                     $rs = $this->dbObj->get_recordset($sql);
 
                     if (is_null($rs) || count($rs) != 1) {
-                        $sql = " INSERT INTO $target(";
+                        $sql = " INSERT INTO {$target}(";
 
                         $dbField[] = 'tcstep_id';
                         $dbVal[] = intval($steps[$spnum]['id']);

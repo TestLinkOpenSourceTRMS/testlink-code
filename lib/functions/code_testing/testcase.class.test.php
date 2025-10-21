@@ -132,9 +132,9 @@ die();
 // function getByPathName($pathName,$pathSeparator='::')
 $pathName = 'ZATHURA::Holodeck::Apollo 10 Simulation::Unload::Full speed unload';
 $fname = 'getByPathName';
-echo "<pre> testcase - $fname(\$pathName,\$pathSeparator='::')";
+echo "<pre> testcase - {$fname}(\$pathName,\$pathSeparator='::')";
 echo "</pre>";
-echo "<pre>            $fname($pathName)";
+echo "<pre>            {$fname}({$pathName})";
 echo "</pre>";
 $result = $tcaseMgr->$fname($pathName);
 new dBug($result);
@@ -150,7 +150,7 @@ $options = null;
 // function getLastExecution($id,$version_id,$tplan_id,$build_id,$platform_id,$options=null)
 echo "<pre> testcase - getLastExecution(\$id,\$version_id,\$tplan_id,\$build_id,\$platform_id\$options=null)";
 echo "</pre>";
-echo "<pre>            getLastExecution($tcase_id,$version_id,$tplan_id,$build_id,$platform_id,$options)";
+echo "<pre>            getLastExecution({$tcase_id},{$version_id},{$tplan_id},{$build_id},{$platform_id},{$options})";
 echo "</pre>";
 $last_execution = $tcaseMgr->getLastExecution($tcase_id, $version_id, $tplan_id,
     $build_id, $platform_id, $options);
@@ -160,7 +160,7 @@ die();
 $tcase_id = 4;
 echo "<pre> testcase - get_by_id(\$id,\$version_id = TC_ALL_VERSIONS, \$active_status='ALL',\$open_status='ALL')";
 echo "</pre>";
-echo "<pre>            get_by_id($tcase_id)";
+echo "<pre>            get_by_id({$tcase_id})";
 echo "</pre>";
 $tcase_info = $tcaseMgr->get_by_id($tcase_id);
 new dBug($tcase_info);
@@ -169,7 +169,7 @@ $set_of_tcase_id = array(
     4,
     6
 );
-echo "<pre>            get_by_id($set_of_tcase_id)";
+echo "<pre>            get_by_id({$set_of_tcase_id})";
 echo "</pre>";
 $set_of_tcase_info = $tcaseMgr->get_by_id($set_of_tcase_id);
 new dBug($set_of_tcase_info);
@@ -178,7 +178,7 @@ $tcase_name = 'Configuration';
 $method = 'get_by_name';
 $tsuite_name = '';
 $tproject_name = '';
-echo "<pre>            $method('{$tcase_name}')";
+echo "<pre>            {$method}('{$tcase_name}')";
 echo "</pre>";
 $info = $tcaseMgr->$method($tcase_name);
 new dBug($info);
@@ -187,7 +187,7 @@ $tcase_name = 'Configuration';
 $tsuite_name = 'Bugzilla';
 $tproject_name = '';
 $method = 'get_by_name';
-echo "<pre>            $method('{$tcase_name}','{$tsuite_name}')";
+echo "<pre>            {$method}('{$tcase_name}','{$tsuite_name}')";
 echo "</pre>";
 $info = $tcaseMgr->$method($tcase_name, $tsuite_name);
 new dBug($info);
@@ -196,7 +196,7 @@ $tcase_name = 'Configuration';
 $tsuite_name = 'Bugzilla';
 $tproject_name = 'IMPORT_TEST';
 $method = 'get_by_name';
-echo "<pre>            $method('{$tcase_name}','{$tsuite_name}','{$tproject_name}')";
+echo "<pre>            {$method}('{$tcase_name}','{$tsuite_name}','{$tproject_name}')";
 echo "</pre>";
 $info = $tcaseMgr->$method($tcase_name, $tsuite_name, $tproject_name);
 new dBug($info);
@@ -206,41 +206,41 @@ die();
 $tcase_id = 4;
 echo "<pre> testcase - check_link_and_exec_status(\$id)";
 echo "</pre>";
-echo "<pre>            check_link_and_exec_status($tcase_id)";
+echo "<pre>            check_link_and_exec_status({$tcase_id})";
 echo "</pre>";
 $link_and_exec_status = $tcaseMgr->checkLinkAndExecStatus($tcase_id);
 new dBug($link_and_exec_status);
 
 echo "<pre> testcase - get_linked_versions(\$id,\$exec_status='ALL',\$active_status='ALL')";
-echo "<pre>            get_linked_versions($tcase_id)";
+echo "<pre>            get_linked_versions({$tcase_id})";
 $linked_versions = $tcaseMgr->get_linked_versions($tcase_id);
 new dBug($linked_versions);
 
 $tcase_id = 4;
 echo "<pre> testcase - get_testproject(\$id)";
-echo "<pre>            get_testproject($tcase_id)";
+echo "<pre>            get_testproject({$tcase_id})";
 $testproject_id = $tcaseMgr->get_testproject($tcase_id);
 new dBug("testproject id=" . $testproject_id);
 
 $tcase_id = 4;
 echo "<pre> testcase - getLastVersionInfo(\$id)";
-echo "<pre>            getLastVersionInfo($tcase_id)";
+echo "<pre>            getLastVersionInfo({$tcase_id})";
 $last_version_info = $tcaseMgr->getLastVersionInfo($tcase_id);
 new dBug($last_version_info);
 
 echo "<pre> testcase - get_versions_status_quo(\$id,\$tcversion_id=null, \$testplan_id=null)";
-echo "<pre>            get_versions_status_quo($tcase_id)";
+echo "<pre>            get_versions_status_quo({$tcase_id})";
 $status_quo = $tcaseMgr->getVersionsStatusQuo($tcase_id);
 new dBug($status_quo);
 
 echo "<pre> testcase - get_exec_status(\$id)";
-echo "<pre>            get_exec_status($tcase_id)";
+echo "<pre>            get_exec_status({$tcase_id})";
 $testcase_exec_status = $tcaseMgr->getExecStatus($tcase_id);
 new dBug($testcase_exec_status);
 
 echo "<pre> testcase - getKeywords(\$tcID,\$kwID = null)";
 echo "</pre>";
-echo "<pre>            getKeywords($tcase_id)";
+echo "<pre>            getKeywords({$tcase_id})";
 echo "</pre>";
 $keywords = $tcaseMgr->getKeywords($tcase_id);
 new dBug($keywords);
@@ -248,7 +248,7 @@ new dBug($keywords);
 echo "<pre> testcase - get_keywords_map(\$id,\$order_by_clause='')";
 echo "</pre>";
 $tcase_id = 4;
-echo "<pre>               get_keywords_map($tcase_id)";
+echo "<pre>               get_keywords_map({$tcase_id})";
 echo "</pre>";
 $keywords_map = $tcaseMgr->get_keywords_map($tcase_id);
 new dBug($keywords_map);
@@ -261,7 +261,7 @@ echo "<pre> testcase - get_executions(\$id,\$version_id,\$tplan_id,\$build_id,<b
                                       \$exec_id_order='DESC',\$exec_to_exclude=null)";
 echo "</pre>";
 
-echo "<pre>            get_executions($tcase_id,$version_id,$tplan_id,$build_id)";
+echo "<pre>            get_executions({$tcase_id},{$version_id},{$tplan_id},{$build_id})";
 echo "</pre>";
 $executions = $tcaseMgr->get_executions($tcase_id, $version_id, $tplan_id,
     $build_id);
@@ -269,7 +269,7 @@ new dBug($executions);
 
 echo "<pre> testcase - getLastExecution(\$id,\$version_id,\$tplan_id,\$build_id,\$get_no_executions=0)";
 echo "</pre>";
-echo "<pre>            getLastExecution($tcase_id,$version_id,$tplan_id,$build_id)";
+echo "<pre>            getLastExecution({$tcase_id},{$version_id},{$tplan_id},{$build_id})";
 echo "</pre>";
 $last_execution = $tcaseMgr->getLastExecution($tcase_id, $version_id, $tplan_id,
     $build_id);
@@ -279,7 +279,7 @@ $tcversion_id = 5;
 $tplan_id = 8;
 echo "<pre> testcase - getVersionExecAssignment(\$tcversion_id,\$tplan_id)";
 echo "</pre>";
-echo "<pre>            getVersionExecAssignment($tcversion_id,$tplan_id)";
+echo "<pre>            getVersionExecAssignment({$tcversion_id},{$tplan_id})";
 echo "</pre>";
 $version_exec_assignment = $tcaseMgr->getVersionExecAssignment($tcversion_id,
     $tplan_id);
@@ -287,7 +287,7 @@ new dBug($version_exec_assignment);
 
 echo "<pre> testcase - get_linked_cfields_at_design(\$id,\$parent_id=null,\$show_on_execution=null)";
 echo "</pre>";
-echo "<pre>            get_linked_cfields_at_design($tcase_id)";
+echo "<pre>            get_linked_cfields_at_design({$tcase_id})";
 echo "</pre>";
 $linked_cfields_at_design = $tcaseMgr->get_linked_cfields_at_design($tcase_id);
 new dBug($linked_cfields_at_design);
@@ -296,7 +296,7 @@ echo "<pre> testcase - get_linked_cfields_at_execution(\$id,\$parent_id=null,<br
                                                        \$show_on_execution=null,<br>
                                                        \$execution_id=null,\$testplan_id=null)";
 echo "</pre>";
-echo "<pre>            get_linked_cfields_at_execution($tcase_id)";
+echo "<pre>            get_linked_cfields_at_execution({$tcase_id})";
 echo "</pre>";
 $linked_cfields_at_execution = $tcaseMgr->get_linked_cfields_at_execution(
     $tcase_id);
@@ -304,7 +304,7 @@ new dBug($linked_cfields_at_execution);
 
 echo "<pre> testcase - html_table_of_custom_field_inputs(\$id,\$parent_id=null,\$scope='design',\$name_suffix='')";
 echo "</pre>";
-echo "<pre>            html_table_of_custom_field_inputs($tcase_id)";
+echo "<pre>            html_table_of_custom_field_inputs({$tcase_id})";
 echo "</pre>";
 $table_of_custom_field_inputs = $tcaseMgr->html_table_of_custom_field_inputs(
     $tcase_id);
@@ -317,7 +317,7 @@ echo "<pre> testcase - html_table_of_custom_field_values(\$id,\$scope='design',<
                                                          \$execution_id=null,\$testplan_id=null) ";
 echo "</pre>";
 
-echo "<pre> testcase - html_table_of_custom_field_values($tcase_id)";
+echo "<pre> testcase - html_table_of_custom_field_values({$tcase_id})";
 echo "</pre>";
 $table_of_custom_field_values = $tcaseMgr->html_table_of_custom_field_values(
     $tcase_id);

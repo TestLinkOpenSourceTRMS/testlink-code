@@ -249,7 +249,7 @@ if (count($rspecSet) > 0) {
                 $current = count($req_info['linked_testcases']);
                 if ($expected_coverage) {
                     $coverage_string = "<!-- -1 -->" . $labels['na'] .
-                        " ($current/0)";
+                        " ({$current}/0)";
                     if ($expected_coverage) {
                         $percentage = 100 / $expected_coverage * $current;
                         $coverage_string = commentPercentage($percentage) .

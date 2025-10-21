@@ -479,7 +479,7 @@ function prepareNode(&$db, &$node, &$map_node_tccount, $attr_map = null,
 
                     if ($my['options']['getExternalTestCaseID']) {
                         if (! isset($tpNode['external_id'])) {
-                            $sql = " /* $debugMsg - line:" . __LINE__ . " */ " .
+                            $sql = " /* {$debugMsg} - line:" . __LINE__ . " */ " .
                                 " SELECT TCV.tc_external_id AS external_id " .
                                 " FROM {$tables['tcversions']}  TCV " .
                                 " WHERE TCV.id=" . $node['tcversion_id'];
@@ -514,7 +514,7 @@ function prepareNode(&$db, &$node, &$map_node_tccount, $attr_map = null,
                 // At least in my installation the aliases column name is returned lower case, then
                 // PHP fails when:
                 // if($myrow['NUM_ACTIVE_VERSIONS'] == 0)
-                $sql = " /* $debugMsg - line:" . __LINE__ . " */ " .
+                $sql = " /* {$debugMsg} - line:" . __LINE__ . " */ " .
                     " SELECT count(TCV.id) AS num_active_versions " .
                     " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
                     " WHERE NH.parent_id=" . $node['id'] .
@@ -529,7 +529,7 @@ function prepareNode(&$db, &$node, &$map_node_tccount, $attr_map = null,
 
             // TICKET 4496: added inactive testcase filter
             if ($node !== REMOVEME && $my['options']['ignoreActiveTestCases']) {
-                $sql = " /* $debugMsg - line:" . __LINE__ . " */ " .
+                $sql = " /* {$debugMsg} - line:" . __LINE__ . " */ " .
                     " SELECT count(TCV.id) AS num_active_versions " .
                     " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
                     " WHERE NH.parent_id=" . $node['id'] .
@@ -546,7 +546,7 @@ function prepareNode(&$db, &$node, &$map_node_tccount, $attr_map = null,
         if (! is_null($node) &&
             ($my['options']['viewType'] == 'testSpecTree' ||
             $my['options']['viewType'] == 'testSpecTreeForTestPlan')) {
-            $sql = " /* $debugMsg - line:" . __LINE__ . " */ " .
+            $sql = " /* {$debugMsg} - line:" . __LINE__ . " */ " .
                 " SELECT COALESCE(MAX(TCV.id),0) AS targetid, TCV.tc_external_id AS external_id" .
                 " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
                 " WHERE  NH.id = TCV.id {$activeVersionClause} AND NH.parent_id={$node['id']} " .
@@ -564,7 +564,7 @@ function prepareNode(&$db, &$node, &$map_node_tccount, $attr_map = null,
                         case 'testSpecTreeForTestPlan':
                             // Try to get info from linked tcversions
                             // Platform is not needed
-                            $sql = " /* $debugMsg - line:" . __LINE__ . " */ " .
+                            $sql = " /* {$debugMsg} - line:" . __LINE__ . " */ " .
                                 " SELECT DISTINCT TPTCV.tcversion_id AS targetid " .
                                 " FROM {$tables['tcversions']} TCV " .
                                 " JOIN {$tables['nodes_hierarchy']} NH " .
@@ -579,7 +579,7 @@ function prepareNode(&$db, &$node, &$map_node_tccount, $attr_map = null,
                             break;
                     }
 
-                    $sql = " /* $debugMsg - line:" . __LINE__ . " */ " .
+                    $sql = " /* {$debugMsg} - line:" . __LINE__ . " */ " .
                         " SELECT TCV.execution_type " .
                         " FROM {$tables['tcversions']} TCV " .
                         " WHERE TCV.id = {$target_id} ";
@@ -1085,9 +1085,9 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
                 " WHERE NHTCX.parent_id = {$node['id']} " .
                 " GROUP BY NHTCX.parent_id, TCVX.tc_external_id ";
 
-            $sql = " /* $debugMsg */ SELECT CFD.value " .
+            $sql = " /* {$debugMsg} */ SELECT CFD.value " .
                 " FROM {$tables['cfield_design_values']} CFD, {$tables['nodes_hierarchy']} NH " .
-                " JOIN ( $latest_active_version_sql ) LAVSQL ON NH.id = LAVSQL.max_tcv_id " .
+                " JOIN ( {$latest_active_version_sql} ) LAVSQL ON NH.id = LAVSQL.max_tcv_id " .
                 " WHERE CFD.node_id = NH.id ";
 
             // IMPORTANT DEV NOTES

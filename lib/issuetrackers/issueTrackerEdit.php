@@ -148,7 +148,7 @@ function initArgs($whiteList)
     foreach ($whiteList as $inputKey => $allowedValues) {
         if (property_exists($args, $inputKey) &&
             ! isset($allowedValues[$args->$inputKey])) {
-            $msg = "Input parameter $inputKey - white list validation failure - " .
+            $msg = "Input parameter {$inputKey} - white list validation failure - " .
                 "Value:" . $args->$inputKey . " - " . "File: " .
                 basename(__FILE__) . " - Function: " . __FUNCTION__;
             tLog($msg, 'ERROR');

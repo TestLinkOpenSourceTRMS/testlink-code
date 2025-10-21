@@ -113,7 +113,7 @@ if ($args->doAction == 'saveForBaseline') {
                 $exec_status = "'" . $verboseCode[$verbose] . "'";
                 $sql = "INSERT INTO {$tables['baseline_l1l2_details']} " .
                     " (context_id,top_tsuite_id,child_tsuite_id,status,qty,total_tc) " .
-                    " VALUES($context_id,{$info['parent_id']},$l2_id,$exec_status,{$figures['qty']}, " .
+                    " VALUES({$context_id},{$info['parent_id']},{$l2_id},{$exec_status},{$figures['qty']}, " .
                     " {$info['total_tc']})";
                 $db->exec_query($sql);
             }
@@ -469,7 +469,7 @@ function createSpreadsheet($gui, &$tplanMgr)
                     $fieldSet['percentage_completed']);
 
                 $cellZone = "A{$startingRow}:" . $cellRange[$whatCell] .
-                    "$startingRow";
+                    "{$startingRow}";
 
                 $objPHPExcel->getActiveSheet()
                     ->getStyle($cellZone)

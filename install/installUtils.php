@@ -466,9 +466,9 @@ function _mysql_make_user($dbhandler, $db_host, $db_name, $login, $passwd)
     $safeDBHost = $dbhandler->prepare_string($db_host);
     $safeLogin = $dbhandler->prepare_string($login);
 
-    $stmt = " CREATE USER '$safeLogin' ";
+    $stmt = " CREATE USER '{$safeLogin}' ";
     if (strlen(trim($db_host)) != 0) {
-        $stmt .= "@" . "'$safeDBHost'";
+        $stmt .= "@" . "'{$safeDBHost}'";
     }
 
     // to guess if we are using MariaDB or MySQL
@@ -499,11 +499,11 @@ function _mysql_make_user($dbhandler, $db_host, $db_name, $login, $passwd)
     // To have compatibility with MySQL 5.x
     // IDENTIFIED WITH mysql_native_password
     if ($isMySQL) {
-        $stmt .= " IDENTIFIED WITH mysql_native_password BY '$passwd' ";
+        $stmt .= " IDENTIFIED WITH mysql_native_password BY '{$passwd}' ";
     }
 
     if ($isMariaDB) {
-        $stmt .= " IDENTIFIED  BY '$passwd' ";
+        $stmt .= " IDENTIFIED  BY '{$passwd}' ";
     }
 
     echo 'Running..' . $stmt;
@@ -537,7 +537,7 @@ function _mysql_assign_grants($dbhandler, $db_host, $db_name, $login, $passwd)
     $safeLogin = $dbhandler->prepare_string($login);
 
     $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON
-           `$safeDBName`.* TO '$safeLogin'@'$safeDBHost'
+           `{$safeDBName}`.* TO '{$safeLogin}'@'{$safeDBHost}'
             WITH GRANT OPTION ";
 
     if (! @$dbhandler->exec_query($stmt)) {
@@ -557,7 +557,7 @@ function _mysql_assign_grants($dbhandler, $db_host, $db_name, $login, $passwd)
     //
     if (strcasecmp('localhost', $db_host) != 0) {
         $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON
-            `$safeDBName`.* TO '$safeLogin'@'localhost'
+            `{$safeDBName}`.* TO '{$safeLogin}'@'localhost'
             WITH GRANT OPTION ";
 
         if (! @$dbhandler->exec_query($stmt)) {

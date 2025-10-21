@@ -53,7 +53,7 @@ switch ($args->doc_type) {
                     "&tplan_id=$args->tplan_id" . "&type=testreport_onbuild";
 
                 foreach ($gui->buildInfoSet as $bid => $nunu) {
-                    $gui->buildRptLinkSet[$bid] = $dl . "&build_id=$bid";
+                    $gui->buildRptLinkSet[$bid] = $dl . "&build_id={$bid}";
                 }
             }
         }
@@ -264,7 +264,7 @@ function initializeGui(&$db, $args)
 
             $req_qty = $tprojectMgr->count_all_requirements($args->tproject_id);
             $gui->ajaxTree->root_node->name = htmlspecialchars(
-                $args->tproject_name) . " ($req_qty)";
+                $args->tproject_name) . " ({$req_qty})";
             $gui->ajaxTree->cookiePrefix .= "tproject_id_" .
                 $gui->ajaxTree->root_node->id . "_";
             $gui->mainTitle = lang_get('requirement_specification_report');
@@ -284,7 +284,7 @@ function initializeGui(&$db, $args)
 
             $tcase_qty = $tprojectMgr->count_testcases($args->tproject_id);
             $gui->ajaxTree->root_node->name = htmlspecialchars(
-                $args->tproject_name) . " ($tcase_qty)";
+                $args->tproject_name) . " ({$tcase_qty})";
             $gui->ajaxTree->cookiePrefix .= "tproject_id_" .
                 $gui->ajaxTree->root_node->id . "_";
             $gui->mainTitle = lang_get('testspecification_report');

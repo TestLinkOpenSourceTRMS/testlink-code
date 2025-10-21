@@ -32,9 +32,9 @@ function create_month_option_list($p_month = 0)
     for ($i = 1; $i <= 12; $i ++) {
         $month_name = date('F', mktime(0, 0, 0, $i, 1, 2000));
         if ($i == $p_month) {
-            $month_option .= "<option value=\"$i\" selected=\"selected\">$month_name</option>";
+            $month_option .= "<option value=\"{$i}\" selected=\"selected\">{$month_name}</option>";
         } else {
-            $month_option .= "<option value=\"$i\">$month_name</option>";
+            $month_option .= "<option value=\"{$i}\">{$month_name}</option>";
         }
     }
     return $month_option;
@@ -45,9 +45,9 @@ function create_numeric_month_option_list($p_month = 0)
     $month_option = '';
     for ($i = 1; $i <= 12; $i ++) {
         if ($i == $p_month) {
-            $month_option .= "<option value=\"$i\" selected=\"selected\"> $i </option>";
+            $month_option .= "<option value=\"{$i}\" selected=\"selected\"> {$i} </option>";
         } else {
-            $month_option .= "<option value=\"$i\"> $i </option>";
+            $month_option .= "<option value=\"{$i}\"> {$i} </option>";
         }
     }
     return $month_option;
@@ -58,9 +58,9 @@ function create_day_option_list($p_day = 0)
     $day_option = '';
     for ($i = 1; $i <= 31; $i ++) {
         if ($i == $p_day) {
-            $day_option .= "<option value=\"$i\" selected=\"selected\"> $i </option>";
+            $day_option .= "<option value=\"{$i}\" selected=\"selected\"> {$i} </option>";
         } else {
-            $day_option .= "<option value=\"$i\"> $i </option>";
+            $day_option .= "<option value=\"{$i}\"> {$i} </option>";
         }
     }
     return $day_option;
@@ -73,9 +73,9 @@ function create_year_option_list($p_year = 0)
 
     for ($i = $current_year; $i > 1999; $i --) {
         if ($i == $p_year) {
-            $year_option .= "<option value=\"$i\" selected=\"selected\"> $i </option>";
+            $year_option .= "<option value=\"{$i}\" selected=\"selected\"> {$i} </option>";
         } else {
-            $year_option .= "<option value=\"$i\"> $i </option>";
+            $year_option .= "<option value=\"{$i}\"> {$i} </option>";
         }
     }
     return $year_option;
@@ -164,7 +164,7 @@ function create_date_selection_set($p_name, $p_format, $p_date = 0,
 
     // Here we work with the TIME PART, that exists only when we require TIMESTAMP
     foreach ($t_chars as $t_char) {
-        $common = $opt['required'] . " $t_disable>";
+        $common = $opt['required'] . " {$t_disable}>";
         if (strcasecmp($t_char, "H") == 0) {
             $mask = '<select name="%s_hour" id="%s_hour" ';
             $str_out .= sprintf($mask, $p_name, $p_name) . $common .
@@ -200,7 +200,7 @@ function create_range_option_list($p_value, $p_min, $p_max)
     for ($idx = $p_min; $idx <= $p_max; $idx ++) {
         $selected = '';
         $selected = ($idx == $p_value) ? ' selected="selected" ' : '';
-        $option_list .= "<option value=\"$idx\" {$selected}> $idx </option>";
+        $option_list .= "<option value=\"{$idx}\" {$selected}> {$idx} </option>";
     }
     return $option_list;
 }

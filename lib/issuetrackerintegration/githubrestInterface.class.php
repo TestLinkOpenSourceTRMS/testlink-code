@@ -172,11 +172,11 @@ class githubrestInterface extends issueTrackerInterface
                 'owner',
                 'repo'
             ) as $v) {
-                $logDetails .= "$v={$this->cfg->$v} / ";
+                $logDetails .= "{$v}={$this->cfg->$v} / ";
             }
             $logDetails = trim($logDetails, '/ ');
             $this->connected = false;
-            tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
+            tLog(__METHOD__ . " [{$logDetails}] " . $e->getMessage(), 'ERROR');
         }
     }
 
@@ -224,8 +224,8 @@ class githubrestInterface extends issueTrackerInterface
                 $notes = $this->APIClient->getNotes((int) $issueID);
                 if (is_array($notes) && $notes !== []) {
                     foreach ($notes as $key => $note) {
-                        $issue->summaryHTMLString .= "</br>[Note $key]:$note->body";
-                        $issue->summary .= "\n[Note $key]: $note->body";
+                        $issue->summaryHTMLString .= "</br>[Note {$key}]:$note->body";
+                        $issue->summary .= "\n[Note {$key}]: $note->body";
                     }
                 }
                 $issue->isResolved = $this->state == 'closed';

@@ -47,7 +47,7 @@ function createExecNotesWebEditor($id, $basehref, $editorCfg, $content = null)
     //
     // Rows and Cols values are useless for FCKeditor.
     //
-    $of = web_editor("exec_notes_$id", $basehref, $editorCfg);
+    $of = web_editor("exec_notes_{$id}", $basehref, $editorCfg);
     $of->Value = $content;
     $editor = $of->CreateHTML(10, 60);
     unset($of);

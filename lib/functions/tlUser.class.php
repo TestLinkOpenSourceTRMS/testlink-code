@@ -769,14 +769,14 @@ class tlUser extends tlDBObject
         }
 
         // get users for default roles
-        $sql = "/* $debugMsg */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
+        $sql = "/* {$debugMsg} */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
             " JOIN {$this->tables['role_rights']} a ON a.role_id=u.role_id" .
             " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
             " WHERE b.description='" . $db->prepare_string($rightNick) . "'";
         $defaultRoles = $db->fetchRowsIntoMap($sql, 'id');
 
         // get users for project roles
-        $sql = "/* $debugMsg */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
+        $sql = "/* {$debugMsg} */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
             " JOIN {$this->tables['user_testproject_roles']} p ON p.user_id=u.id" .
             " AND p.testproject_id=" . intval($testprojectID) .
             " JOIN {$this->tables['role_rights']} a ON a.role_id=p.role_id" .
@@ -976,7 +976,7 @@ class tlUser extends tlDBObject
             $fields2get .= ' ,TPLAN.notes, TPLAN.testproject_id ';
         }
 
-        $sql = " /* $debugTag */  SELECT {$fields2get} " .
+        $sql = " /* {$debugTag} */  SELECT {$fields2get} " .
             " FROM {$this->tables['nodes_hierarchy']} NH" .
             " JOIN {$this->tables['testplans']} TPLAN ON NH.id=TPLAN.id  " .
             " LEFT OUTER JOIN {$this->tables['user_testplan_roles']} USER_TPLAN_ROLES" .

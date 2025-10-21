@@ -112,7 +112,7 @@ function getBareBonesReq($dbHandler, $reqID)
             'requirements',
             'nodes_hierarchy'
         ));
-    $sql = " /* $debugMsg */ SELECT REQ.req_doc_id, NH_REQ.name " .
+    $sql = " /* {$debugMsg} */ SELECT REQ.req_doc_id, NH_REQ.name " .
         " FROM {$tables['requirements']} REQ " .
         " JOIN {$tables['nodes_hierarchy']} NH_REQ  ON  NH_REQ.id = REQ.id " .
         " WHERE REQ.id = " . intval($reqID);

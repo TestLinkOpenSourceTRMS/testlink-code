@@ -265,14 +265,14 @@ class testsuite extends tlObjectWithAttachments
 
             // Work on enity table
             if (! is_null($details)) {
-                $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
+                $sql = "/* {$debugMsg} */ UPDATE {$this->tables['testsuites']} " .
                     " SET details = '" . $this->db->prepare_string($details) .
                     "'" . $where;
                 $result = $this->db->exec_query($sql);
             }
 
             // Work on nodes hierarchy table
-            $sqlUpd = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} ";
+            $sqlUpd = "/* {$debugMsg} */ UPDATE {$this->tables['nodes_hierarchy']} ";
             if (! is_null($name)) {
                 $sql = " SET name='" . $this->db->prepare_string($name) . "' ";
                 $sql = $sqlUpd . $sql . $where;
@@ -378,7 +378,7 @@ class testsuite extends tlObjectWithAttachments
         );
         $my['opt'] = array_merge($my['opt'], (array) $opt);
 
-        $sql = "/* $debugMsg */ ";
+        $sql = "/* {$debugMsg} */ ";
 
         switch ($my['opt']['output']) {
             case 'minimun':
@@ -435,7 +435,7 @@ class testsuite extends tlObjectWithAttachments
 
         $f2g = is_null($my['opt']['fields']) ? 'TS.*, NH.name, NH.node_type_id, NH.node_order, NH.parent_id' : $my['opt']['fields'];
 
-        $sql = "/* $debugMsg */ SELECT {$f2g} " .
+        $sql = "/* {$debugMsg} */ SELECT {$f2g} " .
             "  FROM {$this->tables['testsuites']} TS " .
             "  JOIN {$this->tables['nodes_hierarchy']} NH ON TS.id = NH.id " .
             "  WHERE TS.id ";
@@ -1067,7 +1067,7 @@ class testsuite extends tlObjectWithAttachments
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
 
-        $sql = "/* $debugMsg */ SELECT keyword_id,keywords.keyword, notes " .
+        $sql = "/* {$debugMsg} */ SELECT keyword_id,keywords.keyword, notes " .
             " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " .
             " WHERE keyword_id = keywords.id AND fk_id = {$id}";
         if (! is_null($kw_id)) {
@@ -1108,7 +1108,7 @@ class testsuite extends tlObjectWithAttachments
         $options = array_merge($options, (array) $opt);
         $order_by_clause = $options['order_by_clause'];
 
-        $sql = "/* $debugMsg */ SELECT OKW.id AS kw_link,OKW.keyword_id,keywords.keyword " .
+        $sql = "/* {$debugMsg} */ SELECT OKW.id AS kw_link,OKW.keyword_id,keywords.keyword " .
             " FROM {$this->tables['object_keywords']} OKW " .
             " JOIN {$this->tables['keywords']} keywords " .
             " ON OKW.keyword_id = keywords.id ";
@@ -1145,8 +1145,8 @@ class testsuite extends tlObjectWithAttachments
         $status = 1;
         $kw = $this->getKeywords($id, $kw_id);
         if (empty($kw)) {
-            $sql = "/* $debugMsg */ INSERT INTO {$this->tables['object_keywords']} " .
-                " (fk_id,fk_table,keyword_id) VALUES ($id,'nodes_hierarchy',$kw_id)";
+            $sql = "/* {$debugMsg} */ INSERT INTO {$this->tables['object_keywords']} " .
+                " (fk_id,fk_table,keyword_id) VALUES ({$id},'nodes_hierarchy',{$kw_id})";
             $status = $this->db->exec_query($sql) ? 1 : 0;
         }
         return $status;
@@ -1549,7 +1549,7 @@ class testsuite extends tlObjectWithAttachments
                 'scope' => 'design'
             ));
         if (! is_null($sourceItems)) {
-            $sql = "/* $debugMsg */ " .
+            $sql = "/* {$debugMsg} */ " .
                 " INSERT INTO {$this->tables['cfield_design_values']} " .
                 " (field_id,value,node_id) " .
                 " SELECT field_id,value,{$target_id} AS target_id" .
@@ -1803,7 +1803,7 @@ class testsuite extends tlObjectWithAttachments
     private function updateDetails($id, $details)
     {
         $debugMsg = $this->debugMsg . __FUNCTION__;
-        $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
+        $sql = "/* {$debugMsg} */ UPDATE {$this->tables['testsuites']} " .
             " SET details = '" . $this->db->prepare_string($details) . "'" .
             " WHERE id = " . intval($id);
         $this->db->exec_query($sql);
@@ -1873,7 +1873,7 @@ class testsuite extends tlObjectWithAttachments
             $inClause = implode(',', $testcases);
             $sql = " SELECT tcversion_id
                FROM {$this->views['latest_tcase_version_id']}
-               WHERE testcase_id IN ($inClause) ";
+               WHERE testcase_id IN ({$inClause}) ";
 
             $items = $this->db->get_recordset($sql);
         }
@@ -1916,8 +1916,8 @@ class testsuite extends tlObjectWithAttachments
                 break;
         }
 
-        $sql = "/* $debugMsg */
-           SELECT $fields
+        $sql = "/* {$debugMsg} */
+           SELECT {$fields}
            FROM {$this->tables['object_keywords']}
            JOIN {$this->tables['keywords']} KW
            ON keyword_id = KW.id
@@ -2045,7 +2045,7 @@ class testsuite extends tlObjectWithAttachments
             // we can add all
             foreach ($tsSet as $id) {
                 foreach ($kwSet as $kaboom) {
-                    $vv[] = "($id,'nodes_hierarchy',$kaboom)";
+                    $vv[] = "({$id},'nodes_hierarchy',{$kaboom})";
                 }
             }
         } else {
@@ -2055,13 +2055,13 @@ class testsuite extends tlObjectWithAttachments
             foreach ($kwForTS as $tsk => $kwVenn) {
                 $kw2add = array_diff($kwSet, $kwVenn);
                 foreach ($kw2add as $kaboom) {
-                    $vv[] = "($tsk,'nodes_hierarchy',$kaboom)";
+                    $vv[] = "({$tsk},'nodes_hierarchy',{$kaboom})";
                 }
             }
         }
 
         if ($vv !== []) {
-            $sql = "/* $debugMsg */
+            $sql = "/* {$debugMsg} */
               INSERT INTO {$this->tables['object_keywords']}
               (fk_id,fk_table,keyword_id)
               VALUES " . implode(',', $vv);
@@ -2076,7 +2076,7 @@ class testsuite extends tlObjectWithAttachments
         $debugMsg = $this->debugMsg . __FUNCTION__;
 
         $idSet = implode(',', $tsuiteIDSet);
-        $sql = " /* $debugMsg */
+        $sql = " /* {$debugMsg} */
              SELECT fk_id AS tsuite_id, OKW.keyword_id
              FROM {$this->tables['object_keywords']} OKW
              JOIN {$this->tables['keywords']} KW
@@ -2096,7 +2096,7 @@ class testsuite extends tlObjectWithAttachments
 
         $idSet = $id;
         $safeKW = "'" . $this->db->prepare_string(trim($kw)) . "'";
-        $sql = " /* $debugMsg */
+        $sql = " /* {$debugMsg} */
              SELECT fk_id AS tsuite_id, OKW.keyword_id
              FROM {$this->tables['object_keywords']} OKW
              JOIN {$this->tables['keywords']} KW

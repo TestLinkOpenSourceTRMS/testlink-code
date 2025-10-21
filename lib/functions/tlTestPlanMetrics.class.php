@@ -363,9 +363,9 @@ class tlTestPlanMetrics extends testplan
         // My choice was: add DISTINCT to each union piece.
         // May be is a wrong choice, but I need to read and test more to understand
         $sql = " /* {$debugMsg} UNION WITH ALL CLAUSE */" .
-            " SELECT count(0) AS exec_qty, build_id,status $fields " .
-            " FROM ($sqlUnionAB UNION ALL $sqlUnionBB ) AS SQBU " .
-            " GROUP BY build_id,status $fields";
+            " SELECT count(0) AS exec_qty, build_id,status {$fields} " .
+            " FROM ({$sqlUnionAB} UNION ALL {$sqlUnionBB} ) AS SQBU " .
+            " GROUP BY build_id,status {$fields}";
         // 366
         if ($my['opt']['groupByPlatform']) {
             $kol = array(
@@ -425,7 +425,7 @@ class tlTestPlanMetrics extends testplan
 
         if ($my['opt']['groupByPlatform']) {
 
-            $sql = " /* $debugMsg */
+            $sql = " /* {$debugMsg} */
                SELECT COUNT(0) AS qty, TT.build_id, TT.platform_id
                 FROM (
                   SELECT DISTINCT UA.build_id, UA.feature_id,
@@ -442,7 +442,7 @@ class tlTestPlanMetrics extends testplan
             $exec['total'] = (array) $this->db->fetchMapRowsIntoMap($sql,
                 'platform_id', 'build_id');
         } else {
-            $sql = " /* $debugMsg */
+            $sql = " /* {$debugMsg} */
                SELECT COUNT(0) AS qty, TT.build_id
                 FROM (
                   SELECT DISTINCT UA.build_id, UA.feature_id
@@ -650,9 +650,9 @@ class tlTestPlanMetrics extends testplan
             $fields = "platform_id,keyword_id";
         }
         $sql = " /* {$debugMsg} UNION Without ALL CLAUSE => DISCARD Duplicates */" .
-            " SELECT status,keyword,$fields,count(0) AS exec_qty " .
-            " FROM ($sqlUnionAK UNION $sqlUnionBK ) AS SQK " .
-            " GROUP BY status,keyword,$fields
+            " SELECT status,keyword,{$fields},count(0) AS exec_qty " .
+            " FROM ({$sqlUnionAK} UNION {$sqlUnionBK} ) AS SQK " .
+            " GROUP BY status,keyword,{$fields}
           ORDER BY keyword ";
 
         if ($my['opt']['groupByPlatform']) {
@@ -681,7 +681,7 @@ class tlTestPlanMetrics extends testplan
         $exec['key4total'] = 'total';
         if ($my['opt']['getOnlyAssigned']) {
 
-            $sql = "/* $debugMsg */ " . " SELECT COUNT(0) AS qty,$fields " .
+            $sql = "/* {$debugMsg} */ " . " SELECT COUNT(0) AS qty,{$fields} " .
                 " FROM " . " ( /* Get test case,keyword pairs */ " .
                 "  SELECT DISTINCT NHTCV.parent_id, TCK.keyword_id,TPTCV.platform_id " .
                 "  FROM {$this->tables['user_assignments']} UA " .
@@ -692,9 +692,9 @@ class tlTestPlanMetrics extends testplan
                 "  JOIN {$this->tables['testcase_keywords']} TCK " .
                 "  ON TCK.testcase_id = NHTCV.parent_id " .
                 "  WHERE UA. build_id IN ( " . $builds->inClause . " ) " .
-                "  AND UA.type = {$execCode} ) AS SQK " . " GROUP BY $fields";
+                "  AND UA.type = {$execCode} ) AS SQK " . " GROUP BY {$fields}";
         } else {
-            $sql = "/* $debugMsg */ " . " SELECT COUNT(0) AS qty, $fields" .
+            $sql = "/* {$debugMsg} */ " . " SELECT COUNT(0) AS qty, {$fields}" .
                 " FROM " . " ( /* Get test case,keyword pairs */ " .
                 "  SELECT DISTINCT NHTCV.parent_id, TCK.keyword_id,TPTCV.platform_id " .
                 "  FROM {$this->tables['testplan_tcversions']} TPTCV " .
@@ -704,7 +704,7 @@ class tlTestPlanMetrics extends testplan
                 "  JOIN {$this->tables['testcase_keywords']} TCK " .
                 "  ON TCK.testcase_id = NHTCV.parent_id " .
                 "  WHERE TPTCV.testplan_id = " . $safe_id . " ) AS SQK " .
-                " GROUP BY $fields";
+                " GROUP BY {$fields}";
         }
 
         if ($my['opt']['groupByPlatform']) {
@@ -757,7 +757,7 @@ class tlTestPlanMetrics extends testplan
 
         $sql = " /* {$debugMsg} UNION ALL CLAUSE => INCLUDE Duplicates */" .
             " SELECT platform_id,status, count(0) AS exec_qty " .
-            " FROM ($sqlUnionAP UNION ALL $sqlUnionBP ) AS SQPL " .
+            " FROM ({$sqlUnionAP} UNION ALL {$sqlUnionBP} ) AS SQPL " .
             " GROUP BY platform_id,status ";
 
         $exec['with_tester'] = (array) $this->db->fetchMapRowsIntoMap($sql,
@@ -766,7 +766,7 @@ class tlTestPlanMetrics extends testplan
         $this->helperCompleteStatusDomain($exec, 'platform_id');
 
         // get total test cases by Platform id ON TEST PLAN (With & WITHOUT tester assignment)
-        $sql = "/* $debugMsg */ " . " SELECT COUNT(0) AS qty, TPTCV.platform_id " .
+        $sql = "/* {$debugMsg} */ " . " SELECT COUNT(0) AS qty, TPTCV.platform_id " .
             " FROM {$this->tables['testplan_tcversions']} TPTCV " . $addOnJoin .
             " WHERE TPTCV.testplan_id=" . $safe_id . $addOnWhere .
             " GROUP BY platform_id";
@@ -860,9 +860,9 @@ class tlTestPlanMetrics extends testplan
         // If we have PLATFORM we are going to get a MULTIPLIER EFFECT
         //
         $sql = " /* {$debugMsg} UNION WITHOUT ALL => DISCARD Duplicates */" .
-            " SELECT count(0) as exec_qty, urg_imp,status $fields " .
-            " FROM ($sqlUnionA UNION $sqlUnionB ) AS SU " .
-            " GROUP BY urg_imp,status $fields";
+            " SELECT count(0) as exec_qty, urg_imp,status {$fields} " .
+            " FROM ({$sqlUnionA} UNION {$sqlUnionB} ) AS SU " .
+            " GROUP BY urg_imp,status {$fields}";
 
         if ($my['opt']['groupByPlatform']) {
             $kol = array(
@@ -1008,7 +1008,7 @@ class tlTestPlanMetrics extends testplan
 
         $sql = " /* {$debugMsg} UNION ALL CLAUSE => INCLUDE Duplicates */" .
             " SELECT status, count(0) AS exec_qty " .
-            " FROM ($sqlUnionAP UNION ALL $sqlUnionBP ) AS SQPL " .
+            " FROM ({$sqlUnionAP} UNION ALL {$sqlUnionBP} ) AS SQPL " .
             " GROUP BY status ";
 
         $dummy = (array) $this->db->fetchRowsIntoMap($sql, 'status');
@@ -1082,7 +1082,7 @@ class tlTestPlanMetrics extends testplan
 
         $sql = " /* {$debugMsg} */" .
             " SELECT user_id, build_id,status, count(0) AS exec_qty, SUM(execution_duration) AS total_time" .
-            " FROM ($sqlUnionBU) AS SQBU " . " GROUP BY user_id,build_id,status ";
+            " FROM ({$sqlUnionBU}) AS SQBU " . " GROUP BY user_id,build_id,status ";
 
         $keyColumns = array(
             'build_id',
@@ -1598,9 +1598,9 @@ class tlTestPlanMetrics extends testplan
             " AND E.id IS NULL AND LEBP.id IS NULL";
 
         $sql = " /* {$debugMsg} UNION ALL DO NOT DISCARD Duplicates */" .
-            " SELECT count(0) AS exec_qty, tsuite_id, status $fields" .
-            " FROM ($sqlUnionAT UNION ALL $sqlUnionBT ) AS SQT " .
-            " GROUP BY tsuite_id ,status $fields";
+            " SELECT count(0) AS exec_qty, tsuite_id, status {$fields}" .
+            " FROM ({$sqlUnionAT} UNION ALL {$sqlUnionBT} ) AS SQT " .
+            " GROUP BY tsuite_id ,status {$fields}";
 
         if ($my['opt']['groupByPlatform']) {
             $kol = array(
@@ -2189,7 +2189,7 @@ class tlTestPlanMetrics extends testplan
             " E.tcversion_number, E.build_id,E.id AS executions_id, E.status AS status, " .
             " E.notes AS execution_notes, E.tester_id,E.execution_ts," .
             " TCV.version,TCV.tc_external_id AS external_id, " .
-            " $fullEID AS full_external_id," .
+            " {$fullEID} AS full_external_id," .
             " (TPTCV.urgency * TCV.importance) AS urg_imp " . $addFields .
             " FROM {$this->tables['testplan_tcversions']} TPTCV " .
             " /* GO FOR Absolute LATEST exec ID On BUILD,PLATFORM */ " .
@@ -2293,7 +2293,7 @@ class tlTestPlanMetrics extends testplan
             " TCV.version AS tcversion_number, B.id AS build_id," .
             " '{$this->notRunStatusCode}' AS status, " .
             " TCV.version,TCV.tc_external_id AS external_id, " .
-            " $fullEID AS full_external_id," .
+            " {$fullEID} AS full_external_id," .
             " (TPTCV.urgency * TCV.importance) AS urg_imp, TCV.summary " .
             " FROM {$this->tables['testplan_tcversions']} TPTCV " .
             " JOIN {$this->tables['builds']} B " .
@@ -2411,7 +2411,7 @@ class tlTestPlanMetrics extends testplan
         // 20130106 - TICKET 5451 - added A_TPTCV.platform_id on GROUP BY
         // this query try to indentify test cases that has NO ASSIGNMENT ON ALL Builds
         // for EACH PLATFORM.
-        $sqlc = "/* $debugMsg */ " .
+        $sqlc = "/* {$debugMsg} */ " .
             " SELECT count(0) AS TESTER_COUNTER ,A_NHTCV.parent_id AS tcase_id,A_TPTCV.platform_id  " .
             " FROM {$this->tables['testplan_tcversions']} A_TPTCV " .
             " JOIN {$this->tables['builds']} A_B ON A_B.testplan_id = A_TPTCV.testplan_id " .
@@ -2445,12 +2445,12 @@ class tlTestPlanMetrics extends testplan
             " HAVING count(0) = " . intval($buildsCfg['count']);
 
         $sql = "/* {$debugMsg} Not Run */" .
-            " SELECT $add2select NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
+            " SELECT {$add2select} NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
             " TPTCV.tcversion_id,TPTCV.platform_id," .
             " TCV.version AS tcversion_number, {$buildInfo}" .
             " '{$this->notRunStatusCode}' AS status, " .
             " TCV.version,TCV.tc_external_id AS external_id, " .
-            " $fullEID AS full_external_id,UA.user_id," .
+            " {$fullEID} AS full_external_id,UA.user_id," .
             " (TPTCV.urgency * TCV.importance) AS urg_imp, TCV.summary  " .
             " FROM {$this->tables['testplan_tcversions']} TPTCV " .
             " JOIN {$this->tables['builds']} B " .
@@ -2549,7 +2549,7 @@ class tlTestPlanMetrics extends testplan
         );
         $ejoin = array();
         foreach ($key2check as $check => $field) {
-            $ejoin[$check] = is_null($my['filters'][$check]) ? '' : " AND E.$field IN (" .
+            $ejoin[$check] = is_null($my['filters'][$check]) ? '' : " AND E.{$field} IN (" .
                 implode(',', (array) $my['filters'][$check]) . ')';
         }
 
@@ -2579,7 +2579,7 @@ class tlTestPlanMetrics extends testplan
             " AND E.id IS NULL AND LEX.id IS NULL";
 
         // executions
-        $sex = "/* $debugMsg */" .
+        $sex = "/* {$debugMsg} */" .
             "SELECT E.status,E.notes,E.tcversion_number,E.execution_ts,E.build_id,E.platform_id " .
             "FROM {$this->tables['testplan_tcversions']} TPTCV " .
             "JOIN {$this->tables['executions']} E " .
@@ -2596,7 +2596,7 @@ class tlTestPlanMetrics extends testplan
         );
         foreach ($key2check as $check => $field) {
             if (! is_null($my['filters'][$check])) {
-                $where .= " AND E.$field IN (" .
+                $where .= " AND E.{$field} IN (" .
                     implode(',', (array) $my['filters'][$check]) . ')';
             }
         }
@@ -2651,9 +2651,9 @@ class tlTestPlanMetrics extends testplan
         foreach ($key2check as $check => $field) {
             $ic['where'][$check] = '';
             if (! is_null($ic['filters'][$check])) {
-                $sqlLEX .= " AND EE.$field IN (" .
+                $sqlLEX .= " AND EE.{$field} IN (" .
                     implode(',', (array) $ic['filters'][$check]) . ')';
-                $ic['where'][$check] = " AND TPTCV.$field IN (" .
+                $ic['where'][$check] = " AND TPTCV.{$field} IN (" .
                     implode(',', (array) $ic['filters'][$check]) . ')';
             }
         }
@@ -2880,7 +2880,7 @@ class tlTestPlanMetrics extends testplan
             " NHTC.parent_id AS tsuite_id, " .
             " NHTC.id AS tcase_id, TPTCV.platform_id, " .
             " NHTC.name AS name, PLAT.name AS platform_name, " .
-            " $fullEID AS full_external_id " .
+            " {$fullEID} AS full_external_id " .
             " FROM {$this->tables['testplan_tcversions']} TPTCV " .
 
             " JOIN {$this->tables['builds']} B " .
@@ -2905,7 +2905,7 @@ class tlTestPlanMetrics extends testplan
             " ON  E.testplan_id = TPTCV.testplan_id " .
             " AND E.platform_id = TPTCV.platform_id " .
             " AND E.tcversion_id = TPTCV.tcversion_id " .
-            " AND E.build_id = B.id " . " WHERE TPTCV.testplan_id=$safeID " .
+            " AND E.build_id = B.id " . " WHERE TPTCV.testplan_id={$safeID} " .
             " AND E.id IS NULL";
 
         if (null != $platformSet) {
@@ -3023,7 +3023,7 @@ class tlTestPlanMetrics extends testplan
             NHTC.parent_id AS tsuite_id,
             NHTC.id AS tcase_id,
             NHTC.name AS name,
-            $fullEID AS full_external_id
+            {$fullEID} AS full_external_id
             FROM {$this->tables['testplan_tcversions']} TPTCV
 
             JOIN {$this->tables['builds']} B
@@ -3046,7 +3046,7 @@ class tlTestPlanMetrics extends testplan
             AND E.tcversion_id = TPTCV.tcversion_id
             AND E.build_id = B.id
 
-            WHERE TPTCV.testplan_id=$safeID
+            WHERE TPTCV.testplan_id={$safeID}
             AND E.id IS NULL";
 
         $sql .= " GROUP BY tsuite_id, tcase_id, NHTC.name,
@@ -3081,7 +3081,7 @@ class tlTestPlanMetrics extends testplan
           NHTC.parent_id AS tsuite_id,
           NHTC.id AS tcase_id, TPTCV.platform_id,
           NHTC.name AS name, PLAT.name AS platform_name,
-          $fullEID AS full_external_id,
+          {$fullEID} AS full_external_id,
           TCV.tc_external_id AS external_id,
           TCV.version,TCV.execution_type AS exec_type,
           (TPTCV.urgency * TCV.importance) AS urg_imp,
@@ -3114,7 +3114,7 @@ class tlTestPlanMetrics extends testplan
           AND E.tcversion_id = TPTCV.tcversion_id
           AND E.build_id = B.id
 
-          WHERE TPTCV.testplan_id=$safeID
+          WHERE TPTCV.testplan_id={$safeID}
           AND E.id IS NULL";
 
         $sql .= " AND TPTCV.platform_id=" . intval($platformID);
@@ -3482,7 +3482,7 @@ class tlTestPlanMetrics extends testplan
         $rswf = null;
         if ($options['workforce']) {
             $sqlwf = " SELECT COUNT(0) AS testers, {$fields}
-                 FROM ($sqlX) SQLBASE
+                 FROM ({$sqlX}) SQLBASE
                  GROUP BY {$fields}";
 
             switch ($options['timeline']) {
@@ -3522,7 +3522,7 @@ class tlTestPlanMetrics extends testplan
     {
         $fieldList = implode(',', $context);
         $sql = "SELECT MIN(execution_ts) AS begin, MAX(execution_ts) AS end, {$fieldList}" .
-            " FROM {$this->tables['executions']} WHERE testplan_id = $id " .
+            " FROM {$this->tables['executions']} WHERE testplan_id = {$id} " .
             " GROUP BY {$fieldList}";
 
         $levels = count($context);

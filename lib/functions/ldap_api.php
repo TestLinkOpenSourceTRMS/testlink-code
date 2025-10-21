@@ -135,7 +135,7 @@ function ldap_authenticate($p_login_name, $p_password)
         $t_ldap_root_dn = $ldapCfg['ldap_root_dn'];
         $t_ldap_uid_field = $ldapCfg['ldap_uid_field']; // 'uid' by default
 
-        $t_search_filter = "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
+        $t_search_filter = "(&{$t_ldap_organization}({$t_ldap_uid_field}={$t_username}))";
 
         $t_search_attrs = array(
             $t_ldap_uid_field,
@@ -257,7 +257,7 @@ function ldap_get_field_from_username($authCfg, $p_username, $p_field)
     $t_ds = $t_connect->handler; // DIFFERENCE WITH MANTIS
 
     # Search
-    $t_search_filter = "(&$t_ldap_organization($t_ldap_uid_field=$c_username))";
+    $t_search_filter = "(&{$t_ldap_organization}({$t_ldap_uid_field}={$c_username}))";
     $t_search_attrs = array(
         $t_ldap_uid_field,
         $p_field,

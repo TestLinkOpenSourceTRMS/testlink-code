@@ -390,7 +390,7 @@ function doSSOWebServerVar(&$dbHandler, $authCfg = null)
             'users'
         ));
 
-        $sql = "/* $debugMsg */" .
+        $sql = "/* {$debugMsg} */" .
             "SELECT login,role_id,email,first,last,active " .
             "FROM {$tables['users']} " . "WHERE active = 1 AND " .
             " {$authCfg['SSO_user_target_dbfield']} = '" .

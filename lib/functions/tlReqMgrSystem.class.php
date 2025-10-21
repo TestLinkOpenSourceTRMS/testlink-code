@@ -243,7 +243,7 @@ class tlReqMgrSystem extends tlObject
         // check if ID is linked
         $links = $this->getLinks($safeID);
         if (is_null($links)) {
-            $sql = " /* $debugMsg */ DELETE FROM {$this->tables['reqmgrsystems']}  " .
+            $sql = " /* {$debugMsg} */ DELETE FROM {$this->tables['reqmgrsystems']}  " .
                 " WHERE id = " . intval($safeID);
             $this->db->exec_query($sql);
             $ret['msg'] .= sprintf($msg['ok'], $safeID);
@@ -385,11 +385,11 @@ class tlReqMgrSystem extends tlObject
         $statusQuo = $this->getLinkedTo($tprojectID);
 
         if (is_null($statusQuo)) {
-            $sql = "/* $debugMsg */ INSERT INTO {$this->tables['testproject_reqmgrsystem']} " .
+            $sql = "/* {$debugMsg} */ INSERT INTO {$this->tables['testproject_reqmgrsystem']} " .
                 " (testproject_id,reqmgrsystem_id) " . " VALUES(" .
                 intval($tprojectID) . "," . intval($id) . ")";
         } else {
-            $sql = "/* $debugMsg */ UPDATE {$this->tables['testproject_reqmgrsystem']} " .
+            $sql = "/* {$debugMsg} */ UPDATE {$this->tables['testproject_reqmgrsystem']} " .
                 " SET reqmgrsystem_id = " . intval($id) .
                 " WHERE testproject_id = " . intval($tprojectID);
         }
@@ -407,7 +407,7 @@ class tlReqMgrSystem extends tlObject
         if (is_null($id)) {
             return;
         }
-        $sql = "/* $debugMsg */ DELETE FROM {$this->tables['testproject_reqmgrsystem']} " .
+        $sql = "/* {$debugMsg} */ DELETE FROM {$this->tables['testproject_reqmgrsystem']} " .
             " WHERE testproject_id = " . intval($tprojectID) .
             " AND reqmgrsystem_id = " . intval($id);
         $this->db->exec_query($sql);
@@ -432,7 +432,7 @@ class tlReqMgrSystem extends tlObject
             return;
         }
 
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT TPMGR.testproject_id, NHTPR.name AS testproject_name " .
             " FROM {$this->tables['testproject_reqmgrsystem']} TPMGR" .
             " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
@@ -454,7 +454,7 @@ class tlReqMgrSystem extends tlObject
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name, TPIT.reqmgrsystem_id " .
             " FROM {$this->tables['testproject_reqmgrsystem']} TPIT" .
             " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
@@ -535,7 +535,7 @@ class tlReqMgrSystem extends tlObject
         if (is_null($tprojectID)) {
             return;
         }
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT TPIT.testproject_id, NHTPR.name AS testproject_name, " .
             " TPIT.reqmgrsystem_id,ITRK.name AS reqmgrsystem_name, ITRK.type" .
             " FROM {$this->tables['testproject_reqmgrsystem']} TPIT" .

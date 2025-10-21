@@ -317,8 +317,8 @@ function build_search_sql(&$dbHandler, &$argsObj, &$guiObj)
         foreach ($date_keys as $fk => $op) {
             $fkey = str_replace($needle, $fk, $fx);
             if ($argsObj->$fkey) {
-                $filter['ver'][$fkey] = " AND REQV.$fx $op '{$argsObj->$fkey}' ";
-                $filter['rev'][$fkey] = " AND REQR.$fx $op '{$argsObj->$fkey}' ";
+                $filter['ver'][$fkey] = " AND REQV.{$fx} {$op} '{$argsObj->$fkey}' ";
+                $filter['rev'][$fkey] = " AND REQR.{$fx} {$op} '{$argsObj->$fkey}' ";
             }
         }
     }
@@ -415,7 +415,7 @@ function build_search_sql(&$dbHandler, &$argsObj, &$guiObj)
         $side = isset($dummy[1]) ? " RR.{$dummy[1]}_id = NH_REQ.id " : " RR.source_id = NH_REQ.id OR RR.destination_id = NH_REQ.id ";
 
         $from['ver']['relation_type'] = " JOIN {$tables['req_relations']} RR " .
-            " ON ($side) AND RR.relation_type = {$rel_type} ";
+            " ON ({$side}) AND RR.relation_type = {$rel_type} ";
         $from['rev']['relation_type'] = $from['ver']['relation_type'];
     }
 
@@ -439,7 +439,7 @@ function build_search_sql(&$dbHandler, &$argsObj, &$guiObj)
         $tcid = $dbHandler->prepare_string($argsObj->tcid);
         $tcid = str_replace($guiObj->tcasePrefix, "", $tcid);
 
-        $filter['ver']['tcid'] = " AND TCV.tc_external_id = '$tcid' ";
+        $filter['ver']['tcid'] = " AND TCV.tc_external_id = '{$tcid}' ";
         $filter['rev']['tcid'] = $filter['ver']['tcid'];
 
         $from['ver']['tcid'] = " /* 1.9.18 Changed */ " .

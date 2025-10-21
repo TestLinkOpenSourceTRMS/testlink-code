@@ -363,7 +363,7 @@ function launch_inner_xta2m(&$dbHandler, &$tplMgr)
         );
     foreach ($k2c as $tg) {
         if (property_exists($args, $tg) && $args->$tg > 0) {
-            $jt .= "&$tg=" . $args->$tg;
+            $jt .= "&{$tg}=" . $args->$tg;
         }
     }
 

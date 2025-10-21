@@ -397,7 +397,7 @@ class tlStringValidationInfo
         $pfnValidation = $this->pfnValidation;
         if ($pfnValidation && ! $pfnValidation($value)) {
             $msg = "Input parameter validation failed [external function" .
-                " - $pfnValidation]";
+                " - {$pfnValidation}]";
             tLog($msg, 'ERROR');
             throw new Exception($msg);
         }

@@ -566,7 +566,7 @@ function redirect($url, $level = 'location')
     $safeUrl = addslashes($url);
     echo "<html><head></head><body>";
     echo "<script type='text/javascript'>";
-    echo "$level.href='$safeUrl';";
+    echo "{$level}.href='{$safeUrl}';";
     echo "</script></body></html>";
 
     exit();
@@ -1403,7 +1403,7 @@ function getEntityByAPIKey(&$dbHandler, $apiKey, $type)
             break;
     }
 
-    $sql = "/* $debugMsg */ " . " SELECT id FROM {$target} " .
+    $sql = "/* {$debugMsg} */ " . " SELECT id FROM {$target} " .
         " WHERE api_key = '" . $dbHandler->prepare_string($apiKey) . "'";
 
     $rs = $dbHandler->get_recordset($sql);
@@ -1735,36 +1735,36 @@ function getActions(&$gui, $baseURL)
 
     $actions = new stdClass();
 
-    $actions->events = "$bb/events/eventviewer.php?{$ctx}";
-    $actions->usersAssign = "$bb/usermanagement/usersAssign.php?{$ctx}&featureType=testproject&featureID=" .
+    $actions->events = "{$bb}/events/eventviewer.php?{$ctx}";
+    $actions->usersAssign = "{$bb}/usermanagement/usersAssign.php?{$ctx}&featureType=testproject&featureID=" .
         intval($gui->tproject_id);
 
-    $actions->userMgmt = "$bb/usermanagement/usersView.php?{$ctx}" .
+    $actions->userMgmt = "{$bb}/usermanagement/usersView.php?{$ctx}" .
         intval($gui->tproject_id);
 
-    $actions->userInfo = "$bb/usermanagement/userInfo.php?{$ctx}";
-    $actions->projectView = "$bb/project/projectView.php?{$ctx}";
+    $actions->userInfo = "{$bb}/usermanagement/userInfo.php?{$ctx}";
+    $actions->projectView = "{$bb}/project/projectView.php?{$ctx}";
 
-    $actions->cfAssignment = "$bb/cfields/cfieldsTprojectAssign.php?{$ctx}";
-    $actions->cfieldsView = "$bb/cfields/cfieldsView.php?{$ctx}";
+    $actions->cfAssignment = "{$bb}/cfields/cfieldsTprojectAssign.php?{$ctx}";
+    $actions->cfieldsView = "{$bb}/cfields/cfieldsView.php?{$ctx}";
 
-    $actions->keywordsView = "$bb/keywords/keywordsView.php?{$ctx}";
-    $actions->platformsView = "$bb/platforms/platformsView.php?{$ctx}";
-    $actions->issueTrackerView = "$bb/issuetrackers/issueTrackerView.php?{$ctx}";
-    $actions->codeTrackerView = "$bb/codetrackers/codeTrackerView.php?{$ctx}";
-    $actions->reqOverView = "$bb/requirements/reqOverview.php?{$ctx}";
-    $actions->reqMonOverView = "$bb/requirements/reqMonitorOverview.php?{$ctx}";
-    $actions->tcSearch = "$bb/testcases/tcSearch.php?doAction=userInput&{$ctx}";
-    $actions->tcCreatedUser = "$bb/results/tcCreatedPerUserOnTestProject.php?do_action=uinput&{$ctx}";
-    $actions->assignReq = "$bb/general/frmWorkArea.php?feature=assignReqs&{$ctx}";
-    $actions->inventoryView = "$bb/inventory/inventoryView.php?{$ctx}";
+    $actions->keywordsView = "{$bb}/keywords/keywordsView.php?{$ctx}";
+    $actions->platformsView = "{$bb}/platforms/platformsView.php?{$ctx}";
+    $actions->issueTrackerView = "{$bb}/issuetrackers/issueTrackerView.php?{$ctx}";
+    $actions->codeTrackerView = "{$bb}/codetrackers/codeTrackerView.php?{$ctx}";
+    $actions->reqOverView = "{$bb}/requirements/reqOverview.php?{$ctx}";
+    $actions->reqMonOverView = "{$bb}/requirements/reqMonitorOverview.php?{$ctx}";
+    $actions->tcSearch = "{$bb}/testcases/tcSearch.php?doAction=userInput&{$ctx}";
+    $actions->tcCreatedUser = "{$bb}/results/tcCreatedPerUserOnTestProject.php?do_action=uinput&{$ctx}";
+    $actions->assignReq = "{$bb}/general/frmWorkArea.php?feature=assignReqs&{$ctx}";
+    $actions->inventoryView = "{$bb}/inventory/inventoryView.php?{$ctx}";
 
-    $actions->fullTextSearch = "$bb/search/searchMgmt.php?{$ctx}";
+    $actions->fullTextSearch = "{$bb}/search/searchMgmt.php?{$ctx}";
 
-    $actions->metrics_dashboard = "$bb/results/metricsDashboard.php?{$ctx}";
+    $actions->metrics_dashboard = "{$bb}/results/metricsDashboard.php?{$ctx}";
 
     $pp = $bb . '/plan';
-    $actions->planView = "$pp/planView.php?{$ctx}";
+    $actions->planView = "{$pp}/planView.php?{$ctx}";
 
     $actions->buildView = null;
     $actions->mileView = null;
@@ -1772,11 +1772,11 @@ function getActions(&$gui, $baseURL)
     $actions->milestonesView = null;
     $actions->testcase_assignments = null;
     if ($tplan_id > 0) {
-        $actions->buildView = "$pp/buildView.php?{$ctx}";
-        $actions->mileView = "$pp/planMilestonesView.php?{$ctx}";
-        $actions->platformAssign = "$bb/platforms/platformsAssign.php?{$ctx}";
-        $actions->milestonesView = "$bb/plan/planMilestonesView.php?{$ctx}";
-        $actions->testcase_assignments = "$bb/testcases/tcAssignedToUser.php?{$ctx}";
+        $actions->buildView = "{$pp}/buildView.php?{$ctx}";
+        $actions->mileView = "{$pp}/planMilestonesView.php?{$ctx}";
+        $actions->platformAssign = "{$bb}/platforms/platformsAssign.php?{$ctx}";
+        $actions->milestonesView = "{$bb}/plan/planMilestonesView.php?{$ctx}";
+        $actions->testcase_assignments = "{$bb}/testcases/tcAssignedToUser.php?{$ctx}";
     }
 
     $launcher = $_SESSION['basehref'] . "lib/general/frmWorkArea.php?feature=";
@@ -2110,7 +2110,7 @@ function initContext()
         if ($env != '') {
             $env .= "&";
         }
-        $env .= "$prop=" . $context->$prop;
+        $env .= "{$prop}=" . $context->$prop;
     }
 
     return array(

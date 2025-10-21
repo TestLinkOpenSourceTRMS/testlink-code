@@ -171,7 +171,7 @@ class tlRequirementFilterControl extends tlFilterControl
     protected function init_settings()
     {
         foreach ($this->all_settings as $name => $info) {
-            $init_method = "init_$name";
+            $init_method = "init_{$name}";
             if (method_exists($this, $init_method)) {
                 // is valid, configured, exists and therefore can be used, so initialize this setting
                 $this->$init_method();
@@ -203,7 +203,7 @@ class tlRequirementFilterControl extends tlFilterControl
         // iterate through all filters and activate the needed ones
         if ($this->configuration->show_filters == ENABLED) {
             foreach ($this->all_filters as $name => $info) {
-                $init_method = "init_$name";
+                $init_method = "init_{$name}";
                 if (method_exists($this, $init_method) &&
                     $this->configuration->{$name} == ENABLED) {
                     $this->$init_method();
@@ -287,7 +287,7 @@ class tlRequirementFilterControl extends tlFilterControl
             $root_node = new stdClass();
             $root_node->href = "javascript:TPROJECT_REQ_SPEC_MGMT({$this->args->testproject_id})";
             $root_node->id = $this->args->testproject_id;
-            $root_node->name = $this->args->testproject_name . " ($req_qty)";
+            $root_node->name = $this->args->testproject_name . " ({$req_qty})";
             $root_node->testlink_node_type = 'testproject';
         }
 

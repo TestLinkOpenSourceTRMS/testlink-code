@@ -22,14 +22,14 @@ define('DBUG_ON', 1);
 $object_item = "Testplan Manager";
 $object_class = "testplan";
 
-echo "<pre>Poor's Man - $object_item - code inspection tool<br>";
+echo "<pre>Poor's Man - {$object_item} - code inspection tool<br>";
 echo "<pre>Scope of this page is allow you to understand with live<br>";
-echo "examples how to use object: $object_item (implemented in file $object_class_file.class.php)<br>";
+echo "examples how to use object: {$object_item} (implemented in file {$object_class_file}.class.php)<br>";
 echo "Important:";
 echo "You are using your testlink DB to do all operations";
 echo "</pre>";
 echo "<hr>";
-echo "<pre> $object_item - constructor - $object_class(&\$db)";
+echo "<pre> {$object_item} - constructor - {$object_class}(&\$db)";
 echo "</pre>";
 $obj_mgr = new $object_class($db);
 new dBug($obj_mgr);
@@ -37,7 +37,7 @@ new dBug($obj_mgr);
 $tplan_id = 1212;
 echo "<pre> testplan - get_linked_tcversions(\$id,\$filters=null,\$options=null)";
 echo "</pre>";
-echo "<pre> get_linked_tcversions($tplan_id)";
+echo "<pre> get_linked_tcversions({$tplan_id})";
 echo "</pre>";
 $linked_tcversions = $obj_mgr->get_linked_tcversions($tplan_id);
 new dBug($linked_tcversions);
@@ -48,7 +48,7 @@ $options = array(
 echo "<pre> testplan - get_linked_tcversions(\$id,\$filters=null,\$options=null)";
 echo "</pre>";
 
-echo "<pre> get_linked_tcversions($tplan_id,null,$options)";
+echo "<pre> get_linked_tcversions({$tplan_id},null,{$options})";
 echo "</pre>";
 new dBug($options);
 $linked_tcversions = $obj_mgr->get_linked_tcversions($tplan_id, null, $options);
@@ -60,7 +60,7 @@ $options = array(
 echo "<pre> testplan - get_linked_tcversions(\$id,\$filters=null,\$options=null)";
 echo "</pre>";
 
-echo "<pre> get_linked_tcversions($tplan_id,null,$options)";
+echo "<pre> get_linked_tcversions({$tplan_id},null,{$options})";
 echo "</pre>";
 new dBug($options);
 $linked_tcversions = $obj_mgr->get_linked_tcversions($tplan_id, null, $options);
@@ -99,7 +99,7 @@ $testplan->name = 'Test Plan Code Testing';
 $testplan->notes = 'Test Plan created running Code Testing code by TestLink Development Team';
 echo "<pre> {$object_class} - create(\$name,\$notes,\$testproject_id)";
 echo "</pre>";
-echo "<pre> {$object_class} - create('$testplan->name','$testplan->notes',$testproject_id)";
+echo "<pre> {$object_class} - create('$testplan->name','$testplan->notes',{$testproject_id})";
 echo "</pre>";
 $testplan->id = $obj_mgr->create($testplan->name, $testplan->notes,
     $testproject_id);
@@ -116,14 +116,14 @@ $object_item = "Build Manager";
 $object_class = "build_mgr";
 $object_class_file = "testplan";
 
-echo "<pre>Poor's Man - $object_item - code inspection tool<br>";
+echo "<pre>Poor's Man - {$object_item} - code inspection tool<br>";
 echo "<pre>Scope of this page is allow you to understand with live<br>";
-echo "examples how to use object: $object_item (implemented in file $object_class_file.class.php)<br>";
+echo "examples how to use object: {$object_item} (implemented in file {$object_class_file}.class.php)<br>";
 echo "Important:";
 echo "You are using your testlink DB to do all operations";
 echo "</pre>";
 echo "<hr>";
-echo "<pre> $object_item - constructor - $object_class(&\$db)";
+echo "<pre> {$object_item} - constructor - {$object_class}(&\$db)";
 echo "</pre>";
 $obj_mgr = new $object_class($db);
 new dBug($obj_mgr);
@@ -166,7 +166,7 @@ if (! is_null($all_testplans_on_tl)) {
 
 echo "<pre> testplan - get_by_id(\$id)";
 echo "</pre>";
-echo "<pre>            get_by_id($tplan_id)";
+echo "<pre>            get_by_id({$tplan_id})";
 echo "</pre>";
 $tplan_info = $tplan_mgr->get_by_id($tplan_id);
 new dBug($tplan_info);
@@ -174,21 +174,21 @@ new dBug($tplan_info);
 $tplan_name = "TEST_TESTPLAN";
 echo "<pre> testplan - get_by_name(\$name,\$tproject_id = 0)";
 echo "</pre>";
-echo "<pre>            get_by_name($tplan_name)";
+echo "<pre>            get_by_name({$tplan_name})";
 echo "</pre>";
 $tplan_info = $tplan_mgr->get_by_name($tplan_name);
 new dBug($tplan_info);
 
 echo "<pre> testplan - get_builds(\$tplan_id,\$active=null,\$open=null)";
 echo "</pre>";
-echo "<pre>            get_builds($tplan_id)";
+echo "<pre>            get_builds({$tplan_id})";
 echo "</pre>";
 $all_builds = $tplan_mgr->get_builds($tplan_id);
 new dBug($all_builds);
 
 echo "<pre> testplan - count_testcases(\$tplan_id)";
 echo "</pre>";
-echo "<pre>            count_testcases($tplan_id)";
+echo "<pre>            count_testcases({$tplan_id})";
 echo "</pre>";
 $count_testcases = $tplan_mgr->count_testcases($tplan_id);
 new dBug("Number of testcase linked to test plan=" . $count_testcases);
@@ -196,7 +196,7 @@ new dBug("Number of testcase linked to test plan=" . $count_testcases);
 echo "<pre> testplan - get_linked_tcversions(\$id,\$filters=null,\$options=null)";
 echo "</pre>";
 
-echo "<pre>            get_linked_tcversions($tplan_id)";
+echo "<pre>            get_linked_tcversions({$tplan_id})";
 echo "</pre>";
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id);
 new dBug($linked_tcversions);
@@ -214,7 +214,7 @@ $build_id = $dummy[0];
 
 echo "<pre> build manager - get_by_id(\$id)";
 echo "</pre>";
-echo "<pre>                 get_by_id($build_id)";
+echo "<pre>                 get_by_id({$build_id})";
 echo "</pre>";
 $build_info = $build_mgr->get_by_id($build_id);
 new dBug($build_info);

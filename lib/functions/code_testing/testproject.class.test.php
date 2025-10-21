@@ -73,15 +73,15 @@ die();
 $tproject_id = 1;
 echo "<pre> testproject - getKeywords(\$testproject_id,\$keywordID = null)";
 echo "</pre>";
-echo "<pre>               getKeywords($tproject_id)";
+echo "<pre>               getKeywords({$tproject_id})";
 echo "</pre>";
 $keywords = $tproject_mgr->getKeywords($tproject_id);
 new dBug($keywords);
 
 $tproject_id = 1;
-echo "<pre> testproject - get_first_level_test_suites($tproject_id,$mode='simple')";
+echo "<pre> testproject - get_first_level_test_suites({$tproject_id},{$mode}='simple')";
 echo "</pre>";
-echo "<pre>               get_first_level_test_suites($tproject_id,$mode='simple')";
+echo "<pre>               get_first_level_test_suites({$tproject_id},{$mode}='simple')";
 echo "</pre>";
 $info = $tproject_mgr->get_first_level_test_suites($tproject_id,
     $mode = 'simple');
@@ -91,34 +91,34 @@ die();
 echo "<pre> testproject - get_keywords_map(\$testproject_id)";
 echo "</pre>";
 $tproject_id = 1;
-echo "<pre>               get_keywords_map($tproject_id)";
+echo "<pre>               get_keywords_map({$tproject_id})";
 echo "</pre>";
 $keywords_map = $tproject_mgr->get_keywords_map($tproject_id);
 new dBug($keywords_map);
 
 echo "<pre> testproject - get_keywords_tcases(\$testproject_id, \$keyword_id=0)";
 echo "</pre>";
-echo "<pre>               get_keywords_tcases($tproject_id)";
+echo "<pre>               get_keywords_tcases({$tproject_id})";
 echo "</pre>";
 $keywords_tcases = $tproject_mgr->get_keywords_tcases($tproject_id);
 new dBug($keywords_tcases);
 
 echo "<pre> testproject - get_linked_custom_fields(\$id,\$node_type=null)";
 echo "</pre>";
-echo "<pre>               get_linked_custom_fields($tproject_id)";
+echo "<pre>               get_linked_custom_fields({$tproject_id})";
 echo "</pre>";
 $linked_custom_fields = $tproject_mgr->get_linked_custom_fields($tproject_id);
 new dBug($linked_custom_fields);
 
 echo "<pre> testproject - gen_combo_test_suites(\$id,\$exclude_branches=null,\$mode='dotted')";
 echo "</pre>";
-echo "<pre>               gen_combo_test_suites($tproject_id,null,'dotted')";
+echo "<pre>               gen_combo_test_suites({$tproject_id},null,'dotted')";
 echo "</pre>";
 $combo_test_suites = $tproject_mgr->gen_combo_test_suites($tproject_id, null,
     'dotted');
 new dBug($combo_test_suites);
 
-echo "<pre>               gen_combo_test_suites($tproject_id,null,'dotted')";
+echo "<pre>               gen_combo_test_suites({$tproject_id},null,'dotted')";
 echo "</pre>";
 $combo_test_suites = $tproject_mgr->gen_combo_test_suites($tproject_id, null,
     'array');
@@ -126,7 +126,7 @@ new dBug($combo_test_suites);
 
 echo "<pre> testproject - getReqSpec(\$testproject_id, \$id = null)";
 echo "</pre>";
-echo "<pre>               getReqSpec($tproject_id)";
+echo "<pre>               getReqSpec({$tproject_id})";
 echo "</pre>";
 $requirement_spec = $tproject_mgr->getReqSpec($tproject_id);
 new dBug($requirement_spec);
@@ -134,7 +134,7 @@ new dBug($requirement_spec);
 $srs_id = 2;
 echo "<pre>               getReqSpec(\$tproject_id,\$srs_id)";
 echo "</pre>";
-echo "<pre>               getReqSpec($tproject_id,$srs_id)";
+echo "<pre>               getReqSpec({$tproject_id},{$srs_id})";
 echo "</pre>";
 $requirement_spec = $tproject_mgr->getReqSpec($tproject_id, $srs_id);
 new dBug($requirement_spec);
@@ -142,7 +142,7 @@ new dBug($requirement_spec);
 $srs_title = 'SRS2';
 echo "<pre> testproject - get_srs_by_title(\$testproject_id,\$title,\$ignore_case=0)";
 echo "</pre>";
-echo "<pre>               get_srs_by_title($tproject_id,$srs_title)";
+echo "<pre>               get_srs_by_title({$tproject_id},{$srs_title})";
 echo "</pre>";
 $srs_by_title = $tproject_mgr->get_srs_by_title($tproject_id, $srs_title);
 new dBug($srs_by_title);

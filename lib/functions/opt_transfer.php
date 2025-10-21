@@ -15,10 +15,10 @@
  **/
 function opt_transf_cfg(&$opt_cfg, $right_list, $js_ot_name = 'ot')
 {
-    $opt_cfg->js_events->all_right_click = "window.setTimeout('$js_ot_name.transferAllRight()',20);";
-    $opt_cfg->js_events->left2right_click = "window.setTimeout('$js_ot_name.transferRight()',20);";
-    $opt_cfg->js_events->right2left_click = "window.setTimeout('$js_ot_name.transferLeft()',20);";
-    $opt_cfg->js_events->all_left_click = "window.setTimeout('$js_ot_name.transferAllLeft()',20);";
+    $opt_cfg->js_events->all_right_click = "window.setTimeout('{$js_ot_name}.transferAllRight()',20);";
+    $opt_cfg->js_events->left2right_click = "window.setTimeout('{$js_ot_name}.transferRight()',20);";
+    $opt_cfg->js_events->right2left_click = "window.setTimeout('{$js_ot_name}.transferLeft()',20);";
+    $opt_cfg->js_events->all_left_click = "window.setTimeout('{$js_ot_name}.transferAllLeft()',20);";
 
     $a_right = array();
     $a_left = array();

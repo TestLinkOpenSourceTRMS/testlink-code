@@ -263,7 +263,7 @@ class tlCodeTracker extends tlObject
         // check if ID is linked
         $links = $this->getLinks($safeID);
         if (is_null($links)) {
-            $sql = " /* $debugMsg */ DELETE FROM {$this->tables['codetrackers']}  " .
+            $sql = " /* {$debugMsg} */ DELETE FROM {$this->tables['codetrackers']}  " .
                 " WHERE id = " . intval($safeID);
             $this->db->exec_query($sql);
             $ret['msg'] .= sprintf($msg['ok'], $safeID);
@@ -405,11 +405,11 @@ class tlCodeTracker extends tlObject
         $statusQuo = $this->getLinkedTo($tprojectID);
 
         if (is_null($statusQuo)) {
-            $sql = "/* $debugMsg */ INSERT INTO {$this->tables['testproject_codetracker']} " .
+            $sql = "/* {$debugMsg} */ INSERT INTO {$this->tables['testproject_codetracker']} " .
                 " (testproject_id,codetracker_id) " . " VALUES(" .
                 intval($tprojectID) . "," . intval($id) . ")";
         } else {
-            $sql = "/* $debugMsg */ UPDATE {$this->tables['testproject_codetracker']} " .
+            $sql = "/* {$debugMsg} */ UPDATE {$this->tables['testproject_codetracker']} " .
                 " SET codetracker_id = " . intval($id) .
                 " WHERE testproject_id = " . intval($tprojectID);
         }
@@ -427,7 +427,7 @@ class tlCodeTracker extends tlObject
         if (is_null($id)) {
             return;
         }
-        $sql = "/* $debugMsg */ DELETE FROM {$this->tables['testproject_codetracker']} " .
+        $sql = "/* {$debugMsg} */ DELETE FROM {$this->tables['testproject_codetracker']} " .
             " WHERE testproject_id = " . intval($tprojectID) .
             " AND codetracker_id = " . intval($id);
         $this->db->exec_query($sql);
@@ -452,7 +452,7 @@ class tlCodeTracker extends tlObject
             return;
         }
 
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT TPCT.testproject_id, NHTPR.name AS testproject_name " .
             " FROM {$this->tables['testproject_codetracker']} TPCT" .
             " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
@@ -474,7 +474,7 @@ class tlCodeTracker extends tlObject
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT TPCT.testproject_id, NHTPR.name AS testproject_name, TPCT.codetracker_id " .
             " FROM {$this->tables['testproject_codetracker']} TPCT" .
             " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NHTPR " .
@@ -553,7 +553,7 @@ class tlCodeTracker extends tlObject
         if (is_null($tprojectID)) {
             return;
         }
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT TPCT.testproject_id, NHTPR.name AS testproject_name, " .
             " TPCT.codetracker_id,CTRK.name AS codetracker_name, CTRK.type" .
             " FROM {$this->tables['testproject_codetracker']} TPCT" .

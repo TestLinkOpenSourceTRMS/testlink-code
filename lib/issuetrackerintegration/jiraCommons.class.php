@@ -75,7 +75,7 @@ class jiraCommons
         if (property_exists($issue, 'duedate')) {
             $strDueDate = $this->helperParseDate($issue->duedate);
             if (! is_null($strDueDate)) {
-                $summary .= "<b> [$strDueDate] </b> ";
+                $summary .= "<b> [{$strDueDate}] </b> ";
             }
         }
         return $summary;

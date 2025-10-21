@@ -597,7 +597,7 @@ class tlTestCaseFilterControl extends tlFilterControl
         $at_least_one_active = false;
 
         foreach ($this->all_settings as $name => $info) {
-            $init_method = "init_$name";
+            $init_method = "init_{$name}";
             if (in_array($name, $this->mode_setting_mapping[$this->mode]) &&
                 method_exists($this, $init_method)) {
                 // is valid, configured, exists and therefore can be used, so initialize this setting
@@ -660,7 +660,7 @@ class tlTestCaseFilterControl extends tlFilterControl
         // iterate through all filters and activate the needed ones
         $this->display_filters = false;
         foreach ($this->all_filters as $name => $info) {
-            $init_method = "init_$name";
+            $init_method = "init_{$name}";
 
             if ($this->configuration->show_filters == self::ENABLED &&
                 property_exists($this->configuration, $name) &&
@@ -1064,7 +1064,7 @@ class tlTestCaseFilterControl extends tlFilterControl
                     $root_node->href = "javascript:EP({$this->args->testproject_id})";
                     $root_node->id = $this->args->testproject_id;
                     $root_node->name = $this->args->testproject_name .
-                        " ($tcase_qty)";
+                        " ({$tcase_qty})";
                     $root_node->wrapOpen = $root_node->wrapClose = '';
                     $root_node->testlink_node_type = 'testproject';
                 }

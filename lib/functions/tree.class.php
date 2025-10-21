@@ -317,7 +317,7 @@ class tree extends tlObject
         if ($children != "") {
             $id2del .= ",{$children}";
         }
-        $sql = "/* $debugMsg */ DELETE FROM {$this->object_table} WHERE id IN ({$id2del})";
+        $sql = "/* {$debugMsg} */ DELETE FROM {$this->object_table} WHERE id IN ({$id2del})";
 
         $this->db->exec_query($sql);
     }
@@ -467,7 +467,7 @@ class tree extends tlObject
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
         // look up the parent of this node
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT id,name,parent_id,node_type_id,node_order " .
             " FROM {$this->object_table} WHERE id = " . intval($node_id);
 
@@ -541,20 +541,20 @@ class tree extends tlObject
         if (is_array($node_id)) {
             $safeSet = array_map('intval', $node_id);
             $id_list = implode(",", $safeSet);
-            $where_clause = " WHERE id IN ($id_list) ";
+            $where_clause = " WHERE id IN ({$id_list}) ";
         } else {
             $safe = intval($node_id);
             if ($safe <= 0) {
                 throw new Exception("BAD node_id", 1);
             }
-            $where_clause = " WHERE id = $safe";
+            $where_clause = " WHERE id = {$safe}";
         }
 
         $safeP = $this->db->prepare_int($parent_id);
-        $sql = "/* $debugMsg */
+        $sql = "/* {$debugMsg} */
             UPDATE {$this->object_table}
-            SET parent_id = $safeP
-            $where_clause ";
+            SET parent_id = {$safeP}
+            {$where_clause} ";
 
         $result = $this->db->exec_query($sql);
 
@@ -590,7 +590,7 @@ class tree extends tlObject
         );
         $my['opt'] = array_merge($my['opt'], (array) $opt);
 
-        $sql = "/* $debugMsg */ " .
+        $sql = "/* {$debugMsg} */ " .
             " SELECT id,name,parent_id,node_type_id,node_order FROM {$this->object_table} " .
             " WHERE parent_id = " . $this->db->prepare_int($id) .
             " ORDER BY node_order,id";
@@ -1253,7 +1253,7 @@ class tree extends tlObject
             // get only different items, to get descriptions
             $unique_nodes = implode(',', array_unique($all_nodes));
 
-            $sql = "/* $debugMsg */ " .
+            $sql = "/* {$debugMsg} */ " .
                 " SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})";
             $decode = $this->db->fetchRowsIntoMap($sql, 'id');
 
@@ -1397,7 +1397,7 @@ class tree extends tlObject
             $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         }
 
-        $sql = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
+        $sql = "/* {$debugMsg} */ SELECT NH.* FROM {$this->object_table} NH " .
             " WHERE NH.parent_id = " . $this->db->prepare_int($node_id) .
             " {$additionalWhereClause} ";
         $rs = $this->db->get_recordset($sql);
@@ -1441,7 +1441,7 @@ class tree extends tlObject
         if (! is_null($root_id) && ($node_id != $root_id)) {
             $children = (array) $this->db->get_recordset($sql);
             if (count($children) == 0) {
-                $sql2 = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
+                $sql2 = "/* {$debugMsg} */ SELECT NH.* FROM {$this->object_table} NH " .
                     " WHERE NH.id = " . $this->db->prepare_int($node_id);
                 $node_info = $this->db->get_recordset($sql2);
                 if (isset($this->class_name[$node_info[0]['node_type_id']])) {
@@ -1553,7 +1553,7 @@ class tree extends tlObject
     public function getAllItemsID($parentList, &$itemSet, $coupleTypes)
     {
         $debugMsg = 'Class:' . __CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
-        $sql = "/* $debugMsg */  " .
+        $sql = "/* {$debugMsg} */  " .
             " SELECT id,node_type_id from {$this->tables['nodes_hierarchy']} " .
             " WHERE parent_id IN ({$parentList})";
         $sql .= " AND node_type_id IN ({$coupleTypes['target']},{$coupleTypes['container']}) ";
@@ -1582,7 +1582,7 @@ class tree extends tlObject
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
         $addJoin = '';
-        $sql = "/* $debugMsg */ ";
+        $sql = "/* {$debugMsg} */ ";
         $sql .= " SELECT NH_MAIN.id,NH_MAIN.parent_id,NH_MAIN.name,NH_MAIN.node_type_id " .
             " FROM {$this->object_table} AS NH_MAIN " .
             " JOIN {$this->tables['node_types']} AS NT ON NT.id = NH_MAIN.node_type_id ";
@@ -1647,7 +1647,7 @@ class tree extends tlObject
             $concat = " CONCAT(NHL1.name,':'," .
                 " SUBSTRING(NHL2.name,{$where2cut}) )";
         }
-        $sql = "SELECT $concat AS name
+        $sql = "SELECT {$concat} AS name
             FROM {$this->tables['nodes_hierarchy']} NHL2
             JOIN {$this->tables['nodes_hierarchy']} NHL1
             ON NHL1.id = NHL2.parent_id

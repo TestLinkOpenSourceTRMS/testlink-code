@@ -584,7 +584,7 @@ class searchCommands
             $filterRS['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
             foreach ($targetSet as $target) {
                 $filterRS['scope'] .= $args->and_or .
-                    " $udf(RSRV.scope) $this->likeOp '%{$target}%' ";
+                    " {$udf}(RSRV.scope) $this->likeOp '%{$target}%' ";
             }
             $filterRS['scope'] .= ')';
 
@@ -715,7 +715,7 @@ class searchCommands
                     $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
                     foreach ($targetSet as $target) {
                         $filterRQ['scope'] .= $args->and_or .
-                            " $udf(RQV.scope) $this->likeOp '%{$target}%' ";
+                            " {$udf}(RQV.scope) $this->likeOp '%{$target}%' ";
                     }
                     $filterRQ['scope'] .= ')';
                 }
@@ -789,7 +789,7 @@ class searchCommands
 
             foreach ($targetSet as $target) {
                 $filterSpecial['ts_summary'] .= $args->and_or .
-                    " $udf(TS.details) $this->likeOp '%{$target}%' ";
+                    " {$udf}(TS.details) $this->likeOp '%{$target}%' ";
             }
             $filterSpecial['ts_summary'] .= ')';
         }
@@ -873,7 +873,7 @@ class searchCommands
                 $target = trim($tgx);
                 if (is_numeric($target)) {
                     $filterSpecial['by_tc_id'] .= $args->and_or .
-                        " TCV.tc_external_id = $target ";
+                        " TCV.tc_external_id = {$target} ";
                 }
             }
         }
@@ -919,7 +919,7 @@ class searchCommands
 
             foreach ($targetSet as $target) {
                 $filterSpecial['by_steps'] .= $args->and_or .
-                    " $udf(TCSTEPS.actions) $this->likeOp '%{$target}%' ";
+                    " {$udf}(TCSTEPS.actions) $this->likeOp '%{$target}%' ";
             }
             $filterSpecial['by_steps'] .= ')';
         }
@@ -930,7 +930,7 @@ class searchCommands
 
             foreach ($targetSet as $target) {
                 $filterSpecial['by_expected_results'] .= $args->and_or .
-                    " $udf(TCSTEPS.expected_results) $this->likeOp '%{$target}%' ";
+                    " {$udf}(TCSTEPS.expected_results) $this->likeOp '%{$target}%' ";
             }
             $filterSpecial['by_expected_results'] .= ')';
         }
@@ -960,7 +960,7 @@ class searchCommands
                         switch ($kf) {
                             case 'summary':
                             case 'preconditions':
-                                $xx = " $udf(" . $xx . ") ";
+                                $xx = " {$udf}(" . $xx . ") ";
                                 break;
                         }
                         $filterSpecial[$kf] .= "{$xx} {$this->likeOp}  '%{$target}%' ";

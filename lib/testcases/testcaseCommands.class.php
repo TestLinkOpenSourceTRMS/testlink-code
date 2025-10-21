@@ -1521,7 +1521,7 @@ class testcaseCommands
                     $inClause = "'" . implode("','", $argsObj->free_keywords) .
                         "'";
                     $sql = "SELECT id,keyword FROM {$tbl['keywords']}
-                  WHERE id IN($inClause) ";
+                  WHERE id IN({$inClause}) ";
                     $kwSet = $this->db->fetchRowsIntoMap($sql, 'id');
 
                     $strToDel = isset($cfx[$info['prefix']]['prefix']) ? $cfx[$info['prefix']]['prefix'] : '';

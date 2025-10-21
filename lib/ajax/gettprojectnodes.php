@@ -206,8 +206,8 @@ function getAllTCasesID($idList, &$tcIDs)
     $tcNodeTypeID = 3;
 
     $tbl = DB_TABLE_PREFIX . 'nodes_hierarchy';
-    $sql = " SELECT id,node_type_id FROM $tbl
-           WHERE parent_id IN ($idList)
+    $sql = " SELECT id,node_type_id FROM {$tbl}
+           WHERE parent_id IN ({$idList})
            AND node_type_id IN (3,2) ";
 
     $result = $db->exec_query($sql);

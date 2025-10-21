@@ -497,7 +497,7 @@ function check_php_settings(&$errCounter)
     }
     $final_msg .= "<tr><td>Checking maximal allowed memory (Parameter memory_limit)</td>";
     if ($memory_limit < $memory_limit_recommended) {
-        $final_msg .= "<td><span class='tab-warning'>$memory_limit MegaBytes - " .
+        $final_msg .= "<td><span class='tab-warning'>{$memory_limit} MegaBytes - " .
             "We suggest {$memory_limit_recommended} MB" .
             " in order to manage hundred of test cases</span></td></tr>";
     } else {
@@ -672,7 +672,7 @@ function check_session(&$errCounter)
         $errCounter ++;
     }
 
-    $out .= "<td><span class='tab-$color'>$msg</span></td></tr>\n";
+    $out .= "<td><span class='tab-{$color}'>{$msg}</span></td></tr>\n";
     return $out;
 }
 
@@ -704,8 +704,8 @@ function check_timeout(&$errCounter)
         $res = 'Too short. It must be extended!';
         $errCounter ++;
     }
-    $out .= "<td><span class='tab-$color'>" . $gc_maxlifetime_min .
-        " minutes and $gc_maxlifetime_sec seconds - ($res)</span></td></tr>\n";
+    $out .= "<td><span class='tab-{$color}'>" . $gc_maxlifetime_min .
+        " minutes and {$gc_maxlifetime_sec} seconds - ({$res})</span></td></tr>\n";
 
     return $out;
 }

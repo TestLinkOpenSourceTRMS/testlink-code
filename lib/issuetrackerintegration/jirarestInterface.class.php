@@ -234,7 +234,7 @@ class jirarestInterface extends issueTrackerInterface
                 $issue = null;
             }
         } catch (Exception $e) {
-            tLog("JIRA Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
+            tLog("JIRA Ticket ID {$issueID} - " . $e->getMessage(), 'WARNING');
             $issue = null;
         }
         return $issue;
@@ -394,7 +394,7 @@ class jirarestInterface extends issueTrackerInterface
                 if (isset($op->errors)) {
                     $ret['msg'] = __FUNCTION__ . ":Failure:JIRA Message:\n";
                     foreach ($op->errors as $pk => $pv) {
-                        $ret['msg'] .= "$pk => $pv\n";
+                        $ret['msg'] .= "{$pk} => {$pv}\n";
                     }
                 } else {
                     $ret = array(

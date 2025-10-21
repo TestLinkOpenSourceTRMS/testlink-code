@@ -328,7 +328,7 @@ function process_req(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version
                 urlencode($tprojectPrefix) . '&item=req&id=' . urlencode($docID);
             $ret['msg'] = sprintf(lang_get('req_version_not_found'), $version,
                 $docID, $tprojectPrefix);
-            $ret['msg'] .= sprintf(" <a href=\"$req_url\">%s</a>",
+            $ret['msg'] .= sprintf(" <a href=\"{$req_url}\">%s</a>",
                 lang_get('direct_link_on_wrong_version'));
             $req_id = null;
         }
@@ -336,11 +336,11 @@ function process_req(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version
 
     // Third and last step: set cookie and build the link (only if the requested item really was found).
     if (! is_null($req_id)) {
-        $ret['url'] = "lib/requirements/reqView.php?item=requirement&requirement_id=$req_id";
+        $ret['url'] = "lib/requirements/reqView.php?item=requirement&requirement_id={$req_id}";
 
         // link to open in requirement frame must include version
         if (! is_null($version_id)) {
-            $ret['url'] .= "&req_version_id=$version_id";
+            $ret['url'] .= "&req_version_id={$version_id}";
         }
 
         $ckCfg = config_get('cookie');

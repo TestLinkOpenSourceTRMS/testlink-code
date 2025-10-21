@@ -294,7 +294,7 @@ class tlExtTable extends tlTable
 
             foreach ($options as $opt_str) {
                 if (isset($column[$opt_str])) {
-                    $s .= ",$opt_str: {$column[$opt_str]}";
+                    $s .= ",{$opt_str}: {$column[$opt_str]}";
                 }
             }
 
@@ -386,7 +386,7 @@ class tlExtTable extends tlTable
         $s = "status_code_label = new Array();\n";
         foreach ($cfg["status_label"] as $status => $label) {
             $code = $cfg['status_code'][$status];
-            $s .= "status_code_label.$code = '" . lang_get($label) . "';\n";
+            $s .= "status_code_label.{$code} = '" . lang_get($label) . "';\n";
         }
 
         // 20121223 - franciscom -
@@ -396,13 +396,13 @@ class tlExtTable extends tlTable
         $cfg = config_get('urgency');
         $s .= "prio_code_label = new Array();\n";
         foreach ($cfg['code_label'] as $code => $label) {
-            $s .= "prio_code_label[$code] = '" . lang_get($label) . "';\n";
+            $s .= "prio_code_label[{$code}] = '" . lang_get($label) . "';\n";
         }
 
         $cfg = config_get('importance');
         $s .= "importance_code_label = new Array();\n";
         foreach ($cfg['code_label'] as $code => $label) {
-            $s .= "importance_code_label[$code] = '" . lang_get($label) . "';\n";
+            $s .= "importance_code_label[{$code}] = '" . lang_get($label) . "';\n";
         }
 
         return $s;
@@ -498,7 +498,7 @@ class tlExtTable extends tlTable
             $resultsCfg["status_label_for_exec_ui"]);
         foreach ($verboseStatusOrder as $order => $status) {
             $code = $resultsCfg['status_code'][$status];
-            $jsCode .= "status_code_order.$code = " . $order . ";\n";
+            $jsCode .= "status_code_order.{$code} = " . $order . ";\n";
         }
         return $jsCode;
     }
@@ -569,7 +569,7 @@ class tlExtTable extends tlTable
         $items = array();
         foreach ($cfg['code_label'] as $code => $label) {
             $items[] = array(
-                "$code",
+                "{$code}",
                 lang_get($label)
             );
         }
@@ -585,7 +585,7 @@ class tlExtTable extends tlTable
         $items = array();
         foreach ($cfg['code_label'] as $code => $label) {
             $items[] = array(
-                "$code",
+                "{$code}",
                 lang_get($label)
             );
         }

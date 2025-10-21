@@ -206,7 +206,7 @@ class database
             tLog(
                 "ERROR ON exec_query() - database.class.php <br />" .
                 $this->error(htmlspecialchars($p_query)) .
-                "<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");
+                "<br />THE MESSAGE : {$message} ", 'ERROR', "DATABASE");
             echo "<pre> ============================================================================== </pre>";
             echo "<pre> DB Access Error - debug_print_backtrace() OUTPUT START </pre>";
             echo "<pre> ATTENTION: Enabling more debug info will produce path disclosure weakness (CWE-200) </pre>";
@@ -375,7 +375,7 @@ class database
         $c_field = $this->db->prepare_string($p_field);
         $c_key = $this->db->prepare_string($p_key);
 
-        $sql = "DESCRIBE $c_table";
+        $sql = "DESCRIBE {$c_table}";
         $result = $this->exec_query($sql);
 
         $count = $this->num_rows($result);

@@ -111,7 +111,7 @@ function initOptionPanels(&$tplan_mgr, &$platform_mgr, &$opt_cfg, &$args)
         foreach ($map as $plat_id => &$plat_name) {
             $count = $tplan_mgr->count_testcases($args->tplan_id, $plat_id);
             $plat_name .= sprintf(lang_get('platform_linked_count'), $count);
-            $platform_count_js .= "platform_count_map['$plat_name'] = $count;\n";
+            $platform_count_js .= "platform_count_map['{$plat_name}'] = {$count};\n";
 
             // Removal of duplicates is NOT handled
             // automatically since we just have modified

@@ -33,112 +33,112 @@ $print_url = 'lib/print';
 
 //
 $user_admin = array(
-    "$user_admin_url/usersassign.php" => array(
+    "{$user_admin_url}/usersassign.php" => array(
         "user_role_assignment"
     )
 );
 $proj_admin = array(
-    "$proj_admin_url/projectEdit.php" => array(
+    "{$proj_admin_url}/projectEdit.php" => array(
         "mgt_modify_product"
     )
 );
 $test_exec = array(
-    "$test_exec_url/execnavigator.php" => array(
+    "{$test_exec_url}/execnavigator.php" => array(
         "testplan_execute"
     )
 );
 
 $tplan_admin = array(
-    "$tplan_admin_url/planupdatetc.php" => array(
+    "{$tplan_admin_url}/planupdatetc.php" => array(
         "testplan_planning"
     ),
-    "$tplan_admin_url/planaddtc.php" => array(
+    "{$tplan_admin_url}/planaddtc.php" => array(
         "testplan_planning"
     ),
-    "$tplan_admin_url/planaddtcnavigator.php" => array(
+    "{$tplan_admin_url}/planaddtcnavigator.php" => array(
         "testplan_planning"
     ),
-    "$tplan_admin_url/planedit.php" => array(
+    "{$tplan_admin_url}/planedit.php" => array(
         "testplan_planning"
     ),
-    "$tplan_admin_url/plannew.php" => array(
+    "{$tplan_admin_url}/plannew.php" => array(
         "testplan_planning"
     ),
-    "$tplan_admin_url/planpriority.php" => array(
+    "{$tplan_admin_url}/planpriority.php" => array(
         "testplan_planning"
     ),
-    "$tplan_admin_url/planupdatetc.php" => array(
+    "{$tplan_admin_url}/planupdatetc.php" => array(
         "testplan_planning"
     ),
-    "$tplan_admin_url/planmilestoneedit.php" => array(
+    "{$tplan_admin_url}/planmilestoneedit.php" => array(
         "testplan_planning"
     ),
-    "$tplan_admin_url/plantcnavigator.php" => array(
+    "{$tplan_admin_url}/plantcnavigator.php" => array(
         "testplan_planning"
     ),
-    "$tplan_admin_url/plantcremove.php" => array(
+    "{$tplan_admin_url}/plantcremove.php" => array(
         "testplan_planning"
     )
 );
 
 $reports = array(
-    "$reports_url/resultsallbuilds.php" => array(
+    "{$reports_url}/resultsallbuilds.php" => array(
         "testplan_metrics"
     ),
-    "$reports_url/resultsbugs.php" => array(
+    "{$reports_url}/resultsbugs.php" => array(
         "testplan_metrics"
     ),
-    "$reports_url/resultsbuild.php" => array(
+    "{$reports_url}/resultsbuild.php" => array(
         "testplan_metrics"
     ),
-    "$reports_url/resultsbystatus.php" => array(
+    "{$reports_url}/resultsbystatus.php" => array(
         "testplan_metrics"
     ),
-    "$reports_url/resultsgeneral.php" => array(
+    "{$reports_url}/resultsgeneral.php" => array(
         "testplan_metrics"
     ),
-    "$reports_url/resultsnavigator.php" => array(
+    "{$reports_url}/resultsnavigator.php" => array(
         "testplan_metrics"
     ),
-    "$reports_url/resultssend.php" => array(
+    "{$reports_url}/resultssend.php" => array(
         "testplan_metrics"
     ),
-    "$reports_url/resultstc.php" => array(
+    "{$reports_url}/resultstc.php" => array(
         "testplan_metrics"
     )
 );
 
 $tc_admin = array(
-    "$tc_admin_url/containeredit.php" => array(
+    "{$tc_admin_url}/containeredit.php" => array(
         "mgt_modify_tc",
         "mgt_view_tc"
     ),
-    "$tc_admin_url/tcedit.php" => array(
+    "{$tc_admin_url}/tcedit.php" => array(
         "mgt_modify_tc",
         "mgt_view_tc"
     ),
-    "$tc_admin_url/tcimport.php" => array(
+    "{$tc_admin_url}/tcimport.php" => array(
         "mgt_modify_tc",
         "mgt_view_tc"
     ),
-    "$tc_admin_url/searchform.php" => null,
-    "$tc_admin_url/searchdata.php" => null,
-    "$tc_admin_url/listtestcases.php" => null
+    "{$tc_admin_url}/searchform.php" => null,
+    "{$tc_admin_url}/searchdata.php" => null,
+    "{$tc_admin_url}/listtestcases.php" => null
 );
 
 $print_data = array(
-    "$print_url/printdata.php" => null,
-    "$print_url/selectdata.php" => null
+    "{$print_url}/printdata.php" => null,
+    "{$print_url}/selectdata.php" => null
 );
 
 $cf_admin = array(
-    "$cf_admin_url/cfieldsEdit.php" => array(
+    "{$cf_admin_url}/cfieldsEdit.php" => array(
         "cfield_management"
     ),
-    "$cf_admin_url/cfieldsView.php" => array(
+    "{$cf_admin_url}/cfieldsView.php" => array(
         "cfield_view"
     ),
-    "$cf_admin_url/cfieldsTProjectAssign.php" => array(
+    "{$cf_admin_url}/cfieldsTProjectAssign.php" => array(
         "cfield_management"
     )
 );

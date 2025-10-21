@@ -159,7 +159,7 @@ function getBuildDomainForGUI(&$tplanMgr, &$argsObj)
         foreach ($htmlMenu['items'] as $key => $name) {
             $count = $tplanMgr->assignment_mgr->get_count_of_assignments_for_build_id(
                 $key);
-            $htmlMenu['items'][$key] = $name . " ($lblCount" . $count . ")";
+            $htmlMenu['items'][$key] = $name . " ({$lblCount}" . $count . ")";
             $htmlMenu['testers'][$key] = $count;
         }
 

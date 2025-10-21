@@ -97,7 +97,7 @@ class mantisdbInterface extends issueTrackerInterface
         if (! $this->isConnected()) {
             return false;
         }
-        $sql = "/* $debugMsg */ SELECT id,status,summary FROM mantis_bug_table " .
+        $sql = "/* {$debugMsg} */ SELECT id,status,summary FROM mantis_bug_table " .
             " WHERE id=" . intval($id);
 
         $rs = $this->dbConnection->fetchRowsIntoMap($sql, 'id');

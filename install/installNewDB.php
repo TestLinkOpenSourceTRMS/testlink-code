@@ -94,7 +94,7 @@ $validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
 if (! $validator->isValid($dbHost)) {
     // hostname is invalid; print the reasons
     foreach ($validator->getMessages() as $message) {
-        echo "$message\n";
+        echo "{$message}\n";
     }
     die();
 }
@@ -238,7 +238,7 @@ $db = new database($dbDriverName);
 
 if ($conn_result['status'] == 0) {
     $db->close();
-    echo "<br>Database $db_name does not exist. <br>";
+    echo "<br>Database {$db_name} does not exist. <br>";
 
     if ($upgrade) {
         echo "Can't Upgrade";
@@ -283,7 +283,7 @@ if ($create) {
     $sql_create_db = $db->build_sql_create_db($db_name);
 
     if (! $db->exec_query($sql_create_db)) {
-        echo "<span class='notok'>Failed!</span></b> - Could not create database: $db! " .
+        echo "<span class='notok'>Failed!</span></b> - Could not create database: {$db}! " .
             $db->error_msg();
         $errors += 1;
 
@@ -410,10 +410,10 @@ $msg = create_user_for_db($dbDriverName, $db_name, $db_server, $db_admin_name,
 
 echo "<br /><b>Creating Testlink DB user `" . $user_host[0] . "`</b>:";
 if (strpos($msg, 'ok -') === false) {
-    echo "<span class='notok'>Failed!</span></b> - Could not create user: $tl_db_login!";
+    echo "<span class='notok'>Failed!</span></b> - Could not create user: {$tl_db_login}!";
     $errors += 1;
 } else {
-    echo "<span class='ok'>OK! ($msg) </span>";
+    echo "<span class='ok'>OK! ({$msg}) </span>";
 }
 
 // Schema Operations (CREATE, ALTER, ecc).
@@ -629,8 +629,8 @@ function drop_tables(&$dbHandler, $dbTablePrefix, $dbType)
             $targetTable = $dbTablePrefix . $tablePlainName;
             if (in_array($targetTable, $tablesOnDB)) {
                 // Need to add option (CASCADE ?) to delete dependent object
-                echo "Dropping $targetTable" . "<br />";
-                $sql = "DROP TABLE $targetTable";
+                echo "Dropping {$targetTable}" . "<br />";
+                $sql = "DROP TABLE {$targetTable}";
                 $sql .= (($dbType != 'mssql') && ($dbType != 'sqlsrv')) ? " CASCADE " : ' ';
                 $dbHandler->exec_query($sql);
             }
@@ -652,8 +652,8 @@ function drop_views(&$dbHandler, $dbItemPrefix, $dbType)
             $target = $dbItemPrefix . $itemPlainName;
             if (in_array($target, $itemsOnDB)) {
                 // Need to add option (CASCADE ?) to delete dependent object
-                echo "Dropping $target" . "<br />";
-                $sql = "DROP VIEW $target";
+                echo "Dropping {$target}" . "<br />";
+                $sql = "DROP VIEW {$target}";
                 $sql .= (($dbType != 'mssql') && ($dbType != 'sqlsrv')) ? " CASCADE " : ' ';
                 $dbHandler->exec_query($sql);
             }

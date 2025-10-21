@@ -514,7 +514,7 @@ class tlTransaction extends tlDBObject
                 $sessionID = "'" . $db->prepare_string($this->sessionID) . "'";
             }
 
-            $query = "/* $debugMsg */ INSERT INTO {$this->tables['transactions']} " .
+            $query = "/* {$debugMsg} */ INSERT INTO {$this->tables['transactions']} " .
                 "(entry_point,start_time,end_time,user_id,session_id) " .
                 "VALUES ('{$entryPoint}',{$startTime},{$endTime},{$userID},{$sessionID})";
             $result = $db->exec_query($query);
@@ -523,7 +523,7 @@ class tlTransaction extends tlDBObject
             }
         } else {
             $endTime = $db->prepare_int(time());
-            $query = " /* $debugMsg */ " .
+            $query = " /* {$debugMsg} */ " .
                 " UPDATE {$this->tables['transactions']} SET end_time = {$endTime} " .
                 " WHERE id = " . intval($this->dbID);
             $result = $db->exec_query($query);
@@ -714,8 +714,8 @@ class tlEventManager extends tlObjectWithDB
             }
 
             // 201501114 - help by TurboP
-            $query = "/* $debugMsg */ " .
-                " DELETE $alias4del FROM {$this->tables['transactions']} $alias4del " .
+            $query = "/* {$debugMsg} */ " .
+                " DELETE {$alias4del} FROM {$this->tables['transactions']} {$alias4del} " .
                 " WHERE NOT EXISTS " .
                 " (SELECT EV.id FROM {$this->tables['events']} EV " .
                 "  WHERE EV.transaction_id = {$alias4del}.id) ";
@@ -870,7 +870,7 @@ class tlEvent extends tlDBObject
                     $db->prepare_string($this->$tg) . "'") : 'NULL';
             }
 
-            $query = "/* $debugMsg */ " .
+            $query = "/* {$debugMsg} */ " .
                 "INSERT INTO {$this->tables['events']} (transaction_id,log_level,description,source," .
                 "fired_at,object_id,object_type,activity) " .
                 "VALUES ({$transactionID},{$logLevel},'{$description}',{$local->source}," .

@@ -80,7 +80,7 @@ if ($op) {
         foreach ($methods as $call) {
             $x = $if->$call($issue);
             echo '<br><b>Test Case #' . $tc . '</b><br>';
-            echo "<br>\$if->$call($issue) => " . $x . '<br><br>';
+            echo "<br>\$if->{$call}({$issue}) => " . $x . '<br><br>';
             $tc ++;
         }
     }

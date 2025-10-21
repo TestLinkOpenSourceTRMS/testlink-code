@@ -139,11 +139,11 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
                 'uribase',
                 'apikey'
             ) as $v) {
-                $logDetails .= "$v={$this->cfg->$v} / ";
+                $logDetails .= "{$v}={$this->cfg->$v} / ";
             }
             $logDetails = trim($logDetails, '/ ');
             $this->connected = false;
-            tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
+            tLog(__METHOD__ . " [{$logDetails}] " . $e->getMessage(), 'ERROR');
         }
     }
 

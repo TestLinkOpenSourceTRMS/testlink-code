@@ -79,19 +79,19 @@ $its[$user] = new redminerestInterface(15, $cfg);
 
 if ($its[$user]->isConnected()) {
 
-    echo "Try To Get ISSUE FROM PUBLIC PROJECT with $user <br>";
+    echo "Try To Get ISSUE FROM PUBLIC PROJECT with {$user} <br>";
     $xx = $its[$user]->getIssue(23);
     echo '<pre>';
     var_dump($xx);
     echo '</pre>';
 
-    echo "Try To Get ISSUE FROM ***Private*** PROJECT with $user THAT HAS NO ACCESS <br>";
+    echo "Try To Get ISSUE FROM ***Private*** PROJECT with {$user} THAT HAS NO ACCESS <br>";
     $xx = $its[$user]->getIssue(3);
     echo '<pre>';
     var_dump($xx);
     echo '</pre>';
 
-    echo "Try To Get ISSUE FROM ***Private*** PROJECT with $user THAT HAS ACCESS OK <br>";
+    echo "Try To Get ISSUE FROM ***Private*** PROJECT with {$user} THAT HAS ACCESS OK <br>";
     $xx = $its[$user]->getIssue(24);
     echo '<pre>';
     var_dump($xx);

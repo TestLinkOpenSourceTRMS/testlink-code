@@ -19,8 +19,8 @@ $password = 'root';
 $uribase = 'http://localhost/development/mantis/mantisbt-1.2.15/';
 
 $cfg = "<!-- Template mantissoapInterface -->\n" . "<issuetracker>\n" .
-    "<username>$username</username>\n" . "<password>$password</password>\n" .
-    "<uribase>$uribase</uribase>\n" . "<project>Project ONE</project>\n" .
+    "<username>{$username}</username>\n" . "<password>{$password}</password>\n" .
+    "<uribase>{$uribase}</uribase>\n" . "<project>Project ONE</project>\n" .
     "<category>YUMO</category>" . "</issuetracker>\n";
 
 echo '<hr><br>';

@@ -428,7 +428,7 @@ function saveImportedResultData(&$db, $resultData, $context, $options)
                 }
 
                 if ($doInsert) {
-                    $sql = " /* $debugMsg */ " .
+                    $sql = " /* {$debugMsg} */ " .
                         " INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
                         " tcversion_id,execution_ts,notes,tcversion_number,platform_id,execution_type" .
                         ($addExecDuration ? ',execution_duration' : '') . ")" .
@@ -501,12 +501,12 @@ function saveImportedResultData(&$db, $resultData, $context, $options)
 
                         foreach ($tcase_exec['bug_id'] as $bug_id) {
                             $bug_id = trim($bug_id);
-                            $sql = " /* $debugMsg */ " .
+                            $sql = " /* {$debugMsg} */ " .
                                 " SELECT execution_id AS check_qty FROM  {$tables['execution_bugs']} " .
                                 " WHERE bug_id = '{$bug_id}' AND execution_id={$execution_id} ";
                             $rs = $db->get_recordset($sql);
                             if (is_null($rs)) {
-                                $sql = " /* $debugMsg */ " .
+                                $sql = " /* {$debugMsg} */ " .
                                     " INSERT INTO {$tables['execution_bugs']} (bug_id,execution_id)" .
                                     " VALUES ('" . $db->prepare_string($bug_id) .
                                     "', {$execution_id} )";

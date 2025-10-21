@@ -46,7 +46,7 @@ $cfg = "<!-- Template " . __CLASS__ . " -->\n" . "<issuetracker>\n" .
     "<project>fpo</project>\n" . "</issuetracker>\n";
 
 echo '<hr><br>';
-echo "<b>Testing  BST Integration - $itfName </b>";
+echo "<b>Testing  BST Integration - {$itfName} </b>";
 echo '<hr><br>';
 echo "Configuration settings<br>";
 echo "<pre><xmp>" . $cfg . "</xmp></pre>";

@@ -533,7 +533,7 @@ class mantissoapInterface extends issueTrackerInterface
                         break;
 
                     default:
-                        $ret['msg'] = "Cannot create note, MantisBT message: $faultMsg";
+                        $ret['msg'] = "Cannot create note, MantisBT message: {$faultMsg}";
                         break;
                 }
             }

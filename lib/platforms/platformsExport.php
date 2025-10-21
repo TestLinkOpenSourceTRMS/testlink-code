@@ -116,7 +116,7 @@ function doExport(&$db, $filename, $tproject_id)
     ));
     $adodbXML = new ADODB_XML("1.0", "UTF-8");
 
-    $sql = "/* $debugMsg */
+    $sql = "/* {$debugMsg} */
           SELECT name,notes,enable_on_design,enable_on_execution,is_open
           FROM {$tables['platforms']} PLAT
           WHERE PLAT.testproject_id=" . intval($tproject_id);

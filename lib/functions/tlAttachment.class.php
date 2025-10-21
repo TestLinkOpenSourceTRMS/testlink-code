@@ -329,7 +329,7 @@ class tlAttachment extends tlDBObject
         $query = "INSERT INTO {$this->tables['attachments']}
              (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title)
              VALUES ({$this->fkID},'{$tableName}','{$fName}',{$destFPath},{$this->fSize},'{$this->fType}'," .
-            $db->db_now() . ",$fContents,{$this->compressionType},'{$title}')";
+            $db->db_now() . ",{$fContents},{$this->compressionType},'{$title}')";
 
         $result = $db->exec_query($query);
         if ($result) {

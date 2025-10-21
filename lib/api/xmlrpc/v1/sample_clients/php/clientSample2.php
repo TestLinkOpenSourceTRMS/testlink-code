@@ -110,7 +110,7 @@ echo "<br>";
 // ----------------------------------------------------------------------
 $method = 'getTestCaseCustomFieldDesignValue';
 $client_query = 'tl.' . $method;
-$unitTestDescription = "Test - $method";
+$unitTestDescription = "Test - {$method}";
 
 $args = array();
 $args["devKey"] = DEV_KEY;

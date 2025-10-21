@@ -126,7 +126,7 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
         $table_style = "style=\"margin-left: 0;\"";
     }
 
-    $output = "<table class=\"req\" $table_style><tr><th colspan=\"$tableColspan\">" .
+    $output = "<table class=\"req\" {$table_style}><tr><th colspan=\"{$tableColspan}\">" .
         "<span class=\"label\">{$labels['requirement']}:</span> " . $name .
         "</th></tr>\n";
 
@@ -198,18 +198,18 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
             (array) $req_mgr->getGoodForReqVersion($req['version_id']));
 
         $expected = $req['expected_coverage'];
-        $coverage = $labels['not_aplicable'] . " ($current/0)";
+        $coverage = $labels['not_aplicable'] . " ({$current}/0)";
         if ($expected) {
             $percentage = round(100 / $expected * $current, 2);
             $coverage = "{$percentage}% ({$current}/{$expected})";
         }
 
-        $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
-            $labels['coverage'] . "</span></td>" . "<td>$coverage</td></tr>";
+        $output .= "<tr><td width=\"{$firstColWidth}\"><span class=\"label\">" .
+            $labels['coverage'] . "</span></td>" . "<td>{$coverage}</td></tr>";
     }
 
     if ($options['req_scope']) {
-        $output .= "<tr><td colspan=\"$tableColspan\"> <br/>" . $req['scope'] .
+        $output .= "<tr><td colspan=\"{$tableColspan}\"> <br/>" . $req['scope'] .
             "</td></tr>";
     }
 
@@ -219,7 +219,7 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
         $relations = $req_mgr->get_relations($req['id']);
 
         if ($relations['num_relations']) {
-            $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+            $output .= "<tr><td width=\"{$firstColWidth}\"><span class=\"label\">" .
                 $labels['relations'] . "</span></td><td>";
 
             $filler = str_repeat('&nbsp;', 5); // MAGIC allowed
@@ -255,7 +255,7 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
             ));
 
         if ($req_coverage !== []) {
-            $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+            $output .= "<tr><td width=\"{$firstColWidth}\"><span class=\"label\">" .
                 $labels['related_tcs'] . "</span></td>" . "<td>";
             foreach ($req_coverage[$req['version_id']] as $tc) {
                 $output .= htmlspecialchars(
@@ -276,8 +276,8 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
                 $cflabel = htmlspecialchars($cf['label']);
                 $value = htmlspecialchars($cf['value']);
 
-                $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
-                    $cflabel . "</span></td>" . "<td>$value</td></tr>";
+                $output .= "<tr><td width=\"{$firstColWidth}\"><span class=\"label\">" .
+                    $cflabel . "</span></td>" . "<td>{$value}</td></tr>";
             }
         }
     }
@@ -287,7 +287,7 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
     $attachSet = (array) $req_mgr->getAttachmentInfos($req['revision_id']);
 
     if ($attachSet !== []) {
-        $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+        $output .= "<tr><td width=\"{$firstColWidth}\"><span class=\"label\">" .
             $labels['attached_files'] . "</span></td><td>";
 
         foreach ($attachSet as $fitem) {
@@ -415,7 +415,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix,
 
     $docHeadingNumbering = '';
     if ($options['headerNumbering']) {
-        $docHeadingNumbering = "$tocPrefix. ";
+        $docHeadingNumbering = "{$tocPrefix}. ";
     }
 
     if ($options['docType'] != SINGLE_REQSPEC) {
@@ -426,7 +426,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix,
     $reLevel = ($reLevel > 6) ? 6 : $reLevel;
     $reLevel = ($reLevel < 1) ? 1 : $reLevel;
 
-    $output .= "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
+    $output .= "<table class=\"req_spec\"><tr><th colspan=\"{$tableColspan}\">" .
         "<h{$reLevel} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
         $name . "</h{$reLevel}></th></tr>\n";
 
@@ -466,7 +466,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix,
     if ($options['req_spec_overwritten_count_reqs']) {
         $current = $req_spec_mgr->get_requirements_count($spec_id); // NEEDS REFACTOR
         $expected = $spec['total_req'];
-        $coverage = $labels['not_aplicable'] . " ($current/0)";
+        $coverage = $labels['not_aplicable'] . " ({$current}/0)";
         if ($expected) {
             $percentage = round(100 / $expected * $current, 2);
             $coverage = "{$percentage}% ({$current}/{$expected})";
@@ -478,7 +478,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix,
     }
 
     if ($options['req_spec_scope']) {
-        $output .= "<tr><td colspan=\"$tableColspan\">" . $spec['scope'] .
+        $output .= "<tr><td colspan=\"{$tableColspan}\">" . $spec['scope'] .
             "</td></tr>";
     }
 
@@ -490,15 +490,15 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix,
                 $cflabel = htmlspecialchars($cf['label']);
                 $value = htmlspecialchars($cf['value']);
 
-                $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
-                    $cflabel . "</span></td>" . "<td>$value</td></tr>";
+                $output .= "<tr><td width=\"{$firstColWidth}\"><span class=\"label\">" .
+                    $cflabel . "</span></td>" . "<td>{$value}</td></tr>";
             }
         }
     }
 
     $attachSet = (array) $req_spec_mgr->getAttachmentInfos($spec_id);
     if ($attachSet !== []) {
-        $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
+        $output .= "<tr><td width=\"{$firstColWidth}\"><span class=\"label\">" .
             $labels['attached_files'] . "</span></td><td><ul>";
 
         foreach ($attachSet as $item) {
@@ -507,7 +507,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix,
                 $fname .= htmlspecialchars($item['title']) . " : ";
             }
             $fname .= htmlspecialchars($item['file_name']);
-            $output .= "<li>$fname</li>";
+            $output .= "<li>{$fname}</li>";
         }
         $output .= "</ul></td></tr>";
     }
@@ -1525,7 +1525,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
                 $fname .= htmlspecialchars($item['title']) . " : ";
             }
             $fname .= htmlspecialchars($item['file_name']);
-            $code .= "<li>$fname</li>";
+            $code .= "<li>{$fname}</li>";
 
             $sec = hash('sha256', $item['file_name']);
 
@@ -1789,7 +1789,7 @@ function renderTestSuiteNodeForPrinting(&$db, &$node, $env, &$options, $context,
                     $fname .= htmlspecialchars($item['title']) . " : ";
                 }
                 $fname .= htmlspecialchars($item['file_name']);
-                $code .= "<li>$fname</li>";
+                $code .= "<li>{$fname}</li>";
 
                 $sec = hash('sha256', $item['file_name']);
                 $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' .
@@ -2164,11 +2164,11 @@ function renderPlatformHeading($tocPrefix, $platform, &$options)
     $lbl = lang_get('platform');
     $name = htmlspecialchars($platform['name']);
     $options['tocCode'] .= '<p>&nbsp;</p><p><b><a href="#' .
-        prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $lbl" . ':' . $name .
+        prefixToHTMLID($tocPrefix) . '">' . "{$tocPrefix}. {$lbl}" . ':' . $name .
         '</a></b></p>';
 
     $out = '<h1 class="doclevel" id="' . prefixToHTMLID($tocPrefix) .
-        "\">$tocPrefix. $lbl: $name</h1>";
+        "\">{$tocPrefix}. {$lbl}: {$name}</h1>";
     // platform description is enabled with test plan description option settings
     if ($options['showPlatformNotes']) {
         $out .= '<div class="txtlevel">' .

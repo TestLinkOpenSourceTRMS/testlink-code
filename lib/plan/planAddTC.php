@@ -324,7 +324,7 @@ if ($do_display !== 0) {
                     $out = $tmp;
                 } else {
                     $tmp['spec_view'][1]["testsuite"] = $tmp['spec_view'][0]['testsuite'];
-                    array_push($out['spec_view'], $tmp['spec_view'][1]);
+                    $out['spec_view'][] = $tmp['spec_view'][1];
                 }
             }
         }
@@ -350,7 +350,7 @@ if ($do_display !== 0) {
                 $out = $tmp;
             } else {
                 $tmp['spec_view'][1]["testsuite"] = $tmp['spec_view'][0]['testsuite'];
-                array_push($out['spec_view'], $tmp['spec_view'][1]);
+                $out['spec_view'][] = $tmp['spec_view'][1];
             }
         }
     }

@@ -173,7 +173,6 @@ function plugin_config_set($option, $value, $project = TL_ANY_PROJECT)
         $value = serialize($value);
     } elseif (is_float($value)) {
         $config_type = CONFIG_TYPE_FLOAT;
-        $value = $value;
     } elseif (is_int($value) || is_numeric($value)) {
         $config_type = CONFIG_TYPE_INT;
         $value = $dbHandler->prepare_int($value);

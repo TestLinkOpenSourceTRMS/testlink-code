@@ -220,7 +220,7 @@ class dBug
     public function varIsArray($var)
     {
         $var_ser = serialize($var);
-        array_push($this->arrHistory, $var_ser);
+        $this->arrHistory[] = $var_ser;
 
         $this->makeTableHeader("array", "array");
         if (is_array($var)) {
@@ -252,7 +252,7 @@ class dBug
     public function varIsObject($var)
     {
         $var_ser = serialize($var);
-        array_push($this->arrHistory, $var_ser);
+        $this->arrHistory[] = $var_ser;
         $this->makeTableHeader("object", "object");
 
         if (is_object($var)) {

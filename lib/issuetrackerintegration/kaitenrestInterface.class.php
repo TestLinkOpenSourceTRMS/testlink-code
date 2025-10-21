@@ -77,7 +77,6 @@ class kaitenrestInterface extends issueTrackerInterface
         if (property_exists($this->cfg, 'options')) {
             $option = get_object_vars($this->cfg->options);
             foreach ($option as $name => $elem) {
-                $name = $name;
                 $this->options[$name] = (string) $elem;
             }
         }

@@ -9100,17 +9100,15 @@ class TestlinkXMLRPCServer extends IXR_Server
                     $cfieldMgr->design_values_to_db($hash,
                         $args[self::$buildIDParamName], null, null, 'build');
                     // Add the result for each custom field to the returned array
-                    array_push($ret,
-                        array(
-                            'status' => 'ok',
-                            'msg' => 'Custom Field:' . $cfName . ' processed '
-                        ));
+                    $ret[] = array(
+                        'status' => 'ok',
+                        'msg' => 'Custom Field:' . $cfName . ' processed '
+                    );
                 } else {
-                    array_push($ret,
-                        array(
-                            'status' => 'ko',
-                            'msg' => 'Custom Field:' . $cfName . ' skipped '
-                        ));
+                    $ret[] = array(
+                        'status' => 'ko',
+                        'msg' => 'Custom Field:' . $cfName . ' skipped '
+                    );
                 }
             }
             // Return the result after all of the fields have been processed

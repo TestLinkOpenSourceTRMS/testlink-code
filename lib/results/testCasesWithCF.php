@@ -309,20 +309,23 @@ function getColumnsDefinition($showPlatforms, $customFields, $platforms)
             'filterOptions' => $platforms
         );
     }
-    array_push($colDef, array(
+    $colDef[] = array(
         'title_key' => 'build',
         'width' => 35
-    ), array(
+    );
+    $colDef[] = array(
         'title_key' => 'th_owner',
         'width' => 60
-    ), array(
+    );
+    $colDef[] = array(
         'title_key' => 'date',
         'width' => 60
-    ), array(
+    );
+    $colDef[] = array(
         'title_key' => 'status',
         'type' => 'status',
         'width' => 30
-    ));
+    );
 
     $colDef[] = array(
         'title_key' => 'title_execution_notes',

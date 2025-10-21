@@ -1903,7 +1903,7 @@ function getBackupSteps(&$tcaseMgr, $guiObj, $testPlanId, $platformId, $buildId)
     $stepsIds = array();
     foreach ($guiObj->map_last_exec as $tcId => $elements) {
         foreach ($guiObj->map_last_exec[$tcId]['steps'] as $step) {
-            array_push($stepsIds, $step["id"]);
+            $stepsIds[] = $step["id"];
         }
     }
 

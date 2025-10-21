@@ -765,7 +765,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     {
         $children = $this->get_requirement_child_by_id_req($id);
         foreach ($children as $child) {
-            array_push($this->requirement_child_ids, $child);
+            $this->requirement_child_ids[] = $child;
             $this->get_requirement_child_by_id($child["destination_id"]);
         }
         return $this->requirement_child_ids;

@@ -234,13 +234,12 @@ class database
         }
 
         if ($this->logQueries) {
-            array_push($this->queries_array,
-                array(
-                    $p_query,
-                    $t_elapsed,
-                    $ec,
-                    $emsg
-                ));
+            $this->queries_array[] = array(
+                $p_query,
+                $t_elapsed,
+                $ec,
+                $emsg
+            );
         }
 
         return $t_result;
@@ -473,7 +472,7 @@ class database
         foreach ($this->queries_array as $t_val_array) {
             if (! in_array($t_val_array[0], $t_shown_queries)) {
                 $t_unique_queries ++;
-                array_push($t_shown_queries, $t_val_array[0]);
+                $t_shown_queries[] = $t_val_array[0];
             }
         }
         return $t_unique_queries;

@@ -87,7 +87,6 @@ class redminerestInterface extends issueTrackerInterface
         if (property_exists($this->cfg, 'attributes')) {
             $attr = get_object_vars($this->cfg->attributes);
             foreach ($attr as $name => $elem) {
-                $name = $name;
                 if (is_object($elem)) {
                     $elem = get_object_vars($elem);
                     $cc = current($elem);
@@ -387,7 +386,7 @@ class redminerestInterface extends issueTrackerInterface
                 // Management of Dynamic Values From XML Configuration
                 $safeVal = array();
                 foreach ($opt->tagValue->value as $val) {
-                    array_push($safeVal, htmlentities($val, ENT_XML1));
+                    $safeVal[] = htmlentities($val, ENT_XML1);
                 }
                 $cf = str_replace($opt->tagValue->tag, $safeVal, $cf);
 

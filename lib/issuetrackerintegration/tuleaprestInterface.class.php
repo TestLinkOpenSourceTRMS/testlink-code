@@ -265,9 +265,9 @@ class tuleaprestInterface extends issueTrackerInterface
 
         try {
 
-            $this->APIClient = new tuleap((string) trim($this->cfg->uriapi),
-                (string) trim($this->cfg->username),
-                (string) trim($this->cfg->password));
+            $this->APIClient = new tuleap(trim($this->cfg->uriapi),
+                trim($this->cfg->username),
+                trim($this->cfg->password));
 
             try {
                 $this->connected = $this->APIClient->Connect();

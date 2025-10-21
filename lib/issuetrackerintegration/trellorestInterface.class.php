@@ -72,7 +72,7 @@ class trellorestInterface extends issueTrackerInterface
         if (property_exists($this->cfg, 'options')) {
             $option = get_object_vars($this->cfg->options);
             foreach ($option as $name => $elem) {
-                $name = (string) $name;
+                $name = $name;
                 $this->options[$name] = (string) $elem;
             }
         }
@@ -149,10 +149,10 @@ class trellorestInterface extends issueTrackerInterface
             // $this->cfg is a simpleXML Object, then seems very conservative and safe
             // to cast properties BEFORE using it.
             $myContext = [
-                'url' => (string) trim($this->cfg->uribase),
-                'apikey' => (string) trim($this->cfg->apikey),
-                'apitoken' => (string) trim($this->cfg->apitoken),
-                'boardid' => (string) trim($this->cfg->boardid)
+                'url' => trim($this->cfg->uribase),
+                'apikey' => trim($this->cfg->apikey),
+                'apitoken' => trim($this->cfg->apitoken),
+                'boardid' => trim($this->cfg->boardid)
             ];
 
             $cfg = [

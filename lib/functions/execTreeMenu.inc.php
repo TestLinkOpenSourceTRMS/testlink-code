@@ -746,52 +746,48 @@ function testPlanTree(&$dbHandler, &$menuUrl, $tproject_id, $tproject_name,
 
     $tplan_tcases = array();
     if ($test_spec) {
-        if (is_null($filters['tcase_id']) || $filters['tcase_id'] > 0) // 20120519 TO BE CHECKED
-        {
-            // Step 1 - get item set with exec status.
-            // This has to scopes:
-            // 1. tree coloring according exec status on (Test plan, platform, build ) context
-            // 2. produce sql that can be used to reduce item set on combination with filters
-            // that can not be used on this step like:
-            // a. test cases belonging to branch with root TEST SUITE
-            // b. keyword filter on AND MODE
-            // c. execution results on other builds, any build etc
-            //
-            // WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
-            // THIS YET.
-            //
-            if (! is_null(
-                $sql2do = $tplan_mgr->{$objOptions->getTreeMethod}($tplan_id,
-                    $filters, $options))) {
-                $doPinBall = false;
-                if (is_array($sql2do)) {
-                    if ($doPinBall = $filters['keyword_filter_type'] == 'And') {
-                        $kmethod = "fetchRowsIntoMapAddRC";
-                        $unionClause = " UNION ALL ";
-                    } else {
-                        $kmethod = "fetchRowsIntoMap";
-                        $unionClause = ' UNION ';
-                    }
-                    $sql2run = $sql2do['exec'] . $unionClause .
-                        $sql2do['not_run'];
+        // Step 1 - get item set with exec status.
+        // This has to scopes:
+        // 1. tree coloring according exec status on (Test plan, platform, build ) context
+        // 2. produce sql that can be used to reduce item set on combination with filters
+        // that can not be used on this step like:
+        // a. test cases belonging to branch with root TEST SUITE
+        // b. keyword filter on AND MODE
+        // c. execution results on other builds, any build etc
+        //
+        // WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
+        // THIS YET.
+        //
+        if ((is_null($filters['tcase_id']) || $filters['tcase_id'] > 0) && ! is_null(
+            $sql2do = $tplan_mgr->{$objOptions->getTreeMethod}($tplan_id,
+                $filters, $options))) {
+            $doPinBall = false;
+            if (is_array($sql2do)) {
+                if ($doPinBall = $filters['keyword_filter_type'] == 'And') {
+                    $kmethod = "fetchRowsIntoMapAddRC";
+                    $unionClause = " UNION ALL ";
                 } else {
                     $kmethod = "fetchRowsIntoMap";
-                    $sql2run = $sql2do;
+                    $unionClause = ' UNION ';
                 }
-
-                $tplan_tcases = $dbHandler->$kmethod($sql2run, 'tcase_id');
-                if ($doPinBall && ! is_null($tplan_tcases)) {
-                    $kwc = count($filters['keyword_id']);
-                    $ak = array_keys($tplan_tcases);
-                    $mx = null;
-                    foreach ($ak as $tk) {
-                        if ($tplan_tcases[$tk]['recordcount'] == $kwc) {
-                            $mx[$tk] = $tplan_tcases[$tk];
-                        }
+                $sql2run = $sql2do['exec'] . $unionClause .
+                    $sql2do['not_run'];
+            } else {
+                $kmethod = "fetchRowsIntoMap";
+                $sql2run = $sql2do;
+            }
+            $tplan_tcases = $dbHandler->$kmethod($sql2run, 'tcase_id');
+            if ($doPinBall && ! is_null($tplan_tcases)) {
+                $kwc = count($filters['keyword_id']);
+                $ak = array_keys($tplan_tcases);
+                $mx = null;
+                foreach ($ak as $tk) {
+                    if ($tplan_tcases[$tk]['recordcount'] == $kwc) {
+                        $mx[$tk] = $tplan_tcases[$tk];
                     }
-                    $tplan_tcases = null;
-                    $tplan_tcases = $mx;
                 }
+                $tplan_tcases = null;
+                $tplan_tcases = $mx;
             }
         }
 

@@ -94,9 +94,9 @@ class stashrestInterface extends codeTrackerInterface
             // $this->cfg is a simpleXML Object, then seems very conservative and safe
             // to cast properties BEFORE using it.
             $this->stashCfg = array(
-                'username' => (string) trim($this->cfg->username),
-                'password' => (string) trim($this->cfg->password),
-                'host' => (string) trim($this->cfg->uriapi)
+                'username' => trim($this->cfg->username),
+                'password' => trim($this->cfg->password),
+                'host' => trim($this->cfg->uriapi)
             );
 
             $this->stashCfg['proxy'] = config_get('proxy');

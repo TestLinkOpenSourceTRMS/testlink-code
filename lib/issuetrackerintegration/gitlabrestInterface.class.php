@@ -77,7 +77,7 @@ class gitlabrestInterface extends issueTrackerInterface
         if (property_exists($this->cfg, 'attributes')) {
             $attr = get_object_vars($this->cfg->attributes);
             foreach ($attr as $name => $elem) {
-                $name = (string) $name;
+                $name = $name;
                 if (is_object($elem)) {
                     $elem = get_object_vars($elem);
                     $cc = current($elem);
@@ -146,9 +146,9 @@ class gitlabrestInterface extends issueTrackerInterface
             // CRITIC NOTICE for developers
             // $this->cfg is a simpleXML Object, then seems very conservative and safe
             // to cast properties BEFORE using it.
-            $redUrl = (string) trim($this->cfg->uribase);
-            $redAK = (string) trim($this->cfg->apikey);
-            $projectId = (string) trim($this->cfg->projectidentifier); // TODO: check integer value
+            $redUrl = trim($this->cfg->uribase);
+            $redAK = trim($this->cfg->apikey);
+            $projectId = trim($this->cfg->projectidentifier); // TODO: check integer value
             $pxy = new stdClass();
             $pxy->proxy = config_get('proxy');
             $this->APIClient = new gitlab($redUrl, $redAK, $projectId, $pxy);

@@ -294,7 +294,7 @@ function initializeGui(&$dbh, &$argsObj, &$tplanMgr)
     // will be used when sending mail o creating spreadsheet
     $guiObj->platSet = array();
     if (! empty($argsObj->platSet)) {
-        $pp = (array) array_flip($argsObj->platSet);
+        $pp = array_flip($argsObj->platSet);
     }
     if (! isset($pp[0])) {
         // we have platforms

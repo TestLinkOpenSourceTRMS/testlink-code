@@ -102,9 +102,9 @@ class fogbugzrestInterface extends issueTrackerInterface
             // CRITIC NOTICE for developers
             // $this->cfg is a simpleXML Object, then seems very conservative and safe
             // to cast properties BEFORE using it.
-            $this->APIClient = new FogBugz((string) trim($this->cfg->username),
-                (string) trim($this->cfg->password),
-                (string) trim($this->cfg->uribase));
+            $this->APIClient = new FogBugz(trim($this->cfg->username),
+                trim($this->cfg->password),
+                trim($this->cfg->uribase));
             $this->APIClient->logon();
             $this->connected = true;
         } catch (Exception $e) {

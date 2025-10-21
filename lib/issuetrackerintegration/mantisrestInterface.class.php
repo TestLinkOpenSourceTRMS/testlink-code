@@ -85,7 +85,7 @@ class mantisrestInterface extends issueTrackerInterface
         if (property_exists($this->cfg, 'options')) {
             $option = get_object_vars($this->cfg->options);
             foreach ($option as $name => $elem) {
-                $name = (string) $name;
+                $name = $name;
                 $this->options[$name] = (string) $elem;
             }
         }
@@ -134,8 +134,8 @@ class mantisrestInterface extends issueTrackerInterface
             // $this->cfg is a simpleXML Object, then seems very conservative and safe
             // to cast properties BEFORE using it.
             $context = [
-                'url' => (string) trim($this->cfg->uribase),
-                'apikey' => (string) trim($this->cfg->apikey)
+                'url' => trim($this->cfg->uribase),
+                'apikey' => trim($this->cfg->apikey)
             ];
 
             $tlContext = [
@@ -185,7 +185,7 @@ class mantisrestInterface extends issueTrackerInterface
      */
     public function buildViewBugURL($id)
     {
-        return (string) ($this->cfg->uriview . urlencode($id));
+        return $this->cfg->uriview . urlencode($id);
     }
 
     /**

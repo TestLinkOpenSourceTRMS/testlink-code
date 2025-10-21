@@ -45,7 +45,7 @@ if ($its->isConnected()) {
     $issue = array(
         'fields' => array(
             'project' => array(
-                'key' => (string) $projectkey
+                'key' => $projectkey
             ),
             'summary' => $summary,
             'description' => $description,

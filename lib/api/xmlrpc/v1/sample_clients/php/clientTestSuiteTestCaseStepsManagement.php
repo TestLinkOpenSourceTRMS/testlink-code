@@ -81,7 +81,7 @@ if (($loop2do = count($originalSteps)) > 0) {
 }
 
 // Now reinsert original content if any
-$steps2insert = ! is_null($originalSteps) && count((array) $originalSteps > 0) ? $originalSteps : $fakeSteps;
+$steps2insert = ! is_null($originalSteps) && count($originalSteps > 0) ? $originalSteps : $fakeSteps;
 $args = $commonArgs;
 $args["version"] = $cfg->tcaseVersionNumber;
 $args["action"] = 'create';

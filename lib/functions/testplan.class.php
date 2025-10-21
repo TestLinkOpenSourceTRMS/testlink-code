@@ -4934,7 +4934,7 @@ class testplan extends tlObjectWithAttachments
         $hits = is_null($recordset) ? $recordset : array_flip(
             array_keys($recordset));
 
-        $items = (array) $hits + (array) $notRunHits;
+        $items = $hits + (array) $notRunHits;
         return $items !== [] ? $items : null;
     }
 
@@ -4996,7 +4996,7 @@ class testplan extends tlObjectWithAttachments
         $hits = is_null($recordset) ? $recordset : array_flip(
             array_keys($recordset));
 
-        $items = (array) $hits + (array) $notRunHits;
+        $items = $hits + (array) $notRunHits;
         return $items !== [] ? $items : null;
     }
 

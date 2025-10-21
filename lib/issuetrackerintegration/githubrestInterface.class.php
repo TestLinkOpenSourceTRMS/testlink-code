@@ -77,7 +77,7 @@ class githubrestInterface extends issueTrackerInterface
         if (property_exists($this->cfg, 'attributes')) {
             $attr = get_object_vars($this->cfg->attributes);
             foreach ($attr as $name => $elem) {
-                $name = (string) $name;
+                $name = $name;
                 if (is_object($elem)) {
                     $elem = get_object_vars($elem);
                     $cc = current($elem);
@@ -140,11 +140,11 @@ class githubrestInterface extends issueTrackerInterface
             // CRITIC NOTICE for developers
             // $this->cfg is a simpleXML Object, then seems very conservative and safe
             // to cast properties BEFORE using it.
-            $url = (string) trim($this->cfg->url);
-            $user = (string) trim($this->cfg->user);
-            $apiKey = (string) trim($this->cfg->apikey);
-            $repo = (string) trim($this->cfg->repo); // TODO: check integer value
-            $owner = (string) trim($this->cfg->owner); // TODO: check integer value
+            $url = trim($this->cfg->url);
+            $user = trim($this->cfg->user);
+            $apiKey = trim($this->cfg->apikey);
+            $repo = trim($this->cfg->repo); // TODO: check integer value
+            $owner = trim($this->cfg->owner); // TODO: check integer value
             $pxy = new stdClass();
             $pxy->proxy = config_get('proxy');
             $this->APIClient = new github($url, $user, $apiKey, $owner, $repo,

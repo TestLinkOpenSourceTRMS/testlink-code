@@ -613,10 +613,10 @@ function importExecutionFromXML(&$xmlTCExec)
     // seems that no PHP error is generated when trying to access an undefined
     // property. Do not know if will not be better anyway to use property_exists()
     $execInfo['tcase_name'] = (string) $xmlTCExec->name;
-    $execInfo['result'] = (string) trim($xmlTCExec->result);
-    $execInfo['notes'] = (string) trim($xmlTCExec->notes);
-    $execInfo['timestamp'] = (string) trim($xmlTCExec->timestamp);
-    $execInfo['tester'] = (string) trim($xmlTCExec->tester);
+    $execInfo['result'] = trim($xmlTCExec->result);
+    $execInfo['notes'] = trim($xmlTCExec->notes);
+    $execInfo['timestamp'] = trim($xmlTCExec->timestamp);
+    $execInfo['tester'] = trim($xmlTCExec->tester);
     $execInfo['execution_type'] = intval((int) trim($xmlTCExec->execution_type));
     $execInfo['execution_duration'] = trim($xmlTCExec->execution_duration);
 

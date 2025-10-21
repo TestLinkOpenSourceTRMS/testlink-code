@@ -87,7 +87,7 @@ class redminerestInterface extends issueTrackerInterface
         if (property_exists($this->cfg, 'attributes')) {
             $attr = get_object_vars($this->cfg->attributes);
             foreach ($attr as $name => $elem) {
-                $name = (string) $name;
+                $name = $name;
                 if (is_object($elem)) {
                     $elem = get_object_vars($elem);
                     $cc = current($elem);
@@ -157,8 +157,8 @@ class redminerestInterface extends issueTrackerInterface
             // CRITIC NOTICE for developers
             // $this->cfg is a simpleXML Object, then seems very conservative and safe
             // to cast properties BEFORE using it.
-            $redUrl = (string) trim($this->cfg->uribase);
-            $redAK = (string) trim($this->cfg->apikey);
+            $redUrl = trim($this->cfg->uribase);
+            $redAK = trim($this->cfg->apikey);
             $pxy = new stdClass();
             $pxy->proxy = config_get('proxy');
             $this->APIClient = new redmine($redUrl, $redAK, $pxy);

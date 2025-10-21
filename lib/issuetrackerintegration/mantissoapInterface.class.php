@@ -83,7 +83,7 @@ class mantissoapInterface extends issueTrackerInterface
      */
     public function buildViewBugURL($id)
     {
-        return (string) ($this->cfg->uriview . urlencode($id));
+        return $this->cfg->uriview . urlencode($id);
     }
 
     /**

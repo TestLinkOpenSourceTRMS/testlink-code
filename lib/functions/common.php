@@ -779,7 +779,7 @@ function ini_get_bool($p_name)
                 break;
         }
     } else {
-        return (bool) $result;
+        return $result;
     }
 }
 

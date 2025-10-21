@@ -530,8 +530,10 @@ function sendMailToTesters(&$dbHandler, &$tcaseMgr, &$guiObj, &$argsObj,
 
                 $userObj = $guiObj->all_users[$user_id];
                 $email['to_address'] = trim($userObj->emailAddress);
-                if ($email['to_address'] == '' ||
-                    ! $validator->isValid($email['to_address'])) {
+                if ($email['to_address'] == '') {
+                    continue;
+                }
+                if (! $validator->isValid($email['to_address'])) {
                     continue;
                 }
 

@@ -829,7 +829,10 @@ function renderTestSpecTreeForPrinting(&$db, &$node, &$options, $env, $context,
         $children_qty = count($childNodes);
         for ($idx = 0; $idx < $children_qty; $idx ++) {
             $current = $childNodes[$idx];
-            if (is_null($current) || $current == REMOVEME) {
+            if (is_null($current)) {
+                continue;
+            }
+            if ($current == REMOVEME) {
                 continue;
             }
 

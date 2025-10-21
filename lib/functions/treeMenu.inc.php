@@ -957,8 +957,10 @@ function renderExecTreeNode($level, &$node, &$tcase_node, $hash_id_descr,
         // Can not assign anymore to intermediate variables.
         $nodes_qty = count($node['childNodes']);
         for ($idx = 0; $idx < $nodes_qty; $idx ++) {
-            if (is_null($node['childNodes'][$idx]) ||
-                $node['childNodes'][$idx] == REMOVEME) {
+            if (is_null($node['childNodes'][$idx])) {
+                continue;
+            }
+            if ($node['childNodes'][$idx] == REMOVEME) {
                 continue;
             }
             renderExecTreeNode($level + 1, $node['childNodes'][$idx],

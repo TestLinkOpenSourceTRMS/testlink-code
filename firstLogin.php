@@ -191,7 +191,10 @@ function notifyGlobalAdmins(&$dbHandler, &$userObj)
         $validator = new Zend_Validate_EmailAddress();
         foreach ($mail['to'] as $mm) {
             $ema = trim($mm);
-            if ($ema == '' || ! $validator->isValid($ema)) {
+            if ($ema == '') {
+                continue;
+            }
+            if (! $validator->isValid($ema)) {
                 continue;
             }
             $dest[] = $ema;

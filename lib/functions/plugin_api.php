@@ -413,7 +413,10 @@ function plugin_find_all()
 
     if ($t_dir = opendir($t_plugin_path)) {
         while (($t_file = readdir($t_dir)) !== false) {
-            if ('.' == $t_file || '..' == $t_file) {
+            if ('.' == $t_file) {
+                continue;
+            }
+            if ('..' == $t_file) {
                 continue;
             }
             if (is_dir($t_plugin_path . $t_file)) {
@@ -609,7 +612,10 @@ function get_all_available_plugins($existing_plugins)
     // Find all plugins that are newly available (And not already registered)
     if ($t_dir = opendir(TL_PLUGIN_PATH)) {
         while (($t_file = readdir($t_dir)) !== false) {
-            if ('.' == $t_file || '..' == $t_file) {
+            if ('.' == $t_file) {
+                continue;
+            }
+            if ('..' == $t_file) {
                 continue;
             }
             if (! in_array($t_file, $registered_plugin_names) &&

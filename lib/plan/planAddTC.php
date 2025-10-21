@@ -840,8 +840,10 @@ function sendMailToTesters(&$dbHandler, &$tcaseMgr, &$guiObj, &$argsObj,
             foreach ($tester_set as $user_id => $value) {
                 $userObj = $userData[$user_id];
                 $email['to_address'] = trim($userObj->emailAddress);
-                if ($email['to_address'] == '' ||
-                    ! $validator->isValid($email['to_address'])) {
+                if ($email['to_address'] == '') {
+                    continue;
+                }
+                if (! $validator->isValid($email['to_address'])) {
                     continue;
                 }
 

@@ -51,7 +51,7 @@ if ($args->tprojectID) {
     $map = (array) $db->fetchRowsIntoMap($sql, 'id', database::CUMULATIVE);
 
     // dont show requirements from different testprojects than the selected one
-    if (count($map)) {
+    if ($map !== []) {
         $reqIDSet = array_keys($map);
         foreach ($reqIDSet as $item) {
             $pid = $tproject_mgr->tree_manager->getTreeRoot($item);

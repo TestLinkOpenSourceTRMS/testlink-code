@@ -241,7 +241,7 @@ function doBulkAssignment(&$dbHandler, &$argsObj, $targetTestCaseSet = null)
     $req_mgr = new requirement_mgr($dbHandler);
     $assignmentCounter = 0;
     $requirements = array_keys($argsObj->reqIdSet);
-    if (! is_null($requirements) && count($requirements) > 0) {
+    if (! is_null($requirements) && $requirements !== []) {
         $tcase_set = $targetTestCaseSet;
         if (is_null($tcase_set)) {
             $tsuite_mgr = new testsuite($dbHandler);

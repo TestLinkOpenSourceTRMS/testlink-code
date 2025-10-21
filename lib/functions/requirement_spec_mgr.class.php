@@ -1811,7 +1811,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
             ' GROUP BY RSPEC_REV.parent_id ';
 
         $maxi = (array) $this->db->fetchRowsIntoMap($sql_max, 'rev_id');
-        if (count($maxi) > 0) {
+        if ($maxi !== []) {
             $sql = " /* $debugMsg */ SELECT RSPEC.id,RSPEC.testproject_id,RSPEC.doc_id,NH_RSPEC.name AS title, " .
                 " RSPEC_REV.revision ";
 

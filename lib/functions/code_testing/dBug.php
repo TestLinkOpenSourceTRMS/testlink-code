@@ -130,7 +130,7 @@ class dBug
     }
 
     // create the main table header
-    function makeTableHeader($type, $header, $colspan = 2)
+    public function makeTableHeader($type, $header, $colspan = 2)
     {
         if (! $this->bInitialized) {
             $header = $this->getVariableName() . " (" . $header . ")";
@@ -145,7 +145,7 @@ class dBug
     }
 
     // create the table row header
-    function makeTDHeader($type, $header)
+    public function makeTDHeader($type, $header)
     {
         echo "<tr>
 				<td valign=\"top\" onClick='dBug_toggleRow(this)' class=\"dBug_" . $type .
@@ -154,13 +154,13 @@ class dBug
     }
 
     // close table row
-    function closeTDRow()
+    public function closeTDRow()
     {
         return "</td></tr>\n";
     }
 
     // error
-    function error($type)
+    public function error($type)
     {
         $error = "Error: Variable cannot be a";
         // this just checks if the type starts with a vowel or "x" and displays either "a" or "an"
@@ -177,7 +177,7 @@ class dBug
     }
 
     // check variable type
-    function checkType($var)
+    public function checkType($var)
     {
         switch (gettype($var)) {
             case "resource":
@@ -204,20 +204,20 @@ class dBug
     }
 
     // if variable is a NULL type
-    function varIsNULL()
+    public function varIsNULL()
     {
         echo "NULL";
     }
 
     // if variable is a boolean type
-    function varIsBoolean($var)
+    public function varIsBoolean($var)
     {
         $var = ($var == 1) ? "TRUE" : "FALSE";
         echo $var;
     }
 
     // if variable is an array type
-    function varIsArray($var)
+    public function varIsArray($var)
     {
         $var_ser = serialize($var);
         array_push($this->arrHistory, $var_ser);
@@ -249,7 +249,7 @@ class dBug
     }
 
     // if variable is an object type
-    function varIsObject($var)
+    public function varIsObject($var)
     {
         $var_ser = serialize($var);
         array_push($this->arrHistory, $var_ser);
@@ -289,7 +289,7 @@ class dBug
     }
 
     // if variable is a resource type
-    function varIsResource($var)
+    public function varIsResource($var)
     {
         $this->makeTableHeader("resourceC", "resource", 1);
         echo "<tr>\n<td>\n";
@@ -318,7 +318,7 @@ class dBug
     }
 
     // if variable is a database resource type
-    function varIsDBResource($var, $db = "mysql")
+    public function varIsDBResource($var, $db = "mysql")
     {
         if ($db == "pgsql")
             $db = "pg";
@@ -368,7 +368,7 @@ class dBug
     }
 
     // if variable is an image/gd resource type
-    function varIsGDResource($var)
+    public function varIsGDResource($var)
     {
         $this->makeTableHeader("resource", "gd", 2);
         $this->makeTDHeader("resource", "Width");
@@ -381,13 +381,13 @@ class dBug
     }
 
     // if variable is an xml type
-    function varIsXml($var)
+    public function varIsXml($var)
     {
         $this->varIsXmlResource($var);
     }
 
     // if variable is an xml resource type
-    function varIsXmlResource($var)
+    public function varIsXmlResource($var)
     {
         $xml_parser = xml_parser_create();
         xml_parser_set_option($xml_parser, XML_OPTION_CASE_FOLDING, 0);
@@ -433,7 +433,7 @@ class dBug
     }
 
     // parse xml
-    function xmlParse($xml_parser, $data, $bFinal)
+    public function xmlParse($xml_parser, $data, $bFinal)
     {
         if (! xml_parse($xml_parser, $data, $bFinal)) {
             die(
@@ -444,7 +444,7 @@ class dBug
     }
 
     // xml: inititiated when a start tag is encountered
-    function xmlStartElement($parser, $name, $attribs)
+    public function xmlStartElement($parser, $name, $attribs)
     {
         $this->xmlAttrib[$this->xmlCount] = $attribs;
         $this->xmlName[$this->xmlCount] = $name;
@@ -463,7 +463,7 @@ class dBug
     }
 
     // xml: initiated when an end tag is encountered
-    function xmlEndElement($parser, $name)
+    public function xmlEndElement($parser, $name)
     {
         for ($i = 0; $i < $this->xmlCount; $i ++) {
             eval($this->xmlSData[$i]);
@@ -482,7 +482,7 @@ class dBug
     }
 
     // xml: initiated when text between tags is encountered
-    function xmlCharacterData($parser, $data)
+    public function xmlCharacterData($parser, $data)
     {
         $count = $this->xmlCount - 1;
         if (! empty($this->xmlCData[$count]))
@@ -492,7 +492,7 @@ class dBug
     }
 
     // xml: initiated when a comment or other miscellaneous texts is encountered
-    function xmlDefaultHandler($parser, $data)
+    public function xmlDefaultHandler($parser, $data)
     {
         // strip '<!--' and '-->' off comments
         $data = str_replace(array(
@@ -506,7 +506,7 @@ class dBug
             $this->xmlDData[$count] = $data;
     }
 
-    function initJSandCSS()
+    public function initJSandCSS()
     {
         echo <<<SCRIPTS
         			<script language="JavaScript">

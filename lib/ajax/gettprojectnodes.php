@@ -220,7 +220,7 @@ function getAllTCasesID($idList, &$tcIDs)
                 $suiteIDs[] = $row['id'];
             }
         }
-        if (count($suiteIDs)) {
+        if ($suiteIDs !== []) {
             $suiteIDs = implode(",", $suiteIDs);
             getAllTCasesID($suiteIDs, $tcIDs);
         }

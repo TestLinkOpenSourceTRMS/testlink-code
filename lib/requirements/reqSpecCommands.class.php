@@ -562,7 +562,7 @@ class reqSpecCommands
             $root
         ), $this->treeMgr->get_subtree($argsObj->tproject_id, $my['filters']));
 
-        if (count($subtree)) {
+        if ($subtree !== []) {
             $obj->containers = $this->treeMgr->createHierarchyMap($subtree);
         }
         return $obj;
@@ -620,7 +620,7 @@ class reqSpecCommands
             $root
         ), $this->treeMgr->get_subtree($argsObj->tproject_id, $my['filters']));
 
-        if (count($subtree)) {
+        if ($subtree !== []) {
             $obj->containers = $this->treeMgr->createHierarchyMap($subtree);
         }
         return $obj;

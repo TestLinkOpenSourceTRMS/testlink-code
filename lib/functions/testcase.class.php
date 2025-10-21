@@ -3253,7 +3253,7 @@ class testcase extends tlObjectWithAttachments
         $link_info = null;
         $in_set = null;
 
-        if (count($rs)) {
+        if ($rs !== []) {
             foreach ($rs as $idx => $elem) {
                 if ($elem['tcversion_number'] != $elem['version']) {
                     // Save to generate record for linked but not executed if needed
@@ -9645,7 +9645,7 @@ class testcase extends tlObjectWithAttachments
 
         $rs = (array) $this->db->get_recordset($sql);
 
-        return count($rs) > 0;
+        return $rs !== [];
     }
 
     /**

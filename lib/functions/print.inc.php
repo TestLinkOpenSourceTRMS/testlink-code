@@ -286,7 +286,7 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
     // since 1.9.18 => we need to use req version
     $attachSet = (array) $req_mgr->getAttachmentInfos($req['revision_id']);
 
-    if (count($attachSet)) {
+    if ($attachSet !== []) {
         $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
             $labels['attached_files'] . "</span></td><td>";
 
@@ -497,7 +497,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix,
     }
 
     $attachSet = (array) $req_spec_mgr->getAttachmentInfos($spec_id);
-    if (count($attachSet)) {
+    if ($attachSet !== []) {
         $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
             $labels['attached_files'] . "</span></td><td><ul>";
 
@@ -1453,7 +1453,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
             '" valign="top"><span class="label">' . $labels['reqs'] . '</span>';
         $code .= '<td colspan="' . ($cfg['tableColspan'] - 1) . '">';
 
-        if (count($requirements)) {
+        if ($requirements !== []) {
             foreach ($requirements as $req) {
                 $code .= htmlspecialchars(
                     $req['req_doc_id'] . ":  " . $req['title']) . " " .
@@ -1479,7 +1479,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
             array(
                 'fields' => 'keyword_id,KW.keyword'
             ));
-        if (count($kwSet)) {
+        if ($kwSet !== []) {
             foreach ($kwSet as $kw) {
                 $code .= htmlspecialchars($kw['keyword']) . "<br />";
             }
@@ -1501,7 +1501,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
             array(
                 'fields' => 'platform_id,PL.name'
             ));
-        if (count($itSet)) {
+        if ($itSet !== []) {
             foreach ($itSet as $it) {
                 $code .= htmlspecialchars($it['name']) . "<br />";
             }

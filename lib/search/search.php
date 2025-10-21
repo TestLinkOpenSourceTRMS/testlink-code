@@ -191,7 +191,7 @@ function buildTCExtTable($gui, $charset, $edit_icon, $history_icon)
     $designCfg = getWebEditorCfg('design');
     $designType = $designCfg['type'];
 
-    if (count((array) $gui->resultSet) > 0) {
+    if ((array) $gui->resultSet !== []) {
         $labels = array(
             'test_suite' => lang_get('test_suite'),
             'test_case' => lang_get('test_case')

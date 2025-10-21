@@ -916,7 +916,7 @@ class testplan extends tlObjectWithAttachments
                 array_shift($filter);
             }
 
-            if (count($filter)) {
+            if ($filter !== []) {
                 $sql['filter'] = " AND TK.keyword_id IN (" .
                     implode(',', $filter) . ")";
             }
@@ -3826,7 +3826,7 @@ class testplan extends tlObjectWithAttachments
 
             $cfMap = (array) $tsuiteMgr->get_linked_cfields_at_design(
                 $container['id'], null, null, $tproject_id);
-            if (count($cfMap) > 0) {
+            if ($cfMap !== []) {
                 $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
             }
 
@@ -4794,8 +4794,8 @@ class testplan extends tlObjectWithAttachments
 
         // build results record set
         $hitsFoundOn = array();
-        $hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
-        $hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
+        $hitsFoundOn['notRun'] = $hits['notRun'] !== [];
+        $hitsFoundOn['otherStatus'] = $hits['otherStatus'] !== [];
 
         if ($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus']) {
             $items = array_merge(array_keys($hits['notRun']),
@@ -4935,7 +4935,7 @@ class testplan extends tlObjectWithAttachments
             array_keys($recordset));
 
         $items = (array) $hits + (array) $notRunHits;
-        return count($items) > 0 ? $items : null;
+        return $items !== [] ? $items : null;
     }
 
     /**
@@ -4997,7 +4997,7 @@ class testplan extends tlObjectWithAttachments
             array_keys($recordset));
 
         $items = (array) $hits + (array) $notRunHits;
-        return count($items) > 0 ? $items : null;
+        return $items !== [] ? $items : null;
     }
 
     /**
@@ -5210,8 +5210,8 @@ class testplan extends tlObjectWithAttachments
 
         // build results recordset
         $hitsFoundOn = array();
-        $hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
-        $hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
+        $hitsFoundOn['notRun'] = $hits['notRun'] !== [];
+        $hitsFoundOn['otherStatus'] = $hits['otherStatus'] !== [];
 
         if ($get['notRun'] && $get['otherStatus']) {
             if ($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus']) {
@@ -5403,8 +5403,8 @@ class testplan extends tlObjectWithAttachments
 
         // build results recordset
         $hitsFoundOn = array();
-        $hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
-        $hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
+        $hitsFoundOn['notRun'] = $hits['notRun'] !== [];
+        $hitsFoundOn['otherStatus'] = $hits['otherStatus'] !== [];
 
         // 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
         // if($get['notRun'] && $get['otherStatus'])

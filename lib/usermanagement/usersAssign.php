@@ -341,7 +341,7 @@ function getTestProjectEffectiveRoles($dbHandler, &$objMgr, &$argsObj, $users)
     if (! $argsObj->featureID) {
         if ($argsObj->testprojectID) {
             $argsObj->featureID = $argsObj->testprojectID;
-        } elseif (count($features)) {
+        } elseif ($features !== []) {
             $xx = current($features);
             $argsObj->featureID = $xx['id'];
         }

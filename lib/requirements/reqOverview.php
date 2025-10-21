@@ -71,7 +71,7 @@ if (count($gui->reqIDs) > 0) {
 
     $gui->cfields4req = (array) $cfield_mgr->get_linked_cfields_at_design(
         $args->tproject_id, 1, null, 'requirement', null, 'name');
-    $gui->processCF = count($gui->cfields4req) > 0;
+    $gui->processCF = $gui->cfields4req !== [];
 
     $coverageSet = null;
     $relationCounters = null;

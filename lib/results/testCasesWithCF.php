@@ -234,7 +234,7 @@ function buildResultSet(&$dbHandler, &$guiObj, $tproject_id, $tplan_id)
 
     // this way on caller can be used on array operations, without warnings
     $guiObj->cfields = (array) $guiObj->cfields;
-    if (count($guiObj->cfields) > 0) {
+    if ($guiObj->cfields !== []) {
         foreach ($guiObj->cfields as $key => $values) {
             $cf_place_holder['cfields'][$key] = '';
         }

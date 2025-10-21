@@ -22,10 +22,10 @@ require_once (TL_ABS_PATH . '/lib/functions/tlPlugin.class.php');
 class TLTestPlugin extends TestlinkPlugin
 {
 
-    function _construct()
+    public function _construct()
     {}
 
-    function register()
+    public function register()
     {
         $this->name = 'TLTest';
         $this->description = 'Test Plugin';
@@ -37,7 +37,7 @@ class TLTestPlugin extends TestlinkPlugin
         $this->url = 'http://www.collab.net';
     }
 
-    function config()
+    public function config()
     {
         return array(
             'config1' => '',
@@ -45,7 +45,7 @@ class TLTestPlugin extends TestlinkPlugin
         );
     }
 
-    function hooks()
+    public function hooks()
     {
         return array(
             'EVENT_TEST_SUITE_CREATE' => 'testsuite_create',
@@ -64,7 +64,7 @@ class TLTestPlugin extends TestlinkPlugin
         );
     }
 
-    function testsuite_create($args)
+    public function testsuite_create($args)
     {
         $arg = func_get_args(); // To get all the arguments
         $db = $this->db; // To show how to get a Database Connection
@@ -72,7 +72,7 @@ class TLTestPlugin extends TestlinkPlugin
         tLog("Im in testsuite create", "WARNING");
     }
 
-    function testproject_create()
+    public function testproject_create()
     {
         $arg = func_get_args(); // To get all the arguments
         tLog(
@@ -80,7 +80,7 @@ class TLTestPlugin extends TestlinkPlugin
             ", prefix: " . $arg[3], "WARNING");
     }
 
-    function testproject_update()
+    public function testproject_update()
     {
         $arg = func_get_args(); // To get all the arguments
         tLog(
@@ -88,7 +88,7 @@ class TLTestPlugin extends TestlinkPlugin
             ", prefix: " . $arg[3], "WARNING");
     }
 
-    function testcase_update()
+    public function testcase_update()
     {
         $arg = func_get_args(); // To get all the arguments
         tLog(
@@ -96,25 +96,25 @@ class TLTestPlugin extends TestlinkPlugin
             ", title: " . $arg[3] . ", summary" . $arg[4], "WARNING");
     }
 
-    function testrequirement_create()
+    public function testrequirement_create()
     {
         $arg = func_get_args(); // To get all the arguments
         tLog("In TestRequirement Create with id: " . $arg[1], "WARNING");
     }
 
-    function testrequirement_update()
+    public function testrequirement_update()
     {
         $arg = func_get_args(); // To get all the arguments
         tLog("In TestRequirement Update with id: " . $arg[1], "WARNING");
     }
 
-    function testrequirement_delete()
+    public function testrequirement_delete()
     {
         $arg = func_get_args(); // To get all the arguments
         tLog("In TestRequirement Delete with id: " . $arg[1], "WARNING");
     }
 
-    function testExecute()
+    public function testExecute()
     {
         $arg = func_get_args(); // To get all the arguments
         tLog(
@@ -123,35 +123,35 @@ class TLTestPlugin extends TestlinkPlugin
             $arg[5] . ", Status: " . $arg[6], "WARNING");
     }
 
-    function testrun_display_block()
+    public function testrun_display_block()
     {
         $args = func_get_args();
         // $args details: $arg[1] -> Testplan Id, $arg[2] -> Build Id, $arg[3] ->TestCase Id, $arg[4] -> TestCase Version Id
         return '<img src="http://www.testingexcellence.com/wp-content/uploads/2010/01/testlink-open-source-test-management-tool.jpg" />';
     }
 
-    function bottom_link()
+    public function bottom_link()
     {
         $tLink['href'] = '';
         $tLink['label'] = plugin_lang_get('left_bottom_link');
         return $tLink;
     }
 
-    function top_link()
+    public function top_link()
     {
         $tLink['href'] = plugin_page('config.php');
         $tLink['label'] = plugin_lang_get('config');
         return $tLink;
     }
 
-    function right_top_link()
+    public function right_top_link()
     {
         $tLink['href'] = '';
         $tLink['label'] = plugin_lang_get('right_top_link');
         return $tLink;
     }
 
-    function right_bottom_link()
+    public function right_bottom_link()
     {
         $tLink['href'] = '';
         $tLink['label'] = plugin_lang_get('right_bottom_link');

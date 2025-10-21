@@ -276,7 +276,7 @@ function checkForRights($rights, $roleQuestion, $bAND = 1)
             }
         } else {
             // for OR one of all must be present
-            if (count($r)) {
+            if ($r !== []) {
                 $ret = 'yes';
             }
         }

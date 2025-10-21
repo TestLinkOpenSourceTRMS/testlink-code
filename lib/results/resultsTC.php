@@ -320,7 +320,7 @@ function initializeGui(&$dbHandler, &$argsObj, $imgSet, &$tplanMgr)
         array(
             'outputFormat' => 'map'
         ));
-    $guiObj->show_platforms = (count($guiObj->platforms) > 0);
+    $guiObj->show_platforms = ($guiObj->platforms !== []);
 
     $guiObj->img = new stdClass();
     $guiObj->img->exec = $imgSet['exec_icon'];

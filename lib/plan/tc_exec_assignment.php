@@ -88,7 +88,7 @@ switch ($args->doAction) {
             }
 
             foreach ($features2 as $key => $featByPlatform) {
-                if (count($features2[$key]) > 0) {
+                if ($features2[$key] !== []) {
                     foreach ($featByPlatform as $values) {
                         $assignment_mgr->assign($values);
                     }
@@ -600,7 +600,7 @@ function doRemoveAll(&$dbH, &$argsObj, &$guiObj, $cfg, $oMgr)
     }
 
     foreach ($features2 as $key => $values) {
-        if (count($features2[$key]) > 0) {
+        if ($features2[$key] !== []) {
             $oMgr['assign']->delete_by_feature_id_and_build_id($values);
         }
     }

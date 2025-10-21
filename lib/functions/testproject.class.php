@@ -886,8 +886,7 @@ class testproject extends tlObjectWithAttachments
             'testplan' => 'me',
             'requirement_spec' => 'me'
         );
-        $gui->canDoExport = count(
-            (array) $this->tree_manager->get_children($safeID, $exclusion)) > 0;
+        $gui->canDoExport = (array) $this->tree_manager->get_children($safeID, $exclusion) !== [];
         if ($modded_item_id) {
             $gui->moddedItem = $this->get_by_id(intval($modded_item_id));
         }
@@ -2224,7 +2223,7 @@ class testproject extends tlObjectWithAttachments
                     $suiteIDs[] = $row['id'];
                 }
             }
-            if (count($suiteIDs)) {
+            if ($suiteIDs !== []) {
                 $suiteIDs = implode(",", $suiteIDs);
                 $this->get_all_testcases_id($suiteIDs, $tcIDs, $options);
             }

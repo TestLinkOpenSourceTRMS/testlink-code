@@ -64,7 +64,7 @@ $testcases = array();
 // first step: get the requirements and linked testcases with which we have to work,
 // order them into $rspecSet by spec
 $gui->total_reqs = 0;
-if (count($req_ids)) {
+if ($req_ids !== []) {
     list ($gui->total_reqs, $rspecSet, $testcases) = buildReqSpecMap($req_ids,
         $req_mgr, $req_spec_mgr, $tplan_mgr, $args->states_to_show->selected,
         $args);
@@ -843,7 +843,7 @@ function buildReqSpecMap($reqSet, &$reqMgr, &$reqSpecMgr, &$tplanMgr,
     // TC3 is NOT PART OF TEST PLAN under analisys
     //
     $tcaseSet = array();
-    if (count($tc_ids)) {
+    if ($tc_ids !== []) {
         $filters = array(
             'tcase_id' => $tc_ids
         );

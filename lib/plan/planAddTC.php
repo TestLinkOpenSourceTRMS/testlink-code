@@ -130,7 +130,7 @@ if ($do_display) {
         'write_button_only_if_linked' => 0,
         'add_custom_fields' => 0
     );
-    $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
+    $opt['add_custom_fields'] = $cfields !== [] ? 1 : 0;
 
     // Add Test Cases to Test plan - Right pane does not honor custom field filter
     // filter by test case execution type
@@ -281,7 +281,7 @@ if ($do_display) {
         'write_button_only_if_linked' => 0,
         'add_custom_fields' => 0
     );
-    $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
+    $opt['add_custom_fields'] = $cfields !== [] ? 1 : 0;
 
     // Add Test Cases to Test plan - Right pane does not honor custom field filter
     // filter by test case execution type

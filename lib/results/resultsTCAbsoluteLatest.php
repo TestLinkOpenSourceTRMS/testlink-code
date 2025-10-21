@@ -235,7 +235,7 @@ function buildMatrix(&$guiObj, &$argsObj, $forceFormat = null)
         'width' => 100
     );
 
-    $fo = ! is_null($forceFormat) ? $forceFormat : $argsObj->format;
+    $fo = is_null($forceFormat) ? $argsObj->format : $forceFormat;
     if ($fo == FORMAT_HTML) {
         $matrix = new tlExtTable($columns, $guiObj->matrix,
             'tl_table_results_tc');
@@ -572,7 +572,7 @@ function buildDataSet(&$db, &$args, &$gui, &$metrics, $labels,
                 $name = htmlspecialchars("{$external_id}:{$rf['name']}",
                     ENT_QUOTES);
 
-                $fo = ! is_null($forceFormat) ? $forceFormat : $args->format;
+                $fo = is_null($forceFormat) ? $args->format : $forceFormat;
                 if ($fo == FORMAT_HTML) {
                     $rows[$cols['link']] = "<!-- " .
                         sprintf("%010d", $rf['external_id']) . " -->";

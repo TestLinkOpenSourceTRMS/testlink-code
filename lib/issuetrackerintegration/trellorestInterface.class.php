@@ -207,7 +207,7 @@ class trellorestInterface extends issueTrackerInterface
     public function getIssueStatusCode($issueID)
     {
         $issue = $this->getIssue($issueID);
-        return ! is_null($issue) ? $issue->statusCode : false;
+        return is_null($issue) ? false : $issue->statusCode;
     }
 
     /**
@@ -220,7 +220,7 @@ class trellorestInterface extends issueTrackerInterface
     public function getIssueStatusVerbose($issueID)
     {
         $issue = $this->getIssue($issueID);
-        return ! is_null($issue) ? $issue->statusVerbose : false;
+        return is_null($issue) ? false : $issue->statusVerbose;
     }
 
     /**

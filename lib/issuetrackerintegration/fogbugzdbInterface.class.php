@@ -103,7 +103,7 @@ class fogbugzdbInterface extends issueTrackerInterface
     public function checkBugIDExistence($id)
     {
         $issue = $this->getIssue($id);
-        return ! is_null($issue) ? 1 : 0;
+        return is_null($issue) ? 0 : 1;
     }
 
     public function buildViewBugLink($bugID, $addSummary = false)

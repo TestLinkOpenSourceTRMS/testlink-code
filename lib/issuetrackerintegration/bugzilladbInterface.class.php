@@ -61,7 +61,7 @@ class bugzilladbInterface extends issueTrackerInterface
 
         $sql = " SELECT bug_id AS id,short_desc AS summary,bug_status AS status" .
             " FROM " .
-            (! is_null($this->cfg->dbschema) ? " {$this->cfg->dbschema}.bugs " : 'bugs') .
+            (is_null($this->cfg->dbschema) ? 'bugs' : " {$this->cfg->dbschema}.bugs ") .
             " WHERE bug_id = '{$id}' ";
         $rs = $this->dbConnection->fetchRowsIntoMap($sql, 'id');
         $issue = null;
@@ -112,7 +112,7 @@ class bugzilladbInterface extends issueTrackerInterface
     {
         $issue = $this->getIssue($id);
 
-        return ! is_null($issue) ? 1 : 0;
+        return is_null($issue) ? 0 : 1;
     }
 
     /**

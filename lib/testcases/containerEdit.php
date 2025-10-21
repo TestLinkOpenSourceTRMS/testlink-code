@@ -550,7 +550,7 @@ function initArgs(&$dbHandler, &$tprojectMgr, &$tsuiteMgr, $optionTransferCfg)
             break;
 
         case 'testsuite':
-            $nodeID = ! is_null($args->testsuiteID) ? $args->testsuiteID : $args->containerID;
+            $nodeID = is_null($args->testsuiteID) ? $args->containerID : $args->testsuiteID;
             $args->tprojectID = $tsuiteMgr->getTestProjectFromTestSuite($nodeID,
                 null);
             break;

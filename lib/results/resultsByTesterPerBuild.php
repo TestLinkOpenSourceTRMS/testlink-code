@@ -146,8 +146,8 @@ $gui->tableSet = array(
 );
 
 // show warning message instead of table if table is empty
-$gui->warning_message = ! ($rows > 0 === false) ? '' : lang_get(
-    'no_testers_per_build');
+$gui->warning_message = $rows > 0 === false ? lang_get(
+    'no_testers_per_build') : '';
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);

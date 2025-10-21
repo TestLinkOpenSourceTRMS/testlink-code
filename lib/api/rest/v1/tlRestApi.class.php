@@ -362,7 +362,7 @@ class tlRestApi
 
         if (! is_null($tproject)) {
             $items = $this->tprojectMgr->get_all_testplans($tproject[0]['id']);
-            $op['items'] = (! empty($items)) ? $items : null;
+            $op['items'] = (empty($items)) ? null : $items;
         } else {
             $op['message'] = "No Test Project identified by '" . $idCard . "'!";
             $op['status'] = 'error';

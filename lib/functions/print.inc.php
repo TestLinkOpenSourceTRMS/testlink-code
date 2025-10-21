@@ -555,13 +555,13 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options, $tocPrefix,
             break;
 
         case 'requirement_spec':
-            $tocPrefix .= (! is_null($tocPrefix) ? "." : '') . $rsCnt;
+            $tocPrefix .= (is_null($tocPrefix) ? '' : ".") . $rsCnt;
             $code .= renderReqSpecNodeForPrinting($db, $node, $options,
                 $tocPrefix, $rstLevel, $tprojectID);
             break;
 
         case 'requirement':
-            $tocPrefix .= (! is_null($tocPrefix) ? "." : '') . $rsCnt;
+            $tocPrefix .= (is_null($tocPrefix) ? '' : ".") . $rsCnt;
             $code .= renderReqForPrinting($db, $node, $options, $rstLevel,
                 $tprojectID);
             break;
@@ -756,7 +756,7 @@ function renderSimpleChapter($title, $content, $addToStyle = null)
 {
     $output = '';
     if ($content != "") {
-        $sAdd = ! is_null($addToStyle) ? " style=\"{$addToStyle}\" " : '';
+        $sAdd = is_null($addToStyle) ? '' : " style=\"{$addToStyle}\" ";
         $output .= '<h1 class="doclevel"' . $sAdd . ' >' . $title . "</h1>\n";
         $output .= '<div class="txtlevel">' . $content . "</div>\n <br/>";
     }
@@ -811,7 +811,7 @@ function renderTestSpecTreeForPrinting(&$db, &$node, &$options, $env, $context,
             break;
 
         case 'testsuite':
-            $tocPrefix .= (! is_null($tocPrefix) ? "." : '') . $env->tocCounter;
+            $tocPrefix .= (is_null($tocPrefix) ? '' : ".") . $env->tocCounter;
             $code .= renderTestSuiteNodeForPrinting($db, $node, $env, $options,
                 $context, $tocPrefix, $indentLevel);
             break;

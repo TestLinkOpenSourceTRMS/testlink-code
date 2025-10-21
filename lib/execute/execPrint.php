@@ -24,7 +24,7 @@ $tree_mgr = new tree($db);
 $args = initArgs();
 
 $gui = new stdClass();
-$gui->goback_url = ! is_null($args->goback_url) ? $args->goback_url : '';
+$gui->goback_url = is_null($args->goback_url) ? '' : $args->goback_url;
 $gui->page_title = '';
 
 if ($args->deleteAttachmentID > 0) {

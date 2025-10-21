@@ -216,7 +216,7 @@ function initializeGui(&$dbHandler, &$argsObj, &$cfgObj, &$tplanMgr)
         ));
 
     $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
-    $gui->has_platforms = ! is_null($dummy) ? 1 : 0;
+    $gui->has_platforms = is_null($dummy) ? 0 : 1;
 
     $gui->platform_info['id'] = 0;
     $gui->platform_info['name'] = '';

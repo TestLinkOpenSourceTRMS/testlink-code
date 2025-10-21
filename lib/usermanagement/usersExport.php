@@ -80,7 +80,7 @@ function initializeGui($argsObj)
     $gui->page_title = lang_get('export_users');
     $gui->do_it = 1;
     $gui->nothing_todo_msg = '';
-    $gui->goback_url = ! is_null($argsObj->goback_url) ? $argsObj->goback_url : '';
+    $gui->goback_url = is_null($argsObj->goback_url) ? '' : $argsObj->goback_url;
     $gui->export_filename = is_null($argsObj->export_filename) ? 'users.xml' : $argsObj->export_filename;
     $gui->exportTypes = array(
         'XML' => 'XML'

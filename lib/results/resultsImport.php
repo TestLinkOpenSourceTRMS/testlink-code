@@ -708,8 +708,8 @@ function initArgs(&$dbHandler)
     $args->platformID = isset($_REQUEST['platformID']) ? intval(
         $_REQUEST['platformID']) : null;
     $args->tplanID = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : null;
-    $args->tplanID = ! is_null($args->tplanID) ? $args->tplanID : intval(
-        $_SESSION['testplanID']);
+    $args->tplanID = is_null($args->tplanID) ? intval(
+        $_SESSION['testplanID']) : $args->tplanID;
 
     $args->tprojectID = isset($_REQUEST['tprojectID']) ? intval(
         $_REQUEST['tprojectID']) : null;

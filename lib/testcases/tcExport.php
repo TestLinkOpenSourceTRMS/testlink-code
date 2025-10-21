@@ -235,7 +235,7 @@ function initializeGui($argsObj)
     $guiObj->exportTypes = $argsObj->exportTypes;
     $guiObj->tproject_id = $argsObj->tproject_id;
 
-    $guiObj->goback_url = ! is_null($argsObj->goback_url) ? $argsObj->goback_url : '';
+    $guiObj->goback_url = is_null($argsObj->goback_url) ? '' : $argsObj->goback_url;
     $guiObj->oneTestCaseExport = ($argsObj->tcase_id && $argsObj->tcversion_id);
 
     $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" .

@@ -387,8 +387,8 @@ function get_tplan_effective_role(&$db, $tplan_id, $tproject, $user_id = null,
     $tplan = $tplan_mgr->get_by_id($tplan_id);
     unset($tplan_mgr);
 
-    $roleInhMode = ! is_null($inheritanceMode) ? $inheritanceMode : config_get(
-        'testplan_role_inheritance_mode');
+    $roleInhMode = is_null($inheritanceMode) ? config_get(
+        'testplan_role_inheritance_mode') : $inheritanceMode;
 
     /**
      * key: user_id

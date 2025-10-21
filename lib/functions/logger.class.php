@@ -857,8 +857,8 @@ class tlEvent extends tlDBObject
             $description = $db->prepare_string($dummy);
 
             $local = new stdClass();
-            $local->objectID = ! is_null($this->objectID) ? $db->prepare_int(
-                $this->objectID) : 0;
+            $local->objectID = is_null($this->objectID) ? 0 : $db->prepare_int(
+                    $this->objectID);
 
             $str2loop = array(
                 'source',
@@ -866,8 +866,8 @@ class tlEvent extends tlDBObject
                 'activityCode'
             );
             foreach ($str2loop as $tg) {
-                $local->$tg = ! is_null($this->$tg) ? ("'" .
-                    $db->prepare_string($this->$tg) . "'") : 'NULL';
+                $local->$tg = is_null($this->$tg) ? ('NULL') : "'" .
+                        $db->prepare_string($this->$tg) . "'";
             }
 
             $query = "/* {$debugMsg} */ " .

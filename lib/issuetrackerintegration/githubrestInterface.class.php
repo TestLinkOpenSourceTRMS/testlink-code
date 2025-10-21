@@ -246,7 +246,7 @@ class githubrestInterface extends issueTrackerInterface
     public function getIssueStatusCode($issueID)
     {
         $issue = $this->getIssue($issueID);
-        return ! is_null($issue) ? $issue->statusCode : false;
+        return is_null($issue) ? false : $issue->statusCode;
     }
 
     /**

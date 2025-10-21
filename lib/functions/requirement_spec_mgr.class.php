@@ -678,7 +678,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
                     break;
 
                 case 'count':
-                    return ! is_null($rs) ? count($rs) : 0;
+                    return is_null($rs) ? 0 : count($rs);
                     break;
             }
         }
@@ -745,7 +745,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
                             break;
 
                         case 'count':
-                            $rs = ! is_null($rs) ? count($rs) : 0;
+                            $rs = is_null($rs) ? 0 : count($rs);
                             break;
                     }
                 }
@@ -2433,7 +2433,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         if (! is_null($ret) && $my['options']['decode_user']) {
             $this->decode_users($ret);
         }
-        return ! is_null($ret) ? $ret[0] : null;
+        return is_null($ret) ? null : $ret[0];
     }
 
     /**

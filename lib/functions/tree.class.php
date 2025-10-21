@@ -229,7 +229,7 @@ class tree extends tlObject
             }
 
             $rs = $this->db->get_recordset($sql);
-            $result = ! is_null($rs) ? $rs[0] : null;
+            $result = is_null($rs) ? null : $rs[0];
         }
         return $result;
     }
@@ -1653,6 +1653,6 @@ class tree extends tlObject
             ON NHL1.id = NHL2.parent_id
             WHERE NHL2.id = " . intval($node_id);
         $rs = $this->db->get_recordset($sql);
-        return ! is_null($rs) ? $rs[0]['name'] : '';
+        return is_null($rs) ? '' : $rs[0]['name'];
     }
 }

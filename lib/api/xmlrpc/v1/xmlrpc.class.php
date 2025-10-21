@@ -587,7 +587,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         }
 
         $tprojectid = intval($tprojectid);
-        $tplanid = ! is_null($tplanid) ? intval($tplanid) : - 1;
+        $tplanid = is_null($tplanid) ? - 1 : intval($tplanid);
 
         if ($tprojectid <= 0 && $tplanid > 0) {
             // get test project from test plan
@@ -1571,7 +1571,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     {
         $tplan_id = $this->args[self::$testPlanIDParamName];
         $tcase_id = $this->args[self::$testCaseIDParamName];
-        $platform_id = ! is_null($platformInfo) ? key($platformInfo) : null;
+        $platform_id = is_null($platformInfo) ? null : key($platformInfo);
 
         $filters = array(
             'exec_status' => "ALL",

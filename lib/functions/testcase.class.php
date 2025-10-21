@@ -674,7 +674,7 @@ class testcase extends tlObjectWithAttachments
                                 break;
 
                             case 'counterSuffix':
-                                $mask = ! is_null($algo_cfg->text) ? $algo_cfg->text : '#%s';
+                                $mask = is_null($algo_cfg->text) ? '#%s' : $algo_cfg->text;
                                 $nameSet = array_flip(array_keys($itemSet));
 
                                 // 20110109 - franciscom
@@ -2220,7 +2220,7 @@ class testcase extends tlObjectWithAttachments
         $tcVersionID = $useLatest ? self::LATEST_VERSION : self::ALL_VERSIONS;
         $tcase_info = $this->get_by_id($id, $tcVersionID);
         if ($tcase_info) {
-            $callme = ! is_null($my['options']['use_this_name']) ? $my['options']['use_this_name'] : $tcase_info[0]['name'];
+            $callme = is_null($my['options']['use_this_name']) ? $tcase_info[0]['name'] : $my['options']['use_this_name'];
             $callme = $this->trimAndLimit($callme);
 
             $newTCObj = $this->create_tcase_only($parent_id, $callme,
@@ -5073,8 +5073,8 @@ class testcase extends tlObjectWithAttachments
     public function getTestProjectFromTestCase($id, $parent_id = null)
     {
         $the_path = $this->tree_manager->get_path(
-            (! empty($id)) ? $id : $parent_id);
-        return (! empty($the_path)) ? $the_path[0]['parent_id'] : $parent_id;
+            (empty($id)) ? $parent_id : $id);
+        return (empty($the_path)) ? $parent_id : $the_path[0]['parent_id'];
     }
 
     /*
@@ -6313,7 +6313,7 @@ class testcase extends tlObjectWithAttachments
     public function update_last_modified($tcversion_id, $user_id,
         $time_stamp = null)
     {
-        $changed_ts = ! is_null($time_stamp) ? $time_stamp : $this->db->db_now();
+        $changed_ts = is_null($time_stamp) ? $this->db->db_now() : $time_stamp;
         $sql = " UPDATE {$this->tables['tcversions']} " . " SET updater_id=" .
             $this->db->prepare_int($user_id) . ", " . " modification_ts = " .
             $changed_ts . " WHERE id = " . $this->db->prepare_int($tcversion_id);
@@ -6955,7 +6955,7 @@ class testcase extends tlObjectWithAttachments
         switch ($my['opt']['output']) {
             case 'exec_id':
                 $dummy = $this->db->get_recordset($sqlLEX);
-                $out = (! is_null($dummy) ? $dummy[0]['id'] : null);
+                $out = (is_null($dummy) ? null : $dummy[0]['id']);
                 break;
 
             case 'timestamp':
@@ -7086,7 +7086,7 @@ class testcase extends tlObjectWithAttachments
         switch ($my['opt']['output']) {
             case 'exec_id':
                 $dummy = $this->db->get_recordset($sqlLEX);
-                $out = (! is_null($dummy) ? $dummy[0]['id'] : null);
+                $out = (is_null($dummy) ? null : $dummy[0]['id']);
                 break;
 
             case 'full':
@@ -7389,7 +7389,7 @@ class testcase extends tlObjectWithAttachments
             array(
                 'plan_status' => 1
             ));
-        $goo->has_testplans = ! empty($testplans) ? 1 : 0;
+        $goo->has_testplans = empty($testplans) ? 0 : 1;
 
         $platformMgr = new tlPlatform($this->db, $goo->tproject_id);
 
@@ -8502,7 +8502,7 @@ class testcase extends tlObjectWithAttachments
         $txtin = array_merge($txtin, $jollyKilled);
 
         foreach ($txtin as $key) {
-            $sk->$key = ! is_null($userInput) ? $userInput->$key : '';
+            $sk->$key = is_null($userInput) ? '' : $userInput->$key;
         }
 
         if (! is_null($userInput) && $userInput->jolly != '') {

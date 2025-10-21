@@ -174,7 +174,7 @@ $topText .= renderFirstPage($doc_info);
 renderTOC($printingOptions); // @TODO check if is really useful
 
 $tocPrefix = null;
-if ($showPlatforms = ! isset($treeForPlatform[0]) ? true : false) {
+if ($showPlatforms = isset($treeForPlatform[0]) ? false : true) {
     $tocPrefix = 0;
 }
 
@@ -774,8 +774,8 @@ function buildContentForTestPlanBranch(&$dbHandler, $itemsTree, $ctx, &$docInfo,
         // After architecture changes on how CF design values for Test Cases are
         // managed, we need the test case version ID and not test case ID
         // In addition if we loop over Platforms we need to save this set each time!!!
-        $items2loop = ! is_null($linkedBy[$platform_id]) ? array_keys(
-            $linkedBy[$platform_id]) : null;
+        $items2loop = is_null($linkedBy[$platform_id]) ? null : array_keys(
+                $linkedBy[$platform_id]);
         if (! is_null($items2loop)) {
             foreach ($items2loop as $rdx) {
                 $metrics->estimatedExecTime[$platform_id][] = $linkedBy[$platform_id][$rdx]['tcversion_id'];

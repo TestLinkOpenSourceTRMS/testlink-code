@@ -1399,7 +1399,7 @@ class testsuite extends tlObjectWithAttachments
     {
         if (! $tproject_id) {
             $the_path = $this->tree_manager->get_path(
-                ! is_null($id) ? $id : $parent_id);
+                is_null($id) ? $parent_id : $id);
             $path_len = count($the_path);
             $tproject_id = ($path_len > 0) ? $the_path[$path_len - 1]['parent_id'] : $parent_id;
         }

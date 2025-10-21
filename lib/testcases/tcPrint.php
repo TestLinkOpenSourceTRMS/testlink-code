@@ -110,7 +110,7 @@ function initializeGui(&$argsObj, &$node)
     $guiObj = new stdClass();
     $guiObj->outputFormatDomain = $argsObj->outputFormatDomain;
     $guiObj->object_name = '';
-    $guiObj->goback_url = ! is_null($argsObj->goback_url) ? $argsObj->goback_url : '';
+    $guiObj->goback_url = is_null($argsObj->goback_url) ? '' : $argsObj->goback_url;
     $guiObj->object_name = $node['name'];
     $guiObj->page_title = sprintf(lang_get('print_testcase'), $node['name']);
     $guiObj->tproject_name = $argsObj->tproject_name;

@@ -205,7 +205,7 @@ function initializeGui(&$argsObj, &$tplanMgr)
     );
     $guiObj->page_title = lang_get('export_test_plan');
     $guiObj->object_name = $info['name'];
-    $guiObj->goback_url = ! is_null($argsObj->goback_url) ? $argsObj->goback_url : '';
+    $guiObj->goback_url = is_null($argsObj->goback_url) ? '' : $argsObj->goback_url;
 
     $guiObj->tplan_id = intval($argsObj->tplan_id);
     $guiObj->tproject_id = intval($argsObj->tproject_id);

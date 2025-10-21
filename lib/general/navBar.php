@@ -240,7 +240,7 @@ function initializeGui(&$db, &$args)
         'EVENT_TITLE_BAR'
     ) as $menu_item) {
         $menu_content = event_signal($menu_item);
-        $gui->plugins[$menu_item] = ! empty($menu_content) ? $menu_content : null;
+        $gui->plugins[$menu_item] = empty($menu_content) ? null : $menu_content;
     }
 
     $gui->ssodisable = $args->ssodisable;

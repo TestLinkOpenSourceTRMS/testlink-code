@@ -24,7 +24,7 @@ $args = initArgs();
 
 $gui = new stdClass();
 $gui->page_title = lang_get('import_cfields');
-$gui->goback_url = ! is_null($args->goback_url) ? $args->goback_url : '';
+$gui->goback_url = is_null($args->goback_url) ? '' : $args->goback_url;
 $gui->file_check = array(
     'show_results' => 0,
     'status_ok' => 1,

@@ -257,7 +257,7 @@ function generateTestSpecTree(&$db, $tproject_id, $tproject_name, $linkto,
     }
     $treeMenu->menustring = $menustring;
 
-    $tc2show = ! is_null($tc2show) ? explode(",", trim($tc2show, ",")) : null;
+    $tc2show = is_null($tc2show) ? null : explode(",", trim($tc2show, ","));
     return array(
         'menu' => $treeMenu,
         'leaves' => $tc2show,
@@ -575,7 +575,7 @@ function prepareNode(&$db, &$node, &$map_node_tccount, $attr_map = null,
                                 " AND TPTCV.testplan_id = " .
                                 " {$my['filters']['setting_testplan']}";
                             $rs = $db->get_recordset($sql);
-                            $target_id = ! is_null($rs) ? $rs[0]['targetid'] : $target_id;
+                            $target_id = is_null($rs) ? $target_id : $rs[0]['targetid'];
                             break;
                     }
 
@@ -887,8 +887,8 @@ function renderExecTreeNode($level, &$node, &$tcase_node, $hash_id_descr,
                     '</span>';
             }
 
-            $pfn = ! is_null($pf[$node_type]) ? $pf[$node_type] .
-                "({$node['id']})" : null;
+            $pfn = is_null($pf[$node_type]) ? null : $pf[$node_type] .
+                    "({$node['id']})";
             if ('testsuite' == $node_type && ($opt['alertOnTestSuiteTCQty'] > 0) &&
                 $testcase_count > $opt['alertOnTestSuiteTCQty']) {
                 $jfn = config_get('jsAlertOnTestSuiteTCQty');
@@ -2470,7 +2470,7 @@ function generateTestSpecTreeNew(&$db, $tproject_id, $tproject_name, $linkto,
     }
     $treeMenu->menustring = $menustring;
 
-    $tc2show = ! is_null($tc2show) ? explode(",", trim($tc2show, ",")) : null;
+    $tc2show = is_null($tc2show) ? null : explode(",", trim($tc2show, ","));
     return array(
         'menu' => $treeMenu,
         'leaves' => $tc2show,

@@ -107,7 +107,7 @@ function initializeGui(&$argsObj)
         - 1 => ''
     ) + $argsObj->domainTCImportance;
 
-    $guiObj->goback_url = ! is_null($argsObj->goback_url) ? $argsObj->goback_url : '';
+    $guiObj->goback_url = is_null($argsObj->goback_url) ? '' : $argsObj->goback_url;
 
     return $guiObj;
 }

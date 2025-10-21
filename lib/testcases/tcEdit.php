@@ -931,7 +931,7 @@ function createNewVersion(&$tplEng, &$argsObj, &$guiObj, &$tcaseMgr,
     $identity = new stdClass();
     $identity->id = $argsObj->tcase_id;
     $identity->tproject_id = $argsObj->tproject_id;
-    $identity->version_id = ! is_null($argsObj->show_mode) ? $candidate : testcase::ALL_VERSIONS;
+    $identity->version_id = is_null($argsObj->show_mode) ? testcase::ALL_VERSIONS : $candidate;
 
     $guiObj->viewerArgs['action'] = "do_update";
     $guiObj->viewerArgs['refreshTree'] = DONT_REFRESH;

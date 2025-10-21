@@ -92,7 +92,7 @@ class gforgesoapInterface extends issueTrackerInterface
     public function getIssueStatusCode($issueID)
     {
         $issue = $this->getIssue($issueID);
-        return ! is_null($issue) ? $issue->statusCode : false;
+        return is_null($issue) ? false : $issue->statusCode;
     }
 
     /**
@@ -105,7 +105,7 @@ class gforgesoapInterface extends issueTrackerInterface
     public function getIssueStatusVerbose($issueID)
     {
         $issue = $this->getIssue($issueID);
-        return ! is_null($issue) ? $issue->statusVerbose : null;
+        return is_null($issue) ? null : $issue->statusVerbose;
     }
 
     /**
@@ -117,7 +117,7 @@ class gforgesoapInterface extends issueTrackerInterface
     public function getIssueSummary($issueID)
     {
         $issue = $this->getIssue($issueID);
-        return ! is_null($issue) ? $issue->summary : null;
+        return is_null($issue) ? null : $issue->summary;
     }
 
     /**

@@ -803,7 +803,7 @@ function processRequirements(&$dbHandler, &$reqMgr, $tcaseName, $tcIDCard,
                     " AND REQ.srs_id={$req_spec_id} ";
 
                 $rsx = $dbHandler->get_recordset($sql);
-                if ($useit = (! empty($rsx) ? true : false)) {
+                if ($useit = (empty($rsx) ? false : true)) {
                     $cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']] = $rsx[0]['id'];
                 }
             }

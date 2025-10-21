@@ -659,8 +659,8 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
     // when $testCaseSet is null because we have
     // applied filters => we do not need to call other
     // method because we know we are going to get NOTHING
-    $testCaseSet = ! is_null($testCaseSet) ? array_combine($testCaseSet,
-        $testCaseSet) : null;
+    $testCaseSet = is_null($testCaseSet) ? null : array_combine($testCaseSet,
+            $testCaseSet);
     if ($filterApplied && is_null($testCaseSet)) {
         return null;
     }
@@ -955,8 +955,8 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems,
                         // because we have applied it before on:
                         // $tcversionSet = $tcaseMgr->get_last_active_version()
                         if ($useFilter['cfields']) {
-                            $filteredSet = (! empty($allowedSet)) ? array_keys(
-                                $allowedSet) : $tcvidSet;
+                            $filteredSet = (empty($allowedSet)) ? $tcvidSet : array_keys(
+                                    $allowedSet);
                             $dummySet = $tcaseMgr->filter_tcversions_by_cfields(
                                 $filteredSet, $filters['cfields'], $options);
 
@@ -1515,8 +1515,8 @@ function getFilteredSpecViewFlat(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
     // when $testCaseSet is null because we have applied filters
     // => we do not need to call other
     // method because we know we are going to get NOTHING
-    $testCaseSet = ! is_null($testCaseSet) ? array_combine($testCaseSet,
-        $testCaseSet) : null;
+    $testCaseSet = is_null($testCaseSet) ? null : array_combine($testCaseSet,
+            $testCaseSet);
     if ($filterApplied && is_null($testCaseSet)) {
         return null;
     }

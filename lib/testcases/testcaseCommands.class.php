@@ -121,12 +121,12 @@ class testcaseCommands
         $p2check = 'goback_url';
         $obj->$p2check = '';
         if (property_exists($argsObj, $p2check)) {
-            $obj->$p2check = ! is_null($argsObj->$p2check) ? $argsObj->$p2check : '';
+            $obj->$p2check = is_null($argsObj->$p2check) ? '' : $argsObj->$p2check;
         }
 
         $p2check = 'show_mode';
         if (property_exists($argsObj, $p2check)) {
-            $obj->$p2check = ! is_null($argsObj->$p2check) ? $argsObj->$p2check : 'show';
+            $obj->$p2check = is_null($argsObj->$p2check) ? 'show' : $argsObj->$p2check;
         }
 
         // need to check where is used

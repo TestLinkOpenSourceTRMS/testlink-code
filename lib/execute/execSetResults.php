@@ -1617,7 +1617,7 @@ function initializeGui(&$dbHandler, &$argsObj, &$cfgObj, &$tplanMgr, &$tcaseMgr,
     $gui->history_status_btn_name = $gui->history_on ? 'btn_history_off' : 'btn_history_on';
 
     $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
-    $gui->has_platforms = ! is_null($dummy) ? 1 : 0;
+    $gui->has_platforms = is_null($dummy) ? 0 : 1;
 
     $gui->platform_info['id'] = 0;
     $gui->platform_info['name'] = '';

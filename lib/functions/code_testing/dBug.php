@@ -414,7 +414,7 @@ class dBug
         $this->makeTDHeader("xml", "xmlRoot");
 
         // attempt to open xml file
-        $bFile = (! ($fp = @fopen($var, "r"))) ? false : true;
+        $bFile = ($fp = @fopen($var, "r")) ? true : false;
 
         // read xml file
         if ($bFile) {
@@ -469,10 +469,10 @@ class dBug
         for ($i = 0; $i < $this->xmlCount; $i ++) {
             eval($this->xmlSData[$i]);
             $this->makeTDHeader("xml", "xmlText");
-            echo (! empty($this->xmlCData[$i])) ? $this->xmlCData[$i] : "&nbsp;";
+            echo (empty($this->xmlCData[$i])) ? "&nbsp;" : $this->xmlCData[$i];
             echo $this->closeTDRow();
             $this->makeTDHeader("xml", "xmlComment");
-            echo (! empty($this->xmlDData[$i])) ? $this->xmlDData[$i] : "&nbsp;";
+            echo (empty($this->xmlDData[$i])) ? "&nbsp;" : $this->xmlDData[$i];
             echo $this->closeTDRow();
             $this->makeTDHeader("xml", "xmlChildren");
             unset($this->xmlCData[$i], $this->xmlDData[$i]);

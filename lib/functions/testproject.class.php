@@ -3332,8 +3332,8 @@ class testproject extends tlObjectWithAttachments
 
             $highlander = $this->db->fetchRowsIntoMap($ssx, 'tc_id');
             if ($filterOnTC) {
-                $ky = ! is_null($highlander) ? array_diff_key($tclist,
-                    $highlander) : $tclist;
+                $ky = is_null($highlander) ? $tclist : array_diff_key($tclist,
+                        $highlander);
                 foreach ($ky as $tcase) {
                     unset($rs[$tcase]);
                 }
@@ -3476,8 +3476,8 @@ class testproject extends tlObjectWithAttachments
             }
         }
 
-        $hits = ! is_null($sql) ? $this->db->fetchRowsIntoMap($sql,
-            'testcase_id') : null;
+        $hits = is_null($sql) ? null : $this->db->fetchRowsIntoMap($sql,
+                'testcase_id');
 
         // clean up
         if ($delTT) {
@@ -4212,8 +4212,8 @@ class testproject extends tlObjectWithAttachments
             }
         }
 
-        $hits = ! is_null($sql) ? $this->db->fetchRowsIntoMap($sql,
-            'testcase_id') : null;
+        $hits = is_null($sql) ? null : $this->db->fetchRowsIntoMap($sql,
+                'testcase_id');
 
         // clean up
         if ($delTT) {

@@ -228,7 +228,7 @@ function buildMatrix(&$guiObj, &$argsObj, $forceFormat = null)
         'width' => 100
     ];
 
-    $fo = ! is_null($forceFormat) ? $forceFormat : $argsObj->format;
+    $fo = is_null($forceFormat) ? $argsObj->format : $forceFormat;
     if ($fo == FORMAT_HTML) {
 
         // 20221231 - having a differente name for the table it's critic
@@ -608,7 +608,7 @@ function buildDataSet(&$db, &$args, &$gui, &$exec, $labels, $forceFormat = null)
                 $name = htmlspecialchars("{$external_id}:{$rf[$top]['name']}",
                     ENT_QUOTES);
 
-                $fo = ! is_null($forceFormat) ? $forceFormat : $args->format;
+                $fo = is_null($forceFormat) ? $args->format : $forceFormat;
                 if ($fo == FORMAT_HTML) {
                     $rows[$cols['link']] = "<!-- " .
                         sprintf("%010d", $rf[$top]['external_id']) . " -->";

@@ -188,7 +188,7 @@ function getCFDiff($cfields, &$itemMgr)
                 $cmp[$cf_key] = array(
                     'label' => htmlspecialchars($cfieldsLeft[$cf_key]['label']),
                     'lvalue' => $cfieldsLeft[$cf_key]['value'],
-                    'rvalue' => ! is_null($cfieldsRight) ? $cfieldsRight[$cf_key]['value'] : null,
+                    'rvalue' => is_null($cfieldsRight) ? null : $cfieldsRight[$cf_key]['value'],
                     'changed' => $cfieldsLeft[$cf_key]['value'] !=
                     $cfieldsRight[$cf_key]['value']
                 );

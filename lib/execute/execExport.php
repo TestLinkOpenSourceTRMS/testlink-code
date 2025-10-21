@@ -83,7 +83,7 @@ function initializeGui(&$argsObj, &$tplanMgr)
     );
     $guiObj->page_title = lang_get('export_execution_set');
     $guiObj->object_name = '';
-    $guiObj->goback_url = ! is_null($argsObj->goback_url) ? $argsObj->goback_url : '';
+    $guiObj->goback_url = is_null($argsObj->goback_url) ? '' : $argsObj->goback_url;
 
     $key2loop = array(
         'tproject',

@@ -832,7 +832,7 @@ class testplan extends tlObjectWithAttachments
             intval($tcversionID) . " AND platform_id = " . intval($platformID);
 
         $linked_items = $this->db->fetchRowsIntoMap($sql, 'id');
-        return ! is_null($linked_items) ? key($linked_items) : - 1;
+        return is_null($linked_items) ? - 1 : key($linked_items);
     }
 
     /**
@@ -2384,7 +2384,7 @@ class testplan extends tlObjectWithAttachments
             // Need to get testplan parent (testproject id) in order to get custom fields
             // 20081122 - franciscom - need to check when we can call this with ID=NULL
             $the_path = $this->tree_manager->get_path(
-                ! is_null($id) ? $id : $parent_id);
+                is_null($id) ? $parent_id : $id);
             $path_len = count($the_path);
         }
         $tproject_id = ($path_len > 0) ? $the_path[$path_len - 1]['parent_id'] : $parent_id;
@@ -2414,7 +2414,7 @@ class testplan extends tlObjectWithAttachments
             // Need to get testplan parent (testproject id) in order to get custom fields
             // 20081122 - franciscom - need to check when we can call this with ID=NULL
             $the_path = $this->tree_manager->get_path(
-                ! is_null($id) ? $id : $parent_id);
+                is_null($id) ? $parent_id : $id);
             $path_len = count($the_path);
         }
         $tproject_id = ($path_len > 0) ? $the_path[$path_len - 1]['parent_id'] : $parent_id;

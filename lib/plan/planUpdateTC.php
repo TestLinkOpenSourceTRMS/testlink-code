@@ -292,7 +292,7 @@ function doUpdateAllToLatest(&$dbObj, $argsObj, &$tplanMgr)
             }
         }
     }
-    $qty == 0 ? $msg = lang_get('all_versions_where_latest') : $msg = sprintf(
+    $msg = $qty == 0 ? lang_get('all_versions_where_latest') : sprintf(
         lang_get('num_of_updated'), $qty);
 
     return $msg;

@@ -144,7 +144,7 @@ switch ($args->edit) {
         $gui->hasBeenExecuted = intval($statusQuo['executed']) > 0;
 
         if ($gui->canAddRemoveKWFromExecuted || ! $gui->hasBeenExecuted) {
-            $kwQty = ! is_null($args->keywordArray) ? count($args->keywordArray) : 0;
+            $kwQty = is_null($args->keywordArray) ? 0 : count($args->keywordArray);
             if ($args->assignToTestCase && $kwQty > 0) {
                 $result = 'ok';
                 $tcaseMgr->setKeywords($args->id, $latestActiveVersionID,

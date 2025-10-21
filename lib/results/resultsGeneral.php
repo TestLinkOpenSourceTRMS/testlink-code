@@ -45,13 +45,13 @@ if (is_null($tsInf)) {
             'groupByPlatform' => 1
         ));
 
-    $gui->statistics->keywords = ! is_null($keywordsMetrics) ? $keywordsMetrics->info : null;
+    $gui->statistics->keywords = is_null($keywordsMetrics) ? null : $keywordsMetrics->info;
 
     if ($gui->showPlatforms) {
         $items2loop[] = 'platform';
         $platformMetrics = $metricsMgr->getStatusTotalsByPlatformForRender(
             $args->tplan_id);
-        $gui->statistics->platform = ! is_null($platformMetrics) ? $platformMetrics->info : null;
+        $gui->statistics->platform = is_null($platformMetrics) ? null : $platformMetrics->info;
     }
 
     if ($gui->testprojectOptions->testPriorityEnabled) {
@@ -62,7 +62,7 @@ if (is_null($tsInf)) {
         );
         $priorityMetrics = $metricsMgr->getStatusTotalsByPriorityForRender(
             $args->tplan_id, $filters, $opt);
-        $gui->statistics->priorities = ! is_null($priorityMetrics) ? $priorityMetrics->info : null;
+        $gui->statistics->priorities = is_null($priorityMetrics) ? null : $priorityMetrics->info;
     }
 
     foreach ($items2loop as $item) {

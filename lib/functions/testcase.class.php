@@ -2827,11 +2827,9 @@ class testcase extends tlObjectWithAttachments
                 // when tcase ID has not been provided this can not be used
                 // will not do any check => leave it CRASH
                 $where_clause .= " AND TCV.version = {$my['filters']['version_number']} ";
-            } else {
-                if ($version_id != self::ALL_VERSIONS &&
-                    $version_id != self::LATEST_VERSION) {
-                    $where_clause .= $versionSQLOp . " TCV.id = {$version_id} ";
-                }
+            } elseif ($version_id != self::ALL_VERSIONS &&
+                $version_id != self::LATEST_VERSION) {
+                $where_clause .= $versionSQLOp . " TCV.id = {$version_id} ";
             }
 
             $active_status = strtoupper($my['filters']['active_status']);
@@ -3997,10 +3995,8 @@ class testcase extends tlObjectWithAttachments
         if (is_array($version_id)) {
             $versionid_list = implode(",", $version_id);
             $where_clause .= " AND tcversions.id IN ({$versionid_list}) ";
-        } else {
-            if ($version_id != self::ALL_VERSIONS) {
-                $where_clause .= " AND tcversions.id = {$version_id} ";
-            }
+        } elseif ($version_id != self::ALL_VERSIONS) {
+            $where_clause .= " AND tcversions.id = {$version_id} ";
         }
 
         if (! is_null($my['options']['exec_to_exclude'])) {
@@ -4143,12 +4139,10 @@ class testcase extends tlObjectWithAttachments
                 " AND NHA.id IN ({$versionid_list}) ";
             $where_clause_2 = $where_clause .
                 " AND tcversions.id IN ({$versionid_list}) ";
-        } else {
-            if ($version_id != self::ALL_VERSIONS) {
-                $where_clause_1 = $where_clause . " AND NHA.id = {$version_id} ";
-                $where_clause_2 = $where_clause .
-                    " AND tcversions.id = {$version_id} ";
-            }
+        } elseif ($version_id != self::ALL_VERSIONS) {
+            $where_clause_1 = $where_clause . " AND NHA.id = {$version_id} ";
+            $where_clause_2 = $where_clause .
+                " AND tcversions.id = {$version_id} ";
         }
 
         // This logic (is mine - franciscom) must be detailed better!!!!!
@@ -6455,10 +6449,8 @@ class testcase extends tlObjectWithAttachments
                 }
                 $where_clause .= ' AND TCV.id IN (' . implode(",", $version_id) .
                     ') ';
-            } else {
-                if ($version_id != self::ALL_VERSIONS) {
-                    $where_clause .= ' AND TCV.id = ' . intval($version_id);
-                }
+            } elseif ($version_id != self::ALL_VERSIONS) {
+                $where_clause .= ' AND TCV.id = ' . intval($version_id);
             }
         }
 

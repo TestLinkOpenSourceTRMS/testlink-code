@@ -920,39 +920,37 @@ class tlTestPlanMetrics extends testplan
                         }
                     }
                 }
-            } else {
+            } elseif (! is_null($rs)) {
                 // The OLD WAY
-                if (! is_null($rs)) {
-                    for ($jdx = 0; $jdx < $loop2do; $jdx ++) {
-                        if ($rs[$jdx]['urg_imp'] >=
-                            $priorityCfg->threshold['high']) {
-                            $rs[$jdx]['priority_level'] = HIGH;
-                            $hitOn = HIGH;
-                        } elseif ($rs[$jdx]['urg_imp'] <
-                            $priorityCfg->threshold['low']) {
-                            $rs[$jdx]['priority_level'] = LOW;
-                            $hitOn = LOW;
-                        } else {
-                            $rs[$jdx]['priority_level'] = MEDIUM;
-                            $hitOn = MEDIUM;
-                        }
-
-                        // to improve readability
-                        $status = $rs[$jdx]['status'];
-                        if (! isset($out[$hitOn][$status])) {
-                            $out[$hitOn][$status] = $rs[$jdx];
-                        } else {
-                            $out[$hitOn][$status]['exec_qty'] += $rs[$jdx]['exec_qty'];
-                        }
-
-                        if (! isset($totals[$hitOn])) {
-                            $totals[$hitOn] = array(
-                                'priority_level' => $hitOn,
-                                'qty' => 0
-                            );
-                        }
-                        $totals[$hitOn]['qty'] += $rs[$jdx]['exec_qty'];
+                for ($jdx = 0; $jdx < $loop2do; $jdx ++) {
+                    if ($rs[$jdx]['urg_imp'] >=
+                        $priorityCfg->threshold['high']) {
+                        $rs[$jdx]['priority_level'] = HIGH;
+                        $hitOn = HIGH;
+                    } elseif ($rs[$jdx]['urg_imp'] <
+                        $priorityCfg->threshold['low']) {
+                        $rs[$jdx]['priority_level'] = LOW;
+                        $hitOn = LOW;
+                    } else {
+                        $rs[$jdx]['priority_level'] = MEDIUM;
+                        $hitOn = MEDIUM;
                     }
+
+                    // to improve readability
+                    $status = $rs[$jdx]['status'];
+                    if (! isset($out[$hitOn][$status])) {
+                        $out[$hitOn][$status] = $rs[$jdx];
+                    } else {
+                        $out[$hitOn][$status]['exec_qty'] += $rs[$jdx]['exec_qty'];
+                    }
+
+                    if (! isset($totals[$hitOn])) {
+                        $totals[$hitOn] = array(
+                            'priority_level' => $hitOn,
+                            'qty' => 0
+                        );
+                    }
+                    $totals[$hitOn]['qty'] += $rs[$jdx]['exec_qty'];
                 }
             }
             $exec['with_tester'] = $out;

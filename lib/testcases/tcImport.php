@@ -451,21 +451,19 @@ function saveImportedTCData(&$db, $tcData, $tproject_id, $container_id, $userID,
                             $name,
                             $messages['already_exists_updated']
                         );
+                    } elseif ($ret['reason'] == '') {
+                        $resultMap[] = array(
+                            $name,
+                            sprintf($messages['already_exists_not_updated'],
+                                $tcasePrefix . $glueChar . $externalid,
+                                $tcasePrefix . $glueChar .
+                                $ret['hit_on']['tc_external_id'])
+                        );
                     } else {
-                        if ($ret['reason'] == '') {
-                            $resultMap[] = array(
-                                $name,
-                                sprintf($messages['already_exists_not_updated'],
-                                    $tcasePrefix . $glueChar . $externalid,
-                                    $tcasePrefix . $glueChar .
-                                    $ret['hit_on']['tc_external_id'])
-                            );
-                        } else {
-                            $resultMap[] = array(
-                                $name,
-                                $ret['msg']
-                            );
-                        }
+                        $resultMap[] = array(
+                            $name,
+                            $ret['msg']
+                        );
                     }
                     break;
 
@@ -647,13 +645,11 @@ function checkXMLTCTsuite($fileName, $recursiveMode)
                     'msg' => lang_get('wrong_xml_tsuite_file')
                 );
             }
-        } else {
-            if ($elementName != 'testcases' && $elementName != 'testcase') {
-                $file_check = array(
-                    'status_ok' => 0,
-                    'msg' => lang_get('wrong_xml_tcase_file')
-                );
-            }
+        } elseif ($elementName != 'testcases' && $elementName != 'testcase') {
+            $file_check = array(
+                'status_ok' => 0,
+                'msg' => lang_get('wrong_xml_tcase_file')
+            );
         }
     }
     return $file_check;

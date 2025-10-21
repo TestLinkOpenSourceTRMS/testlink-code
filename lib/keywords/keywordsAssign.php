@@ -61,25 +61,21 @@ switch ($args->edit) {
         if ($args->onlyDirectChildren) {
             $tsChildren = $tsuite_mgr->get_children_testcases($args->id,
                 'only_id');
+        } elseif ($args->useFilteredSet) {
+            $filteredTC = $args->tcaseSet;
         } else {
-            if ($args->useFilteredSet) {
-                $filteredTC = $args->tcaseSet;
-            } else {
-                $deepTC = $tsuite_mgr->get_testcases_deep($args->id, 'only_id');
-            }
+            $deepTC = $tsuite_mgr->get_testcases_deep($args->id, 'only_id');
         }
 
         if ($args->onlyDirectChildren && $args->useFilteredSet &&
             ! empty($tsChildren) && ! empty($filteredTC)) {
             $tcs = array_intersect($tsChildren, $filteredTC);
+        } elseif ($args->useFilteredSet && ! empty($filteredTC)) {
+            $tcs = &$filteredTC;
+        } elseif ($args->onlyDirectChildren) {
+            $tcs = &$tsChildren;
         } else {
-            if ($args->useFilteredSet && ! empty($filteredTC)) {
-                $tcs = &$filteredTC;
-            } elseif ($args->onlyDirectChildren) {
-                $tcs = &$tsChildren;
-            } else {
-                $tcs = &$deepTC;
-            }
+            $tcs = &$deepTC;
         }
 
         if (($loop2do = count($tcs)) !== 0) {

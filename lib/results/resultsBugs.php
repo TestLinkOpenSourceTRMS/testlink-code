@@ -192,10 +192,8 @@ function buildBugString(&$db, $execID, &$bugInterface, &$openBugsArray,
                     if (! in_array($bugID, $resolvedBugsArray)) {
                         $resolvedBugsArray[] = $bugID;
                     }
-                } else {
-                    if (! in_array($bugID, $openBugsArray)) {
-                        $openBugsArray[] = $bugID;
-                    }
+                } elseif (! in_array($bugID, $openBugsArray)) {
+                    $openBugsArray[] = $bugID;
                 }
                 $bugUrls[] = $bugInfo['link_to_bts'];
             }

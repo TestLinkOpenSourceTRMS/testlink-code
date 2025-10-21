@@ -290,15 +290,13 @@ class testsuite extends tlObjectWithAttachments
             $ret['msg'] = 'ok';
             if (! $result) {
                 $ret['msg'] = $this->db->error_msg();
-            } else {
-                if (defined('TL_APICALL')) {
-                    $ctx = array(
-                        'id' => $id,
-                        'name' => $name,
-                        'details' => $details
-                    );
-                    event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
-                }
+            } elseif (defined('TL_APICALL')) {
+                $ctx = array(
+                    'id' => $id,
+                    'name' => $name,
+                    'details' => $details
+                );
+                event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
             }
         } else {
             $ret['msg'] = $check['msg'];

@@ -313,15 +313,13 @@ function importTestPlanLinksFromXML(&$dbHandler, &$tplanMgr, $targetFile,
                                 $idx + 1, $targetName, $contextObj->tplan_name);
                         }
                     }
+                } elseif ($linkWithPlatform) {
+                    $import_status = $labels['not_imported'];
+                    $dummy_msg = sprintf(
+                        $labels['link_with_platform_not_needed'], $idx + 1);
                 } else {
-                    if ($linkWithPlatform) {
-                        $import_status = $labels['not_imported'];
-                        $dummy_msg = sprintf(
-                            $labels['link_with_platform_not_needed'], $idx + 1);
-                    } else {
-                        $platformID = 0;
-                        $status_ok = true;
-                    }
+                    $platformID = 0;
+                    $status_ok = true;
                 }
                 if (! is_null($dummy_msg)) {
                     $msg[] = array(

@@ -901,11 +901,9 @@ function doNotRunAnalysis($tcaseQty, $execStatusCounter, $notRunCode)
             $evaluation = $notRunCode;
             $doIt = false;
         }
-    } else {
-        if ($execStatusCounter['totalTPTCV'] == $execStatusCounter[$notRunCode]) {
-            $evaluation = $notRunCode;
-            $doIt = false;
-        }
+    } elseif ($execStatusCounter['totalTPTCV'] == $execStatusCounter[$notRunCode]) {
+        $evaluation = $notRunCode;
+        $doIt = false;
     }
     return array(
         $evaluation,

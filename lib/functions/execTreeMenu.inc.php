@@ -471,10 +471,8 @@ function prepareExecTreeNode(&$db, &$node, &$map_node_tccount,
     // Then BE VERY Carefull if you plan to refactor, to avoid unexpected
     // side effects.
     if ($node_type == 'testcase') {
-
         $tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
         $tcase_counters = array_fill_keys($status_descr_list, 0);
-
         if (is_null($tpNode)) {
             // Dev Notes: when this happens ?
             // 1. two or more platforms on test plan (PLAT-A,PLAT-B)
@@ -516,64 +514,59 @@ function prepareExecTreeNode(&$db, &$node, &$map_node_tccount,
                 $node['leaf'] = true;
             }
         }
-    } else {
-        if (isset($node['childNodes']) && is_array($node['childNodes'])) {
-            // node is a Test Suite or Test Project
-            $childNodes = &$node['childNodes'];
-            $childNodesQty = count($childNodes);
-            for ($idx = 0; $idx < $childNodesQty; $idx ++) {
-                $current = &$childNodes[$idx];
-                // I use set an element to null to filter out leaf menu items
-                if (is_null($current)) {
-                    $childNodes[$idx] = REMOVEME;
-                    continue;
-                }
-
-                $counters_map = prepareExecTreeNode($db, $current,
-                    $map_node_tccount, $tplan_tcases, $my['filters'],
-                    $my['options']);
-
-                foreach ($counters_map as $key => $value) {
-                    $tcase_counters[$key] += $counters_map[$key];
-                }
+    } elseif (isset($node['childNodes']) && is_array($node['childNodes'])) {
+        // node is a Test Suite or Test Project
+        $childNodes = &$node['childNodes'];
+        $childNodesQty = count($childNodes);
+        for ($idx = 0; $idx < $childNodesQty; $idx ++) {
+            $current = &$childNodes[$idx];
+            // I use set an element to null to filter out leaf menu items
+            if (is_null($current)) {
+                $childNodes[$idx] = REMOVEME;
+                continue;
             }
 
-            foreach ($tcase_counters as $key => $value) {
-                $node[$key] = $tcase_counters[$key];
-            }
+            $counters_map = prepareExecTreeNode($db, $current,
+                $map_node_tccount, $tplan_tcases, $my['filters'],
+                $my['options']);
 
-            // hhhm is this test needed ? Why ?
-            if (isset($node['id'])) {
-                $map_node_tccount[$node['id']] = array(
-                    'testcount' => $node['testcase_count'],
-                    'name' => $node['name']
-                );
+            foreach ($counters_map as $key => $value) {
+                $tcase_counters[$key] += $counters_map[$key];
             }
-
-            // need to check is this check can be TRUE on some situation
-            // After mail on 20140124, it seems is useless.
-            // This piece is useful only when you use platforms.
-            // Use Case
-            // Test plan with 2 platforms - QQ, WW
-            // TC-1A -> platform QQ
-            // NO TEST CASE assigned to test plan with platform WW
-            // User wants to see execution tree with platform WW
-            // You are going to enter here because $tplan_tcases is NULL
-            if (! is_null($tplan_tcases) && ! $tcase_counters['testcase_count'] &&
-                ($node_type != 'testproject')) {
-                $node = REMOVEME;
-            }
-        } elseif ($node_type == 'testsuite') {
-            // Empty test suite
+        }
+        foreach ($tcase_counters as $key => $value) {
+            $node[$key] = $tcase_counters[$key];
+        }
+        // hhhm is this test needed ? Why ?
+        if (isset($node['id'])) {
             $map_node_tccount[$node['id']] = array(
-                'testcount' => 0,
+                'testcount' => $node['testcase_count'],
                 'name' => $node['name']
             );
+        }
+        // need to check is this check can be TRUE on some situation
+        // After mail on 20140124, it seems is useless.
+        // This piece is useful only when you use platforms.
+        // Use Case
+        // Test plan with 2 platforms - QQ, WW
+        // TC-1A -> platform QQ
+        // NO TEST CASE assigned to test plan with platform WW
+        // User wants to see execution tree with platform WW
+        // You are going to enter here because $tplan_tcases is NULL
+        if (! is_null($tplan_tcases) && ! $tcase_counters['testcase_count'] &&
+            ($node_type != 'testproject')) {
+            $node = REMOVEME;
+        }
+    } elseif ($node_type == 'testsuite') {
+        // Empty test suite
+        $map_node_tccount[$node['id']] = array(
+            'testcount' => 0,
+            'name' => $node['name']
+        );
 
-            // If is an EMPTY Test suite and we have added filtering conditions, We will destroy it.
-            if ($filtersApplied || ! is_null($tplan_tcases)) {
-                $node = REMOVEME;
-            }
+        // If is an EMPTY Test suite and we have added filtering conditions, We will destroy it.
+        if ($filtersApplied || ! is_null($tplan_tcases)) {
+            $node = REMOVEME;
         }
     }
 

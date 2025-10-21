@@ -192,7 +192,6 @@ function doDBConnect(&$db, $onErrorExit = false)
         $logtext = ' Connect to database <b>' . DB_NAME . '</b> on Host <b>' .
             DB_HOST . '</b> fails <br>';
         $logtext .= 'DBMS Error Message: ' . $result['dbms_msg'];
-
         $logmsg = $logtext .
             ($onErrorExit ? '<br>Redirection to connection fail screen.' : '');
         tLog(str_replace($search, $replace, $logmsg), 'ERROR');
@@ -204,11 +203,9 @@ function doDBConnect(&$db, $onErrorExit = false)
             $smarty->display('workAreaSimple.tpl');
             exit();
         }
-    } else {
-        if ((DB_TYPE == 'mysql') && ($charSet == 'UTF-8')) {
-            $db->exec_query("SET CHARACTER SET utf8");
-            $db->exec_query("SET collation_connection = 'utf8_general_ci'");
-        }
+    } elseif ((DB_TYPE == 'mysql') && ($charSet == 'UTF-8')) {
+        $db->exec_query("SET CHARACTER SET utf8");
+        $db->exec_query("SET collation_connection = 'utf8_general_ci'");
     }
 
     // if we establish a DB connection, we reopen the session,

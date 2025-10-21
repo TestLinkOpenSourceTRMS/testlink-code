@@ -129,10 +129,8 @@ class SqlParser
 
         if ($pos === false) {
             $use_v = true;
-        } else {
-            if ($pos == 0) {
-                $use_v = false;
-            }
+        } elseif ($pos == 0) {
+            $use_v = false;
         }
 
         // Empty line must not be used

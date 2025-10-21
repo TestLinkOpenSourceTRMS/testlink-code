@@ -30,9 +30,7 @@ if ($args->useRecursion) {
     // $dummy = array_flip($tree_mgr->get_available_node_types());
     $node_info = $tree_mgr->get_node_hierarchy_info($node_id);
     $gui->export_filename = $node_info['name'];
-
     $gui->page_title = lang_get('title_tsuite_export');
-
     $dummy = '.testsuite-deep.xml';
     if ($node_id == $args->tproject_id) {
         $gui->page_title = lang_get('title_tsuite_export_all');
@@ -41,29 +39,27 @@ if ($args->useRecursion) {
         $gui->nothing_todo_msg = lang_get('no_testsuites_to_export');
     }
     $gui->export_filename .= $dummy;
-} else {
+} elseif ($gui->oneTestCaseExport) {
     // Exporting situations:
     // All test cases in test suite.
     // One test case.
-    if ($gui->oneTestCaseExport) {
-        $tcaseMgr = new testcase($db);
-        $tcinfo = $tcaseMgr->get_by_id($args->tcase_id, $args->tcversion_id,
-            null, array(
-                'output' => 'essential'
-            ));
-        $tcinfo = $tcinfo[0];
-        $node_id = $args->tcase_id;
-        $gui->export_filename = $tcinfo['name'] . '.version' . $tcinfo['version'] .
-            '.testcase.xml';
-        $gui->page_title = lang_get('title_tc_export');
-    } else {
-        $check_children = 1;
-        $node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
-        $gui->export_filename = $node_info['name'] .
-            '.testsuite-children-testcases.xml';
-        $gui->page_title = lang_get('title_tc_export_all');
-        $gui->nothing_todo_msg = lang_get('no_testcases_to_export');
-    }
+    $tcaseMgr = new testcase($db);
+    $tcinfo = $tcaseMgr->get_by_id($args->tcase_id, $args->tcversion_id,
+        null, array(
+            'output' => 'essential'
+        ));
+    $tcinfo = $tcinfo[0];
+    $node_id = $args->tcase_id;
+    $gui->export_filename = $tcinfo['name'] . '.version' . $tcinfo['version'] .
+        '.testcase.xml';
+    $gui->page_title = lang_get('title_tc_export');
+} else {
+    $check_children = 1;
+    $node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
+    $gui->export_filename = $node_info['name'] .
+        '.testsuite-children-testcases.xml';
+    $gui->page_title = lang_get('title_tc_export_all');
+    $gui->nothing_todo_msg = lang_get('no_testcases_to_export');
 }
 $gui->export_filename = is_null($args->export_filename) ? $gui->export_filename : $args->export_filename;
 

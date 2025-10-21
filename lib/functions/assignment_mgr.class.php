@@ -203,11 +203,9 @@ class assignment_mgr extends tlObjectWithDB
                     if (isset($elem['build_id'])) {
                         $sql .= ",build_id";
                         $values .= "," . $safe['build_id'];
-                    } else {
-                        if ($safe['type'] == $types['testcase_execution']['id']) {
-                            throw new Exception(
-                                "Error Processing Request - BUILD ID is Mandatory");
-                        }
+                    } elseif ($safe['type'] == $types['testcase_execution']['id']) {
+                        throw new Exception(
+                            "Error Processing Request - BUILD ID is Mandatory");
                     }
 
                     $sql .= ") " . $values . ")";

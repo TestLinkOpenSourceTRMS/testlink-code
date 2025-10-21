@@ -229,10 +229,8 @@ function getSecurityNotes(&$db)
         if (! checkForLDAPExtension()) {
             $securityNotes[] = lang_get("ldap_extension_not_loaded");
         }
-    } else {
-        if (checkForAdminDefaultPwd($db)) {
-            $securityNotes[] = lang_get("sec_note_admin_default_pwd");
-        }
+    } elseif (checkForAdminDefaultPwd($db)) {
+        $securityNotes[] = lang_get("sec_note_admin_default_pwd");
     }
 
     if (! checkForBTSConnection()) {
@@ -813,47 +811,37 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename,
         if (file_exists($checked_file)) {
             if (is_writable($checked_file)) {
                 $out .= "<td><span class='tab-success'>OK (writable)</span></td></tr>\n";
-            } else {
-                if ($isCritical) {
-                    $out .= "<td><span class='tab-error'>Failed! Please fix the file " .
-                        $checked_file .
-                        " permissions and reload the page.</span></td></tr>";
-                    $errCounter += 1;
-                } else {
-                    $out .= "<td><span class='tab-warning'>Not writable! Please fix the file " .
-                        $checked_file . " permissions.</span></td></tr>";
-                }
-            }
-        } else {
-            if (is_writable($checked_path)) {
-                $out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
-            } else {
-                if ($isCritical) {
-                    $out .= "<td><span class='tab-error'>Directory is not writable! Please fix " .
-                        $checked_path .
-                        " permissions and reload the page.</span></td></tr>";
-                    $errCounter += 1;
-                } else {
-                    $out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " .
-                        $checked_path . " permissions.</span></td></tr>";
-                }
-            }
-        }
-    } else {
-        if (file_exists($checked_file)) {
-            if (! is_writable($checked_file)) {
-                $out .= "<td><span class='tab-success'>OK (read only)</span></td></tr>\n";
-            } else {
-                $out .= "<td><span class='tab-warning'>It's recommended to have read only permission for security reason.</span></td></tr>";
-            }
-        } else {
-            if ($isCritical) {
-                $out .= "<td><span class='tab-error'>Failed! The file is not on place.</span></td></tr>";
+            } elseif ($isCritical) {
+                $out .= "<td><span class='tab-error'>Failed! Please fix the file " .
+                    $checked_file .
+                    " permissions and reload the page.</span></td></tr>";
                 $errCounter += 1;
             } else {
-                $out .= "<td><span class='tab-warning'>The file is not on place.</span></td></tr>";
+                $out .= "<td><span class='tab-warning'>Not writable! Please fix the file " .
+                    $checked_file . " permissions.</span></td></tr>";
             }
+        } elseif (is_writable($checked_path)) {
+            $out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
+        } elseif ($isCritical) {
+            $out .= "<td><span class='tab-error'>Directory is not writable! Please fix " .
+                $checked_path .
+                " permissions and reload the page.</span></td></tr>";
+            $errCounter += 1;
+        } else {
+            $out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " .
+                $checked_path . " permissions.</span></td></tr>";
         }
+    } elseif (file_exists($checked_file)) {
+        if (! is_writable($checked_file)) {
+            $out .= "<td><span class='tab-success'>OK (read only)</span></td></tr>\n";
+        } else {
+            $out .= "<td><span class='tab-warning'>It's recommended to have read only permission for security reason.</span></td></tr>";
+        }
+    } elseif ($isCritical) {
+        $out .= "<td><span class='tab-error'>Failed! The file is not on place.</span></td></tr>";
+        $errCounter += 1;
+    } else {
+        $out .= "<td><span class='tab-warning'>The file is not on place.</span></td></tr>";
     }
 
     return $out;

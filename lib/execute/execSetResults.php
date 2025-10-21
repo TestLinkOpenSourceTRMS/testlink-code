@@ -527,8 +527,8 @@ if ($userid_array) {
         $userSet[] = $value;
     }
 }
-$gui->headsUpTSuite = smartyAssignTestsuiteInfo($smarty, $tree_mgr,
-    $tcase_id, $args->tproject_id, $cfg);
+$gui->headsUpTSuite = smartyAssignTestsuiteInfo($smarty, $tree_mgr, $tcase_id,
+    $args->tproject_id, $cfg);
 if ($args->doSave || $args->saveStepsPartialExec) {
     $gui->headsUpTSuite = false;
 }
@@ -546,8 +546,7 @@ if ($gui->can_use_bulk_op = ($args->level == 'testsuite')) {
 }
 // has sense only if there are cf for execution
 // may be can improve check
-if (! $gui->can_use_bulk_op &&
-    $cfg->exec_cfg->exec_mode->new_exec == 'latest') {
+if (! $gui->can_use_bulk_op && $cfg->exec_cfg->exec_mode->new_exec == 'latest') {
 
     list ($tcase_id, $tcversion_id, $latestExecIDInContext, $hasCFOnExec) = processTestCase(
         $tcase, $gui, $args, $cfg, $linked_tcversions, $tree_mgr, $tcaseMgr,
@@ -568,8 +567,7 @@ $smarty->assign('test_automation_enabled', 0);
 $smarty->assign('gui', $gui);
 $smarty->assign('cfg', $cfg);
 $smarty->assign('users', tlUser::getByIDs($db, $userSet));
-$smarty->display(
-    $templateCfg->template_dir . $templateCfg->default_template);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
  */
@@ -651,7 +649,7 @@ function initArgs(&$dbHandler, $cfgObj)
     if ($args->level == 'testcase' || is_null($args->filter_status) ||
         (! is_array($args->filter_status) && trim($args->filter_status) == '')) {
         $args->filter_status = null;
-    } else {
+    } elseif (is_string($args->filter_status) && strlen($args->filter_status) > 1) {
         // 20130306 - franciscom
         // This (without the strlen() check) generated issue 5541: When "Result" filter is used ...
         // at least when result DIFFERENT that NOT RUN is used on filter
@@ -661,11 +659,8 @@ function initArgs(&$dbHandler, $cfgObj)
         // under the hood when getting data from $_REQUEST, then this piece
         // of code not only will be useless BUT WRONG, because will try
         // to unserialize something that IS NOT SERIALIZED!!!!
-
         // After TICKET 6651, may be need to limit size of $args->filter_status
-        if (is_string($args->filter_status) && strlen($args->filter_status) > 1) {
-            $args->filter_status = json_decode($args->filter_status);
-        }
+        $args->filter_status = json_decode($args->filter_status);
     }
 
     switch ($args->level) {
@@ -1693,43 +1688,40 @@ function initializeGui(&$dbHandler, &$argsObj, &$cfgObj, &$tplanMgr, &$tcaseMgr,
             $kx = $kj . 'ForStep';
             $gui->$kx = $argsObj->$kx;
         }
-    } else {
-        if (null != $gui->issueTrackerMetaData) {
-            $singleVal = array(
-                'issuetype' => 'issueType',
-                'issuepriority' => 'issuePriority'
-            );
-            foreach ($singleVal as $kj => $attr) {
-                $gui->$attr = null;
-                if (property_exists($itsCfg, $kj)) {
-                    $gui->$attr = $itsCfg->$kj;
-                } else {
-                    /* Provide warning */
-                    tLog(
-                        "Issue Tracker Config Issue? - Attribute:{$kj} doesn't exist",
-                        "WARNING");
-                }
-                $forStep = $attr . 'ForStep';
-                $gui->$forStep = $gui->$attr;
+    } elseif (null != $gui->issueTrackerMetaData) {
+        $singleVal = array(
+            'issuetype' => 'issueType',
+            'issuepriority' => 'issuePriority'
+        );
+        foreach ($singleVal as $kj => $attr) {
+            $gui->$attr = null;
+            if (property_exists($itsCfg, $kj)) {
+                $gui->$attr = $itsCfg->$kj;
+            } else {
+                /* Provide warning */
+                tLog(
+                    "Issue Tracker Config Issue? - Attribute:{$kj} doesn't exist",
+                    "WARNING");
             }
-
-            $multiVal = array(
-                'version' => 'artifactVersion',
-                'component' => 'artifactComponent'
-            );
-            foreach ($multiVal as $kj => $attr) {
-                $gui->$attr = null;
-                if (property_exists($itsCfg, $kj)) {
-                    $gui->$attr = (array) $itsCfg->$kj;
-                } else {
-                    /* Provide warning */
-                    tLog(
-                        "Issue Tracker Config Issue? - Attribute:{$kj} doesn't exist",
-                        "WARNING");
-                }
-                $forStep = $attr . 'ForStep';
-                $gui->$forStep = $gui->$attr;
+            $forStep = $attr . 'ForStep';
+            $gui->$forStep = $gui->$attr;
+        }
+        $multiVal = array(
+            'version' => 'artifactVersion',
+            'component' => 'artifactComponent'
+        );
+        foreach ($multiVal as $kj => $attr) {
+            $gui->$attr = null;
+            if (property_exists($itsCfg, $kj)) {
+                $gui->$attr = (array) $itsCfg->$kj;
+            } else {
+                /* Provide warning */
+                tLog(
+                    "Issue Tracker Config Issue? - Attribute:{$kj} doesn't exist",
+                    "WARNING");
             }
+            $forStep = $attr . 'ForStep';
+            $gui->$forStep = $gui->$attr;
         }
     }
 

@@ -120,20 +120,18 @@ function doAuthorize(&$db, $login, $pwd, $options = null)
             $user->emailAddress = $login;
             $user->firstName = $options->givenName;
             $user->lastName = $options->familyName;
-        } else {
-            if ($authCfg['ldap_automatic_user_creation']) {
-                $user->authentication = 'LDAP'; // force for auth_does_password_match
-                $check = auth_does_password_match($db, $user, $pwd);
+        } elseif ($authCfg['ldap_automatic_user_creation']) {
+            $user->authentication = 'LDAP';
+            // force for auth_does_password_match
+            $check = auth_does_password_match($db, $user, $pwd);
+            if ($check->status_ok) {
+                $forceUserCreation = true;
+                $uf = getUserFieldsFromLDAP($user->login,
+                    $authCfg['ldap'][$check->ldap_index]);
 
-                if ($check->status_ok) {
-                    $forceUserCreation = true;
-                    $uf = getUserFieldsFromLDAP($user->login,
-                        $authCfg['ldap'][$check->ldap_index]);
-
-                    $user->emailAddress = $uf->emailAddress;
-                    $user->firstName = $uf->firstName;
-                    $user->lastName = $uf->lastName;
-                }
+                $user->emailAddress = $uf->emailAddress;
+                $user->firstName = $uf->firstName;
+                $user->lastName = $uf->lastName;
             }
         }
 

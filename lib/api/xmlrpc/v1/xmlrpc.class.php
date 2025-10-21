@@ -577,8 +577,8 @@ class TestlinkXMLRPCServer extends IXR_Server
         $tprojectid = intval(
             isset($context[self::$testProjectIDParamName]) ? $context[self::$testProjectIDParamName] : 0);
 
-        if ($tprojectid == 0 && isset(
-            $this->args[self::$testProjectIDParamName])) {
+        if ($tprojectid == 0 &&
+            isset($this->args[self::$testProjectIDParamName])) {
             $tprojectid = $this->args[self::$testProjectIDParamName];
         }
 
@@ -606,8 +606,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             // Try using TestSuiteID to get TestProjectID
             $tsuiteid = intval(
                 isset($context[self::$testSuiteIDParamName]) ? $context[self::$testSuiteIDParamName] : 0);
-            if ($tsuiteid == 0 && isset(
-                $this->args[self::$testSuiteIDParamName])) {
+            if ($tsuiteid == 0 &&
+                isset($this->args[self::$testSuiteIDParamName])) {
                 $tsuiteid = intval($this->args[self::$testSuiteIDParamName]);
             }
             if ($tsuiteid > 0) {
@@ -787,15 +787,13 @@ class TestlinkXMLRPCServer extends IXR_Server
                 $msg = $messagePrefix . sprintf(INVALID_TPLANID_STR, $tplanid);
                 $this->errors[] = new IXR_Error(INVALID_TPLANID, $msg);
                 $status = false;
-            } else {
+            } elseif ($this->checkGuess() &&
+                (! $this->_isBuildIDPresent() &&
+                ! $this->_isParamPresent(self::$buildNameParamName,
+                    $messagePrefix))) {
                 // tplanid exists and its valid
                 // Do we need to try to guess build id ?
-                if ($this->checkGuess() &&
-                    (! $this->_isBuildIDPresent() &&
-                    ! $this->_isParamPresent(self::$buildNameParamName,
-                        $messagePrefix))) {
-                    $status = $this->_setBuildID2Latest();
-                }
+                $status = $this->_setBuildID2Latest();
             }
         }
         return $status;
@@ -3786,11 +3784,9 @@ class TestlinkXMLRPCServer extends IXR_Server
                 $msg = sprintf(PARAMETER_NOT_INT_STR,
                     self::$versionNumberParamName, $version);
                 $this->errors[] = new IXR_Error(PARAMETER_NOT_INT, $msg);
-            } else {
-                if (! ($status = ($version > 0))) {
-                    $msg = sprintf(VERSION_NOT_VALID_STR, $version);
-                    $this->errors[] = new IXR_Error(VERSION_NOT_VALID, $msg);
-                }
+            } elseif (! ($status = ($version > 0))) {
+                $msg = sprintf(VERSION_NOT_VALID_STR, $version);
+                $this->errors[] = new IXR_Error(VERSION_NOT_VALID, $msg);
             }
         }
         return $status;
@@ -3923,11 +3919,9 @@ class TestlinkXMLRPCServer extends IXR_Server
                 if ($this->_isParamPresent($key)) {
                     $additional_values[] = $this->args[$key];
                     $additional_fields[] = $field_name;
-                } else {
-                    if (! is_null($opt_values[$key])) {
-                        $additional_values[] = $opt_values[$key];
-                        $additional_fields[] = $field_name;
-                    }
+                } elseif (! is_null($opt_values[$key])) {
+                    $additional_values[] = $opt_values[$key];
+                    $additional_fields[] = $field_name;
                 }
             }
         }
@@ -4663,8 +4657,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             return $this->errors;
         }
 
-        if ($status_ok && ! $this->_isParamPresent(
-            self::$versionNumberParamName)) {
+        if ($status_ok &&
+            ! $this->_isParamPresent(self::$versionNumberParamName)) {
             try {
                 $tc = $this->getTestCase($args, self::THROW_ON_ERROR);
                 $this->args[self::$versionNumberParamName] = $tc[0][self::$versionNumberParamName];
@@ -5181,19 +5175,15 @@ class TestlinkXMLRPCServer extends IXR_Server
                     $this->errors[] = new IXR_Error(
                         TESTPROJECTNAME_DOESNOT_EXIST, $msg);
                 }
-            } else {
-
-                if (isset($target[self::$prefixParamName]) &&
-                    $target[self::$prefixParamName] != '') {
-                    $prefix = trim($this->args[self::$prefixParamName]);
-                    $tprojectInfo = $this->tprojectMgr->get_by_prefix($prefix);
-
-                    if ($status_ok = is_null($tprojectInfo)) {
-                        $msg = $msg_prefix .
-                            sprintf(TPROJECT_PREFIX_DOESNOT_EXIST_STR, $prefix);
-                        $this->errors[] = new IXR_Error(
-                            TPROJECT_PREFIX_DOESNOT_EXIST, $msg);
-                    }
+            } elseif (isset($target[self::$prefixParamName]) &&
+                $target[self::$prefixParamName] != '') {
+                $prefix = trim($this->args[self::$prefixParamName]);
+                $tprojectInfo = $this->tprojectMgr->get_by_prefix($prefix);
+                if ($status_ok = is_null($tprojectInfo)) {
+                    $msg = $msg_prefix .
+                        sprintf(TPROJECT_PREFIX_DOESNOT_EXIST_STR, $prefix);
+                    $this->errors[] = new IXR_Error(
+                        TPROJECT_PREFIX_DOESNOT_EXIST, $msg);
                 }
             }
         }
@@ -7227,8 +7217,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             'checkTestCaseVersionNumber'
         );
         $status_ok = $this->_runChecks($checkFunctions, $msg_prefix);
-        if ($status_ok &&
-            ! $this->_isParamPresent(self::$executionTypeParamName)) {
+        if ($status_ok && ! $this->_isParamPresent(
+            self::$executionTypeParamName)) {
             $status_ok = false;
             $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,
                 self::$customFieldsParamName);
@@ -8033,26 +8023,22 @@ class TestlinkXMLRPCServer extends IXR_Server
                 $msg = $messagePrefix .
                     sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
                 $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);
-            } else {
+            } elseif ($status_ok = $this->checkPlatformIdentity($tplan_id)) {
                 // get platform_id and check it
-                if ($status_ok = $this->checkPlatformIdentity($tplan_id)) {
-                    $platform_set = $this->tplanMgr->getPlatforms($tplan_id,
-                        array(
-                            'outputFormat' => 'mapAccessByID',
-                            'outputDetails' => 'name'
-                        ));
-
-                    // Now check if link has all 3 components
-                    // test plan, test case, platform
-                    $platform_id = $this->args[self::$platformIDParamName];
-                    $platform_info = array(
-                        $platform_id => $platform_set[$platform_id]
-                    );
-
-                    if ($status_ok = $this->_checkTCIDAndTPIDValid(
-                        $platform_info, $msg_prefix)) {
-                        $execContext['platform_id'] = $platform_id;
-                    }
+                $platform_set = $this->tplanMgr->getPlatforms($tplan_id,
+                    array(
+                        'outputFormat' => 'mapAccessByID',
+                        'outputDetails' => 'name'
+                    ));
+                // Now check if link has all 3 components
+                // test plan, test case, platform
+                $platform_id = $this->args[self::$platformIDParamName];
+                $platform_info = array(
+                    $platform_id => $platform_set[$platform_id]
+                );
+                if ($status_ok = $this->_checkTCIDAndTPIDValid($platform_info,
+                    $msg_prefix)) {
+                    $execContext['platform_id'] = $platform_id;
                 }
             }
         }
@@ -8173,8 +8159,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                     " WHERE parent_id = {$this->args[self::$testCaseIDParamName]})";
 
                 if (! is_null($execContext['build_id'])) {
-                    $sql .= " AND build_id = " . intval(
-                        $execContext['build_id']);
+                    $sql .= " AND build_id = " .
+                        intval($execContext['build_id']);
                 }
 
                 if (! is_null($execContext['platform_id'])) {
@@ -8316,26 +8302,22 @@ class TestlinkXMLRPCServer extends IXR_Server
                 $msg = $messagePrefix .
                     sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
                 $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);
-            } else {
+            } elseif ($status_ok = $this->checkPlatformIdentity($tplan_id)) {
                 // get platform_id and check it
-                if ($status_ok = $this->checkPlatformIdentity($tplan_id)) {
-                    $platform_set = $this->tplanMgr->getPlatforms($tplan_id,
-                        array(
-                            'outputFormat' => 'mapAccessByID',
-                            'outputDetails' => 'name'
-                        ));
-
-                    // Now check if link has all 3 components
-                    // test plan, test case, platform
-                    $platform_id = $this->args[self::$platformIDParamName];
-                    $platform_info = array(
-                        $platform_id => $platform_set[$platform_id]
-                    );
-
-                    if ($status_ok = $this->_checkTCIDAndTPIDValid(
-                        $platform_info, $msg_prefix)) {
-                        $execContext['platform_id'] = $platform_id;
-                    }
+                $platform_set = $this->tplanMgr->getPlatforms($tplan_id,
+                    array(
+                        'outputFormat' => 'mapAccessByID',
+                        'outputDetails' => 'name'
+                    ));
+                // Now check if link has all 3 components
+                // test plan, test case, platform
+                $platform_id = $this->args[self::$platformIDParamName];
+                $platform_info = array(
+                    $platform_id => $platform_set[$platform_id]
+                );
+                if ($status_ok = $this->_checkTCIDAndTPIDValid($platform_info,
+                    $msg_prefix)) {
+                    $execContext['platform_id'] = $platform_id;
                 }
             }
         }

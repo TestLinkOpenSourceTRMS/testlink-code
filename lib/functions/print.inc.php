@@ -1201,7 +1201,6 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
                 if (isset($cfields['specScope']['before_steps_results'])) {
                     $code .= $cfields['specScope']['before_steps_results'];
                 }
-
                 if (! is_null($tcInfo[$key]) && $tcInfo[$key] != '') {
                     $td_colspan = 3;
                     $code .= '<tr>' . '<td><span class="label">' .
@@ -1336,15 +1335,13 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
                         }
                     }
                 }
-            } else {
+            } elseif ($tcInfo[$key] != '') {
                 // disable the field if it's empty
-                if ($tcInfo[$key] != '') {
-                    $code .= '<tr><td colspan="' . $cfg['tableColspan'] .
-                        '"><span class="label">' . $labels[$key] .
-                        ':</span><br />' .
-                        ($designType == 'none' ? nl2br($tcInfo[$key]) : $tcInfo[$key]) .
-                        "</td></tr>";
-                }
+                $code .= '<tr><td colspan="' . $cfg['tableColspan'] .
+                    '"><span class="label">' . $labels[$key] .
+                    ':</span><br />' .
+                    ($designType == 'none' ? nl2br($tcInfo[$key]) : $tcInfo[$key]) .
+                    "</td></tr>";
             }
         }
     }

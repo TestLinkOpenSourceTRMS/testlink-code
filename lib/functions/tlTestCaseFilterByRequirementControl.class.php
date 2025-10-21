@@ -743,26 +743,21 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
                             $this->args->testproject_id,
                             $this->args->testproject_name, $filters, $options);
                     }
-
                     $root_node = $tree_menu->rootnode;
                     $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-                } else {
-                    if ($mode == 'mode_req_coverage') {
-                        $loader = $gui->basehref .
-                            'lib/ajax/getreqcoveragenodes.php?mode=reqspec&' .
-                            "root_node={$this->args->testproject_id}";
-
-                        $req_qty = count(
-                            $this->testproject_mgr->get_all_requirement_ids(
-                                $this->args->testproject_id));
-
-                        $root_node = new stdClass();
-                        $root_node->href = "javascript:EP({$this->args->testproject_id})";
-                        $root_node->id = $this->args->testproject_id;
-                        $root_node->name = $this->args->testproject_name .
-                            " ({$req_qty})";
-                        $root_node->testlink_node_type = 'testproject';
-                    }
+                } elseif ($mode == 'mode_req_coverage') {
+                    $loader = $gui->basehref .
+                        'lib/ajax/getreqcoveragenodes.php?mode=reqspec&' .
+                        "root_node={$this->args->testproject_id}";
+                    $req_qty = count(
+                        $this->testproject_mgr->get_all_requirement_ids(
+                            $this->args->testproject_id));
+                    $root_node = new stdClass();
+                    $root_node->href = "javascript:EP({$this->args->testproject_id})";
+                    $root_node->id = $this->args->testproject_id;
+                    $root_node->name = $this->args->testproject_name .
+                        " ({$req_qty})";
+                    $root_node->testlink_node_type = 'testproject';
                 }
                 break;
         }

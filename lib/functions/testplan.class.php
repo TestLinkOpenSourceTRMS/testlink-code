@@ -2598,14 +2598,12 @@ class testplan extends tlObjectWithAttachments
                         $cf_query .= " ( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
                         $count ++;
                     }
-                } else {
+                } elseif (trim($cf_value) != '') {
                     // Because cf value can NOT exists on DB depending on system config.
-                    if (trim($cf_value) != '') {
-                        $cf_query .= $or_clause;
-                        $cf_query .= " ( CFD.value LIKE '%{$cf_value}%' AND CFD.field_id = {$cf_id} ) ";
-                    } else {
-                        $ignored ++;
-                    }
+                    $cf_query .= $or_clause;
+                    $cf_query .= " ( CFD.value LIKE '%{$cf_value}%' AND CFD.field_id = {$cf_id} ) ";
+                } else {
+                    $ignored ++;
                 }
 
                 if ($or_clause == '') {

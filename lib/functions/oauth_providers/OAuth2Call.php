@@ -86,10 +86,8 @@ if (! isset($_GET['code'])) {
                 if (! is_null($oauthCfg['oauth_domain'])) {
                     $oap['domain_hint'] = $oauthCfg['oauth_domain'];
                 }
-            } else {
-                if ($oauthCfg['oauth_force_single']) {
-                    $oap['prompt'] = 'consent';
-                }
+            } elseif ($oauthCfg['oauth_force_single']) {
+                $oap['prompt'] = 'consent';
             }
 
             // http_build_query — Generate URL-encoded query string

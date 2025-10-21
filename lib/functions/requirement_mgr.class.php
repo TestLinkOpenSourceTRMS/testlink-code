@@ -209,16 +209,12 @@ class requirement_mgr extends tlObjectWithAttachments
         if (is_array($version_id)) {
             $versionid_list = implode(",", $version_id);
             $where_clause .= " AND REQV.id IN ({$versionid_list}) ";
-        } else {
-            if (is_null($version_id)) {
-                // search by "human" version number
-                $where_clause .= " AND REQV.version = {$version_number} ";
-            } else {
-                if ($version_id != self::ALL_VERSIONS &&
-                    $version_id != self::LATEST_VERSION) {
-                    $where_clause .= " AND REQV.id = {$version_id} ";
-                }
-            }
+        } elseif (is_null($version_id)) {
+            // search by "human" version number
+            $where_clause .= " AND REQV.version = {$version_number} ";
+        } elseif ($version_id != self::ALL_VERSIONS &&
+            $version_id != self::LATEST_VERSION) {
+            $where_clause .= " AND REQV.id = {$version_id} ";
         }
 
         // added -1 AS revision_id to make some process easier
@@ -263,21 +259,19 @@ class requirement_mgr extends tlObjectWithAttachments
                     $recordset = $this->db->get_recordset($sql);
                     break;
             }
-        } else {
+        } elseif (! $id_is_array) {
             // But, how performance wise can be do this,
             // instead of using MAX(version) and a group by?
             //
             // if $id was a list then this will return something USELESS
             //
-            if (! $id_is_array) {
-                $recordset = array(
-                    $this->db->fetchFirstRow($sql)
-                );
-            } else {
-                // Write to event viewer ???
-                // Developer Needs to user
-                die('use getByIDBulkLatestVersionRevision()');
-            }
+            $recordset = array(
+                $this->db->fetchFirstRow($sql)
+            );
+        } else {
+            // Write to event viewer ???
+            // Developer Needs to user
+            die('use getByIDBulkLatestVersionRevision()');
         }
 
         $rs = null;

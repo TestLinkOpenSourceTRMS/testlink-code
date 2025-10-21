@@ -31,10 +31,8 @@ function ldap_connect_bind($authCfg, $p_binddn = '', $p_password = '')
     $t_ldap_uri = parse_url($authCfg['ldap_server']);
     if (count($t_ldap_uri) > 1) {
         $t_ds = ldap_connect($authCfg['ldap_server']);
-    } else {
-        if (is_numeric($authCfg['ldap_port'])) {
-            $t_ds = ldap_connect($authCfg['ldap_server'], $authCfg['ldap_port']);
-        }
+    } elseif (is_numeric($authCfg['ldap_port'])) {
+        $t_ds = ldap_connect($authCfg['ldap_server'], $authCfg['ldap_port']);
     }
 
     // IMPORTANT NOTICE from PHP Manual

@@ -258,10 +258,8 @@ function doSimpleBooleanMgmt(&$cfieldMgr, $argsObj, $cfg)
                 if ($argsObj->attrBefore[$id][$cfg['dbField']] == 0) {
                     $on[] = $id;
                 }
-            } else {
-                if ($argsObj->attrBefore[$id][$cfg['dbField']] == 1) {
-                    $off[] = $id;
-                }
+            } elseif ($argsObj->attrBefore[$id][$cfg['dbField']] == 1) {
+                $off[] = $id;
             }
         }
 

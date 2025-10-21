@@ -1424,12 +1424,10 @@ class tree extends tlObject
                         $this->delete_subtree_objects($root_id, $rowID,
                             $additionalWhereClause, $exclude_children_of,
                             $exclude_branches);
-                    } else {
+                    } elseif (! is_null($nodeClassName)) {
                         // For us in this method context this node is a leaf => just delete
-                        if (! is_null($nodeClassName)) {
-                            $item_mgr = new $nodeClassName($this->db);
-                            $item_mgr->delete($rowID);
-                        }
+                        $item_mgr = new $nodeClassName($this->db);
+                        $item_mgr->delete($rowID);
                     }
                 }
             }

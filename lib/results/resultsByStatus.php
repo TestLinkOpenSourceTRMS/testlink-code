@@ -182,19 +182,15 @@ if (! is_null($metrics) && ! empty($metrics)) {
                 }
             }
             $out[$odx]['testerName'] = implode(',', $zux);
+        } elseif ($exec[$userAccessKey] == 0) {
+            $out[$odx]['testerName'] = $labels['nobody'];
+        } elseif (isset($users, $exec[$userAccessKey])) {
+            $out[$odx]['testerName'] = htmlspecialchars(
+                $users[$exec[$userAccessKey]]);
         } else {
-            if ($exec[$userAccessKey] == 0) {
-                $out[$odx]['testerName'] = $labels['nobody'];
-            } else {
-                if (isset($users, $exec[$userAccessKey])) {
-                    $out[$odx]['testerName'] = htmlspecialchars(
-                        $users[$exec[$userAccessKey]]);
-                } else {
-                    // user id has been disable/deleted
-                    $out[$odx]['testerName'] = sprintf($labels['deleted_user'],
-                        $exec[$userAccessKey]);
-                }
-            }
+            // user id has been disable/deleted
+            $out[$odx]['testerName'] = sprintf($labels['deleted_user'],
+                $exec[$userAccessKey]);
         }
         $out[$odx]['testerName'] = htmlspecialchars($out[$odx]['testerName']);
 

@@ -878,13 +878,11 @@ class tlUser extends tlDBObject
 
         if (isset($userTestProjectRoles[$testprojectID])) {
             $userTestProjectRights = (array) $userTestProjectRoles[$testprojectID]->rights;
-
             // Special situation => just one right
             $doMoreAnalysis = true;
             if (count($userTestProjectRights) == 1) {
                 $doMoreAnalysis = ! is_null($userTestProjectRights[0]->dbID);
             }
-
             $allRights = null;
             if ($doMoreAnalysis) {
                 $testProjectRights = array();
@@ -901,10 +899,8 @@ class tlUser extends tlDBObject
             } else {
                 return false;
             }
-        } else {
-            if (! is_null($accessPublic) && $accessPublic['tproject'] == 0) {
-                return false;
-            }
+        } elseif (! is_null($accessPublic) && $accessPublic['tproject'] == 0) {
+            return false;
         }
 
         if ($testPlanID > 0) {
@@ -914,18 +910,14 @@ class tlUser extends tlDBObject
                 foreach ($userTestPlanRights as $right) {
                     $testPlanRights[] = $right->name;
                 }
-
                 // subtract test projects rights
                 $testPlanRights = array_diff($testPlanRights,
                     array_keys($g_propRights_product));
-
                 propagateRights($allRights, $g_propRights_product,
                     $testPlanRights);
                 $allRights = $testPlanRights;
-            } else {
-                if (! is_null($accessPublic) && $accessPublic['tplan'] == 0) {
-                    return false;
-                }
+            } elseif (! is_null($accessPublic) && $accessPublic['tplan'] == 0) {
+                return false;
             }
         }
 

@@ -113,10 +113,8 @@ if ($testplanID) {
         // Configured
         $role = $currentUser->tplanRoles[$testplanID];
         $rd = $role->getDisplayName();
-    } else {
-        if (config_get('testplan_role_inheritance_mode') == 'global') {
-            $rd = $currentUser->globalRole->name;
-        }
+    } elseif (config_get('testplan_role_inheritance_mode') == 'global') {
+        $rd = $currentUser->globalRole->name;
     }
 
     if (null != $rd) {

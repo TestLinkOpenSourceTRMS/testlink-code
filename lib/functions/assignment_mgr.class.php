@@ -245,7 +245,7 @@ class assignment_mgr extends tlObjectWithDB
                 'creation_ts'
             );
 
-            foreach ($simple_fields as $idx => $field) {
+            foreach ($simple_fields as $field) {
                 if (isset($elem[$field])) {
                     $sql .= $sepa . "$field={$elem[$field]} ";
                     $sepa = ",";

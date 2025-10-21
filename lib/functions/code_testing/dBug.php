@@ -49,30 +49,30 @@
 class dBug
 {
 
-    var $xmlDepth = array();
+    public $xmlDepth = array();
 
-    var $xmlCData;
+    public $xmlCData;
 
-    var $xmlSData;
+    public $xmlSData;
 
-    var $xmlDData;
+    public $xmlDData;
 
-    var $xmlCount = 0;
+    public $xmlCount = 0;
 
-    var $xmlAttrib;
+    public $xmlAttrib;
 
-    var $xmlName;
+    public $xmlName;
 
-    var $arrType = array(
+    public $arrType = array(
         "array",
         "object",
         "resource",
         "boolean"
     );
 
-    var $bInitialized = false;
+    public $bInitialized = false;
 
-    var $arrHistory = array();
+    public $arrHistory = array();
 
     public function __construct($var, $forceType = "")
     {

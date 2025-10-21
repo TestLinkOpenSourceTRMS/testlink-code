@@ -1151,7 +1151,7 @@ class testplan extends tlObjectWithAttachments
         $platformLabel = lang_get('platform');
 
         $dummy = null;
-        foreach ($items['items'] as $tcase_id => $elem) {
+        foreach ($items['items'] as $elem) {
             foreach ($elem as $platform_id => $tcversion_id) {
                 $dummy[] = "(tcversion_id = {$tcversion_id} AND platform_id = {$platform_id})";
             }

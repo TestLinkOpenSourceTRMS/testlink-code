@@ -4752,7 +4752,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     {
         $result = array();
         $this->_setArgs($args);
-        $action = isset($this->args, self::$actionParamName) ? $this->args[self::$actionParamName] : 'create';
+        $action = $this->args !== null ? $this->args[self::$actionParamName] : 'create';
 
         $checkFunctions = array(
             'authenticate',
@@ -6934,7 +6934,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 
                 $step_id = 0;
                 $stepSet = null;
-                $action = isset($this->args, self::$actionParamName) ? $this->args[self::$actionParamName] : 'create';
+                $action = $this->args !== null ? $this->args[self::$actionParamName] : 'create';
 
                 //
                 // id,step_number,actions,expected_results,active,execution_type

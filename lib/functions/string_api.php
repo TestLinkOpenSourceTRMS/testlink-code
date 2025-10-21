@@ -75,7 +75,8 @@ function string_nl2br($p_string, $p_wrap = 100)
     // fix up eols within <pre> tags
     $pre2 = array();
     preg_match_all("/<pre[^>]*?>(.|\n)*?<\/pre>/", $p_string, $pre1);
-    for ($x = 0; $x < count($pre1[0]); $x ++) {
+    $counter = count($pre1[0]);
+    for ($x = 0; $x < $counter; $x ++) {
         $pre2[$x] = preg_replace("/<br[^>]*?>/", "", $pre1[0][$x]);
         // this may want to be replaced by html_entity_decode (or equivalent)
         // if other encoded characters are a problem

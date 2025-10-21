@@ -1408,7 +1408,8 @@ class testproject extends tlObjectWithAttachments
             $xmlCode .= TL_XMLEXPORT_HEADER . "\n";
         }
         $xmlCode .= "<keywords>";
-        for ($idx = 0; $idx < count($kwIDs); $idx ++) {
+        $counter = count($kwIDs);
+        for ($idx = 0; $idx < $counter; $idx ++) {
             $keyword = new tlKeyword($kwIDs[$idx]);
             $keyword->readFromDb($this->db);
             $keyword->writeToXML($xmlCode, true);
@@ -1427,7 +1428,8 @@ class testproject extends tlObjectWithAttachments
     {
         $kwIDs = $this->getKeywordIDsFor($testproject_id);
         $csv = null;
-        for ($idx = 0; $idx < count($kwIDs); $idx ++) {
+        $counter = count($kwIDs);
+        for ($idx = 0; $idx < $counter; $idx ++) {
             $keyword = new tlKeyword($kwIDs[$idx]);
             $keyword->readFromDb($this->db);
             $keyword->writeToCSV($csv, $delim);

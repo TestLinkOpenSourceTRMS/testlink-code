@@ -507,7 +507,8 @@ class tlRole extends tlDBObject
     protected function buildRightsArray($rightInfo)
     {
         $rights = null;
-        for ($i = 0; $i < count($rightInfo); $i ++) {
+        $counter = count($rightInfo);
+        for ($i = 0; $i < $counter; $i ++) {
             $id = $rightInfo[$i];
             $right = new tlRight($id['right_id']);
             $right->name = $id['description'];

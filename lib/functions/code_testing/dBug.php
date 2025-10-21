@@ -335,7 +335,8 @@ class dBug
         echo "<tr><td class=\"dBug_resourceKey\">&nbsp;</td>";
         for ($i = 0; $i < $numfields; $i ++) {
             $field_header = "";
-            for ($j = 0; $j < count($arrFields); $j ++) {
+            $counter = count($arrFields);
+            for ($j = 0; $j < $counter; $j ++) {
                 $db_func = $db . "_field_" . $arrFields[$j];
                 if (function_exists($db_func)) {
                     $fheader = call_user_func($db_func, $var, $i) . " ";

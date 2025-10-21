@@ -519,8 +519,9 @@ class tlAttachmentRepository extends tlObjectWithDB
         $statusOK = true;
         $attachmentIDs = (array) $this->getAttachmentIDsFor($fkid,
             $stdTableUsedAsFolder);
+        $counter = count($attachmentIDs);
 
-        for ($i = 0; $i < count($attachmentIDs); $i ++) {
+        for ($i = 0; $i < $counter; $i ++) {
             $id = $attachmentIDs[$i];
             $statusOK = ($this->deleteAttachment($id) && $statusOK);
         }

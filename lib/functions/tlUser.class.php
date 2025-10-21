@@ -1181,8 +1181,8 @@ class tlUser extends tlDBObject
         if (null == $ids) {
             return null;
         }
-
-        for ($idx = 0; $idx < count($ids); $idx ++) {
+        $counter = count($ids);
+        for ($idx = 0; $idx < $counter; $idx ++) {
             $id = $ids[$idx];
             $user = tlDBObject::createObjectFromDB($db, $id, __CLASS__,
                 self::TLOBJ_O_SEARCH_BY_ID, $detailLevel);

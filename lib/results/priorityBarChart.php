@@ -48,8 +48,9 @@ $blockedArray[0] = "blocked";
 
 $notRunArray = array();
 $notRunArray[0] = "not run";
+$counter = count($arrDataKeys);
 
-for ($i = 0; $i < count($arrDataKeys); $i ++) {
+for ($i = 0; $i < $counter; $i ++) {
     $keywordArr = $arrDataKeys2[$i];
     $namesOfKeywordsArray[$i + 1] = $keywordArr[0];
     $passArray[$i + 1] = $keywordArr[2];

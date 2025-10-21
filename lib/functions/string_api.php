@@ -296,7 +296,7 @@ function string_insert_hrefs($p_string)
     # Find any URL in a string and replace it with a clickable link
     # From MantisBT 2.25.2
     $p_string = preg_replace_callback($s_url_regex,
-        function ($p_match) {
+        static function ($p_match) {
             $t_url_href = 'href="' . rtrim($p_match[1], '.') . '"';
             if (config_get('html_make_links') == LINKS_NEW_WINDOW) {
                 $t_url_target = ' target="_blank"';

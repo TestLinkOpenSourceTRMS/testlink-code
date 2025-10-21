@@ -125,7 +125,7 @@ class tlRestApi
 
         // test route with anonymous function
         $this->app->get('/who',
-            function (): void {
+            static function (): void {
                 echo __CLASS__ . ' : Get Route /who';
             });
 

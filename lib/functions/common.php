@@ -748,9 +748,7 @@ function priority_to_level($priority)
     if ($priority < $urgencyImportance->threshold['low']) {
         return LOW;
     }
-    else {
-        return MEDIUM;
-    }
+    return MEDIUM;
 }
 
 /**

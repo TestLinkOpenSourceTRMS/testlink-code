@@ -11,8 +11,6 @@ if ($installationType=='upgrade') {
     header("Location: upgradeStart.php");
     exit;
 }
-else {
-	echo "No installationType found in \$_GET.";
-}
+echo "No installationType found in \$_GET.";
 
 ?>

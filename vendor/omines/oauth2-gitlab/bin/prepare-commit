@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+cd $(dirname $0)/..
+
+vendor/bin/php-cs-fixer fix
+vendor/bin/phpstan
+XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text
+vendor/bin/infection --threads=max
+
+echo "All good, ready for commit!"

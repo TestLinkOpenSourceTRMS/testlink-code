@@ -1,15 +1,11 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-diactoros for the canonical source repository
- * @copyright https://github.com/laminas/laminas-diactoros/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-diactoros/blob/master/LICENSE.md New BSD License
- */
-
 declare(strict_types=1);
 
 namespace Laminas\Diactoros;
 
+use Laminas\Diactoros\ServerRequestFilter\FilterServerRequestInterface;
+use Laminas\Diactoros\ServerRequestFilter\FilterUsingXForwardedHeaders;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,11 +14,6 @@ use function is_callable;
 
 /**
  * Class for marshaling a request object from the current PHP environment.
- *
- * Logic largely refactored from the Laminas Laminas\Http\PhpEnvironment\Request class.
- *
- * @copyright Copyright (c) 2005-2015 Laminas (https://www.zend.com)
- * @license   https://getlaminas.org/license/new-bsd New BSD License
  */
 class ServerRequestFactory implements ServerRequestFactoryInterface
 {
@@ -43,21 +34,29 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      * order to marshal the request URI and headers.
      *
      * @see fromServer()
+     *
      * @param array $server $_SERVER superglobal
      * @param array $query $_GET superglobal
      * @param array $body $_POST superglobal
      * @param array $cookies $_COOKIE superglobal
      * @param array $files $_FILES superglobal
-     * @return ServerRequest
+     * @param null|FilterServerRequestInterface $requestFilter If present, the
+     *     generated request will be passed to this instance and the result
+     *     returned by this method. When not present, a default instance of
+     *     FilterUsingXForwardedHeaders is created, using the `trustReservedSubnets()`
+     *     constructor.
      */
     public static function fromGlobals(
-        array $server = null,
-        array $query = null,
-        array $body = null,
-        array $cookies = null,
-        array $files = null
-    ) : ServerRequest {
-        $server = normalizeServer(
+        ?array $server = null,
+        ?array $query = null,
+        ?array $body = null,
+        ?array $cookies = null,
+        ?array $files = null,
+        ?FilterServerRequestInterface $requestFilter = null
+    ): ServerRequest {
+        $requestFilter = $requestFilter ?: FilterUsingXForwardedHeaders::trustReservedSubnets();
+
+        $server  = normalizeServer(
             $server ?: $_SERVER,
             is_callable(self::$apacheRequestHeaders) ? self::$apacheRequestHeaders : null
         );
@@ -68,10 +67,10 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             $cookies = parseCookieHeader($headers['cookie']);
         }
 
-        return new ServerRequest(
+        return $requestFilter(new ServerRequest(
             $server,
             $files,
-            marshalUriFromSapi($server, $headers),
+            UriFactory::createFromSapi($server, $headers),
             marshalMethodFromSapi($server),
             'php://input',
             $headers,
@@ -79,13 +78,13 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             $query ?: $_GET,
             $body ?: $_POST,
             marshalProtocolVersionFromSapi($server)
-        );
+        ));
     }
 
     /**
      * {@inheritDoc}
      */
-    public function createServerRequest(string $method, $uri, array $serverParams = []) : ServerRequestInterface
+    public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequestInterface
     {
         $uploadedFiles = [];
 

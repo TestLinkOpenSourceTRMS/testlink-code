@@ -22,8 +22,8 @@ class TestlinkAPIClient:
 # substitute your Dev Key Here
 client = TestlinkAPIClient("f2a979d533cdd9761434bba60a88e4d8")
 # get info about the server
-print client.getInfo()
+print(client.getInfo())
 # Substitute for tcid and tpid that apply to your project
 result = client.reportTCResult(1132, 56646, "p")
 # Typically you'd want to validate the result here and probably do something more useful with it
-print "reportTCResult result was: %s" %(result)
+print("reportTCResult result was: %s" %(result))

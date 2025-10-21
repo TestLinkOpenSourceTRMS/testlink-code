@@ -16,7 +16,11 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=7.2",
+        "ext-iconv": "*"
+    },
+    "provide": {
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": { "Symfony\\Polyfill\\Mbstring\\": "" },
@@ -27,8 +31,9 @@
     },
     "minimum-stability": "dev",
     "extra": {
-        "branch-alias": {
-            "dev-master": "1.15-dev"
+        "thanks": {
+            "name": "symfony/polyfill",
+            "url": "https://github.com/symfony/polyfill"
         }
     }
 }

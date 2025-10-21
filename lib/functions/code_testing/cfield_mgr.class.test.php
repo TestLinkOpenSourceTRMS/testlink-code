@@ -1,7 +1,7 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: cfield_mgr.class.test.php,v $
  *
@@ -14,14 +14,14 @@
  *
  * rev : 20080811 - franciscom
  *
-*/
-require_once('../../../config.inc.php');
-require_once('common.php');
-require_once('tree.class.php');
+ */
+require_once '../../../config.inc.php';
+require_once 'common.php';
+require_once 'tree.class.php';
 
 testlinkInitPage($db);
-$object_item="Custom Field Manager";
-$object_class="cfield_mgr";
+$object_item = "Custom Field Manager";
+$object_class = "cfield_mgr";
 
 echo "<pre>Poor's Man - $object_item - code inspection tool<br>";
 echo "<pre>Scope of this page is allow you to understand with live<br>";
@@ -30,12 +30,13 @@ echo "Important:";
 echo "You are using your testlink DB to do all operations";
 echo "</pre>";
 echo "<hr>";
-echo "<pre> $object_item - constructor - $object_class(&\$db)";echo "</pre>";
-$obj_mgr=new $object_class($db);
+echo "<pre> $object_item - constructor - $object_class(&\$db)";
+echo "</pre>";
+$obj_mgr = new $object_class($db);
 new dBug($obj_mgr);
 
-$tproject_id=2714;
-$enabled=1;
+$tproject_id = 2714;
+$enabled = 1;
 echo "
 function get_linked_cfields_at_testplan_design(\$tproject_id,\$enabled,
                                                \$node_type=null,\$node_id=null,
@@ -44,8 +45,7 @@ function get_linked_cfields_at_testplan_design(\$tproject_id,\$enabled,
 echo "
 function get_linked_cfields_at_testplan_design($tproject_id,$enabled);
 ";
-$cf=$obj_mgr->get_linked_cfields_at_testplan_design($tproject_id,$enabled);
+$cf = $obj_mgr->get_linked_cfields_at_testplan_design($tproject_id, $enabled);
 new dBug($cf);
-
 
 ?>

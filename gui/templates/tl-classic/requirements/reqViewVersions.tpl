@@ -455,7 +455,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                  show_hide_container_title=$labels.other_versions
                  show_hide_container_id=$div_id
                  show_hide_container_draw=false
-                 show_hide_container_class='exec_additional_info'
+                 show_hide_container_class='execAdditionalInfo'
                  show_hide_container_view_status_id=$memstatus_id}
 
         <div id="vers_{$vid}" class="workBack">
@@ -478,7 +478,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                      show_hide_container_title=$title
                      show_hide_container_id=$div_id
                      show_hide_container_draw=false
-                     show_hide_container_class='exec_additional_info'
+                     show_hide_container_class='execAdditionalInfo'
                      show_hide_container_view_status_id=$memstatus_id}
 
               {* Other Versions *}     

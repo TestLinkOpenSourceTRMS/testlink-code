@@ -1,0 +1,76 @@
+name: test suite
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule: # Ensure weekly test also if no pushes happen to keep up with dependencies
+    - cron: 0 11 * * 1
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental || matrix.dependencies == 'beta' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - '8.1'
+          - '8.2'
+        dependencies: [ stable, beta, lowest ]
+        experimental: [ false ]
+        include:
+          - description: 'stable dependencies'
+            dependencies: stable
+          - description: 'lowest dependencies'
+            dependencies: lowest
+          - description: 'beta/RC dependencies'
+            dependencies: beta
+          - description: 'nightly with stable dependencies'
+            php: 8.3
+            experimental: true
+
+    name: PHP ${{ matrix.php }} ${{ matrix.description }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: intl, mbstring
+          ini-values: zend.assertions=1
+
+      - name: Dump PHP diagnostics
+        run: php -i && php -m
+
+      - name: Allow beta dependencies
+        run: composer config minimum-stability beta
+        if: matrix.dependencies == 'beta'
+
+      - name: Install dependencies
+        run: composer update --no-progress ${{ (matrix.dependencies == 'lowest') && '--prefer-lowest --prefer-stable' || ''}}
+
+      - name: Check code style
+        run: vendor/bin/php-cs-fixer fix --dry-run
+        if: ${{ matrix.dependencies == 'stable' && !matrix.experimental }}
+
+      - name: Run PHPStan static analysis
+        run: vendor/bin/phpstan
+        if: ${{ matrix.dependencies != 'lowest' && !matrix.experimental }}
+
+      - name: Run automated tests
+        run: vendor/bin/phpunit --coverage-text --coverage-xml build/coverage-xml --coverage-cobertura build/cobertura.xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Run infection tests
+        run: vendor/bin/infection --threads=max
+        if: ${{ matrix.dependencies == 'stable' && !matrix.experimental }}
+        env:
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_TOKEN }}

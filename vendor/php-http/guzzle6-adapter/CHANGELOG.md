@@ -1,13 +1,52 @@
 # Change Log
 
 
-## 1.1.1 - 2016-05-10
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [2.0.2] - 2021-03-02
+
+### Added
+
+- Add Support for PHP 8
+
+## [2.0.1] - 2018-12-16
+
+### Fixed
+- `\Http\Adapter\Guzzle6\Client::sendRequest` no longer throws any exceptions that do not implement
+  the PSR exception interface.
+
+  Instead of `\UnexpectedValueException` we now throw `Http\Adapter\Guzzle6\Exception\UnexpectedValueException`
+  (which extends `\UnexpectedValueException` and implements `Psr\Http\Client\ClientExceptionInterface`).
+
+  Instead of `\RuntimeException` we now throw `Http\Client\Exception\TransferException`
+  (which extends `\RuntimeException` and  implements `Psr\Http\Client\ClientExceptionInterface`).
+
+## [2.0.0] - 2018-11-14
+
+### Added
+
+- Support for HTTPlug 2.0 and PSR-18
+
+### Changed
+
+- `Client` and `Promise` are both final
+
+### Removed
+
+- Support for PHP <7.1
+
+
+## [1.1.1] - 2016-05-10
 
 ### Fixed
 
 - Adapter can again be instantiated without a guzzle client.
 
-## 1.1.0 - 2016-05-09
+
+## [1.1.0] - 2016-05-09
 
 ### Added
 
@@ -15,10 +54,10 @@
   configuration for the underlying guzzle client.
 
 
-## 1.0.0 - 2016-01-26
+## [1.0.0] - 2016-01-26
 
 
-## 0.4.1 - 2016-01-13
+## [0.4.1] - 2016-01-13
 
 ### Changed
 
@@ -29,7 +68,7 @@
 - Client common dependency
 
 
-## 0.4.0 - 2016-01-12
+## [0.4.0] - 2016-01-12
 
 ### Changed
 
@@ -37,7 +76,13 @@
 - Updated HTTPlug to RC1
 
 
-## 0.2.1 - 2015-12-17
+## [0.3.1] - 2015-12-31
+
+
+## [0.3.0] - 2015-12-31
+
+
+## [0.2.1] - 2015-12-17
 
 ### Added
 
@@ -48,7 +93,7 @@
 - Guzzle setup conforms to HTTPlug requirement now: Minimal functionality in client
 
 
-## 0.2.0 - 2015-12-15
+## [0.2.0] - 2015-12-15
 
 ### Added
 
@@ -64,3 +109,4 @@
 ### Added
 
 - Initial release
+

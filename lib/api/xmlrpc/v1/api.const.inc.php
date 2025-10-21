@@ -3,14 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * filesource: api.const.inc.php
  */
- 
+
 /**
- * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
- * @package 	TestlinkAPI
+ *
+ * @author Asiel Brumfield <asielb@users.sourceforge.net>
+ * @package TestlinkAPI
  */
- 
-/** DB Constants used for testing */
-define('TEST_DSN',FALSE); 
+
+/**
+ * DB Constants used for testing
+ */
+define('TEST_DSN', false);
 define('TEST_DB_TYPE', 'mysql');
 define('TEST_DB_USER', 'root');
 define('TEST_DB_PASS', '');

@@ -1,5 +1,27 @@
 # Change Log
 
+## 6.5.8 - 2022-06-20
+
+* Fix change in port should be considered a change in origin
+* Fix `CURLOPT_HTTPAUTH` option not cleared on change of origin
+
+## 6.5.7 - 2022-06-09
+
+* Fix failure to strip Authorization header on HTTP downgrade
+* Fix failure to strip the Cookie header on change in host or HTTP downgrade
+
+## 6.5.6 - 2022-05-25
+
+* Fix cross-domain cookie leakage
+
+## 6.5.5 - 2020-06-16
+
+* Unpin version constraint for `symfony/polyfill-intl-idn` [#2678](https://github.com/guzzle/guzzle/pull/2678)
+
+## 6.5.4 - 2020-05-25
+
+* Fix various intl icu issues [#2626](https://github.com/guzzle/guzzle/pull/2626)
+
 ## 6.5.3 - 2020-04-18
 
 * Use Symfony intl-idn polyfill [#2550](https://github.com/guzzle/guzzle/pull/2550)
@@ -19,7 +41,10 @@
 * Improvement: Added support for reset internal queue in MockHandler. [#2143](https://github.com/guzzle/guzzle/pull/2143)
 * Improvement: Added support to pass arbitrary options to `curl_multi_init`. [#2287](https://github.com/guzzle/guzzle/pull/2287)
 * Fix: Gracefully handle passing `null` to the `header` option. [#2132](https://github.com/guzzle/guzzle/pull/2132)
-* Fix: `RetryMiddleware` did not do exponential delay between retires due unit mismatch. [#2132](https://github.com/guzzle/guzzle/pull/2132)
+* Fix: `RetryMiddleware` did not do exponential delay between retries due unit mismatch. [#2132](https://github.com/guzzle/guzzle/pull/2132)
+  Previously, `RetryMiddleware` would sleep for 1 millisecond, then 2 milliseconds, then 4 milliseconds.
+  **After this change, `RetryMiddleware` will sleep for 1 second, then 2 seconds, then 4 seconds.**
+  `Middleware::retry()` accepts a second callback parameter to override the default timeouts if needed.
 * Fix: Prevent undefined offset when using array for ssl_key options. [#2348](https://github.com/guzzle/guzzle/pull/2348)
 * Deprecated `ClientInterface::VERSION`
 

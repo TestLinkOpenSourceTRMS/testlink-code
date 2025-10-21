@@ -202,6 +202,12 @@ class ADODB_DataDict {
 	*/
 	public $blobAllowsDefaultValue;
 
+
+	/**
+	 * @var string String to use to quote identifiers and names
+	 */
+	public $quote;
+
 	function getCommentSQL($table,$col)
 	{
 		return false;
@@ -504,10 +510,12 @@ class ADODB_DataDict {
 	 *
 	 * As some DBMs can't do that on their own, you need to supply the complete definition of the new table,
 	 * to allow recreating the table and copying the content over to the new table
-	 * @param string $tabname table-name
-	 * @param string $flds column-name and type for the changed column
-	 * @param string $tableflds='' complete definition of the new table, eg. for postgres, default ''
+	 *
+	 * @param string       $tabname table-name
+	 * @param array|string $flds column-name and type for the changed column
+	 * @param string       $tableflds='' complete definition of the new table, eg. for postgres, default ''
 	 * @param array|string $tableoptions='' options for the new table see createTableSQL, default ''
+	 *
 	 * @return array with SQL strings
 	 */
 	function alterColumnSQL($tabname, $flds, $tableflds='',$tableoptions='')
@@ -837,7 +845,7 @@ class ADODB_DataDict {
 						$fdefault = $this->connection->qstr($fdefault);
 				}
 			}
-			$suffix = $this->_createSuffix($fname,$ftype,$fnotnull,$fdefault,$fautoinc,$fconstraint,$funsigned);
+			$suffix = $this->_createSuffix($fname, $ftype, $fnotnull, $fdefault, $fautoinc, $fconstraint, $funsigned, $fprimary, $pkey);
 
 			// add index creation
 			if ($widespacing) $fname = str_pad($fname,24);
@@ -890,8 +898,22 @@ class ADODB_DataDict {
 	}
 
 
-	// return string must begin with space
-	function _createSuffix($fname,&$ftype,$fnotnull,$fdefault,$fautoinc,$fconstraint,$funsigned)
+	/**
+	 * Construct an database specific SQL string of constraints for column.
+	 *
+	 * @param string $fname         column name
+	 * @param string & $ftype       column type
+	 * @param bool   $fnotnull      NOT NULL flag
+	 * @param string|bool $fdefault DEFAULT value
+	 * @param bool   $fautoinc      AUTOINCREMENT flag
+	 * @param string $fconstraint   CONSTRAINT value
+	 * @param bool   $funsigned     UNSIGNED flag
+	 * @param string|bool $fprimary PRIMARY value
+	 * @param array  & $pkey        array of primary key column names
+	 *
+	 * @return string Combined constraint string, must start with a space
+	 */
+	function _createSuffix($fname, &$ftype, $fnotnull, $fdefault, $fautoinc, $fconstraint, $funsigned, $fprimary, &$pkey)
 	{
 		$suffix = '';
 		if (strlen($fdefault)) $suffix .= " DEFAULT $fdefault";
@@ -1007,15 +1029,20 @@ class ADODB_DataDict {
 	}
 
 	/**
-	"Florian Buzin [ easywe ]" <florian.buzin#easywe.de>
-
-	This function changes/adds new fields to your table. You don't
-	have to know if the col is new or not. It will check on its own.
-	*/
+	 * This function changes/adds new fields to your table.
+	 *
+	 * You don't have to know if the col is new or not. It will check on its own.
+	 *
+	 * @param string   $tablename
+	 * @param string   $flds
+	 * @param string[] $tableoptions
+	 * @param bool     $dropOldFlds
+	 *
+	 * @return string[] Array of SQL Commands
+	 */
 	function changeTableSQL($tablename, $flds, $tableoptions = false, $dropOldFlds=false)
 	{
 	global $ADODB_FETCH_MODE;
-
 		$save = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		if ($this->connection->fetchMode !== false) $savem = $this->connection->setFetchMode(false);
@@ -1033,12 +1060,15 @@ class ADODB_DataDict {
 			return $this->createTableSQL($tablename, $flds, $tableoptions);
 		}
 
+		$sql = [];
 		if (is_array($flds)) {
 		// Cycle through the update fields, comparing
 		// existing fields to fields to update.
 		// if the Metatype and size is exactly the
 		// same, ignore - by Mark Newham
 			$holdflds = array();
+			$fields_to_add = [];
+			$fields_to_alter = [];
 			foreach($flds as $k=>$v) {
 				if ( isset($cols[$k]) && is_object($cols[$k]) ) {
 					// If already not allowing nulls, then don't change
@@ -1062,45 +1092,27 @@ class ADODB_DataDict {
 					if ($mt == 'X') $ml = $v['SIZE'];
 					if (($mt != $v['TYPE']) || ($ml != $fsize || $sc != $fprec) || (isset($v['AUTOINCREMENT']) && $v['AUTOINCREMENT'] != $obj->auto_increment)) {
 						$holdflds[$k] = $v;
+						$fields_to_alter[$k] = $v;
 					}
 				} else {
+					$fields_to_add[$k] = $v;
 					$holdflds[$k] = $v;
 				}
 			}
 			$flds = $holdflds;
-		}
 
-
-		// already exists, alter table instead
-		list($lines,$pkey,$idxs) = $this->_genFields($flds);
-		// genfields can return FALSE at times
-		if ($lines == null) $lines = array();
-		$alter = 'ALTER TABLE ' . $this->tableName($tablename);
-		$sql = array();
-
-		foreach ( $lines as $id => $v ) {
-			if ( isset($cols[$id]) && is_object($cols[$id]) ) {
-
-				$flds = lens_ParseArgs($v,',');
-
-				//  We are trying to change the size of the field, if not allowed, simply ignore the request.
-				// $flds[1] holds the type, $flds[2] holds the size -postnuke addition
-				if ($flds && in_array(strtoupper(substr($flds[0][1],0,4)),$this->invalidResizeTypes4)
-				 && (isset($flds[0][2]) && is_numeric($flds[0][2]))) {
-					if ($this->debug) ADOConnection::outp(sprintf("<h3>%s cannot be changed to %s currently</h3>", $flds[0][0], $flds[0][1]));
-					#echo "<h3>$this->alterCol cannot be changed to $flds currently</h3>";
-					continue;
-	 			}
-				$sql[] = $alter . $this->alterCol . ' ' . $v;
-			} else {
-				$sql[] = $alter . $this->addCol . ' ' . $v;
-			}
+			$sql = array_merge(
+				$this->addColumnSQL($tablename, $fields_to_add),
+				$this->alterColumnSql($tablename, $fields_to_alter)
+			);
 		}
 
 		if ($dropOldFlds) {
-			foreach ( $cols as $id => $v )
-			    if ( !isset($lines[$id]) )
-					$sql[] = $alter . $this->dropCol . ' ' . $v->name;
+			foreach ($cols as $id => $v) {
+				if (!isset($lines[$id])) {
+					$sql[] = $this->dropColumnSQL($tablename, $flds);
+				}
+			}
 		}
 		return $sql;
 	}

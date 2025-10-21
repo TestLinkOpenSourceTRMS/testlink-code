@@ -1,0 +1,19 @@
+{
+    "$schema": "https://raw.githubusercontent.com/infection/infection/0.27.0/resources/schema.json",
+    "timeout": 10,
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "minMsi": 100,
+    "minCoveredMsi": 100,
+    "mutators": {
+        "@default": true
+    },
+    "logs": {
+        "text": "log/infection.txt",
+        "perMutator": "log/mutators.md",
+        "stryker": { "report": "master" }
+    }
+}

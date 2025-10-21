@@ -1,17 +1,13 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-diactoros for the canonical source repository
- * @copyright https://github.com/laminas/laminas-diactoros/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-diactoros/blob/master/LICENSE.md New BSD License
- */
-
 declare(strict_types=1);
 
 namespace Laminas\Diactoros;
 
 use function preg_match_all;
 use function urldecode;
+
+use const PREG_SET_ORDER;
 
 /**
  * Parse a cookie header according to RFC 6265.
@@ -20,9 +16,9 @@ use function urldecode;
  * overwriting. Thus, the server request should take the cookies from the request header instead.
  *
  * @param string $cookieHeader A string cookie header value.
- * @return array key/value cookie pairs.
+ * @return array<non-empty-string, string> key/value cookie pairs.
  */
-function parseCookieHeader($cookieHeader) : array
+function parseCookieHeader($cookieHeader): array
 {
     preg_match_all('(
         (?:^\\n?[ \t]*|;[ ])

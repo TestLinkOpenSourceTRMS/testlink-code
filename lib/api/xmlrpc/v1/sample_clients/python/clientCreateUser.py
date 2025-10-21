@@ -11,7 +11,7 @@ devKey="YOURAPIKEY"
 
 server = xmlrpclib.Server(SERVER_URL%serverName)
 
-print server.tl.about()
+print(server.tl.about())
 
 # check Key
 if not (server.tl.checkDevKey({'devKey': devKey})):
@@ -24,15 +24,15 @@ args = {'devKey': devKey,
         'email': 'user.api@your.domain.org',
         'password': 'yourpwd'}
 
-print "Create user with password..."
+print("Create user with password...")
 userID = server.tl.createUser(args)
 
 if isinstance(userID, str):
-    print "User %s created."%userID
+    print("User %s created."%userID)
 else:
-    print "Something's wrong: "
+    print("Something's wrong: ")
     for err in userID:
-        print err['message']
+        print(err['message'])
 
 args = {'devKey': devKey,
         'login': 'uapi2',
@@ -40,15 +40,15 @@ args = {'devKey': devKey,
         'lastname': 'API2',
         'email': 'user.api2@your.domain.org'}
 
-print "Create user without password..."
+print("Create user without password...")
 userID = server.tl.createUser(args)
 
 if isinstance(userID, str):
-    print "User %s created."%userID
+    print("User %s created."%userID)
 else:
-    print "Something's wrong: "
+    print("Something's wrong: ")
     for err in userID:
-        print err['message']
+        print(err['message'])
 
 args = {'devKey': devKey,
         'login': 'uapi2',
@@ -56,12 +56,12 @@ args = {'devKey': devKey,
         'lastname': 'API2',
         'email': 'user.api2@your.domain.org'}
 
-print "Create user with existing uid..."
+print("Create user with existing uid...")
 userID = server.tl.createUser(args)
 
 if isinstance(userID, str):
-    print "User %s created."%userID
+    print("User %s created."%userID)
 else:
-    print "Something's wrong: "
+    print("Something's wrong: ")
     for err in userID:
-        print err['message']
+        print(err['message'])

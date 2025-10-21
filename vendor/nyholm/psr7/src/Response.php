@@ -10,8 +10,10 @@ use Psr\Http\Message\{ResponseInterface, StreamInterface};
  * @author Michael Dowling and contributors to guzzlehttp/psr7
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  * @author Martijn van der Ven <martijn@vanderven.se>
+ *
+ * @final This class should never be extended. See https://github.com/Nyholm/psr7/blob/master/doc/final.md
  */
-final class Response implements ResponseInterface
+class Response implements ResponseInterface
 {
     use MessageTrait;
 
@@ -37,7 +39,7 @@ final class Response implements ResponseInterface
      * @param string $version Protocol version
      * @param string|null $reason Reason phrase (when empty a default will be used based on the status code)
      */
-    public function __construct(int $status = 200, array $headers = [], $body = null, string $version = '1.1', string $reason = null)
+    public function __construct(int $status = 200, array $headers = [], $body = null, string $version = '1.1', ?string $reason = null)
     {
         // If we got no body, defer initialization of the stream until Response::getBody()
         if ('' !== $body && null !== $body) {
@@ -65,7 +67,10 @@ final class Response implements ResponseInterface
         return $this->reasonPhrase;
     }
 
-    public function withStatus($code, $reasonPhrase = ''): self
+    /**
+     * @return static
+     */
+    public function withStatus($code, $reasonPhrase = ''): ResponseInterface
     {
         if (!\is_int($code) && !\is_string($code)) {
             throw new \InvalidArgumentException('Status code has to be an integer');
@@ -73,7 +78,7 @@ final class Response implements ResponseInterface
 
         $code = (int) $code;
         if ($code < 100 || $code > 599) {
-            throw new \InvalidArgumentException('Status code has to be an integer between 100 and 599');
+            throw new \InvalidArgumentException(\sprintf('Status code has to be an integer between 100 and 599. A status code of %d was given', $code));
         }
 
         $new = clone $this;

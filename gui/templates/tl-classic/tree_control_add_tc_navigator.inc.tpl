@@ -11,7 +11,7 @@
 
 {lang_get var=labels s='expand_tree, collapse_tree, show_whole_spec_on_right_panel'}
 
-<div class="x-panel-body exec_additional_info" style="padding:3px; padding-left: 9px;border:1px solid #99BBE8;">
+<div class="x-panel-body execAdditionalInfo" style="padding:3px; padding-left: 9px;border:1px solid #99BBE8;">
 
 <input type="button" value="{$labels.expand_tree}" id="expand_tree" name="expand_tree" 
        onclick="tree.expandAll();" style="font-size: 90%;" />

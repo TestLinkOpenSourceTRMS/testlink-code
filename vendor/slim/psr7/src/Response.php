@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slim Framework (https://slimframework.com)
  *
@@ -16,22 +17,18 @@ use Psr\Http\Message\StreamInterface;
 use Slim\Psr7\Factory\StreamFactory;
 use Slim\Psr7\Interfaces\HeadersInterface;
 
+use function is_integer;
+use function is_object;
+use function is_string;
+use function method_exists;
+
 class Response extends Message implements ResponseInterface
 {
-    /**
-     * @var int
-     */
-    protected $status = StatusCodeInterface::STATUS_OK;
+    protected int $status = StatusCodeInterface::STATUS_OK;
 
-    /**
-     * @var string
-     */
-    protected $reasonPhrase = '';
+    protected string $reasonPhrase = '';
 
-    /**
-     * @var array
-     */
-    protected static $messages = [
+    protected static array $messages = [
         // Informational 1xx
         StatusCodeInterface::STATUS_CONTINUE => 'Continue',
         StatusCodeInterface::STATUS_SWITCHING_PROTOCOLS => 'Switching Protocols',
@@ -118,8 +115,8 @@ class Response extends Message implements ResponseInterface
         ?StreamInterface $body = null
     ) {
         $this->status = $this->filterStatus($status);
-        $this->headers = $headers ? $headers : new Headers();
-        $this->body = $body ? $body : (new StreamFactory())->createStream();
+        $this->headers = $headers ?: new Headers([], []);
+        $this->body = $body ?: (new StreamFactory())->createStream();
     }
 
     /**
@@ -141,8 +138,9 @@ class Response extends Message implements ResponseInterface
 
     /**
      * {@inheritdoc}
+     * @return static
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): ResponseInterface
     {
         $code = $this->filterStatus($code);
         $reasonPhrase = $this->filterReasonPhrase($reasonPhrase);
@@ -205,6 +203,12 @@ class Response extends Message implements ResponseInterface
 
         if (!is_string($reasonPhrase)) {
             throw new InvalidArgumentException('Response reason phrase must be a string.');
+        }
+
+        if (strpos($reasonPhrase, "\r") !== false || strpos($reasonPhrase, "\n") !== false) {
+            throw new InvalidArgumentException(
+                'Reason phrase contains one of the following prohibited characters: \r \n'
+            );
         }
 
         return $reasonPhrase;

@@ -1,5 +1,5 @@
 <?php
- /**
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
@@ -10,7 +10,7 @@
  *
  *
  * A sample client implementation in php
- * 
+ *
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * @link      http://testlink.org/api/
@@ -23,24 +23,23 @@
  *      20080306 - franciscom - added dBug to improve diagnostic info.
  *      20080305 - franciscom - refactored
  */
- 
 require_once 'util.php';
 require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
-$method='getTestSuitesForTestPlan';
-$test_num=1;
-$unitTestDescription="Test {$test_num} - {$method}";
+$method = 'getTestSuitesForTestPlan';
+$test_num = 1;
+$unitTestDescription = "Test {$test_num} - {$method}";
 
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["testplanid"]=3;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["testplanid"] = 3;
 
-$debug=true;
+$debug = true;
 echo $unitTestDescription;
 
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
+$client->debug = $debug;
 
-runTest($client,$method,$args);
+runTest($client, $method, $args);
 ?>

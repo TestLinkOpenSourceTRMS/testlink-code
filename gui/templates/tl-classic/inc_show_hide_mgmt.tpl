@@ -7,7 +7,7 @@ Author : franciscom
 Rev:
 *}
 {$show_hide_container_draw=$show_hide_container_draw|default:false}
-{$show_hide_container_class=$show_hide_container_class|default:"exec_additional_info"}
+{$show_hide_container_class=$show_hide_container_class|default:"execAdditionalInfo"}
 
 {*  franciscom - implementation note -
 	1. save the status when user saves executiosn.

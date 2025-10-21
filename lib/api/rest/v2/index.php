@@ -7,9 +7,8 @@
  *
  * If you are using Composer, you can skip this step.
  */
-require 'tlRestApi.class.php';
+require_once 'tlRestApi.class.php';
 $rest = new tlRestApi();
-
 
 /**
  * Run the Slim application

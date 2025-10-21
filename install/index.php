@@ -13,9 +13,9 @@
  */
 
 if(!isset($tlCfg)) {
-  $tlCfg = new stdClass();  
-} 
-require_once("../cfg/const.inc.php");
+  $tlCfg = new stdClass();
+}
+require_once '../cfg/const.inc.php';
 
 session_start();
 $_SESSION['session_test'] = 1;
@@ -40,8 +40,8 @@ $forum_url = 'forum.testlink.org';
 <div class="tlStory">
     <p>You are installing TestLink <?php echo $_SESSION['testlink_version'] ?> </p>
     <p><b><?php echo $prev_ver ?> Migration to latest version ( <?php echo $_SESSION['testlink_version'] ?>) requires Database changes that has to be done MANUALLY.
-          Please read README file provided with installation.</b></p> 
-    <p><b>For information about Migration from older version ( < 1.9.3 ) please read README file provided with installation.</b></p> 
+          Please read README file provided with installation.</b></p>
+    <p><b>For information about Migration from older version ( < 1.9.3 ) please read README file provided with installation.</b></p>
     <p><b>Please read Section on README file or go to <?php echo 'http://' .$forum_url ?> (Forum: TestLink 1.9.4 and greater News,changes, etc)</b> </p>
     <p>Open <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
     for more information or troubleshooting. You could also look at
@@ -61,11 +61,11 @@ $forum_url = 'forum.testlink.org';
 
     <br>
     <i>
-    TestLink is a complicated piece of software, and has always been released under 
-    an Open Source license, and this will continue into the far future. 
-    <br>It has cost thousands of hours to develop, test and support TestLink. 
-    <br>If you find TestLink valuable, we would appreciate if you would consider 
-    buying a support agreement or requesting custom development.    
+    TestLink is a complicated piece of software, and has always been released under
+    an Open Source license, and this will continue into the far future.
+    <br>It has cost thousands of hours to develop, test and support TestLink.
+    <br>If you find TestLink valuable, we would appreciate if you would consider
+    buying a support agreement or requesting custom development.
     </i>
 </div>
 <div class="tlLiner">&nbsp;</div>

@@ -15,4 +15,4 @@ data["deep"] = "true"
 data["details"] = "full"
 tcinfo = conn.tl.getTestCasesForTestSuite(data)
 
-print tcinfo
+print(tcinfo)

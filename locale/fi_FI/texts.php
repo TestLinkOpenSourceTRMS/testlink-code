@@ -13,24 +13,22 @@
  * 	$TLS_instruct[<key>] and $TLS_instruct_title[<key>]
  *
  * Revisions history is not stored for the file
- * 
- * 
+ *
+ *
  * @package 	TestLink
  * @author 		Kirsi Mäkinen, Jan-Erik Finlander, Juho Kauppi, Heikki Alonen, Jari Ahonen, Otto Moilanen
- * @copyright 	2003-2009, TestLink community 
+ * @copyright 	2003-2009, TestLink community
  * @version    	CVS: $Id: texts.php,v 1.3 2010/06/24 17:25:55 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
-
-
 $TLS_htmltext_title['assignReqs'] = "Määritä Testitapauksen vaatimukset ";
 $TLS_htmltext['assignReqs'] = "<h2>Tarkoitus:</h2>
 <p>Käyttäjät voivat asettaa suhteita ja testata tapauksissa. Testi suunnittelija voi määrittää suhteet 0..n to 0..n. I.e. Yksi testi tapauksessa voitaisiin antaa, ei yhtään, yhden tai useamman vaatimuksen ja päinvastoin. Tällainen jäljitettävyys matriisi auttaa tutkimaan testin kattavuuden vaatimukset ja selvittää, mitkä onnistuneesti jättänyt aikana testaus. Tämä analysoida toimii varmistetaan, että kaikki määritellyt odotukset ovat täyttyneet.</p>
 
 <h2>Aloita:</h2>
 <ol>
-<li>Valitse Test Asia on puu milloin vasemmalle. Yhdistelmäruutuun ruutuun luettelo Vaatimukset Tekniset näkyy yläosassa olevaa workarea. </li> 
+<li>Valitse Test Asia on puu milloin vasemmalle. Yhdistelmäruutuun ruutuun luettelo Vaatimukset Tekniset näkyy yläosassa olevaa workarea. </li>
 <li>Valitse eritelmä Asiakirja jos useammat kerran määritelty.</li>
 <li>Valitse eritelmä Asiakirja jos useammat kerran määritelty. TestLink automaattisesti reloads sivua.</li>
 <li>Keski block workarea luetellaan kaikki vaatimukset (alkaen valittu Specification), jotka liittyvät testin tapauksessa. Pohja estää 'Saatavilla olevat vaatimukset' luetellaan kaikki vaatimukset, jotka eivät ole suhteessa nykyisen testin tapauksessa. Suunnittelija voi tavaramerkin vaatimuksia, jotka kuuluvat tämän testin, ja valitse sitten painiketta 'Valitse'. Nämä uudet sidottuja testi näkyvät keskellä estää 'sidotut Vaatimukset'.</li>
@@ -42,36 +40,36 @@ $TLS_htmltext_title['editTc'] = "Testauseritelmä";
 $TLS_htmltext['editTc'] = "<h2>Tarkoitus:</h2>
 <h2>Tarkoitus:</h2>
 <p>The <i>Testauseritelmä</i> avulla käyttäjät voivat tarkastella ja muokata kaikki nykyiset " .
-"<i>Test Suites</i> ja <i>Testi Cases</i>. Test Cases ovat versioidut ja kaikki " .
-"ja aiemmat versiot ovat saatavilla ja niitä voidaan tarkastella ja hallinnoi täällä.</p>
+    "<i>Test Suites</i> ja <i>Testi Cases</i>. Test Cases ovat versioidut ja kaikki " .
+    "ja aiemmat versiot ovat saatavilla ja niitä voidaan tarkastella ja hallinnoi täällä.</p>
 
 <h2>Aloita:</h2>
 <ol>
 <li>Valitse Test projekti navigointisivun puu (root node). <i>Huomaa: " .
-"Voit aina muuttaa aktivoida Test Project valitsemalla eri jokin " .
-"alasvetovalikossa yläkulmasta oikeaan alakulmaan.</i></li>
+    "Voit aina muuttaa aktivoida Test Project valitsemalla eri jokin " .
+    "alasvetovalikossa yläkulmasta oikeaan alakulmaan.</i></li>
 <li>Luo uusi testausohjelmisto klikkaamalla <b>New Child testausohjelmisto</b>. testausohjelmisto voi " .
-"saatettava rakenteen testi-asiakirjojen mukaan teidän yleissopimusten (toiminnallinen / ei-toiminnallinen" .
-"testit, tuotteen osia tai toimintoja, muuttaa jne.). Kuvaus" .
-"testiohjelmisto voisi pitää soveltamisalaan mukana testi tapauksissa oletuskokoonpanoon," .
-"linkkejä asiaan liittyvät asiakirjat, rajoituksia ja muita hyödyllisiä tietoja. Yleensä" .
-"kaikki merkinnät, jotka ovat yhteisiä lapsen Test Cases. Test Suites seurata" .
-"me &quot;kansio&quot; metafora, näin käyttäjät voivat siirtää ja kopioida Test Suites kanssa" .
-"Testaus-hankkeeseen. Lisäksi niitä voidaan tuoda maahan tai viedään maasta (mukaan lukien suljettuun testitapauksia).</li>
+    "saatettava rakenteen testi-asiakirjojen mukaan teidän yleissopimusten (toiminnallinen / ei-toiminnallinen" .
+    "testit, tuotteen osia tai toimintoja, muuttaa jne.). Kuvaus" .
+    "testiohjelmisto voisi pitää soveltamisalaan mukana testi tapauksissa oletuskokoonpanoon," .
+    "linkkejä asiaan liittyvät asiakirjat, rajoituksia ja muita hyödyllisiä tietoja. Yleensä" .
+    "kaikki merkinnät, jotka ovat yhteisiä lapsen Test Cases. Test Suites seurata" .
+    "me &quot;kansio&quot; metafora, näin käyttäjät voivat siirtää ja kopioida Test Suites kanssa" .
+    "Testaus-hankkeeseen. Lisäksi niitä voidaan tuoda maahan tai viedään maasta (mukaan lukien suljettuun testitapauksia).</li>
 <li>Test sviitit ovat skaalattavat kansioihin. Käyttäjä voi siirtää tai kopioida Test Suites kanssa " .
-"Testaus-hankkeeseen. Test sviittiä voidaan tuoda maahan tai viedä maasta (myös testitapauksia).
+    "Testaus-hankkeeseen. Test sviittiä voidaan tuoda maahan tai viedä maasta (myös testitapauksia).
 <li>Valitse uudesta Test Suite-navigointi puu ja luoda" .
-"uusi Test Asia klikkaamalla <b>Luo Test Case</b>. Test Case täsmennetään " .
-"erityisesti testausta skenaario ja odotetut tulokset sekä mukautetut kentät määritelty " .
-"että Test Project (katso käyttöohjetta lisätietoja). On myös mahdollista " .
-"siirtää <b>avainsanat</b> parantaa jäljitettävyyttä.</li>
+    "uusi Test Asia klikkaamalla <b>Luo Test Case</b>. Test Case täsmennetään " .
+    "erityisesti testausta skenaario ja odotetut tulokset sekä mukautetut kentät määritelty " .
+    "että Test Project (katso käyttöohjetta lisätietoja). On myös mahdollista " .
+    "siirtää <b>avainsanat</b> parantaa jäljitettävyyttä.</li>
 <li>Navigoi kautta puunäkymässä vasemmalla puolella ja muokata tietoja. Testitapauksia tallentaa oman historian.</li>
 <li>Anna teidän luonut testauseritelmä on <span class=\"help\" onclick=
 \"javascript:open_help_window('glossary','$locale');\">Test Plan kun testitapauksia ovat valmiita.</li>
 </ol>
 
 <p>TestLinkillä voit järjestellä testi tapauksissa osaksi testi sviittiä." .
-"Test sviittiä voidaan nested muiden koe-sviittiä, joiden avulla voit luoda hierarkioita testityypin sviittiä. Voit tulostaa nämä tiedot yhdessä testin tapauksissa.</p>";
+    "Test sviittiä voidaan nested muiden koe-sviittiä, joiden avulla voit luoda hierarkioita testityypin sviittiä. Voit tulostaa nämä tiedot yhdessä testin tapauksissa.</p>";
 
 $TLS_htmltext_title['searchTc'] = "Test Case hakusivu";
 $TLS_htmltext['searchTc'] = "<h2>Purpose:</h2>
@@ -86,11 +84,11 @@ case sensitive. Result include just test cases from actual Test Project.</p>
 <li>Valitse vaaditaan avainsanan tai vasemmalle arvo 'Ei sovelleta'.</li>
 <li>Napsauta Hae-painiketta.</li>
 <li>Kaikki täyttyvät testi tapaukset ovat osoittaneet. Voit muokata testi tapauksissa kautta 'Otsikko'-linkkiä.</li>
-</ol>";//
+</ol>"; //
 
 // ------------------------------------------------------------------------------------------
 
-$TLS_htmltext_title['printTestSpec'] = "Tulosta testauseritelmä"; //printTC.html
+$TLS_htmltext_title['printTestSpec'] = "Tulosta testauseritelmä"; // printTC.html
 $TLS_htmltext['printTestSpec'] = "<h2>Tarkoitus:</h2>
 <p>Täältä voit tulostaa yhden testin tapauksessa kaikki testin tapauksissa testi sviitti tai kaikki testin tapauksissa testi hanketta tai suunnitelmaa.</p>
 <h2>Aloita:</h2>
@@ -105,11 +103,11 @@ See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 <li><p>Käytä selaimen tulosta toiminnot itse tulostaa tiedot.<br />
 <i>Huomaa: Varmista, että vain tulostaa oikean käden kanssa.</i></p>
 </li>
-</ol>";//
+</ol>"; //
 
 // ------------------------------------------------------------------------------------------
 
-$TLS_htmltext_title['reqSpecMgmt'] = "Vaatimukset Eritelmä Design"; //printTC.html
+$TLS_htmltext_title['reqSpecMgmt'] = "Vaatimukset Eritelmä Design"; // printTC.html
 $TLS_htmltext['reqSpecMgmt'] = "<p>Voit hallita vaatimustarve määrittely asiakirjoja.</p>
 
 <h2>Requirements Specification</h2>
@@ -122,10 +120,11 @@ Yksi käyttäjä voi lisätä yksinkertainen kuvaus tai huomautukset, <b>Laajuus
 
 <h2><a name='req'>Vaatimukset</a></h2>
 
-<p>Klikkaa otsikkoa olemassa oleva eritelmä. Jos ei ole," . "klikkaa hankkeen node luoda sellainen. Voit luoda, muokata, poistaa tai maahantuonnin vaatimukset asiakirjan. Jokainen vaatimus on otsikko, laajuus ja tila. A-asema olisi joko 'Normaali' tai 'Epävakaa'. Epävakaa vaatimuksia ei lasketa ja käyttötiedot Tämä parametri olisi käyttää sekä unimplemented ominaisuuksia ja väärin suunnitellut vaatimukset.</p>
+<p>Klikkaa otsikkoa olemassa oleva eritelmä. Jos ei ole," .
+    "klikkaa hankkeen node luoda sellainen. Voit luoda, muokata, poistaa tai maahantuonnin vaatimukset asiakirjan. Jokainen vaatimus on otsikko, laajuus ja tila. A-asema olisi joko 'Normaali' tai 'Epävakaa'. Epävakaa vaatimuksia ei lasketa ja käyttötiedot Tämä parametri olisi käyttää sekä unimplemented ominaisuuksia ja väärin suunnitellut vaatimukset.</p>
 
 <p>Voit luoda uuden testin tapauksissa vaatimukset käyttämällä useita toimia tarkastetaan vaatimukset eritelmän näytöllä. Nämä Test Cases luodaan osaksi testausohjelmisto nimi määritelty kokoonpanoasetuksia <i>(default is: \$tlCfg->req_cfg->default_testsuite_name =
-'Testausohjelmisto luotu Vaatimus - Auto';)</i>. Otsikko ja Soveltamisala kopioidaan nämä testitapauksia.</p>";//
+'Testausohjelmisto luotu Vaatimus - Auto';)</i>. Otsikko ja Soveltamisala kopioidaan nämä testitapauksia.</p>"; //
 
 // ------------------------------------------------------------------------------------------
 
@@ -146,7 +145,7 @@ $TLS_htmltext['keywordsAssign'] = "<h2>Tarkoitus:</h2>
 <p>TestLink käyttää tätä lähestymistapaa niin, että vanhemmat versiot testi tapauksissa testi suunnitelmat eivät vaikuta Hakusanalla tehtäviä teet sen viimeisintä versiota testin tapauksessa. Jos haluat testata tapauksissa testi-suunnitelma on päivitetty, ensin vahvistaa ne ovat ajan tasalla käyttämällä 'Päivitä Modified Test Cases' toiminnallisuutta, ennen kuin teet Hakusanalla toimeksiannoissa.</p>";
 
 $TLS_htmltext_title['executeTest'] = "Test Case Execution";
-$TLS_htmltext['executeTest'] = "<h2>Tarkoitus:</h2> 
+$TLS_htmltext['executeTest'] = "<h2>Tarkoitus:</h2>
 
 <p>Avulla käyttäjä voi suorittaa testitapauksia. Käyttäjä voi määrittää Testitulos Test Johdanto Build. Katso ohjeesta lisätietoja suodatin ja asetukset. (klikkaa kysymysmerkki-kuvake).</p>
 
@@ -161,12 +160,11 @@ $TLS_htmltext['executeTest'] = "<h2>Tarkoitus:</h2>
 </ol>
 <p><i>Note: Huom: TestLink on configurated tehdä yhteistyötä teidän Bug tracker jos haluat luoda / jäljittää ongelmaraportti suoraan niiden GUI.</i></p>";
 
-
 // ------------------------------------------------------------------------------------------
 
 $TLS_htmltext_title['showMetrics'] = "Kuvaus testausselosteet ja Metrics";
-$TLS_htmltext['showMetrics'] = "<p>Raportit liittyvät testisuunnittelmaan".
-"(määritelty alkuun navigator). Tämä Test Plan voisi poiketa nykyisen testin suunnitelman toteutusta varten. Voit myös valita raportin muodossa:</p>
+$TLS_htmltext['showMetrics'] = "<p>Raportit liittyvät testisuunnittelmaan" .
+    "(määritelty alkuun navigator). Tämä Test Plan voisi poiketa nykyisen testin suunnitelman toteutusta varten. Voit myös valita raportin muodossa:</p>
 <ul>
 <li><b>Normal</b> - raportti näkyy Web-sivuna</li>
 <li><b>OpenOffice Writer</b> - raportti tuodaan OpenOffice Writeriin</li>
@@ -264,12 +262,11 @@ $TLS_htmltext['tc_exec_assignment'] = "<h2>Tarkoitus</h2>
 <li>Valitse suunniteltua testauslaite.</li>
 <li>Napsauta Tallenna-painiketta esittämään luokitukseen.</li>
 <li>Avaa suorittamisen sivu tarkistaa assignment. Voit perustaa suodatin käyttäjille.</li>
-</ol>";//
-
+</ol>"; //
 
 // ------------------------------------------------------------------------------------------
 
-$TLS_htmltext_title['reqSpecMgmt'] = "Vaatimukset Eritelmä Design"; //printTC.html
+$TLS_htmltext_title['reqSpecMgmt'] = "Vaatimukset Eritelmä Design"; // printTC.html
 $TLS_htmltext['reqSpecMgmt'] = "<p>Voit hallita Requirement Specification asiakirjoja.</p>
 
 <h2>Requirements Specification</h2>
@@ -296,13 +293,13 @@ A-asema olisi joko 'Normaali' tai 'Ei testavissa'. Ei testable vaatimuksia ei la
 
 $TLS_htmltext_title['keywordsAssign'] = "Keyword Assignment";
 
-$TLS_htmltext['keywordsAssign']    = "<h2>Purpose:</h2>
+$TLS_htmltext['keywordsAssign'] = "<h2>Purpose:</h2>
 
 <p>The Keyword Assignment page is the place where users can batch
 
 assign keywords to the existing Test Suite or Test Case</p>
 
- 
+
 
 <h2>To Assign Keywords:</h2>
 
@@ -324,7 +321,7 @@ granular level.</li>
 
 </ol>
 
- 
+
 
 <h2>Important Information Regarding Keyword Assignments in Test Plans:</h2>
 
@@ -345,8 +342,6 @@ by keyword assignments you make to the most recent version of the test case. If 
 test cases in your test plan to be updated, first verify they are up to date using the 'Update
 
 Modified Test Cases' functionality BEFORE making keyword assignments.</p>";
-
- 
 
 // ------------------------------------------------------------------------------------------
 
@@ -379,12 +374,13 @@ $TLS_htmltext['executeTest'] = "<h2>Purpose:</h2>
 <li>Täytä testin tapauksessa johtaa ja muussa sovellettavassa muistiinpanoja tai vikoja.</li>
 <li>Tallenna tulokset.</li>
 </ol>
-<p><i>Huom: TestLink on configurated tehdä yhteistyötä teidän Bug tracker jos haluat luoda / jäljittää ongelmaraportti suoraan niiden GU</i></p>";//
+<p><i>Huom: TestLink on configurated tehdä yhteistyötä teidän Bug tracker jos haluat luoda / jäljittää ongelmaraportti suoraan niiden GU</i></p>"; //
 
 // ------------------------------------------------------------------------------------------
 
 $TLS_htmltext_title['showMetrics'] = "Kuvaus testausselosteet ja mittarit";
-$TLS_htmltext['showMetrics'] = "<p>Raportit liittyvät testisuunnitelmaan " ."
+$TLS_htmltext['showMetrics'] = "<p>Raportit liittyvät testisuunnitelmaan " .
+    "
 (määritelty alkuun navigator). Tämä Test Plan voisi poiketa nykyisen testin suunnitelman toteutusta varten. Voit myös valita raportin muodossa:</p>
 <ul>
 <li><b>Normaalitila</b> - raportti näkyy Web-sivun</li>
@@ -465,11 +461,9 @@ twice on the same build, the most recent execution will be taken into account.</
 <h3>Yhteensä Bugs jokaisessa testissä asia</h3>
 <p>Tämä raportti osoittaa kunkin testin tapauksessa kaikki virheraportit arkistoida sitä vastaan koko hankkeeseen. Tämä raportti on käytettävissä vain, jos Vianjäljitysjärjestelmä on kytketty.</p>";
 
- 
-
 // ------------------------------------------------------------------------------------------
 
-$TLS_htmltext_title['planAddTC'] = "Lisää / Poista testitapauksia Testisuunnitelmaan"; //testSetAdd
+$TLS_htmltext_title['planAddTC'] = "Lisää / Poista testitapauksia Testisuunnitelmaan"; // testSetAdd
 $TLS_htmltext['planAddTC'] = "<h2>Päämäärä</h2>
 <p>Avulla käyttäjä (ja johtaa tason oikeudet) lisätä tai poistaa testi tapauksissa osaksi Test suunnitelma.</p>
 
@@ -477,9 +471,7 @@ $TLS_htmltext['planAddTC'] = "<h2>Päämäärä</h2>
 <ol>
 <li>Klikkaa testausohjelmistoa nähdäksesi kaikki se testi sviittiä ja kaikki sen testitapaukset.</li>
 <li>Kun olet valmis, klikkaa 'Lisää / Poista' Test Cases-painiketta lisätä tai poistaa testin tapauksissa. Huomautus: Ei ole mahdollista lisätä samassa testissä tapauksessa useita kertoja.</li>
-</ol>";//
-
- 
+</ol>"; //
 
 // ------------------------------------------------------------------------------------------
 
@@ -497,7 +489,6 @@ $TLS_htmltext['tc_exec_assignment'] = "<h2>Päämäärä</h2>
 
 // ------------------------------------------------------------------------------------------
 
-
 $TLS_htmltext_title['planUpdateTC'] = "Päivitä Testitapaukset, Testisuunnitelmassa";
 $TLS_htmltext['planUpdateTC'] = "<h2>Päämäärä</h2>
 <p>Tämän sivun avulla päivittäminen Test tapauksessa uudempaan (eri) versio, jos testauseritelmä on muuttunut. On harvinaista, että joitakin toimintoja on selkeytetty testauksen aikana. . Käyttäjä muuttaa testauseritelmä, mutta muutoksia on propagoivat Test Plan liikaa. Muuten Test suunnitelma omistaa alkuperäinen versio, jotta voitaisiin varmistaa, että tulokset viittaavat oikea teksti testin tapauksessa.</p>
@@ -509,13 +500,12 @@ $TLS_htmltext['planUpdateTC'] = "<h2>Päämäärä</h2>
 <li>Napsauta Päivitä testisuunnitelma-painiketta esittää muutoksia.</li>
 <li>Voit tarkistaa: Avaa suorittamisen sivun avulla voit katsella teksti testin tapauksessa.</li>
 </ol>";
- 
 
 // ------------------------------------------------------------------------------------------
 
 $TLS_htmltext_title['test_urgency'] = "Specify tests with high or low urgency";
 
-$TLS_htmltext['test_urgency']   = "<h2>Purpose</h2>
+$TLS_htmltext['test_urgency'] = "<h2>Purpose</h2>
 
 <p>TestLink allows setting the urgency of a Test Suite to affect the  testing Priority of test cases.
 
@@ -527,7 +517,7 @@ at first. It helps to ensure that testing will cover the most important tests
 
 also under time pressure.</p>
 
- 
+
 
 <h2>Aloita</h2>
 
@@ -549,12 +539,8 @@ significant changes.</li>
 
 <p><i>For example, a Test case with a High importance in a Test suite with Low urgency " .
 
-"will be Medium priority.</i>";
-
- 
+    "will be Medium priority.</i>";
 
 // ------------------------------------------------------------------------------------------
-
- 
 
 ?>

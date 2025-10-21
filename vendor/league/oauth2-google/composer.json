@@ -34,7 +34,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "League\\OAuth2\\Client\\Test\\": "tests/src/"
+            "League\\OAuth2\\Client\\Test\\": "test/src/"
         }
     },
     "scripts": {

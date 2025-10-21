@@ -1,24 +1,24 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * 
+ *
  * @filesource getrequirementnodes.php
  * @author    Francisco Mancardi
- * 
- * **** IMPORTANT *****   
+ *
+ * **** IMPORTANT *****
  * Created using Ext JS example code
  *
  * Is the tree loader, will be called via AJAX.
- * Ext JS automatically will pass $_REQUEST['node']   
+ * Ext JS automatically will pass $_REQUEST['node']
  * Other arguments will be added by TL php code that needs the tree.
- *   
+ *
  * This tree is used to navigate ...
  *
  * @internal revision
- *        
+ *
  */
-require_once('../../config.inc.php');
-require_once('common.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 
@@ -37,8 +37,8 @@ echo json_encode($nodes);
 
 */
 function display_children($dbHandler,$root_node,$parent,$filter_node,
-                          $show_children=ON,$operation='manage',$mode='reqspec') 
-{             
+                          $show_children=ON,$operation='manage',$mode='reqspec')
+{
   $tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy','node_types','req_specs'));
   $cfg = config_get('req_cfg');
   $forbidden_parent['testproject'] = 'none';
@@ -47,7 +47,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
   if($cfg->child_requirements_mgmt)
   {
     $forbidden_parent['requirement_spec'] = 'none';
-  } 
+  }
   
   $fn = array();
   $fn['print']['reqspec'] = array('testproject' => 'TPROJECT_PTP_RS',
@@ -73,54 +73,53 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
         
     default:
       $js_function=$fn['manage'][$mode];
-    break;  
+    break;
   }
     
   $nodes = null;
   $filter_node_type = $show_children ? '' : ",'requirement'";
-  $sql = " SELECT NHA.*, NT.description AS node_type, RSPEC.doc_id " . 
+  $sql = " SELECT NHA.*, NT.description AS node_type, RSPEC.doc_id " .
          " FROM {$tables['nodes_hierarchy']} NHA JOIN {$tables['node_types']}  NT " .
          " ON NHA.node_type_id=NT.id " .
-         " AND NT.description NOT IN " . 
+         " AND NT.description NOT IN " .
          " ('testcase','testsuite','testcase_version','testplan','requirement_spec_revision' {$filter_node_type}) " .
          " LEFT OUTER JOIN {$tables['req_specs']} RSPEC " .
-         " ON RSPEC.id = NHA.id " . 
+         " ON RSPEC.id = NHA.id " .
          " WHERE NHA.parent_id = " . intval($parent);
     
   if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
   {
-    $sql .= " AND NHA.id = " . intval($filter_node);  
+    $sql .= " AND NHA.id = " . intval($filter_node);
   }
-  $sql .= " ORDER BY NHA.node_order ";    
+  $sql .= " ORDER BY NHA.node_order ";
 
   $nodeSet = $dbHandler->get_recordset($sql);
-  if(!is_null($nodeSet)) 
+  if(!is_null($nodeSet))
   {
     $sql =  " SELECT DISTINCT req_doc_id AS doc_id,NHA.id" .
             " FROM {$tables['requirements']} REQ JOIN {$tables['nodes_hierarchy']} NHA ON NHA.id = REQ.id  " .
-            " JOIN {$tables['nodes_hierarchy']}  NHB ON NHA.parent_id = NHB.id " . 
+            " JOIN {$tables['nodes_hierarchy']}  NHB ON NHA.parent_id = NHB.id " .
             " JOIN {$tables['node_types']} NT ON NT.id = NHA.node_type_id " .
             " WHERE NHB.id = " . intval($parent) . " AND NT.description = 'requirement'";
     $requirements = $dbHandler->fetchRowsIntoMap($sql,'id');
 
     $treeMgr = new tree($dbHandler);
     $ntypes = $treeMgr->get_available_node_types();
-    $peerTypes = array('target' => $ntypes['requirement'], 'container' => $ntypes['requirement_spec']); 
-    foreach($nodeSet as $key => $row)
+    $peerTypes = array('target' => $ntypes['requirement'], 'container' => $ntypes['requirement_spec']);
+    foreach($nodeSet as $row)
     {
-      $path['text'] = htmlspecialchars($row['name']);                                  
-      $path['id'] = $row['id'];                                                           
+      $path['text'] = htmlspecialchars($row['name']);
+      $path['id'] = $row['id'];
         
       // this attribute/property is used on custom code on drag and drop
-      $path['position'] = $row['node_order'];                                                   
+      $path['position'] = $row['node_order'];
       $path['leaf'] = false;
       $path['cls'] = 'folder';
           
       // Important:
       // We can add custom keys, and will be able to access it using
-      // public property 'attributes' of object of Class Ext.tree.TreeNode 
-      // 
-      $path['testlink_node_type'] = $row['node_type'];                                     
+      // public property 'attributes' of object of Class Ext.tree.TreeNode
+      $path['testlink_node_type'] = $row['node_type'];
       $path['testlink_node_name'] = $path['text']; // already htmlspecialchars() done
 
       $path['forbidden_parent'] = 'none';
@@ -141,7 +140,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
           if(!is_null($req_list))
           {
             $item_qty = count($req_list);
-            $path['text'] .= " ({$item_qty})";   
+            $path['text'] .= " ({$item_qty})";
           }
         break;
 
@@ -153,8 +152,8 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
         break;
       }
 
-      $nodes[] = $path;                                                                        
-    } // foreach  
+      $nodes[] = $path;
+    }
   }
-  return $nodes;                                                                             
-}                                                                                               
+  return $nodes;
+}

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slim Framework (https://slimframework.com)
  *
@@ -11,6 +12,13 @@ namespace Slim\Psr7;
 
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
+
+use function flush;
+use function ob_get_clean;
+use function ob_get_level;
+use function strlen;
+
+use const SEEK_SET;
 
 class NonBufferedBody implements StreamInterface
 {
@@ -73,7 +81,7 @@ class NonBufferedBody implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         throw new RuntimeException('A NonBufferedBody is not seekable.');
     }

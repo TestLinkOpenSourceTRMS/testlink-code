@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-diactoros for the canonical source repository
- * @copyright https://github.com/laminas/laminas-diactoros/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-diactoros/blob/master/LICENSE.md New BSD License
- */
-
 declare(strict_types=1);
 
 namespace Laminas\Diactoros\Response;
@@ -15,7 +9,6 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Stream;
 use Psr\Http\Message\StreamInterface;
 
-use function get_class;
 use function gettype;
 use function is_object;
 use function is_string;
@@ -40,7 +33,7 @@ class XmlResponse extends Response
      * @param string|StreamInterface $xml String or stream for the message body.
      * @param int $status Integer status code for the response; 200 by default.
      * @param array $headers Array of headers to use at initialization.
-     * @throws Exception\InvalidArgumentException if $text is neither a string or stream.
+     * @throws Exception\InvalidArgumentException If $text is neither a string or stream.
      */
     public function __construct(
         $xml,
@@ -58,9 +51,9 @@ class XmlResponse extends Response
      * Create the message body.
      *
      * @param string|StreamInterface $xml
-     * @throws Exception\InvalidArgumentException if $xml is neither a string or stream.
+     * @throws Exception\InvalidArgumentException If $xml is neither a string or stream.
      */
-    private function createBody($xml) : StreamInterface
+    private function createBody($xml): StreamInterface
     {
         if ($xml instanceof StreamInterface) {
             return $xml;
@@ -69,8 +62,8 @@ class XmlResponse extends Response
         if (! is_string($xml)) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Invalid content (%s) provided to %s',
-                (is_object($xml) ? get_class($xml) : gettype($xml)),
-                __CLASS__
+                is_object($xml) ? $xml::class : gettype($xml),
+                self::class
             ));
         }
 

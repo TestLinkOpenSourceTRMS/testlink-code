@@ -10,10 +10,19 @@ declare(strict_types=1);
 
 namespace Slim\Exception;
 
+/** @api */
 class HttpInternalServerErrorException extends HttpSpecializedException
 {
+    /**
+     * @var int
+     */
     protected $code = 500;
+
+    /**
+     * @var string
+     */
     protected $message = 'Internal server error.';
-    protected $title = '500 Internal Server Error';
-    protected $description = 'Unexpected condition encountered preventing server from fulfilling request.';
+
+    protected string $title = '500 Internal Server Error';
+    protected string $description = 'Unexpected condition encountered preventing server from fulfilling request.';
 }

@@ -14,17 +14,15 @@ use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
 
+/** @api */
 interface RouteParserInterface
 {
     /**
      * Build the path for a named route excluding the base path
      *
-     *
-     * @param string $routeName   Route name
-     * @param array  $data        Named argument replacement data
-     * @param array  $queryParams Optional query string parameters
-     *
-     * @return string
+     * @param string                $routeName   Route name
+     * @param array<string, string> $data        Named argument replacement data
+     * @param array<string, string> $queryParams Optional query string parameters
      *
      * @throws RuntimeException         If named route does not exist
      * @throws InvalidArgumentException If required data not provided
@@ -34,11 +32,9 @@ interface RouteParserInterface
     /**
      * Build the path for a named route including the base path
      *
-     * @param string $routeName   Route name
-     * @param array  $data        Named argument replacement data
-     * @param array  $queryParams Optional query string parameters
-     *
-     * @return string
+     * @param string                $routeName   Route name
+     * @param array<string, string> $data        Named argument replacement data
+     * @param array<string, string> $queryParams Optional query string parameters
      *
      * @throws RuntimeException         If named route does not exist
      * @throws InvalidArgumentException If required data not provided
@@ -48,12 +44,10 @@ interface RouteParserInterface
     /**
      * Get fully qualified URL for named route
      *
-     * @param UriInterface $uri
-     * @param string       $routeName   Route name
-     * @param array        $data        Named argument replacement data
-     * @param array        $queryParams Optional query string parameters
-     *
-     * @return string
+     * @param UriInterface              $uri
+     * @param string                    $routeName   Route name
+     * @param array<string, string>     $data        Named argument replacement data
+     * @param array<string, string>     $queryParams Optional query string parameters
      */
     public function fullUrlFor(UriInterface $uri, string $routeName, array $data = [], array $queryParams = []): string;
 }

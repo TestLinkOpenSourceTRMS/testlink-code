@@ -232,7 +232,7 @@
       {$labels.caption_nav_filters}
     </div>
 
-  <div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;overflow: visible;">
+  <div id="filters" class="x-panel-body execAdditionalInfo" style="padding-top: 3px;overflow: visible;">
     
     <table class="smallGrey" style="width:98%;">
 
@@ -537,7 +537,7 @@
       {$labels.caption_nav_settings}
     </div>
 
-    <div id="settings" class="x-panel-body exec_additional_info" "style="padding-top: 3px;">
+    <div id="settings" class="x-panel-body execAdditionalInfo" "style="padding-top: 3px;">
       <input type='hidden' id="tpn_view_settings" name="tpn_view_status"  value="0" />
 
       <table class="smallGrey" style="width:98%;">
@@ -572,7 +572,7 @@
     {$labels.caption_nav_filters}
   </div>
 
-  <div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px; overflow: visible;">
+  <div id="filters" class="x-panel-body execAdditionalInfo" style="padding-top: 3px; overflow: visible;">
 
   <table class="smallGrey" style="width:98%;">
 

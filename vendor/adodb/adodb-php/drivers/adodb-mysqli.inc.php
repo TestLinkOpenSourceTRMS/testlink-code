@@ -75,6 +75,25 @@ class ADODB_mysqli extends ADOConnection {
 	var $ssl_capath = null;
 	var $ssl_cipher = null;
 
+	/**
+	 * Forcing emulated prepared statements.
+	 *
+	 * When set to true, ADODb will not execute queries using MySQLi native
+	 * bound variables, and will instead use the built-in string interpolation
+	 * and argument quoting from the parent class {@see ADOConnection::Execute()}.
+	 *
+	 * This is needed for some database engines that use mysql wire-protocol but
+	 * do not support prepared statements, like
+	 * {@see https://manticoresearch.com/ Manticore Search} or
+	 * {@see https://clickhouse.com/ ClickHouse}.
+	 *
+	 * WARNING: This is a potential security risk, and strongly discouraged for code
+	 * handling untrusted input {@see https://github.com/ADOdb/ADOdb/issues/1028#issuecomment-2081586024}.
+	 *
+	 * @var bool $doNotUseBoundVariables
+	 */
+	var $doNotUseBoundVariables = false;
+
 	/** @var mysqli Identifier for the native database connection */
 	var $_connectionID = false;
 
@@ -126,22 +145,74 @@ class ADODB_mysqli extends ADOConnection {
 	}
 
 	/**
-	 * Adds a parameter to the connection string.
+	 * Adds a parameter to the connection string, can also set connection property values.
 	 *
 	 * Parameter must be one of the constants listed in mysqli_options().
 	 * @see https://www.php.net/manual/en/mysqli.options.php
-	 *
-	 * @param int    $parameter The parameter to set
-	 * @param string $value     The value of the parameter
+	 * 
+	 * OR 
+	 * 
+	 * Parameter must be a string matching one of the following special cases.
+	 * 'ssl' - SSL values e.g. ('ssl' => ['ca' => '/path/to/ca.crt.pem'])
+	 * 'clientflags' - Client flags of type 'MYSQLI_CLIENT_'
+	 * @see https://www.php.net/manual/en/mysqli.real-connect.php
+	 * @see https://www.php.net/manual/en/mysqli.constants.php
+	 * 'socket' - The socket or named pipe that should be used
+	 * 'port' - The port number to attempt to connect to the MySQL server
+	 * 
+	 * @param string|int $parameter The parameter to set
+	 * @param string|int|array $value The value of the parameter
 	 *
 	 * @return bool
 	 */
 	public function setConnectionParameter($parameter, $value) {
-		if(!is_numeric($parameter)) {
-			$this->outp_throw("Invalid connection parameter '$parameter'", __METHOD__);
-			return false;
+
+		// Special case for setting SSL values.
+		if ("ssl" === $parameter && is_array($value)) {
+			if (isset($value["key"])) {
+				$this->ssl_key = $value["key"];
+			}
+			if (isset($value["cert"])) {
+				$this->ssl_cert = $value["cert"];
+			}
+			if (isset($value["ca"])) {
+				$this->ssl_ca = $value["ca"];
+			}
+			if (isset($value["capath"])) {
+				$this->ssl_capath = $value["capath"];
+			}
+			if (isset($value["cipher"])) {
+				$this->ssl_cipher = $value["cipher"];
+			}
+
+			return true;
 		}
-		return parent::setConnectionParameter($parameter, $value);
+
+		// Special case for setting the client flag(s).
+		if ("clientflags" === $parameter && is_numeric($value)) {
+			$this->clientFlags = $value;
+			return true;
+		}
+
+		// Special case for setting the socket.
+		if ("socket" === $parameter && is_string($value)) {
+			$this->socket = $value;
+			return true;
+		}
+
+		// Special case for setting the port.
+		if ("port" === $parameter && is_numeric($value)) {
+			$this->port = (int)$value;
+			return true;
+		}
+
+		// Standard mysqli_options.
+		if (is_numeric($parameter)) {
+			return parent::setConnectionParameter($parameter, $value);
+		}
+
+		$this->outp_throw("Invalid connection parameter '$parameter'", __METHOD__);
+		return false;
 	}
 
 	/**
@@ -165,6 +236,14 @@ class ADODB_mysqli extends ADOConnection {
 					  $persist = false)
 	{
 		if(!extension_loaded("mysqli")) {
+			return null;
+		}
+		// Check for a function that only exists in mysqlnd
+		if (!function_exists('mysqli_stmt_get_result')) {
+			// @TODO This will be treated as if the mysqli extension were not available
+			// This could be misleading, so we output an additional error message.
+			// We should probably throw a specific exception instead.
+			$this->outp("MySQL Native Driver (msqlnd) required");
 			return null;
 		}
 		$this->_connectionID = @mysqli_init();
@@ -206,9 +285,14 @@ class ADODB_mysqli extends ADOConnection {
 
 		// SSL Connections for MySQLI
 		if ($this->ssl_key || $this->ssl_cert || $this->ssl_ca || $this->ssl_capath || $this->ssl_cipher) {
+
 			mysqli_ssl_set($this->_connectionID, $this->ssl_key, $this->ssl_cert, $this->ssl_ca, $this->ssl_capath, $this->ssl_cipher);
-			$this->socket = MYSQLI_CLIENT_SSL;
-			$this->clientFlags = MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT;
+
+			// Check for any SSL client flag set, NOTE: bitwise operation.
+			if (!($this->clientFlags & MYSQLI_CLIENT_SSL)) {
+        			ADOConnection::outp('When using certificates, set the client flag MYSQLI_CLIENT_SSL_VERIFY_SERVER_CERT or MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT');
+				return false;
+			}
 		}
 
 		#if (!empty($this->port)) $argHostname .= ":".$this->port;
@@ -932,13 +1016,15 @@ class ADODB_mysqli extends ADOConnection {
 
 		$SQL = "SELECT column_name, column_type
 				  FROM information_schema.columns
-				 WHERE table_schema='{$this->databaseName}'
+				 WHERE table_schema='{$this->database}'
 				   AND table_name='$table'";
 
 		$schemaArray = $this->getAssoc($SQL);
-		$schemaArray = array_change_key_case($schemaArray,CASE_LOWER);
+		if (is_array($schemaArray)) {
+			$schemaArray = array_change_key_case($schemaArray,CASE_LOWER);
+			$rs = $this->Execute(sprintf($this->metaColumnsSQL,$table));
+		}
 
-		$rs = $this->Execute(sprintf($this->metaColumnsSQL,$table));
 		if (isset($savem)) $this->SetFetchMode($savem);
 		$ADODB_FETCH_MODE = $save;
 		if (!is_object($rs))
@@ -1017,7 +1103,6 @@ class ADODB_mysqli extends ADOConnection {
 	{
 //		$this->_connectionID = $this->mysqli_resolve_link($this->_connectionID);
 		$this->database = $dbName;
-		$this->databaseName = $dbName; # obsolete, retained for compat with older adodb versions
 
 		if ($this->_connectionID) {
 			$result = @mysqli_select_db($this->_connectionID, $dbName);
@@ -1092,18 +1177,12 @@ class ADODB_mysqli extends ADOConnection {
 		return array($sql,$stmt);
 	}
 
-	/**
-	 * Execute SQL
-	 *
-	 * @param string     $sql      SQL statement to execute, or possibly an array
-	 *                             holding prepared statement ($sql[0] will hold sql text)
-	 * @param array|bool $inputarr holds the input data to bind to.
-	 *                             Null elements will be set to null.
-	 *
-	 * @return ADORecordSet|bool
-	 */
 	public function execute($sql, $inputarr = false)
 	{
+		if ($this->doNotUseBoundVariables) {
+			return parent::execute($sql, $inputarr);
+		}
+
 		if ($this->fnExecute) {
 			$fn = $this->fnExecute;
 			$ret = $fn($this, $sql, $inputarr);
@@ -1112,12 +1191,16 @@ class ADODB_mysqli extends ADOConnection {
 			}
 		}
 
-		if ($inputarr === false) {
+		if ($inputarr === false || $inputarr === []) {
 			return $this->_execute($sql);
 		}
 
 		if (!is_array($inputarr)) {
 			$inputarr = array($inputarr);
+		}
+		else {
+			//remove alphanumeric placeholders
+			$inputarr = array_values($inputarr);
 		}
 
 		if (!is_array($sql)) {
@@ -1143,8 +1226,10 @@ class ADODB_mysqli extends ADOConnection {
 					}
 					$bulkTypeArray[] = $typeArray;
 				}
+				$currentBulkBind = $this->bulkBind;
 				$this->bulkBind = false;
 				$ret = $this->_execute($sql, $bulkTypeArray);
+				$this->bulkBind = $currentBulkBind;
 			} else {
 				$typeArray = $this->getBindParamWithType($inputarr);
 				$ret = $this->_execute($sql, $typeArray);
@@ -1186,14 +1271,14 @@ class ADODB_mysqli extends ADOConnection {
 	}
 
 	/**
-	* Return the query id.
-	*
-	* @param string|array $sql
-	* @param array $inputarr
-	*
-	* @return bool|mysqli_result
+	 * Execute a query.
+	 *
+	 * @param string|array $sql        Query to execute.
+	 * @param array        $inputarr   An optional array of parameters.
+	 *
+	 * @return mysqli_result|bool
 	*/
-	function _query($sql, $inputarr)
+	function _query($sql, $inputarr = false)
 	{
 		global $ADODB_COUNTRECS;
 		// Move to the next recordset, or return false if there is none. In a stored proc
@@ -1202,6 +1287,14 @@ class ADODB_mysqli extends ADOConnection {
 		// return value of the stored proc (ie the number of rows affected).
 		// Commented out for reasons of performance. You should retrieve every recordset yourself.
 		//	if (!mysqli_next_result($this->connection->_connectionID))	return false;
+
+		// When SQL is empty, mysqli_query() throws exception on PHP 8 (#945)
+		if (!$sql) {
+			if ($this->debug) {
+				ADOConnection::outp("Empty query");
+			}
+			return false;
+		}
 
 		if (is_array($sql)) {
 
@@ -1307,6 +1400,10 @@ class ADODB_mysqli extends ADOConnection {
 
 				$ret = mysqli_stmt_execute($stmt);
 
+				// Store error code and message
+				$this->_errorCode = $stmt->errno;
+				$this->_errorMsg = $stmt->error;
+
 				/*
 				* Did we throw an error?
 				*/
@@ -1314,17 +1411,12 @@ class ADODB_mysqli extends ADOConnection {
 					return false;
 			}
 
-			/*
-			* Is the statement a non-select
-			*/
-			if ($stmt->affected_rows > -1)
-			{
+			// Tells affected_rows to be compliant
+			$this->isSelectStatement = $stmt->affected_rows == -1;
+			if (!$this->isSelectStatement) {
 				$this->statementAffectedRows = $stmt->affected_rows;
 				return true;
 			}
-
-			// Tells affected_rows to be compliant
-			$this->isSelectStatement = true;
 
 			// Turn the statement into a result set and return it
 			return $stmt->get_result();
@@ -1337,6 +1429,10 @@ class ADODB_mysqli extends ADOConnection {
 			*/
 			$this->usePreparedStatement   = false;
 			$this->useLastInsertStatement = false;
+
+			// Reset error code and message
+			$this->_errorCode = 0;
+			$this->_errorMsg = '';
 		}
 
 		/*
@@ -1378,10 +1474,13 @@ class ADODB_mysqli extends ADOConnection {
 	 */
 	function ErrorMsg()
 	{
-		if (empty($this->_connectionID))
-			$this->_errorMsg = @mysqli_connect_error();
-		else
-			$this->_errorMsg = @mysqli_error($this->_connectionID);
+		if (!$this->_errorMsg) {
+			if (empty($this->_connectionID)) {
+				$this->_errorMsg = mysqli_connect_error();
+			} else {
+				$this->_errorMsg = $this->_connectionID->error ?? $this->_connectionID->connect_error;
+			}
+		}
 		return $this->_errorMsg;
 	}
 
@@ -1392,10 +1491,14 @@ class ADODB_mysqli extends ADOConnection {
 	 */
 	function ErrorNo()
 	{
-		if (empty($this->_connectionID))
-			return @mysqli_connect_errno();
-		else
-			return @mysqli_errno($this->_connectionID);
+		if (!$this->_errorCode) {
+			if (empty($this->_connectionID)) {
+				$this->_errorCode = mysqli_connect_errno();
+			} else {
+				$this->_errorCode = $this->_connectionID->errno ?? $this->_connectionID->connect_errno;
+			}
+		}
+		return $this->_errorCode;
 	}
 
 	/**
@@ -1445,6 +1548,9 @@ class ADODB_mysqli extends ADOConnection {
 		return $this->charSet ?: false;
 	}
 
+	/**
+	 * @deprecated 5.21.0 Use {@see setConnectionParameter()} instead
+	 */
 	function setCharSet($charset)
 	{
 		if (!$this->_connectionID || !method_exists($this->_connectionID,'set_charset')) {

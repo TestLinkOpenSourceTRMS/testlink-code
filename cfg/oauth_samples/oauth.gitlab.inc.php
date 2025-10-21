@@ -15,13 +15,13 @@
 # does not overwrite other or will be overwritten
 #
 # HOW TO use this file ?
-# 1. copy this file to 
-#     [TESTLINK_INSTALL]/cfg/
+# 1. copy this file to
+# [TESTLINK_INSTALL]/cfg/
 #
 # 2. configure according your application
 #
 # 3. add the following line to your custom_config.inc.php
-#    require('aouth.gitlab.inc.php');
+# require('aouth.gitlab.inc.php');
 #
 # ##############################################################
 #
@@ -34,13 +34,11 @@
 #
 $tlCfg->OAuthServers['gitlab'] = array();
 
-$tlCfg->OAuthServers['gitlab']['redirect_uri'] = 
-   'http://fman.hopto.org/login.php?oauth=gitlab';
+$tlCfg->OAuthServers['gitlab']['redirect_uri'] = 'http://fman.hopto.org/login.php?oauth=gitlab';
 
 $tlCfg->OAuthServers['gitlab']['oauth_enabled'] = true;
 $tlCfg->OAuthServers['gitlab']['oauth_name'] = 'gitlab';
 
-$tlCfg->OAuthServers['gitlab']['oauth_client_id'] = 
-'27a03c93d60b5ddb4e0cef92149678fbe37c099733605e046a5428a9da4177ba';
+$tlCfg->OAuthServers['gitlab']['oauth_client_id'] = '27a03c93d60b5ddb4e0cef92149678fbe37c099733605e046a5428a9da4177ba';
 
 $tlCfg->OAuthServers['gitlab']['oauth_client_secret'] = 'c157df291b81dbfd8084d38b155029baded3cf76c7449670bd2da889fe8b99eb';

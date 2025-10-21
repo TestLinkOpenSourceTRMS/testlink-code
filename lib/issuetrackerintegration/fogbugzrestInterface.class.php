@@ -22,6 +22,8 @@ require_once TL_ABS_PATH . '/third_party/fogbugz-php-api/lib/api.php';
 class fogbugzrestInterface extends issueTrackerInterface
 {
 
+    private $name;
+
     private $APIClient;
 
     /**
@@ -103,8 +105,7 @@ class fogbugzrestInterface extends issueTrackerInterface
             // $this->cfg is a simpleXML Object, then seems very conservative and safe
             // to cast properties BEFORE using it.
             $this->APIClient = new FogBugz(trim($this->cfg->username),
-                trim($this->cfg->password),
-                trim($this->cfg->uribase));
+                trim($this->cfg->password), trim($this->cfg->uribase));
             $this->APIClient->logon();
             $this->connected = true;
         } catch (Exception $e) {

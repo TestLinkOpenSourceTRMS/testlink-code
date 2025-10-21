@@ -12,6 +12,8 @@
 class reqCommands
 {
 
+    private array $reqRelationTypeDescr;
+
     private $db;
 
     private $reqSpecMgr;

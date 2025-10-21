@@ -12,6 +12,8 @@ require_once TL_ABS_PATH . '/third_party/trello-php-api/lib/trello-rest-api.php'
 class trellorestInterface extends issueTrackerInterface
 {
 
+    private $name;
+
     private $APIClient;
 
     private $options = [];

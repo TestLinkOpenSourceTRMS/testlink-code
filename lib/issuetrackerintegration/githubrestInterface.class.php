@@ -15,6 +15,10 @@ require_once TL_ABS_PATH . '/third_party/github-php-api/lib/github-rest-api.php'
 class githubrestInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    public $issueAttr;
+
     private $APIClient;
 
     private $issueDefaults;

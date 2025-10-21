@@ -17,6 +17,8 @@ require_once 'lib/api/xmlrpc.class.php';
 class SampleXMLRPCServer extends TestlinkXMLRPCServer
 {
 
+    public $tsuiteMgr;
+
     public function __construct()
     {
         openlog("testlink", LOG_ODELAY, LOG_LOCAL1);

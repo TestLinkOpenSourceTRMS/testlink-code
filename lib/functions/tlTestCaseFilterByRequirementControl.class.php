@@ -110,6 +110,8 @@
 class tlTestCaseFilterByRequirementControl extends tlFilterControl
 {
 
+    public $user;
+
     public $req_mgr;
 
     /**

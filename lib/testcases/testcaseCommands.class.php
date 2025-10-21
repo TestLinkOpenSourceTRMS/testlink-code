@@ -17,6 +17,12 @@
 class testcaseCommands
 {
 
+    /**
+     *
+     * @var map
+     */
+    private $tables;
+
     private $db;
 
     private $tcaseMgr;

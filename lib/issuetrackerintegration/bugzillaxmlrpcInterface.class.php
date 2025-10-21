@@ -17,6 +17,16 @@ Zend_Loader_Autoloader::getInstance();
 class bugzillaxmlrpcInterface extends issueTrackerInterface
 {
 
+    public $guiCfg;
+
+    private $name;
+
+    /**
+     *
+     * @var array{code: string, verbose: string}[]
+     */
+    public $defaultResolvedStatus;
+
     private $APIClient;
 
     private $issueDefaults;

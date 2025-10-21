@@ -27,6 +27,10 @@ require_once TL_ABS_PATH . '/third_party/youtrackclient/src/youtrackclient.php';
 class youtrackrestInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    public $statusDomain;
+
     private $APIClient;
 
     private $issueDefaults;

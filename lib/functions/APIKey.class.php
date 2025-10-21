@@ -18,6 +18,8 @@ require_once 'common.php';
 class APIKey extends tlObjectWithDB
 {
 
+    public $dbID;
+
     private $object_table = "";
 
     public function __construct()

@@ -21,6 +21,8 @@
 class tlUser extends tlDBObject
 {
 
+    public $loginRegExp;
+
     /**
      *
      * @var string the name of the table the object is stored into
@@ -1356,8 +1358,8 @@ class tlUser extends tlDBObject
         if ($status) {
             # look up cookie in the database to see if it is valid
             $sql = "SELECT COUNT(0) AS hits FROM $this->object_table " .
-                "WHERE cookie_string = '" .
-                $db->prepare_string($p_cookie_string) . "'";
+                "WHERE cookie_string = '" . $db->prepare_string(
+                    $p_cookie_string) . "'";
             $rs = $db->fetchFirstRow($sql);
 
             if (! is_array($rs)) {

@@ -19,6 +19,8 @@
 class tree extends tlObject
 {
 
+    public $object_table;
+
     // ORDER IS CRITIC
     // configurable values - pseudoconstants
     // VERBOSE description do not map 100% contents of node_types table

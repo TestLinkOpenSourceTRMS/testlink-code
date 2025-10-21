@@ -15,6 +15,8 @@ require_once dirname(__FILE__) . '/requirements.inc.php';
 class requirement_spec_mgr extends tlObjectWithAttachments
 {
 
+    public $object_table;
+
     const CASE_SENSITIVE = 0;
 
     const CASE_INSENSITIVE = 1;
@@ -2132,9 +2134,9 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         }
 
         $sql = "/* {$debugMsg} */ INSERT INTO {$this->tables['req_specs_revisions']} " .
-            " ({$fields2insert}) " . " VALUES({$rspecID}" . "," . $ret['id'] . "," .
-            intval($item['revision']) . "," . intval($item['status']) . ",'" .
-            $this->db->prepare_string($item['doc_id']) . "','" .
+            " ({$fields2insert}) " . " VALUES({$rspecID}" . "," . $ret['id'] .
+            "," . intval($item['revision']) . "," . intval($item['status']) .
+            ",'" . $this->db->prepare_string($item['doc_id']) . "','" .
             $this->db->prepare_string($item['name']) . "','" .
             $this->db->prepare_string($item['scope']) . "','" .
             $this->db->prepare_string($item['type']) . "','" .

@@ -17,6 +17,8 @@
 class searchCommands
 {
 
+    public $reqSpecMgr;
+
     private $db;
 
     private $tcaseMgr;
@@ -886,8 +888,8 @@ class searchCommands
 
             $from['by_custom_field'] = " JOIN {$tables['cfield_design_values']} CFD " .
                 " ON CFD.node_id=NH_TCV.id ";
-            $filter['by_custom_field'] = " AND CFD.field_id=" . intval(
-                $tc_cf_id);
+            $filter['by_custom_field'] = " AND CFD.field_id=" .
+                intval($tc_cf_id);
 
             switch ($gui->cf_types[$cf_def['type']]) {
                 case 'date':

@@ -40,6 +40,8 @@ require_once 'Slim/Slim.php';
 class tlRestApi
 {
 
+    public $app;
+
     public static $version = "2.1.1";
 
     /**

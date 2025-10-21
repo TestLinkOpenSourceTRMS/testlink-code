@@ -25,6 +25,10 @@
 class tlTestPlanMetrics extends testplan
 {
 
+    public $resultsCfg;
+
+    private mixed $testCaseCfg;
+
     /** @var resource references passed in by constructor */
     public $db;
 
@@ -766,7 +770,8 @@ class tlTestPlanMetrics extends testplan
         $this->helperCompleteStatusDomain($exec, 'platform_id');
 
         // get total test cases by Platform id ON TEST PLAN (With & WITHOUT tester assignment)
-        $sql = "/* {$debugMsg} */ " . " SELECT COUNT(0) AS qty, TPTCV.platform_id " .
+        $sql = "/* {$debugMsg} */ " .
+            " SELECT COUNT(0) AS qty, TPTCV.platform_id " .
             " FROM {$this->tables['testplan_tcversions']} TPTCV " . $addOnJoin .
             " WHERE TPTCV.testplan_id=" . $safe_id . $addOnWhere .
             " GROUP BY platform_id";
@@ -1082,7 +1087,8 @@ class tlTestPlanMetrics extends testplan
 
         $sql = " /* {$debugMsg} */" .
             " SELECT user_id, build_id,status, count(0) AS exec_qty, SUM(execution_duration) AS total_time" .
-            " FROM ({$sqlUnionBU}) AS SQBU " . " GROUP BY user_id,build_id,status ";
+            " FROM ({$sqlUnionBU}) AS SQBU " .
+            " GROUP BY user_id,build_id,status ";
 
         $keyColumns = array(
             'build_id',

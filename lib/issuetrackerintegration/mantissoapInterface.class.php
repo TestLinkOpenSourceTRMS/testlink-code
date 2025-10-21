@@ -12,6 +12,12 @@
 class mantissoapInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    public $guiCfg;
+
+    public $code_status;
+
     // Copied from mantis configuration
     private $status_color = array(
         'new' => '#ffa0a0', # red,

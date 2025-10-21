@@ -12,6 +12,10 @@ require_once TL_ABS_PATH . 'third_party/mantis-rest-api/lib/mantis-rest-api.php'
 class mantisrestInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    private bool $canSetReporter;
+
     private $APIClient;
 
     private $options = [];

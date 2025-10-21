@@ -20,6 +20,10 @@
 class jirasoapInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    private array $guiCfg;
+
     protected $APIClient;
 
     protected $authToken;
@@ -162,8 +166,7 @@ class jirasoapInterface extends issueTrackerInterface
                 $issue->IDHTMLString = "<b>{$issueID} : </b>";
                 $issue->statusCode = $issue->status;
                 $issue->statusVerbose = array_search($issue->statusCode,
-                    $this->statusDomain,
-                    true);
+                    $this->statusDomain, true);
                 $issue->statusHTMLString = $this->support->buildStatusHTMLString(
                     $issue->statusVerbose);
                 $issue->summaryHTMLString = $this->support->buildSummaryHTMLString(

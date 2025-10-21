@@ -86,10 +86,11 @@ class dBug
             "object",
             "xml"
         ); // array of variable types that can be "forced"
-        if (in_array($forceType, $arrAccept))
+        if (in_array($forceType, $arrAccept)) {
             $this->{"varIs" . ucfirst($forceType)}($var);
-        else
+        } else {
             $this->checkType($var);
+        }
     }
 
     private function getVariableName()
@@ -109,8 +110,9 @@ class dBug
             $arrCurrent = $arrBacktrace[$i];
             if (array_key_exists("function", $arrCurrent) &&
                 (in_array($arrCurrent["function"], $arrInclude) ||
-                (0 != strcasecmp($arrCurrent["function"], "dbug"))))
+                (0 != strcasecmp($arrCurrent["function"], "dbug")))) {
                 continue;
+            }
 
             $arrFile = $arrCurrent;
 
@@ -171,8 +173,9 @@ class dBug
             "o",
             "u",
             "x"
-        )))
+        ))) {
             $error .= "n";
+        }
         return $error . " " . $type . " type";
     }
 
@@ -230,20 +233,22 @@ class dBug
                 // check for recursion
                 if (is_array($value)) {
                     $var_ser = serialize($value);
-                    if (in_array($var_ser, $this->arrHistory, true))
+                    if (in_array($var_ser, $this->arrHistory, true)) {
                         $value = "*RECURSION*";
+                    }
                 }
 
-                if (in_array(gettype($value), $this->arrType))
+                if (in_array(gettype($value), $this->arrType)) {
                     $this->checkType($value);
-                else {
+                } else {
                     $value = (trim($value) == "") ? "[empty string]" : $value;
                     echo $value;
                 }
                 echo $this->closeTDRow();
             }
-        } else
+        } else {
             echo "<tr><td>" . $this->error("array") . $this->closeTDRow();
+        }
         array_pop($this->arrHistory);
         echo "</table>";
     }
@@ -271,10 +276,11 @@ class dBug
                             get_class($value) : "*RECURSION*";
                     }
                 }
-                if (in_array(gettype($value), $this->arrType))
+                if (in_array(gettype($value), $this->arrType)) {
                     $this->checkType($value);
-                else
+                } else {
                     echo $value;
+                }
                 echo $this->closeTDRow();
             }
             $arrObjMethods = get_class_methods(get_class($var));
@@ -282,8 +288,9 @@ class dBug
                 $this->makeTDHeader("object", $value);
                 echo "[function]" . $this->closeTDRow();
             }
-        } else
+        } else {
             echo "<tr><td>" . $this->error("object") . $this->closeTDRow();
+        }
         array_pop($this->arrHistory);
         echo "</table>";
     }
@@ -320,10 +327,12 @@ class dBug
     // if variable is a database resource type
     public function varIsDBResource($var, $db = "mysql")
     {
-        if ($db == "pgsql")
+        if ($db == "pgsql") {
             $db = "pg";
-        if ($db == "sybase-db" || $db == "sybase-ct")
+        }
+        if ($db == "sybase-db" || $db == "sybase-ct") {
             $db = "sybase";
+        }
         $arrFields = array(
             "name",
             "type",
@@ -340,10 +349,11 @@ class dBug
                 $db_func = $db . "_field_" . $arrFields[$j];
                 if (function_exists($db_func)) {
                     $fheader = call_user_func($db_func, $var, $i) . " ";
-                    if ($j == 0)
+                    if ($j == 0) {
                         $field_name = $fheader;
-                    else
+                    } else {
                         $field_header .= $fheader;
+                    }
                 }
             }
             $field[$i] = call_user_func($db . "_fetch_field", $var, $i);
@@ -364,8 +374,9 @@ class dBug
             echo "</tr>\n";
         }
         echo "</table>";
-        if ($numrows > 0)
+        if ($numrows > 0) {
             call_user_func($db . "_data_seek", $var, 0);
+        }
     }
 
     // if variable is an image/gd resource type
@@ -454,11 +465,12 @@ class dBug
         $this->xmlSData[$this->xmlCount] .= 'echo "<strong>' .
             $this->xmlName[$this->xmlCount] . '</strong>".$this->closeTDRow();';
         $this->xmlSData[$this->xmlCount] .= '$this->makeTDHeader("xml","xmlAttributes");';
-        if (! empty($attribs))
+        if (! empty($attribs)) {
             $this->xmlSData[$this->xmlCount] .= '$this->varIsArray($this->xmlAttrib[' .
                 $this->xmlCount . ']);';
-        else
+        } else {
             $this->xmlSData[$this->xmlCount] .= 'echo "&nbsp;";';
+        }
         $this->xmlSData[$this->xmlCount] .= 'echo $this->closeTDRow();';
         $this->xmlCount ++;
     }
@@ -486,10 +498,11 @@ class dBug
     public function xmlCharacterData($parser, $data)
     {
         $count = $this->xmlCount - 1;
-        if (! empty($this->xmlCData[$count]))
+        if (! empty($this->xmlCData[$count])) {
             $this->xmlCData[$count] .= $data;
-        else
+        } else {
             $this->xmlCData[$count] = $data;
+        }
     }
 
     // xml: initiated when a comment or other miscellaneous texts is encountered
@@ -501,10 +514,11 @@ class dBug
             "--&gt;"
         ), "", htmlspecialchars($data));
         $count = $this->xmlCount - 1;
-        if (! empty($this->xmlDData[$count]))
+        if (! empty($this->xmlDData[$count])) {
             $this->xmlDData[$count] .= $data;
-        else
+        } else {
             $this->xmlDData[$count] = $data;
+        }
     }
 
     public function initJSandCSS()

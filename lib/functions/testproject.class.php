@@ -24,6 +24,8 @@ require_once 'event_api.php';
 class testproject extends tlObjectWithAttachments
 {
 
+    public $object_table;
+
     const RECURSIVE_MODE = true;
 
     const EXCLUDE_TESTCASES = true;
@@ -886,7 +888,8 @@ class testproject extends tlObjectWithAttachments
             'testplan' => 'me',
             'requirement_spec' => 'me'
         );
-        $gui->canDoExport = (array) $this->tree_manager->get_children($safeID, $exclusion) !== [];
+        $gui->canDoExport = (array) $this->tree_manager->get_children($safeID,
+            $exclusion) !== [];
         if ($modded_item_id) {
             $gui->moddedItem = $this->get_by_id(intval($modded_item_id));
         }
@@ -3333,7 +3336,7 @@ class testproject extends tlObjectWithAttachments
             $highlander = $this->db->fetchRowsIntoMap($ssx, 'tc_id');
             if ($filterOnTC) {
                 $ky = is_null($highlander) ? $tclist : array_diff_key($tclist,
-                        $highlander);
+                    $highlander);
                 foreach ($ky as $tcase) {
                     unset($rs[$tcase]);
                 }
@@ -3409,8 +3412,8 @@ class testproject extends tlObjectWithAttachments
                 $this->db->exec_query($sql);
                 $a4ins = array_chunk($tcaseSet, 2000); // MAGIC
                 foreach ($a4ins as $chu) {
-                    $sql = "INSERT INTO {$tt} (id) VALUES (" . implode('),(', $chu) .
-                        ")";
+                    $sql = "INSERT INTO {$tt} (id) VALUES (" .
+                        implode('),(', $chu) . ")";
                     $this->db->exec_query($sql);
                 }
             }
@@ -3477,7 +3480,7 @@ class testproject extends tlObjectWithAttachments
         }
 
         $hits = is_null($sql) ? null : $this->db->fetchRowsIntoMap($sql,
-                'testcase_id');
+            'testcase_id');
 
         // clean up
         if ($delTT) {
@@ -4144,8 +4147,8 @@ class testproject extends tlObjectWithAttachments
                 $this->db->exec_query($sql);
                 $a4ins = array_chunk($tcaseSet, 2000); // MAGIC
                 foreach ($a4ins as $chu) {
-                    $sql = "INSERT INTO {$tt} (id) VALUES (" . implode('),(', $chu) .
-                        ")";
+                    $sql = "INSERT INTO {$tt} (id) VALUES (" .
+                        implode('),(', $chu) . ")";
                     $this->db->exec_query($sql);
                 }
             }
@@ -4213,7 +4216,7 @@ class testproject extends tlObjectWithAttachments
         }
 
         $hits = is_null($sql) ? null : $this->db->fetchRowsIntoMap($sql,
-                'testcase_id');
+            'testcase_id');
 
         // clean up
         if ($delTT) {

@@ -12,6 +12,10 @@
 class jiradbInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    public $statusDomain;
+
     public $defaultResolvedStatus;
 
     private $dbSchema;

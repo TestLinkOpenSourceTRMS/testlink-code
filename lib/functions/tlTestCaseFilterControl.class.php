@@ -162,6 +162,8 @@
 class tlTestCaseFilterControl extends tlFilterControl
 {
 
+    public $user;
+
     /**
      * Testcase manager object.
      * Initialized not in constructor, only on first use to save resources.

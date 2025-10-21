@@ -12,6 +12,10 @@
 class fogbugzdbInterface extends issueTrackerInterface
 {
 
+    private array $guiCfg;
+
+    public $status_color;
+
     /**
      * Construct and connect to BTS.
      *

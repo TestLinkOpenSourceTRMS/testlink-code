@@ -29,6 +29,8 @@ require_once dirname(__FILE__) . '/attachments.inc.php';
 class testplan extends tlObjectWithAttachments
 {
 
+    public $platform_mgr;
+
     /**
      * query options
      */
@@ -1706,9 +1708,8 @@ class testplan extends tlObjectWithAttachments
                 }
 
                 $sql = "INSERT INTO {$this->tables['milestones']} (name,a,b,c,target_date,{$add2fields} testplan_id)";
-                $sql .= " VALUES ('" .
-                    $this->db->prepare_string($mstone['name']) . "'," .
-                    $mstone['high_percentage'] . "," .
+                $sql .= " VALUES ('" . $this->db->prepare_string(
+                    $mstone['name']) . "'," . $mstone['high_percentage'] . "," .
                     $mstone['medium_percentage'] . "," .
                     $mstone['low_percentage'] . ",'" . $mstone['target_date'] .
                     "', {$add2values}{$new_tplan_id})";
@@ -2676,8 +2677,7 @@ class testplan extends tlObjectWithAttachments
         if (is_null($cf_info)) {
             return $this->getEstimatedExecutionTime($id, $itemSet, $platformID);
         }
-        return $this->getEstimatedExecutionTimeFromCF($id, $itemSet,
-            $platformID);
+        return $this->getEstimatedExecutionTimeFromCF($id, $itemSet, $platformID);
     }
 
     /**
@@ -5201,7 +5201,8 @@ class testplan extends tlObjectWithAttachments
         }
 
         if ($get['otherStatus'] = (! empty($statusSetLocal))) {
-            tLog(__METHOD__ . ":: \$tplan_mgr->{$getHitsStatusSetMethod}", 'DEBUG');
+            tLog(__METHOD__ . ":: \$tplan_mgr->{$getHitsStatusSetMethod}",
+                'DEBUG');
             $hits['otherStatus'] = (array) $this->$getHitsStatusSetMethod($id,
                 $statusSetLocal, $buildSet);
         }
@@ -6957,8 +6958,8 @@ class testplan extends tlObjectWithAttachments
         // get target platform (if exists)
         if ($context['platform_id'] > 0) {
             $info = $this->platform_mgr->getByID($context['platform_id']);
-            $xmlString .= "\t<platform name=\"" .
-                htmlspecialchars($info['name']) . "\" />\n";
+            $xmlString .= "\t<platform name=\"" . htmlspecialchars(
+                $info['name']) . "\" />\n";
             $my['filters']['platform_id'] = $context['platform_id'];
         }
 

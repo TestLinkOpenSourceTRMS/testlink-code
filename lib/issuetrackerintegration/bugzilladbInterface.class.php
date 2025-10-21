@@ -14,6 +14,14 @@ class bugzilladbInterface extends issueTrackerInterface
 {
 
     /**
+     *
+     * @var array{code: string, verbose: string}[]
+     */
+    public $defaultResolvedStatus;
+
+    private array $guiCfg;
+
+    /**
      * Construct and connect to BTS.
      *
      * @param string $type

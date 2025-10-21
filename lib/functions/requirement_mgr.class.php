@@ -20,6 +20,8 @@ require_once dirname(__FILE__) . '/attachments.inc.php';
 class requirement_mgr extends tlObjectWithAttachments
 {
 
+    public $object_table;
+
     protected $db;
 
     public $cfield_mgr;
@@ -1015,9 +1017,9 @@ class requirement_mgr extends tlObjectWithAttachments
             // Warning:
             // We are not maintaining hierarchy !!!
             $sql = " SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
-                " WHERE name='" . $this->db->prepare_string(
-                    $auto_testsuite_name) . "' " . " AND parent_id=" .
-                $tproject_id . " " . " AND node_type_id=" .
+                " WHERE name='" .
+                $this->db->prepare_string($auto_testsuite_name) . "' " .
+                " AND parent_id=" . $tproject_id . " " . " AND node_type_id=" .
                 $node_descr_type['testsuite'];
 
             $result = $this->db->exec_query($sql);
@@ -2633,7 +2635,8 @@ class requirement_mgr extends tlObjectWithAttachments
 
         $sql = "/* {$debugMsg} */ SELECT id, source_id, destination_id, relation_type, author_id, creation_ts " .
             " FROM {$this->tables['req_relations']} " .
-            " WHERE source_id={$id} OR destination_id={$id} " . " ORDER BY id ASC ";
+            " WHERE source_id={$id} OR destination_id={$id} " .
+            " ORDER BY id ASC ";
 
         $relations['relations'] = $this->db->get_recordset($sql);
         if (! empty($relations['relations'])) {
@@ -3112,7 +3115,8 @@ class requirement_mgr extends tlObjectWithAttachments
 
         $rs = $this->db->get_recordset($sql);
 
-        $sql = "/* {$debugMsg} */" . " SELECT REQV.id AS version_id, REQV.version," .
+        $sql = "/* {$debugMsg} */" .
+            " SELECT REQV.id AS version_id, REQV.version," .
             "     REQV.creation_ts, REQV.author_id, " .
             "     REQV.modification_ts, REQV.modifier_id, " . self::NO_REVISION .
             " AS revision_id, " . "      REQV.revision, REQV.scope, " .

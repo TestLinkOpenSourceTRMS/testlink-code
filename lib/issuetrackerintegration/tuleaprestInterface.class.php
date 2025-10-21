@@ -14,6 +14,14 @@ require_once TL_ABS_PATH . '/third_party/tuleap-php-api/lib/tuleap-rest-api.php'
 class tuleaprestInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    /**
+     *
+     * @var string[]
+     */
+    public $defaultResolvedStatus;
+
     private $APIClient;
 
     private $trackerID;
@@ -264,8 +272,7 @@ class tuleaprestInterface extends issueTrackerInterface
         try {
 
             $this->APIClient = new tuleap(trim($this->cfg->uriapi),
-                trim($this->cfg->username),
-                trim($this->cfg->password));
+                trim($this->cfg->username), trim($this->cfg->password));
 
             try {
                 $this->connected = $this->APIClient->Connect();

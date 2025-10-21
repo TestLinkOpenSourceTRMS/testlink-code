@@ -20,6 +20,12 @@ require_once 'table.class.php';
 class tlHTMLTable extends tlTable
 {
 
+    private mixed $code_status;
+
+    private mixed $status_color;
+
+    public $prio_code_label;
+
     public function __construct($columns, $data, $tableID = 'tlHTMLTable')
     {
         // Save those for faster access in renderStatus() and renderPriority()

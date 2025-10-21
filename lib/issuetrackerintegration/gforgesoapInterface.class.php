@@ -19,6 +19,8 @@
 class gforgesoapInterface extends issueTrackerInterface
 {
 
+    private $name;
+
     protected $APIClient;
 
     protected $authToken;
@@ -179,8 +181,7 @@ class gforgesoapInterface extends issueTrackerInterface
             $issue->IDHTMLString = "<b>{$issueID} : </b>";
             $issue->statusCode = $issue->status_id;
             $issue->statusVerbose = array_search($issue->statusCode,
-                $this->statusDomain,
-                true);
+                $this->statusDomain, true);
             $issue->statusHTMLString = $this->buildStatusHTMLString(
                 $issue->statusCode);
             $issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);

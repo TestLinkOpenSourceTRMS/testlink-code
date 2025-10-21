@@ -38,6 +38,10 @@ if (! ($cf_files === [] || $cf_files === false)) {
 class cfield_mgr extends tlObject
 {
 
+    public $object_table;
+
+    public $debugMsg;
+
     const DEFAULT_INPUT_SIZE = 50;
 
     const TEXTAREA_MAX_SIZE = 255;

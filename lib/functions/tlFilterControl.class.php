@@ -36,6 +36,14 @@
 abstract class tlFilterControl extends tlObjectWithDB
 {
 
+    private string $filter_mode_button_name;
+
+    /**
+     *
+     * @var mixed
+     */
+    public $user;
+
     /**
      * Label (and name) for the button to enable simple filter mode.
      *

@@ -16,6 +16,10 @@
 class bareBonesRestAPI
 {
 
+    public $api;
+
+    public $url;
+
     /**
      *
      * @var string Some systems i.e. trello need both

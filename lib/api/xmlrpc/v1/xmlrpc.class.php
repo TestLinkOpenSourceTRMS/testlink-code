@@ -50,6 +50,8 @@ require_once 'APIErrors.php';
 class TestlinkXMLRPCServer extends IXR_Server
 {
 
+    public $methods;
+
     public static $version = "1.1";
 
     const OFF = false;
@@ -575,8 +577,8 @@ class TestlinkXMLRPCServer extends IXR_Server
         $tprojectid = intval(
             isset($context[self::$testProjectIDParamName]) ? $context[self::$testProjectIDParamName] : 0);
 
-        if ($tprojectid == 0 &&
-            isset($this->args[self::$testProjectIDParamName])) {
+        if ($tprojectid == 0 && isset(
+            $this->args[self::$testProjectIDParamName])) {
             $tprojectid = $this->args[self::$testProjectIDParamName];
         }
 
@@ -604,8 +606,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             // Try using TestSuiteID to get TestProjectID
             $tsuiteid = intval(
                 isset($context[self::$testSuiteIDParamName]) ? $context[self::$testSuiteIDParamName] : 0);
-            if ($tsuiteid == 0 &&
-                isset($this->args[self::$testSuiteIDParamName])) {
+            if ($tsuiteid == 0 && isset(
+                $this->args[self::$testSuiteIDParamName])) {
                 $tsuiteid = intval($this->args[self::$testSuiteIDParamName]);
             }
             if ($tsuiteid > 0) {
@@ -4661,8 +4663,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             return $this->errors;
         }
 
-        if ($status_ok &&
-            ! $this->_isParamPresent(self::$versionNumberParamName)) {
+        if ($status_ok && ! $this->_isParamPresent(
+            self::$versionNumberParamName)) {
             try {
                 $tc = $this->getTestCase($args, self::THROW_ON_ERROR);
                 $this->args[self::$versionNumberParamName] = $tc[0][self::$versionNumberParamName];
@@ -7225,8 +7227,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             'checkTestCaseVersionNumber'
         );
         $status_ok = $this->_runChecks($checkFunctions, $msg_prefix);
-        if ($status_ok && ! $this->_isParamPresent(
-            self::$executionTypeParamName)) {
+        if ($status_ok &&
+            ! $this->_isParamPresent(self::$executionTypeParamName)) {
             $status_ok = false;
             $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,
                 self::$customFieldsParamName);
@@ -8171,8 +8173,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                     " WHERE parent_id = {$this->args[self::$testCaseIDParamName]})";
 
                 if (! is_null($execContext['build_id'])) {
-                    $sql .= " AND build_id = " .
-                        intval($execContext['build_id']);
+                    $sql .= " AND build_id = " . intval(
+                        $execContext['build_id']);
                 }
 
                 if (! is_null($execContext['platform_id'])) {

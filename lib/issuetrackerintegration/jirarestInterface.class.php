@@ -16,6 +16,16 @@ require_once TL_ABS_PATH . '/third_party/fayp-jira-rest/Jira.php';
 class jirarestInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    private array $guiCfg;
+
+    /**
+     *
+     * @var mixed[]
+     */
+    public $statusDomain;
+
     const NOPROJECTKEY = 'e18b741e13b2b1b09f2ac85615e37bae';
 
     private $APIClient;

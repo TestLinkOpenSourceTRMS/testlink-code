@@ -32,6 +32,16 @@ require_once TL_ABS_PATH . 'third_party/phpxmlrpc/lib/xmlrpc.inc';
 class tracxmlrpcInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    /**
+     *
+     * @var array{code: string, verbose: string}[]
+     */
+    public $defaultResolvedStatus;
+
+    public $guiCfg;
+
     private $APIClient;
 
     // this info has been get from ticket.get documentation

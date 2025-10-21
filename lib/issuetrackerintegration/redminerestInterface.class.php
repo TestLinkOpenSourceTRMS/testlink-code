@@ -13,6 +13,12 @@ require_once TL_ABS_PATH .
 class redminerestInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    private bool $canSetReporter;
+
+    public $issueAttr;
+
     private $APIClient;
 
     private $issueDefaults;

@@ -14,6 +14,10 @@ require_once TL_ABS_PATH . '/third_party/gitlab-php-api/lib/gitlab-rest-api.php'
 class gitlabrestInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    public $issueAttr;
+
     private $APIClient;
 
     private $issueDefaults;
@@ -221,7 +225,8 @@ class gitlabrestInterface extends issueTrackerInterface
                     'id' => (int) $jsonObj->project_id
                 );
 
-                $issue->isResolved = property_exists($this, 'state') && $this->state !== null;
+                $issue->isResolved = property_exists($this, 'state') &&
+                    $this->state !== null;
             }
         } catch (Exception $e) {
             tLog(__METHOD__ . '/' . $e->getMessage(), 'ERROR');

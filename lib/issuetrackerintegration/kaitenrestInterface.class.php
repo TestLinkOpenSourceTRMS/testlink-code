@@ -12,6 +12,10 @@ require_once TL_ABS_PATH . '/third_party/kaiten-php-api/lib/kaiten-rest-api.php'
 class kaitenrestInterface extends issueTrackerInterface
 {
 
+    private $name;
+
+    private bool $canSetReporter;
+
     private $APIClient;
 
     private $options = [];

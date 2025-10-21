@@ -8,7 +8,7 @@ Purpose: draw execution controls
 
 Author : franciscom
 *}	
-{* Russian Doll, make name shorter *}
+{* Russian Doll, make name shorter *} 
 {$tcvID = $args_tcversion_id}  
       {$ResultsStatusCode=$tlCfg->results.status_code}
       {if $args_save_type == 'bulk'}
@@ -69,7 +69,7 @@ Author : franciscom
 
                   {if $tlCfg->exec_cfg->exec_mode->new_exec == 'latest'}
                     {$addBR=1}
-                   <img src="{$tlImages.copy_attachments}" 
+                   <img src="{$tlImages.copyAttachments}" 
                          title="{$args_labels.copy_attachments_from_latest_exec}">
                     <input type="checkbox" name="copyAttFromLEXEC"  id="copyAttFromLEXEC">
                     &nbsp;

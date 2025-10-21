@@ -1,14 +1,14 @@
 <?php
-/** 
+/**
  *  TestLink Open Source Project - http://testlink.sourceforge.net/
- * 
+ *
  *  @filesource getreqmonitors.php
  *  @author   Francisco Mancardi
- * 
+ *
  *  @internal revisions
  */
-require_once('../../../config.inc.php');
-require_once('common.php');
+require_once '../../../config.inc.php';
+require_once 'common.php';
 testlinkInitPage($db);
 
 $item_id = isset($_REQUEST['item_id']) ? intval($_REQUEST['item_id']): null;

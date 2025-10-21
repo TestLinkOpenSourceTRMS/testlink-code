@@ -1,5 +1,5 @@
 <?php
- /**
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
@@ -9,99 +9,95 @@
  * @modified $Date: 2010/04/15 10:11:48 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
- * rev: 
+ * rev:
  */
- 
 require_once 'util.php';
 require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
-$method='getTestPlanPlatforms';
-$test_num=1;
-$unitTestDescription="Test {$test_num} - {$method}";
+$method = 'getTestPlanPlatforms';
+$test_num = 1;
+$unitTestDescription = "Test {$test_num} - {$method}";
 
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["testplanid"]=-123;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["testplanid"] = - 123;
 
-$additionalInfo='<br>Test PLan ID is < 0 =>  INEXISTENT<br>';
-$debug=true;
+$additionalInfo = '<br>Test PLan ID is < 0 =>  INEXISTENT<br>';
+$debug = true;
 echo $unitTestDescription;
 echo $additionalInfo;
 
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
+$client->debug = $debug;
 
-runTest($client,$method,$args);
+runTest($client, $method, $args);
 // ---------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------
-$test_num++;
-$unitTestDescription="Test {$test_num} - {$method}";
+$test_num ++;
+$unitTestDescription = "Test {$test_num} - {$method}";
 
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["testplanid"]=380;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["testplanid"] = 380;
 
-$additionalInfo='<br>Test Plan HAS NO PLATFORMS<br>';
-$debug=true;
-echo $unitTestDescription;
-echo $additionalInfo;
-echo 'arguments:<br>';
-foreach($args as $key => $value)
-{
-	echo $key . '=' . $value . '<br>';
-}
-
-$client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args);
-// ---------------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------------
-$test_num++;
-$unitTestDescription="Test {$test_num} - {$method}";
-
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["testplanid"]=1651;
-
-$additionalInfo='<br>Test Plan Has platforms<br>';
-$debug=true;
+$additionalInfo = '<br>Test Plan HAS NO PLATFORMS<br>';
+$debug = true;
 echo $unitTestDescription;
 echo $additionalInfo;
 echo 'arguments:<br>';
-foreach($args as $key => $value)
-{
-	echo $key . '=' . $value . '<br>';
+foreach ($args as $key => $value) {
+    echo $key . '=' . $value . '<br>';
 }
 
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args);
+$client->debug = $debug;
+runTest($client, $method, $args);
 // ---------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------
-$test_num++;
-$unitTestDescription="Test {$test_num} - {$method}";
+$test_num ++;
+$unitTestDescription = "Test {$test_num} - {$method}";
 
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["tesid"]=1651;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["testplanid"] = 1651;
 
-$additionalInfo='<br>BAD parameter<br>';
-$debug=true;
+$additionalInfo = '<br>Test Plan Has platforms<br>';
+$debug = true;
 echo $unitTestDescription;
 echo $additionalInfo;
 echo 'arguments:<br>';
-foreach($args as $key => $value)
-{
-	echo $key . '=' . $value . '<br>';
+foreach ($args as $key => $value) {
+    echo $key . '=' . $value . '<br>';
 }
 
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args);
+$client->debug = $debug;
+runTest($client, $method, $args);
+// ---------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------
+$test_num ++;
+$unitTestDescription = "Test {$test_num} - {$method}";
+
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["tesid"] = 1651;
+
+$additionalInfo = '<br>BAD parameter<br>';
+$debug = true;
+echo $unitTestDescription;
+echo $additionalInfo;
+echo 'arguments:<br>';
+foreach ($args as $key => $value) {
+    echo $key . '=' . $value . '<br>';
+}
+
+$client = new IXR_Client($server_url);
+$client->debug = $debug;
+runTest($client, $method, $args);
 // ---------------------------------------------------------------------------------
 
 ?>

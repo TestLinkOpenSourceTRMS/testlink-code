@@ -69,6 +69,7 @@ $TLS_asc = "Ascending";
 $TLS_any = "Any";
 
 $TLS_all = "All";
+$TLS_any_bracketed 	= "[Any]";	
 $TLS_alt_delete = "delete";
 $TLS_assigned_by = "Assigned by";
 $TLS_attribute = "Attribute";
@@ -95,6 +96,7 @@ $TLS_edited_by = "Edited by";
 $TLS_days = "days";
 $TLS_desc = "Descending";
 $TLS_description = "Description";
+$TLS_delete_confirm_question = "Are you sure you want to delete";
 $TLS_doc_id = "Document ID";
 $TLS_doc_id_short = "Doc ID";
 $TLS_destination_top = "Destination position top";
@@ -125,6 +127,7 @@ $TLS_importance = "Importance";
 $TLS_imported = "Imported";
 $TLS_important_notice = "Important Notice";
 $TLS_its_duedate_with_separator = "Due date: ";
+$TLS_hint_mail_for_tester 	= "Additional text to be sent in the notification email";			
 $TLS_hint_like_search_on_name = 'Search wil be done on NAME in LIKE %value%';
 
 $TLS_keyword = "Keyword";
@@ -181,6 +184,7 @@ $TLS_req_specification = "Req. Specification";
 $TLS_revision = "revision";
 $TLS_revision_short = "rev";
 $TLS_revision_tag = "[r%s]";
+$TLS_version_tag = "[v%s]";
 $TLS_version_revision_tag = "[v%sr%s]";
 
 $TLS_srs = "SRS";
@@ -878,7 +882,6 @@ $TLS_btn_hide_cf = "Hide Custom Fields";
 $TLS_btn_show_cf = "Show Custom Fields";
 $TLS_btn_export_testplan_tree = 'Export Test Plan';
 $TLS_btn_export_testplan_tree_for_results = 'Export for results import';
-
 $TLS_expand_tree = "Expand tree";
 $TLS_collapse_tree = "Collapse tree";
 $TLS_filter_active_inactive = "Active/Inactive";
@@ -1186,7 +1189,9 @@ $TLS_del_script_warning_msg = "Really delete this script link from TestLink Data
 
 
 // gui/templates/reqSpecList.tpl
+$TLS_btn_assign_tc = "Assign test case";
 $TLS_no_docs = "No available documents.";
+$TLS_req_list_docs = "List of documents";
 
 
 
@@ -1724,7 +1729,6 @@ $TLS_btn_new_version_from_latest = "Create New Version From Latest";
 $TLS_btn_new_sibling = "New sibling";
 $TLS_hint_new_sibling = "Create another test case under current Test Suite";
 $TLS_hint_new_version = "Create a new version";
-
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
 $TLS_can_not_edit_frozen_tc = "You can not edit this version because it has been frozen";
 $TLS_can_not_delete_relation_frozen_tc = "You can not delete this relation : testcase has been frozen";
@@ -3851,7 +3855,7 @@ $TLS_demo_usage = "This is a DEMO SITE, use it with RESPECT. <br>" .
                   "<b>If you find TestLink useful think about supporting our work<br>";
 
 
-// reqSpecMoveOrCopy.tpl
+// ----- reqSpecMoveOrCopy.tpl
 
 
 $TLS_remove_kw_msgbox_title = "Remove keyword";
@@ -3895,7 +3899,7 @@ $TLS_assignments = "Assignments:";
 $TLS_btn_bulk_mon = 'Bulk Monitoring';
 $TLS_bulk_monitoring = $TLS_btn_bulk_mon;
 $TLS_monitoring = 'Monitoring';
-$TLS_btn_toogle_mon = 'Toogle Monitoring';
+$TLS_btn_toogle_mon = 'Toggle Monitoring';
 $TLS_btn_start_mon = 'Start Monitoring';
 $TLS_btn_stop_mon = 'Stop Monitoring';
 
@@ -3926,7 +3930,7 @@ $TLS_search_words_on_attr = "Word/Words will be searched among one or more attri
 
 $TLS_search_other_attr = "You can set search criteria that does not use words. But This search criteria will be added on AND mode";
 
-$TLS_search_created_by_ph = 'value will be searched on login/firts name/last name';
+$TLS_search_created_by_ph = 'value will be searched on login/first name/last name';
 $TLS_multiple_entities_search = 'Search on multiple entities';
 $TLS_no_access_to_feature = 'You do not have enough rights to access the feature';
 

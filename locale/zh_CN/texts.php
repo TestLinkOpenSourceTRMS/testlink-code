@@ -25,15 +25,13 @@
  * Revisions history is not stored for the file
  *
  * ------------------------------------------------------------------------------------ */
-$TLS_htmltext_title['error']	= "Application error";
-$TLS_htmltext['error'] 		= "<p>Unexpected error happens. Please check event viewer or " .
-		"logs for details.</p><p>You are welcome to report the problem. Please visit our " .
-		"<a href='http://www.teamst.org'>website</a>.</p>";
+$TLS_htmltext_title['error'] = "Application error";
+$TLS_htmltext['error'] = "<p>Unexpected error happens. Please check event viewer or " .
+    "logs for details.</p><p>You are welcome to report the problem. Please visit our " .
+    "<a href='http://www.teamst.org'>website</a>.</p>";
 
-
-
-$TLS_htmltext_title['assignReqs']	= "分配需求给测试用例"; //已校对
-$TLS_htmltext['assignReqs'] 		= "<h2>目的:</h2>
+$TLS_htmltext_title['assignReqs'] = "分配需求给测试用例"; // 已校对
+$TLS_htmltext['assignReqs'] = "<h2>目的:</h2>
 <p>用户可以设置测试套件和需求规约之间的关系. 设计者可以把此处的测试套件和需求规约一一关联
 .例如:一个测试用例可以被关联到零个、一个、多个测试套件,反之亦然.
 这些可追踪的模型帮助我们去研究测试用例对需求的覆盖情况,并且找出测试用例是否通过的情况.这些分析用来验证测试的覆盖程度是否达到预期的结果。</p>
@@ -49,40 +47,36 @@ $TLS_htmltext['assignReqs'] 		= "<h2>目的:</h2>
         测试用例会在工作区中间的'已指派的需求'中显示.</li>
 </ol>";
 
-
 // --------------------------------------------------------------------------------------
-$TLS_htmltext_title['editTc']	= "测试规范"; //已校对
-$TLS_htmltext['editTc'] 		= "<h2>目的:</h2>
+$TLS_htmltext_title['editTc'] = "测试规范"; // 已校对
+$TLS_htmltext['editTc'] = "<h2>目的:</h2>
 <h2>目的:</h2>
-<p> <i>测试规范</i> 允许用户查看和编辑所有现有的" .
-		"<i>测试套件</i> 和 <i>测试用例</i>. 测试用例默认使用当前版本.".
-		"所有以前的历史版本都是可用的,并且可以在这里进行查看和管理.</p>
+<p> <i>测试规范</i> 允许用户查看和编辑所有现有的" . "<i>测试套件</i> 和 <i>测试用例</i>. 测试用例默认使用当前版本." .
+    "所有以前的历史版本都是可用的,并且可以在这里进行查看和管理.</p>
 
 <h2>开始:</h2>
 <ol>
-	<li>从右上角的下拉菜单中选择你的测试项目. <i>注意: " .
-	"你永远可以从右上角的下拉菜单选择改变当前的测试项目." .
-	".</i></li>
+	<li>从右上角的下拉菜单中选择你的测试项目. <i>注意: " . "你永远可以从右上角的下拉菜单选择改变当前的测试项目." .
+    ".</i></li>
     <li>点击\"测试规范\",然后从中选择一个测试套件</li>
 	<li>点击 <b>新建测试套件</b>将创建一个新的测试套件的子集. " .
-	"测试套件子集可以为你的测试文档归类,归类可以是按照你的需要来进行(功能/非功能,  产品部件, 产品功能, 需求更改, 等等)." .
-	"测试套件子集的描述中中包含了相关的测试用例的作用域,默认的系统配置信息等,他们还可能包含和其他一些文档资料链接, 测试局限性, 或者其他信息.通常这些注释是测试套件子集所共同具有的. 他们构成了一个测试套件的文件夹的概念,测试套件子集是可以扩充的文件夹. 用户可以在同一个测试计划里移动或者复制它们.同时, 他们可以作为一个整体(包括其中的测试用例)输出或者输入到其他格式." .".</li>
-	<li>在导航树中选择一个刚创建的新的测试套件" .
-	"然后点击<b>创建测试用例</b>. 就可以在这个测试套件子集里创建一个新的测试用例." .
-	"一个测试用例定义了一个特有的测试过程,它包括测试的环境, 步骤, 期望的结果, 测试项目中的自定义字段(参见用户手册), 还可以给测试用例指派一个" .
-	"<b>关键字</b> 以方便跟踪查询.</li>
+    "测试套件子集可以为你的测试文档归类,归类可以是按照你的需要来进行(功能/非功能,  产品部件, 产品功能, 需求更改, 等等)." .
+    "测试套件子集的描述中中包含了相关的测试用例的作用域,默认的系统配置信息等,他们还可能包含和其他一些文档资料链接, 测试局限性, 或者其他信息.通常这些注释是测试套件子集所共同具有的. 他们构成了一个测试套件的文件夹的概念,测试套件子集是可以扩充的文件夹. 用户可以在同一个测试计划里移动或者复制它们.同时, 他们可以作为一个整体(包括其中的测试用例)输出或者输入到其他格式." .
+    ".</li>
+	<li>在导航树中选择一个刚创建的新的测试套件" . "然后点击<b>创建测试用例</b>. 就可以在这个测试套件子集里创建一个新的测试用例." .
+    "一个测试用例定义了一个特有的测试过程,它包括测试的环境, 步骤, 期望的结果, 测试项目中的自定义字段(参见用户手册), 还可以给测试用例指派一个" .
+    "<b>关键字</b> 以方便跟踪查询.</li>
 	<li>从左边的导航树里选择和编辑数据来实现导航功能. 测试用例可以保存自己的所有历史.</li>
 	<li>测试用例编写完毕后, 你可以把它的测试规范关联到 <span class=\"help\" onclick=
 	\"javascript:open_help_window('glossary','$locale');\">测试计划</span> .</li>
 </ol>
 
-    <p>TestLink可以帮你整理测试套件,可以把测试套件分类成为不同的测试套件子集. 测试套件子集还可以包含更下级的测试案例子集. 
-       因此你可以把这些所有的信息打印成册." ."</p>";
-
+    <p>TestLink可以帮你整理测试套件,可以把测试套件分类成为不同的测试套件子集. 测试套件子集还可以包含更下级的测试案例子集.
+       因此你可以把这些所有的信息打印成册." . "</p>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchTc']	= "测试用例搜索页"; //已校对
-$TLS_htmltext['searchTc'] 		= "<h2>目的:</h2>
+$TLS_htmltext_title['searchTc'] = "测试用例搜索页"; // 已校对
+$TLS_htmltext['searchTc'] = "<h2>目的:</h2>
 
 <p>按照关键字和搜索字符串来进行搜索. 英文搜索是不区分大小写. 结果只包括当前测试项目中已有的测试用例.</p>
 
@@ -95,24 +89,11 @@ $TLS_htmltext['searchTc'] 		= "<h2>目的:</h2>
 	<li>所有符合搜索条件的测试用例就会显示出来. 你可以点击'标题'链接开始对测试用例进行其它操作.</li>
 </ol>";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* contribution by asimon for 2976 */
 // requirements search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchReq']	= "Requirement Search Page";
-$TLS_htmltext['searchReq'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext_title['searchReq'] = "Requirement Search Page";
+$TLS_htmltext['searchReq'] = "<h2>Purpose:</h2>
 
 <p>Navigation according to keywords and/or searched strings. The search is not
 case sensitive. Result includes just requirements from actual Test Project.</p>
@@ -134,8 +115,8 @@ case sensitive. Result includes just requirements from actual Test Project.</p>
 
 // requirement specification search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchReqSpec']	= "Requirement Specification Search Page";
-$TLS_htmltext['searchReqSpec'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext_title['searchReqSpec'] = "Requirement Specification Search Page";
+$TLS_htmltext['searchReqSpec'] = "<h2>Purpose:</h2>
 
 <p>Navigation according to keywords and/or searched strings. The search is not
 case sensitive. Result includes just requirement specifications from actual Test Project.</p>
@@ -156,10 +137,9 @@ case sensitive. Result includes just requirement specifications from actual Test
 - Empty fields are not considered.</p>";
 /* end contribution */
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printTestSpec']	= "打印需求规约"; //printTC.html //已校对
-$TLS_htmltext['printTestSpec'] 			= "<h2>目的:</h2>
+$TLS_htmltext_title['printTestSpec'] = "打印需求规约"; // printTC.html //已校对
+$TLS_htmltext['printTestSpec'] = "<h2>目的:</h2>
 <p>在这里你可以打印单个测试用例，测试套件中的所有测试用例或者测试项目或测试计划中的所有测试用例.</p>
 <h2>开始:</h2>
 <ol>
@@ -173,19 +153,18 @@ $TLS_htmltext['printTestSpec'] 			= "<h2>目的:</h2>
  <i>注意:保证只打印右边的框架.</i></p></li>
 </ol>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['reqSpecMgmt']	= "需求规约设计"; //printTC.html //已校对
-$TLS_htmltext['reqSpecMgmt'] 			= "<p>你可以管理需求规约文档.</p>
+$TLS_htmltext_title['reqSpecMgmt'] = "需求规约设计"; // printTC.html //已校对
+$TLS_htmltext['reqSpecMgmt'] = "<p>你可以管理需求规约文档.</p>
 
 <h2>需求规约</h2>
 
 <p>需求是由<b>需求规约文档</b>来约定的,然后关联到测试项目.
-<br /> TestLink(当前版本)暂时还不支持需求规约版本中包含了需求本身的情况. 
+<br /> TestLink(当前版本)暂时还不支持需求规约版本中包含了需求本身的情况.
 所以，文档的版本必须在需求规约之后创建<b>标题</b>.
 用户可以添加简单描述到 <b>范围</b> 区域.</p>
 
-<p><b><a name='total_count'>需求覆盖数目</a></b> 
+<p><b><a name='total_count'>需求覆盖数目</a></b>
 是为了统计需求覆盖率而使用的,如果不把所有的需求提交到TestLink管理，<b>0</b>那么当前结果分析中需求的数量以TestLink管理起来的需求为依据.</p>
 <p><i>例如: SRS项目中包括200个需求,但是只有50个需求被TestLink管理起来.那么测试覆盖率就是25%(如果所有的测试需求被测试的情况下).</i></p>
 
@@ -196,35 +175,19 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>你可以管理需求规约文档.</p>
 <p>用户可以在需求界面中使用已创建的需求自动创建测试用例.这些测试用例被创建到名字定义在配置文件<i>(default is: \$tlCfg->req_cfg->default_testsuite_name ='Test suite created by Requirement - Auto';)</i>
 中的测试套件中. 标题和范围被复制到测试用例中.</p>";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; //printReq
+$TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; // printReq
 $TLS_htmltext['printReqSpec'] = "<h2>Purpose:</h2>
 <p>You can generate document with the requirements within a requirement specification,
 or all the requirements in a test project.</p>
 <h2>Get Started:</h2>
 <ol>
 <li>
-<p>Select the parts of the requirements you want to display, and then click on a  
+<p>Select the parts of the requirements you want to display, and then click on a
 requirement specification, or the test project. A printable page will be displayed.</p>
 </li>
-<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
-the information displayed as HTML, or in a Pseudo Micosoft Word document. 
+<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want
+the information displayed as HTML, or in a Pseudo Micosoft Word document.
 See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 '{$locale}');\">help</span> for more information.</p>
 </li>
@@ -233,10 +196,9 @@ See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 </li>
 </ol>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['keywordsAssign']	= "指派关键字"; //已校对
-$TLS_htmltext['keywordsAssign'] 			= "<h2>目的:</h2>
+$TLS_htmltext_title['keywordsAssign'] = "指派关键字"; // 已校对
+$TLS_htmltext['keywordsAssign'] = "<h2>目的:</h2>
 <p>在该功能中用户可以批量地把关键字设置到现有的测试用例和测试套件中
 </p>
 
@@ -251,18 +213,17 @@ $TLS_htmltext['keywordsAssign'] 			= "<h2>目的:</h2>
 <p>当且仅当测试计划中包含最新版本的测试用例时，你指派的关键字才能影响到你的测试用例上.
 如果你的测试计划中包含的是旧版本的测试用例，你设置的关键字将不会被看到。
 </p>
-<p>TestLink会使用这种要求，以至于你对最新版本的测试用例指派的关键字对测试计划中的旧版本没什么影响. 
+<p>TestLink会使用这种要求，以至于你对最新版本的测试用例指派的关键字对测试计划中的旧版本没什么影响.
 如果你希望测试计划中的关键字及时更新，首先使用'更新修改的测试用例'来验证是否是最新版本
 在指派关键字之前.</p>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['executeTest']	= "测试用例执行"; //已校对
-$TLS_htmltext['executeTest'] 		= "<h2>目的:</h2>
+$TLS_htmltext_title['executeTest'] = "测试用例执行"; // 已校对
+$TLS_htmltext['executeTest'] = "<h2>目的:</h2>
 
 <p>允许用户执行测试用例.用户为了构建的需要可以把测试结果和相关测试用例关联起来.
  查看关于过滤器和设置的更多帮助 " .
-		"(点击?按钮).</p>
+    "(点击?按钮).</p>
 
 <h2>开始:</h2>
 
@@ -276,9 +237,9 @@ $TLS_htmltext['executeTest'] 		= "<h2>目的:</h2>
 <p><i>注意:如果你打算直接创建/跟踪问题，必须先配置TestLink关联到相关的bug跟踪工具.</i></p>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['showMetrics']	= "测试报告和统计数据"; //已校对
-$TLS_htmltext['showMetrics'] 		= "<p>关于测试计划的报告" .
-		"(在导航条里定义了). 这个测试计划可能与当前执行的测试计划不同. 可以选择的格式有:</p>
+$TLS_htmltext_title['showMetrics'] = "测试报告和统计数据"; // 已校对
+$TLS_htmltext['showMetrics'] = "<p>关于测试计划的报告" .
+    "(在导航条里定义了). 这个测试计划可能与当前执行的测试计划不同. 可以选择的格式有:</p>
 <ul>
 <li><b>HTML</b> - 报告显示为网页格式</li>
 <li><b>MS Excel</b> - 报告输出为 Microsoft Excel</li>
@@ -355,10 +316,9 @@ $TLS_htmltext['showMetrics'] 		= "<p>关于测试计划的报告" .
 <h3>每个测试用例报告的错误总数</h3>
 <p>该报表显示了每个测试用例所发现的所有错误. 包括全部项目中的所有错误. 该报表只有在和错误跟踪系统整合了以后才可见.</p>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planAddTC']	= "添加/删除测试用例到测试计划"; // testSetAdd //已校对
-$TLS_htmltext['planAddTC'] 			= "<h2>目的:</h2>
+$TLS_htmltext_title['planAddTC'] = "添加/删除测试用例到测试计划"; // testSetAdd //已校对
+$TLS_htmltext['planAddTC'] = "<h2>目的:</h2>
 <p>用户可以从测试计划中添加或者删除测试用例(用户的级别至少为项目经理).</p>
 
 <h2>添加／删除测试用例的步骤:</h2>
@@ -369,8 +329,8 @@ $TLS_htmltext['planAddTC'] 			= "<h2>目的:</h2>
 </ol>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['tc_exec_assignment']	= "给测试员分配测试任务"; //已校对
-$TLS_htmltext['tc_exec_assignment'] 		= "<h2>目的</h2>
+$TLS_htmltext_title['tc_exec_assignment'] = "给测试员分配测试任务"; // 已校对
+$TLS_htmltext['tc_exec_assignment'] = "<h2>目的</h2>
 <p>管理者通过该页面来对测试人员分配具体测试任务.</p>
 
 <h2>开始</h2>
@@ -381,14 +341,12 @@ $TLS_htmltext['tc_exec_assignment'] 		= "<h2>目的</h2>
 	<li>打开测试员的执行页面验证关联的情况.可以为使用者设置过滤器.</li>
 </ol>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planUpdateTC']	= "更新测试计划中的测试用例"; //已校对
-$TLS_htmltext['planUpdateTC'] 		= "<h2>目的</h2>
+$TLS_htmltext_title['planUpdateTC'] = "更新测试计划中的测试用例"; // 已校对
+$TLS_htmltext['planUpdateTC'] = "<h2>目的</h2>
 <p>如果需求规约版本改变了，可以通过该页面对测试用例进行更新.
-        在测试过程中经常发生添加新的需求的情况." .
-		" 例如:用户更改了测试规约，但是这个改变需要传达到测试计划中. " .
-		" 否则测试计划继续使用着旧版本的需求规约,测试结果还在关联测试用例中的字段.</p>
+        在测试过程中经常发生添加新的需求的情况." . " 例如:用户更改了测试规约，但是这个改变需要传达到测试计划中. " .
+    " 否则测试计划继续使用着旧版本的需求规约,测试结果还在关联测试用例中的字段.</p>
 
 <h2>开始</h2>
 <ol>
@@ -398,11 +356,10 @@ $TLS_htmltext['planUpdateTC'] 		= "<h2>目的</h2>
 	<li>验证方法:查看执行页面中的测试用例(集).</li>
 </ol>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['test_urgency']	= "设置测试的紧急程度";
-$TLS_htmltext['test_urgency'] 		= "<h2>目的</h2>
-<p>TestLink允许设置测试套件的紧急程度来影响测试用例执行的优先级. 
+$TLS_htmltext_title['test_urgency'] = "设置测试的紧急程度";
+$TLS_htmltext['test_urgency'] = "<h2>目的</h2>
+<p>TestLink允许设置测试套件的紧急程度来影响测试用例执行的优先级.
 	测试的优先级取决于测试用例的重要程度和定义在测试计划中的紧急程度两个方面.
     项目领导者可以设置哪一套测试用例先被执行. 使用这个功能来确保在时间允许的情
     况下覆盖最重要的测试用例.</p>
@@ -414,8 +371,7 @@ $TLS_htmltext['test_urgency'] 		= "<h2>目的</h2>
     执行的产品的严重程度.</li>
 	<li>点击'保存'来提交改变.</li>
 </ol>
-<p><i>例如:一个'高'紧急程度的测试套件中的'低'紧急程度的测试用例在执行时是'中'级别 " ."</i>";
-
+<p><i>例如:一个'高'紧急程度的测试套件中的'低'紧急程度的测试用例在执行时是'中'级别 " . "</i>";
 
 // ------------------------------------------------------------------------------------------
 

@@ -76,7 +76,7 @@ class ADODB_ldap extends ADOConnection {
 			if ($this->debug) ADOConnection::outp($e);
 			return false;
 		}
-		if( count( $LDAP_CONNECT_OPTIONS ) > 0 ) {
+		if(!empty($LDAP_CONNECT_OPTIONS)) {
 			$this->_inject_bind_options( $LDAP_CONNECT_OPTIONS );
 		}
 
@@ -157,7 +157,6 @@ class ADODB_ldap extends ADOConnection {
 		}
 	}
 
-	/* returns _queryID or false */
 	function _query($sql,$inputarr=false)
 	{
 		$rs = @ldap_search( $this->_connectionID, $this->database, $sql );

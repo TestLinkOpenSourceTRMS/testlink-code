@@ -6,7 +6,8 @@
         "laminas",
         "http",
         "psr",
-        "psr-7"
+        "psr-7",
+        "psr-17"
     ],
     "homepage": "https://laminas.dev",
     "support": {
@@ -18,36 +19,43 @@
         "forum": "https://discourse.laminas.dev"
     },
     "config": {
-        "sort-packages": true
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "sort-packages": true,
+        "platform": {
+            "php": "8.0.99"
+        }
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "2.1.x-dev",
-            "dev-develop": "2.2.x-dev",
-            "dev-release-1.8": "1.8.x-dev"
+        "laminas": {
+            "config-provider": "Laminas\\Diactoros\\ConfigProvider",
+            "module": "Laminas\\Diactoros"
         }
     },
     "require": {
-        "php": "^7.1",
-        "laminas/laminas-zendframework-bridge": "^1.0",
+        "php": "~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0",
         "psr/http-factory": "^1.0",
-        "psr/http-message": "^1.0"
+        "psr/http-message": "^1.1"
     },
     "require-dev": {
         "ext-curl": "*",
         "ext-dom": "*",
+        "ext-gd": "*",
         "ext-libxml": "*",
-        "http-interop/http-factory-tests": "^0.5.0",
-        "laminas/laminas-coding-standard": "~1.0.0",
-        "php-http/psr7-integration-tests": "^1.0",
-        "phpunit/phpunit": "^7.5.18"
+        "http-interop/http-factory-tests": "^0.9.0",
+        "laminas/laminas-coding-standard": "^2.5",
+        "php-http/psr7-integration-tests": "^1.2",
+        "phpunit/phpunit": "^9.5.28",
+        "psalm/plugin-phpunit": "^0.18.4",
+        "vimeo/psalm": "^5.6"
     },
     "provide": {
         "psr/http-factory-implementation": "1.0",
         "psr/http-message-implementation": "1.0"
     },
     "conflict": {
-        "phpspec/prophecy": "<1.9.0"
+        "zendframework/zend-diactoros": "*"
     },
     "autoload": {
         "files": [
@@ -85,9 +93,7 @@
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
         "test": "phpunit --colors=always",
-        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
-    },
-    "replace": {
-        "zendframework/zend-diactoros": "^2.2.1"
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
+        "static-analysis": "psalm --shepherd --stats"
     }
 }

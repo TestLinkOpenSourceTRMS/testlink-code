@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-diactoros for the canonical source repository
- * @copyright https://github.com/laminas/laminas-diactoros/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-diactoros/blob/master/LICENSE.md New BSD License
- */
-
 declare(strict_types=1);
 
 namespace Laminas\Diactoros;
@@ -13,6 +7,7 @@ namespace Laminas\Diactoros;
 use Psr\Http\Message\UploadedFileInterface;
 
 use function is_array;
+use function sprintf;
 
 /**
  * Normalize uploaded files
@@ -21,9 +16,9 @@ use function is_array;
  * arrays are normalized.
  *
  * @return UploadedFileInterface[]
- * @throws Exception\InvalidArgumentException for unrecognized values
+ * @throws Exception\InvalidArgumentException For unrecognized values.
  */
-function normalizeUploadedFiles(array $files) : array
+function normalizeUploadedFiles(array $files): array
 {
     /**
      * Traverse a nested tree of uploaded file specifications.
@@ -35,13 +30,13 @@ function normalizeUploadedFiles(array $files) : array
      * @param string[]|array[]|null $typeTree
      * @return UploadedFile[]|array[]
      */
-    $recursiveNormalize = function (
+    $recursiveNormalize = static function (
         array $tmpNameTree,
         array $sizeTree,
         array $errorTree,
-        array $nameTree = null,
-        array $typeTree = null
-    ) use (&$recursiveNormalize) : array {
+        ?array $nameTree = null,
+        ?array $typeTree = null
+    ) use (&$recursiveNormalize): array {
         $normalized = [];
         foreach ($tmpNameTree as $key => $value) {
             if (is_array($value)) {
@@ -57,10 +52,10 @@ function normalizeUploadedFiles(array $files) : array
             }
             $normalized[$key] = createUploadedFile([
                 'tmp_name' => $tmpNameTree[$key],
-                'size' => $sizeTree[$key],
-                'error' => $errorTree[$key],
-                'name' => $nameTree[$key] ?? null,
-                'type' => $typeTree[$key] ?? null,
+                'size'     => $sizeTree[$key],
+                'error'    => $errorTree[$key],
+                'name'     => $nameTree[$key] ?? null,
+                'type'     => $typeTree[$key] ?? null,
             ]);
         }
         return $normalized;
@@ -80,8 +75,9 @@ function normalizeUploadedFiles(array $files) : array
      * @param array $files
      * @return UploadedFile[]
      */
-    $normalizeUploadedFileSpecification = function (array $files = []) use (&$recursiveNormalize) : array {
-        if (! isset($files['tmp_name']) || ! is_array($files['tmp_name'])
+    $normalizeUploadedFileSpecification = static function (array $files = []) use (&$recursiveNormalize): array {
+        if (
+            ! isset($files['tmp_name']) || ! is_array($files['tmp_name'])
             || ! isset($files['size']) || ! is_array($files['size'])
             || ! isset($files['error']) || ! is_array($files['error'])
         ) {

@@ -18,6 +18,7 @@ use function array_values;
 
 /**
  * Route callback strategy with route parameters as individual arguments.
+ * @api
  */
 class RequestResponseArgs implements InvocationStrategyInterface
 {
@@ -25,12 +26,7 @@ class RequestResponseArgs implements InvocationStrategyInterface
      * Invoke a route callable with request, response and all route parameters
      * as individual arguments.
      *
-     * @param callable               $callable
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface      $response
-     * @param array                  $routeArguments
-     *
-     * @return ResponseInterface
+     * @param array<string, string>  $routeArguments
      */
     public function __invoke(
         callable $callable,

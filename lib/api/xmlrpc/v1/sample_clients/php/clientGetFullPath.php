@@ -1,5 +1,5 @@
 <?php
- /**
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
@@ -16,94 +16,102 @@ require_once 'util.php';
 require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
-$method='getFullPath';
-$unitTestDescription="Test - {$method}";
-$idx=1;
+$method = 'getFullPath';
+$unitTestDescription = "Test - {$method}";
+$idx = 1;
 
 // --------------------------------------------------------------------------
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["nodeid"]=3312;
-$debug=true;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["nodeid"] = 3312;
+$debug = true;
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args,$idx);
-$idx++;
+$client->debug = $debug;
+runTest($client, $method, $args, $idx);
+$idx ++;
 // --------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["nodeid"]=array(3312,3314,3316);
-$debug=true;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["nodeid"] = array(
+    3312,
+    3314,
+    3316
+);
+$debug = true;
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args,$idx);
-$idx++;
+$client->debug = $debug;
+runTest($client, $method, $args, $idx);
+$idx ++;
 
 // --------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["nodeid"]=array(3333312,3314,3316);
-$debug=true;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["nodeid"] = array(
+    3333312,
+    3314,
+    3316
+);
+$debug = true;
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args,$idx);
-$idx++;
+$client->debug = $debug;
+runTest($client, $method, $args, $idx);
+$idx ++;
 // --------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["nodeid"]='A';
-$debug=true;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["nodeid"] = 'A';
+$debug = true;
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args,$idx);
-$idx++;
+$client->debug = $debug;
+runTest($client, $method, $args, $idx);
+$idx ++;
 
 // --------------------------------------------------------------------------
-$args=array();
-$args["devKey"]=DEV_KEY;
-$debug=true;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$debug = true;
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args,$idx);
-$idx++;
+$client->debug = $debug;
+runTest($client, $method, $args, $idx);
+$idx ++;
 
 // --------------------------------------------------------------------------
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["nodeid"]=-1;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["nodeid"] = - 1;
 
-$debug=true;
+$debug = true;
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args,$idx);
-$idx++;
+$client->debug = $debug;
+runTest($client, $method, $args, $idx);
+$idx ++;
 
 // --------------------------------------------------------------------------
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["nodeid"]=1;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["nodeid"] = 1;
 
-$debug=true;
+$debug = true;
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args,$idx);
-$idx++;
+$client->debug = $debug;
+runTest($client, $method, $args, $idx);
+$idx ++;
 
 // --------------------------------------------------------------------------
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["nodeid"]=419;
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["nodeid"] = 419;
 
-$debug=true;
+$debug = true;
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-runTest($client,$method,$args,$idx);
-$idx++;
+$client->debug = $debug;
+runTest($client, $method, $args, $idx);
+$idx ++;
 
 ?>

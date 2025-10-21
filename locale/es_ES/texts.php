@@ -14,14 +14,14 @@
  *
  *
  * Revisions history is not stored for the file
- * 
+ *
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2003-2009, TestLink community 
+ * @copyright 	2003-2009, TestLink community
  * @version    	CVS: $Id: texts.php,v 1.29 2010/07/22 14:14:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
- * ------------------------------------------------------------------------------------- 
+ * -------------------------------------------------------------------------------------
  * Spanish (es_ES) translation
  * -------------------------------------------------------------------------------------
  * Translated by: Jesus Hernandez
@@ -29,17 +29,14 @@
  * -------------------------------------------------------------------------------------
  **/
 
-
 // --------------------------------------------------------------------------------------
-$TLS_htmltext_title['error']	= "Error de la Aplicación";
-$TLS_htmltext['error'] 		= "<p>Ha ocurrido un error inesperado. Por favor, consulta el visor de eventos o " .
-		"los mensajes de registro para más detalles.</p><p>Agradeceríamos que informaras del error. Por favor, visita nuestra " .
-		"<a href='http://www.teamst.org'>web</a>.</p>";
+$TLS_htmltext_title['error'] = "Error de la Aplicación";
+$TLS_htmltext['error'] = "<p>Ha ocurrido un error inesperado. Por favor, consulta el visor de eventos o " .
+    "los mensajes de registro para más detalles.</p><p>Agradeceríamos que informaras del error. Por favor, visita nuestra " .
+    "<a href='http://www.teamst.org'>web</a>.</p>";
 
-
-
-$TLS_htmltext_title['assignReqs']	= "Asignar Requisitos a un Caso de Prueba";
-$TLS_htmltext['assignReqs'] 		= "<h2>Propósito:</h2>
+$TLS_htmltext_title['assignReqs'] = "Asignar Requisitos a un Caso de Prueba";
+$TLS_htmltext['assignReqs'] = "<h2>Propósito:</h2>
 <p>Esta funcionalidad permite establecer relaciones entre los Requisitos y los Casos de Prueba.
 Un diseñador podría definir relaciones 0..n a 0..n. Por ejemplo, un Caso de Prueba podría estar
 asignado a ninguno, a uno o a muchos Requisitos y viceversa. Esta matriz de trazabilidad ayuda
@@ -53,54 +50,52 @@ las pruebas. Este análisis sirve para confirmar que se cumplen todas las expect
 	<li>Selecciona una Especificación de Requisitos si hay más de una definida.
 	TestLink recarga la página automáticamente.</li>
     <li>Aparecen dos bloques: 'Requisitos Asignados' que es la lista de todos los Requisitos de la Especificación
-	seleccionada que están asignados al Caso de Prueba y 'Requisitos Disponibles' que es la lista de todos los 
+	seleccionada que están asignados al Caso de Prueba y 'Requisitos Disponibles' que es la lista de todos los
     Requisitos que no están asignados al Caso de Prueba actual.
 	Un diseñador podría marcar Requisitos que están cubiertos
 	por este Caso de Prueba y hacer click en el botón 'Asignar'. Estos nuevos Requisitos asignados al Caso de Prueba se
 	mostrarán en el bloque de 'Requisitos Asignados'.</li>
 </ol>";
 
-
 // --------------------------------------------------------------------------------------
-$TLS_htmltext_title['editTc']	= "Especificación de Pruebas";
-$TLS_htmltext['editTc'] 		= "<h2>Propósito:</h2>
+$TLS_htmltext_title['editTc'] = "Especificación de Pruebas";
+$TLS_htmltext['editTc'] = "<h2>Propósito:</h2>
 <p>La <i>Especificación de Pruebas</i> permite a los usuarios ver y editar todo el contenido existente para " .
-		"<i>Suites de Pruebas</i> y <i>Casos de Prueba</i>. Los Casos de Prueba son versionados y todas " .
-		"las versiones anteriores están disponibles y pueden ser vistas y gestionadas desde aquí.</p>
+    "<i>Suites de Pruebas</i> y <i>Casos de Prueba</i>. Los Casos de Prueba son versionados y todas " .
+    "las versiones anteriores están disponibles y pueden ser vistas y gestionadas desde aquí.</p>
 
 <h2>Primeros pasos:</h2>
 <ol>
 	<li>Selecciona tu Proyecto de Pruebas en el árbol de navegación (el nodo raíz). <i>Por favor, ten en cuenta que: " .
-	"Siempre puedes cambiar el Proyecto de Pruebas activo seleccionando uno diferente en la " .
-	"lista desplegable de la esquina superior derecha.</i></li>
+    "Siempre puedes cambiar el Proyecto de Pruebas activo seleccionando uno diferente en la " .
+    "lista desplegable de la esquina superior derecha.</i></li>
 	<li>Crea una nueva Suite de Pruebas pulsando en <b>Nueva Suite de Pruebas</b>. Las Suites de Pruebas pueden " .
-	"ser utilizadas para estructurar tus documentos de prueba de acuerdo a tus necesidades (tets funcionales/no funcionales, " .
-	"componentes del producto o características, peticiones de cambio, etc.). La descripción de " .
-	"una Suite de Pruebas puede contener el alcance de los casos de prueba incluidos, la configuración por defecto, " .
-	"enlaces a documentos importantes, limitaciones y otra información de utilidad. En general, " .
-	"todas las anotaciones que son comunes a los Casos de Prueba incluidos. Las Suites de Pruebas se comportan " .
-	"como un directorio escalable, por lo que los usuarios pueden mover y copiar las Suites de Pruebas dentro " .
-	"del Proyecto de Pruebas. Además, las Suites de Pruebas pueden ser importadas o exportadas (incluyendo los casos de prueba que contienen).</li>
+    "ser utilizadas para estructurar tus documentos de prueba de acuerdo a tus necesidades (tets funcionales/no funcionales, " .
+    "componentes del producto o características, peticiones de cambio, etc.). La descripción de " .
+    "una Suite de Pruebas puede contener el alcance de los casos de prueba incluidos, la configuración por defecto, " .
+    "enlaces a documentos importantes, limitaciones y otra información de utilidad. En general, " .
+    "todas las anotaciones que son comunes a los Casos de Prueba incluidos. Las Suites de Pruebas se comportan " .
+    "como un directorio escalable, por lo que los usuarios pueden mover y copiar las Suites de Pruebas dentro " .
+    "del Proyecto de Pruebas. Además, las Suites de Pruebas pueden ser importadas o exportadas (incluyendo los casos de prueba que contienen).</li>
 	<li>Las Suites de Pruebas son directorios escalables. Los usuarios pueden mover y copiar las Suites de Pruebas dentro " .
-	"del Proyecto de Pruebas. Las Suites de Pruebas podrían ser importadas o exportadas (incluidos los Casos de Prueba).
+    "del Proyecto de Pruebas. Las Suites de Pruebas podrían ser importadas o exportadas (incluidos los Casos de Prueba).
 	<li>Seleccionar tu recien creada Suite de Pruebas en el árbol de navegación y crea " .
-	"un nuevo Caso de Prueba pulsando en <b>Crear Caso de Prueba</b>. Un Caso de Prueba especifica " .
-	"un escenario de pruebas en particular, resultados esperados y campos personalizados definidos " .
-	"en el Proyecto de Pruebas (consulta el manual de usuario para más información). Además es posible " .
-	"asignar <b>keywords</b> para mejorar la trazabilidad.</li>
+    "un nuevo Caso de Prueba pulsando en <b>Crear Caso de Prueba</b>. Un Caso de Prueba especifica " .
+    "un escenario de pruebas en particular, resultados esperados y campos personalizados definidos " .
+    "en el Proyecto de Pruebas (consulta el manual de usuario para más información). Además es posible " .
+    "asignar <b>keywords</b> para mejorar la trazabilidad.</li>
 	<li>Navega por la vista en árbol del lado izquierdo y edite la información. Los Casos de Prueba almacenan su propio historial.</li>
 	<li>Asigna tu Especificación de Pruebas al <span class=\"help\" onclick=
 	\"javascript:open_help_window('glossary','$locale');\">Plan de Pruebas</span> cuando tus Casos de Prueba estén preparados.</li>
 </ol>
 
 <p>Con TestLink organizas los casos de prueba en suites de pruebas." .
-"Las Suites de Pruebas pueden ser anidadas dentro de otras suites de pruebas, permitiendote crear jerarquías de suites de pruebas.
+    "Las Suites de Pruebas pueden ser anidadas dentro de otras suites de pruebas, permitiendote crear jerarquías de suites de pruebas.
  Entonces puedes imprimir esta información junto con los casos de prueba.</p>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchTc']	= "Pantalla de Búsqueda de Caso de Prueba";
-$TLS_htmltext['searchTc'] 		= "<h2>Propósito:</h2>
+$TLS_htmltext_title['searchTc'] = "Pantalla de Búsqueda de Caso de Prueba";
+$TLS_htmltext['searchTc'] = "<h2>Propósito:</h2>
 
 <p>Navegación según las keywords y/o las palabras buscadas. La búsqueda
 no distingue minúsculas de mayúsculas. Los resultados incluyen sólo los casos de prueba del Proyecto de Pruebas actual.</p>
@@ -116,8 +111,8 @@ no distingue minúsculas de mayúsculas. Los resultados incluyen sólo los casos
 
 // requirements search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchReq']	= "Pantalla de Búsqueda de Requisitos";
-$TLS_htmltext['searchReq'] 		= "<h2>Propósito:</h2>
+$TLS_htmltext_title['searchReq'] = "Pantalla de Búsqueda de Requisitos";
+$TLS_htmltext['searchReq'] = "<h2>Propósito:</h2>
 
 <p>Navegación según las keywords y/o las palabras buscadas. La búsqueda no distingue
 minúsculas de mayúsculas. Los resultados incluyen sólo los requisitos del Proyecto de Pruebas actual.</p>
@@ -139,8 +134,8 @@ minúsculas de mayúsculas. Los resultados incluyen sólo los requisitos del Pro
 
 // requirement specification search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchReqSpec']	= "Pantalla de Búsqueda de Especificación de Requisitos";
-$TLS_htmltext['searchReqSpec'] 		= "<h2>Propósito:</h2>
+$TLS_htmltext_title['searchReqSpec'] = "Pantalla de Búsqueda de Especificación de Requisitos";
+$TLS_htmltext['searchReqSpec'] = "<h2>Propósito:</h2>
 
 <p>Navegación según las keywords y/o las palabras buscadas. La búsqueda no distingue
 minúsculas de mayúsculas. Los resultados incluyen sólo las especificaciones de requisitos del Proyecto de Pruebas actual.</p>
@@ -161,10 +156,9 @@ minúsculas de mayúsculas. Los resultados incluyen sólo las especificaciones d
 - Los campos vacíos no se tienen en cuenta.</p>";
 /* end contribution */
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printTestSpec']	= "Imprimir Especificación de Pruebas"; //printTC.html
-$TLS_htmltext['printTestSpec'] 			= "<h2>Propósito:</h2>
+$TLS_htmltext_title['printTestSpec'] = "Imprimir Especificación de Pruebas"; // printTC.html
+$TLS_htmltext['printTestSpec'] = "<h2>Propósito:</h2>
 <p>Desde aquí puedes imprimir un único caso de prueba, todos los casos de prueba de una suite de pruebas,
 o todos los casos de prueba de un proyecto de pruebas o plan.</p>
 <h2>Primeros pasos:</h2>
@@ -183,17 +177,16 @@ que la información se muestre como HTML o en un documento Microsoft Word. Consu
 </li>
 </ol>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['reqSpecMgmt']	= "Diseño de Especificación de Requisitos"; //printTC.html
-$TLS_htmltext['reqSpecMgmt'] 			= "<p>Puedes gestionar documentos de Especificación de Requisitos.</p>
+$TLS_htmltext_title['reqSpecMgmt'] = "Diseño de Especificación de Requisitos"; // printTC.html
+$TLS_htmltext['reqSpecMgmt'] = "<p>Puedes gestionar documentos de Especificación de Requisitos.</p>
 
 <h2>Especificación de Requisitos</h2>
 
-<p>Los requisitos están agrupados por documento de <b>Especificación de Requisitos</b> que están relacionados al 
+<p>Los requisitos están agrupados por documento de <b>Especificación de Requisitos</b> que están relacionados al
 Proyecto de Pruebas.</p>
 
-<p>Los documentos de Especificación de Requisitos pueden estar ordenados jerárquicamente. 
+<p>Los documentos de Especificación de Requisitos pueden estar ordenados jerárquicamente.
 Crear el nivel superior de los documentos de Especificación de Requisitos ulsando en el nodo del proyecto. </p>
 
 <p>TestLink no soporta (aún) versiones para la Especificación de Requisitos
@@ -201,11 +194,11 @@ y los Requisitos en sí mismos. Por tanto, la versión del documento debe ser a�
 un <b>Título</b> de Especificación.
 Un usuario puede añadir una simple descripción o notas al campo <b>Descripción</b>.</p>
 
-<p><b><a name='total_count'>Sobreescribir el contador de REQs</a></b> sirve para  
-evaluar la cobertura de Req. en caso de que no todos los requisitos estén añadidos a TestLink. 
+<p><b><a name='total_count'>Sobreescribir el contador de REQs</a></b> sirve para
+evaluar la cobertura de Req. en caso de que no todos los requisitos estén añadidos a TestLink.
 El valor <b>0</b> significa que el valor actual de requisitos es el que se usará
 para las métricas.</p>
-<p><i>Ejemplo. El campo muestra un valor de 200 requisitos pero sólo 50 son añadidos a TestLink. La cobertura 
+<p><i>Ejemplo. El campo muestra un valor de 200 requisitos pero sólo 50 son añadidos a TestLink. La cobertura
 de pruebas es del 25% (si todos los requisitos añadidos son probados).</i></p>
 
 <h2><a name='req'>Requisitos</a></h2>
@@ -213,25 +206,24 @@ de pruebas es del 25% (si todos los requisitos añadidos son probados).</i></p>
 <p>Pulsa en el título de una Especificación de Requisitos. Puedes crrar, editar, borrar
 o importar requisitos en el documento. Cada requisito tiene título, descripción y estado.
 El estado puede ser 'Normal' o 'No testable'. Los requisitos No testables no son tenidos en cuenta en
-las métricas. Este parámetro debería ser usado tanto para funcionalidades no implementadas como para 
+las métricas. Este parámetro debería ser usado tanto para funcionalidades no implementadas como para
 requisitos mal diseñados.</p>
 
-<p>Puedes crear nuevos casos de prueba desde los requsititos usando la acción múltiple con los requisitos 
+<p>Puedes crear nuevos casos de prueba desde los requsititos usando la acción múltiple con los requisitos
 seleccionados en la pantalla de especificación. Estos Casos de Prueba son creados dentro de la Suite de Pruebas
 con el nombre definido en la configuración <i>(por defecto es: \$tlCfg->req_cfg->default_testsuite_name =
 'Título del Documento de Especificación de Requisitos + (generado automáticamente desde espec. req.)';)</i>.
 Título y Descripción son copiados a estos Casos de Prueba.</p>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printReqSpec'] = "Imprimir Especificación de Requisitos"; //printReq
+$TLS_htmltext_title['printReqSpec'] = "Imprimir Especificación de Requisitos"; // printReq
 $TLS_htmltext['printReqSpec'] = "<h2>Propósito:</h2>
 <p>Desde aquí puedes imprimir un requisito, todos los requisitos de la especificación de requisitos,
 o todos los requisitos del proyecto de pruebas.</p>
 <h2>Primeros pasos:</h2>
 <ol>
 <li>
-<p>Selecciona las partes de los requisitos que quieres mostrar y luego pulsa en un requisito, 
+<p>Selecciona las partes de los requisitos que quieres mostrar y luego pulsa en un requisito,
 especificación de requisito o proyecto de pruebas. Se mostrará una página imprimible.</p>
 </li>
 <li><p>Usa la lista desplegable \"Mostrar como\" del panel de navegación para especificar si quieres
@@ -244,10 +236,9 @@ que la información se muestre como HTML o en un documento Microsoft Word. Consu
 </li>
 </ol>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['keywordsAssign']	= "Asignación de Keyword";
-$TLS_htmltext['keywordsAssign'] 			= "<h2>Propósito:</h2>
+$TLS_htmltext_title['keywordsAssign'] = "Asignación de Keyword";
+$TLS_htmltext['keywordsAssign'] = "<h2>Propósito:</h2>
 <p>La pantalla de asignación de Keywords es el lugar en el que los usuarios pueden
 asignar keywords a la Suite de Pruebas existente o a un Caso de Prueba</p>
 
@@ -273,14 +264,13 @@ por asignaciones de keywords que realices en las versiones más nuevas de los ca
 los casos de prueba de tu plan de pruebas estén actualizados, primero verifica que están al día utilizando la funcionalidad
 'Actualizar Casos de Prueba Modificados' ANTES de realizar la asignación de keyword.</p>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['executeTest']	= "Ejecución de Caso de Prueba";
-$TLS_htmltext['executeTest'] 		= "<h2>Propósito:</h2>
+$TLS_htmltext_title['executeTest'] = "Ejecución de Caso de Prueba";
+$TLS_htmltext['executeTest'] = "<h2>Propósito:</h2>
 
 <p>Permite al usuario ejecutar casos de prueba. El usuario puede asignar resultados de prueba
 a un Caso de Prueba para cada Build. Consulta la ayuda para más información sobre filtrado y configuración " .
-		"(pulsa en el icono con el signo de interrogación).</p>
+    "(pulsa en el icono con el signo de interrogación).</p>
 
 <h2>Primeros pasos:</h2>
 
@@ -294,13 +284,13 @@ a un Caso de Prueba para cada Build. Consulta la ayuda para más información so
 	<li>Selecciona el resultado del caso de prueba y completa las notas y la asignación de defectos.</li>
 	<li>Guarda los resultados.</li>
 </ol>
-<p><i>Nota: TestLink debe ser configurado para trabajar con un Gestor de Defectos 
+<p><i>Nota: TestLink debe ser configurado para trabajar con un Gestor de Defectos
 si quieres crear/enlazar un defecto directamente desde la interfaz.</i></p>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['showMetrics']	= "Descripción de Informes de Pruebas y Métricas";
-$TLS_htmltext['showMetrics'] 		= "<p>Los informes están relacionados a un Plan de Pruebas " .
-		"(definido en la parte superior del Navegador). Este Plan de Pruebas puede ser diferente al
+$TLS_htmltext_title['showMetrics'] = "Descripción de Informes de Pruebas y Métricas";
+$TLS_htmltext['showMetrics'] = "<p>Los informes están relacionados a un Plan de Pruebas " .
+    "(definido en la parte superior del Navegador). Este Plan de Pruebas puede ser diferente al
 Plan de Pruebas actual para la ejecución. Además puedes seleccionar el formato del informe:</p>
 <ul>
 <li><b>Normal</b> - el informe es mostrado en una página web</li>
@@ -426,10 +416,9 @@ casos pasados, fallados, bloqueados y no ejecutados.</p>
 <p>Este informe muestra cada caso de prueba con todos los defectos asociados en todo el proyecto de pruebas.
 Este informe sólo está disponible si hay un Gestor de Defectos conectado.</p>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planAddTC']	= "Añadir / Quitar Casos de Prueba del Plan de Pruebas"; // testSetAdd
-$TLS_htmltext['planAddTC'] 			= "<h2>Propósito:</h2>
+$TLS_htmltext_title['planAddTC'] = "Añadir / Quitar Casos de Prueba del Plan de Pruebas"; // testSetAdd
+$TLS_htmltext['planAddTC'] = "<h2>Propósito:</h2>
 <p>Los usuarios con privilegios (con un nivel de permisos determinado) pueden añadir o quitar casos de prueba de un Plan de Pruebas.</p>
 
 <h2>Añadir o quitar Casos de Prueba:</h2>
@@ -440,8 +429,8 @@ $TLS_htmltext['planAddTC'] 			= "<h2>Propósito:</h2>
 </ol>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['tc_exec_assignment']	= "Asignar Testers a la ejecución de pruebas";
-$TLS_htmltext['tc_exec_assignment'] 		= "<h2>Propósito</h2>
+$TLS_htmltext_title['tc_exec_assignment'] = "Asignar Testers a la ejecución de pruebas";
+$TLS_htmltext['tc_exec_assignment'] = "<h2>Propósito</h2>
 <p>Esta pantalla permite a los líderes de pruebas asignar usuarios a casos de prueba particulares del Plan de Pruebas.</p>
 
 <h2>Primeros pasos:</h2>
@@ -453,12 +442,12 @@ $TLS_htmltext['tc_exec_assignment'] 		= "<h2>Propósito</h2>
 </ol>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planUpdateTC']	= "Actualizar Casos de Prueba del Plan de Pruebas";
-$TLS_htmltext['planUpdateTC'] 		= "<h2>Propósito</h2>
+$TLS_htmltext_title['planUpdateTC'] = "Actualizar Casos de Prueba del Plan de Pruebas";
+$TLS_htmltext['planUpdateTC'] = "<h2>Propósito</h2>
 <p>Esta pantalla permite actualizar el Caso de Prueba a una nueva (diferente) versión en el caso de que la Especificación
 de Pruebas haya cambiado. Sucede a menudo que alguna funcionalidad se clarifica durante el testing." .
-		" El usuario modifica la Especificación de Pruebas, pero es necesario que los cambios se propaguen también al Plan de Pruebas. En otro caso, el Plan" .
-		" de Pruebas mantiene la versión original para estar seguros de que el resultado se refiere al text correcto del Caso de Prueba.</p>
+    " El usuario modifica la Especificación de Pruebas, pero es necesario que los cambios se propaguen también al Plan de Pruebas. En otro caso, el Plan" .
+    " de Pruebas mantiene la versión original para estar seguros de que el resultado se refiere al text correcto del Caso de Prueba.</p>
 
 <h2>Primeros pasos:</h2>
 <ol>
@@ -468,12 +457,11 @@ de Pruebas haya cambiado. Sucede a menudo que alguna funcionalidad se clarifica 
 	<li>Para verificar: Abre la pantalla de ejecución para ver el text del caso de prueba.</li>
 </ol>";
 
-
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['test_urgency']	= "Especificar casos de prueba con alta o baja urgencia";
-$TLS_htmltext['test_urgency'] 		= "<h2>Propósito</h2>
-<p>TestLink permite establecer la urgencia de una Suite de Pruebas para afectar a la Prioridad de los casos de prueba. 
-		La prioridad de los casos depende tanto de la Importancia de los casos de prueba como de la Urgencia definida en 
+$TLS_htmltext_title['test_urgency'] = "Especificar casos de prueba con alta o baja urgencia";
+$TLS_htmltext['test_urgency'] = "<h2>Propósito</h2>
+<p>TestLink permite establecer la urgencia de una Suite de Pruebas para afectar a la Prioridad de los casos de prueba.
+		La prioridad de los casos depende tanto de la Importancia de los casos de prueba como de la Urgencia definida en
 		el Plan de Pruebas. El lider de pruebas debe especificar el conjunto de casos de prueba que deberían ser probados
 		en primer lugar. Esto ayuda a asegurar que el testing cubrirá los casos de prueba más importantes
 		incluso bajo presiones de tiempo.</p>
@@ -488,8 +476,7 @@ $TLS_htmltext['test_urgency'] 		= "<h2>Propósito</h2>
 	<li>Pulsa el botón 'Guardar' para aplicar los cambios.</li>
 </ol>
 <p><i>Por ejemplo, un Caso de Prueba con una importancia Alta en una Suite de Pruebas con Baja urgencia " .
-		"tendrá una prioridad Media.</i>";
-
+    "tendrá una prioridad Media.</i>";
 
 // ------------------------------------------------------------------------------------------
 

@@ -28,15 +28,14 @@ if (defined('ADODB_SESSION')) return 1;
 define('ADODB_SESSION', dirname(__FILE__));
 define('ADODB_SESSION2', ADODB_SESSION);
 
-/*
-	Unserialize session data manually. See PHPLens Issue No: 9821
-
-	From Kerr Schere, to unserialize session data stored via ADOdb.
-	1. Pull the session data from the db and loop through it.
-	2. Inside the loop, you will need to urldecode the data column.
-	3. After urldecode, run the serialized string through this function:
-
-*/
+/**
+ * 	Unserialize session data manually. See PHPLens Issue No: 9821
+ *
+ * From Kerr Schere, to unserialize session data stored via ADOdb.
+ * 1. Pull the session data from the db and loop through it.
+ * 2. Inside the loop, you will need to urldecode the data column.
+ * 3. After urldecode, run the serialized string through this function:
+ */
 function adodb_unserialize( $serialized_string )
 {
 	$variables = array( );
@@ -47,10 +46,13 @@ function adodb_unserialize( $serialized_string )
 	return( $variables );
 }
 
-/*
-	Thanks Joe Li. See PHPLens Issue No: 11487&x=1
-	Since adodb 4.61.
-*/
+/**
+ * Regenerate session id
+ *
+ * Thanks Joe Li. See PHPLens Issue No: 11487&x=1
+ *
+ * @since 4.61
+ */
 function adodb_session_regenerate_id()
 {
 	$conn = ADODB_Session::_conn();
@@ -79,45 +81,52 @@ function adodb_session_regenerate_id()
 	return true;
 }
 
-/*
-    Generate database table for session data
-    @see PHPLens Issue No: 12280
-    @return 0 if failure, 1 if errors, 2 if successful.
-	@author Markus Staab http://www.public-4u.de
-*/
+/**
+ * Generate database table for session data.
+ * @see PHPLens Issue No: 12280
+ *
+ * @return int 0 if failure, 1 if errors, 2 if successful.
+ *
+ * @author Markus Staab http://www.public-4u.de
+ */
 function adodb_session_create_table($schemaFile=null,$conn = null)
 {
-    // set default values
-    if ($schemaFile===null) $schemaFile = ADODB_SESSION . '/session_schema2.xml';
-    if ($conn===null) $conn = ADODB_Session::_conn();
+	// set default values
+	if ($schemaFile===null) $schemaFile = ADODB_SESSION . '/session_schema2.xml';
+	if ($conn===null) $conn = ADODB_Session::_conn();
 
 	if (!$conn) return 0;
 
-    $schema = new adoSchema($conn);
-    $schema->ParseSchema($schemaFile);
-    return $schema->ExecuteSchema();
+	$schema = new adoSchema($conn);
+	$schema->ParseSchema($schemaFile);
+	return $schema->ExecuteSchema();
 }
 
-/*!
-	\static
-*/
+/**
+ * ADOdb Session v2 class.
+ */
 class ADODB_Session {
+
+	/**
+	 * Session Connection's Database provider.
+	 *
+	 * Populated when opening the database connection.
+	 * @see ADODB_Session::open()}.
+	 *
+	 * @var string
+	 */
+	protected static $provider;
+
 	/////////////////////
 	// getter/setter methods
 	/////////////////////
 
-	/*
-
-	function Lock($lock=null)
-	{
-	static $_lock = false;
-
-		if (!is_null($lock)) $_lock = $lock;
-		return $lock;
-	}
-	*/
-	/*!
-	*/
+	/**
+	 * Get/Set Database driver.
+	 *
+	 * @param string $driver
+	 * @return string
+	 */
 	static function driver($driver = null)
 	{
 		static $_driver = 'mysqli';
@@ -136,8 +145,12 @@ class ADODB_Session {
 		return $_driver;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set Database hostname.
+	 *
+	 * @param string $host
+	 * @return string
+	 */
 	static function host($host = null) {
 		static $_host = 'localhost';
 		static $set = false;
@@ -155,8 +168,12 @@ class ADODB_Session {
 		return $_host;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set Database connection user.
+	 *
+	 * @param string $user
+	 * @return string
+	 */
 	static function user($user = null)
 	{
 		static $_user = 'root';
@@ -175,8 +192,12 @@ class ADODB_Session {
 		return $_user;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set Database connection password.
+	 *
+	 * @param null $password
+	 * @return string
+	 */
 	static function password($password = null)
 	{
 		static $_password = '';
@@ -195,8 +216,12 @@ class ADODB_Session {
 		return $_password;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set Database name.
+	 *
+	 * @param null $database
+	 * @return string
+	 */
 	static function database($database = null)
 	{
 		static $_database = '';
@@ -214,8 +239,12 @@ class ADODB_Session {
 		return $_database;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set Connection's persistence mode.
+	 *
+	 * @param $persist
+	 * @return string|true
+	 */
 	static function persist($persist = null)
 	{
 		static $_persist = true;
@@ -227,8 +256,12 @@ class ADODB_Session {
 		return $_persist;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set Connection's lifetime.
+	 *
+	 * @param int $lifetime
+	 * @return int
+	 */
 	static function lifetime($lifetime = null)
 	{
 		static $_lifetime;
@@ -255,8 +288,12 @@ class ADODB_Session {
 		return $_lifetime;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set Connection's debug mode.
+	 *
+	 * @param bool $debug
+	 * @return bool
+	 */
 	static function debug($debug = null)
 	{
 		static $_debug = false;
@@ -264,11 +301,6 @@ class ADODB_Session {
 
 		if (!is_null($debug)) {
 			$_debug = (bool) $debug;
-
-			$conn = ADODB_Session::_conn();
-			if ($conn) {
-				#$conn->debug = $_debug;
-			}
 			$set = true;
 		} elseif (!$set) {
 			// backwards compatibility
@@ -280,8 +312,12 @@ class ADODB_Session {
 		return $_debug;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set garbage collection function.
+	 *
+	 * @param callable $expire_notify Function name
+	 * @return callable|false
+	 */
 	static function expireNotify($expire_notify = null)
 	{
 		static $_expire_notify;
@@ -300,8 +336,12 @@ class ADODB_Session {
 		return $_expire_notify;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set Sessions table name.
+	 *
+	 * @param string $table Session table name (defaults to 'sessions2')
+	 * @return string
+	 */
 	static function table($table = null)
 	{
 		static $_table = 'sessions2';
@@ -320,8 +360,15 @@ class ADODB_Session {
 		return $_table;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set table optimization mode.
+	 *
+	 * If true, with MySQL and PostgreSQL databases, the Sessions table will
+	 * be optimized when garbage collection is performed.
+	 *
+	 * @param bool $optimize
+	 * @return bool
+	 */
 	static function optimize($optimize = null)
 	{
 		static $_optimize = false;
@@ -340,16 +387,21 @@ class ADODB_Session {
 		return $_optimize;
 	}
 
-	/*!
-	*/
+	/**
+	 * No longer used, kept for backwards-compatibility only.
+	 *
+	 * @param int $sync_seconds
+	 * @return int
+	 *
+	 * @deprecated
+	 */
 	static function syncSeconds($sync_seconds = null) {
-		//echo ("<p>WARNING: ADODB_SESSION::syncSeconds is longer used, please remove this function for your code</p>");
-
 		return 0;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set if CLOBs are available to store session data.
+	 */
 	static function clob($clob = null) {
 		static $_clob = false;
 		static $set = false;
@@ -367,15 +419,24 @@ class ADODB_Session {
 		return $_clob;
 	}
 
-	/*!
-	*/
+	/**
+	 * No longer used, kept for backwards-compatibility only.
+	 *
+	 * @param string $data_field_name
+	 * @return string
+	 *
+	 * @deprecated
+	 */
 	static function dataFieldName($data_field_name = null) {
-		//echo ("<p>WARNING: ADODB_SESSION::dataFieldName() is longer used, please remove this function for your code</p>");
 		return '';
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set session data filter.
+	 *
+	 * @param array $filter
+	 * @return array
+	 */
 	static function filter($filter = null) {
 		static $_filter = array();
 
@@ -389,8 +450,12 @@ class ADODB_Session {
 		return $_filter;
 	}
 
-	/*!
-	*/
+	/**
+	 * Get/Set the encryption key if encrypted sessions are in use.
+	 *
+	 * @param string $encryption_key
+	 * @return string
+	 */
 	static function encryptionKey($encryption_key = null) {
 		static $_encryption_key = 'CRYPTED ADODB SESSIONS ROCK!';
 
@@ -405,14 +470,19 @@ class ADODB_Session {
 	// private methods
 	/////////////////////
 
-	/*!
-	*/
+	/**
+	 * Returns the Session's Database Connection.
+	 *
+	 * @return ADOConnection|false
+	 */
 	static function _conn($conn=null) {
 		return isset($GLOBALS['ADODB_SESS_CONN']) ? $GLOBALS['ADODB_SESS_CONN'] : false;
 	}
 
-	/*!
-	*/
+	/**
+	 * @param $crc
+	 * @return false|mixed
+	 */
 	static function _crc($crc = null) {
 		static $_crc = false;
 
@@ -423,8 +493,9 @@ class ADODB_Session {
 		return $_crc;
 	}
 
-	/*!
-	*/
+	/**
+	 * Initialize session handler.
+	 */
 	static function _init() {
 		session_set_save_handler(
 			array('ADODB_Session', 'open'),
@@ -437,16 +508,19 @@ class ADODB_Session {
 	}
 
 
-	/*!
-	*/
+	/**
+	 * Create the encryption key for crypted sessions.
+	 *
+	 * Crypt the used key, ADODB_Session::encryptionKey() as key and
+	 * session_id() as salt.
+	 */
 	static function _sessionKey() {
-		// use this function to create the encryption key for crypted sessions
-		// crypt the used key, ADODB_Session::encryptionKey() as key and session_id() as salt
 		return crypt(ADODB_Session::encryptionKey(), session_id());
 	}
 
-	/*!
-	*/
+	/**
+	 * Dump recordset.
+	 */
 	static function _dumprs(&$rs) {
 		$conn	= ADODB_Session::_conn();
 		$debug	= ADODB_Session::debug();
@@ -476,10 +550,39 @@ class ADODB_Session {
 		$rs->MoveFirst();
 	}
 
+	/**
+	 * Check if Session Connection's DB type is MySQL.
+	 *
+	 * @return bool
+	 */
+	static protected function isConnectionMysql() {
+		return self::$provider == 'mysql';
+	}
+
+	/**
+	 * Check if Session Connection's DB type is PostgreSQL.
+	 *
+	 * @return bool
+	 */
+	static protected function isConnectionPostgres() {
+		return self::$provider == 'postgres';
+	}
+
 	/////////////////////
 	// public methods
 	/////////////////////
 
+	/**
+	 * Establishes a connection to the database for session management.
+	 *
+	 * @param string $host
+	 * @param string $driver
+	 * @param string $user
+	 * @param string $password
+	 * @param string $database
+	 * @param array $options
+	 * @return void
+	 */
 	static function config($driver, $host, $user, $password, $database=false,$options=false)
 	{
 		ADODB_Session::driver($driver);
@@ -495,11 +598,17 @@ class ADODB_Session {
 		if (isset($options['debug'])) ADODB_Session::debug($options['debug']);
 	}
 
-	/*!
-		Create the connection to the database.
-
-		If $conn already exists, reuse that connection
-	*/
+	/**
+	 * Create the connection to the database.
+	 *
+	 * If $conn already exists, reuse that connection.
+	 *
+	 * @param string $save_path
+	 * @param string $session_name
+	 * @param bool $persist
+	 *
+	 * @return bool
+	 */
 	static function open($save_path, $session_name, $persist = null)
 	{
 		$conn = ADODB_Session::_conn();
@@ -521,10 +630,6 @@ class ADODB_Session {
 			$persist = ADODB_Session::persist();
 		}
 
-# these can all be defaulted to in php.ini
-#		assert('$database');
-#		assert('$driver');
-#		assert('$host');
 		if (strpos($driver, 'pdo_') === 0){
 			$conn = ADONewConnection('pdo');
 			$driver = str_replace('pdo_', '', $driver);
@@ -562,8 +667,15 @@ class ADODB_Session {
 			}
 		}
 
+		if ($ok) {
+			$GLOBALS['ADODB_SESS_CONN'] = $conn;
 
-		if ($ok) $GLOBALS['ADODB_SESS_CONN'] = $conn;
+			// Initialize Session data provider
+			self::$provider = $conn->dataProvider;
+			if (self::$provider == 'pdo') {
+				self::$provider = $conn->dsnType == 'pgsql' ? 'postgres' : $conn->dsnType;
+			}
+		}
 		else
 			ADOConnection::outp('<p>Session: connection failed</p>', false);
 
@@ -571,9 +683,9 @@ class ADODB_Session {
 		return $ok;
 	}
 
-	/*!
-		Close the connection
-	*/
+	/**
+	 * Close the connection
+	 */
 	static function close()
 	{
 /*
@@ -583,9 +695,12 @@ class ADODB_Session {
 		return true;
 	}
 
-	/*
-		Slurp in the session variables and return the serialized string
-	*/
+	/**
+	 * Slurp in the session variables and return the serialized string.
+	 *
+	 * @param string $key
+	 * @return string
+	 */
 	static function read($key)
 	{
 		$conn	= ADODB_Session::_conn();
@@ -596,9 +711,7 @@ class ADODB_Session {
 			return '';
 		}
 
-		//assert('$table');
-
-		$binary = $conn->dataProvider === 'mysql' ? '/*! BINARY */' : '';
+		$binary = ADODB_Session::isConnectionMysql() ? '/*! BINARY */' : '';
 
 		global $ADODB_SESSION_SELECT_FIELDS;
 		if (!isset($ADODB_SESSION_SELECT_FIELDS)) $ADODB_SESSION_SELECT_FIELDS = 'sessdata';
@@ -635,16 +748,22 @@ class ADODB_Session {
 		return '';
 	}
 
-	/*!
-		Write the serialized data to a database.
-
-		If the data has not been modified since the last read(), we do not write.
-	*/
+	/**
+	 * Write the serialized data to a database.
+	 *
+	 * If the data has not been modified since the last read(), we do not write.
+	 *
+	 * @param string $key
+	 * @param string $oval
+	 *
+	 * @return bool
+	 */
 	static function write($key, $oval)
 	{
-	global $ADODB_SESSION_READONLY;
-
-		if (!empty($ADODB_SESSION_READONLY)) return;
+		global $ADODB_SESSION_READONLY;
+		if (!empty($ADODB_SESSION_READONLY)) {
+			return false;
+		}
 
 		$clob			= ADODB_Session::clob();
 		$conn			= ADODB_Session::_conn();
@@ -662,11 +781,9 @@ class ADODB_Session {
 		if ($debug) $conn->debug = 1;
 		$sysTimeStamp = $conn->sysTimeStamp;
 
-		//assert('$table');
-
 		$expiry = $conn->OffsetDate($lifetime/(24*3600),$sysTimeStamp);
 
-		$binary = $conn->dataProvider === 'mysql' ? '/*! BINARY */' : '';
+		$binary = ADODB_Session::isConnectionMysql() ? '/*! BINARY */' : '';
 
 		// crc32 optimization since adodb 2.1
 		// now we only update expiry date, thx to sebastian thom in adodb 2.32
@@ -684,8 +801,9 @@ class ADODB_Session {
 				}
 			}
 
-
-			$sql = "UPDATE $table SET expiry = $expiry ,expireref=".$conn->Param('0').", modified = $sysTimeStamp WHERE $binary sesskey = ".$conn->Param('1')." AND expiry >= $sysTimeStamp";
+			$sql = "UPDATE $table SET expiry = $expiry, expireref=" . $conn->Param('0')
+				. ", modified = $sysTimeStamp WHERE sesskey = $binary " . $conn->Param('1')
+				. " AND expiry >= $sysTimeStamp";
 			$rs = $conn->Execute($sql,array($expirevar,$key));
 			return true;
 		}
@@ -705,7 +823,8 @@ class ADODB_Session {
 			}
 		}
 
-		if (!$clob) {	// no lobs, simply use replace()
+		if (!$clob) {
+			// no lobs, simply use replace()
 			$rs = $conn->Execute("SELECT COUNT(*) AS cnt FROM $table WHERE $binary sesskey = ".$conn->Param(0),array($key));
 			if ($rs) $rs->Close();
 
@@ -716,7 +835,6 @@ class ADODB_Session {
 				$sql = "INSERT INTO $table (expiry, sessdata, expireref, sesskey, created, modified)
 					VALUES ($expiry,".$conn->Param('0').", ". $conn->Param('1').", ".$conn->Param('2').", $sysTimeStamp, $sysTimeStamp)";
 			}
-
 
 			$rs = $conn->Execute($sql,array($val,$expireref,$key));
 
@@ -737,14 +855,12 @@ class ADODB_Session {
 					VALUES ($expiry,$lob_value, ". $conn->Param('0').", ".$conn->Param('1').", $sysTimeStamp, $sysTimeStamp)";
 			}
 
-			$rs = $conn->Execute($sql,array($expireref,$key));
+			$conn->Execute($sql,array($expireref,$key));
 
 			$qkey = $conn->qstr($key);
-			$rs2 = $conn->UpdateBlob($table, 'sessdata', $val, " sesskey=$qkey", strtoupper($clob));
+			$conn->UpdateBlob($table, 'sessdata', $val, " sesskey=$qkey", strtoupper($clob));
 			if ($debug) echo "<hr>",htmlspecialchars($oval), "<hr>";
 			$rs = @$conn->CompleteTrans();
-
-
 		}
 
 		if (!$rs) {
@@ -768,8 +884,12 @@ class ADODB_Session {
 		return $rs ? true : false;
 	}
 
-	/*!
-	*/
+	/**
+	 * Destroy session.
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
 	static function destroy($key) {
 		$conn			= ADODB_Session::_conn();
 		$table			= ADODB_Session::table();
@@ -780,16 +900,15 @@ class ADODB_Session {
 		}
 		$debug			= ADODB_Session::debug();
 		if ($debug) $conn->debug = 1;
-		//assert('$table');
 
 		$qkey = $conn->quote($key);
-		$binary = $conn->dataProvider === 'mysql' || $conn->dataProvider === 'pdo' ? '/*! BINARY */' : '';
+		$binary = ADODB_Session::isConnectionMysql() ? '/*! BINARY */' : '';
 
 		if ($expire_notify) {
 			reset($expire_notify);
 			$fn = next($expire_notify);
 			$savem = $conn->SetFetchMode(ADODB_FETCH_NUM);
-			$sql = "SELECT expireref, sesskey FROM $table WHERE $binary sesskey = $qkey";
+			$sql = "SELECT expireref, sesskey FROM $table WHERE sesskey = $binary $qkey";
 			$rs = $conn->Execute($sql);
 			ADODB_Session::_dumprs($rs);
 			$conn->SetFetchMode($savem);
@@ -799,24 +918,26 @@ class ADODB_Session {
 			if (!$rs->EOF) {
 				$ref = $rs->fields[0];
 				$key = $rs->fields[1];
-				//assert('$ref');
-				//assert('$key');
 				$fn($ref, $key);
 			}
 			$rs->Close();
 		}
 
-		$sql = "DELETE FROM $table WHERE $binary sesskey = $qkey";
+		$sql = "DELETE FROM $table WHERE sesskey = $binary $qkey";
 		$rs = $conn->Execute($sql);
 		if ($rs) {
 			$rs->Close();
 		}
 
-		return $rs ? true : false;
+		return (bool)$rs;
 	}
 
-	/*!
-	*/
+	/**
+	 * Perform garbage collection.
+	 *
+	 * @param int $maxlifetime
+	 * @return bool
+	 */
 	static function gc($maxlifetime)
 	{
 		$conn			= ADODB_Session::_conn();
@@ -829,8 +950,6 @@ class ADODB_Session {
 			return false;
 		}
 
-
-		$debug			= ADODB_Session::debug();
 		if ($debug) {
 			$conn->debug = 1;
 			$COMMITNUM = 2;
@@ -838,10 +957,8 @@ class ADODB_Session {
 			$COMMITNUM = 20;
 		}
 
-		//assert('$table');
-
 		$time = $conn->OffsetDate(-$maxlifetime/24/3600,$conn->sysTimeStamp);
-		$binary = $conn->dataProvider === 'mysql' ? '/*! BINARY */' : '';
+		$binary = ADODB_Session::isConnectionMysql() ? '/*! BINARY */' : '';
 
 		if ($expire_notify) {
 			reset($expire_notify);
@@ -858,13 +975,12 @@ class ADODB_Session {
 		if ($rs) {
 			$tr = $conn->hasTransactions;
 			if ($tr) $conn->BeginTrans();
-			$keys = array();
 			$ccnt = 0;
 			while (!$rs->EOF) {
 				$ref = $rs->fields[0];
 				$key = $rs->fields[1];
 				if ($fn) $fn($ref, $key);
-				$del = $conn->Execute("DELETE FROM $table WHERE sesskey=".$conn->Param('0'),array($key));
+				$conn->Execute("DELETE FROM $table WHERE sesskey = $binary " . $conn->Param('0'), array($key));
 				$rs->MoveNext();
 				$ccnt += 1;
 				if ($tr && $ccnt % $COMMITNUM == 0) {
@@ -881,12 +997,9 @@ class ADODB_Session {
 
 		// suggested by Cameron, "GaM3R" <gamr@outworld.cx>
 		if ($optimize) {
-			$driver = ADODB_Session::driver();
-
-			if (preg_match('/mysql/i', $driver)) {
+			if (ADODB_Session::isConnectionMysql()) {
 				$sql = "OPTIMIZE TABLE $table";
-			}
-			if (preg_match('/postgres/i', $driver)) {
+			} elseif (ADODB_Session::isConnectionPostgres()) {
 				$sql = "VACUUM $table";
 			}
 			if (!empty($sql)) {
@@ -903,12 +1016,16 @@ ADODB_Session::_init();
 if (empty($ADODB_SESSION_READONLY))
 	register_shutdown_function('session_write_close');
 
-// for backwards compatibility only
+/**
+ * @deprecated for backwards compatibility only
+ */
 function adodb_sess_open($save_path, $session_name, $persist = true) {
 	return ADODB_Session::open($save_path, $session_name, $persist);
 }
 
-// for backwards compatibility only
+/**
+ * @deprecated for backwards compatibility only
+ */
 function adodb_sess_gc($t)
 {
 	return ADODB_Session::gc($t);

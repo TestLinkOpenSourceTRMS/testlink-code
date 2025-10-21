@@ -22,7 +22,7 @@ if( !($_SESSION['currentUser']->globalRole->name=='admin') )
 }
 
 
-$tcase_mgr = new testcase($db);
+$tcaseMgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 
 $testProjects = $tproject_mgr->get_all();

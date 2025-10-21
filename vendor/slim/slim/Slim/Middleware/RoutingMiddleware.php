@@ -24,20 +24,10 @@ use Slim\Routing\RoutingResults;
 
 class RoutingMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var RouteResolverInterface
-     */
-    protected $routeResolver;
+    protected RouteResolverInterface $routeResolver;
 
-    /**
-     * @var RouteParserInterface
-     */
-    protected $routeParser;
+    protected RouteParserInterface $routeParser;
 
-    /**
-     * @param RouteResolverInterface $routeResolver
-     * @param RouteParserInterface   $routeParser
-     */
     public function __construct(RouteResolverInterface $routeResolver, RouteParserInterface $routeParser)
     {
         $this->routeResolver = $routeResolver;
@@ -45,17 +35,12 @@ class RoutingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param ServerRequestInterface  $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     *
      * @throws HttpNotFoundException
      * @throws HttpMethodNotAllowedException
      * @throws RuntimeException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $request = $request->withAttribute(RouteContext::ROUTE_PARSER, $this->routeParser);
         $request = $this->performRouting($request);
         return $handler->handle($request);
     }
@@ -64,7 +49,6 @@ class RoutingMiddleware implements MiddlewareInterface
      * Perform routing
      *
      * @param  ServerRequestInterface $request PSR7 Server Request
-     * @return ServerRequestInterface
      *
      * @throws HttpNotFoundException
      * @throws HttpMethodNotAllowedException
@@ -72,10 +56,9 @@ class RoutingMiddleware implements MiddlewareInterface
      */
     public function performRouting(ServerRequestInterface $request): ServerRequestInterface
     {
-        $routingResults = $this->routeResolver->computeRoutingResults(
-            $request->getUri()->getPath(),
-            $request->getMethod()
-        );
+        $request = $request->withAttribute(RouteContext::ROUTE_PARSER, $this->routeParser);
+
+        $routingResults = $this->resolveRoutingResultsFromRequest($request);
         $routeStatus = $routingResults->getRouteStatus();
 
         $request = $request->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
@@ -100,5 +83,16 @@ class RoutingMiddleware implements MiddlewareInterface
             default:
                 throw new RuntimeException('An unexpected error occurred while performing routing.');
         }
+    }
+
+    /**
+     * Resolves the route from the given request
+     */
+    protected function resolveRoutingResultsFromRequest(ServerRequestInterface $request): RoutingResults
+    {
+        return $this->routeResolver->computeRoutingResults(
+            $request->getUri()->getPath(),
+            $request->getMethod()
+        );
     }
 }

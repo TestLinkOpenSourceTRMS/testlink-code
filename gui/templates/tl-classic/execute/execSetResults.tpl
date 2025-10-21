@@ -331,7 +331,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                                    '{$tsd_val_for_hidden_list}');
               {/if}
 
-              {if $round_enabled}Nifty('div.exec_additional_info');{/if}
+              {if $round_enabled}Nifty('div.execAdditionalInfo');{/if}
               {if #ROUND_TC_SPEC#}Nifty('div.exec_test_spec');{/if}
               {if #ROUND_EXEC_HISTORY#}Nifty('div.exec_history');{/if}
               {if #ROUND_TC_TITLE#}Nifty('div.exec_tc_title');{/if}"
@@ -482,10 +482,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
              show_hide_container_title=$gui->testplan_div_title
              show_hide_container_id=$div_id
              show_hide_container_draw=false
-             show_hide_container_class='exec_additional_info'
+             show_hide_container_class='execAdditionalInfo'
              show_hide_container_view_status_id=$memstatus_id}
 
-    <div id="{$div_id}" class="exec_additional_info">
+    <div id="{$div_id}" class="execAdditionalInfo">
       {if $gui->testPlanEditorType == 'none'}{$gui->testplan_notes|nl2br}{else}{$gui->testplan_notes}{/if}
       {if $gui->testplan_cfields neq ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
     </div>
@@ -504,7 +504,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                  show_hide_container_id=$div_id
                  show_hide_container_view_status_id=$memstatus_id
                  show_hide_container_draw=true
-                 show_hide_container_class='exec_additional_info'
+                 show_hide_container_class='execAdditionalInfo'
                  show_hide_container_html=$content}
     {/if}         
     {* ------------------------------------------------------- *}
@@ -519,9 +519,9 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
              show_hide_container_id=$div_id
              show_hide_container_view_status_id=$memstatus_id
              show_hide_container_draw=false
-             show_hide_container_class='exec_additional_info'}
+             show_hide_container_class='execAdditionalInfo'}
 
-    <div id="{$div_id}" class="exec_additional_info">
+    <div id="{$div_id}" class="execAdditionalInfo">
       {if $gui->buildEditorType == 'none'}{$gui->build_notes|nl2br}{else}{$gui->build_notes}{/if}
       {if $gui->build_cfields != ''} <div id="cfields_build" class="custom_field_container">{$gui->build_cfields}</div>{/if}
     </div>
@@ -543,7 +543,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                        show_hide_container_title=$labels.bulk_tc_status_management
                        show_hide_container_id=$div_id
                        show_hide_container_draw=false
-                       show_hide_container_class='exec_additional_info'
+                       show_hide_container_class='execAdditionalInfo'
                        show_hide_container_view_status_id=$memstatus_id}
 
               <div id="{$div_id}" name="{$div_id}">

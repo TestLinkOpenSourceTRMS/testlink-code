@@ -249,7 +249,13 @@ template       ::= template PHP(B). {
 
                       // template text
 template       ::= template  TEXT(B). {
-         $this->current_buffer->append_subtree($this, $this->compiler->processText(B));
+         $text = $this->yystack[ $this->yyidx + 0 ]->minor;
+
+         if ((string)$text == '') {
+            $this->current_buffer->append_subtree($this, null);
+         }
+
+         $this->current_buffer->append_subtree($this, new Smarty_Internal_ParseTree_Text($text, $this->strip));
 }
                       // strip on
 template       ::= template  STRIPON. {
@@ -308,7 +314,7 @@ smartytag(A)::= SIMPLETAG(B). {
     $tag = trim(substr(B, $this->compiler->getLdelLength(), -$this->compiler->getRdelLength()));
     if ($tag == 'strip') {
         $this->strip = true;
-        A = null;;
+        A = null;
     } else {
         if (defined($tag)) {
             if ($this->security) {
@@ -752,6 +758,9 @@ value(res)       ::= doublequoted_with_quotes(s). {
 
 
 value(res)    ::= varindexed(vi) DOUBLECOLON static_class_access(r). {
+    if ($this->security && $this->security->static_classes !== array()) {
+        $this->compiler->trigger_template_error('dynamic static class not allowed by security setting');
+    }
     $prefixVar = $this->compiler->getNewPrefixVariable();
     if (vi['var'] === '\'smarty\'') {
         $this->compiler->appendPrefixCode("<?php {$prefixVar} = ". $this->compiler->compileTag('private_special_variable',array(),vi['smarty_internal_index']).';?>');

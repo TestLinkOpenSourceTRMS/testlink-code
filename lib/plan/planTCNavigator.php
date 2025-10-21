@@ -16,11 +16,11 @@
  *
  **/
 
-require('../../config.inc.php');
-require_once("common.php");
-require_once("users.inc.php");
-require_once("treeMenu.inc.php");
-require_once('exec.inc.php');
+require_once '../../config.inc.php';
+require_once 'common.php';
+require_once 'users.inc.php';
+require_once 'treeMenu.inc.php';
+require_once 'exec.inc.php';
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -43,13 +43,13 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
- * @param unknown_type $dbHandler
- * @param unknown_type $control
+ * @param database $dbHandler
+ * @param tlTestCaseFilterControl $control
  * @return stdClass
- * 
+ *
  * @internal revisions:
  */
-function initializeGui(&$dbHandler, &$control, &$assignmentMgr) 
+function initializeGui(&$dbHandler, &$control, &$assignmentMgr)
 {
 
   $gui = new stdClass();
@@ -60,7 +60,7 @@ function initializeGui(&$dbHandler, &$control, &$assignmentMgr)
   $gui->additional_string = '';
   
   // configure target URLs and clickable buttons
-  switch($control->args->feature) 
+  switch($control->args->feature)
   {
     case 'planUpdateTC':
       $gui->menuUrl = "lib/plan/planUpdateTC.php";
@@ -76,7 +76,7 @@ function initializeGui(&$dbHandler, &$control, &$assignmentMgr)
     case 'tc_exec_assignment':
       $gui->title_navigator = lang_get('navigator_tc_exec_assignment');
       $gui->menuUrl = "lib/plan/tc_exec_assignment.php";
-      $build_id = $control->settings['setting_build']['selected'];
+      $control->settings['setting_build']['selected'];
       $control->draw_tc_unassign_button = true;
       $control->draw_tc_assignment_bulk_copy_button = true;
 

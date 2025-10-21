@@ -39,10 +39,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              show_hide_container_title=$container_title
              show_hide_container_id=$div_id
              show_hide_container_draw=false
-             show_hide_container_class='exec_additional_info'
+             show_hide_container_class='execAdditionalInfo'
              show_hide_container_view_status_id=$memstatus_id}
 
-		<div id="{$div_id}" name="{$div_id}" class="exec_additional_info">
+		<div id="{$div_id}" name="{$div_id}" class="execAdditionalInfo">
       <br />
       <div class="exec_testsuite_details" style="width:95%;">
       <span class="legend_container">{$labels.details}</span><br />

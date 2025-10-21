@@ -1,13 +1,13 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Basic description of steps and license confirmation
- * 
+ *
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2009, TestLink community 
+ * @copyright 	2009, TestLink community
  * @version    	CVS: $Id: installIntro.php,v 1.2 2010/05/02 14:30:13 franciscom Exp $
  *
  * @internal Revisions:
@@ -26,17 +26,17 @@ if (isset($_GET['type']))
 	switch($_SESSION['installation_type'])
 	{
 		case 'new':
-			$_SESSION['title'] .= " - New installation"; 
-			$_SESSION['isNew'] = TRUE; 
+			$_SESSION['title'] .= " - New installation";
+			$_SESSION['isNew'] = true;
 		break;
 		
 		case 'upgrade_1.8_to_1.9':
 		default:
-			$_SESSION['title'] .= " - Upgrade"; 
-			$_SESSION['isNew'] = FALSE; 
+			$_SESSION['title'] .= " - Upgrade";
+			$_SESSION['isNew'] = false;
 		break;
 	
-	} 
+	}
 }
 else
 {
@@ -44,7 +44,7 @@ else
 	exit;
 }
 
-include 'installHead.inc';
+include_once 'installHead.inc';
 ?>
 <div class="tlStory">
 <p><b>TestLink</b> is developed and shared under GPL license. You are welcome to share your changes
@@ -80,15 +80,15 @@ function ableButton() {
 	button = document.getElementById("continue");
 	
 	if(check.checked==true) {
-		button.disabled = false;	
+		button.disabled = false;
 	} else {
-		button.disabled = true;	
+		button.disabled = true;
 	}
 }
 </script>
 <p>
   	<form action="installCheck.php">
-	<div style="float:right;"><input type="submit" id="continue" value="Continue" 
+	<div style="float:right;"><input type="submit" id="continue" value="Continue"
 			disabled="disabled" /></div>
 	<div><input type="checkbox" id="licenseOK" name="licenseOK" onClick="ableButton()" />
 	<label for="licenseOK">I agree to the terms set out in this license.</label>
@@ -96,4 +96,4 @@ function ableButton() {
 <p>
 
 </div>
-<?php include 'installFooter.inc'; ?>
+<?php include_once 'installFooter.inc'; ?>

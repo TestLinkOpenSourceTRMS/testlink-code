@@ -1,22 +1,22 @@
 <?php
 //
 // filesource oauth.microsoft.inc.php
-// 
+//
 // IMPORTANTE NOTICE
 // key in $tlCfg->OAuthServers[]
 // can be anything you want that make this configuration
 // does not overwrite other or will be overwritten
 //
 // HOW TO use this file ?
-// 1. copy this file to 
-//     [TESTLINK_INSTALL]/cfg/
+// 1. copy this file to
+// [TESTLINK_INSTALL]/cfg/
 //
 // 2. configure according your application
 //
 // 3. add the following line to your custom_config.inc.php
-//    require('aouth.microsoft.inc.php');
+// require('aouth.microsoft.inc.php');
 //
-// ------------------------------------------------------------- 
+// -------------------------------------------------------------
 $tlCfg->OAuthServers['microsoft'] = array();
 $tlCfg->OAuthServers['microsoft']['redirect_uri'] = '';
 

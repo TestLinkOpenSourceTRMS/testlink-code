@@ -18,46 +18,16 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
  */
-class GitlabIdentityProviderException extends IdentityProviderException
+final class GitlabIdentityProviderException extends IdentityProviderException
 {
-    /**
-     * Creates client exception from response.
-     *
-     * @param mixed $data Parsed response data
-     * @return IdentityProviderException
-     */
-    public static function clientException(ResponseInterface $response, $data)
-    {
-        return static::fromResponse(
-            $response,
-            isset($data['message']) ? $data['message'] : $response->getReasonPhrase()
-        );
-    }
-
-    /**
-     * Creates oauth exception from response.
-     *
-     * @param ResponseInterface $response Response received from upstream
-     * @param string $data                Parsed response data
-     * @return IdentityProviderException
-     */
-    public static function oauthException(ResponseInterface $response, $data)
-    {
-        return static::fromResponse(
-            $response,
-            isset($data['error']) ? $data['error'] : $response->getReasonPhrase()
-        );
-    }
-
     /**
      * Creates identity exception from response.
      *
      * @param ResponseInterface $response Response received from upstream
-     * @param string|null $message        Parsed message
-     * @return IdentityProviderException
+     * @param ?string $message Parsed message
      */
-    protected static function fromResponse(ResponseInterface $response, $message = null)
+    public static function fromResponse(ResponseInterface $response, string $message = null): IdentityProviderException
     {
-        return new static($message, $response->getStatusCode(), (string) $response->getBody());
+        return new self($message ?? $response->getReasonPhrase() ?: self::class, $response->getStatusCode(), $response->getBody()->getContents());
     }
 }

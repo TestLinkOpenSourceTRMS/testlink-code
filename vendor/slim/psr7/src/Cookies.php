@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slim Framework (https://slimframework.com)
  *
@@ -11,28 +12,37 @@ namespace Slim\Psr7;
 
 use InvalidArgumentException;
 
+use function array_key_exists;
+use function array_replace;
+use function count;
+use function explode;
+use function gmdate;
+use function in_array;
+use function is_array;
+use function is_string;
+use function preg_split;
+use function rtrim;
+use function strtolower;
+use function strtotime;
+use function urldecode;
+use function urlencode;
+
 class Cookies
 {
     /**
      * Cookies from HTTP request
-     *
-     * @var array
      */
-    protected $requestCookies = [];
+    protected array $requestCookies = [];
 
     /**
      * Cookies for HTTP response
-     *
-     * @var array
      */
-    protected $responseCookies = [];
+    protected array $responseCookies = [];
 
     /**
      * Default cookie properties
-     *
-     * @var array
      */
-    protected $defaults = [
+    protected array $defaults = [
         'value' => '',
         'domain' => null,
         'hostonly' => null,
@@ -74,7 +84,7 @@ class Cookies
      */
     public function get(string $name, $default = null)
     {
-        return isset($this->requestCookies[$name]) ? $this->requestCookies[$name] : $default;
+        return array_key_exists($name, $this->requestCookies) ? $this->requestCookies[$name] : $default;
     }
 
     /**
@@ -154,7 +164,10 @@ class Cookies
             $result .= '; HttpOnly';
         }
 
-        if (isset($properties['samesite']) && in_array(strtolower($properties['samesite']), ['lax', 'strict'], true)) {
+        if (
+            isset($properties['samesite'])
+            && in_array(strtolower($properties['samesite']), ['lax', 'strict', 'none'], true)
+        ) {
             // While strtolower is needed for correct comparison, the RFC doesn't care about case
             $result .= '; SameSite=' . $properties['samesite'];
         }
@@ -174,7 +187,7 @@ class Cookies
     public static function parseHeader($header): array
     {
         if (is_array($header)) {
-            $header = isset($header[0]) ? $header[0] : '';
+            $header = $header[0] ?? '';
         }
 
         if (!is_string($header)) {

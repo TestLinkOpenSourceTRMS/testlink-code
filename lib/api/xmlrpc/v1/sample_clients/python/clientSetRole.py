@@ -11,7 +11,7 @@ devKey="YOURAPIKEY"
 
 server = xmlrpclib.Server(SERVER_URL%serverName)
 
-print server.tl.about()
+print(server.tl.about())
 
 # check Key
 if not (server.tl.checkDevKey({'devKey': devKey})):
@@ -22,27 +22,27 @@ args = {'devKey': devKey,
         'testprojectid': 1,
         'rolename': 'leader'}
 
-print "Set role leader to a user..."
+print("Set role leader to a user...")
 res = server.tl.setUserRoleOnProject(args)
 
 if res == True:
-    print "The role %s is granted to the user %s on the project %s."%(args['rolename'], args['userid'], args['testprojectid'])
+    print("The role %s is granted to the user %s on the project %s."%(args['rolename'], args['userid'], args['testprojectid']))
 else:
-    print "Something's wrong: "
+    print("Something's wrong: ")
     for err in res:
-        print err['message']
+        print(err['message'])
 
 args = {'devKey': devKey,
         'userid': 9999,
         'testprojectid': 1,
         'rolename': 'leader'}
 
-print "Set role leader to a non existing user..."
+print("Set role leader to a non existing user...")
 res = server.tl.setUserRoleOnProject(args)
 
 if res == True:
-    print "The role %s is granted to the user %s on the project %s."%(args['rolename'], args['userid'], args['testprojectid'])
+    print("The role %s is granted to the user %s on the project %s."%(args['rolename'], args['userid'], args['testprojectid']))
 else:
-    print "Something's wrong: "
+    print("Something's wrong: ")
     for err in res:
-        print err['message']
+        print(err['message'])

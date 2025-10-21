@@ -3,6 +3,27 @@ All notable changes to `oauth2-gitlab` will be documented in this file
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+Nothing yet.
+
+## [3.6.0] - 2023-11-06
+Maintenance release
+
+ - Upped code quality to PHPStan max level
+ - Officially support PHP 8.3
+ - Switched to Github Actions
+
+## [3.5.0] - 2022-10-18
+### Changed
+ - Maintenance release dropping support for PHP versions below 8.0
+
+## [3.4.0] - 2021-02-08
+### Added
+ - Compatibility with php-gitlab-api v11
+ - Test suite compatible with PHP8
+
+## [3.3.0] - 2020-02-10
+### Added
+ - Compatibility with php-gitlab-api v10
 
 ## [3.2.0] - 2020-02-10
 ### Changed
@@ -55,7 +76,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
  - Original fork, feature complete
 
-[Unreleased]: https://github.com/omines/oauth2-gitlab/compare/3.2.0...master
+[Unreleased]: https://github.com/omines/oauth2-gitlab/compare/3.6.0...master
+[3.6.0]: https://github.com/omines/oauth2-gitlab/compare/3.5.0...3.6.0
+[3.5.0]: https://github.com/omines/oauth2-gitlab/compare/3.4.0...3.5.0
+[3.4.0]: https://github.com/omines/oauth2-gitlab/compare/3.3.0...3.4.0
+[3.3.0]: https://github.com/omines/oauth2-gitlab/compare/3.2.0...3.3.0
 [3.2.0]: https://github.com/omines/oauth2-gitlab/compare/3.1.2...3.2.0
 [3.1.2]: https://github.com/omines/oauth2-gitlab/compare/3.1.1...3.1.2
 [3.1.1]: https://github.com/omines/oauth2-gitlab/compare/3.1.0...3.1.1

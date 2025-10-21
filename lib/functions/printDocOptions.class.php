@@ -1,140 +1,206 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- *  
+ *
  */
-class printDocOptions {
+class printDocOptions
+{
 
-  protected $doc;
-  protected $reqSpec;
-  protected $testSpec;
-  protected $exec;
+    protected $doc;
 
-  /**
-   *
-   */
-  function __construct() {
+    protected $reqSpec;
 
-    $this->doc = array();
+    protected $testSpec;
 
-    // element format
-    // 
-    // 'value' => 'toc','description' => 'opt_show_toc','checked' => 'n'
-    // 'value': will be used to get the value
-    // 'description': label id, to be used for localization
-    //
-    // if checked is not present => 'checked' => 'n'
-    //
-    $this->doc[] = array( 'value' => 'toc','description' => 'opt_show_toc');
-    $this->doc[] = array( 'value' => 'headerNumbering','description' => 'opt_show_hdrNumbering');
+    protected $exec;
 
-    // Specific for Documents regarding Requirement Specifications
-    $this->reqSpec = array();
-    $key2init = array('req_spec_scope','req_spec_author',
-                      'req_spec_overwritten_count_reqs',
-                      'req_spec_type','req_spec_cf','req_scope',
-                      'req_author','req_status',
-                      'req_type','req_cf','req_relations',
-                      'req_linked_tcs','req_coverage','displayVersion');
+    /**
+     */
+    public function __construct()
+    {
+        $this->doc = array();
 
-    $yes = array('req_spec_scope' => 'y','req_scope' => 'y');
-    foreach($key2init as $key) {
-      $yn = isset($key2init2yes[$key]) ? $key2init2yes[$key] : 'n';
-      $this->reqSpec[] = array('value' => $key,'checked' => $yn,
-                               'description' => 'opt_' . $key);
-    } 
+        // element format
+        //
+        // 'value' => 'toc','description' => 'opt_show_toc','checked' => 'n'
+        // 'value': will be used to get the value
+        // 'description': label id, to be used for localization
+        //
+        // if checked is not present => 'checked' => 'n'
+        $this->doc[] = array(
+            'value' => 'toc',
+            'description' => 'opt_show_toc'
+        );
+        $this->doc[] = array(
+            'value' => 'headerNumbering',
+            'description' => 'opt_show_hdrNumbering'
+        );
 
-    $this->testSpec = array();
-    $this->testSpec[] = array('value' => 'header','description' => 'opt_show_suite_txt');
-    $this->testSpec[] = array('value' => 'summary','description' => 'opt_show_tc_summary','checked' => 'y');
-    $this->testSpec[] = array('value' => 'body','description' => 'opt_show_tc_body');
-    $this->testSpec[] = array('value' => 'author','description' => 'opt_show_tc_author');
-    $this->testSpec[] = array('value' => 'keyword','description' => 'opt_show_tc_keys');
-    $this->testSpec[] = array('value' => 'cfields','description' => 'opt_show_cfields');
-    $this->testSpec[] = array( 'value' => 'requirement','description' => 'opt_show_tc_reqs');
+        // Specific for Documents regarding Requirement Specifications
+        $this->reqSpec = array();
+        $key2init = array(
+            'req_spec_scope',
+            'req_spec_author',
+            'req_spec_overwritten_count_reqs',
+            'req_spec_type',
+            'req_spec_cf',
+            'req_scope',
+            'req_author',
+            'req_status',
+            'req_type',
+            'req_cf',
+            'req_relations',
+            'req_linked_tcs',
+            'req_coverage',
+            'displayVersion'
+        );
 
-    $this->exec = array(); 
-    $this->exec[] = array( 'value' => 'execResultsByCFOnExecCombination','description' => 'opt_cfexec_comb');
+        foreach ($key2init as $key) {
+            $yn = isset($key2init2yes[$key]) ? $key2init2yes[$key] : 'n';
+            $this->reqSpec[] = array(
+                'value' => $key,
+                'checked' => $yn,
+                'description' => 'opt_' . $key
+            );
+        }
 
-    $this->exec[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes');
-        
-    $this->exec[] = array('value' => 'step_exec_notes', 'description' => 'opt_show_tcstep_exec_notes');
+        $this->testSpec = array();
+        $this->testSpec[] = array(
+            'value' => 'header',
+            'description' => 'opt_show_suite_txt'
+        );
+        $this->testSpec[] = array(
+            'value' => 'summary',
+            'description' => 'opt_show_tc_summary',
+            'checked' => 'y'
+        );
+        $this->testSpec[] = array(
+            'value' => 'body',
+            'description' => 'opt_show_tc_body'
+        );
+        $this->testSpec[] = array(
+            'value' => 'author',
+            'description' => 'opt_show_tc_author'
+        );
+        $this->testSpec[] = array(
+            'value' => 'keyword',
+            'description' => 'opt_show_tc_keys'
+        );
+        $this->testSpec[] = array(
+            'value' => 'cfields',
+            'description' => 'opt_show_cfields'
+        );
+        $this->testSpec[] = array(
+            'value' => 'requirement',
+            'description' => 'opt_show_tc_reqs'
+        );
 
-    $this->exec[] = array('value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
-        
-    $this->exec[] = array('value' => 'step_exec_status','description' => 'opt_show_tcstep_exec_status','checked' => 'y');
-        
-    $this->exec[] = array('value' => 'build_cfields','description' => 'opt_show_build_cfields','checked' => 'n');
-    $this->exec[] = array('value' => 'metrics','description' => 'opt_show_metrics');
+        $this->exec = array();
+        $this->exec[] = array(
+            'value' => 'execResultsByCFOnExecCombination',
+            'description' => 'opt_cfexec_comb'
+        );
 
-  }
+        $this->exec[] = array(
+            'value' => 'notes',
+            'description' => 'opt_show_tc_notes'
+        );
 
-  /**
-   *
-   */
-  function getDocOpt() {
-    return $this->doc;
-  }
+        $this->exec[] = array(
+            'value' => 'step_exec_notes',
+            'description' => 'opt_show_tcstep_exec_notes'
+        );
 
-  /**
-   *
-   */
-  function getTestSpecOpt() {
-    return $this->testSpec;
-  }
+        $this->exec[] = array(
+            'value' => 'passfail',
+            'description' => 'opt_show_passfail',
+            'checked' => 'y'
+        );
 
-  /**
-   *
-   */
-  function getReqSpecOpt() {
-    return $this->reqSpec;
-  }
+        $this->exec[] = array(
+            'value' => 'step_exec_status',
+            'description' => 'opt_show_tcstep_exec_status',
+            'checked' => 'y'
+        );
 
-
-  /**
-   *
-   */
-  function getExecOpt() {
-    return $this->exec;
-  }
-
-
-  /**
-   *
-   */
-  function getAllOptVars() {
-
-    $ov = array();
-    $prop = array('doc','testSpec','reqSpec','exec');
-    foreach($prop as $pp) {
-      foreach($this->$pp as $ele) {
-        $ov[$ele['value']] = isset($ele['checked']) ? $ele['checked'] : 'n';
-        $ov[$ele['value']] = ($ov[$ele['value']] == 'y') ? 1 : 0; 
-      }      
+        $this->exec[] = array(
+            'value' => 'build_cfields',
+            'description' => 'opt_show_build_cfields',
+            'checked' => 'n'
+        );
+        $this->exec[] = array(
+            'value' => 'metrics',
+            'description' => 'opt_show_metrics'
+        );
     }
 
-    return $ov;
-  }
-
-  /**
-   *
-   */
-  function getJSPrintPreferences() {
-
-    $ov = array();
-    $prop = array("doc","testSpec","reqSpec","exec");
-    foreach($prop as $pp) {
-      foreach($this->$pp as $ele) {
-        $ov[] = $ele['value']; 
-      }      
+    /**
+     */
+    public function getDocOpt()
+    {
+        return $this->doc;
     }
-    return implode(',',$ov);
-  }
 
+    /**
+     */
+    public function getTestSpecOpt()
+    {
+        return $this->testSpec;
+    }
 
+    /**
+     */
+    public function getReqSpecOpt()
+    {
+        return $this->reqSpec;
+    }
 
+    /**
+     */
+    public function getExecOpt()
+    {
+        return $this->exec;
+    }
 
+    /**
+     */
+    public function getAllOptVars()
+    {
+        $ov = array();
+        $prop = array(
+            'doc',
+            'testSpec',
+            'reqSpec',
+            'exec'
+        );
+        foreach ($prop as $pp) {
+            foreach ($this->$pp as $ele) {
+                $ov[$ele['value']] = isset($ele['checked']) ? $ele['checked'] : 'n';
+                $ov[$ele['value']] = ($ov[$ele['value']] == 'y') ? 1 : 0;
+            }
+        }
 
+        return $ov;
+    }
 
+    /**
+     */
+    public function getJSPrintPreferences()
+    {
+        $ov = array();
+        $prop = array(
+            "doc",
+            "testSpec",
+            "reqSpec",
+            "exec"
+        );
+        foreach ($prop as $pp) {
+            foreach ($this->$pp as $ele) {
+                $ov[] = $ele['value'];
+            }
+        }
+        return implode(',', $ov);
+    }
 }

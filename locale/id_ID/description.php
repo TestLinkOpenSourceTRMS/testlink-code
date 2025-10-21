@@ -1,7 +1,7 @@
 <?php
 /** -------------------------------------------------------------------------------------
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
- * 
+ *
  * Filename $RCSfile: description.php,v $
  * @version $Revision: 1.3 $
  * @modified $Date: 2010/06/24 17:25:57 $ $Author: asimon83 $
@@ -11,17 +11,17 @@
  * === English (en_GB) strings === - default development localization (World-wide English)
  *
  * @ABSTRACT
- * The file contains global variables with html text. These variables are used as 
- * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String" 
+ * The file contains global variables with html text. These variables are used as
+ * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String"
  * prefix '$TLS_hlp_' or '$TLS_txt_'. This must be a reserved prefix.
- * 
+ *
  * Contributors:
  * Add your localization to TestLink tracker as attachment to update the next release
  * for your language.
  *
  * No revision is stored for the the file - see CVS history
- * The initial data are based on help files stored in gui/help/<lang>/ directory. 
- * This directory is obsolete now. It serves as source for localization contributors only. 
+ * The initial data are based on help files stored in gui/help/<lang>/ directory.
+ * This directory is obsolete now. It serves as source for localization contributors only.
  *
  * ----------------------------------------------------------------------------------- */
 
@@ -33,8 +33,8 @@ selected (checked) the data will be shown. In order to change the data
 presented, check or uncheck, click on Filter, and select the desired data
 level from the tree.</p>
 
-<p><b>Document Header:</b> Users can filter out Document Header information. 
-Document Header information includes: Introduction, Scope, References, 
+<p><b>Document Header:</b> Users can filter out Document Header information.
+Document Header information includes: Introduction, Scope, References,
 Test Methodology, and Test Limitations.</p>
 
 <p><b>Test Case Body:</b> Users can filter out Test Case Body information. Test Case Body information
@@ -49,33 +49,33 @@ Body, Test Case Summary will always be included.</p>
 
 <p><b>Table of Content:</b> TestLink inserts list of all titles with internal hypertext links if checked.</p>
 
-<p><b>Output format:</b> There are two possibilities: HTML and MS Word. Browser calls MS word component 
+<p><b>Output format:</b> There are two possibilities: HTML and MS Word. Browser calls MS word component
 in second case.</p>";
 
 // testPlan.html
 $TLS_hlp_testPlan = "<h2>Test Plan</h2>
 
 <h3>General</h3>
-<p>A test plan is a systematic approach to testing a system such as software. You can organize testing activity with 
+<p>A test plan is a systematic approach to testing a system such as software. You can organize testing activity with
 particular builds of product in time and trace results.</p>
 
 <h3>Test Execution</h3>
-<p>This section is where users can execute test cases (write test results) and 
-print Test case suite of the Test Plan. This section is where users can track 
-the results of their test case execution.</p> 
+<p>This section is where users can execute test cases (write test results) and
+print Test case suite of the Test Plan. This section is where users can track
+the results of their test case execution.</p>
 
 <h2>Test Plan Management</h2>
-<p>This section, which is only lead accessible, allows users to administrate test plans. 
-Administering test plans involves creating/editing/deleting plans, 
-adding/editing/deleting/updating test cases in plans, creating builds as well as defining who can 
+<p>This section, which is only lead accessible, allows users to administrate test plans.
+Administering test plans involves creating/editing/deleting plans,
+adding/editing/deleting/updating test cases in plans, creating builds as well as defining who can
 see which plan.<br />
-Users with lead permissions may also set the priority/risk and ownership of 
-Test case suites (categories) and create testing milestones.</p> 
+Users with lead permissions may also set the priority/risk and ownership of
+Test case suites (categories) and create testing milestones.</p>
 
-<p>Note: It is possible that users may not see a dropdown containing any Test plans. 
-In this situation all links (except lead enabled ones) will be unlinked. If you 
-are in this situation you must contact a lead or admin to grant you the proper 
-project rights or create a Test Plan for you.</p>"; 
+<p>Note: It is possible that users may not see a dropdown containing any Test plans.
+In this situation all links (except lead enabled ones) will be unlinked. If you
+are in this situation you must contact a lead or admin to grant you the proper
+project rights or create a Test Plan for you.</p>";
 
 // custom_fields.html
 $TLS_hlp_customFields = "<h2>Custom Fields</h2>
@@ -96,7 +96,7 @@ attributes:</p>
 <li>Caption variable name (eg: This is the value that is
 supplied to lang_get() API , or displayed as-is if not found in language file).</li>
 <li>Custom field type (string, numeric, float, enum, email)</li>
-<li>Enumeration possible values (eg: RED|YELLOW|BLUE), applicable to list, multiselection list 
+<li>Enumeration possible values (eg: RED|YELLOW|BLUE), applicable to list, multiselection list
 and combo types.<br />
 <i>Use the pipe ('|') character to
 separate possible values for an enumeration. One of the possible values
@@ -125,7 +125,7 @@ assigning a test case a result (pass,fail,blocked) against a selected build.</p>
 <p>Access to a bug tracking system could be configured. User can directly add a new bugs
 and browse exesting ones then.</p>";
 
-//bug_add.html
+// bug_add.html
 $TLS_hlp_btsIntegration = "<h2>Add Bugs to Test Case</h2>
 <p><i>(only if it is configured)</i>
 TestLink has a very simple integration with Bug Tracking Systems (BTS),
@@ -135,7 +135,7 @@ The integration is done using links to pages on BTS, that calls the following fe
 	<li>Insert new bug.</li>
 	<li>Display existent bug info. </li>
 </ul>
-</p>  
+</p>
 
 <h3>Process to add a bug</h3>
 <p>
@@ -144,7 +144,7 @@ The integration is done using links to pages on BTS, that calls the following fe
    <li>Step 2: write down the BUGID assigned by BTS.</li>
    <li>Step 3: write BUGID on the input field.</li>
    <li>Step 4: use add bug button.</li>
-   </ul>  
+   </ul>
 
 After closing the add bug page, you will see relevant bug data on the execute page.
 </p>";
@@ -153,57 +153,55 @@ After closing the add bug page, you will see relevant bug data on the execute pa
 $TLS_hlp_executeFilter = "<h2>Setup Filter and Build for test execution</h2>
 
 <p>The left pane consists from navigator through test cases assigned to the current " .
-"Test plan and table with settings and filter. These filters allows the user " .
-"to refine offered set of test cases before they are executed." .
-"Setup your filter, press the \"Apply\" button and select appropriate Test Case " .
-"from tree menu.</p>
+    "Test plan and table with settings and filter. These filters allows the user " .
+    "to refine offered set of test cases before they are executed." .
+    "Setup your filter, press the \"Apply\" button and select appropriate Test Case " .
+    "from tree menu.</p>
 
 <h3>Build</h3>
 <p>Users must choose a build that will be connected with a test result. " .
-"Builds are the basic component for the current Test Plan. Each test case " .
-"may be run more times per build. However the last results is count only. 
+    "Builds are the basic component for the current Test Plan. Each test case " .
+    "may be run more times per build. However the last results is count only.
 <br />Builds can be created by leads using the Create New Build page.</p>
 
 <h3>Test Case ID filter</h3>
-<p>Users can filter test cases by unique identifier. This ID is created automatically 
-during create time. Empty box means that the filter doesn't apply.</p> 
+<p>Users can filter test cases by unique identifier. This ID is created automatically
+during create time. Empty box means that the filter doesn't apply.</p>
 
 <h3>Priority filter</h3>
 <p>Users can filter test cases by test priority. Each test case importance is combined" .
-"with test urgency within the current Test plan. For example 'HIGH' priority test case " .
-"is shown if importance or urgency is HIGH and second attribute is at least MEDIUM level.</p> 
+    "with test urgency within the current Test plan. For example 'HIGH' priority test case " .
+    "is shown if importance or urgency is HIGH and second attribute is at least MEDIUM level.</p>
 
 <h2>Result filter</h2>
-<p>Users can filter test cases by results. Results are what happened to that test 
+<p>Users can filter test cases by results. Results are what happened to that test
 case during a particular build. Test cases can pass, fail, be blocked, or not be run." .
-"This filter is disabled by default.</p>
+    "This filter is disabled by default.</p>
 
 <h3>User filter</h3>
 <p>Users can filter test cases by their assignee. The check-box allows to include also " .
-"\"unassigned\" tests into the resulted set in addtion.</p>";
+    "\"unassigned\" tests into the resulted set in addtion.</p>";
 /*
-<h2>Most Current Result</h2>
-<p>By default or if the 'most current' checkbox is unchecked, the tree will be sorted 
-by the build that is chosen from the dropdown box. In this state the tree will display 
-the test cases status. 
-<br />Example: User selects build 2 from the dropdown box and doesn't check the 'most 
-current' checkbox. All test cases will be shown with their status from build 2. 
-So, if test case 1 passed in build 2 it will be colored green.
-<br />If the user decideds to check the 'most current' checkbox the tree will be 
-colored by the test cases most recent result.
-<br />Ex: User selects build 2 from the dropdown box and this time checks 
-the 'most current' checkbox. All test cases will be shown with most current 
-status. So, if test case 1 passed in build 3, even though the user has also selected 
-build 2, it will be colored green.</p>
+ * <h2>Most Current Result</h2>
+ * <p>By default or if the 'most current' checkbox is unchecked, the tree will be sorted
+ * by the build that is chosen from the dropdown box. In this state the tree will display
+ * the test cases status.
+ * <br />Example: User selects build 2 from the dropdown box and doesn't check the 'most
+ * current' checkbox. All test cases will be shown with their status from build 2.
+ * So, if test case 1 passed in build 2 it will be colored green.
+ * <br />If the user decideds to check the 'most current' checkbox the tree will be
+ * colored by the test cases most recent result.
+ * <br />Ex: User selects build 2 from the dropdown box and this time checks
+ * the 'most current' checkbox. All test cases will be shown with most current
+ * status. So, if test case 1 passed in build 3, even though the user has also selected
+ * build 2, it will be colored green.</p>
  */
-
 
 // newest_tcversions.html
 $TLS_hlp_planTcModified = "<h2>Newest versions of linked Test Cases</h2>
 <p>The whole set of Test Cases linked to Test Plan is analyzed, and a list of Test Cases
 which have a newest version is displayed (against the current set of the Test Plan).
 </p>";
-
 
 // requirementsCoverage.html
 $TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
@@ -212,35 +210,34 @@ $TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
 test cases. Navigate via link \"Requirement Specification\" in main screen.</p>
 
 <h3>Requirements Specification</h3>
-<p>Requirements are grouped by 'Requirements Specification' document which is related to 
-Test Project.<br /> TestLink doesn't support versions for both Requirements Specification  
-and Requirements itself. So, version of document should be added after 
+<p>Requirements are grouped by 'Requirements Specification' document which is related to
+Test Project.<br /> TestLink doesn't support versions for both Requirements Specification
+and Requirements itself. So, version of document should be added after
 a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p> 
+An user can add simple description or notes to <b>Scope</b> field.</p>
 
-<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for 
-evaluation Req. coverage in case that not all requirements are added (imported) in. 
-The value <b>0</b> means that current count of requirements is used for metrics.</p> 
-<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test 
+<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for
+evaluation Req. coverage in case that not all requirements are added (imported) in.
+The value <b>0</b> means that current count of requirements is used for metrics.</p>
+<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test
 coverage is 25% (if all these added requirements will be tested).</i></p>
 
 <h3><a name=\"req\">Requirements</a></h3>
 <p>Click on title of a created Requirements Specification. You can create, edit, delete
 or import requirements for the document. Each requirement has title, scope and status.
 Status should be \"Normal\" or \"Not testable\". Not testable requirements are not counted
-to metrics. This parameter should be used for both unimplemented features and 
-wrong designed requirements.</p> 
+to metrics. This parameter should be used for both unimplemented features and
+wrong designed requirements.</p>
 
-<p>You can create new test cases for requirements by using multi action with checked 
+<p>You can create new test cases for requirements by using multi action with checked
 requirements within the specification screen. These Test Cases are created into Test Suite
-with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name = 
+with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name =
 \"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
 ";
 
-
 // planAddTC_m1.tpl
 $TLS_hlp_planAddTC = "<h2>Regarding 'Save Custom Fields'</h2>
-If you have defined and assigned to Test Project,<br /> 
+If you have defined and assigned to Test Project,<br />
 Custom Fields with:<br />
  'Display on test plan design=true' and <br />
  'Enable on test plan design=true'<br />
@@ -248,7 +245,7 @@ you will see these in this page ONLY for Test Cases linked to Test Plan.
 ";
 
 // xxx.html
-//$TLS_hlp_xxx = "";
+// $TLS_hlp_xxx = "";
 
 // ----- END ------------------------------------------------------------------
 ?>

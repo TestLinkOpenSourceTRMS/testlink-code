@@ -82,6 +82,7 @@ function ADODB_SetDatabaseAdapter(&$db)
 }
 
 
+#[\AllowDynamicProperties]
 class ADODB_Active_Record {
 	static $_changeNames = true; // dynamically pluralize table names
 	static $_foreignSuffix = '_id'; //
@@ -1142,10 +1143,10 @@ class ADODB_Active_Record {
 		$valarr = array();
 		$neworig = array();
 		$pairs = array();
-		$i = -1;
+		$i = 0;
 		$cnt = 0;
 		foreach($table->flds as $name=>$fld) {
-			$i += 1;
+			$orig = $this->_original[$i++] ?? null;
 			$val = $this->$name;
 			$neworig[] = $val;
 
@@ -1165,7 +1166,7 @@ class ADODB_Active_Record {
 				}
 			}
 
-			if (isset($this->_original[$i]) && $val === $this->_original[$i]) {
+			if ($val === $orig) {
 				continue;
 			}
 			$valarr[] = $val;

@@ -1,5 +1,5 @@
 <?php
- /**
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
@@ -10,7 +10,7 @@
  *
  *
  * A sample client implementation in php
- * 
+ *
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * @link      http://testlink.org/api/
@@ -23,30 +23,35 @@
  *      20080306 - franciscom - added dBug to improve diagnostic info.
  *      20080305 - franciscom - refactored
  */
- 
 require_once 'util.php';
 require_once 'sample.inc.php';
 
-$unitTestDescription="Test - getTestCasesForTestPlan";
+$unitTestDescription = "Test - getTestCasesForTestPlan";
 
 /**
-* getTestCasesForTestPlan
-* List test cases linked to a test plan
-* 
-* @param struct $args
-* @param string $args["devKey"]
-* @param int $args["testplanid"]
-* @param int $args["testcaseid"] - optional
-* @param int $args["buildid"] - optional
-* @param int $args["keywordid"] - optional
-* @param boolean $args["executed"] - optional
-* @param int $args["$assignedto"] - optional
-* @param string $args["executestatus"] - optional
-* @return mixed $resultInfo
-*/
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["testplanid"]=61579;
+ * getTestCasesForTestPlan
+ * List test cases linked to a test plan
+ *
+ * @param struct $args
+ * @param string $args["devKey"]
+ * @param int $args["testplanid"]
+ * @param int $args["testcaseid"]
+ *            - optional
+ * @param int $args["buildid"]
+ *            - optional
+ * @param int $args["keywordid"]
+ *            - optional
+ * @param boolean $args["executed"]
+ *            - optional
+ * @param int $args["$assignedto"]
+ *            - optional
+ * @param string $args["executestatus"]
+ *            - optional
+ * @return mixed $resultInfo
+ */
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["testplanid"] = 61579;
 
 // optional
 // $args["testcaseid"] - optional
@@ -56,25 +61,19 @@ $args["testplanid"]=61579;
 // $args["$assignedto"] - optional
 // $args["executestatus"] - optional
 
-//$debug=true;
-$debug=false;
+$debug = false;
 echo $unitTestDescription;
 
-
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
-
-
+$client->debug = $debug;
 
 new dBug($args);
-if(!$client->query('tl.getTestCasesForTestPlan', $args))
-{
-		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
-		$response=null;
-}
-else
-{
-		$response=$client->getResponse();
+if (! $client->query('tl.getTestCasesForTestPlan', $args)) {
+    echo "something went wrong - " . $client->getErrorCode() . " - " .
+        $client->getErrorMessage();
+    $response = null;
+} else {
+    $response = $client->getResponse();
 }
 
 echo "<br> Result was: ";
@@ -83,29 +82,25 @@ echo "<br> Result was: ";
 new dBug($response);
 echo "<br>";
 
-
 // 20080518 - franciscom
-$unitTestDescription="Test - createTestProject";
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["testprojectname"]='API TestProject';
+$unitTestDescription = "Test - createTestProject";
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["testprojectname"] = 'API TestProject';
 
-$debug=true;
-//$debug=false;
+$debug = true;
 echo $unitTestDescription;
 
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
+$client->debug = $debug;
 
 new dBug($args);
-if(!$client->query('tl.createTestProject', $args))
-{
-		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
-		$response=null;
-}
-else
-{
-		$response=$client->getResponse();
+if (! $client->query('tl.createTestProject', $args)) {
+    echo "something went wrong - " . $client->getErrorCode() . " - " .
+        $client->getErrorMessage();
+    $response = null;
+} else {
+    $response = $client->getResponse();
 }
 
 echo "<br> Result was: ";
@@ -113,32 +108,29 @@ new dBug($response);
 echo "<br>";
 
 // ----------------------------------------------------------------------
-$method='getTestCaseCustomFieldDesignValue';
-$client_query='tl.' . $method;
-$unitTestDescription="Test - $method";
+$method = 'getTestCaseCustomFieldDesignValue';
+$client_query = 'tl.' . $method;
+$unitTestDescription = "Test - $method";
 
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["testcaseexternalid"]='ESP-1';
-// $args["customfieldname"]='TESTER_EXPERIENCE';
-$args["customfieldname"]='SSCRIPT_CF1';
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["testcaseexternalid"] = 'ESP-1';
+$args["customfieldname"] = 'SSCRIPT_CF1';
 
-$debug=true;
+$debug = true;
 
 echo $unitTestDescription;
 
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
+$client->debug = $debug;
 
 new dBug($args);
-if(!$client->query($client_query, $args))
-{
-		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
-		$response=null;
-}
-else
-{
-		$response=$client->getResponse();
+if (! $client->query($client_query, $args)) {
+    echo "something went wrong - " . $client->getErrorCode() . " - " .
+        $client->getErrorMessage();
+    $response = null;
+} else {
+    $response = $client->getResponse();
 }
 
 echo "<br> Result was: ";
@@ -146,26 +138,24 @@ new dBug($response);
 echo "<br>";
 
 // -------------------------------------------------------------------------------------
-$unitTestDescription="Test - getTestSuitesForTestPlan";
-$args=array();
-$args["devKey"]=DEV_KEY;
-$args["testplanid"]=61579;
+$unitTestDescription = "Test - getTestSuitesForTestPlan";
+$args = array();
+$args["devKey"] = DEV_KEY;
+$args["testplanid"] = 61579;
 
-$debug=true;
+$debug = true;
 echo $unitTestDescription;
 
 $client = new IXR_Client($server_url);
-$client->debug=$debug;
+$client->debug = $debug;
 
 new dBug($args);
-if(!$client->query('tl.getTestSuitesForTestPlan', $args))
-{
-		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
-		$response=null;
-}
-else
-{
-		$response=$client->getResponse();
+if (! $client->query('tl.getTestSuitesForTestPlan', $args)) {
+    echo "something went wrong - " . $client->getErrorCode() . " - " .
+        $client->getErrorMessage();
+    $response = null;
+} else {
+    $response = $client->getResponse();
 }
 
 echo "<br> Result was: ";

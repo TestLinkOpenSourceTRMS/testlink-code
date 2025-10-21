@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-diactoros for the canonical source repository
- * @copyright https://github.com/laminas/laminas-diactoros/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-diactoros/blob/master/LICENSE.md New BSD License
- */
-
 declare(strict_types=1);
 
 namespace Laminas\Diactoros\Response;
@@ -15,7 +9,6 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Stream;
 use Psr\Http\Message\StreamInterface;
 
-use function get_class;
 use function gettype;
 use function is_object;
 use function is_string;
@@ -41,7 +34,7 @@ class TextResponse extends Response
      * @param string|StreamInterface $text String or stream for the message body.
      * @param int $status Integer status code for the response; 200 by default.
      * @param array $headers Array of headers to use at initialization.
-     * @throws Exception\InvalidArgumentException if $text is neither a string or stream.
+     * @throws Exception\InvalidArgumentException If $text is neither a string or stream.
      */
     public function __construct($text, int $status = 200, array $headers = [])
     {
@@ -56,9 +49,9 @@ class TextResponse extends Response
      * Create the message body.
      *
      * @param string|StreamInterface $text
-     * @throws Exception\InvalidArgumentException if $text is neither a string or stream.
+     * @throws Exception\InvalidArgumentException If $text is neither a string or stream.
      */
-    private function createBody($text) : StreamInterface
+    private function createBody($text): StreamInterface
     {
         if ($text instanceof StreamInterface) {
             return $text;
@@ -67,8 +60,8 @@ class TextResponse extends Response
         if (! is_string($text)) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Invalid content (%s) provided to %s',
-                (is_object($text) ? get_class($text) : gettype($text)),
-                __CLASS__
+                is_object($text) ? $text::class : gettype($text),
+                self::class
             ));
         }
 

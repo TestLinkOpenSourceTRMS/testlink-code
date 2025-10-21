@@ -35,4 +35,4 @@ $serverRequest = $creator->fromGlobals();
 ## Other packages
 
 * [nyholm/psr7](https://github.com/Nyholm/psr7) - A super fast PSR-7 implementation.
-* [zendframework/zend-httphandlerrunner](https://github.com/zendframework/zend-httphandlerrunner) - To send/emit PSR-7 responses
+* [laminas/laminas-httphandlerrunner](https://github.com/laminas/laminas-httphandlerrunner) - To send/emit PSR-7 responses

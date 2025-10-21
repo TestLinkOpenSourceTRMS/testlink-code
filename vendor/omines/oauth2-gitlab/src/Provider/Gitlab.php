@@ -12,6 +12,7 @@ namespace Omines\OAuth2\Client\Provider;
 
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Omines\OAuth2\Client\Provider\Exception\GitlabIdentityProviderException;
@@ -21,37 +22,27 @@ use Psr\Http\Message\ResponseInterface;
  * Gitlab.
  *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
+ *
+ * @phpstan-import-type ResourceOwner from GitlabResourceOwner
  */
 class Gitlab extends AbstractProvider
 {
     use BearerAuthorizationTrait;
 
-    const PATH_API_USER = '/api/v4/user';
-    const PATH_AUTHORIZE = '/oauth/authorize';
-    const PATH_TOKEN = '/oauth/token';
-    const DEFAULT_SCOPE = 'api';
-    const SCOPE_SEPARATOR = ' ';
+    public const DEFAULT_DOMAIN = 'https://gitlab.com';
+    public const DEFAULT_SCOPE = 'api';
+    public const SCOPE_SEPARATOR = ' ';
 
-    /** @var string */
-    public $domain = 'https://gitlab.com';
+    private const PATH_API_USER = '/api/v4/user';
+    private const PATH_AUTHORIZE = '/oauth/authorize';
+    private const PATH_TOKEN = '/oauth/token';
 
-    /**
-     * Gitlab constructor.
-     */
-    public function __construct(array $options, array $collaborators = [])
-    {
-        if (isset($options['domain'])) {
-            $this->domain = $options['domain'];
-        }
-        parent::__construct($options, $collaborators);
-    }
+    public string $domain = self::DEFAULT_DOMAIN;
 
     /**
      * Get authorization url to begin OAuth flow.
-     *
-     * @return string
      */
-    public function getBaseAuthorizationUrl()
+    public function getBaseAuthorizationUrl(): string
     {
         return $this->domain . self::PATH_AUTHORIZE;
     }
@@ -59,19 +50,17 @@ class Gitlab extends AbstractProvider
     /**
      * Get access token url to retrieve token.
      *
-     * @return string
+     * @param mixed[] $params
      */
-    public function getBaseAccessTokenUrl(array $params)
+    public function getBaseAccessTokenUrl(array $params): string
     {
         return $this->domain . self::PATH_TOKEN;
     }
 
     /**
      * Get provider url to fetch user details.
-     *
-     * @return string
      */
-    public function getResourceOwnerDetailsUrl(AccessToken $token)
+    public function getResourceOwnerDetailsUrl(AccessToken $token): string
     {
         return $this->domain . self::PATH_API_USER;
     }
@@ -82,9 +71,9 @@ class Gitlab extends AbstractProvider
      *
      * This returns an array with 'api' scope as default.
      *
-     * @return array
+     * @return string[]
      */
-    protected function getDefaultScopes()
+    protected function getDefaultScopes(): array
     {
         return [self::DEFAULT_SCOPE];
     }
@@ -92,7 +81,7 @@ class Gitlab extends AbstractProvider
     /**
      * GitLab uses a space to separate scopes.
      */
-    protected function getScopeSeparator()
+    protected function getScopeSeparator(): string
     {
         return self::SCOPE_SEPARATOR;
     }
@@ -100,24 +89,27 @@ class Gitlab extends AbstractProvider
     /**
      * Check a provider response for errors.
      *
-     * @param  mixed $data Parsed response data
+     * @param ResponseInterface $response Parsed response data
+     * @param array{error?: string, message?: string}|mixed $data
      * @throws IdentityProviderException
      */
-    protected function checkResponse(ResponseInterface $response, $data)
+    protected function checkResponse(ResponseInterface $response, mixed $data): void
     {
-        if ($response->getStatusCode() >= 400) {
-            throw GitlabIdentityProviderException::clientException($response, $data);
+        if (!is_array($data)) {
+            throw GitlabIdentityProviderException::fromResponse($response, 'Corrupted response');
+        } elseif ($response->getStatusCode() >= 400) {
+            throw GitlabIdentityProviderException::fromResponse($response, $data['message'] ?? $response->getReasonPhrase());
         } elseif (isset($data['error'])) {
-            throw GitlabIdentityProviderException::oauthException($response, $data);
+            throw GitlabIdentityProviderException::fromResponse($response, $data['error']);
         }
     }
 
     /**
      * Generate a user object from a successful user details request.
      *
-     * @return \League\OAuth2\Client\Provider\ResourceOwnerInterface
+     * @param ResourceOwner $response
      */
-    protected function createResourceOwner(array $response, AccessToken $token)
+    protected function createResourceOwner(array $response, AccessToken $token): ResourceOwnerInterface
     {
         $user = new GitlabResourceOwner($response, $token);
 

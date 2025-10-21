@@ -8,8 +8,7 @@
  * @link        http://www.testlink.org/
  *
  */
-
-require_once(TL_ABS_PATH . '/lib/functions/tlPlugin.class.php');
+require_once (TL_ABS_PATH . '/lib/functions/tlPlugin.class.php');
 
 /**
  * Sample Testlink Plugin class that registers itself with the system and provides
@@ -22,132 +21,140 @@ require_once(TL_ABS_PATH . '/lib/functions/tlPlugin.class.php');
  */
 class TLTestPlugin extends TestlinkPlugin
 {
-  function _construct()
-  {
 
-  }
+    function _construct()
+    {}
 
-  function register()
-  {
-    $this->name = 'TLTest';
-    $this->description = 'Test Plugin';
+    function register()
+    {
+        $this->name = 'TLTest';
+        $this->description = 'Test Plugin';
 
-    $this->version = '1.0';
+        $this->version = '1.0';
 
-    $this->author = 'Testlink';
-    $this->contact = 'raja@star-systems.in';
-    $this->url = 'http://www.collab.net';
-  }
+        $this->author = 'Testlink';
+        $this->contact = 'raja@star-systems.in';
+        $this->url = 'http://www.collab.net';
+    }
 
-  function config()
-  {
-    return array(
-      'config1' => '',
-      'config2' => 0
-    );
-  }
+    function config()
+    {
+        return array(
+            'config1' => '',
+            'config2' => 0
+        );
+    }
 
-  function hooks()
-  {
-    $hooks = array(
-      'EVENT_TEST_SUITE_CREATE' => 'testsuite_create',
-      'EVENT_TEST_PROJECT_CREATE' => 'testproject_create',
-      'EVENT_TEST_PROJECT_UPDATE' => 'testproject_update',
-      'EVENT_TEST_CASE_UPDATE' => 'testcase_update',
-      'EVENT_TEST_REQUIREMENT_CREATE' => 'testrequirement_create',
-      'EVENT_TEST_REQUIREMENT_UPDATE' => 'testrequirement_update',
-      'EVENT_TEST_REQUIREMENT_DELETE' => 'testrequirement_delete',
-      'EVENT_EXECUTE_TEST'  => 'testExecute',
-      'EVENT_LEFTMENU_TOP' => 'top_link',
-      'EVENT_LEFTMENU_BOTTOM' => 'bottom_link',
-      'EVENT_RIGHTMENU_TOP' => 'right_top_link',
-      'EVENT_RIGHTMENU_BOTTOM' => 'right_bottom_link',
-      'EVENT_TESTRUN_DISPLAY' => 'testrun_display_block'
-    );
-    return $hooks;
-  }
+    function hooks()
+    {
+        return array(
+            'EVENT_TEST_SUITE_CREATE' => 'testsuite_create',
+            'EVENT_TEST_PROJECT_CREATE' => 'testproject_create',
+            'EVENT_TEST_PROJECT_UPDATE' => 'testproject_update',
+            'EVENT_TEST_CASE_UPDATE' => 'testcase_update',
+            'EVENT_TEST_REQUIREMENT_CREATE' => 'testrequirement_create',
+            'EVENT_TEST_REQUIREMENT_UPDATE' => 'testrequirement_update',
+            'EVENT_TEST_REQUIREMENT_DELETE' => 'testrequirement_delete',
+            'EVENT_EXECUTE_TEST' => 'testExecute',
+            'EVENT_LEFTMENU_TOP' => 'top_link',
+            'EVENT_LEFTMENU_BOTTOM' => 'bottom_link',
+            'EVENT_RIGHTMENU_TOP' => 'right_top_link',
+            'EVENT_RIGHTMENU_BOTTOM' => 'right_bottom_link',
+            'EVENT_TESTRUN_DISPLAY' => 'testrun_display_block'
+        );
+    }
 
-  function testsuite_create($args)
-  {
-    $arg = func_get_args();   // To get all the arguments
-    $db = $this->db;      // To show how to get a Database Connection
-    echo plugin_lang_get("testsuite_display_message");
-    tLog("Im in testsuite create", "WARNING");
-  }
+    function testsuite_create($args)
+    {
+        $arg = func_get_args(); // To get all the arguments
+        $db = $this->db; // To show how to get a Database Connection
+        echo plugin_lang_get("testsuite_display_message");
+        tLog("Im in testsuite create", "WARNING");
+    }
 
-  function testproject_create()
-  {
-    $arg = func_get_args();   // To get all the arguments
-    tLog("In TestProject Create with id: " . $arg[1] . ", name: " . $arg[2] . ", prefix: " . $arg[3], "WARNING");
-  }
+    function testproject_create()
+    {
+        $arg = func_get_args(); // To get all the arguments
+        tLog(
+            "In TestProject Create with id: " . $arg[1] . ", name: " . $arg[2] .
+            ", prefix: " . $arg[3], "WARNING");
+    }
 
-  function testproject_update()
-  {
-    $arg = func_get_args();   // To get all the arguments
-    tLog("In TestProject Update with id: " . $arg[1] . ", name: " . $arg[2] . ", prefix: " . $arg[3], "WARNING");
-  }
+    function testproject_update()
+    {
+        $arg = func_get_args(); // To get all the arguments
+        tLog(
+            "In TestProject Update with id: " . $arg[1] . ", name: " . $arg[2] .
+            ", prefix: " . $arg[3], "WARNING");
+    }
 
-  function testcase_update()
-  {
-      $arg = func_get_args();   // To get all the arguments
-      tLog("In TestCase Update with id: " . $arg[1] . ", planid: " . $arg[2] . ", title: " . $arg[3] . ", summary" . $arg[4], "WARNING");
-  }
+    function testcase_update()
+    {
+        $arg = func_get_args(); // To get all the arguments
+        tLog(
+            "In TestCase Update with id: " . $arg[1] . ", planid: " . $arg[2] .
+            ", title: " . $arg[3] . ", summary" . $arg[4], "WARNING");
+    }
 
-  function testrequirement_create()
-  {
-      $arg = func_get_args();   // To get all the arguments
-      tLog("In TestRequirement Create with id: " . $arg[1], "WARNING");
-  }
+    function testrequirement_create()
+    {
+        $arg = func_get_args(); // To get all the arguments
+        tLog("In TestRequirement Create with id: " . $arg[1], "WARNING");
+    }
 
-  function testrequirement_update()
-  {
-      $arg = func_get_args();   // To get all the arguments
-      tLog("In TestRequirement Update with id: " . $arg[1], "WARNING");
-  }
+    function testrequirement_update()
+    {
+        $arg = func_get_args(); // To get all the arguments
+        tLog("In TestRequirement Update with id: " . $arg[1], "WARNING");
+    }
 
-  function testrequirement_delete()
-  {
-      $arg = func_get_args();   // To get all the arguments
-      tLog("In TestRequirement Delete with id: " . $arg[1], "WARNING");
-  }
+    function testrequirement_delete()
+    {
+        $arg = func_get_args(); // To get all the arguments
+        tLog("In TestRequirement Delete with id: " . $arg[1], "WARNING");
+    }
 
-  function testExecute() {
-    $arg = func_get_args();   // To get all the arguments
-    tLog("In TestRun with testrunid: " . $arg[1] . ", planid: " . $arg[2] . ", buildid: " . $arg[3] . ", testcaseid: " . $arg[4] . ", Notes: " . $arg[5] . ", Status: " . $arg[6], "WARNING");
-  }
+    function testExecute()
+    {
+        $arg = func_get_args(); // To get all the arguments
+        tLog(
+            "In TestRun with testrunid: " . $arg[1] . ", planid: " . $arg[2] .
+            ", buildid: " . $arg[3] . ", testcaseid: " . $arg[4] . ", Notes: " .
+            $arg[5] . ", Status: " . $arg[6], "WARNING");
+    }
 
-  function testrun_display_block() {
-    $args = func_get_args();
-    // $args details: $arg[1] -> Testplan Id, $arg[2] -> Build Id, $arg[3] ->TestCase Id, $arg[4] -> TestCase Version Id
-    return '<img src="http://www.testingexcellence.com/wp-content/uploads/2010/01/testlink-open-source-test-management-tool.jpg" />';
-  }
+    function testrun_display_block()
+    {
+        $args = func_get_args();
+        // $args details: $arg[1] -> Testplan Id, $arg[2] -> Build Id, $arg[3] ->TestCase Id, $arg[4] -> TestCase Version Id
+        return '<img src="http://www.testingexcellence.com/wp-content/uploads/2010/01/testlink-open-source-test-management-tool.jpg" />';
+    }
 
-  function bottom_link()
-  {
-	$tLink['href'] = '';
-	$tLink['label'] = plugin_lang_get('left_bottom_link');
-    return $tLink;
-  }
+    function bottom_link()
+    {
+        $tLink['href'] = '';
+        $tLink['label'] = plugin_lang_get('left_bottom_link');
+        return $tLink;
+    }
 
-  function top_link()
-  {
-	$tLink['href'] = plugin_page('config.php');
-	$tLink['label'] = plugin_lang_get('config');
-    return $tLink;
-  }
+    function top_link()
+    {
+        $tLink['href'] = plugin_page('config.php');
+        $tLink['label'] = plugin_lang_get('config');
+        return $tLink;
+    }
 
-  function right_top_link()
-  {
-	$tLink['href'] = '';
-	$tLink['label'] = plugin_lang_get('right_top_link');
-    return $tLink;
-  }
+    function right_top_link()
+    {
+        $tLink['href'] = '';
+        $tLink['label'] = plugin_lang_get('right_top_link');
+        return $tLink;
+    }
 
-  function right_bottom_link()
-  {
-	$tLink['href'] = '';
-	$tLink['label'] = plugin_lang_get('right_bottom_link');
-    return $tLink;
-  }
-
+    function right_bottom_link()
+    {
+        $tLink['href'] = '';
+        $tLink['label'] = plugin_lang_get('right_bottom_link');
+        return $tLink;
+    }
 }

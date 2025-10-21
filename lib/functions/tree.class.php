@@ -1343,7 +1343,7 @@ class tree extends tlObject
         $parentNodeID = intval($parent_id);
         if (! is_null($id)) {
             // Try to get parent id if not provided on method call.
-            if (is_null($parentNodeID) || $parentNodeID <= 0) {
+            if ($parentNodeID <= 0) {
                 $sql = "/* {$debugMsg} */ " .
                     " SELECT parent_id FROM {$this->object_table} NHA " .
                     " WHERE NHA.id = " . $this->db->prepare_int($id);

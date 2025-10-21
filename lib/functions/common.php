@@ -692,10 +692,7 @@ function isBlank($p_var)
 {
     $p_var = trim($p_var);
     $str_len = strlen($p_var);
-    if (0 == $str_len) {
-        return true;
-    }
-    return false;
+    return 0 == $str_len;
 }
 
 /**

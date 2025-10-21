@@ -496,11 +496,7 @@ function string_prepare_header($p_string)
  */
 function string_contains_scripting_chars($p_string)
 {
-    if ((strstr($p_string, '<') !== false) || (strstr($p_string, '>') !== false)) {
-        return true;
-    }
-
-    return false;
+    return (strstr($p_string, '<') !== false) || (strstr($p_string, '>') !== false);
 }
 
 /**

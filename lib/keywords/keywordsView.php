@@ -59,7 +59,7 @@ function initArgs(&$dbHandler)
         // Probably useless
         $args->openByOther = isset($_REQUEST['openByOther']) ? intval(
             $_REQUEST['openByOther']) : 0;
-        if ($args->openByOther) {
+        if ($args->openByOther !== 0) {
             $args->dialogName = 'kw_dialog';
             $args->bodyOnLoad = "dialog_onLoad($args->dialogName)";
             $args->bodyOnUnload = "dialog_onUnload($args->dialogName)";

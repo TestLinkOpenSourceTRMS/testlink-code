@@ -216,7 +216,7 @@ class exec_cfield_mgr extends cfield_mgr
 
                         foreach ($cf_selected_name as $selectedValue) {
                             $cf_string .= $cf_seperator . $selectedValue;
-                            if ($firstPass) {
+                            if ($firstPass !== 0) {
                                 $cf_seperator = '|';
                                 $firstPass = 0;
                             }

@@ -2248,7 +2248,7 @@ $tlCfg->csrf_filter_enabled = true;
 /**
  * Converted and derived variables (Users should not modify this section)
  */
-define('REFRESH_SPEC_TREE', $tlCfg->spec_cfg->automatic_tree_refresh ? 1 : 0);
+define('REFRESH_SPEC_TREE', $tlCfg->spec_cfg->automatic_tree_refresh !== 0 ? 1 : 0);
 define('TL_SORT_TABLE_ENGINE', $g_sort_table_engine);
 define("TL_REPOSITORY_MAXFILESIZE",
     1024 * 1024 * $tlCfg->repository_max_filesize);

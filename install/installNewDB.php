@@ -474,7 +474,7 @@ if (! empty($a_sql_data)) {
     }
 }
 
-if ($update_pwd) {
+if ($update_pwd !== 0) {
     echo "Password Conversion ...";
     // @author Francisco Mancardi - 20050918
     // Found error upgrading from 1.0.4 to 1.6 on RH

@@ -68,7 +68,7 @@ if ($req_ids !== []) {
     list ($gui->total_reqs, $rspecSet, $testcases) = buildReqSpecMap($req_ids,
         $req_mgr, $req_spec_mgr, $tplan_mgr, $args->states_to_show->selected,
         $args);
-    if (! count($rspecSet)) {
+    if (count($rspecSet) === 0) {
         $gui->warning_msg = $labels['no_matching_reqs'];
     }
 } else {
@@ -76,7 +76,7 @@ if ($req_ids !== []) {
 }
 
 // second step: walk through req spec map, count/calculate, store results
-if (count($rspecSet)) {
+if (count($rspecSet) > 0) {
 
     foreach ($rspecSet as $rspec_id => $req_spec_info) {
         $rspecSet[$rspec_id]['req_counters'] = array(
@@ -131,7 +131,7 @@ if (count($rspecSet)) {
 }
 
 // last step: build the table
-if (count($rspecSet)) {
+if (count($rspecSet) > 0) {
     $allStatusCode = config_get('results');
 
     // headers

@@ -245,8 +245,8 @@ function initArgs(&$dbHandler)
     $args->cts = null;
 
     unset($tprojectMgr);
-    if ($args->codeTrackerEnabled = intval(
-        $args->tcaseTestProject['code_tracker_enabled'])) {
+    if (($args->codeTrackerEnabled = intval(
+        $args->tcaseTestProject['code_tracker_enabled'])) !== 0) {
         $ct_mgr = new tlCodeTracker($dbHandler);
         $args->ctsCfg = $ct_mgr->getLinkedTo($args->tproject_id);
         $args->cts = $ct_mgr->getInterfaceObject($args->tproject_id);

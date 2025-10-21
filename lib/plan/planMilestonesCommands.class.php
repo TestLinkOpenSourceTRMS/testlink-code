@@ -133,7 +133,7 @@ class planMilestonesCommands
 
         // BUGID 3716
         // are the dates valid?
-        if ($op_ok) {
+        if ($op_ok !== 0) {
             // start date is optional
             $op_ok = is_valid_date($argsObj->target_date_original,
                 $date_format_cfg) &&
@@ -227,7 +227,7 @@ class planMilestonesCommands
 
         // BUGID 3716
         // are the dates valid?
-        if ($op_ok) {
+        if ($op_ok !== 0) {
             // start date is optional
             $op_ok = is_valid_date($argsObj->target_date_original,
                 $date_format_cfg) &&

@@ -133,7 +133,7 @@ class tlAttachment extends tlDBObject
         $this->isImage = null;
         $this->inlineString = null;
 
-        if (! ($options & self::TLOBJ_O_SEARCH_BY_ID)) {
+        if (($options & self::TLOBJ_O_SEARCH_BY_ID) === 0) {
             $this->dbID = null;
         }
     }
@@ -251,7 +251,7 @@ class tlAttachment extends tlDBObject
             "compression_type,file_path,fk_id,fk_table FROM {$this->tables['attachments']} ";
 
         $clauses = null;
-        if ($options & self::TLOBJ_O_SEARCH_BY_ID) {
+        if (($options & self::TLOBJ_O_SEARCH_BY_ID) !== 0) {
             $clauses[] = "id = {$this->dbID}";
         }
         if ($clauses) {

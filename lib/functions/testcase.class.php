@@ -1505,7 +1505,7 @@ class testcase extends tlObjectWithAttachments
                 $this->update_tcversion_steps($tcversion_id, $steps);
             }
 
-            if ($ret['status_ok']) {
+            if ($ret['status_ok'] !== 0) {
 
                 $idCard = array(
                     'id' => $id,
@@ -1612,7 +1612,7 @@ class testcase extends tlObjectWithAttachments
         $linked_tcversions = $this->get_linked_versions($id);
         $has_links_to_testplans = is_null($linked_tcversions) ? 0 : 1;
 
-        if ($has_links_to_testplans) {
+        if ($has_links_to_testplans !== 0) {
             // check if executed
             $linked_not_exec = $this->get_linked_versions($id,
                 array(

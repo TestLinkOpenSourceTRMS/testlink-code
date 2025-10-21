@@ -1024,7 +1024,7 @@ class searchCommands
         $mapTC = null;
         if ($doFilter) {
             $mixedFilter = $this->getFilters();
-            if ($filter) {
+            if ($filter !== []) {
                 $sqlPart2 .= implode("", $filter);
             }
 

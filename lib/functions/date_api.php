@@ -227,12 +227,12 @@ function checkTimeStamp($ts)
         $status_ok |= preg_match($v, $value);
     }
 
-    if (! $status_ok) {
+    if ($status_ok === 0) {
         throw new Exception("Invalid Timestamp format", 1);
     }
 
     // Check content
-    if ($status_ok) {
+    if ($status_ok !== 0) {
         // Check Domain
         $status_ok = (strtotime($value) !== false);
         if ($status_ok) {

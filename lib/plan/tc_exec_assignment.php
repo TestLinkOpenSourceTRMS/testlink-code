@@ -344,7 +344,7 @@ function initArgs()
 
     $args->tplan_id = intval(
         isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0);
-    if ($args->tplan_id) {
+    if ($args->tplan_id !== 0) {
         $args->tplan_id = intval(
             isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID']);
     }
@@ -355,7 +355,7 @@ function initArgs()
         isset($_REQUEST['targetUser']) ? $_REQUEST['targetUser'] : 0);
 
     $key = 'doRemoveAll';
-    if ($args->$key = isset($_REQUEST[$key]) ? 1 : 0) {
+    if (($args->$key = isset($_REQUEST[$key]) ? 1 : 0) !== 0) {
         $args->doAction = $key;
     }
 

@@ -3879,7 +3879,7 @@ class testplan extends tlObjectWithAttachments
                         if (! is_null($versionAssignInfo)) {
                             foreach ($versionAssignInfo[$tcversID][$platform_id] as $vaInfo) {
                                 $assignedTesterId = intval($vaInfo['user_id']);
-                                if ($assignedTesterId) {
+                                if ($assignedTesterId !== 0) {
                                     $user = tlUser::getByID($this->db,
                                         $assignedTesterId);
                                     if ($user) {
@@ -8052,7 +8052,7 @@ class build_mgr extends tlObject
         }
 
         if (! is_null($members['is_open'])) {
-            $open_status = intval($members['is_open']) ? 1 : 0;
+            $open_status = intval($members['is_open']) !== 0 ? 1 : 0;
             $sql .= " , is_open=" . $open_status;
 
             if ($open_status == 1) {

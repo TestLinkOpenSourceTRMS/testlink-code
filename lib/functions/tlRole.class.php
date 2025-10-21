@@ -89,10 +89,10 @@ class tlRole extends tlDBObject
     {
         $this->description = null;
         $this->rights = null;
-        if (! ($options & self::ROLE_O_SEARCH_BYNAME)) {
+        if (($options & self::ROLE_O_SEARCH_BYNAME) === 0) {
             $this->name = null;
         }
-        if (! ($options & self::TLOBJ_O_SEARCH_BY_ID)) {
+        if (($options & self::TLOBJ_O_SEARCH_BY_ID) === 0) {
             $this->dbID = null;
         }
 
@@ -134,24 +134,24 @@ class tlRole extends tlDBObject
         $this->_clean($options);
         $getFullDetails = ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS);
         $sql = "SELECT a.id AS role_id,a.description AS role_desc, a.notes ";
-        if ($getFullDetails) {
+        if ($getFullDetails !== 0) {
             $sql .= " ,c.id AS right_id,c.description ";
         }
 
         $sql .= " FROM {$this->object_table} a ";
 
-        if ($getFullDetails) {
+        if ($getFullDetails !== 0) {
             $sql .= " LEFT OUTER JOIN {$this->tables['role_rights']} b ON a.id = b.role_id " .
                 " LEFT OUTER JOIN {$this->tables['rights']}  c ON b.right_id = c.id ";
         }
 
         $clauses = null;
-        if ($options & self::ROLE_O_SEARCH_BYNAME) {
+        if (($options & self::ROLE_O_SEARCH_BYNAME) !== 0) {
             $clauses[] = "a.description = '" . $db->prepare_string($this->name) .
                 "'";
         }
 
-        if ($options & self::TLOBJ_O_SEARCH_BY_ID) {
+        if (($options & self::TLOBJ_O_SEARCH_BY_ID) !== 0) {
             $clauses[] = "a.id = {$this->dbID}";
         }
 
@@ -165,7 +165,7 @@ class tlRole extends tlDBObject
             $this->name = $rightInfo[0]['role_desc'];
             $this->description = $rightInfo[0]['notes'];
 
-            if ($getFullDetails) {
+            if ($getFullDetails !== 0) {
                 $this->rights = $this->buildRightsArray($rightInfo);
             }
         }

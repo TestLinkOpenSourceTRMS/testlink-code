@@ -306,7 +306,7 @@ function doReqImportOther(&$reqMgr, $fileName, $importContext, $importOptions)
 
     if (! is_null($impSet)) {
         $reqSet = $impSet['info'];
-        if ($loop2do = count($reqSet)) {
+        if (($loop2do = count($reqSet)) !== 0) {
             for ($kdx = 0; $kdx < $loop2do; $kdx ++) {
                 $dummy = $reqMgr->createFromMap($reqSet[$kdx],
                     $importContext->tproject_id, $importContext->req_spec_id,

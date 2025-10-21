@@ -151,15 +151,15 @@ class tlPerformanceCounter extends tlObjectWithDB
     public function __toString()
     {
         $output = null;
-        if ($this->counterType & self::TYPE_MEMORY) {
+        if (($this->counterType & self::TYPE_MEMORY) !== 0) {
             $this->updateMemory();
             $output .= "MEMORY: {$this->memoryStart} to {$this->memoryEnd} (max. Peak {$this->memoryPeak});\n";
         }
-        if ($this->counterType & self::TYPE_TIME) {
+        if (($this->counterType & self::TYPE_TIME) !== 0) {
             $duration = $this->getDuration();
             $output .= "DURATION: {$duration} secs;\n";
         }
-        if ($this->counterType & self::TYPE_SQL) {
+        if (($this->counterType & self::TYPE_SQL) !== 0) {
             $this->updateSQL();
             $output .= "SQL queries: " . ($this->sqlQueries) . ";\n";
             $output .= "took " . $this->sqlOverall . " secs;\n";
@@ -182,7 +182,7 @@ class tlPerformanceCounter extends tlObjectWithDB
 
     public function resetTimer()
     {
-        if ($this->counterType & self::TYPE_TIME) {
+        if (($this->counterType & self::TYPE_TIME) !== 0) {
             $this->initialStart = $this->getmicrotime();
             $this->duration = 0;
         }
@@ -190,7 +190,7 @@ class tlPerformanceCounter extends tlObjectWithDB
 
     public function resetMemory()
     {
-        if ($this->counterType & self::TYPE_MEMORY) {
+        if (($this->counterType & self::TYPE_MEMORY) !== 0) {
             $this->memoryStart = memory_get_usage(true);
             $this->memoryEnd = 0;
             $this->memoryPeak = memory_get_peak_usage(true);
@@ -199,7 +199,7 @@ class tlPerformanceCounter extends tlObjectWithDB
 
     public function resetSQL()
     {
-        if ($this->counterType & self::TYPE_SQL) {
+        if (($this->counterType & self::TYPE_SQL) !== 0) {
             $this->initialOverall = $this->db->overallDuration;
             $this->initialQueries = $this->db->nQuery;
         }
@@ -214,7 +214,7 @@ class tlPerformanceCounter extends tlObjectWithDB
 
     protected function updateMemory()
     {
-        if ($this->counterType & self::TYPE_MEMORY) {
+        if (($this->counterType & self::TYPE_MEMORY) !== 0) {
             $this->memoryEnd = memory_get_usage(true);
             $this->memoryPeak = memory_get_peak_usage(true);
         }
@@ -222,7 +222,7 @@ class tlPerformanceCounter extends tlObjectWithDB
 
     protected function updateSQL()
     {
-        if ($this->counterType & self::TYPE_SQL) {
+        if (($this->counterType & self::TYPE_SQL) !== 0) {
             $this->sqlOverall = $this->db->overallDuration -
                 $this->initialOverall;
             $this->sqlQueries = $this->db->nQuery - $this->initialQueries;
@@ -231,7 +231,7 @@ class tlPerformanceCounter extends tlObjectWithDB
 
     public function stopTimer()
     {
-        if ($this->counterType & self::TYPE_TIME) {
+        if (($this->counterType & self::TYPE_TIME) !== 0) {
             $current = $this->getmicrotime();
             $this->duration = ($current - $this->initialStart);
         }

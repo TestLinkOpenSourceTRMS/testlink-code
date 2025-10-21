@@ -131,7 +131,7 @@ function compareImportedReqs(&$dbHandler, $arrImportSource, $tprojectID,
     $unknown_code = lang_get('unknown_code');
     $reqMgr = new requirement_mgr($dbHandler);
     $arrImport = null;
-    if ($loop2do = count($arrImportSource)) {
+    if (($loop2do = count($arrImportSource)) !== 0) {
         $getOptions = array(
             'output' => 'minimun'
         );
@@ -204,7 +204,7 @@ function getReqDocIDs(&$db, $srs_id)
     $arrCurrentReq = $req_spec_mgr->get_requirements($srs_id);
 
     $result = null;
-    if (count($arrCurrentReq)) {
+    if (count($arrCurrentReq) > 0) {
         // only if some reqs exist
         foreach ($arrCurrentReq as $data) {
             $result[$data['id']] = $data['req_doc_id'];
@@ -236,7 +236,7 @@ function loadImportedReq($fileName, $importType)
             break;
     }
 
-    if ($pfn) {
+    if ($pfn !== '' && $pfn !== '0') {
         $retVal = $pfn($fileName);
         if ($importType == 'DocBook') {
             // this structure if useful when importing from CSV
@@ -679,7 +679,7 @@ function getReqCoverage(&$dbHandler, $reqs, &$execMap)
                         }
                     }
                 }
-                if ($go_away) {
+                if ($go_away !== 0) {
                     break;
                 }
             }
@@ -700,7 +700,7 @@ function getReqCoverage(&$dbHandler, $reqs, &$execMap)
 function getLastExecutions(&$db, $tcaseSet, $tplanId)
 {
     $execMap = array();
-    if (count($tcaseSet)) {
+    if (count($tcaseSet) > 0) {
         $tcaseMgr = new testcase($db);
         $items = array_keys($tcaseSet);
         $path_info = $tcaseMgr->tree_manager->get_full_path_verbose($items);
@@ -744,7 +744,7 @@ function check_syntax($fileName, $importType)
             $pfn = "check_syntax_xml";
             break;
     }
-    if ($pfn) {
+    if ($pfn !== '' && $pfn !== '0') {
         return $pfn($fileName);
     }
 }

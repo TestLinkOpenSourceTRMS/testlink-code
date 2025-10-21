@@ -888,7 +888,7 @@ class requirement_mgr extends tlObjectWithAttachments
             $ret['failure_reason'] = 'empty_reqdoc_id';
         }
 
-        if ($ret['status_ok']) {
+        if ($ret['status_ok'] !== 0) {
             $ret['msg'] = 'ok';
             $rs = $this->getByDocID($reqdoc_id, $tproject_id);
             if (! is_null($rs) && (is_null($id) || ! isset($rs[$id]))) {
@@ -901,7 +901,7 @@ class requirement_mgr extends tlObjectWithAttachments
 
         // check for duplicate title
         // BUGID 4150
-        if ($ret['status_ok']) {
+        if ($ret['status_ok'] !== 0) {
             $ret['msg'] = 'ok';
             $target = array(
                 'key' => 'title',
@@ -2554,7 +2554,7 @@ class requirement_mgr extends tlObjectWithAttachments
     $freezeLinkedTCases = $freezeLinkOnNewReqVersion &
       $reqTCLinksCfg->freezeBothEndsOnNewREQVersion;
 
-        if ($freezeLinkedTCases) {
+        if ($freezeLinkedTCases !== 0) {
             $this->closeOpenTCVersionOnOpenLinks($from_version_id);
         }
 

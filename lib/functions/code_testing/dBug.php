@@ -435,7 +435,7 @@ class dBug
     // parse xml
     public function xmlParse($xml_parser, $data, $bFinal)
     {
-        if (! xml_parse($xml_parser, $data, $bFinal)) {
+        if (xml_parse($xml_parser, $data, $bFinal) === 0) {
             die(
                 sprintf("XML error: %s at line %d\n",
                     xml_error_string(xml_get_error_code($xml_parser)),

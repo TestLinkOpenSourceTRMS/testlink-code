@@ -209,7 +209,7 @@ function saveImportedResultData(&$db, $resultData, $context, $options)
     $tplan_mgr = null;
 
     $tc_qty = count($resultData);
-    if ($tc_qty) {
+    if ($tc_qty !== 0) {
         $tplan_mgr = new testplan($db);
         $tproject_mgr = new testproject($db);
         $build_mgr = new build_mgr($db);

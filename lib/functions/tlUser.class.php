@@ -216,15 +216,15 @@ class tlUser extends tlDBObject
         $this->authentication = null;
         $this->expiration_date = null;
 
-        if (! ($options & self::TLOBJ_O_SEARCH_BY_ID)) {
+        if (($options & self::TLOBJ_O_SEARCH_BY_ID) === 0) {
             $this->dbID = null;
         }
 
-        if (! ($options & self::USER_O_SEARCH_BYLOGIN)) {
+        if (($options & self::USER_O_SEARCH_BYLOGIN) === 0) {
             $this->login = null;
         }
 
-        if (! ($options & self::USER_O_SEARCH_BYEMAIL)) {
+        if (($options & self::USER_O_SEARCH_BYEMAIL) === 0) {
             $this->emailAddress = null;
         }
     }
@@ -307,15 +307,15 @@ class tlUser extends tlDBObject
             " FROM {$this->object_table}";
         $clauses = null;
 
-        if ($options & self::TLOBJ_O_SEARCH_BY_ID) {
+        if (($options & self::TLOBJ_O_SEARCH_BY_ID) !== 0) {
             $clauses[] = "id = " . intval($this->dbID);
         }
 
-        if ($options & self::USER_O_SEARCH_BYLOGIN) {
+        if (($options & self::USER_O_SEARCH_BYLOGIN) !== 0) {
             $clauses[] = "login = '" . $db->prepare_string($this->login) . "'";
         }
 
-        if ($options & self::USER_O_SEARCH_BYEMAIL) {
+        if (($options & self::USER_O_SEARCH_BYEMAIL) !== 0) {
             $clauses[] = "email = '" . $db->prepare_string($this->emailAddress) .
                 "'";
         }
@@ -342,7 +342,7 @@ class tlUser extends tlDBObject
                 $this->globalRole->readFromDB($db);
             }
 
-            if ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_ROLES) {
+            if (($this->detailLevel & self::TLOBJ_O_GET_DETAIL_ROLES) !== 0) {
                 $this->readTestProjectRoles($db);
                 $this->readTestPlanRoles($db);
             }

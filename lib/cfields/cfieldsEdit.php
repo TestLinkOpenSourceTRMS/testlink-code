@@ -63,7 +63,7 @@ switch ($args->do_action) {
         break;
 }
 
-if ($do_control_combo_display) {
+if ($do_control_combo_display !== 0) {
     $keys2loop = $cfield_mgr->get_application_areas();
     foreach ($keys2loop as $ui_mode) {
         $cfieldCfg->cf_enable_on[$ui_mode]['value'] = 0;

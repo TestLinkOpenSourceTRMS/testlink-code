@@ -404,7 +404,7 @@ function renderGui(&$smartyObj, &$argsObj, &$tplanMgr, &$buildMgr, $templateCfg,
 
             foreach ($guiObj->buildSet as $elemBuild) {
                 $idk = current($elemBuild);
-                if ($hasCF) {
+                if ($hasCF !== 0) {
                     $cfields = (array) $buildMgr->getCustomFieldsValues($idk,
                         $guiObj->tproject_id);
                     foreach ($cfields as $cfd) {
@@ -586,7 +586,7 @@ function doCreate(&$argsObj, &$buildMgr, &$tplanMgr, $dateFormat)
         }
     }
 
-    if (! $op->status_ok) {
+    if ($op->status_ok === 0) {
         $op->buttonCfg = new stdClass();
         $op->buttonCfg->name = "do_create";
         $op->buttonCfg->value = lang_get('btn_create');
@@ -666,7 +666,7 @@ function doUpdate(&$argsObj, &$buildMgr, &$tplanMgr, $dateFormat)
         }
     }
 
-    if (! $op->status_ok) {
+    if ($op->status_ok === 0) {
         $op->operation_descr = lang_get('title_build_edit') . TITLE_SEP_TYPE3 .
             $oldname;
         $op->buttonCfg = new stdClass();
@@ -704,7 +704,7 @@ function crossChecks($argsObj, &$tplanMgr, $dateFormat)
     }
 
     // check is date is valid
-    if ($op->status_ok) {
+    if ($op->status_ok !== 0) {
 
         // BUGID 3716
         $rdate = trim($argsObj->release_date_original);

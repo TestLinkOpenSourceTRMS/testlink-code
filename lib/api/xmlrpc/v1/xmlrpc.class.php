@@ -1882,7 +1882,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                     $targetID;
                 $resultInfo[0] = $this->dbObj->fetchFirstRow($sql);
 
-                if ($options->getBugs) {
+                if ($options->getBugs !== 0) {
                     $resultInfo[0]['bugs'] = array();
                     $sql = " SELECT DISTINCT bug_id FROM {$this->tables['execution_bugs']} " .
                         " WHERE execution_id = " . $targetID;
@@ -2029,7 +2029,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                     $sql = "SELECT * FROM {$this->tables['executions']} WHERE id=" .
                         $tcExecId;
                     $resultInfo[$tcExecId] = $this->dbObj->fetchFirstRow($sql);
-                    if ($options->getBugs) {
+                    if ($options->getBugs !== 0) {
                         $resultInfo[$tcExecId]['bugs'] = array();
                         $sql = " SELECT DISTINCT bug_id FROM
                        {$this->tables['execution_bugs']}
@@ -5480,7 +5480,7 @@ class TestlinkXMLRPCServer extends IXR_Server
             $messagePrefix);
         $status = $name_exists | $id_exists;
 
-        if (! $status) {
+        if ($status === 0) {
             $pname = self::$platformNameParamName . ' OR ' .
                 self::$platformIDParamName;
             $msg = $messagePrefix .
@@ -5488,7 +5488,7 @@ class TestlinkXMLRPCServer extends IXR_Server
             $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);
         }
 
-        if ($status) {
+        if ($status !== 0) {
             // get test plan name is useful for error messages
             $tplanInfo = $this->tplanMgr->get_by_id($tplanID);
             if (is_null($platformInfo)) {
@@ -9663,7 +9663,7 @@ class TestlinkXMLRPCServer extends IXR_Server
             $sql .= ")";
 
             $sql .= " ORDER BY id ";
-            $sql .= ($opt->getOrderDescending) ? " DESC" : " ASC";
+            $sql .= ($opt->getOrderDescending !== 0) ? " DESC" : " ASC";
 
             $rs = $this->dbObj->fetchRowsIntoMap($sql, 'id');
             if (is_null($rs)) {

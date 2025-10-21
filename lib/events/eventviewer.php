@@ -237,7 +237,7 @@ function getFilters(&$argsObj = null, $dateFormat = null)
 
         if (! is_null($argsObj->testers)) {
             $filters->users = implode(",", $argsObj->testers);
-            if (! $filters->users) {
+            if ($filters->users === '' || $filters->users === '0') {
                 $filters->users = null;
             }
         }

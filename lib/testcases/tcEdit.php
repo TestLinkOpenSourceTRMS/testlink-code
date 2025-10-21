@@ -170,10 +170,10 @@ if ($args->delete_tc_version) {
         );
     }
 
-    if (intval($status_quo_map[$args->tcversion_id]['executed'])) {
+    if (intval($status_quo_map[$args->tcversion_id]['executed']) !== 0) {
         $msg = lang_get('warning') . TITLE_SEP .
             lang_get('delete_linked_and_exec');
-    } elseif (intval($status_quo_map[$args->tcversion_id]['linked'])) {
+    } elseif (intval($status_quo_map[$args->tcversion_id]['linked']) !== 0) {
         $msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');
     }
 
@@ -383,7 +383,7 @@ function initArgs(&$cfgObj, $otName, &$tcaseMgr)
     $args->do_activate_this = isset($_REQUEST['activate_this_tcversion']) ? 1 : 0;
     $args->do_deactivate_this = isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
     $args->activeAttr = 0;
-    if ($args->do_activate_this) {
+    if ($args->do_activate_this !== 0) {
         $args->activeAttr = 1;
     }
 

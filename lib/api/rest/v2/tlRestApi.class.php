@@ -1692,7 +1692,7 @@ class tlRestApi
                     $oio = intval($build['is_open']);
                     $nio = intval($item->is_open);
                     if ($oio != $nio) {
-                        if ($nio) {
+                        if ($nio !== 0) {
                             $this->buildMgr->setOpen($id);
                         } else {
                             $this->buildMgr->setClosed($id);

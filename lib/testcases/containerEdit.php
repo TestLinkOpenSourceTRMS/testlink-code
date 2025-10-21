@@ -464,14 +464,14 @@ function build_del_testsuite_warning_msg(&$tree_mgr, &$tcaseMgr, &$testcases,
             }
             $msg['link_msg'][] = $status;
 
-            if ($status_warning[$status]) {
+            if ($status_warning[$status] !== 0) {
                 $show_warning = 1;
                 $msg['delete_msg'] = $delete_notice[$status];
             }
         }
 
         $idx = 0;
-        if ($show_warning) {
+        if ($show_warning !== 0) {
             $msg['warning'] = array();
             foreach ($verbose as $elem) {
                 $msg['warning'][$idx] = '';
@@ -846,7 +846,7 @@ function reorderTestSuiteViewer(&$smartyObj, &$treeMgr, $argsObj)
     $object_info = $treeMgr->get_node_hierarchy_info($oid);
     $object_name = $object_info['name'];
 
-    if (! count($children)) {
+    if (count($children) === 0) {
         $children = null;
     }
 

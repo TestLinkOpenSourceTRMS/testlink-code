@@ -158,7 +158,7 @@ if ($lastResultMap != null && $platforms_active) {
 }
 
 // create and show the table only if we have data to display
-if ($gui->number_of_not_run_testcases) {
+if ($gui->number_of_not_run_testcases !== 0) {
     $gui->tableSet[] = buildMatrix($gui->matrix, $args->format);
 }
 

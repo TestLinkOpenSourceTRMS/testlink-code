@@ -977,7 +977,7 @@ class testproject extends tlObjectWithAttachments
                 'exclude_testcases' => self::EXCLUDE_TESTCASES
             ));
 
-        if (count($test_spec)) {
+        if (count($test_spec) > 0) {
             $ret = $this->_createHierarchyMap($test_spec, $mode);
         }
         return $ret;
@@ -1626,7 +1626,7 @@ class testproject extends tlObjectWithAttachments
         );
         $subtree = $this->tree_manager->get_subtree($id, $my['filters'],
             $my['options']);
-        if (count($subtree)) {
+        if (count($subtree) > 0) {
             $ret = $this->_createHierarchyMap($subtree, $mode, $dot, 'doc_id');
         }
         return $ret;
@@ -1889,7 +1889,7 @@ class testproject extends tlObjectWithAttachments
             $ret['msg'] = lang_get("warning_empty_req_title");
         }
 
-        if ($ret['status_ok']) {
+        if ($ret['status_ok'] !== 0) {
             $ret['msg'] = 'ok';
             $rs = $this->get_srs_by_title($testproject_id, $title, $ignore_case);
 

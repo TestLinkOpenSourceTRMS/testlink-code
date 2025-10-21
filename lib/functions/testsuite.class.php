@@ -217,7 +217,7 @@ class testsuite extends tlObjectWithAttachments
             }
         }
 
-        if ($ret['status_ok']) {
+        if ($ret['status_ok'] !== 0) {
             // get a new id
             $tsuite_id = $this->tree_manager->new_node($parent_id,
                 $this->my_node_type, $name, $node_order);
@@ -644,7 +644,7 @@ class testsuite extends tlObjectWithAttachments
         $smarty->assign('containerID', $parent_id);
         $smarty->assign('user_feedback', $internalMsg['user_feedback']);
 
-        if ($useUserInput) {
+        if ($useUserInput !== 0) {
             $webEditorData = $userInput;
         } else {
             $the_data = null;

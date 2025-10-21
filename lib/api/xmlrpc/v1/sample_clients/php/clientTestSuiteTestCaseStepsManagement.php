@@ -31,7 +31,7 @@ $fakeSteps = null;
 for ($idx = 1; $idx < $qtySteps; $idx ++) {
     $action = 'FULL STOP NOW!!!! - intensity=';
     $expected_results = '%s Red Lights ON';
-    if ($idx & 1) {
+    if (($idx & 1) !== 0) {
         $action = 'Start Server with power=';
         $expected_results = 'GREEN Lantern %s ON';
     }

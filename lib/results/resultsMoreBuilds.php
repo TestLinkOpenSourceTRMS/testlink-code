@@ -94,7 +94,7 @@ function initializeGui(&$dbHandler, &$argsObj)
     }
 
     $filters['builds'] = null;
-    if (count($argsObj->buildsSelected)) {
+    if (count($argsObj->buildsSelected) > 0) {
         $filters['builds'] = implode(",", $argsObj->buildsSelected);
     }
 

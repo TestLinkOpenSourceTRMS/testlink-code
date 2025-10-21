@@ -34,7 +34,7 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
     protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
     {
         $this->name = null;
-        if (! ($options & self::TLOBJ_O_SEARCH_BY_ID)) {
+        if (($options & self::TLOBJ_O_SEARCH_BY_ID) === 0) {
             $this->dbID = null;
         }
     }
@@ -135,7 +135,7 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
         $query = "SELECT id,description FROM {$tables['rights']} ";
 
         $clauses = null;
-        if ($options & self::TLOBJ_O_SEARCH_BY_ID) {
+        if (($options & self::TLOBJ_O_SEARCH_BY_ID) !== 0) {
             if (! is_array($ids)) {
                 $clauses[] = "id = {$ids}";
             } else {

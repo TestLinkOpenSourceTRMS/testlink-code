@@ -21,7 +21,7 @@ $can_manage_tprojects = has_rights($db, 'mgt_modify_product');
 // make sure the user has rights to manage test projects
 if ($can_manage_tprojects) {
 
-    if ($_POST) {
+    if ($_POST !== []) {
         foreach ($_POST as $testPlan => $testProject) {
             if ($testProject != "none") {
                 echo "<br />changing test plan $testPlan to go with test project $testProject";

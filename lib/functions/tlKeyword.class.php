@@ -59,7 +59,7 @@ class tlKeyword extends tlDBObject implements iSerialization,
         $this->name = null;
         $this->notes = null;
         $this->testprojectID = null;
-        if (! ($options & self::TLOBJ_O_SEARCH_BY_ID)) {
+        if (($options & self::TLOBJ_O_SEARCH_BY_ID) === 0) {
             $this->dbID = null;
         }
     }
@@ -179,7 +179,7 @@ class tlKeyword extends tlDBObject implements iSerialization,
         $query = " SELECT id,keyword,notes,testproject_id FROM {$this->tables['keywords']} ";
 
         $clauses = null;
-        if ($options & self::TLOBJ_O_SEARCH_BY_ID) {
+        if (($options & self::TLOBJ_O_SEARCH_BY_ID) !== 0) {
             if (! is_array($ids)) {
                 $clauses[] = "id = {$ids}";
             } else {

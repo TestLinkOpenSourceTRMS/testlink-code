@@ -85,7 +85,7 @@ if ($args->tproject_id && checkRights($db, $args->user, $args->tproject_id)) {
         $localeDateFormat = $localeDateFormat[$args->user->locale];
 
         foreach ($tplanSet as $idk) {
-            if ($hasCF) {
+            if ($hasCF !== 0) {
                 $cfields = (array) $tplan_mgr->getCustomFieldsValues($idk,
                     $gui->tproject_id);
                 foreach ($cfields as $cfd) {

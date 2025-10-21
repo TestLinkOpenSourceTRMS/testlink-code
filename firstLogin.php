@@ -33,7 +33,7 @@ doDBConnect($db, database::ONERROREXIT);
 
 $message = '';
 if (! is_null($args->doEditUser)) {
-    if (strcmp($args->password, $args->password2)) {
+    if (strcmp($args->password, $args->password2) !== 0) {
         $message = lang_get('passwd_dont_match');
     } else {
         $user = new tlUser();

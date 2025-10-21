@@ -98,7 +98,7 @@ function initEnv(&$dbHandler)
 
     foreach ($gui->buildSet as $elemBuild) {
         $idk = current($elemBuild);
-        if ($hasCF) {
+        if ($hasCF !== 0) {
             $cfields = (array) $build_mgr->getCustomFieldsValues($idk,
                 $gui->tproject_id);
             foreach ($cfields as $cfd) {

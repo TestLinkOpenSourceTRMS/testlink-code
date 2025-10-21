@@ -70,7 +70,7 @@ $_SESSION['history_on'] = $gui->history_on;
 $attachmentInfos = null;
 
 $do_show_instructions = ($args->level == "" || $args->level == 'testproject') ? 1 : 0;
-if ($do_show_instructions) {
+if ($do_show_instructions !== 0) {
     show_instructions('executeTest');
     exit();
 }
@@ -628,7 +628,7 @@ function initArgs(&$dbHandler, $cfgObj)
     $args->doMoveNext = isset($_REQUEST['move2next']) ? 1 : 0;
 
     $args->doMovePrevious = isset($_REQUEST['move2previous']) ? $_REQUEST['move2previous'] : 0;
-    $args->moveTowards = $args->doMoveNext ? 'forward' : ($args->doMovePrevious ? 'backward' : null);
+    $args->moveTowards = $args->doMoveNext !== 0 ? 'forward' : ($args->doMovePrevious ? 'backward' : null);
 
     // can be a list, will arrive via form POST
     $args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;
@@ -762,7 +762,7 @@ function initArgs(&$dbHandler, $cfgObj)
     $args->ctsCfg = null;
     $cts = null;
 
-    if ($args->codeTrackerEnabled = intval($info['code_tracker_enabled'])) {
+    if (($args->codeTrackerEnabled = intval($info['code_tracker_enabled'])) !== 0) {
         $ct_mgr = new tlCodeTracker($dbHandler);
         $args->ctsCfg = $ct_mgr->getLinkedTo($args->tproject_id);
         $cts = $ct_mgr->getInterfaceObject($args->tproject_id);
@@ -1240,7 +1240,7 @@ function setTesterAssignment(&$db, $exec_info, &$tcaseMgr, $tplan_id,
         if (! is_null($p3)) {
             foreach ($p3[$version_id][$platform_id] as $uu) {
                 $assignedTesterId = intval($uu['user_id']);
-                if ($assignedTesterId) {
+                if ($assignedTesterId !== 0) {
                     $user = tlUser::getByID($db, $assignedTesterId);
                     if ($user) {
                         $exec_info[$version_id]['assigned_user'][] = $user->getDisplayName();

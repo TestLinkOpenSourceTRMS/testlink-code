@@ -43,9 +43,9 @@ $linked_tcases = $tplan_mgr->get_linked_items_id($args->tplan_id);
 $qty_linked = count($linked_tcases);
 $gui->testcases = $tplan_mgr->get_linked_and_newest_tcversions($args->tplan_id);
 
-if ($qty_linked) {
+if ($qty_linked !== 0) {
     $qty_newest = count($gui->testcases);
-    if ($qty_newest) {
+    if ($qty_newest !== 0) {
         $gui->show_details = 1;
 
         // get path

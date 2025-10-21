@@ -66,7 +66,7 @@ function setUserSession(&$db, $user, $id, $roleID, $email, $locale = null)
     }
     if (! $_SESSION['testprojectID']) {
         $tpID = null;
-        if (count($arrProducts)) {
+        if (count($arrProducts) > 0) {
             $tpID = key($arrProducts);
         }
         $_SESSION['testprojectID'] = $tpID;
@@ -321,8 +321,8 @@ function getAllUsersRoles(&$db, $order_by = null)
     $specialK = array_flip((array) config_get('demoSpecialUsers'));
     $demoModeEnabled = config_get('demoMode');
     for ($idx = 0; $idx < $loop2do; $idx ++) {
-        $users[$idx]->isDemoSpecial = $demoModeEnabled ? isset(
-            $specialK[$users[$idx]->login]) : false;
+        $users[$idx]->isDemoSpecial = $demoModeEnabled && isset(
+            $specialK[$users[$idx]->login]);
     }
     return $users;
 }

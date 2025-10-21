@@ -50,7 +50,7 @@ function exportDataToCSV($data, $sourceKeys, $destKeys, $bWithHeader = 0,
                 strpos($value, "\n") !== false) {
                 $value = '"' . str_replace('"', '""', $value) . '"';
             }
-            if ($k) {
+            if ($k !== 0) {
                 $line .= $delimiter;
             }
             $line .= $value;

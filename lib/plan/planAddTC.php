@@ -101,7 +101,7 @@ switch ($args->doAction) {
 
 $smarty = new TLSmarty();
 
-if ($do_display) {
+if ($do_display !== 0) {
     $tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
     // see development documentation on [INSTALL DIR]/docs/development/planAddTC.php.txt
     $tplan_linked_tcversions = getFilteredLinkedVersions($db, $args, $tplan_mgr,
@@ -117,7 +117,7 @@ if ($do_display) {
         $keywordsTestCases = $tproject_mgr->getKeywordsLatestTCV(
             $args->tproject_id, $keywordsFilter->items, $keywordsFilter->type);
 
-        if (count($keywordsTestCases)) {
+        if (count($keywordsTestCases) > 0) {
             $testCaseSet = array_keys($keywordsTestCases);
         }
     }
@@ -191,7 +191,7 @@ if ($do_display) {
 
     $smarty->assign('gui', $gui);
     $smarty->display($templateCfg->template_dir . 'planAddTC_m1.tpl');
-} elseif ($do_display_coverage) {
+} elseif ($do_display_coverage !== 0) {
     if ($args->item_level == 'reqcoverage') {
         // Select coverage
 
@@ -267,7 +267,7 @@ if ($do_display) {
         $keywordsTestCases = $tproject_mgr->getKeywordsLatestTCV(
             $args->tproject_id, $keywordsFilter->items, $keywordsFilter->type);
 
-        if (count($keywordsTestCases)) {
+        if (count($keywordsTestCases) > 0) {
             $testCaseSet = array_keys($keywordsTestCases);
         }
     }

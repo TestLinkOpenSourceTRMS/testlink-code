@@ -67,7 +67,7 @@ if ($args->useRecursion) {
 }
 $gui->export_filename = is_null($args->export_filename) ? $gui->export_filename : $args->export_filename;
 
-if ($check_children) {
+if ($check_children !== 0) {
     // Check if there is something to export
     $children = $tree_mgr->get_children($node_id,
         array(

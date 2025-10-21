@@ -461,7 +461,7 @@ class reqSpecCommands
         $my['options']['order_cfg']['type'] = $my['options']['output'] = 'rspec';
         $subtree = $this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,
             $my['filters'], $my['options']);
-        if (count($subtree)) {
+        if (count($subtree) > 0) {
             $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap(
                 $subtree, 'dotted',
                 array(

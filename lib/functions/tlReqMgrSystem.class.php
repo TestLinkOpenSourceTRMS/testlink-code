@@ -204,7 +204,7 @@ class tlReqMgrSystem extends tlObject
                 $info['id']);
         }
 
-        if ($ret['status_ok']) {
+        if ($ret['status_ok'] !== 0) {
             $sql = "UPDATE {$this->tables['reqmgrsystems']}  " . " SET  name = '" .
                 $safeobj->name . "'," . "    cfg = '" . $safeobj->cfg . "'," .
                 "       type = " . $safeobj->type . " WHERE id = " .

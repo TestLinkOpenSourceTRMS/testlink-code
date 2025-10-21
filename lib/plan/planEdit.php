@@ -296,7 +296,7 @@ switch ($args->do_action) {
             }
 
             foreach ($tplanSet as $idk) {
-                if ($hasCF) {
+                if ($hasCF !== 0) {
                     $cfields = (array) $tplan_mgr->getCustomFieldsValues($idk,
                         $gui->tproject_id);
                     foreach ($cfields as $cfd) {
@@ -537,7 +537,7 @@ function getItemData(&$itemMgr, &$guiObj, &$ofObj, $itemID,
     $updateAttachments = false)
 {
     $dummy = $itemMgr->get_by_id($itemID);
-    if (count($dummy)) {
+    if (count($dummy) > 0) {
         $ofObj->Value = $dummy['notes'];
         $guiObj->testplan_name = $dummy['name'];
         $guiObj->is_active = $dummy['active'];

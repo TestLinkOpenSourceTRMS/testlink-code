@@ -172,7 +172,7 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
         $tproject_id = $tobj_id;
     }
 
-    $testplan_id = $is_tplan_view_type ? $tobj_id : null;
+    $testplan_id = $is_tplan_view_type !== 0 ? $tobj_id : null;
 
     $tcaseMgr = new testcase($db);
     $hash_descr_id = $tcaseMgr->tree_manager->get_available_node_types();
@@ -358,7 +358,7 @@ function gen_coverage_view(&$db, $specViewType, $tobj_id, $id, $name,
         $tproject_id = $tobj_id;
     }
 
-    $testplan_id = $is_tplan_view_type ? $tobj_id : null;
+    $testplan_id = $is_tplan_view_type !== 0 ? $tobj_id : null;
 
     $tcaseMgr = new testcase($db);
     $hash_descr_id = $tcaseMgr->tree_manager->get_available_node_types();
@@ -1582,7 +1582,7 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name,
         $tproject_id = $tobj_id;
     }
 
-    $testplan_id = $is_tplan_view_type ? $tobj_id : null;
+    $testplan_id = $is_tplan_view_type !== 0 ? $tobj_id : null;
 
     $tcaseMgr = new testcase($db);
     $hash_descr_id = $tcaseMgr->tree_manager->get_available_node_types();

@@ -143,7 +143,7 @@ function write_execution(&$db, &$execSign, &$exec_data, &$issueTracker)
             $resultsCfg['status_code']['not_run'] ? true : false);
 
         if ($has_been_executed) {
-            $my_notes = $is_bulk_save ? $bulk_notes : $db->prepare_string(
+            $my_notes = $is_bulk_save !== 0 ? $bulk_notes : $db->prepare_string(
                 trim($exec_data['notes'][$tcversion_id]));
 
             $sql = "INSERT INTO {$executions_table} " .
@@ -191,12 +191,12 @@ function write_execution(&$db, &$execSign, &$exec_data, &$issueTracker)
                     LINK_TC_REQ_CLOSED_BY_EXEC, $cOpt);
             }
 
-            if ($has_custom_fields) {
+            if ($has_custom_fields !== 0) {
                 // test useful when doing bulk update, because some type of custom fields
                 // like checkbox can not exist on exec_data. => why ??
                 //
                 $hash_cf = null;
-                $access_key = $is_bulk_save ? 0 : $tcase_id;
+                $access_key = $is_bulk_save !== 0 ? 0 : $tcase_id;
                 if (isset($map_nodeid_array_cfnames[$access_key])) {
                     foreach ($map_nodeid_array_cfnames[$access_key] as $cf_v) {
                         $hash_cf[$cf_v] = $exec_data[$cf_v];

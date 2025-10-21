@@ -36,7 +36,7 @@ class tlReports extends tlObjectWithDB
     /**
      * resource of database handler; reference is passed in by constructor
      */
-    protected $db = null;
+    protected $db;
 
     /**
      * Test Plan Identifier; reference is passed in by constructor

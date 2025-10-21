@@ -66,14 +66,14 @@ class tlLogger extends tlObject
      * @var array logLevels, key log level code, value log level string
      *
      */
-    static $logLevels = null;
+    static $logLevels;
 
     /**
      *
      * @var array logLevelsStringCode, key log level string, value log level code
      *
      */
-    static $logLevelsStringCode = null;
+    static $logLevelsStringCode;
 
     /** @var boolean to enable/disable loging for all loggers */
     protected $doLogging = true;
@@ -83,10 +83,10 @@ class tlLogger extends tlObject
 
     // all transactions, at the moment there is only one transaction supported,
     // could be extended if we need more
-    protected $transactions = null;
+    protected $transactions;
 
     // the logger which are controlled
-    protected $loggers = null;
+    protected $loggers;
 
     protected $eventManager;
 
@@ -388,23 +388,23 @@ class tlTransaction extends tlDBObject
 {
 
     // the attached loggers
-    protected $loggers = null;
+    protected $loggers;
 
-    public $name = null;
+    public $name;
 
-    public $entryPoint = null;
+    public $entryPoint;
 
-    public $startTime = null;
+    public $startTime;
 
-    public $endTime = null;
+    public $endTime;
 
-    public $duration = null;
+    public $duration;
 
-    public $userID = null;
+    public $userID;
 
-    public $sessionID = null;
+    public $sessionID;
 
-    protected $events = null;
+    protected $events;
 
     public function __construct(&$db)
     {
@@ -732,27 +732,27 @@ class tlEventManager extends tlObjectWithDB
 class tlEvent extends tlDBObject
 {
 
-    public $logLevel = null;
+    public $logLevel;
 
-    public $description = null;
+    public $description;
 
-    public $source = null;
+    public $source;
 
-    public $timestamp = null;
+    public $timestamp;
 
-    public $userID = null;
+    public $userID;
 
-    public $sessionID = null;
+    public $sessionID;
 
-    public $transactionID = null;
+    public $transactionID;
 
-    public $activityCode = null;
+    public $activityCode;
 
-    public $objectID = null;
+    public $objectID;
 
-    public $objectType = null;
+    public $objectType;
 
-    public $transaction = null;
+    public $transaction;
 
     // detail levels @TODO DOCUMENT DETAILS OF WHAT ?
     const TLOBJ_O_GET_DETAIL_TRANSACTION = 1;
@@ -916,9 +916,9 @@ class tlEvent extends tlDBObject
 class tlDBLogger extends tlObjectWithDB
 {
 
-    protected $logLevelFilter = null;
+    protected $logLevelFilter;
 
-    protected $pendingTransaction = null;
+    protected $pendingTransaction;
 
     protected $doLogging = true;
 
@@ -971,11 +971,10 @@ class tlDBLogger extends tlObjectWithDB
                 $this->enableLogging();
             }
             return tl::OK;
-        } else {
-            // the db logger only writes transaction if they have at least one event which should be logged
-            // so we store the transaction for later usage
-            $this->pendingTransaction = $t;
         }
+        // the db logger only writes transaction if they have at least one event which should be logged
+        // so we store the transaction for later usage
+        $this->pendingTransaction = $t;
         return tl::OK;
     }
 
@@ -1050,7 +1049,7 @@ class tlFileLogger extends tlObject
 
     static $gmdateMask = "y/M/j H:i:s";
 
-    protected $logLevelFilter = null;
+    protected $logLevelFilter;
 
     protected $doLogging = true;
 
@@ -1227,7 +1226,7 @@ class tlHTMLLogger
 class tlMailLogger extends tlObjectWithDB
 {
 
-    protected $logLevelFilter = null;
+    protected $logLevelFilter;
 
     protected static $eventFormatString = "\t[%timestamp][%errorlevel][%sessionid][%source]\n\t\t%description\n";
 

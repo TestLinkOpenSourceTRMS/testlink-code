@@ -69,27 +69,27 @@ class TestlinkXMLRPCServer extends IXR_Server
      *
      * @access protected
      */
-    protected $dbObj = null;
+    protected $dbObj;
 
-    protected $tables = null;
+    protected $tables;
 
-    protected $tcaseMgr = null;
+    protected $tcaseMgr;
 
-    protected $tprojectMgr = null;
+    protected $tprojectMgr;
 
-    protected $tplanMgr = null;
+    protected $tplanMgr;
 
-    protected $tplanMetricsMgr = null;
+    protected $tplanMetricsMgr;
 
-    protected $reqSpecMgr = null;
+    protected $reqSpecMgr;
 
-    protected $reqMgr = null;
+    protected $reqMgr;
 
-    protected $platformMgr = null;
+    protected $platformMgr;
 
-    protected $itsMgr = null;
+    protected $itsMgr;
 
-    protected $userMgr = null;
+    protected $userMgr;
 
     /**
      * Whether the server will run in a testing mode
@@ -99,17 +99,17 @@ class TestlinkXMLRPCServer extends IXR_Server
     /**
      * userID associated with the devKey provided
      */
-    protected $userID = null;
+    protected $userID;
 
     /**
      * UserObject associated with the userID
      */
-    protected $user = null;
+    protected $user;
 
     /**
      * array where all the args are stored for requests
      */
-    protected $args = null;
+    protected $args;
 
     /**
      * array where error codes and messages are stored
@@ -119,7 +119,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     /**
      * The api key being used to make a request
      */
-    protected $devKey = null;
+    protected $devKey;
 
     /**
      * boolean to allow a method to invoke another method and avoid double auth
@@ -135,19 +135,19 @@ class TestlinkXMLRPCServer extends IXR_Server
     /**
      * _checkTCIDAndTPIDValid()
      */
-    protected $tcVersionID = null;
+    protected $tcVersionID;
 
-    protected $versionNumber = null;
+    protected $versionNumber;
 
     /**
      * Mapping bewteen external & internal test case ID
      */
-    protected $tcaseE2I = null;
+    protected $tcaseE2I;
 
     /**
      * needed in order to manage logs
      */
-    protected $tlLogger = null;
+    protected $tlLogger;
 
     /**
      * #@+
@@ -429,10 +429,9 @@ class TestlinkXMLRPCServer extends IXR_Server
         if (GENERAL_ERROR_CODE != $buildID) {
             $this->args[self::$buildIDParamName] = $buildID;
             return true;
-        } else {
-            $this->errors[] = new IXR_Error(INVALID_BUILDID, INVALID_BUILDID_STR);
-            return false;
         }
+        $this->errors[] = new IXR_Error(INVALID_BUILDID, INVALID_BUILDID_STR);
+        return false;
     }
 
     /**
@@ -508,9 +507,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                 $messagePrefix . NO_DEV_KEY_STR);
             $this->authenticated = false;
             return false;
-        } else {
-            $this->devKey = $this->args[self::$devKeyParamName];
         }
+        $this->devKey = $this->args[self::$devKeyParamName];
 
         // make sure the key we have is valid
         if (! $this->_isDevKeyValid($this->devKey)) {
@@ -518,14 +516,12 @@ class TestlinkXMLRPCServer extends IXR_Server
                 $messagePrefix . INVALID_AUTH_STR);
             $this->authenticated = false;
             return false;
-        } else {
-            // Load User
-            $this->user = tlUser::getByID($this->dbObj, $this->userID);
-            $this->authenticated = true;
-
-            $this->tlLogger->startTransaction('DEFAULT', null, $this->userID);
-            return true;
         }
+        // Load User
+        $this->user = tlUser::getByID($this->dbObj, $this->userID);
+        $this->authenticated = true;
+        $this->tlLogger->startTransaction('DEFAULT', null, $this->userID);
+        return true;
     }
 
     /**
@@ -1540,14 +1536,12 @@ class TestlinkXMLRPCServer extends IXR_Server
     {
         if (null == $devKey || "" == $devKey) {
             return false;
-        } else {
-            $this->userID = null;
-            $this->devKey = $this->dbObj->prepare_string($devKey);
-            $query = "SELECT id FROM {$this->tables['users']} WHERE script_key='{$this->devKey}'";
-            $this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
-
-            return null == $this->userID;
         }
+        $this->userID = null;
+        $this->devKey = $this->dbObj->prepare_string($devKey);
+        $query = "SELECT id FROM {$this->tables['users']} WHERE script_key='{$this->devKey}'";
+        $this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
+        return null == $this->userID;
     }
 
     /**
@@ -2264,9 +2258,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             $resultInfo[0]["id"] = $insertID;
             $resultInfo[0]["message"] = $returnMessage;
             return $resultInfo;
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -2285,9 +2278,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                 array(
                     'output' => 'array_of_map'
                 ));
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -2320,9 +2312,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                 $info = array_values($info);
             }
             return $info;
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -2385,9 +2376,8 @@ class TestlinkXMLRPCServer extends IXR_Server
         if ($status_ok) {
             $testPlanID = $this->args[self::$testPlanIDParamName];
             return $this->tplanMgr->get_testsuites($testPlanID);
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -2625,9 +2615,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             }
 
             return $tsuiteMgr->$pfn($testSuiteID, $details, $opt);
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -3136,9 +3125,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             }
 
             return $resultInfo;
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -3157,11 +3145,10 @@ class TestlinkXMLRPCServer extends IXR_Server
         if (! $this->_isTestModePresent()) {
             $this->errors[] = new IXR_ERROR(NO_TEST_MODE, NO_TEST_MODE_STR);
             return false;
-        } else {
-            // TODO: should probably validate that this is a bool or t/f string
-            $this->testMode = $this->args[self::$testModeParamName];
-            return true;
         }
+        // TODO: should probably validate that this is a bool or t/f string
+        $this->testMode = $this->args[self::$testModeParamName];
+        return true;
     }
 
     /**
@@ -3569,9 +3556,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                     break;
             }
             return $retval;
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -5073,15 +5059,14 @@ class TestlinkXMLRPCServer extends IXR_Server
                 $this->errors[] = new IXR_ERROR(NO_TESTCASE_FOUND,
                     $msg_prefix . NO_TESTCASE_FOUND_STR);
                 return $this->errors;
+            }
+            if (isset($this->args[self::$testCaseExternalIDParamName])) {
+                $result[0]['full_tc_external_id'] = $this->args[self::$testCaseExternalIDParamName];
             } else {
-                if (isset($this->args[self::$testCaseExternalIDParamName])) {
-                    $result[0]['full_tc_external_id'] = $this->args[self::$testCaseExternalIDParamName];
-                } else {
-                    $dummy = $this->tcaseMgr->getPrefix($id);
-                    $result[0]['full_tc_external_id'] = $dummy[0] .
-                        config_get('testcase_cfg')->glue_character .
-                        $result[0]['tc_external_id'];
-                }
+                $dummy = $this->tcaseMgr->getPrefix($id);
+                $result[0]['full_tc_external_id'] = $dummy[0] .
+                    config_get('testcase_cfg')->glue_character .
+                    $result[0]['tc_external_id'];
             }
         }
 
@@ -5097,13 +5082,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 
         if ($status_ok) {
             return $result;
-        } else {
-            if ($throwOnError) {
-                throw new Exception("Test Case Does Not Exist", 1);
-            } else {
-                return $this->errors;
-            }
         }
+        if ($throwOnError) {
+            throw new Exception("Test Case Does Not Exist", 1);
+        }
+        return $this->errors;
     }
 
     /**
@@ -5645,9 +5628,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             $testSuiteID = $this->args[self::$testSuiteIDParamName];
             $tsuiteMgr = new testsuite($this->dbObj);
             return $tsuiteMgr->get_by_id($testSuiteID);
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -6643,9 +6625,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                     break;
             }
             return $cfieldSpec[$cfield['id']];
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -7264,9 +7245,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                 $this->args,
                 $dbg
             );
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -7308,9 +7288,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                 'raw' => $metrics,
                 'table' => $out
             );
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -7425,9 +7404,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             );
 
             return $this->platformMgr->getAllAsMap($optPlat);
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -8444,9 +8422,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             return $this->getValidKeywordSet(
                 intval($this->args[self::$testProjectIDParamName]), '', true,
                 'getProjectKeywords');
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -8514,9 +8491,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                     $safeTCID, $tcversion_id);
             }
             return $kwSet;
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -9113,9 +9089,8 @@ class TestlinkXMLRPCServer extends IXR_Server
             }
             // Return the result after all of the fields have been processed
             return $ret;
-        } else {
-            return $this->errors;
         }
+        return $this->errors;
     }
 
     /**
@@ -9390,18 +9365,16 @@ class TestlinkXMLRPCServer extends IXR_Server
             if ($this->_isParamPresent(self::$requirementVersionIDParamName)) {
                 if (! $this->checkReqVersionID($msg_prefix)) {
                     return false;
-                } else {
-                    $reqVersionID = $this->args[self::$requirementVersionIDParamName];
-                    $latest = false;
                 }
+                $reqVersionID = $this->args[self::$requirementVersionIDParamName];
+                $latest = false;
             } elseif ($this->_isParamPresent(self::$versionNumberParamName)) {
                 if (! $this->checkVersionNumber()) {
                     return false;
-                } else {
-                    $reqVersionNumber = $this->args[self::$versionNumberParamName];
-                    $latest = false;
-                    $version = true;
                 }
+                $reqVersionNumber = $this->args[self::$versionNumberParamName];
+                $latest = false;
+                $version = true;
             }
 
             $reqID = $this->args[self::$requirementIDParamName];

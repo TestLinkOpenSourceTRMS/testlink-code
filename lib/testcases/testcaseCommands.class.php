@@ -739,9 +739,8 @@ class testcaseCommands
                 'status_ok' => true
             ), $opt);
             exit();
-        } else {
-            return $guiObj;
         }
+        return $guiObj;
     }
 
     /**

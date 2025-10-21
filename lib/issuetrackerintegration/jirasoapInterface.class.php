@@ -39,7 +39,7 @@ class jirasoapInterface extends issueTrackerInterface
 
     private $issueDefaults;
 
-    private $issueAttr = null;
+    private $issueAttr;
 
     public $defaultResolvedStatus;
 

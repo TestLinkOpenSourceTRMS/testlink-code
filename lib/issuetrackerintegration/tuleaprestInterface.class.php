@@ -47,29 +47,27 @@ class tuleaprestInterface extends issueTrackerInterface
 
         if (! $this->setCfg($config)) {
             return false;
-        } else {
-            // check the tracker ID
-            if (property_exists($this->cfg, 'tracker')) {
-                $this->trackerID = trim((string) $this->cfg->tracker);
-                if (strlen($this->trackerID) > 0 &&
-                    ! $this->checkTrackerIDSyntax($this->trackerID)) {
-                    return false;
-                }
-            } else {
-                // tracker ID may be absent (bug creation from Testlink will not be possible)
-                $this->trackerID = "";
-            }
-
-            // check the base URI
-            if (property_exists($this->cfg, 'uribase')) {
-                $this->URIBase = trim((string) $this->cfg->uribase);
-                if (strlen($this->URIBase) > 0 &&
-                    ! $this->checkURLSyntax($this->URIBase)) {
-                    return false;
-                }
-            } else {
+        }
+        // check the tracker ID
+        if (property_exists($this->cfg, 'tracker')) {
+            $this->trackerID = trim((string) $this->cfg->tracker);
+            if (strlen($this->trackerID) > 0 &&
+                ! $this->checkTrackerIDSyntax($this->trackerID)) {
                 return false;
             }
+        } else {
+            // tracker ID may be absent (bug creation from Testlink will not be possible)
+            $this->trackerID = "";
+        }
+        // check the base URI
+        if (property_exists($this->cfg, 'uribase')) {
+            $this->URIBase = trim((string) $this->cfg->uribase);
+            if (strlen($this->URIBase) > 0 &&
+                ! $this->checkURLSyntax($this->URIBase)) {
+                return false;
+            }
+        } else {
+            return false;
         }
 
         $this->completeCfg();
@@ -455,14 +453,13 @@ class tuleaprestInterface extends issueTrackerInterface
             if (is_null($op)) {
                 throw new Exception(
                     "Something's wrong when creating an artefact");
-            } else {
-                $ret = array(
-                    'status_ok' => true,
-                    'id' => (string) $op->id,
-                    'msg' => sprintf(lang_get('tuleap_bug_created'), $summary,
-                        (string) $op->tracker->project->id)
-                );
             }
+            $ret = array(
+                'status_ok' => true,
+                'id' => (string) $op->id,
+                'msg' => sprintf(lang_get('tuleap_bug_created'), $summary,
+                    (string) $op->tracker->project->id)
+            );
         } catch (Exception $e) {
             $msg = "Create artifact FAILURE => " . $e->getMessage();
             tLog($msg, 'WARNING');

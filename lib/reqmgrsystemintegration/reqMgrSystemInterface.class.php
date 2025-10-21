@@ -20,32 +20,32 @@ abstract class reqMgrSystemInterface
 
     private $connected;
 
-    private $cfg = null;
+    private $cfg;
 
     // simpleXML object
     private $interfaceViaDB = false;
 
     // Variables related to establishing the connection
-    private $serverConnection = null;
+    private $serverConnection;
 
-    private $server = null;
+    private $server;
 
-    private $user = null;
+    private $user;
 
-    private $password = null;
+    private $password;
 
     // Variables related to retrieving and caching the requirements
     private $projects = array();
 
-    private $lastproject = null;
+    private $lastproject;
 
     private $baselines = array();
 
-    private $lastbaseline = null;
+    private $lastbaseline;
 
     private $requirements = array();
 
-    private $type = null;
+    private $type;
 
     // Variables related to requirement modifications during import.
     private $prefix = "";

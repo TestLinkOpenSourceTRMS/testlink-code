@@ -527,9 +527,8 @@ function createSpreadsheet($gui, $args, $media)
         $email_op = email_send_wrapper($ema, $oops);
         unlink($tmpfname);
         exit();
-    } else {
-        downloadXls($tmpfname, $xlsType, $gui, "{$codex_}");
     }
+    downloadXls($tmpfname, $xlsType, $gui, "{$codex_}");
 }
 
 /**

@@ -51,7 +51,8 @@ if (! $gui->external_password_mgmt && $userID) {
         }
         redirect(TL_BASE_HREF . "login.php?note=lost&viewer={$args->viewer}");
         exit();
-    } elseif ($result['status'] == tlUser::E_EMAILLENGTH) {
+    }
+    if ($result['status'] == tlUser::E_EMAILLENGTH) {
         $gui->note = lang_get('mail_empty_address');
     } elseif ($note != "") {
         $gui->note = getUserErrorMessage($result['status']);

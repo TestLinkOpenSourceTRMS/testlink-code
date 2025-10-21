@@ -168,7 +168,7 @@ class tlTestCaseFilterControl extends tlFilterControl
      *
      * @var testcase
      */
-    private $tc_mgr = null;
+    private $tc_mgr;
 
     /**
      * Platform manager object.
@@ -176,7 +176,7 @@ class tlTestCaseFilterControl extends tlFilterControl
      *
      * @var tlPlatform
      */
-    private $platform_mgr = null;
+    private $platform_mgr;
 
     /**
      * Testplan manager object.
@@ -184,7 +184,7 @@ class tlTestCaseFilterControl extends tlFilterControl
      *
      * @var testplan
      */
-    private $testplan_mgr = null;
+    private $testplan_mgr;
 
     /**
      * This array contains all possible filters.
@@ -354,7 +354,7 @@ class tlTestCaseFilterControl extends tlFilterControl
      *
      * @var string
      */
-    public $form_token = null;
+    public $form_token;
 
     const DISABLED = 0;
 
@@ -2139,9 +2139,8 @@ class tlTestCaseFilterControl extends tlFilterControl
                 }
             }
             return $cf;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**

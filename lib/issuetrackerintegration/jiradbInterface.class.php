@@ -60,9 +60,8 @@ class jiradbInterface extends issueTrackerInterface
             $msg = " - Issuetracker $this->name - jiraversion is MANDATORY - Unable to continue";
             tLog(__METHOD__ . $msg, 'ERROR');
             return false;
-        } else {
-            $this->completeCfg();
         }
+        $this->completeCfg();
 
         $this->defaultResolvedStatus = $this->support->initDefaultResolvedStatus(
             $this->statusDomain);

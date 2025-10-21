@@ -24,35 +24,35 @@ abstract class TestlinkPlugin extends tlObjectWithDB
      * name - Your plugin's full name.
      * Required value.
      */
-    public $name = null;
+    public $name;
 
     /**
      * description - A full description of your plugin.
      */
-    public $description = null;
+    public $description;
 
     /**
      * version - Your plugin's version string.
      * Required value.
      */
-    public $version = null;
+    public $version;
 
     /**
      * author - Your name, or an array of names.
      */
-    public $author = null;
+    public $author;
 
     /**
      * contact - An email address where you can be contacted.
      */
-    public $contact = null;
+    public $contact;
 
     /**
      * url - A web address for your plugin.
      */
-    public $url = null;
+    public $url;
 
-    protected $db = null;
+    protected $db;
 
     /**
      * this function registers your plugin - must set at least name and version
@@ -99,7 +99,7 @@ abstract class TestlinkPlugin extends tlObjectWithDB
     }
 
     # ## Core plugin functionality ###
-    public $basename = null;
+    public $basename;
 
     final public function __construct(&$db, $p_basename)
     {

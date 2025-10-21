@@ -28,7 +28,7 @@
 class tlRequirementFilterControl extends tlFilterControl
 {
 
-    public $req_mgr = null;
+    public $req_mgr;
 
     /**
      * This array contains all possible filters.

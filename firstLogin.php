@@ -57,9 +57,8 @@ if (! is_null($args->doEditUser)) {
                 $url2go = "login.php?note=first";
                 redirect(TL_BASE_HREF . $url2go);
                 exit();
-            } else {
-                $message = getUserErrorMessage($result);
             }
+            $message = getUserErrorMessage($result);
         } else {
             $message = $rx['msg'];
         }

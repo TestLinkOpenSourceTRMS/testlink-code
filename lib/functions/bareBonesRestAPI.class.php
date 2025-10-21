@@ -46,7 +46,7 @@ class bareBonesRestAPI
      * login
      * password
      */
-    public $proxy = null;
+    public $proxy;
 
     public $cfg;
 

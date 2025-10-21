@@ -20,7 +20,7 @@ class jirarestInterface extends issueTrackerInterface
 
     private $APIClient;
 
-    private $issueAttr = null;
+    private $issueAttr;
 
     private $jiraCfg;
 

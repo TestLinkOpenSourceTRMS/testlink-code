@@ -52,20 +52,20 @@ abstract class tlTable
      * A unique id that is used to render the table and to remember state via
      * cookie (requires CookieProvider to be set in Ext.onReady);
      */
-    public $tableID = null;
+    public $tableID;
 
     /** @var The title header for the whole table. Default: null (no title) */
-    public $title = null;
+    public $title;
 
     /** @var Width of the table. Default: null (full width) */
-    public $width = null;
+    public $width;
 
     /**
      *
      * @var Height of the table. Default: null
      * @see $autoHeight
      */
-    public $height = null;
+    public $height;
 
     /**
      *

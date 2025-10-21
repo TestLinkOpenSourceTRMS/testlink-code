@@ -90,9 +90,8 @@ function exportDataToXML($items, $rootTpl, $elemTpl, $elemInfo,
     if ($rootTpl != '' && ! is_null($rootTpl)) {
         $result .= str_replace("{{XMLCODE}}", $xmlCode, $rootTpl);
         return $result;
-    } else {
-        return $xmlCode;
     }
+    return $xmlCode;
 }
 
 /**

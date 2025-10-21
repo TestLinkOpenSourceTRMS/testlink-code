@@ -62,9 +62,8 @@ switch ($args->action) {
             $g2i = $args->oauth_name . '.php';
             if (! include_once $g2i) {
                 die("Oauth client doesn't exist");
-            } else {
-                $includeOK = true;
             }
+            $includeOK = true;
         }
 
         // No good!

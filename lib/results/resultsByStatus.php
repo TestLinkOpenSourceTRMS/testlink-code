@@ -861,9 +861,8 @@ function createSpreadsheet($gui, $args, $customFieldColumns = null)
         $email_op = email_send_wrapper($ema, $oops);
         unlink($tmpfname);
         exit();
-    } else {
-        downloadXls($tmpfname, $xlsType, $gui, 'resultsByStatus_');
     }
+    downloadXls($tmpfname, $xlsType, $gui, 'resultsByStatus_');
 }
 
 /**

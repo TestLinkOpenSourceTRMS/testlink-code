@@ -18,9 +18,9 @@ class gitlabrestInterface extends issueTrackerInterface
 
     private $issueDefaults;
 
-    private $issueOtherAttr = null;
+    private $issueOtherAttr;
 
-    private $translate = null;
+    private $translate;
 
     public $defaultResolvedStatus;
 

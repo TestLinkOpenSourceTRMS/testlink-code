@@ -58,9 +58,8 @@ function string_no_break($p_string)
 {
     if (strpos($p_string, ' ') !== false) {
         return '<span class="nowrap">' . $p_string . "</span>";
-    } else {
-        return $p_string;
     }
+    return $p_string;
 }
 
 /**
@@ -240,12 +239,10 @@ function string_sanitize_url($p_url)
                 $t_param .= "{$k}=" . urlencode(strip_tags(urldecode($v)));
             }
             return $t_path . '?' . $t_param;
-        } else {
-            return $t_path;
         }
-    } else {
-        return $t_url;
+        return $t_path;
     }
+    return $t_url;
 }
 
 /**
@@ -424,9 +421,8 @@ function string_shorten($p_string)
         }
         $t_string .= '...' . $t_last;
         return $t_string;
-    } else {
-        return $p_string;
     }
+    return $p_string;
 }
 
 /**

@@ -81,7 +81,7 @@ abstract class tlObject implements iSerialization
      *      value: table name WITH PREFIX
      * @see getDBTables()
      */
-    protected $tables = null;
+    protected $tables;
 
     /**
      *
@@ -90,7 +90,7 @@ abstract class tlObject implements iSerialization
      *      value: view name WITH PREFIX
      * @see getDBViews()
      */
-    protected $views = null;
+    protected $views;
 
     protected $auditCfg;
 
@@ -496,7 +496,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
      * @var array this is the static object cache for all tlDBObject. objects are stored like this
      *      [classname][detailLevel][databaseID]
      */
-    protected static $objectCache = null;
+    protected static $objectCache;
 
     /**
      *

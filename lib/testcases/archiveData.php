@@ -486,32 +486,26 @@ function processTestCase(&$dbHandler, $tplEngine, $args, &$gui, $grants, $cfg)
             echo $e->getMessage();
         }
         exit();
-    } else {
-        $templateCfg = templateConfiguration();
-
-        // need to initialize search fields
-        $xbm = $item_mgr->getTcSearchSkeleton();
-        $xbm->warning_msg = lang_get('no_records_found');
-        $xbm->pageTitle = lang_get('caption_search_form');
-        $xbm->tableSet = null;
-        $xbm->doSearch = false;
-        $xbm->tproject_id = $args->tproject_id;
-
-        $tprj = new testproject($dbHandler);
-        $oo = $tprj->getOptions($args->tproject_id);
-        $xbm->filter_by['requirement_doc_id'] = $oo->requirementsEnabled;
-        $xbm->keywords = $tprj->getKeywords($args->tproject_id);
-        $xbm->filter_by['keyword'] = ! is_null($xbm->keywords);
-
-        //
-        $cfMgr = new cfield_mgr($dbHandler);
-        $xbm->design_cf = $cfMgr->get_linked_cfields_at_design(
-            $args->tproject_id, cfield_mgr::ENABLED, null, 'testcase');
-
-        $xbm->filter_by['design_scope_custom_fields'] = ! is_null(
-            $xbm->design_cf);
-
-        $tplEngine->assign('gui', $xbm);
-        $tplEngine->display($templateCfg->template_dir . 'tcSearchResults.tpl');
     }
+    $templateCfg = templateConfiguration();
+    // need to initialize search fields
+    $xbm = $item_mgr->getTcSearchSkeleton();
+    $xbm->warning_msg = lang_get('no_records_found');
+    $xbm->pageTitle = lang_get('caption_search_form');
+    $xbm->tableSet = null;
+    $xbm->doSearch = false;
+    $xbm->tproject_id = $args->tproject_id;
+    $tprj = new testproject($dbHandler);
+    $oo = $tprj->getOptions($args->tproject_id);
+    $xbm->filter_by['requirement_doc_id'] = $oo->requirementsEnabled;
+    $xbm->keywords = $tprj->getKeywords($args->tproject_id);
+    $xbm->filter_by['keyword'] = ! is_null($xbm->keywords);
+    //
+    $cfMgr = new cfield_mgr($dbHandler);
+    $xbm->design_cf = $cfMgr->get_linked_cfields_at_design(
+        $args->tproject_id, cfield_mgr::ENABLED, null, 'testcase');
+    $xbm->filter_by['design_scope_custom_fields'] = ! is_null(
+        $xbm->design_cf);
+    $tplEngine->assign('gui', $xbm);
+    $tplEngine->display($templateCfg->template_dir . 'tcSearchResults.tpl');
 }

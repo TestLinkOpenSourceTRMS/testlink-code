@@ -485,9 +485,8 @@ function plugin_register($p_basename, $p_return = false)
 
             if ($p_return) {
                 return $t_plugin;
-            } else {
-                $g_plugin_cache[$p_basename] = $t_plugin;
             }
+            $g_plugin_cache[$p_basename] = $t_plugin;
         }
     }
 

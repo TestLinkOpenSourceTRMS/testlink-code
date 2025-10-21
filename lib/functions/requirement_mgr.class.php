@@ -1291,9 +1291,8 @@ class requirement_mgr extends tlObjectWithAttachments
         }
         if (is_array($testcase_id)) {
             return $this->db->fetchRowsIntoMap($sql, 'testcase_id', true);
-        } else {
-            return $this->db->get_recordset($sql);
         }
+        return $this->db->get_recordset($sql);
     }
 
     /**
@@ -4571,9 +4570,8 @@ class requirement_mgr extends tlObjectWithAttachments
 
         if (is_array($tcversion_id)) {
             return $this->db->fetchRowsIntoMap($sql, 'tcversion_id', true);
-        } else {
-            return $this->db->get_recordset($sql);
         }
+        return $this->db->get_recordset($sql);
     }
 
     /**
@@ -4607,9 +4605,8 @@ class requirement_mgr extends tlObjectWithAttachments
 
         if (is_array($tcversion_id)) {
             return $this->db->fetchRowsIntoMap($sql, 'tcversion_id', true);
-        } else {
-            return $this->db->get_recordset($sql);
         }
+        return $this->db->get_recordset($sql);
     }
 
     /**

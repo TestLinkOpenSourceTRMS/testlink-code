@@ -45,9 +45,8 @@ $do_backup_file = false;
 if ($argc < 1) {
     echo 'Usage: #tl_lang_parser.php <localization_file_to_be_updated>';
     exit();
-} else {
-    $file_lang_old = $argv[1];
 }
+$file_lang_old = $argv[1];
 
 $out = ''; // data for output file
 $var_counter = 0;

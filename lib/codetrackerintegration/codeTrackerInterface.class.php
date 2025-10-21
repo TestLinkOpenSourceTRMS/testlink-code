@@ -33,15 +33,15 @@ abstract class codeTrackerInterface
 
     // members to store the codetracking information.
     // Values are set in the actual subclasses
-    public $cfg = null;
+    public $cfg;
 
     // simpleXML object
-    public $name = null;
+    public $name;
 
-    private $tlCharSet = null;
+    private $tlCharSet;
 
     // private vars don't touch
-    private $dbConnection = null;
+    private $dbConnection;
 
     // usable only if interface is done via direct DB access.
     private $dbMsg = '';

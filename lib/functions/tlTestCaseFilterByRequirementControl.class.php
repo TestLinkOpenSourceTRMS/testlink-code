@@ -110,7 +110,7 @@
 class tlTestCaseFilterByRequirementControl extends tlFilterControl
 {
 
-    public $req_mgr = null;
+    public $req_mgr;
 
     /**
      * Testcase manager object.
@@ -118,7 +118,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
      *
      * @var testcase
      */
-    private $tc_mgr = null;
+    private $tc_mgr;
 
     /**
      * Platform manager object.
@@ -126,7 +126,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
      *
      * @var tlPlatform
      */
-    private $platform_mgr = null;
+    private $platform_mgr;
 
     /**
      * Testplan manager object.
@@ -134,7 +134,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
      *
      * @var testplan
      */
-    private $testplan_mgr = null;
+    private $testplan_mgr;
 
     /**
      * This array contains all possible filters.
@@ -286,7 +286,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl
      *
      * @var string
      */
-    public $form_token = null;
+    public $form_token;
 
     /**
      *

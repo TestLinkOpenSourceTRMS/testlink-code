@@ -594,9 +594,8 @@ function strings_stripSlashes($parameter, $bGPC = true)
             }
         }
         return $retParameter;
-    } else {
-        return stripslashes($parameter);
     }
+    return stripslashes($parameter);
 }
 
 function to_boolean($alt_boolean)
@@ -742,12 +741,14 @@ function microtime_float()
 function priority_to_level($priority)
 {
     $urgencyImportance = config_get('urgencyImportance');
-
     if ($priority >= $urgencyImportance->threshold['high']) {
         return HIGH;
-    } elseif ($priority < $urgencyImportance->threshold['low']) {
+    }
+
+    if ($priority < $urgencyImportance->threshold['low']) {
         return LOW;
-    } else {
+    }
+    else {
         return MEDIUM;
     }
 }

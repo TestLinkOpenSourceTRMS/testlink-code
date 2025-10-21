@@ -62,9 +62,9 @@ class tlExtTable extends tlTable
     /**
      * default grid parameters used by getGridSettings()
      */
-    public $title = null;
+    public $title;
 
-    public $width = null;
+    public $width;
 
     public $height = 500;
 
@@ -85,7 +85,7 @@ class tlExtTable extends tlTable
      *
      * @see tlTable::titleToColumnName()
      */
-    public $sortByColumn = null;
+    public $sortByColumn;
 
     /**
      * 20100816 - asimon - enable sorting by a default column and with configurable direction.

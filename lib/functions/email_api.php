@@ -186,10 +186,9 @@ function email_send($p_from, $p_recipient, $p_subject, $p_message, $p_cc = '',
             print "PROBLEMS SENDING MAIL TO: {$p_recipient}<br />";
             print 'Mailer Error: ' . $mail->ErrorInfo . '<br />';
             exit();
-        } else {
-            $op->status_ok = false;
-            $op->msg = $mail->ErrorInfo;
         }
+        $op->status_ok = false;
+        $op->msg = $mail->ErrorInfo;
     }
     return $op;
 }

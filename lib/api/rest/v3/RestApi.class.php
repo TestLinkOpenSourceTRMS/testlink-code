@@ -49,44 +49,44 @@ class RestApi
      *
      * @access protected
      */
-    protected $db = null;
+    protected $db;
 
-    protected $tables = null;
+    protected $tables;
 
-    protected $tcaseMgr = null;
+    protected $tcaseMgr;
 
-    protected $tprojectMgr = null;
+    protected $tprojectMgr;
 
-    protected $tsuiteMgr = null;
+    protected $tsuiteMgr;
 
-    protected $tplanMgr = null;
+    protected $tplanMgr;
 
-    protected $tplanMetricsMgr = null;
+    protected $tplanMetricsMgr;
 
-    protected $reqSpecMgr = null;
+    protected $reqSpecMgr;
 
-    protected $reqMgr = null;
+    protected $reqMgr;
 
-    protected $platformMgr = null;
+    protected $platformMgr;
 
-    protected $buildMgr = null;
+    protected $buildMgr;
 
-    protected $cfieldMgr = null;
+    protected $cfieldMgr;
 
     /**
      * userID associated with the apiKey provided
      */
-    protected $userID = null;
+    protected $userID;
 
     /**
      * UserObject associated with the userID
      */
-    protected $user = null;
+    protected $user;
 
     /**
      * The api key being used to make a request
      */
-    protected $apiKey = null;
+    protected $apiKey;
 
     /**
      * boolean to allow a method to invoke another method and avoid double auth
@@ -99,9 +99,9 @@ class RestApi
     /**
      * This value is setted in following method:
      */
-    protected $tcVersionID = null;
+    protected $tcVersionID;
 
-    protected $versionNumber = null;
+    protected $versionNumber;
 
     protected $debugMsg;
 

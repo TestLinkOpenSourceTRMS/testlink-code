@@ -26,10 +26,10 @@ class tlTestPlanMetrics extends testplan
 {
 
     /** @var resource references passed in by constructor */
-    public $db = null;
+    public $db;
 
     /** @var object class references passed in by constructor */
-    private $tplanMgr = null;
+    private $tplanMgr;
 
     private $testPlanID = - 1;
 
@@ -1339,10 +1339,9 @@ class tlTestPlanMetrics extends testplan
                 $renderObj,
                 $metrics['staircase']
             );
-        } else {
-            unset($metrics);
-            return $renderObj;
         }
+        unset($metrics);
+        return $renderObj;
     }
 
     /**

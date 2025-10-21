@@ -534,9 +534,8 @@ function createSpreadsheet($gui, $args)
         $email_op = email_send_wrapper($ema, $oops);
         unlink($tmpfname);
         exit();
-    } else {
-        downloadXls($tmpfname, $xlsType, $gui, 'resultsTC_');
     }
+    downloadXls($tmpfname, $xlsType, $gui, 'resultsTC_');
 }
 
 /**

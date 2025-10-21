@@ -20,7 +20,7 @@ class tlCodeTracker extends tlObject
     /** @var resource the database handler */
     protected $db;
 
-    private $types = null;
+    private $types;
 
     // IMPORTANT NOTICE
     // array index is used AS CODE that will be written to DB

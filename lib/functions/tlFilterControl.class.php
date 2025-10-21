@@ -122,14 +122,14 @@ abstract class tlFilterControl extends tlObjectWithDB
      *
      * @var stdClass
      */
-    public $configuration = null;
+    public $configuration;
 
     /**
      * holds the user input read from request
      *
      * @var stdClass
      */
-    public $args = null;
+    public $args;
 
     /**
      * Will hold the configuration of filters (which ones are to be shown) and their values,
@@ -224,7 +224,7 @@ abstract class tlFilterControl extends tlObjectWithDB
     public $do_filtering = false;
 
     // used by derived classes
-    public $cfieldsCfg = null;
+    public $cfieldsCfg;
 
     /**
      * Testproject manager object.
@@ -232,10 +232,10 @@ abstract class tlFilterControl extends tlObjectWithDB
      *
      * @var testproject
      */
-    public $testproject_mgr = null;
+    public $testproject_mgr;
 
     // used by derived classes
-    protected $cfield_mgr = null;
+    protected $cfield_mgr;
 
     /**
      *

@@ -518,65 +518,58 @@ if (! is_null($linked_tcversions)) {
 if ($args->reload_caller) {
     windowCloseAndOpenerReload();
     exit();
-} else {
-    // Removing duplicate and NULL id's
-    unset($userid_array['']);
-    $userSet = null;
-    if ($userid_array) {
-        foreach ($userid_array as $value) {
-            $userSet[] = $value;
-        }
-    }
-
-    $gui->headsUpTSuite = smartyAssignTestsuiteInfo($smarty, $tree_mgr,
-        $tcase_id, $args->tproject_id, $cfg);
-    if ($args->doSave || $args->saveStepsPartialExec) {
-        $gui->headsUpTSuite = false;
-    }
-
-    // Bulk is possible when test suite is selected (and is allowed in config)
-    if ($gui->can_use_bulk_op = ($args->level == 'testsuite')) {
-        $xx = null;
-        if (property_exists($gui, 'execution_time_cfields')) {
-            $xx = current((array) $gui->execution_time_cfields);
-        }
-
-        $gui->execution_time_cfields = null;
-        if (! is_null($xx)) {
-            $gui->execution_time_cfields[0] = $xx;
-        }
-    }
-
-    // has sense only if there are cf for execution
-    // may be can improve check
-    if (! $gui->can_use_bulk_op &&
-        $cfg->exec_cfg->exec_mode->new_exec == 'latest') {
-
-        list ($tcase_id, $tcversion_id, $latestExecIDInContext, $hasCFOnExec) = processTestCase(
-            $tcase, $gui, $args, $cfg, $linked_tcversions, $tree_mgr, $tcaseMgr,
-            $fileRepo);
-
-        if ($latestExecIDInContext > 0) {
-            $tbl = DB_TABLE_PREFIX . 'executions';
-            $sql = "SELECT notes FROM {$tbl}
-                WHERE id = {$latestExecIDInContext}";
-            $rs = $db->get_recordset($sql);
-            $gui->lexNotes = $rs != null ? $rs[0]['notes'] : null;
-        }
-    }
-
-    initWebEditors($gui, $cfg, $_SESSION['basehref']);
-
-    // To silence smarty errors
-    // future must be initialized in a right way
-    $smarty->assign('test_automation_enabled', 0);
-    $smarty->assign('gui', $gui);
-    $smarty->assign('cfg', $cfg);
-    $smarty->assign('users', tlUser::getByIDs($db, $userSet));
-
-    $smarty->display(
-        $templateCfg->template_dir . $templateCfg->default_template);
 }
+// Removing duplicate and NULL id's
+unset($userid_array['']);
+$userSet = null;
+if ($userid_array) {
+    foreach ($userid_array as $value) {
+        $userSet[] = $value;
+    }
+}
+$gui->headsUpTSuite = smartyAssignTestsuiteInfo($smarty, $tree_mgr,
+    $tcase_id, $args->tproject_id, $cfg);
+if ($args->doSave || $args->saveStepsPartialExec) {
+    $gui->headsUpTSuite = false;
+}
+// Bulk is possible when test suite is selected (and is allowed in config)
+if ($gui->can_use_bulk_op = ($args->level == 'testsuite')) {
+    $xx = null;
+    if (property_exists($gui, 'execution_time_cfields')) {
+        $xx = current((array) $gui->execution_time_cfields);
+    }
+
+    $gui->execution_time_cfields = null;
+    if (! is_null($xx)) {
+        $gui->execution_time_cfields[0] = $xx;
+    }
+}
+// has sense only if there are cf for execution
+// may be can improve check
+if (! $gui->can_use_bulk_op &&
+    $cfg->exec_cfg->exec_mode->new_exec == 'latest') {
+
+    list ($tcase_id, $tcversion_id, $latestExecIDInContext, $hasCFOnExec) = processTestCase(
+        $tcase, $gui, $args, $cfg, $linked_tcversions, $tree_mgr, $tcaseMgr,
+        $fileRepo);
+
+    if ($latestExecIDInContext > 0) {
+        $tbl = DB_TABLE_PREFIX . 'executions';
+        $sql = "SELECT notes FROM {$tbl}
+                WHERE id = {$latestExecIDInContext}";
+        $rs = $db->get_recordset($sql);
+        $gui->lexNotes = $rs != null ? $rs[0]['notes'] : null;
+    }
+}
+initWebEditors($gui, $cfg, $_SESSION['basehref']);
+// To silence smarty errors
+// future must be initialized in a right way
+$smarty->assign('test_automation_enabled', 0);
+$smarty->assign('gui', $gui);
+$smarty->assign('cfg', $cfg);
+$smarty->assign('users', tlUser::getByIDs($db, $userSet));
+$smarty->display(
+    $templateCfg->template_dir . $templateCfg->default_template);
 
 /**
  */

@@ -107,9 +107,11 @@ function csrfguard_validate_token($unique_form_name, $token_value)
     $token = get_from_session($unique_form_name);
     if ($token === false) {
         return true;
-    } elseif ($token == $token_value) {
+    }
+    if ($token == $token_value) {
         $result = true;
-    } else {
+    }
+    else {
         $result = false;
     }
     unset_session($unique_form_name);

@@ -57,7 +57,7 @@ class tlInputParameter extends tlObject
      * @var object tlParameterInfo Information about the parameter
      * @see class tlParameterInfo
      */
-    private $parameterInfo = null;
+    private $parameterInfo;
 
     /**
      *
@@ -69,19 +69,19 @@ class tlInputParameter extends tlObject
      *
      * @var mixed tainted value, fetched but not validated
      */
-    protected $taintValue = null;
+    protected $taintValue;
 
     /**
      *
      * @var mixed normalized and maybe validated value
      */
-    protected $normalizedValue = null;
+    protected $normalizedValue;
 
     /**
      *
      * @var tl<TYPE>ValidationInfo Info how the value of the parameter should be validated
      */
-    protected $validationInfo = null;
+    protected $validationInfo;
 
     /**
      *
@@ -234,13 +234,13 @@ class tlParameterInfo
      *
      * @var string source of the parameter input value (eG POST,GET,...)
      */
-    public $source = null;
+    public $source;
 
     /**
      *
      * @var string name of the parameter
      */
-    public $name = null;
+    public $name;
 
     public function __construct($source = null, $name = null)
     {
@@ -294,19 +294,19 @@ class tlStringValidationInfo
      *
      * @var string regular expression which can be used for validation
      */
-    public $regExp = null;
+    public $regExp;
 
     /**
      *
      * @var function callback function which can be used for validation
      */
-    public $pfnValidation = null;
+    public $pfnValidation;
 
     /**
      *
      * @var function callback function which can be used for normalization
      */
-    public $pfnNormalization = null;
+    public $pfnNormalization;
 
     /**
      *
@@ -430,7 +430,7 @@ class tlIntegerValidationInfo
      *
      * @var function callback function which can be used for validation
      */
-    public $pfnValidation = null;
+    public $pfnValidation;
 
     /**
      *
@@ -495,14 +495,14 @@ class tlArrayValidationInfo
      * @var tl<TYPE>ValidationInfo the validation info which should be use to validated
      *      the member of the array
      */
-    public $validationInfo = null;
+    public $validationInfo;
 
     /**
      *
      * @var function callback function which can be used for validation
      */
     // @TODO schlundus, future purposes
-    public $pfnValidation = null;
+    public $pfnValidation;
 
     /**
      *

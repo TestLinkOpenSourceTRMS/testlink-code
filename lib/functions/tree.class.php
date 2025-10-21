@@ -54,7 +54,7 @@ class tree extends tlObject
         null
     );
 
-    private $nodeWithoutClass = null;
+    private $nodeWithoutClass;
 
     public $node_descr_id = array();
 
@@ -79,7 +79,7 @@ class tree extends tlObject
 
     private $ROOT_NODE_TYPE_ID = 1;
 
-    private $ROOT_NODE_PARENT_ID = null;
+    private $ROOT_NODE_PARENT_ID;
 
     /** @var resource database handler */
     public $db;

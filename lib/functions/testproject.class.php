@@ -1451,9 +1451,8 @@ class testproject extends tlObjectWithAttachments
             }
             fclose($handle);
             return self::OK;
-        } else {
-            return self::ERROR;
         }
+        return self::ERROR;
     }
 
     /**

@@ -312,7 +312,8 @@ function getTestProjectEffectiveRoles($dbHandler, &$objMgr, &$argsObj, $users)
     // has right enough to assign user role.
     //
     $features = array();
-    $idSet = $key2loop = array_keys($testprojects);
+    $idSet = array_keys($testprojects);
+    $key2loop = $idSet;
     $rolesCache = null;
     foreach ($idSet as $tk) {
         if (! isset($rolesCache[$testprojects[$tk]['effective_role']])) {

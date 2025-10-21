@@ -481,8 +481,8 @@ class searchCommands
         $this->gui->keyword_id = intval($this->args->keyword_id);
 
         $this->gui->forceSearch = false;
-
-        $this->gui->and_selected = $this->gui->or_selected = '';
+        $this->gui->and_selected = '';
+        $this->gui->or_selected = '';
         switch ($this->args->and_or) {
             case 'and':
                 $this->gui->and_selected = ' selected ';
@@ -991,8 +991,8 @@ class searchCommands
                 $filter['by_keyword_id'] = " AND KW.keyword_id  = " .
                     $args->keyword_id;
             }
-
-            $created_by_on_tc = $args->created_by = trim($args->created_by);
+            $created_by_on_tc = trim($args->created_by);
+            $args->created_by = $created_by_on_tc;
             $from['users'] = '';
             if ($created_by_on_tc != '') {
                 $doFilter = true;
@@ -1001,8 +1001,8 @@ class searchCommands
                     "       AUTHOR.first $this->likeOp '%{$args->created_by}%' OR " .
                     "       AUTHOR.last $this->likeOp '%{$args->created_by}%') ";
             }
-
-            $edited_by_on_tc = $args->edited_by = trim($args->edited_by);
+            $edited_by_on_tc = trim($args->edited_by);
+            $args->edited_by = $edited_by_on_tc;
             if ($edited_by_on_tc != '') {
                 $doFilter = true;
                 $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";

@@ -151,7 +151,7 @@ class youtrackrestInterface extends issueTrackerInterface
         $str = "Ticket ID - " . $issueID . " - does not exist in BTS";
         $issue = $this->getBugStatus($issueID);
         if (! is_null($issue) && is_object($issue)) {
-            $str = array_search($issue->status, $this->statusDomain);
+            $str = array_search($issue->status, $this->statusDomain, true);
             if (strcasecmp($str, 'closed') == 0 ||
                 strcasecmp($str, 'resolved') == 0) {
                 $str = "<del>" . $str . "</del>";

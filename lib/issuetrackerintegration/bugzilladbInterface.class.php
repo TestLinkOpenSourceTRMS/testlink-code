@@ -73,7 +73,8 @@ class bugzilladbInterface extends issueTrackerInterface
             $issue->summary = $rs[$id]['summary']; // useful on spreadsheet export
 
             $issue->IDHTMLString = "<b>{$id} : </b>";
-            $issue->statusCode = $issue->statusVerbose = $rs[$id]['status'];
+            $issue->statusCode = $rs[$id]['status'];
+            $issue->statusVerbose = $rs[$id]['status'];
             $issue->statusHTMLString = $this->buildStatusHTMLString(
                 $issue->statusVerbose);
             $issue->statusColor = isset(

@@ -241,8 +241,8 @@ function initializeGui(&$dbHandler, &$argsObj)
 
     $mgr = new testproject($dbHandler);
     $dummy = $mgr->get_by_id($argsObj->tproject_id);
-
-    $gui->tproject_name = $argsObj->tproject_name = $dummy['name'];
+    $gui->tproject_name = $dummy['name'];
+    $argsObj->tproject_name = $dummy['name'];
 
     $gui->options = new stdClass();
     $gui->options->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;

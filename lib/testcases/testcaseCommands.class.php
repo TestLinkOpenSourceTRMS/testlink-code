@@ -1000,7 +1000,7 @@ class testcaseCommands
             $guiObj->cleanUpWebEditor = true;
 
             // renumber steps only if new step hits an existent step number
-            $hitPos = array_search($newStepNumber, $stepNumberSet);
+            $hitPos = array_search($newStepNumber, $stepNumberSet, true);
             if ($hitPos !== false) {
                 // Process starts from this position
                 $just_renumbered = array(

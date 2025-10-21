@@ -13,7 +13,8 @@ require_once 'keywordsEnv.php';
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$gui = $args = initArgs($db);
+$gui = initArgs($db);
+$args = $gui;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -52,7 +53,8 @@ function initArgs(&$dbHandler)
     $args->tproject_id = $tproject_id;
 
     $args->dialogName = '';
-    $args->bodyOnLoad = $args->bodyOnUnload = '';
+    $args->bodyOnLoad = '';
+    $args->bodyOnUnload = '';
     if (isset($_REQUEST['openByKWInc'])) {
         $args->openByOther = 1;
     } else {

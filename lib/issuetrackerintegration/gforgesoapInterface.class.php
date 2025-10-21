@@ -179,7 +179,8 @@ class gforgesoapInterface extends issueTrackerInterface
             $issue->IDHTMLString = "<b>{$issueID} : </b>";
             $issue->statusCode = $issue->status_id;
             $issue->statusVerbose = array_search($issue->statusCode,
-                $this->statusDomain);
+                $this->statusDomain,
+                true);
             $issue->statusHTMLString = $this->buildStatusHTMLString(
                 $issue->statusCode);
             $issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);
@@ -334,7 +335,7 @@ class gforgesoapInterface extends issueTrackerInterface
      */
     private function buildStatusHTMLString($statusCode)
     {
-        $str = array_search($statusCode, $this->statusDomain);
+        $str = array_search($statusCode, $this->statusDomain, true);
         if (strcasecmp($str, 'closed') == 0 || strcasecmp($str, 'resolved') == 0) {
             $str = "<del>" . $str . "</del>";
         }

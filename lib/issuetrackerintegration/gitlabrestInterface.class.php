@@ -215,7 +215,8 @@ class gitlabrestInterface extends issueTrackerInterface
                 $issue->statusCode = (string) $jsonObj->iid;
                 $issue->statusVerbose = (string) $jsonObj->state;
                 $issue->statusHTMLString = "[$issue->statusVerbose] ";
-                $issue->summary = $issue->summaryHTMLString = (string) $jsonObj->title;
+                $issue->summary = (string) $jsonObj->title;
+                $issue->summaryHTMLString = (string) $jsonObj->title;
                 $issue->gitlabProject = array(
                     'name' => (string) $jsonObj->project_id,
                     'id' => (int) $jsonObj->project_id

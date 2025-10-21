@@ -41,7 +41,8 @@ $userIsBlindFolded = (is_null($accessibleItems) || count($accessibleItems) == 0)
     $tprojectQty > 0;
 
 if ($userIsBlindFolded) {
-    $testprojectID = $testplanID = 0;
+    $testprojectID = 0;
+    $testplanID = 0;
     $_SESSION['testprojectTopMenu'] = '';
 }
 

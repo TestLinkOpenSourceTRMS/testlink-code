@@ -175,7 +175,8 @@ function checkRights(&$db, &$user, $context = null)
 {
     if (is_null($context)) {
         $context = new stdClass();
-        $context->tproject_id = $context->tplan_id = null;
+        $context->tproject_id = null;
+        $context->tplan_id = null;
         $context->getAccessAttr = false;
     }
 

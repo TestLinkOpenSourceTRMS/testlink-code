@@ -869,7 +869,8 @@ class reqSpecCommands
         $guiObj = new stdClass();
         $guiObj->main_descr = '';
         $guiObj->action_descr = '';
-        $guiObj->askForRevision = $guiObj->askForLog = false;
+        $guiObj->askForRevision = false;
+        $guiObj->askForLog = false;
         $guiObj->action_status_ok = true;
         $guiObj->req_spec_id = $argsObj->req_spec_id;
         $guiObj->template = "reqSpecView.php?refreshTree=0&req_spec_id={$argsObj->req_spec_id}";

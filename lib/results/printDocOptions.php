@@ -215,7 +215,8 @@ function initializeGui(&$db, $args)
     $tcaseCfg = config_get('testcase_cfg');
 
     $gui = new stdClass();
-    $gui->showOptionsCheckBoxes = $gui->showOptions = $args->showOptions;
+    $gui->showOptionsCheckBoxes = $args->showOptions;
+    $gui->showOptions = $args->showOptions;
 
     $gui->showHelpIcon = $args->showHelpIcon;
 

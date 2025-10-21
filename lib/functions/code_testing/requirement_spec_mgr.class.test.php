@@ -32,7 +32,7 @@ $item['type'] = 'K';
 $item['log_message'] = 'This is a log message';
 $item['author_id'] = 1;
 
-echo "<pre> {$method2test} - ${$method2test}(&\$rspecID,&\$item,)";
+echo "<pre> {$method2test} - {${$method2test}}(&\$rspecID,&\$item,)";
 echo "</pre>";
 
 new dBug($obj_mgr->$method2test($rspecID, $item));

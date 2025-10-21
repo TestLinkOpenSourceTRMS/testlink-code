@@ -192,8 +192,11 @@ function initializeGui(&$dbHandler, &$argsObj)
 {
     $guiObj = new stdClass();
     $guiObj->pageTitle = lang_get('caption_testCasesWithCF');
-    $guiObj->warning_msg = $guiObj->tcasePrefix = '';
-    $guiObj->path_info = $guiObj->resultSet = $guiObj->tableSet = null;
+    $guiObj->warning_msg = '';
+    $guiObj->tcasePrefix = '';
+    $guiObj->path_info = null;
+    $guiObj->resultSet = null;
+    $guiObj->tableSet = null;
 
     $guiObj->tproject_name = $argsObj->tproject_name;
     $guiObj->tplan_name = $argsObj->tplan_name;

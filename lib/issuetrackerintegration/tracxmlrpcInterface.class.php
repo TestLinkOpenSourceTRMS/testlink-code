@@ -193,7 +193,8 @@ class tracxmlrpcInterface extends issueTrackerInterface
             $issue->statusCode = 0;
             $issue->statusVerbose = $attrib['status'];
             $issue->statusHTMLString = "[$issue->statusVerbose] ";
-            $issue->summary = $issue->summaryHTMLString = $attrib['summary'];
+            $issue->summary = $attrib['summary'];
+            $issue->summaryHTMLString = $attrib['summary'];
             $issue->isResolved = isset(
                 $this->resolvedStatus->byName[$issue->statusVerbose]);
         }

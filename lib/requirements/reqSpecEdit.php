@@ -155,7 +155,8 @@ function renderGui(&$argsObj, $guiObj, $opObj, $templateCfg, $editorCfg)
 {
     $smartyObj = new TLSmarty();
     $renderType = 'none';
-    $tpl = $tpd = null;
+    $tpl = null;
+    $tpd = null;
 
     $actionOperation = array(
         'create' => 'doCreate',

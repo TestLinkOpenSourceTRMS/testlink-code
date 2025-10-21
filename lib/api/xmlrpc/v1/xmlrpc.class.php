@@ -4053,7 +4053,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                     $doLink = false;
                     if ($this->_isParamPresent(self::$overwriteParamName) &&
                         $this->args[self::$overwriteParamName]) {
-                        $doLink = $doDeleteLinks = true;
+                        $doLink = true;
+                        $doDeleteLinks = true;
                     }
 
                     reset($rs);

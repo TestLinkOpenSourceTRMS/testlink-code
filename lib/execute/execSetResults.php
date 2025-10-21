@@ -1507,8 +1507,8 @@ function initializeGui(&$dbHandler, &$argsObj, &$cfgObj, &$tplanMgr, &$tcaseMgr,
     $gui->issueSummaryForStep = null;
     $gui->addIssueOp = null;
     $gui->allowStepAttachments = true;
-
-    $gui->remoteExecFeedback = $gui->user_feedback = '';
+    $gui->remoteExecFeedback = '';
+    $gui->user_feedback = '';
     $gui->tplan_id = $argsObj->tplan_id;
     $gui->tproject_id = $argsObj->tproject_id;
     $gui->build_id = $argsObj->build_id;
@@ -2262,8 +2262,8 @@ function getLinkedItems($argsObj, $historyOn, $cfgObj, $tcaseMgr, $tplanMgr,
             //
             // $tex = $tcaseMgr->db->$kmethod($sql2run,'tcase_id',database::CUMULATIVE);
             $sql2run .= ' ORDER BY exec_order ';
-
-            $ltcv = $tex = $tcaseMgr->db->$kmethod($sql2run, 'tcase_id');
+            $ltcv = $tcaseMgr->db->$kmethod($sql2run, 'tcase_id');
+            $tex = $ltcv;
             if (! is_null($tex)) {
                 // We need to create:
                 // one set for Custom fields that apply to DESIGN
@@ -2566,7 +2566,8 @@ function initExecValuesMenus($tcStatusCfg, $execStatusToExclude)
     $remove = array(
         $tcStatusCfg['not_run']
     );
-    $execStatusTestCase = $execStatusTestCaseStep = createResultsMenu($remove);
+    $execStatusTestCase = createResultsMenu($remove);
+    $execStatusTestCaseStep = $execStatusTestCase;
 
     foreach ($execStatusToExclude['testcase'] as $code) {
         if (isset($execStatusTestCase[$code])) {

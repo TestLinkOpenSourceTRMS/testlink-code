@@ -1624,8 +1624,8 @@ function initUserEnv(&$dbH, $context, $opt = null)
 
     if ($gui->tproject_id > 0) {
         // Force to avoid lot of processing
-        $gui->hasTestCases = $gui->hasKeywords = true;
-
+        $gui->hasTestCases = true;
+        $gui->hasKeywords = true;
         $gui->num_active_tplans = $tprjMgr->getActiveTestPlansCount(
             $args->tproject_id);
 
@@ -1644,7 +1644,8 @@ function initUserEnv(&$dbH, $context, $opt = null)
          * }
          */
         if ($args->tplan_id <= 0) {
-            $gui->tplan_id = $args->tplan_id = (int) doTestPlanSetup($gui);
+            $gui->tplan_id = (int) doTestPlanSetup($gui);
+            $args->tplan_id = (int) doTestPlanSetup($gui);
         }
     }
 

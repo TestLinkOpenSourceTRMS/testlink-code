@@ -2927,7 +2927,8 @@ class cfield_mgr extends tlObject
         $gogo->linked_tprojects = null;
 
         $gogo->cf_map = $this->get_all(null, 'transform');
-        $gogo->cf_types = $gogo->cfield_types = $this->get_available_types();
+        $gogo->cf_types = $this->get_available_types();
+        $gogo->cfield_types = $gogo->cf_types;
 
         // MAGIC 10
         $gogo->drawControlsOnTop = (null != $gogo->cf_map &&

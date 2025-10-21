@@ -406,10 +406,10 @@ function initArgs(&$cfgObj, $otName, &$tcaseMgr)
     $args->step_id = isset($_REQUEST['step_id']) ? intval($_REQUEST['step_id']) : 0;
     $args->step_set = isset($_REQUEST['step_set']) ? $_REQUEST['step_set'] : null;
     $args->tcaseSteps = isset($_REQUEST['tcaseSteps']) ? $_REQUEST['tcaseSteps'] : null;
-
     // from session
-    $args->testproject_id = $args->tproject_id = intval(
+    $args->testproject_id = intval(
         $_SESSION['testprojectID']);
+    $args->tproject_id = $args->testproject_id;
 
     $args->user = $_SESSION['currentUser'];
     $args->user_id = intval($_SESSION['userID']);
@@ -707,8 +707,9 @@ function initializeGui(&$dbHandler, &$argsObj, $cfgObj, &$tcaseMgr, &$tprojMgr)
     );
     $guiObj->grants = new stdClass();
     foreach ($grant2check as $right) {
-        $guiObj->$right = $guiObj->grants->$right = $argsObj->user->hasRight(
+        $guiObj->$right = $argsObj->user->hasRight(
             $dbHandler, $right, $argsObj->tproject_id);
+        $guiObj->grants->$right = $guiObj->$right;
     }
 
     $guiObj->codeTrackerEnabled = $tprojMgr->isCodeTrackerEnabled(

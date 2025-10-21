@@ -104,7 +104,8 @@ if ($args->tprojectID && $args->doAction == 'doSearch') {
         $useOr = true;
         $feOp = " OR ";
         $filterSpecial['tricky'] = " 1=0 ";
-        $args->steps = $args->expected_results = $args->jolly;
+        $args->steps = $args->jolly;
+        $args->expected_results = $args->jolly;
     }
 
     if ($args->steps != "") {

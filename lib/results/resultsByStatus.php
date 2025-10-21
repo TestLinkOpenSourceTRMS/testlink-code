@@ -41,8 +41,8 @@ $labels = &$gui->labels;
 
 $testCaseCfg = config_get('testcase_cfg');
 $metrics = getMetrics($db, $args, $gui);
-
-$cfOnExec = $cfSet = null;
+$cfOnExec = null;
+$cfSet = null;
 
 // done here in order to get some config about images
 $smarty = new TLSmarty();
@@ -469,7 +469,8 @@ function checkRights(&$db, &$user, $context = null)
 {
     if (is_null($context)) {
         $context = new stdClass();
-        $context->tproject_id = $context->tplan_id = null;
+        $context->tproject_id = null;
+        $context->tplan_id = null;
         $context->getAccessAttr = false;
     }
     return $user->hasRightOnProj($db, 'testplan_metrics', $context->tproject_id,

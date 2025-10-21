@@ -61,7 +61,9 @@ if ($args->doAction == 'result' && ! empty($metrics)) {
     $urlSafeString['basehref'] = str_replace(" ", "%20", $args->basehref);
 
     $out = array();
-    $pathCache = $topCache = $levelCache = null;
+    $pathCache = null;
+    $topCache = null;
+    $levelCache = null;
     $nameCache = initNameCache($gui);
 
     $odx = 0;
@@ -317,7 +319,8 @@ function checkRights(&$db, &$user, $context = null)
 {
     if (is_null($context)) {
         $context = new stdClass();
-        $context->tproject_id = $context->tplan_id = null;
+        $context->tproject_id = null;
+        $context->tplan_id = null;
         $context->getAccessAttr = false;
     }
     return $user->hasRightOnProj($db, 'testplan_metrics', $context->tproject_id,

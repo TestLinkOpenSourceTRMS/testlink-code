@@ -168,7 +168,8 @@ function initializeGui(&$dbHandler, &$argsObj, &$cfgObj, &$tplanMgr)
 
     $gui = new stdClass();
     $gui->form_token = $argsObj->form_token;
-    $gui->remoteExecFeedback = $gui->user_feedback = '';
+    $gui->remoteExecFeedback = '';
+    $gui->user_feedback = '';
     $gui->tplan_id = $argsObj->tplan_id;
     $gui->tproject_id = $argsObj->tproject_id;
     $gui->build_id = $argsObj->build_id;

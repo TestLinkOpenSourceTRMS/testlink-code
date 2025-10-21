@@ -947,7 +947,8 @@ function copyTestSuite(&$smartyObj, $template_dir, &$tsuiteMgr, $argsObj)
     $guiObj->refreshTree = $op['status_ok'] && $argsObj->refreshTree;
     $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr, $argsObj->objectID);
     $guiObj->id = $argsObj->objectID;
-    $guiObj->treeFormToken = $guiObj->form_token = $argsObj->treeFormToken;
+    $guiObj->treeFormToken = $argsObj->treeFormToken;
+    $guiObj->form_token = $argsObj->treeFormToken;
 
     $guiObj->direct_link = $tsuiteMgr->buildDirectWebLink($_SESSION['basehref'],
         $guiObj->id, $argsObj->tprojectID);
@@ -1089,7 +1090,8 @@ function moveTestCasesViewer(&$dbHandler, &$smartyObj, &$tprojectMgr, &$treeMgr,
     }
 
     $gui = new stdClass();
-    $gui->treeFormToken = $gui->form_token = $argsObj->treeFormToken;
+    $gui->treeFormToken = $argsObj->treeFormToken;
+    $gui->form_token = $argsObj->treeFormToken;
 
     $dummy = getConfigAndLabels('testCaseStatus', 'code');
     $gui->domainTCStatus = array(

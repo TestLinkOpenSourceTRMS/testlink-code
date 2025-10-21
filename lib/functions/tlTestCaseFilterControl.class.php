@@ -1065,7 +1065,8 @@ class tlTestCaseFilterControl extends tlFilterControl
                     $root_node->id = $this->args->testproject_id;
                     $root_node->name = $this->args->testproject_name .
                         " ({$tcase_qty})";
-                    $root_node->wrapOpen = $root_node->wrapClose = '';
+                    $root_node->wrapOpen = '';
+                    $root_node->wrapClose = '';
                     $root_node->testlink_node_type = 'testproject';
                 }
                 break;
@@ -1251,7 +1252,8 @@ class tlTestCaseFilterControl extends tlFilterControl
 
         switch ($this->mode) {
             case 'plan_mode':
-                $active = $open = null;
+                $active = null;
+                $open = null;
                 if ($this->configuration->setting_build_inactive_out) {
                     $active = testplan::GET_ACTIVE_BUILD;
                 }

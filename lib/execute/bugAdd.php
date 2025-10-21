@@ -319,8 +319,8 @@ function initEnv(&$dbHandler)
         default:
             break;
     }
-
-    $gui->bug_notes = $args->bug_notes = trim($args->bug_notes);
+    $gui->bug_notes = trim($args->bug_notes);
+    $args->bug_notes = $gui->bug_notes;
 
     $args->basehref = $_SESSION['basehref'];
     $tables = tlObjectWithDB::getDBTables(array(

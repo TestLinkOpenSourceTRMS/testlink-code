@@ -24,7 +24,8 @@ require_once 'common.php';
 testlinkInitPage($db);
 
 $smarty = new TLSmarty();
-$smarty->tlTemplateCfg = $templateCfg = templateConfiguration();
+$smarty->tlTemplateCfg = templateConfiguration();
+$templateCfg = $smarty->tlTemplateCfg;
 
 $cfg = array(
     'testcase' => config_get('testcase_cfg'),
@@ -46,7 +47,8 @@ switch ($args->feature) {
         $gui->id = $args->id;
         $gui->user = $args->user;
         if ($args->feature == 'testproject') {
-            $gui->id = $args->id = $args->tproject_id;
+            $gui->id = $args->tproject_id;
+            $args->id = $args->tproject_id;
             $item_mgr->show($smarty, $gui, $templateCfg->template_dir, $args->id);
         } else {
             $gui->direct_link = $item_mgr->buildDirectWebLink(

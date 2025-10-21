@@ -133,7 +133,8 @@ switch ($args->doAction) {
             $args->userID, $opt);
 
         $gui->pageTitle = lang_get('title_testproject_management');
-        $gui->itemQty = $tprojQty = count($gui->tprojects);
+        $gui->itemQty = count($gui->tprojects);
+        $tprojQty = $gui->itemQty;
 
         if ($gui->itemQty > 0) {
             $gui->pageTitle .= ' ' .
@@ -697,7 +698,8 @@ function create(&$argsObj, &$tprojectMgr)
 
     $gui->active = $argsObj->active;
     $gui->is_public = $argsObj->is_public;
-    $gui->projectOptions = $argsObj->projectOptions = prepareOptions($argsObj);
+    $gui->projectOptions = prepareOptions($argsObj);
+    $argsObj->projectOptions = $gui->projectOptions;
     $gui->doActionValue = 'doCreate';
     $gui->buttonValue = lang_get('btn_create');
     $gui->caption = lang_get('caption_new_tproject');

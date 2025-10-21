@@ -88,7 +88,8 @@ function initializeEnv($dbHandler)
 function processSearch(&$dbHandler)
 {
     $tplEngine = new TLSmarty();
-    $tplEngine->tlTemplateCfg = $templateCfg = templateConfiguration();
+    $tplEngine->tlTemplateCfg = templateConfiguration();
+    $templateCfg = $tplEngine->tlTemplateCfg;
 
     $cmdMgr = new searchCommands($dbHandler);
     $cmdMgr->initEnv();
@@ -101,14 +102,21 @@ function processSearch(&$dbHandler)
 
     $xbm->forceSearch = (strlen(trim($args->target)) > 0);
     $xbm->caller = basename(__FILE__);
-
-    $xbm->tc_summary = $xbm->tc_title = 1;
-    $xbm->tc_steps = $xbm->tc_expected_results = $xbm->tc_id = 1;
-    $xbm->tc_preconditions = $xbm->ts_summary = $xbm->ts_title = 1;
+    $xbm->tc_summary = 1;
+    $xbm->tc_title = 1;
+    $xbm->tc_steps = 1;
+    $xbm->tc_expected_results = 1;
+    $xbm->tc_id = 1;
+    $xbm->tc_preconditions = 1;
+    $xbm->ts_summary = 1;
+    $xbm->ts_title = 1;
 
     if ($xbm->reqEnabled) {
-        $xbm->rs_scope = $xbm->rs_title = 1;
-        $xbm->rq_scope = $xbm->rq_title = $xbm->rq_doc_id = 1;
+        $xbm->rs_scope = 1;
+        $xbm->rs_title = 1;
+        $xbm->rq_scope = 1;
+        $xbm->rq_title = 1;
+        $xbm->rq_doc_id = 1;
     }
 
     $tplEngine->assign('gui', $xbm);

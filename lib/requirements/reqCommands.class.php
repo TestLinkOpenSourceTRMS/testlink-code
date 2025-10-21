@@ -1059,7 +1059,8 @@ class reqCommands
         $guiObj->main_descr = '';
         $guiObj->action_descr = '';
         $guiObj->req_id = $argsObj->req_id;
-        $guiObj->suggest_revision = $guiObj->prompt_for_log = false;
+        $guiObj->suggest_revision = false;
+        $guiObj->prompt_for_log = false;
         $guiObj->template = "reqView.php?refreshTree=0&requirement_id={$argsObj->req_id}";
         $guiObj->uploadOp = $argsObj->uploadOp;
 

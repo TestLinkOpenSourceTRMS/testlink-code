@@ -142,7 +142,7 @@ function importCSVData($fileName, $fieldMappings, $options = null)
                             $needle = $k;
                             $dest = $targetKey;
                         }
-                        $t = array_search($needle, $data);
+                        $t = array_search($needle, $data, true);
                         $keyMappings[$t] = $dest;
                     }
                 } else {

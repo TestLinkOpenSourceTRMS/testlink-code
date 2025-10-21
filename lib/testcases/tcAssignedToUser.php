@@ -108,9 +108,10 @@ if ($doIt) {
 
                 $current_row[] = htmlspecialchars($tcase['build_name']);
                 $current_row[] = htmlspecialchars($tcase['tcase_full_path']);
-
                 // create linked icons
-                $ekk = $elk = $exec_link = '';
+                $ekk = '';
+                $elk = '';
+                $exec_link = '';
                 $canExec = ($hasExecRight == 'yes');
 
                 if ($execCfg->exec_mode->tester == 'assigned_to_me') {

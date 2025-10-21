@@ -134,8 +134,9 @@ function initializeGui(&$db, &$args)
         $ckObj->name = $ckCfg->testProjectMemory . intval($_SESSION['userID']);
 
         if (isset($_COOKIE[$ckObj->name])) {
-            $gui->tproject_id = $gui->tprojectID = intval(
+            $gui->tproject_id = intval(
                 $_COOKIE[$ckObj->name]);
+            $gui->tprojectID = $gui->tproject_id;
         }
     }
 
@@ -146,7 +147,8 @@ function initializeGui(&$db, &$args)
             throw new Exception("Can't work without Test Project ID", 1);
         }
         $theOne = current(array_keys($gui->TestProjects));
-        $gui->tproject_id = $gui->tprojectID = $theOne;
+        $gui->tproject_id = $theOne;
+        $gui->tprojectID = $theOne;
     }
 
     $gui->tcasePrefix = '';

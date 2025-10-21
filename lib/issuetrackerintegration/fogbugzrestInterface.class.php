@@ -151,7 +151,8 @@ class fogbugzrestInterface extends issueTrackerInterface
                 $issue->statusCode = (string) $xml->cases->case->sStatus;
                 $issue->statusVerbose = $issue->statusCode;
                 $issue->statusHTMLString = "[$issue->statusCode] ";
-                $issue->summary = $issue->summaryHTMLString = (string) $xml->cases->case->sTitle;
+                $issue->summary = (string) $xml->cases->case->sTitle;
+                $issue->summaryHTMLString = (string) $xml->cases->case->sTitle;
             }
         } catch (Exception $e) {
             $msg = __METHOD__ . '/' . $e->getMessage();

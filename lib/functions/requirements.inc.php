@@ -65,7 +65,7 @@ function executeImportedReqs(&$db, $arrImportSource, $map_cur_reqdoc_id,
             $import_status = lang_get('req_import_result_skipped');
         } else {
             $crash = $map_cur_reqdoc_id &&
-                array_search($docID, $map_cur_reqdoc_id);
+                array_search($docID, $map_cur_reqdoc_id, true);
             if ($crash) {
                 // process conflict according to choosen solution
                 tLog('Conflict found. solution: ' . $conflictSolution);

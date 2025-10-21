@@ -162,7 +162,8 @@ class jirasoapInterface extends issueTrackerInterface
                 $issue->IDHTMLString = "<b>{$issueID} : </b>";
                 $issue->statusCode = $issue->status;
                 $issue->statusVerbose = array_search($issue->statusCode,
-                    $this->statusDomain);
+                    $this->statusDomain,
+                    true);
                 $issue->statusHTMLString = $this->support->buildStatusHTMLString(
                     $issue->statusVerbose);
                 $issue->summaryHTMLString = $this->support->buildSummaryHTMLString(

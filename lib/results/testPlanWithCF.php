@@ -27,7 +27,9 @@ $args = initArgs($tplan_mgr);
 
 $gui = new stdClass();
 $gui->warning_msg = '';
-$gui->path_info = $gui->resultSet = $gui->tableSet = null;
+$gui->path_info = null;
+$gui->resultSet = null;
+$gui->tableSet = null;
 $gui->pageTitle = lang_get('caption_testPlanWithCF');
 $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;

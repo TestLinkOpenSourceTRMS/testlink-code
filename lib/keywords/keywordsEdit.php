@@ -214,8 +214,10 @@ function edit(&$argsObj, &$guiObj, &$tproject_mgr)
 
     $keyword = $tproject_mgr->getKeyword($argsObj->keyword_id);
     if ($keyword) {
-        $guiObj->keyword = $argsObj->keyword = $keyword->name;
-        $guiObj->notes = $argsObj->notes = $keyword->notes;
+        $guiObj->keyword = $keyword->name;
+        $argsObj->keyword = $keyword->name;
+        $guiObj->notes = $keyword->notes;
+        $argsObj->notes = $keyword->notes;
         $guiObj->action_descr .= TITLE_SEP . $guiObj->keyword;
     }
 

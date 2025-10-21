@@ -408,8 +408,10 @@ function initializeGui(&$dbH, $argsObj)
 {
     $guiObj = new stdClass();
     $guiObj->user_feedback = '';
-    $guiObj->tcTitle = $guiObj->assignedReq = null;
-    $guiObj->unassignedReq = $guiObj->arrReqSpec = null;
+    $guiObj->tcTitle = null;
+    $guiObj->assignedReq = null;
+    $guiObj->unassignedReq = null;
+    $guiObj->arrReqSpec = null;
 
     $guiObj->showCloseButton = $argsObj->showCloseButton;
     $guiObj->selectedReqSpec = $argsObj->idReqSpec;

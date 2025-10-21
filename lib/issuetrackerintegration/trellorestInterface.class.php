@@ -276,8 +276,10 @@ class trellorestInterface extends issueTrackerInterface
                 $issue->statusVerbose = (string) $silo->name;
                 $issue->statusHTMLString = "[{$issue->statusVerbose}]";
 
-                $verbose = (string) $jsonObj->name; // . " {{$jsonObj->dateLastActivity}}";
-                $issue->summary = $issue->summaryHTMLString = $verbose;
+                $verbose = (string) $jsonObj->name;
+                // . " {{$jsonObj->dateLastActivity}}";
+                $issue->summary = $verbose;
+                $issue->summaryHTMLString = $verbose;
 
                 $issue->isResolved = false;
             }

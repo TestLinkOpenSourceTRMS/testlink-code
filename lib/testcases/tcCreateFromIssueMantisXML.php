@@ -511,7 +511,8 @@ function initializeGui(&$dbHandler, &$argsObj)
     $guiObj->importLimitBytes = config_get('import_file_max_size_bytes');
     $guiObj->importLimitKB = ($guiObj->importLimitBytes / 1024);
     $guiObj->containerID = $argsObj->container_id;
-    $guiObj->refreshTree = $guiObj->doImport = tlStringLen($argsObj->importType);
+    $guiObj->refreshTree = tlStringLen($argsObj->importType);
+    $guiObj->doImport = $guiObj->refreshTree;
     $guiObj->resultMap = null;
     $guiObj->container_name = '';
     $guiObj->file_check = array(

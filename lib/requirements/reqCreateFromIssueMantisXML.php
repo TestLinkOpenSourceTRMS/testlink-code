@@ -115,7 +115,8 @@ function initializeGui(&$dbHandler, &$argsObj)
     );
 
     $guiObj->req_spec_id = $argsObj->req_spec_id;
-    $guiObj->refreshTree = $guiObj->doImport = tlStringLen($argsObj->importType);
+    $guiObj->refreshTree = tlStringLen($argsObj->importType);
+    $guiObj->doImport = $guiObj->refreshTree;
     $guiObj->resultMap = null;
     $guiObj->req_spec_name = '';
     $guiObj->file_check = array(

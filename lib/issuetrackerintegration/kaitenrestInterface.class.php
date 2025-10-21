@@ -193,7 +193,8 @@ class kaitenrestInterface extends issueTrackerInterface
                 $issue->statusCode = (string) $jsonObj->state;
                 $issue->statusVerbose = $this->resolvedStatus->byCode[$issue->statusCode];
                 $issue->statusHTMLString = "[{$issue->statusVerbose}{$conditionData}]";
-                $issue->summary = $issue->summaryHTMLString = (string) $jsonObj->title;
+                $issue->summary = (string) $jsonObj->title;
+                $issue->summaryHTMLString = (string) $jsonObj->title;
                 $issue->isResolved = (int) $jsonObj->state == 3;
             }
         } catch (Exception $e) {

@@ -527,8 +527,8 @@ class testsuite extends tlObjectWithAttachments
             $gui->sqlResult = $sqlResult;
             $gui->sqlAction = $action;
         }
-
-        $gui->item_id = $tsuite_id = $id;
+        $gui->item_id = $id;
+        $tsuite_id = $id;
         if (! property_exists($gui, 'tproject_id')) {
             $gui->tproject_id = $this->getTestProjectFromTestSuite($tsuite_id,
                 null);
@@ -564,7 +564,8 @@ class testsuite extends tlObjectWithAttachments
         $gui->attachmentInfos = getAttachmentInfosFrom($this, $id);
         $gui->id = $id;
         $gui->page_title = lang_get('testsuite');
-        $gui->level = $gui->containerType = 'testsuite';
+        $gui->level = 'testsuite';
+        $gui->containerType = 'testsuite';
         $cfg = getWebEditorCfg('design');
         $gui->testDesignEditorType = $cfg['type'];
 

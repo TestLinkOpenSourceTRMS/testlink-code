@@ -999,7 +999,7 @@ class testplan extends tlObjectWithAttachments
         $notRunFilter = null;
         $execFilter = '';
 
-        $notRunPresent = array_search($this->notRunStatusCode, $filter);
+        $notRunPresent = array_search($this->notRunStatusCode, $filter, true);
         if ($notRunPresent !== false) {
             $notRunFilter = " E.status IS NULL ";
             unset($filter[$this->notRunStatusCode]);

@@ -3001,7 +3001,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                 ));
             $targetPlatform = null;
 
-            if (! empty($platformSet)) {
+            if ($platformSet !== []) {
                 $status_ok = $this->checkPlatformIdentity(
                     $this->args[self::$testPlanIDParamName], $platformSet,
                     $msg_prefix);
@@ -3951,7 +3951,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                 'outputFormat' => 'mapAccessByID'
             );
             $platformSet = (array) $this->tplanMgr->getPlatforms($tplan_id, $opt);
-            $hasPlatforms = (! empty($platformSet));
+            $hasPlatforms = ($platformSet !== []);
             $hasPlatformIDArgs = $this->_isParamPresent(
                 self::$platformIDParamName);
 
@@ -8217,7 +8217,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                 $targetIDs[] = $execContext['execution_id'];
             }
 
-            if (! empty($targetIDs)) {
+            if ($targetIDs !== []) {
                 $resultInfo[0]['bugs'] = array();
                 $sql = " SELECT DISTINCT bug_id FROM {$this->tables['execution_bugs']} " .
                     " WHERE execution_id in(" . implode(',', $targetIDs) . ")";

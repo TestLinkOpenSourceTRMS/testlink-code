@@ -111,7 +111,7 @@ if ($args->doIt) {
         }
     }
 
-    if (! empty($matrixData)) {
+    if ($matrixData !== []) {
         $table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
         $table->addCustomBehaviour('text', array(
             'render' => 'columnWrap'
@@ -234,10 +234,8 @@ function buildResultSet(&$dbHandler, &$guiObj, $tproject_id, $tplan_id)
 
     // this way on caller can be used on array operations, without warnings
     $guiObj->cfields = (array) $guiObj->cfields;
-    if ($guiObj->cfields !== []) {
-        foreach ($guiObj->cfields as $key => $values) {
-            $cf_place_holder['cfields'][$key] = '';
-        }
+    foreach ($guiObj->cfields as $key => $values) {
+        $cf_place_holder['cfields'][$key] = '';
     }
 
     $cf_map = $cfieldMgr->get_linked_cfields_at_execution($tproject_id, 1,

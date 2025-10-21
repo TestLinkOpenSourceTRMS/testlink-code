@@ -411,7 +411,7 @@ if (! is_null($linked_tcversions)) {
             }
         }
 
-        if (! empty($stepSet)) {
+        if ($stepSet !== []) {
             // test case version under exec has steps
             $ctx = new stdClass();
             $ctx->testplan_id = $args->tplan_id;
@@ -929,7 +929,7 @@ function getTestsuiteNameDetails(&$db, $tcase_id)
                {$tables['nodes_hierarchy']} NHB
           WHERE TS.id=NHA.parent_id
           AND   NHB.id=NHA.parent_id ";
-    if (is_array($tcase_id) && ! empty($tcase_id)) {
+    if (is_array($tcase_id) && $tcase_id !== []) {
         $in_list = implode(",", $tcase_id);
         $sql .= "AND NHA.id IN (" . $in_list . ")";
     } elseif (! is_null($tcase_id)) {
@@ -1028,7 +1028,7 @@ function smartyAssignTestsuiteInfo(&$smarty, &$tree_mgr, $tcase_id, $tproject_id
             $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
         }
 
-        if (! empty($a_tsval)) {
+        if ($a_tsval !== []) {
             $ckObj->value = $a_tsval[0];
             tlSetCookie($ckObj);
         }

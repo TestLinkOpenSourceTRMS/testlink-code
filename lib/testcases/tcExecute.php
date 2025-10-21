@@ -111,25 +111,23 @@ function remoteExecTestcaseSet(&$db, $parent_id, $msg)
                 $tree_manager, $cfield_manager);
         }
     }
-    if ($executionResults) {
-        foreach ($executionResults as $key => $value) {
-            $node_info = $tree_manager->get_node_hierarchy_info($key);
+    foreach ($executionResults as $key => $value) {
+        $node_info = $tree_manager->get_node_hierarchy_info($key);
 
-            $xmlResponse .= '<tr><th colspan="2">' .
-                lang_get('tcexec_results_for') . $node_info['name'] .
-                "</th></tr>";
-            $serverTest = 1;
-            foreach ($value as $_key => $_value) {
-                if ($_value != - 1) {
-                    $xmlResponse .= "<tr><td>" . $_key . ":</td><td>" . $_value .
-                        "</td></tr>";
-                } else {
-                    $serverTest += 1;
-                }
+        $xmlResponse .= '<tr><th colspan="2">' .
+            lang_get('tcexec_results_for') . $node_info['name'] .
+            "</th></tr>";
+        $serverTest = 1;
+        foreach ($value as $_key => $_value) {
+            if ($_value != - 1) {
+                $xmlResponse .= "<tr><td>" . $_key . ":</td><td>" . $_value .
+                    "</td></tr>";
+            } else {
+                $serverTest += 1;
             }
-            if ($serverTest != 1) {
-                $xmlResponse .= $xmlResponse .= $msg['check_server_setting'];
-            }
+        }
+        if ($serverTest != 1) {
+            $xmlResponse .= $xmlResponse .= $msg['check_server_setting'];
         }
     }
     return $xmlResponse;

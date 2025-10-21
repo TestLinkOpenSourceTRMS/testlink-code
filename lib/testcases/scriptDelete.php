@@ -74,7 +74,7 @@ function initEnv(&$dbHandler)
     $args->script_id = trim($args->script_id);
 
     $scriptArray = explode("&&", $args->script_id);
-    if (! empty($scriptArray)) {
+    if ($scriptArray !== []) {
         $args->project_key = $scriptArray[0];
         $args->repository_name = $scriptArray[1];
         $args->code_path = $scriptArray[2];

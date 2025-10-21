@@ -2102,7 +2102,7 @@ class testplan extends tlObjectWithAttachments
 
         $recordset = (array) $this->db->get_recordset($sql);
         $myarray = array();
-        if (! empty($recordset)) {
+        if ($recordset !== []) {
             $myarray = array(
                 $recordset[0]
             );
@@ -3888,7 +3888,7 @@ class testplan extends tlObjectWithAttachments
                                 }
                             }
                         }
-                        (! empty($userList)) ? $tcaseExportOptions['ASSIGNED_USER'] = $userList : $tcaseExportOptions['ASSIGNED_USER'] = null;
+                        ($userList !== []) ? $tcaseExportOptions['ASSIGNED_USER'] = $userList : $tcaseExportOptions['ASSIGNED_USER'] = null;
 
                         $xmlTC .= $tcaseMgr->exportTestCaseDataToXML(
                             $cNode['id'], $cNode['tcversion_id'], $tproject_id,

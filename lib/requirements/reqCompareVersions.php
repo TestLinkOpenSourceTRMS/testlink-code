@@ -238,7 +238,7 @@ function getCFDiff($cfields, &$reqMgr)
         }
     }
 
-    return (null != $cmp && ! empty($cmp)) ? $cmp : null;
+    return (null != $cmp && $cmp !== []) ? $cmp : null;
 }
 
 /**

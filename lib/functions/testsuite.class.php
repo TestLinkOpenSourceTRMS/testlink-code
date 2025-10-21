@@ -916,7 +916,7 @@ class testsuite extends tlObjectWithAttachments
                     }
                 }
             }
-            $doit = ! empty($testcases);
+            $doit = $testcases !== [];
         }
 
         if ($doit && $details == 'full') {
@@ -979,7 +979,7 @@ class testsuite extends tlObjectWithAttachments
                     $testcases[] = $elem;
                 }
             }
-            $doit = ! empty($testcases);
+            $doit = $testcases !== [];
         }
 
         if ($doit && $details == 'full') {
@@ -1232,7 +1232,7 @@ class testsuite extends tlObjectWithAttachments
                 if (isset($optExport['CFIELDS']) && $optExport['CFIELDS']) {
                     $cfMap = (array) $this->get_linked_cfields_at_design(
                         $container_id, null, null, $tproject_id);
-                    if (! empty($cfMap)) {
+                    if ($cfMap !== []) {
                         $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
                     }
                 }
@@ -1262,7 +1262,7 @@ class testsuite extends tlObjectWithAttachments
                         }
                     }
 
-                    if (! empty($attach)) {
+                    if ($attach !== []) {
                         $attchRootElem = "<attachments>\n{{XMLCODE}}</attachments>\n";
                         $attchElemTemplate = "\t<attachment>\n" .
                             "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
@@ -1866,7 +1866,7 @@ class testsuite extends tlObjectWithAttachments
             foreach ($subtree as $elem) {
                 $testcases[] = $elem['id'];
             }
-            $doit = ! empty($testcases);
+            $doit = $testcases !== [];
         }
 
         if ($doit) {
@@ -2054,15 +2054,13 @@ class testsuite extends tlObjectWithAttachments
             // the new ones.
             foreach ($kwForTS as $tsk => $kwVenn) {
                 $kw2add = array_diff($kwSet, $kwVenn);
-                if (! empty($kw2add)) {
-                    foreach ($kw2add as $kaboom) {
-                        $vv[] = "($tsk,'nodes_hierarchy',$kaboom)";
-                    }
+                foreach ($kw2add as $kaboom) {
+                    $vv[] = "($tsk,'nodes_hierarchy',$kaboom)";
                 }
             }
         }
 
-        if (! empty($vv)) {
+        if ($vv !== []) {
             $sql = "/* $debugMsg */
               INSERT INTO {$this->tables['object_keywords']}
               (fk_id,fk_table,keyword_id)

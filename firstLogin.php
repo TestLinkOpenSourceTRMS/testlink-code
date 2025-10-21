@@ -199,7 +199,7 @@ function notifyGlobalAdmins(&$dbHandler, &$userObj)
         }
 
         // silence errors
-        if (! empty($dest)) {
+        if ($dest !== []) {
             $mail['to'] = implode(',', $dest); // email_api uses ',' as list separator
             $mail['subject'] = lang_get('new_account');
             $mail['body'] = lang_get('new_account') . "\n";

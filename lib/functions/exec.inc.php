@@ -172,7 +172,7 @@ function write_execution(&$db, &$execSign, &$exec_data, &$issueTracker)
             $execSet[$tcversion_id] = $execution_id;
 
             $tcvRelations = (array) $tcaseMgr->getTCVRelationsRaw($tcversion_id);
-            if (! empty($tcvRelations)) {
+            if ($tcvRelations !== []) {
                 $itemSet = array_keys($tcvRelations);
                 $tcaseMgr->closeOpenTCVRelation($itemSet,
                     LINK_TC_RELATION_CLOSED_BY_EXEC);

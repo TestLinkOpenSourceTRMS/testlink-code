@@ -162,7 +162,7 @@ function getCustomFields(&$tcaseMgr, &$execSet)
             $tplan_id = $execSet[$tcvid][$idx]['testplan_id'];
             $dummy = (array) $tcaseMgr->html_table_of_custom_field_values(
                 $tcvid, 'execution', null, $exec_id, $tplan_id);
-            $cf[$exec_id] = (! empty($dummy)) ? $dummy : '';
+            $cf[$exec_id] = ($dummy !== []) ? $dummy : '';
         }
     }
     return $cf;

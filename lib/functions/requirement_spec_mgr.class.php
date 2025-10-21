@@ -1109,7 +1109,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
                 }
             }
 
-            if (! empty($attachments)) {
+            if ($attachments !== null && $attachments !== []) {
                 $attchRootElem = "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
                 $attchElemTemplate = "\t\t<attachment>\n" .
                     "\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .

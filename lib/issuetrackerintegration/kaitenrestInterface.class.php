@@ -289,7 +289,7 @@ class kaitenrestInterface extends issueTrackerInterface
             }
         }
 
-        if (! empty($result['links'])) {
+        if (isset($result['links']) && $result['links'] !== []) {
             $result['descr'] = strstr($info, $result['links'][0]['descr'], true);
         }
         return $result;

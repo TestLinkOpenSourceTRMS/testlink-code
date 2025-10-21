@@ -254,7 +254,7 @@ function renderReqForPrinting(&$db, $node, &$options, $reqLevel, $tprojectID)
                 'tproject_id' => $tprojectID
             ));
 
-        if (! empty($req_coverage)) {
+        if ($req_coverage !== []) {
             $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
                 $labels['related_tcs'] . "</span></td>" . "<td>";
             foreach ($req_coverage[$req['version_id']] as $tc) {
@@ -1052,7 +1052,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
             'renderImageInline' => true
         ));
 
-    if (! empty($tcInfo)) {
+    if ($tcInfo !== []) {
         $tcInfo = $tcInfo[0];
     } else {
         $msg = basename(__FILE__) . ' >' . 'Line: ' . __LINE__ . ' > ' .
@@ -1514,7 +1514,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $env, $context,
 
     // Attachments
     $attachSet = (array) $st->tc_mgr->getAttachmentInfos($tcVersionID);
-    if (! empty($attachSet)) {
+    if ($attachSet !== []) {
         $code .= '<tr><td> <span class="label">' . $labels['attached_files'] .
             '</span></td>';
         $code .= '<td colspan="' . ($cfg['tableColspan'] - 2) . '"><ul>';
@@ -1778,7 +1778,7 @@ function renderTestSuiteNodeForPrinting(&$db, &$node, $env, &$options, $context,
         $tInfo = null;
 
         $attachSet = (array) $tsuite_mgr->getAttachmentInfos($node['id']);
-        if (! empty($attachSet)) {
+        if ($attachSet !== []) {
             $code .= '<table><caption style="text-align:left;">' .
                 $l10n['attached_files'] . '</caption>';
             $code .= '<tr><td>&nbsp</td>';

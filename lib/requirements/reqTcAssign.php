@@ -294,7 +294,7 @@ function doSingleTestCaseOperation(&$dbHandler, &$argsObj, &$guiObj, $pfn)
                     $msg .= $idOneReq . ', ';
                 }
             }
-            if (! empty($msg)) {
+            if ($msg !== '' && $msg !== '0') {
                 $guiObj->user_feedback = lang_get('req_msg_notupdated_coverage') .
                     $msg;
             }
@@ -307,7 +307,7 @@ function doSingleTestCaseOperation(&$dbHandler, &$argsObj, &$guiObj, $pfn)
                     $msg .= $idLink . ', ';
                 }
             }
-            if (! empty($msg)) {
+            if ($msg !== '' && $msg !== '0') {
                 $guiObj->user_feedback = lang_get('req_msg_notupdated_coverage') .
                     $msg;
             }

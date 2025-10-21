@@ -737,7 +737,7 @@ class testproject extends tlObjectWithAttachments
             case 'map_with_inactive_mark':
             default:
                 $arrTemp = (array) $this->db->fetchRowsIntoMap($sql, 'id');
-                $do_post_process = ! empty($arrTemp);
+                $do_post_process = $arrTemp !== [];
                 break;
         }
 
@@ -2088,7 +2088,7 @@ class testproject extends tlObjectWithAttachments
         }
 
         foreach ($a_sql as $oneSQL) {
-            if (empty($error)) {
+            if ($error === '' || $error === '0') {
                 $sql = $oneSQL[0];
                 $result = $this->db->exec_query($sql);
                 if (! $result) {
@@ -2117,7 +2117,7 @@ class testproject extends tlObjectWithAttachments
         // custom fields assignments
         // custom fields values ( right now we are not using custom fields on test projects)
         // attachments
-        if (empty($error)) {
+        if ($error === '' || $error === '0') {
             $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testprojects']} WHERE testproject_id = {$id} ";
             $this->db->exec_query($sql);
 
@@ -2134,7 +2134,7 @@ class testproject extends tlObjectWithAttachments
             }
         }
 
-        if (empty($error)) {
+        if ($error === '' || $error === '0') {
             // Delete test project with requirements defined crashed with memory exhausted
             $this->tree_manager->delete_subtree_objects($id, $id, '',
                 array(
@@ -2152,7 +2152,7 @@ class testproject extends tlObjectWithAttachments
             }
         }
 
-        if (! empty($error)) {
+        if ($error !== '' && $error !== '0') {
             $ret['msg'] = $error;
             $ret['status_ok'] = 0;
         }
@@ -2608,7 +2608,7 @@ class testproject extends tlObjectWithAttachments
             $free = $retval['allfree'] ? $all : array_diff_key($all, $linked);
         }
 
-        if (! empty($free)) {
+        if ($free !== null && $free !== []) {
             $in_clause = implode(',', array_keys($free));
             $sql = " /* $debugMsg */ " .
                 " SELECT MAX(TCV.version) AS version, TCV.tc_external_id, " .
@@ -3252,7 +3252,7 @@ class testproject extends tlObjectWithAttachments
 
         // Approach Change - get all
         $rs = (array) $this->db->fetchRowsIntoMap($sql, 'id');
-        if (empty($rs)) {
+        if ($rs === []) {
             return $qnum;
         }
 
@@ -3333,10 +3333,8 @@ class testproject extends tlObjectWithAttachments
             if ($filterOnTC) {
                 $ky = ! is_null($highlander) ? array_diff_key($tclist,
                     $highlander) : $tclist;
-                if (! empty($ky)) {
-                    foreach ($ky as $tcase) {
-                        unset($rs[$tcase]);
-                    }
+                foreach ($ky as $tcase) {
+                    unset($rs[$tcase]);
                 }
             }
         }

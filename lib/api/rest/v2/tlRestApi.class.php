@@ -514,7 +514,7 @@ class tlRestApi
             $this->tprojectMgr->get_all_testcases_id($tproject['id'],
                 $tcaseIDSet);
 
-            if (! empty($tcaseIDSet)) {
+            if ($tcaseIDSet !== []) {
                 $op['items'] = array();
                 foreach ($tcaseIDSet as $tcaseID) {
                     $item = $this->tcaseMgr->getLastVersionInfo($tcaseID);
@@ -1811,7 +1811,7 @@ class tlRestApi
                         $p2link[$plat_id] = $plat_id;
                     }
                 }
-                if (! empty($p2link)) {
+                if ($p2link !== []) {
                     $platMgr->linkToTestplan($p2link, $tplan_id);
                 }
             }

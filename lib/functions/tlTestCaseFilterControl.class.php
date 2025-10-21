@@ -2112,7 +2112,7 @@ class tlTestCaseFilterControl extends tlFilterControl
         // for CF types that present a domain like LIST, then if the blank option is
         // not present will be added as FIRST OPTION
 
-        if (! empty($cf)) {
+        if ($cf !== []) {
             $cfTypes = array_flip($this->cfield_mgr->get_available_types());
             $key2loop = array_keys($cf);
             foreach ($key2loop as $cfID) {

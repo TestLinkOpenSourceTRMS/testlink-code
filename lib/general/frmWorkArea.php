@@ -207,7 +207,7 @@ function validateBuildAvailability(&$db, &$tplanMgr, $context, $attrFilter)
         }
 
         $mzx = '';
-        if (! empty($msx)) {
+        if ($msx !== []) {
             $mzx = "(" . implode(' & ', $msx) . ")";
         }
 

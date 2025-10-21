@@ -863,7 +863,7 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems,
             }
         }
 
-        if (! empty($itemSet) &&
+        if ($itemSet !== null && $itemSet !== [] &&
             ($useFilter['execution_type'] || $useFilter['importance'] ||
             $useFilter['cfields'] || $useFilter['status'])) {
             // This logic can have some Potential Performance ISSUE - 20120619 - fman
@@ -987,11 +987,9 @@ function getTestSpecFromNode(&$dbHandler, &$tcaseMgr, &$linkedItems,
                     }
 
                     $setToRemove = array_diff_key($tcversionSet, $allowedSet);
-                    if (! empty($setToRemove)) {
-                        foreach ($setToRemove as $value) {
-                            $tspecKey = $itemSet[$value['testcase_id']];
-                            $test_spec[$tspecKey] = null;
-                        }
+                    foreach ($setToRemove as $value) {
+                        $tspecKey = $itemSet[$value['testcase_id']];
+                        $test_spec[$tspecKey] = null;
                     }
                     break;
             }

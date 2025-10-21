@@ -719,7 +719,7 @@ class tree extends tlObject
         $sql .= " GROUP BY parent_id ";
         $rs = (array) $this->db->get_recordset($sql);
 
-        return ! empty($rs) ? $rs[0]['max_order'] : 0;
+        return $rs !== [] ? $rs[0]['max_order'] : 0;
     }
 
     /*
@@ -1248,7 +1248,7 @@ class tree extends tlObject
             }
         }
 
-        $status_ok = (! is_null($all_nodes) && ! empty($all_nodes));
+        $status_ok = (! is_null($all_nodes) && $all_nodes !== []);
         if ($status_ok) {
             // get only different items, to get descriptions
             $unique_nodes = implode(',', array_unique($all_nodes));

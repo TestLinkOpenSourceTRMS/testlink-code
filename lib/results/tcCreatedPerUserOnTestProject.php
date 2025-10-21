@@ -283,7 +283,7 @@ function initGuiForCSVDownload(&$dbHandler, $argsObj, &$guiObj)
             }
         }
 
-        if (empty($rows)) {
+        if ($rows === []) {
             return;
         }
 

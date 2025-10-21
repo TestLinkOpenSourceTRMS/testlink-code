@@ -115,7 +115,7 @@ foreach ($testcase_bugs as &$row) {
 }
 $arrData = array_values($testcase_bugs);
 
-if (! empty($arrData)) {
+if ($arrData !== []) {
     // Create column headers
     $columns = getColumnsDefinition();
 

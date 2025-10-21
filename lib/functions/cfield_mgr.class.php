@@ -24,7 +24,7 @@ require_once dirname(__FILE__) . '/string_api.php';
 // Copied from mantis, allow load of user custom implementations
 // some sort of poor's man plugin
 $cf_files = glob(TL_ABS_PATH . "custom/cf_*.php");
-if (! empty($cf_files)) {
+if (! ($cf_files === [] || $cf_files === false)) {
     foreach ($cf_files as $inc) {
         require_once $inc;
     }
@@ -2551,10 +2551,8 @@ class cfield_mgr extends tlObject
         $locationMap = null;
         $dummy = $this->getLocations();
         $verboseLocationCode = array_flip($dummy[$nodeType]);
-        if (! empty($verboseLocationCode)) {
-            foreach ($verboseLocationCode as $key => $value) {
-                $locationMap[$key]['location'] = $value;
-            }
+        foreach ($verboseLocationCode as $key => $value) {
+            $locationMap[$key]['location'] = $value;
         }
         return $locationMap;
     }

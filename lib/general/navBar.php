@@ -192,7 +192,7 @@ function initializeGui(&$db, &$args)
             }
 
             if ($testPlanFound == 0 && is_array($testPlanSet) &&
-                ! empty($testPlanSet)) {
+                $testPlanSet !== []) {
                 setSessionTestPlan($testPlanSet[0]);
             }
             $testPlanSet[$index]['selected'] = 1;

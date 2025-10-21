@@ -3704,7 +3704,7 @@ class testcase extends tlObjectWithAttachments
             }
         }
 
-        if (empty($dummy)) {
+        if ($dummy === []) {
             return;
         }
 
@@ -4006,7 +4006,7 @@ class testcase extends tlObjectWithAttachments
         if (! is_null($my['options']['exec_to_exclude'])) {
 
             if (is_array($my['options']['exec_to_exclude'])) {
-                if (! empty($my['options']['exec_to_exclude'])) {
+                if (isset($my['options']['exec_to_exclude']) && $my['options']['exec_to_exclude'] !== []) {
                     $exec_id_list = implode(",",
                         $my['options']['exec_to_exclude']);
                     $where_clause .= " AND e.id NOT IN ({$exec_id_list}) ";
@@ -4432,7 +4432,7 @@ class testcase extends tlObjectWithAttachments
                 }
             }
 
-            if (! empty($attachments)) {
+            if ($attachments !== null && $attachments !== []) {
                 $tc_data[0]['xmlattachments'] = exportDataToXML($attachments,
                     $this->XMLCfg->att->root, $this->XMLCfg->att->elemTPL,
                     $this->XMLCfg->att->decode, true);
@@ -6291,7 +6291,7 @@ class testcase extends tlObjectWithAttachments
                 'fields2get' => 'id',
                 'accessKey' => 'id'
             ));
-        if (! empty($stepSet)) {
+        if ($stepSet !== []) {
             $this->delete_step_by_id(array_keys($stepSet));
         }
 
@@ -8573,7 +8573,7 @@ class testcase extends tlObjectWithAttachments
                         // Theorically can be just ONE, but it depends
                         // is user had not messed things.
                         $yy = explode($tlEndTag, $xx[$xdx]);
-                        if (! empty($yy)) {
+                        if ($yy !== []) {
                             $variableName = trim($yy[0]);
 
                             try {
@@ -8668,7 +8668,7 @@ class testcase extends tlObjectWithAttachments
             }
         }
 
-        if (empty($script_list)) {
+        if ($script_list === []) {
             $script_list = null;
         }
         return $script_list;
@@ -8743,7 +8743,7 @@ class testcase extends tlObjectWithAttachments
             $name = $whoami['l'] . self::NAME_PHOPEN;
 
             $juice = $this->orangeJuice($text2scan);
-            $name .= (! empty($dm)) ? $dm[0] : $meat;
+            $name .= ($dm !== []) ? $dm[0] : $meat;
             $name .= self::NAME_DIVIDE . $juice . self::NAME_PHCLOSE .
                 $whoami['r'];
         }
@@ -8789,7 +8789,7 @@ class testcase extends tlObjectWithAttachments
             }
 
             $dm = explode(self::NAME_DIVIDE, $needle);
-            $target = $side['l'] . ((! empty($dm)) ? $dm[0] : $needle);
+            $target = $side['l'] . (($dm !== []) ? $dm[0] : $needle);
 
             $juice = $this->orangeJuice($scan4values);
             $target .= self::NAME_DIVIDE . $juice . $side['r'];
@@ -8929,7 +8929,7 @@ class testcase extends tlObjectWithAttachments
             }
         }
 
-        if (! empty($values)) {
+        if ($values !== []) {
             $sql = 'INSERT INTO ' . $this->tables['testcase_relations'] . $ins .
                 ' VALUES ' . implode(',', $values);
 
@@ -9944,7 +9944,7 @@ class testcase extends tlObjectWithAttachments
             }
         }
 
-        if (empty($dummy)) {
+        if ($dummy === []) {
             return;
         }
 

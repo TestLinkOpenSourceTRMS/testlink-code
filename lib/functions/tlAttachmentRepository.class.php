@@ -322,7 +322,7 @@ class tlAttachmentRepository extends tlObjectWithDB
         }
 
         $path .= DIRECTORY_SEPARATOR . $id;
-        if (! empty($path) && $mkDir && ! file_exists($path)) {
+        if ($path !== '' && $path !== '0' && $mkDir && ! file_exists($path)) {
             mkdir($path);
         }
 

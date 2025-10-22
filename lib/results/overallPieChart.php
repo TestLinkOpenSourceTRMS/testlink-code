@@ -17,7 +17,8 @@
 require_once '../../config.inc.php';
 require_once 'common.php';
 
-require_once __DIR__ . '/../../vendor/autoload.php'; // Autoload files using Composer autoload
+require_once __DIR__ . '/../../vendor/autoload.php';
+
 use pChart\pData;
 use pChart\pChart;
 

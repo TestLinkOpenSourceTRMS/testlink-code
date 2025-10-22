@@ -23,5 +23,10 @@
 		"league/oauth2-github" : "^2.0",
 		"league/oauth2-google" : "^3.0",
 		"wp-statistics/pchart" : "~1.2"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"pChart\\" : "vendor/wp-statistics/pchart/src"
+		}
 	}
 }

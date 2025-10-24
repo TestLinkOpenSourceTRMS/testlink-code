@@ -23,8 +23,6 @@
 /**
  * IXR is the class used for the XML-RPC server
  */
-use const Collator\OFF;
-
 define("TL_APICALL", 'XML-RPC');
 
 require_once '../../../../config.inc.php';
@@ -1541,7 +1539,12 @@ class TestlinkXMLRPCServer extends IXR_Server
         $this->devKey = $this->dbObj->prepare_string($devKey);
         $query = "SELECT id FROM {$this->tables['users']} WHERE script_key='{$this->devKey}'";
         $this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
-        return null == $this->userID;
+
+        if (null == $this->userID) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**

@@ -23,8 +23,6 @@
 /**
  * IXR is the class used for the XML-RPC server
  */
-use const Collator\OFF;
-
 define("TL_APICALL", 'XML-RPC');
 
 require_once '../../../../config.inc.php';
@@ -50,6 +48,8 @@ require_once 'APIErrors.php';
 class TestlinkXMLRPCServer extends IXR_Server
 {
 
+    public $methods;
+
     public static $version = "1.1";
 
     const OFF = false;
@@ -69,27 +69,27 @@ class TestlinkXMLRPCServer extends IXR_Server
      *
      * @access protected
      */
-    protected $dbObj = null;
+    protected $dbObj;
 
-    protected $tables = null;
+    protected $tables;
 
-    protected $tcaseMgr = null;
+    protected $tcaseMgr;
 
-    protected $tprojectMgr = null;
+    protected $tprojectMgr;
 
-    protected $tplanMgr = null;
+    protected $tplanMgr;
 
-    protected $tplanMetricsMgr = null;
+    protected $tplanMetricsMgr;
 
-    protected $reqSpecMgr = null;
+    protected $reqSpecMgr;
 
-    protected $reqMgr = null;
+    protected $reqMgr;
 
-    protected $platformMgr = null;
+    protected $platformMgr;
 
-    protected $itsMgr = null;
+    protected $itsMgr;
 
-    protected $userMgr = null;
+    protected $userMgr;
 
     /**
      * Whether the server will run in a testing mode
@@ -99,17 +99,17 @@ class TestlinkXMLRPCServer extends IXR_Server
     /**
      * userID associated with the devKey provided
      */
-    protected $userID = null;
+    protected $userID;
 
     /**
      * UserObject associated with the userID
      */
-    protected $user = null;
+    protected $user;
 
     /**
      * array where all the args are stored for requests
      */
-    protected $args = null;
+    protected $args;
 
     /**
      * array where error codes and messages are stored
@@ -119,7 +119,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     /**
      * The api key being used to make a request
      */
-    protected $devKey = null;
+    protected $devKey;
 
     /**
      * boolean to allow a method to invoke another method and avoid double auth
@@ -135,19 +135,19 @@ class TestlinkXMLRPCServer extends IXR_Server
     /**
      * _checkTCIDAndTPIDValid()
      */
-    protected $tcVersionID = null;
+    protected $tcVersionID;
 
-    protected $versionNumber = null;
+    protected $versionNumber;
 
     /**
      * Mapping bewteen external & internal test case ID
      */
-    protected $tcaseE2I = null;
+    protected $tcaseE2I;
 
     /**
      * needed in order to manage logs
      */
-    protected $tlLogger = null;
+    protected $tlLogger;
 
     /**
      * #@+
@@ -1540,13 +1540,16 @@ class TestlinkXMLRPCServer extends IXR_Server
     {
         if (null == $devKey || "" == $devKey) {
             return false;
-        } else {
-            $this->userID = null;
-            $this->devKey = $this->dbObj->prepare_string($devKey);
-            $query = "SELECT id FROM {$this->tables['users']} WHERE script_key='{$this->devKey}'";
-            $this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
+        }
+        $this->userID = null;
+        $this->devKey = $this->dbObj->prepare_string($devKey);
+        $query = "SELECT id FROM {$this->tables['users']} WHERE script_key='{$this->devKey}'";
+        $this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
 
-            return null == $this->userID;
+        if (null == $this->userID) {
+            return false;
+        } else {
+            return true;
         }
     }
 

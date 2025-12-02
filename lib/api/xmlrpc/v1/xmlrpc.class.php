@@ -9201,4 +9201,3 @@ class TestlinkXMLRPCServer extends IXR_Server {
         );
     }
 } // class end
-

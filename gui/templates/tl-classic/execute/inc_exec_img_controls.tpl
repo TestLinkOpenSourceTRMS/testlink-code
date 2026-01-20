@@ -109,7 +109,7 @@ Author : franciscom
                      <img src="{$tlImages.$in}" title="{$ikval.title}"
                           name="fastExec{$kode}[{$tcversion_id}]"
                           id="fastExec{$kode}_{$tcversion_id}"
-                          onclick="javascript:saveExecStatus({$tcvID},'{$kode}');">&nbsp;
+                          onclick="javascript:saveExecStatus({$tcvID},'{$kode}',{$tlCfg->exec_cfg->steps_notes_concat});">&nbsp;
                    {/foreach}  
                    <br />
                    <br />
@@ -121,7 +121,7 @@ Author : franciscom
                      <img src="{$tlImages.$in}" title="{$ikval.title}"
                           name="fastExecNext{$kode}[{$tcversion_id}]"
                           id="fastExecNext{$kode}_{$tcversion_id}"
-                          onclick="javascript:saveExecStatus({$tcvID},'{$kode}','',1);">&nbsp;
+                          onclick="javascript:saveExecStatus({$tcvID},'{$kode}',{$tlCfg->exec_cfg->steps_notes_concat},1);">&nbsp;
                    {/foreach}  
                    <br />
                    <br />

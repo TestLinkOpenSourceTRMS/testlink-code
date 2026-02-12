@@ -3141,8 +3141,8 @@ $TLS_warning_empty_platform = "La plateforme est obligatoire.";
 $TLS_API_NO_MATCH = "Aucune correspondance entre les paramètres suivants (%s)";
 $TLS_API_INVALID_AUTH = "Le client ne peut être authentifié : clé de développeur invalide.";
 $TLS_API_INSUFFICIENT_RIGHTS = "L’utilisateur correspondant à la clé de développeur " .
-                 "n’a pas les droits suffisants pour effectuer cette action.";
-                 "- Détails : droit %s, Identifiant Projet : %s, Identifiant Campagne de test : %s";
+                 "n’a pas les droits suffisants pour effectuer cette action" .
+                 " - Détails : droit %s, Identifiant Projet : %s, Identifiant Campagne de test : %s";
 
 $TLS_API_UPDATER_INSUFFICIENT_RIGHTS = "L'utilisateur %s " .
                  "n'a pas les droits suffisants pour effectuer cette action." .

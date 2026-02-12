@@ -1726,7 +1726,7 @@ class testcase extends tlObjectWithAttachments {
     tcversions
     nodes from hierarchy
     testcase_script_links
-
+    platforms
   */
   function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -1781,11 +1781,15 @@ class testcase extends tlObjectWithAttachments {
              WHERE testcase_id = {$id} 
              AND tcversion_id IN ({$tcversion_list})";
 
+    $sql[]="/* $debugMsg */
+            DELETE FROM {$this->tables['testcase_platforms']}
+            WHERE testcase_id = {$id}
+            AND tcversion_id IN ({$tcversion_list})";
+
     $sql[]="/* $debugMsg */ 
             DELETE FROM {$this->tables['req_coverage']}  
             WHERE testcase_id = {$id}
             AND tcversion_id IN ({$tcversion_list})";
-
 
     // This has to be the last, to avoid FK issues
     $sql[]="/* $debugMsg */ 

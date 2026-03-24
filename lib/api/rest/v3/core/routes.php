@@ -66,4 +66,38 @@ return function (App $app) {
   $app->put('/testplans/{tplan_id}/platforms',
              array($app->restApi,'addPlatformsToTestPlan'));
 
+  // Vue SPA 용 확장 라우트
+  $app->get('/testprojects/{id}/testsuites',
+            array($app->restApi,'getProjectTestSuites'));
+
+  $app->get('/testprojects/{id}/dashboard',
+            array($app->restApi,'getProjectDashboard'));
+
+  $app->get('/testprojects/{id}/milestones',
+            array($app->restApi,'getProjectMilestones'));
+
+  $app->post('/testprojects/{id}/milestones',
+             array($app->restApi,'createMilestone'));
+
+  $app->get('/testsuites/{id}/testcases',
+            array($app->restApi,'getSuiteTestCases'));
+
+  $app->get('/testcases/{id}',
+            array($app->restApi,'getTestCaseDetail'));
+
+  $app->get('/testplans/{id}/executions',
+            array($app->restApi,'getPlanExecutions'));
+
+  $app->get('/testplans/{id}/progress',
+            array($app->restApi,'getPlanProgress'));
+
+  $app->get('/milestones/{id}',
+            array($app->restApi,'getMilestone'));
+
+  $app->put('/milestones/{id}',
+            array($app->restApi,'updateMilestone'));
+
+  $app->delete('/milestones/{id}',
+               array($app->restApi,'deleteMilestone'));
+
 };

@@ -29,6 +29,12 @@ const routes = [
     name: 'milestones',
     component: () => import('../views/MilestoneView.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/projects/:id/suites',
+    name: 'testsuites',
+    component: () => import('../views/TestSuiteView.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

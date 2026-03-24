@@ -161,8 +161,13 @@ class RestApi
   /**
    *
    */
-  public function authenticate(Request $request, RequestHandler $handler) 
+  public function authenticate(Request $request, RequestHandler $handler)
   {
+    // Allow OPTIONS preflight requests through without authentication
+    if ($request->getMethod() === 'OPTIONS') {
+      return $handler->handle($request);
+    }
+
     $hh = $request->getHeaders();
     
     $apiKey = null;

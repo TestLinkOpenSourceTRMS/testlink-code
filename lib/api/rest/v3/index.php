@@ -83,6 +83,25 @@ if (is_dir($where)) {
 $routes = require './core/routes.php';
 $routes($app);
 
+// CORS middleware for Vue dev server
+$app->add(function (Request $request, $handler) {
+    $response = $handler->handle($request);
+    $origin = $request->getHeaderLine('Origin');
+    $allowedOrigins = ['http://localhost:5173', 'http://localhost:8090', 'http://localhost'];
+    if (in_array($origin, $allowedOrigins)) {
+        $response = $response
+            ->withHeader('Access-Control-Allow-Origin', $origin)
+            ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization, apiKey')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    }
+    return $response;
+});
+
+// OPTIONS preflight
+$app->options('/{routes:.+}', function (Request $request, Response $response) {
+    return $response;
+});
+
 // Middleware
 $app->add(array($app->restApi,'authenticate'));
 

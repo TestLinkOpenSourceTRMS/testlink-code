@@ -48,20 +48,41 @@
           <div v-if="testPlans.length === 0" class="list-group-item text-muted text-center py-4">
             테스트 플랜이 없습니다.
           </div>
-          <RouterLink
+          <div
             v-for="plan in testPlans"
             :key="plan.id"
-            :to="`/projects/${route.params.id}/runs/${plan.id}`"
             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            style="cursor: pointer;"
+            @click="selectPlan(plan)"
           >
             <div>
-              <div class="fw-medium">{{ plan.name }}</div>
+              <div class="fw-medium" :class="selectedPlanId === plan.id ? 'text-primary' : ''">{{ plan.name }}</div>
               <small class="text-muted">{{ plan.notes || '' }}</small>
             </div>
-            <span :class="plan.active == '1' ? 'badge bg-primary' : 'badge bg-secondary'">
-              {{ plan.active == '1' ? '활성' : '비활성' }}
-            </span>
-          </RouterLink>
+            <div class="d-flex align-items-center gap-2">
+              <span :class="plan.active == '1' ? 'badge bg-primary' : 'badge bg-secondary'">
+                {{ plan.active == '1' ? '활성' : '비활성' }}
+              </span>
+              <RouterLink
+                :to="`/projects/${route.params.id}/runs/${plan.id}`"
+                class="btn btn-sm btn-outline-secondary"
+                @click.stop
+              >실행</RouterLink>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 플랜 선택 시 차트 표시 -->
+      <div v-if="selectedPlanId" class="mt-4">
+        <h5 class="mb-3">{{ selectedPlanName }} 현황</h5>
+        <div class="row g-3">
+          <div class="col-md-8">
+            <ProgressChart :plan-id="selectedPlanId" />
+          </div>
+          <div class="col-md-4">
+            <ActivityFeed :executions="planExecutions" />
+          </div>
         </div>
       </div>
     </div>
@@ -72,12 +93,27 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { getProject, getProjectTestPlans, getProjectDashboard } from '../api/projects.js'
+import { getPlanExecutions } from '../api/executions.js'
+import ProgressChart from '../components/dashboard/ProgressChart.vue'
+import ActivityFeed from '../components/dashboard/ActivityFeed.vue'
 
 const route = useRoute()
 const loading = ref(true)
 const project = ref(null)
 const testPlans = ref([])
 const dashboard = ref({})
+const selectedPlanId = ref(null)
+const selectedPlanName = ref('')
+const planExecutions = ref([])
+
+async function selectPlan(plan) {
+  selectedPlanId.value = plan.id
+  selectedPlanName.value = plan.name
+  try {
+    const res = await getPlanExecutions(plan.id)
+    planExecutions.value = res.data?.items || []
+  } catch (e) {}
+}
 
 onMounted(async () => {
   try {

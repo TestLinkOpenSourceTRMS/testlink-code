@@ -45,7 +45,8 @@ const loading = ref(true)
 onMounted(async () => {
   try {
     const res = await getProjects()
-    projects.value = res.data || []
+    const data = res.data
+    projects.value = Array.isArray(data) ? data : (data?.item || data?.items || [])
   } catch (e) {
     console.error(e)
   } finally {

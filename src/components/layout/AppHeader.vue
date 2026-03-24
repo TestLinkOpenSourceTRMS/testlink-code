@@ -32,14 +32,20 @@ const maskedKey = computed(() => {
 onMounted(async () => {
   try {
     const res = await getProjects()
-    projects.value = res.data || []
+    const data = res.data
+    projects.value = Array.isArray(data) ? data : (data?.item || data?.items || [])
   } catch (e) {
     // not logged in
   }
 })
 
 function onProjectChange() {
-  emit('project-changed', projects.value.find(p => p.id == selectedProjectId.value))
+  const project = projects.value.find(p => p.id == selectedProjectId.value)
+  if (project) {
+    localStorage.setItem('tl_current_project_id', project.id)
+    localStorage.setItem('tl_current_project_name', project.name)
+  }
+  emit('project-changed', project)
   if (selectedProjectId.value) {
     router.push(`/projects/${selectedProjectId.value}`)
   }

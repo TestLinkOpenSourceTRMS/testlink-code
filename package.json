@@ -12,7 +12,7 @@
     "vue-router": "^4.3.0",
     "axios": "^1.7.0",
     "bootstrap": "^5.3.0",
-    "@bootstrap-icons/font": "^1.11.0",
+    "bootstrap-icons": "^1.11.0",
     "chart.js": "^4.4.0",
     "@tiptap/vue-3": "^2.4.0",
     "@tiptap/starter-kit": "^2.4.0",

@@ -295,6 +295,7 @@ $tlCfg->locales = array('cs_CZ' => 'Czech','de_DE' => 'German','en_GB' => 'Engli
 $tlCfg->locales_date_format = array('cs_CZ' => '%d.%m.%Y','de_DE' => '%d.%m.%Y','en_GB' => '%d/%m/%Y',
                                     'en_US' => '%m/%d/%Y','es_AR' => '%d/%m/%Y','es_ES' => '%d/%m/%Y',
                                     'fi_FI' => '%d/%m/%Y','fr_FR' => '%d/%m/%Y','id_ID' => '%d/%m/%Y',
+                                    'hu_HU' => '%Y-%m-%d',
                                     'it_IT' => '%d/%m/%Y','ja_JP' => '%Y/%m/%d','ko_KR' => '%Y/%m/%d',
                                     'nl_NL' => '%d-%m-%Y','pl_PL' => '%d.%m.%Y','pt_BR' => '%d/%m/%Y',
                                     'pt_PT' => '%d/%m/%Y','ru_RU' => '%d.%m.%Y','zh_CN' => '%Y-%m-%d'); 
@@ -304,6 +305,7 @@ $tlCfg->locales_timestamp_format = array('cs_CZ' => '%d.%m.%Y %H:%M:%S','de_DE' 
                                          'en_GB' => '%d/%m/%Y %H:%M:%S','en_US' => '%m/%d/%Y %H:%M:%S',
                                          'es_AR' => '%d/%m/%Y %H:%M:%S','es_ES' => '%d/%m/%Y %H:%M:%S',
                                          'fi_FI' => '%d/%m/%Y %H:%M:%S','fr_FR' => '%d/%m/%Y %H:%M:%S',
+                                         'hu_HU' => '%Y-%m-%d %H:%M:%S',
                                          'id_ID' => '%d/%m/%Y %H:%M:%S','it_IT' => '%d/%m/%Y %H:%M:%S',
                                          'ja_JP' => '%Y/%m/%d %H:%M:%S','ko_KR' => '%Y/%m/%d %H:%M:%S',
                                          'nl_NL' => '%d-%m-%Y %H:%M:%S','pl_PL' => '%d.%m.%Y %H:%M:%S',
@@ -314,7 +316,9 @@ $tlCfg->locales_timestamp_format = array('cs_CZ' => '%d.%m.%Y %H:%M:%S','de_DE' 
  * deprecated since use of datepicker */
 $tlCfg->locales_html_select_date_field_order = array('cs_CZ' => 'dmY','de_DE' => 'dmY','en_GB' => 'dmY',
                                                      'en_US' => 'mdY','es_AR' => 'dmY','es_ES' => 'dmY','fi_FI' => 'dmY',
-                                                     'fr_FR' => 'dmY','id_ID' => 'dmY','it_IT' => 'dmY','ja_JP' => 'Ymd',
+                                                     'fr_FR' => 'dmY','id_ID' => 'dmY',
+                                                     'hu_HU' => 'Ymd',
+                                                     'it_IT' => 'dmY','ja_JP' => 'Ymd',
                                                      'ko_KR' => 'Ymd','nl_NL' => 'dmY','pl_PL' => 'dmY','pt_BR' => 'dmY',
                                                      'pt_PT' => 'dmY','ru_RU' => 'dmY','zh_CN' => 'Ymd'); 
 

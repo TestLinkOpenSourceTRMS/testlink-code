@@ -38,8 +38,17 @@
 // You need to be certain that these folders have correct permissions in order
 // to allow the user/daemon used to run the webserver service/daemon read/write access.
 //
-// $tlCfg->log_path = '/var/testlink-ga-testlink-code/logs/'; /* unix example */
-// $g_repositoryPath = '/var/testlink-ga-testlink-code/upload_area/';  /* unix example */
+// Unix/Linux examples (directories must exist and be writable by Apache):
+// $tlCfg->log_path = '/var/testlink/logs/';
+// $g_repositoryPath = '/var/testlink/upload_area/';
+//
+// Windows / XAMPP example (place directories OUTSIDE htdocs for security):
+// Create these directories first:
+//   mkdir C:\testlink\logs
+//   mkdir C:\testlink\upload_area
+// Then set:
+// $tlCfg->log_path = 'C:/testlink/logs/';
+// $g_repositoryPath = 'C:/testlink/upload_area/';
 //
 // 
 // ********************************************************************************************

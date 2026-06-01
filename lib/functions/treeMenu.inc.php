@@ -1243,7 +1243,7 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
   $safe_platform = intval($filters->setting_platform);
-  $buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
+  $buildSet = array_keys((array)$tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
   if( !is_null($buildSet) ) 
   {
     if( $safe_platform > 0 )
@@ -1295,7 +1295,7 @@ function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_
  * @return array new tcase_set
  */
 function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
-  $buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
+  $buildSet = array_keys((array)$tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
   if( !is_null($buildSet) ) {
 
     $safe_platform = intval($filters->setting_platform);

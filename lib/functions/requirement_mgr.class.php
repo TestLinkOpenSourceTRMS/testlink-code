@@ -3867,7 +3867,7 @@ function getByIDBulkLatestVersionRevision($id,$opt=null)
     $rs = $recordset;
 
     // try to guess output structure
-    $x = array_keys(current($rs));
+    $x = array_keys((array)current($rs));
     if( is_int($x[0]) )
     {
       // output[REQID][0] = array('id' =>, 'xx' => ...)

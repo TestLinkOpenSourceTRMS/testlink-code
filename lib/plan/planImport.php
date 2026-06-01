@@ -376,7 +376,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
                   // linked platforms
                   $createLink = false;
                   $updateLink = false;
-                  $plat_keys = array_keys($linkedVersions[$dummy[0]['tcversion_id']][$contextObj->tplan_id]);
+                  $plat_keys = array_keys((array)$linkedVersions[$dummy[0]['tcversion_id']][$contextObj->tplan_id]);
                   $plat_keys = array_flip($plat_keys);
 
                   if( isset($plat_keys[$platformID]) )

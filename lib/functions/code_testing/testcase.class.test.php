@@ -34,7 +34,7 @@ $context->build_id = 20;
 $context->tester_id = 10;
 
 
-$stepsID = array_keys($steps['notes']);
+$stepsID = array_keys((array)$steps['notes']);
 //$tcase_mgr->deleteStepsPartialExec($stepsID,$context);
 
 $m2r = 'saveStepsPartialExec';

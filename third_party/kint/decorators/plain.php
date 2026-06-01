@@ -87,7 +87,7 @@ class Kint_Decorators_Plain
 	public static function decorateTrace( $traceData )
 	{
 		$output   = self::_title( 'TRACE' );
-		$lastStep = count( $traceData );
+		$lastStep = count((array)$traceData);
 		foreach ( $traceData as $stepNo => $step ) {
 			$title = str_pad( ++$stepNo . ': ', 4, ' ' );
 

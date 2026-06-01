@@ -213,7 +213,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $guiObj->matrix = array();
 
   $guiObj->platforms = (array)$tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
-  $guiObj->show_platforms = (count($guiObj->platforms) > 0);
+  $guiObj->show_platforms = (count((array)$guiObj->platforms) > 0);
 
   $guiObj->img = new stdClass();
   $guiObj->img->exec = $imgSet['exec_icon'];
@@ -252,7 +252,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $guiObj->matrixCfg  = config_get('resultMatrixReport');
   $guiObj->buildInfoSet = $tplanMgr->get_builds($argsObj->tplan_id, testplan::ACTIVE_BUILDS,null,
                                                 array('orderBy' => $guiObj->matrixCfg->buildOrderByClause)); 
-  $guiObj->activeBuildsQty = count($guiObj->buildInfoSet);
+  $guiObj->activeBuildsQty = count((array)$guiObj->buildInfoSet);
 
 
   // hmm need to understand if this can be removed
@@ -300,7 +300,7 @@ function createSpreadsheet($gui,$args)
 
   // contribution to have more than 26 columns   
   $cellRange = range('A','Z');
-  $cellRangeLen = count($cellRange);
+  $cellRangeLen = count((array)$cellRange);
   for($idx = 0; $idx < $cellRangeLen; $idx++)
   {
     for($jdx = 0; $jdx < $cellRangeLen; $jdx++) 
@@ -381,7 +381,7 @@ function createSpreadsheet($gui,$args)
   $dataHeader[] = $lbl['execution_duration'];
   $dataHeader[] = $lbl['execution_type'];
 
-  $startingRow = count($lines2write) + 2; // MAGIC
+  $startingRow = count((array)$lines2write) + 2; // MAGIC
   $cellArea = "A{$startingRow}:";
   foreach($dataHeader as $zdx => $field)
   {
@@ -395,7 +395,7 @@ function createSpreadsheet($gui,$args)
   
   $startingRow++;
   
-  $qta_loops = count($gui->matrix);
+  $qta_loops = count((array)$gui->matrix);
 
   for($idx = 0; $idx < $qta_loops; $idx++)
   {
@@ -446,7 +446,7 @@ function setUpBuilds(&$args,&$gui)
     $gui->filterApplied = false;
     if( !is_null($gui->buildInfoSet) )
     {
-      $args->builds->idSet = array_keys($gui->buildInfoSet);
+      $args->builds->idSet = array_keys((array)$gui->buildInfoSet);
     }
   }  
   else
@@ -499,7 +499,7 @@ urg_imp 4       => NEED TO DECODE
 execution_type => NEED TO DECODE 
 */
 
-  $loop2do = count($metrics);
+  $loop2do = count((array)$metrics);
 
   $uk2 = array('user_id','tester_id');
 

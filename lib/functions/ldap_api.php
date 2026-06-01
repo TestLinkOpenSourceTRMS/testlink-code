@@ -29,7 +29,7 @@ function ldap_connect_bind( $authCfg, $p_binddn = '', $p_password = '')
 
   $t_message = "Attempting connection to LDAP ";
   $t_ldap_uri = parse_url($authCfg['ldap_server']);
-  if(count( $t_ldap_uri ) > 1) 
+  if(count((array)$t_ldap_uri) > 1) 
   {
     $t_message .= "URI {$authCfg['ldap_server']}.";
     $t_ds = ldap_connect($authCfg['ldap_server']);

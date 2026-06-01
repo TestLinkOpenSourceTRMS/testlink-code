@@ -39,7 +39,7 @@ function getKeywordsEnv(&$dbHandler,&$user,$tproject_id,$opt=null) {
 
     // Count how many times the keyword has been used
     $kwEnv->kwOnTCV = (array)$tproject->countKeywordUsageInTCVersions($tproject_id);
-    if( $more && count($kwEnv->kwOnTCV) > 0) {
+    if( $more && count((array)$kwEnv->kwOnTCV) > 0) {
       foreach($kwEnv->kwOnTCV as $kk => $dummy) {
         $kwEnv->kwOnTCV[$kk]['keyword'] = $kwNames[$kk];
         $kwEnv->kwOnTCV[$kk]['notes'] = $kwNotes[$kk];        

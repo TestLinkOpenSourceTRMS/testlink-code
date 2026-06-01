@@ -20,7 +20,7 @@
 function string_preserve_spaces_at_bol( $p_string ) 
 {
 	$lines = explode( "\n", $p_string );
-	$line_count = count( $lines );
+	$line_count = count((array)$lines);
 	for ( $i = 0; $i < $line_count; $i++ ) {
 		$count	= 0;
 		$prefix	= '';
@@ -71,7 +71,7 @@ function string_nl2br( $p_string, $p_wrap = 100 )
 		// fix up eols within <pre> tags
 		$pre2 = array();
 		preg_match_all("/<pre[^>]*?>(.|\n)*?<\/pre>/", $p_string, $pre1);
-		for ( $x = 0; $x < count($pre1[0]); $x++ ) 
+		for ( $x = 0; $x < count((array)$pre1[0]); $x++ ) 
 		{
 			$pre2[$x] = preg_replace("/<br[^>]*?>/", "", $pre1[0][$x]);
 			// this may want to be replaced by html_entity_decode (or equivalent)
@@ -429,7 +429,7 @@ function string_shorten( $p_string ) {
 		$t_bits = preg_split( $t_pattern, $p_string, -1, PREG_SPLIT_DELIM_CAPTURE );
 
 		$t_string = '';
-		$t_last = $t_bits[ count( $t_bits ) - 1 ];
+		$t_last = $t_bits[ count((array)$t_bits) - 1 ];
 		$t_last_len = tlStrLen( $t_last );
 
 		foreach ( $t_bits as $t_bit ) {

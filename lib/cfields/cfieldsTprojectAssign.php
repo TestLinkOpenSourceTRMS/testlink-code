@@ -14,7 +14,7 @@ $templateCfg = templateConfiguration();
 
 $cfield_mgr = new cfield_mgr($db);
 $args = init_args($db);
-$checkedIDSet = array_keys($args->checkedCF);
+$checkedIDSet = array_keys((array)$args->checkedCF);
 
 switch ($args->doAction) {
   case 'doAssign':
@@ -126,7 +126,7 @@ function initializeGui(&$args,&$cfield_mgr)
   $gui->tproject_name = $args->tproject_name;
   
   $gui->linkedCF = $cfield_mgr->get_linked_to_testproject($args->tproject_id);
-  $cf2exclude = is_null($gui->linkedCF) ? null :array_keys($gui->linkedCF);
+  $cf2exclude = is_null($gui->linkedCF) ? null :array_keys((array)$gui->linkedCF);
   $gui->other_cf = $cfield_mgr->get_all($cf2exclude);
 
   $gui->cf_available_types = $cfield_mgr->get_available_types();
@@ -222,7 +222,7 @@ function doSimpleBooleanMgmt(&$cfieldMgr,$argsObj,$cfg)
   // This way user does not need to check cf for this operations
   // Think makes life easier   
   $serviceInput = $cfg['ha'];
-  $cfSet = array_keys($argsObj->$serviceInput);
+  $cfSet = array_keys((array)$argsObj->$serviceInput);
 
   $m2c = $cfg['m2c'];
   $operativeInput = $cfg['attr'];

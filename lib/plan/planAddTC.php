@@ -120,8 +120,8 @@ if($do_display) {
       $tproject_mgr->getKeywordsLatestTCV($args->tproject_id,
         $keywordsFilter->items,$keywordsFilter->type);
 
-    if (sizeof($keywordsTestCases)) {
-      $testCaseSet = array_keys($keywordsTestCases);
+    if (sizeof((array)$keywordsTestCases)) {
+      $testCaseSet = array_keys((array)$keywordsTestCases);
     }
   }
   
@@ -129,7 +129,7 @@ if($do_display) {
   // exists on this test project.
   $cfields = (array)$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
   $opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
-  $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
+  $opt['add_custom_fields'] = count((array)$cfields) > 0 ? 1 : 0;
 
   // Add Test Cases to Test plan - Right pane does not honor custom field filter
   // filter by test case execution type
@@ -265,8 +265,8 @@ if($do_display) {
       $tproject_mgr->getKeywordsLatestTCV($args->tproject_id,
         $keywordsFilter->items,$keywordsFilter->type);
 
-		if (sizeof($keywordsTestCases)) {
-			$testCaseSet = array_keys($keywordsTestCases);
+		if (sizeof((array)$keywordsTestCases)) {
+			$testCaseSet = array_keys((array)$keywordsTestCases);
 		}
 	}
 
@@ -276,7 +276,7 @@ if($do_display) {
     (array)$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
 
 	$opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
-	$opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
+	$opt['add_custom_fields'] = count((array)$cfields) > 0 ? 1 : 0;
 
   // Add Test Cases to Test plan - Right pane does not honor custom field filter
   // filter by test case execution type
@@ -469,7 +469,7 @@ function init_args(&$tproject_mgr)
   // contains WHAT TO REMOVE
   $args->topLevelTestSuite = 0;
   if( $getFromSession && isset($pageCache['filter_toplevel_testsuite']) 
-                      && count($pageCache['filter_toplevel_testsuite']) > 0)
+                      && count((array)$pageCache['filter_toplevel_testsuite']) > 0)
   {
     // get all
     $first_level_suites = $tproject_mgr->get_first_level_test_suites($args->tproject_id,'simple',array('accessKey' => 'id'));
@@ -491,7 +491,7 @@ function init_args(&$tproject_mgr)
   $ak = 'filter_keywords';
   if (isset($pageCache[$ak])) {
     $args->keyword_id = $pageCache[$ak];
-    if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+    if (is_array($args->keyword_id) && count((array)$args->keyword_id) == 1) {
       $args->keyword_id = $args->keyword_id[0];
     }
   }
@@ -555,7 +555,7 @@ function doReorder(&$argsObj,&$tplanMgr)
     // Now add info for new liked test cases if any
     if(!is_null($argsObj->testcases2add))
     {
-        $tcaseSet = array_keys($argsObj->testcases2add);
+        $tcaseSet = array_keys((array)$argsObj->testcases2add);
         foreach($tcaseSet as $tcid)
         {
           // This check is needed because, after we have added test case
@@ -895,7 +895,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
  */
 function initDrawSaveButtons(&$guiObj)
 {
-  $keySet = array_keys($guiObj->items);
+  $keySet = array_keys((array)$guiObj->items);
 
   // 20100225 - eloff - BUGID 3205 - check only when platforms are active
   // Logic to initialize drawSavePlatformsButton.
@@ -908,7 +908,7 @@ function initDrawSaveButtons(&$guiObj)
       $testSuite = &$guiObj->items[$key];
       if($testSuite['linked_testcase_qty'] > 0)
       {
-        $tcaseSet = array_keys($testSuite['testcases']);
+        $tcaseSet = array_keys((array)$testSuite['testcases']);
         foreach($tcaseSet as $tcaseKey)
         {
           if( isset($testSuite['testcases'][$tcaseKey]['feature_id'][0]) )
@@ -934,7 +934,7 @@ function initDrawSaveButtons(&$guiObj)
     $tcaseSet = &$guiObj->items[$key]['testcases'];
     if( !is_null($tcaseSet) )
     {
-      $tcversionSet = array_keys($tcaseSet);
+      $tcversionSet = array_keys((array)$tcaseSet);
       foreach($tcversionSet as $tcversionID)
       {
         if( isset($tcaseSet[$tcversionID]['custom_fields']) && 
@@ -997,12 +997,12 @@ function init_build_selector(&$testplan_mgr, &$argsObj) {
     (array)$testplan_mgr->get_builds_for_html_options($argsObj->tplan_id,
                                                       testplan::GET_ACTIVE_BUILD,
                                                       testplan::GET_OPEN_BUILD);
-  $menu['count'] = count($menu['items']);
+  $menu['count'] = count((array)$menu['items']);
   
   // if no build has been chosen yet, select the newest build by default
   $build_id = $argsObj->build_id;
   if (!$build_id && $menu['count']) {
-    $keys = array_keys($menu['items']);
+    $keys = array_keys((array)$menu['items']);
     $build_id = end($keys);
   }
   $menu['selected'] = $build_id;

@@ -32,7 +32,7 @@ $uncovered = null;
 $gui = new stdClass();
 $gui->items = null;
 $gui->tproject_name = $args->tproject_name;
-$gui->has_reqspec = count($reqSpec) > 0;
+$gui->has_reqspec = count((array)$reqSpec) > 0;
 $gui->has_requirements = false;
 $gui->has_tc = false;
 
@@ -53,7 +53,7 @@ if($gui->has_requirements)
     $tcasesID = null; 
     $tproject_mgr->get_all_testcases_id($args->tproject_id,$tcasesID);  
     
-    if(!is_null($tcasesID) && count($tcasesID) > 0)
+    if(!is_null($tcasesID) && count((array)$tcasesID) > 0)
     {
         $debugMsg = 'File: ' . basename(__FILE__) . ' - Line: ' . __LINE__ . ' - ';
 		$sql = " /* $debugMsg */ " .
@@ -69,10 +69,10 @@ if($gui->has_requirements)
 }
 
 
-if($gui->has_tc = (!is_null($uncovered) && count($uncovered) > 0) )
+if($gui->has_tc = (!is_null($uncovered) && count((array)$uncovered) > 0) )
 {
     // Get external  ID
-    $testSet = array_keys($uncovered);
+    $testSet = array_keys((array)$uncovered);
     $inClause = implode(',',$testSet);
     $debugMsg = 'File: ' . basename(__FILE__) . ' - Line: ' . __LINE__ . ' - ';
     $sql = "/* $debugMsg */ " .

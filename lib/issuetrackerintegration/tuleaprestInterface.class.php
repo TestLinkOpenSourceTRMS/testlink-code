@@ -169,7 +169,7 @@ class tuleaprestInterface extends issueTrackerInterface
                 // retrieve the labels of closed status
                 $ret['status'] = $this->getClosedLabels($status, $statusValuesID);
                 // check that all labels have been found
-                if ( count($ret['status']) != (count($status->values) - count($statusValuesID)) )
+                if ( count((array)$ret['status']) != (count((array)$status->values) - count((array)$statusValuesID)) )
                     throw new Exception('Some labels was not found.');
             } else
                 throw new Exception('The tracker ' . $this->trackerID . ' was not found.');
@@ -190,7 +190,7 @@ class tuleaprestInterface extends issueTrackerInterface
      * @author Aurelien TISNE <aurelien.tisne@csgroup.eu>
      **/
     private function getField($tracker, $fieldID) {
-        $i = count($tracker->fields);
+        $i = count((array)$tracker->fields);
         $field = null;
         while ($i > 0 && ! $field) {
             if ($tracker->fields[$i - 1]->field_id == $fieldID)

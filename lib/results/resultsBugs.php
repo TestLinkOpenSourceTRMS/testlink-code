@@ -112,7 +112,7 @@ foreach ($testcase_bugs as &$row)
 }
 $arrData = array_values($testcase_bugs);
 
-if(count($arrData) > 0) 
+if(count((array)$arrData) > 0) 
 {
   // Create column headers
   $columns = getColumnsDefinition();
@@ -148,10 +148,10 @@ else
   $gui->warning_msg = $l18n['no_linked_bugs'];
 }
 
-$totalOpenBugs = count($openBugs);
-$totalResolvedBugs = count($resolvedBugs);
+$totalOpenBugs = count((array)$openBugs);
+$totalResolvedBugs = count((array)$resolvedBugs);
 $totalBugs = $totalOpenBugs + $totalResolvedBugs;
-$totalCasesWithBugs = count($arrData);
+$totalCasesWithBugs = count((array)$arrData);
 
 $gui->user = $args->user;
 $gui->printDate = '';

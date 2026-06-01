@@ -136,7 +136,7 @@ function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
   if($simpleXMLItems)
   {
     $items_counter=0;
-    $loop_qty = count($simpleXMLItems);
+    $loop_qty = count((array)$simpleXMLItems);
 
     // new dBug($loop_qty);
     for($idx=0; $idx < $loop_qty; $idx++)

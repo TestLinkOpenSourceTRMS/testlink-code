@@ -147,7 +147,7 @@ function contextAsXML(&$dbHandler,$contextSet,&$tplanMgr)
     					 	 "\n\t" . "</platform>";
 	}
 	
-	$key2loop = array_keys($info);
+	$key2loop = array_keys((array)$info);
 	foreach($key2loop as $item_key)
 	{
 		if(!is_null($info[$item_key]))

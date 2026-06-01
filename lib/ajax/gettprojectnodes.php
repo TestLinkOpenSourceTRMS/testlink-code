@@ -127,7 +127,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
         case 'testsuite':
           $items = array();
           getAllTCasesID($row['id'],$items);
-          $tcase_qty = sizeof($items);
+          $tcase_qty = sizeof((array)$items);
 
           $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
           $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
@@ -195,7 +195,7 @@ function getAllTCasesID($idList,&$tcIDs) {
           $suiteIDs[] = $row['id'];
         }
       }
-      if (sizeof($suiteIDs)) {
+      if (sizeof((array)$suiteIDs)) {
         $suiteIDs  = implode(",",$suiteIDs);
         getAllTCasesID($suiteIDs,$tcIDs);
       }

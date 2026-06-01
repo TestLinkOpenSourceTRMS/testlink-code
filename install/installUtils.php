@@ -497,9 +497,7 @@ function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd) {
   $safeLogin = $dbhandler->prepare_string($login);
 
   $stmt = " CREATE USER '$safeLogin' ";
-  if (strlen(trim($db_host)) != 0) {
-    $stmt .= "@" . "'$safeDBHost'";
-  }         
+  $stmt .= "@'%'"; // Docker: use wildcard host         
 
   // to guess if we are using MariaDB or MySQL
   // does not seems to be a reliable way to do this
@@ -570,7 +568,7 @@ function _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd) {
   $safeLogin = $dbhandler->prepare_string($login);
 
   $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON 
-           `$safeDBName`.* TO '$safeLogin'@'$safeDBHost' 
+           `$safeDBName`.* TO '$safeLogin'@'%' 
             WITH GRANT OPTION ";
 
   if ( !@$dbhandler->exec_query($stmt) ) {
@@ -590,7 +588,7 @@ function _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd) {
   //
   if( strcasecmp('localhost',$db_host) != 0 ) {
     $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON 
-            `$safeDBName`.* TO '$safeLogin'@'localhost' 
+            `$safeDBName`.* TO '$safeLogin'@'%' 
             WITH GRANT OPTION ";
 
     if ( !@$dbhandler->exec_query($stmt) ) {

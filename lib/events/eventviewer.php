@@ -60,7 +60,7 @@ $gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $arg
                                          $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
                                          $filters->endTime,$filters->users);
 
-if (count($gui->events) > 0) 
+if (count((array)$gui->events) > 0) 
 {
   $table = buildExtTable($gui, $show_icon, $charset);
   if (!is_null($table)) 
@@ -218,7 +218,7 @@ function getFilters(&$argsObj=null,$dateFormat=null)
 function buildExtTable($gui,$show_icon,$charset)
 {
   $table = null;
-  if(count($gui->events) > 0) 
+  if(count((array)$gui->events) > 0) 
   {
     $columns = array();
     $columns[] = array('title_key' => 'th_timestamp', 'width' => 15);

@@ -72,7 +72,7 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 	}
 	else
 	{
-		$filters['platforms'] = array_keys($gui->platformSet);
+		$filters['platforms'] = array_keys((array)$gui->platformSet);
 	}
    
 	// convert starttime to iso format for database usage
@@ -92,8 +92,8 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 	$everest = $tplan_mgr->getRootTestSuites($gui->tplan_id,$gui->tproject_id,array('output' => 'plain'));
     $tsuites_qty = sizeOf($argsObj->testsuitesSelected);
     
-    $userWantsAll = ($tsuits_qty == 0 || $tsuits_qty == count($everest));
-    $filters['top_level_tsuites'] = ($tsuites_qty == 0 || $tsuites_qty == count($everest)) ? null : $argsObj->testsuitesSelected;
+    $userWantsAll = ($tsuits_qty == 0 || $tsuits_qty == count((array)$everest));
+    $filters['top_level_tsuites'] = ($tsuites_qty == 0 || $tsuites_qty == count((array)$everest)) ? null : $argsObj->testsuitesSelected;
 	$gui->testsuitesSelected = array();
 	foreach($argsObj->testsuitesSelected as $dmy)
 	{
@@ -101,7 +101,7 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 	} 
 
     $filters['builds'] = null;
-    if (sizeof($argsObj->buildsSelected)) 
+    if (sizeof((array)$argsObj->buildsSelected)) 
     {
     	$filters['builds'] = implode(",", $argsObj->buildsSelected);
     }
@@ -174,7 +174,7 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
     {
         $gui->keywords->items += $tplan_keywords_map; 
     }    
-    $gui->keywords->qty = count($gui->keywords->items);
+    $gui->keywords->qty = count((array)$gui->keywords->items);
     $gui->keywordSelected = $gui->keywords->items[$argsObj->keywordSelected];
     
     $gui->builds_html = $tplan_mgr->get_builds_for_html_options($gui->tplan_id);

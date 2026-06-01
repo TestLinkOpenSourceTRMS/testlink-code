@@ -70,7 +70,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 
     // Special processing for keywords
     if ($filters['filter_keywords'] != null && 
-    	count($filters['filter_keywords']) == 1 &&
+    	count((array)$filters['filter_keywords']) == 1 &&
         $filters['filter_keywords'][0] == 0
        ) {
        // Get all available keywords on test project and apply these set
@@ -78,7 +78,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
        // TODOD
        $tproject_mgr = new testproject($db);
        $usedKeywordsByKeyID = $tproject_mgr->getUsedKeywordsMap($tproject_id);
-       $filters['filter_keywords'] = array_keys($usedKeywordsByKeyID);
+       $filters['filter_keywords'] = array_keys((array)$usedKeywordsByKeyID);
     }
 
     $rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
@@ -351,7 +351,7 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
     $nodesCodeType = array_flip($nodesTypeCode);
 
     $resultsCfg = config_get('results');
-    $status_descr_list = array_keys($resultsCfg['status_code']);
+    $status_descr_list = array_keys((array)$resultsCfg['status_code']);
     $status_descr_list[] = 'testcase_count';
     
     $my = array();
@@ -386,13 +386,13 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
     $enabledFiltersOn['keywords'] = 
       (null != $attr_map && isset($attr_map['keywords']) 
        && null != $attr_map['keywords']
-       && count($attr_map['keywords']) > 0);
+       && count((array)$attr_map['keywords']) > 0);
 
     $enabledFiltersOn['platforms'] = 
       (null != $attr_map 
        && isset($attr_map['platforms'])
        && null != $attr_map['platforms']
-       && count($attr_map['platforms']) > 0);
+       && count((array)$attr_map['platforms']) > 0);
 
 
     $filterOnTCVersionAttribute = $enabledFiltersOn['executionType'] || $enabledFiltersOn['importance'];
@@ -411,7 +411,7 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
                           $my['filters']['filter_result_result'] : null;
     
 
-    $testPlanIsNotEmpty = (!is_null($tplan_tcases) && count($tplan_tcases) > 0); 
+    $testPlanIsNotEmpty = (!is_null($tplan_tcases) && count((array)$tplan_tcases) > 0); 
   }
     
   $tcase_counters = array_fill_keys($status_descr_list, 0);
@@ -662,7 +662,7 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
   {
     // node has to be a Test Suite ?
     $childNodes = &$node['childNodes'];
-    $childNodesQty = count($childNodes);
+    $childNodesQty = count((array)$childNodes);
 
     for($idx = 0;$idx < $childNodesQty ;$idx++)
     {
@@ -813,7 +813,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
     // in order to change it's values using reference .
     // Can not assign anymore to intermediate variables.
     //
-    $nChildren = sizeof($node['childNodes']);
+    $nChildren = sizeof((array)$node['childNodes']);
     for($idx = 0;$idx < $nChildren;$idx++)
     {
       // asimon - replaced is_null by !isset because of warnings in event log
@@ -996,7 +996,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
   {
     // need to work always original object in order to change it's values using reference .
     // Can not assign anymore to intermediate variables.
-    $nodes_qty = sizeof($node['childNodes']);
+    $nodes_qty = sizeof((array)$node['childNodes']);
     for($idx = 0;$idx <$nodes_qty ;$idx++)
     {
       if(is_null($node['childNodes'][$idx]) || $node['childNodes'][$idx]==REMOVEME)
@@ -1107,7 +1107,7 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
                                                               $cf_hash,$node_types); 
         
         // now remove testsuite node if it is empty after coming back from recursion
-        if (!count($tcase_tree[$key]['childNodes'])) 
+        if (!count((array)$tcase_tree[$key]['childNodes'])) 
         {
           $delete_suite = true;
         }
@@ -1201,7 +1201,7 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
        * TC Version 4: cfield "color" has value "red", cfield "status" has value "ready".
        * 
        * Filter by color GREEN and status READY, then $rows looks like this: Array ( [0] => red, [1] => red )
-       * => count($rows) returns 2, which matches the number of custom fields we want to filter by.
+       * => count((array)$rows) returns 2, which matches the number of custom fields we want to filter by.
        * So TC lands in the result set instead of being filtered out.
        * That is wrong, because TC matches only one of the fields we were filtering by!
        * 
@@ -1209,7 +1209,7 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
        * so that each custom field only is contained ONCE in the result set.
        */
             
-      $passed = (count($rows) == count($cf_hash)) ? true : false;
+      $passed = (count((array)$rows) == count((array)$cf_hash)) ? true : false;
       // now delete node if no match was found
       if (!$passed) 
       {
@@ -1243,7 +1243,7 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
   $safe_platform = intval($filters->setting_platform);
-  $buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
+  $buildSet = array_keys((array)$tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
   if( !is_null($buildSet) ) 
   {
     if( $safe_platform > 0 )
@@ -1295,7 +1295,7 @@ function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_
  * @return array new tcase_set
  */
 function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
-  $buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
+  $buildSet = array_keys((array)$tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
   if( !is_null($buildSet) ) {
 
     $safe_platform = intval($filters->setting_platform);
@@ -2295,7 +2295,7 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
 {
   $tables = tlObject::getDBTables(array('executions','nodes_hierarchy'));
   $dummy = current($items);
-  $key2scan = array_keys($items);
+  $key2scan = array_keys((array)$items);
   $keySet = null;
   foreach($key2scan as $fx)
   {
@@ -2677,7 +2677,7 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
   
     // node has to be a Test Suite ?
     $childNodes = &$node['childNodes'];
-    $childNodesQty = count($childNodes);
+    $childNodesQty = count((array)$childNodes);
     
     //$pos2unset = array();
     for($idx = 0;$idx < $childNodesQty ;$idx++) {

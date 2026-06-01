@@ -202,7 +202,7 @@ function validateBuildAvailability(&$db,&$tplanMgr,$context,$attrFilter)
     }  
     
     $mzx = '';
-    if(count($msx) > 0)
+    if(count((array)$msx) > 0)
     {
       $mzx = "(" . implode(' & ',$msx) . ")";
     }  

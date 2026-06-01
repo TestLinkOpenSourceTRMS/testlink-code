@@ -61,7 +61,7 @@ switch($args->doAction)
     $gui->items = $dummy->items;        
     $gui->file_check = $dummy->file_check;
     $gui->userFeedback = (array)$dummy->userFeedback;
-    if(array_key_exists("syntaxError", $gui->userFeedback) && count($gui->userFeedback['syntaxError']) > 0) 
+    if(array_key_exists("syntaxError", $gui->userFeedback) && count((array)$gui->userFeedback['syntaxError']) > 0) 
     {
       $gui->importResult = lang_get('import_syntax_error');
     } 
@@ -199,7 +199,7 @@ function doReqImportFromMantisXML(&$reqMgr,&$simpleXMLObj,$importContext)
 {
 
   $inputItems = getFromMantisIssueSimpleXMLObj($simpleXMLObj);
-  $loop2do = count($inputItems);
+  $loop2do = count((array)$inputItems);
   for($kdx=0; $kdx < $loop2do; $kdx++)
   {   
     $dummy = $reqMgr->createFromMap($inputItems[$kdx],$importContext->tproject_id,
@@ -227,7 +227,7 @@ function getFromMantisIssueSimpleXMLObj($xmlObj)
 
   $jdx = 0;
   $xmlIssue = $xmlObj->issue;
-  $loops2do=sizeof($xmlIssue);
+  $loops2do=sizeof((array)$xmlIssue);
  
   $XMLDef['elements'] = array('string' => array('summary' => null,'description' => null,
                                                 'additional_information' => null,

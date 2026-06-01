@@ -61,7 +61,7 @@ if( $doIt )
   $execCfg = config_get('exec_cfg');
 
   $tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
-  $tplanSet=array_keys($gui->resultSet);
+  $tplanSet=array_keys((array)$gui->resultSet);
   $sql="SELECT name,id FROM {$tables['nodes_hierarchy']} " .
        "WHERE id IN (" . implode(',',$tplanSet) . ")";
   $gui->tplanNames=$db->fetchRowsIntoMap($sql,'id');
@@ -191,7 +191,7 @@ if( $doIt )
 		$matrix->setGroupByColumnName(lang_get($columns[0]['title_key']));
 		
 		// make table collapsible if more than 1 table is shown and surround by frame
-		if (count($tplanSet) > 1) {
+		if (count((array)$tplanSet) > 1) {
 			$matrix->collapsible = true;
 			$matrix->frame = true;
 		}

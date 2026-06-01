@@ -85,7 +85,7 @@ switch($args->doAction) {
   case "create":  
   case "edit":  
   case "doCreate":  
-    $op = $commandMgr->$pfn($args,$opt_cfg,array_keys($testCaseEditorKeys),$_REQUEST);
+    $op = $commandMgr->$pfn($args,$opt_cfg,array_keys((array)$testCaseEditorKeys),$_REQUEST);
     $doRender = true;
   break;
     
@@ -194,7 +194,7 @@ if($args->delete_tc_version) {
   $the_xx[$the_tc_node['parent_id']] .= ' (' . lang_get('current') . ')';
   $tc_info = $tcase_mgr->get_by_id($args->tcase_id);
   
-  $container_qty = count($the_xx);
+  $container_qty = count((array)$the_xx);
   $gui->move_enabled = 1;
   if ($container_qty == 1) {
     // move operation is nonsense

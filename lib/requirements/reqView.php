@@ -114,7 +114,7 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
 
   // 2018 $gui->req_coverage = $req_mgr->get_coverage($gui->req_id);  
   // This need to become an array.
-  $loop2do = count($gui->req_versions);
+  $loop2do = count((array)$gui->req_versions);
   $gui->current_req_coverage = array();
   $gui->other_req_coverage = array();
   for($cvx = 0 ; $cvx < $loop2do; $cvx++) {
@@ -150,7 +150,7 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
     $req_mgr->getFileUploadRelativeURL($gui->req_id, $gui->req_version_id);
 
   $gui->log_target = null;
-  $loop2do = count($gui->req_versions);
+  $loop2do = count((array)$gui->req_versions);
   for($rqx = 0; $rqx < $loop2do; $rqx++) {
     $gui->log_target[] = ($gui->req_versions[$rqx]['revision_id'] > 0) ?  $gui->req_versions[$rqx]['revision_id'] :  
                           $gui->req_versions[$rqx]['version_id'];
@@ -170,9 +170,9 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
   // Now CF for other Versions
   $gui->other_versions[0] = null;
   $gui->cfields_other_versions[] = null;
-  if( count($gui->req_versions) > 1 ) {
+  if( count((array)$gui->req_versions) > 1 ) {
     $gui->other_versions[0] = array_slice($gui->req_versions,1);
-    $loop2do = count($gui->other_versions[0]);
+    $loop2do = count((array)$gui->other_versions[0]);
     for($qdx=0; $qdx < $loop2do; $qdx++) {
       $target_version = $gui->other_versions[0][$qdx]['version_id'];
       $gui->cfields_other_versions[0][$qdx]= 
@@ -195,7 +195,7 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
   
   if( $gui->showAllVersions ) {
     $versionSet = array();
-    $loop2do = count($gui->req_versions);    
+    $loop2do = count((array)$gui->req_versions);    
     for( $ggx=0; $ggx < $loop2do; $ggx++ ) {
       $versionSet[] = intval($gui->req_versions[$ggx]['version_id']);
     }

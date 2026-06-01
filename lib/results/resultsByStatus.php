@@ -49,7 +49,7 @@ $cfOnExec = $cfSet = null;
 
 // done here in order to get some config about images
 $smarty = new TLSmarty();
-if (!is_null($metrics) and count($metrics) > 0) {              
+if (!is_null($metrics) and count((array)$metrics) > 0) {              
   if ($args->addOpAccess) {  
     $links = featureLinks($labels,$smarty->getImages());
   }  
@@ -72,7 +72,7 @@ if (!is_null($metrics) and count($metrics) > 0) {
   if( $args->type != $statusCode['not_run'] ) {
     // get Custom fields definition to understand columns to be added
     $cfSet = $tcase_mgr->cfield_mgr->get_linked_cfields_at_execution($args->tproject_id,true,'testcase');
-    $execSet = array_keys($metrics);
+    $execSet = array_keys((array)$metrics);
 
 
     // go for Custom fields values of all executions on ONE SHOT!
@@ -87,7 +87,7 @@ if (!is_null($metrics) and count($metrics) > 0) {
       $dummy = $tcase_mgr->getPathLayered(array($exec['tcase_id']));  
       $pathCache[$exec['tcase_id']] = $dummy[$exec['tsuite_id']]['value'];
       $levelCache[$exec['tcase_id']] = $dummy[$exec['tsuite_id']]['level'];
-      $ky = current(array_keys($dummy)); 
+      $ky = current(array_keys((array)$dummy)); 
       $topCache[$exec['tcase_id']] = $ky;
     }
     
@@ -247,7 +247,7 @@ if (!is_null($metrics) and count($metrics) > 0) {
       if($gui->bugInterfaceOn && $exec['status'] != $statusCode['not_run']) 
       {
         $bugSet = get_bugs_for_exec($db, $its, $exec['executions_id'],array('id','summary'));
-        if (count($bugSet) == 0) 
+        if (count((array)$bugSet) == 0) 
         {
           $gui->without_bugs_counter += 1;
         }
@@ -450,7 +450,7 @@ function initializeGui(&$dbh,&$argsObj,&$tplanMgr)
   // needed to decode
   $getOpt = ['outputFormat' => 'map'];
   $guiObj->platformSet = (array)$tplanMgr->getPlatforms($argsObj->tplan_id,$getOpt);  
-  $guiObj->show_platforms = count($guiObj->platformSet);
+  $guiObj->show_platforms = count((array)$guiObj->platformSet);
   // 
 
   $guiObj->its = null;  // Issue Tracker System
@@ -783,7 +783,7 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
     $dataHeader[] = $lbl['th_bugs_id_summary'];
   }  
 
-  $startingRow = count($lines2write) + 2; // MAGIC
+  $startingRow = count((array)$lines2write) + 2; // MAGIC
   $cellArea = "A{$startingRow}:";
   foreach($dataHeader as $zdx => $field) {
     $cellID = $cellRange[$zdx] . $startingRow; 
@@ -796,7 +796,7 @@ function createSpreadsheet($gui,$args,$media,$customFieldColumns=null)
 
   // Now process data  
   $startingRow++;
-  $qta_loops = count($gui->dataSet);
+  $qta_loops = count((array)$gui->dataSet);
   for ($idx = 0; $idx < $qta_loops; $idx++) {
     $line2write = $gui->dataSet[$idx];
     $colCounter = 0; 

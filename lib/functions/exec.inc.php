@@ -109,7 +109,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
   // because our choice is also get the test steps ids fromm these inputs.
   //
   if( isset($_REQUEST['step_notes']) ) {
-    $stepsIDSet = array_keys($_REQUEST['step_notes']);
+    $stepsIDSet = array_keys((array)$_REQUEST['step_notes']);
     $ctx = new stdClass();
     $ctx->testplan_id = $execSign->tplan_id;
     $ctx->platform_id = $executedInPlatform;
@@ -169,8 +169,8 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
 
       // 
       $tcvRelations = (array)$tcaseMgr->getTCVRelationsRaw($tcversion_id);
-      if( count($tcvRelations) > 0 ) {
-        $itemSet = array_keys($tcvRelations);
+      if( count((array)$tcvRelations) > 0 ) {
+        $itemSet = array_keys((array)$tcvRelations);
         $tcaseMgr->closeOpenTCVRelation($itemSet,LINK_TC_RELATION_CLOSED_BY_EXEC);
       }
 
@@ -224,7 +224,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
 
       if( $hasMoreData->nike ) {
         $target = DB_TABLE_PREFIX . 'execution_tcsteps';
-        $key2loop = array_keys($exec_data['step_notes']);
+        $key2loop = array_keys((array)$exec_data['step_notes']);
 
         $stepsSql = " SELECT id, step_number FROM " . DB_TABLE_PREFIX . 'tcsteps' . 
                     " WHERE id IN (" . implode(",", $key2loop) . ")"; 
@@ -263,7 +263,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
 
               // May be we have enabled MULTIPLE on file upload
               if( is_array($_FILES['uploadedFile']['name'][$step_id])) {
-                $curly = count($_FILES['uploadedFile']['name'][$step_id]); 
+                $curly = count((array)$_FILES['uploadedFile']['name'][$step_id]); 
                 for($moe=0; $moe < $curly; $moe++) {
                   $fSize = isset($_FILES['uploadedFile']['size'][$step_id][$moe]) ? 
                            $_FILES['uploadedFile']['size'][$step_id][$moe] : 0;
@@ -272,7 +272,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
                               $_FILES['uploadedFile']['tmp_name'][$step_id][$moe] : '';
 
                   if ($fSize && $fTmpName != "") {
-                    $fk2loop = array_keys($_FILES['uploadedFile']);
+                    $fk2loop = array_keys((array)$_FILES['uploadedFile']);
                     foreach($fk2loop as $tk) {
                       $fInfo[$tk] = $_FILES['uploadedFile'][$tk][$step_id][$moe];
                     }  
@@ -307,7 +307,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
                             $_FILES['uploadedFile']['tmp_name'][$step_id] : '';
 
                 if ($fSize && $fTmpName != "") {
-                  $fk2loop = array_keys($_FILES['uploadedFile']);
+                  $fk2loop = array_keys((array)$_FILES['uploadedFile']);
                   foreach($fk2loop as $tk) {
                     $fInfo[$tk] = $_FILES['uploadedFile'][$tk][$step_id];
                   }  
@@ -573,7 +573,7 @@ function delete_execution(&$db,$exec_id)
   $sql[] = "DELETE FROM {$tables['execution_tcsteps']} WHERE execution_id = {$sid}";
   
   // This delete HAS TO BE THE LATEST, because is the PARENT
-  $ldx = count($sql);
+  $ldx = count((array)$sql);
   $sql[$ldx] = "DELETE FROM {$tables['executions']} WHERE id = {$sid}";
 
   foreach ($sql as $the_stm)
@@ -770,7 +770,7 @@ function copyIssues(&$dbHandler,$source,$dest) {
   $linkedIssues = $dbHandler->fetchRowsIntoMap($sql,'bug_id');
   if( !is_null($linkedIssues) )
   {  
-    $idSet = array_keys($linkedIssues);
+    $idSet = array_keys((array)$linkedIssues);
     $safeDest = intval($dest);
 
     $blist = implode("','", $idSet);
@@ -853,7 +853,7 @@ function generateIssueText($dbHandler,$argsObj,$itsObj,$opt=null) {
                      'tc_name', 'tc_external_id');
 
     $lbl = array();
-    $l2d = count($lblKeys);
+    $l2d = count((array)$lblKeys);
     for($ldx=0; $ldx < $l2d; $ldx++) {
       $lbl[$lblKeys[$ldx]] = lang_get($lblKeys[$ldx]);
     }
@@ -1057,7 +1057,7 @@ function addAttachmentsToExec($execID,&$docRepo) {
     $honeyPot[$bee] = (array)$_FILES['uploadedFile'][$bee][0];
   }
 
-  $curly = count($honeyPot);
+  $curly = count((array)$honeyPot);
   $op = new stdClass();
   $op->msg = '';
 
@@ -1068,7 +1068,7 @@ function addAttachmentsToExec($execID,&$docRepo) {
     $fTmpName = isset($honeyPot['tmp_name'][$moe]) ? $honeyPot['tmp_name'][$moe] : '';
 
     if ($fSize >0  && $fTmpName != "") {
-      $fk2loop = array_keys($_FILES['uploadedFile']);
+      $fk2loop = array_keys((array)$_FILES['uploadedFile']);
       foreach($fk2loop as $tk) {
         $fInfo[$tk] = $honeyPot[$tk][$moe];
       }  

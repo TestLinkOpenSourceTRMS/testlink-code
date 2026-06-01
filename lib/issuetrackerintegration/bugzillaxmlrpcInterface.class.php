@@ -173,7 +173,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     $resp = array_merge($resp,(array)$op['response']);
 
 
-		if(count($resp['Bug.get']['faults']) == 0)
+		if(count((array)$resp['Bug.get']['faults']) == 0)
 		{
 			$issue = new stdClass();
       $issue->id = $issueID;

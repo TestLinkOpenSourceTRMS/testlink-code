@@ -56,7 +56,7 @@ function getDataAndScale(&$dbHandler,$argsObj)
   if( !is_null($dummy) )    
   {
     $dataSet = $dummy->info;
-    $obj->canDraw = !is_null($dataSet) && (count($dataSet) > 0);
+    $obj->canDraw = !is_null($dataSet) && (count((array)$dataSet) > 0);
   }
   
   if($obj->canDraw)
@@ -91,7 +91,7 @@ function getDataAndScale(&$dbHandler,$argsObj)
   if(!is_null($totals))
   {
     // in this array position we will find minimun value after an rsort
-    $minPos = count($dataSet)-1;
+    $minPos = count((array)$dataSet)-1;
     $obj->scale->maxY = 0;
     $obj->scale->minY = 0;
     

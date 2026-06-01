@@ -68,7 +68,7 @@ if( !is_null($childrenReq) && $req_cfg->show_child_reqs_on_reqspec_print_view)
                  		  'displayLastEdit' => 1, 'docType' => SINGLE_REQ);
 
 	$text2print .= '<div><h2>' . lang_get('reqs') . '</h2></div>';
-	$loop2do = count($childrenReq);
+	$loop2do = count((array)$childrenReq);
 	for($rdx=0; $rdx < $loop2do; $rdx++)
 	{
 		$text2print .= renderReqForPrinting($db,$childrenReq[$rdx],$reqPrintOpts,

@@ -140,7 +140,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
           $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
           if(!is_null($req_list))
           {
-            $item_qty = count($req_list);
+            $item_qty = count((array)$req_list);
             $path['text'] .= " ({$item_qty})";   
           }
         break;

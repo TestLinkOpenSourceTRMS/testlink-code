@@ -33,7 +33,7 @@ if ($args->bPostBack) {
       $opt['allow_empty_title'] = true;
     }  
 
-    $l2d = count($fInfo);
+    $l2d = count((array)$fInfo);
     for($fdx=0; $fdx <= $l2d; $fdx++) {
       $fSize = isset($fInfo['size'][$fdx]) ? $fInfo['size'][$fdx] : 0;
       $fTmpName = isset($fInfo['tmp_name'][$fdx]) ? 
@@ -88,7 +88,7 @@ function init_args()
   $args = new stdClass();
   I_PARAMS($iParams,$args);
   
-  $args->bPostBack = sizeof($_POST);
+  $args->bPostBack = sizeof((array)$_POST);
   
   return $args;
 }

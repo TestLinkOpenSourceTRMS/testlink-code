@@ -180,7 +180,7 @@ function buildMatrix(&$guiObj,&$argsObj)
                            'th_last_name' => null,'expiration' => null,
                            'th_email' => null));
 
-  $loop2do = count($guiObj->matrix);
+  $loop2do = count((array)$guiObj->matrix);
  
   // login added as workaround for SORTING, because the whole string is used then user_id
   // in url takes precedence over the login displayed 
@@ -249,7 +249,7 @@ function getAllUsersForGrid(&$dbHandler)
 
   // because we need to render this on EXT-JS, we have issues with <no rights> role
   // due to <, then we are going to escape values in description column
-  $loop2do = count($users);
+  $loop2do = count((array)$users);
   $dummy = '';
   for($idx=0; $idx < $loop2do; $idx++)
   {
@@ -276,7 +276,7 @@ function getAllUsersForGrid(&$dbHandler)
     foreach($users as $row)
     {
       $cr = array();
-      $elem = array_keys($row);
+      $elem = array_keys((array)$row);
       foreach($elem as $accessKey)
       {
         if(!is_numeric($accessKey))
@@ -291,7 +291,7 @@ function getAllUsersForGrid(&$dbHandler)
  
 	if( config_get('demoMode') )
 	{
-  	$loop2do = count($users);
+  	$loop2do = count((array)$users);
 	  $specialK = array_flip((array)config_get('demoSpecialUsers'));
   	for($idx=0; $idx < $loop2do; $idx++)
 	  {

@@ -166,7 +166,7 @@ class tlAttachmentRepository extends tlObjectWithDB
       $op->statusOK = $this->storeFileInFSRepository($fTmpName,$destFPath);
     } else {
       $fContents = $this->getFileContentsForDBRepository($fTmpName,$destFName);
-      $op->statusOK = sizeof($fContents);
+      $op->statusOK = sizeof((array)$fContents);
       if($op->statusOK) {
         @unlink($fTmpName); 
       } 
@@ -486,7 +486,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     $statusOK = true;
     $attachmentIDs = (array)$this->getAttachmentIDsFor($fkid,$stdTableUsedAsFolder);
     
-    for($i = 0;$i < sizeof($attachmentIDs);$i++) {
+    for($i = 0;$i < sizeof((array)$attachmentIDs);$i++) {
       $id = $attachmentIDs[$i];
       $statusOK = ($this->deleteAttachment($id) && $statusOK);
     }
@@ -531,7 +531,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX,'',$fkTableName);
 
     $idSet = (array)$this->getAttachmentIDsFor($fkid,$stdTableUsedAsFolder);
-    $loop2do = sizeof($idSet);
+    $loop2do = sizeof((array)$idSet);
     for($idx = 0;$idx < $loop2do; $idx++) {
       $attachmentInfo = $this->getAttachmentInfo($idSet[$idx]);
       if (null != $attachmentInfo) {
@@ -587,18 +587,18 @@ class tlAttachmentRepository extends tlObjectWithDB
     $stdTableUsedAsFolder = str_replace(DB_TABLE_PREFIX,'',$fkTableName);
 
     $attachments = $this->getAttachmentInfosFor($source_id,$stdTableUsedAsFolder);
-    if( null != $attachments && count($attachments) > 0) {
+    if( null != $attachments && count((array)$attachments) > 0) {
       foreach($attachments as $key => $value) {
         $file_contents = null;
         $f_parts = explode(DIRECTORY_SEPARATOR,$value['file_path']);
-        $mangled_fname = $f_parts[count($f_parts)-1];
+        $mangled_fname = $f_parts[count((array)$f_parts)-1];
         
         if ($this->repositoryType == TL_REPOSITORY_TYPE_FS) {
           $destFPath = $this->buildRepositoryFilePath($mangled_fname,$stdTableUsedAsFolder,$target_id);
           $status_ok = copy($this->repositoryPath . $value['file_path'],$destFPath);
         } else {
           $file_contents = $this->getAttachmentContentFromDB($value['id']);
-          $status_ok = sizeof($file_contents);
+          $status_ok = sizeof((array)$file_contents);
         }
         
         if($status_ok) {

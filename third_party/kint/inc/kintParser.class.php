@@ -289,7 +289,7 @@ abstract class kintParser extends kintVariableData
 		}
 
 		$variableData->type = 'array';
-		$variableData->size = count( $variable );
+		$variableData->size = count((array)$variable);
 
 		if ( $variableData->size === 0 ) {
 			return;
@@ -415,7 +415,7 @@ abstract class kintParser extends kintVariableData
 
 		$castedArray        = (array) $variable;
 		$variableData->type = get_class( $variable );
-		$variableData->size = count( $castedArray );
+		$variableData->size = count((array)$castedArray);
 
 		if ( isset( self::$_objects[ $hash ] ) ) {
 			$variableData->value = '*RECURSION*';

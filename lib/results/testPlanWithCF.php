@@ -79,7 +79,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
             }
         }
     }
-    if(($gui->row_qty = count($cf_map)) > 0 )
+    if(($gui->row_qty = count((array)$cf_map)) > 0 )
     {
         $gui->warning_msg = '';
         $gui->resultSet = $result;
@@ -108,7 +108,7 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $labels, $edit_ico
 	$title_sep = config_get('gui_title_separator_1');
 	
 	$table = null;
-	if(count($gui->resultSet) > 0) 
+	if(count((array)$gui->resultSet) > 0) 
 	{
 		$columns = array();
 		$columns[] = array('title_key' => 'test_suite');

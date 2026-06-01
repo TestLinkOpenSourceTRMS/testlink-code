@@ -35,7 +35,7 @@ $cfg = getCfg();
 // manageUserSubscribtion($db,$args);
 $smarty = new TLSmarty();
 
-if(count($gui->reqIDSet) > 0) 
+if(count((array)$gui->reqIDSet) > 0) 
 {
   $pathCache = null;
   $imgSet = $smarty->getImages();
@@ -113,7 +113,7 @@ if(count($gui->reqIDSet) > 0)
 
   // -------------------------------------------------------------------------------------------------- 
   // Construction of EXT-JS table starts here    
-  if(($gui->row_qty = count($rows)) > 0 ) 
+  if(($gui->row_qty = count((array)$rows)) > 0 ) 
   {
        
     /**

@@ -181,7 +181,7 @@ function smarty_csrf_filter($source, $smarty) {
  */
 function csrfguard_start()
 {
-  if (count($_POST))
+  if (count((array)$_POST))
   {
     if (!isset($_POST['CSRFName']))
     {

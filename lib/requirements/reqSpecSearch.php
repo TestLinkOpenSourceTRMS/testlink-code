@@ -113,13 +113,13 @@ if ($args->tprojectID)
 }
 
 $smarty = new TLSmarty();
-$gui->row_qty=count($itemSet);
+$gui->row_qty=count((array)$itemSet);
 if($gui->row_qty > 0)
 {
   $gui->resultSet = $itemSet;
   if($gui->row_qty <= $req_cfg->search->max_qty_for_display)
   {
-    $req_set=array_keys($itemSet);
+    $req_set=array_keys((array)$itemSet);
     $options = array('output_format' => 'path_as_string');
     $gui->path_info=$tproject_mgr->tree_manager->get_full_path_verbose($req_set, $options);
   }
@@ -164,14 +164,14 @@ function buildExtTable($gui, $charset)
   // }
   //
   //
-  if(count($gui->resultSet) > 0) 
+  if(count((array)$gui->resultSet) > 0) 
   {
     $matrixData = array();
     $columns = array();
     $columns[] = array('title_key' => 'req_spec', 'type' => 'text', 'groupable' => 'false', 
                        'hideable' => 'false');
   
-    $key2loop = array_keys($gui->resultSet);
+    $key2loop = array_keys((array)$gui->resultSet);
     foreach($key2loop as $rspec_id)
     {
       $rowData = array();

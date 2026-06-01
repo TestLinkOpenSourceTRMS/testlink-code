@@ -43,18 +43,18 @@ $gui->tplan_id=$args->tplan_id;
 $gui->tproject_name = $args->tproject_name;
 
 $linked_tcases = $tplan_mgr->get_linked_items_id($args->tplan_id);
-$qty_linked = count($linked_tcases);
+$qty_linked = count((array)$linked_tcases);
 $gui->testcases = $tplan_mgr->get_linked_and_newest_tcversions($args->tplan_id);
 
 if($qty_linked)
 {
-    $qty_newest = count($gui->testcases);
+    $qty_newest = count((array)$gui->testcases);
     if($qty_newest)
     {
         $gui->show_details = 1;
     
         // get path
-        $tcaseSet=array_keys($gui->testcases);
+        $tcaseSet=array_keys((array)$gui->testcases);
         $path_info=$tree_mgr->get_full_path_verbose($tcaseSet);
         foreach($gui->testcases as $tcase_id => $value)
         {

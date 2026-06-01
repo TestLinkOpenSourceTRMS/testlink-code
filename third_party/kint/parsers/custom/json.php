@@ -6,7 +6,7 @@ class Kint_Parsers_Json extends kintParser
 	{
 		if ( !KINT_PHP53
 			|| !is_string( $variable )
-			|| !isset( $variable{0} ) || ( $variable{0} !== '{' && $variable{0} !== '[' )
+			|| !isset( $variable[0] ) || ( $variable[0] !== '{' && $variable[0] !== '[' )
 			|| ( $json = json_decode( $variable, true ) ) === null
 		) return false;
 

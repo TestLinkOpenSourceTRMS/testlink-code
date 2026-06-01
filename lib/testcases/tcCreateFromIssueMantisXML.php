@@ -206,14 +206,14 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
 
     $reqSpecSet = $tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title','RSPEC.doc_id as rspec_doc_id', 'REQ.req_doc_id'),'req_doc_id');
-    $tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count($reqSpecSet) > 0);
+    $tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count((array)$reqSpecSet) > 0);
 
     $getVersionOpt = array('output' => 'minimun');
     $tcasePrefix = $tproject_mgr->getTestCasePrefix($tproject_id);
   }
   
   $resultMap = array();
-  $tc_qty = sizeof($tcData);
+  $tc_qty = sizeof((array)$tcData);
   $userIDCache = array();
   
   for($idx = 0; $idx <$tc_qty ; $idx++)
@@ -306,7 +306,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 
       if( !is_null($info) )
       {
-        $tcase_qty = count($info);
+        $tcase_qty = count((array)$info);
        switch($tcase_qty)
        {
            case 1:
@@ -346,7 +346,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
         { 
           // Get full path of existent Test Cases
           $stain = $tcase_mgr->tree_manager->get_path($item_id,null, 'name');
-          $n = count($stain);         
+          $n = count((array)$stain);         
           $stain[$n-1] = $tcasePrefix . config_get('testcase_cfg')->glue_character . $externalid . ':' . $stain[$n-1];
           $stain = implode('/',$stain);
           
@@ -449,7 +449,7 @@ function getTestCaseSetFromIssueSimpleXMLObj($xmlObj)
 
   $jdx = 0;
   $xmlIssue = $xmlObj->issue;
-  $loops2do=sizeof($xmlIssue);
+  $loops2do=sizeof((array)$xmlIssue);
  
   $XMLDef['elements'] = array('string' => array('summary' => null,'description' => null,
                                                 'additional_information' => null,

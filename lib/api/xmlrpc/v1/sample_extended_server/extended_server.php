@@ -29,7 +29,7 @@ class SampleXMLRPCServer extends TestlinkXMLRPCServer {
 
         $result = $this->tsuiteMgr->get_by_name($testSuiteName);
 
-        $num = sizeof($result);
+        $num = sizeof((array)$result);
         if ($num == 0) {
             $msg = $msg_prefix . sprintf("Name %s does not belong to a test suite present on system!", $testSuiteName);
             $this->errors[] = new IXR_Error(8004, $msg);

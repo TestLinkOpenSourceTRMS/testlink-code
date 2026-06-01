@@ -436,7 +436,7 @@ class reqSpecCommands
     $my['filters'] = array('exclude_node_types' => $exclude_node_types);
     $my['options']['order_cfg']['type'] = $my['options']['output'] = 'rspec';
     $subtree = $this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters'],$my['options']);
-    if(count($subtree))
+    if(count((array)$subtree))
     {
       $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree,'dotted',array('field' => 'doc_id','format' => '%s:'));
     }
@@ -520,7 +520,7 @@ class reqSpecCommands
     $root = $this->treeMgr->get_node_hierarchy_info($argsObj->tproject_id);
     $subtree = array_merge(array($root),$this->treeMgr->get_subtree($argsObj->tproject_id,$my['filters']));
 
-    if(count($subtree))
+    if(count((array)$subtree))
     {
       $obj->containers = $this->treeMgr->createHierarchyMap($subtree);
     }
@@ -575,7 +575,7 @@ class reqSpecCommands
     $root = $this->treeMgr->get_node_hierarchy_info($argsObj->tproject_id);
     $subtree = array_merge(array($root),$this->treeMgr->get_subtree($argsObj->tproject_id,$my['filters']));
 
-    if(count($subtree))
+    if(count((array)$subtree))
     {
       $obj->containers = $this->treeMgr->createHierarchyMap($subtree);
     }
@@ -594,7 +594,7 @@ class reqSpecCommands
     $childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
     if( !is_null($childNodes)) 
     {
-      $loop_qty=sizeof($childNodes); 
+      $loop_qty=sizeof((array)$childNodes); 
       for($idx = 0;$idx < $loop_qty;$idx++) 
       {
         $cNode = $childNodes[$idx];

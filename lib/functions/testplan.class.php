@@ -2814,7 +2814,7 @@ class testplan extends tlObjectWithAttachments
 
     $tcVersionIDSet = array();
     $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
-    $platformSet = array_keys($this->getPlatforms($id,$getOpt));
+    $platformSet = array_keys((array)$this->getPlatforms($id,$getOpt));
 
     if( is_null($itemSet) )
     {
@@ -2893,7 +2893,7 @@ class testplan extends tlObjectWithAttachments
     {
       $tcVersionIDSet = array();
       $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
-      $platformSet = array_keys($this->getPlatforms($id,$getOpt));
+      $platformSet = array_keys((array)$this->getPlatforms($id,$getOpt));
       
       $sql = " /* $debugMsg */ ";
       if( DB_TYPE == 'mysql')
@@ -3017,7 +3017,7 @@ class testplan extends tlObjectWithAttachments
     $targetSet = array();
 
     $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
-    $platformSet = array_keys($this->getPlatforms($context->tplan_id,$getOpt));
+    $platformSet = array_keys((array)$this->getPlatforms($context->tplan_id,$getOpt));
 
     if( is_null($execIDSet) )
     {
@@ -3107,7 +3107,7 @@ class testplan extends tlObjectWithAttachments
     if( $status_ok)
     {
       $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
-      $platformSet = array_keys($this->getPlatforms($id,$getOpt));
+      $platformSet = array_keys((array)$this->getPlatforms($id,$getOpt));
 
       // ----------------------------------------------------------------------------
       $sql="SELECT SUM(CAST(value AS NUMERIC)) ";
@@ -5727,7 +5727,7 @@ class testplan extends tlObjectWithAttachments
 
     if($my['options']['buildID'] <= 0) {
       if( is_null($buildSet) ) {
-        $buildSet = array_keys($this->get_builds($id, self::ACTIVE_BUILDS));
+        $buildSet = array_keys((array)$this->get_builds($id, self::ACTIVE_BUILDS));
         $buildsCfg['statusClause'] = " AND B.active = 1 ";
       }
       $buildsCfg['count'] = count((array)$buildSet);
@@ -5991,7 +5991,7 @@ class testplan extends tlObjectWithAttachments
       {
         $activeStatus = intval($domain[$options['build_active_status']]);
       }
-      $dummy = array_keys($this->get_builds($safe_id,$activeStatus));
+      $dummy = array_keys((array)$this->get_builds($safe_id,$activeStatus));
     }
     
     return implode(",",$dummy);

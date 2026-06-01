@@ -300,7 +300,7 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)  {
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
   
-  if(null != $gui->resultSet && count($gui->resultSet) > 0)  {
+  if(null != $gui->resultSet && count((array)$gui->resultSet) > 0)  {
     $labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
     $columns = array();
     

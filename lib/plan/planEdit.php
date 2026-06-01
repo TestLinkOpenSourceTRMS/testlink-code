@@ -255,7 +255,7 @@ switch($args->do_action)
 
       // --------------------------------------------------------------------------------------------------
       $availableCF = (array)$tplan_mgr->get_linked_cfields_at_design(current($tplanSet),$gui->tproject_id);
-      $hasCF = count($availableCF);
+      $hasCF = count((array)$availableCF);
       $gui->cfieldsColumns = null; 
       $initCFCol = true;
       
@@ -315,7 +315,7 @@ switch($args->do_action)
         if( $gui->drawPlatformQtyColumn )
         {
           $plat = $tplan_mgr->getPlatforms($idk);
-          $gui->tplans[$idk]['platform_qty'] = is_null($plat) ? 0 : count($plat);
+          $gui->tplans[$idk]['platform_qty'] = is_null($plat) ? 0 : count((array)$plat);
         }
   
         // Get rights for each test plan
@@ -494,7 +494,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
 function getItemData(&$itemMgr,&$guiObj,&$ofObj,$itemID,$updateAttachments=false)
 {
   $dummy = $itemMgr->get_by_id($itemID);
-  if (sizeof($dummy))
+  if (sizeof((array)$dummy))
   {
     $ofObj->Value = $dummy['notes'];
     $guiObj->testplan_name = $dummy['name'];

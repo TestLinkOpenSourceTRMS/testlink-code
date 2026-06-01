@@ -191,7 +191,7 @@ if( $doIt )
 		$matrix->setGroupByColumnName(lang_get($columns[0]['title_key']));
 		
 		// make table collapsible if more than 1 table is shown and surround by frame
-		if (count($tplanSet) > 1) {
+		if (count((array)$tplanSet) > 1) {
 			$matrix->collapsible = true;
 			$matrix->frame = true;
 		}

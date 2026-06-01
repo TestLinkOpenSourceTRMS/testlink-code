@@ -64,7 +64,7 @@ if ($args->compare_selected_versions)
 		
 		  $gui->diff[$key]['diff'] = $diffEngine->inline($gui->diff[$key]['left'], $gui->leftID, 
 			                                               $gui->diff[$key]['right'], $gui->rightID,$args->context);
-			$gui->diff[$key]['count'] = count($diffEngine->changes);
+			$gui->diff[$key]['count'] = count((array)$diffEngine->changes);
 		}
 		
 		// are there any changes? then display! if not, nothing to show here

@@ -32,7 +32,7 @@ var_dump($x);
 
 //$issues = $issueMgr->find(d);
 //echo '<pre>' . var_dump($issues) . '</pre>';
-//$issuesQty = count($issues);
+//$issuesQty = count((array)$issues);
 //for ($idx=0; $idx < $issuesQty; $idx++) 
 //{
 //    echo $issues[$idx]->subject;

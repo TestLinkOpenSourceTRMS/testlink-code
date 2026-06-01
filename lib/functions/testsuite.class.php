@@ -413,7 +413,7 @@ class testsuite extends tlObjectWithAttachments
     $rs = $this->db->fetchRowsIntoMap($sql,'id');
     if( !is_null($rs) )
     {
-      $rs = count($rs) == 1 ? current($rs) : $rs;
+      $rs = count((array)$rs) == 1 ? current($rs) : $rs;
     }
    
     // now inline image processing (if needed)
@@ -868,7 +868,7 @@ class testsuite extends tlObjectWithAttachments
           } 
         }
       }
-      $doit = count($testcases) > 0;
+      $doit = count((array)$testcases) > 0;
     }
     
     if($doit && $details=='full')
@@ -931,7 +931,7 @@ class testsuite extends tlObjectWithAttachments
           $testcases[]= $elem;
         } 
       }
-      $doit = count($testcases) > 0;
+      $doit = count((array)$testcases) > 0;
     }
       
     if($doit && $details=='full')
@@ -1102,7 +1102,7 @@ class testsuite extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $status = 1;
     $kw = $this->getKeywords($id,$kw_id);
-    if( ($doLink = !sizeof($kw)) )
+    if( ($doLink = !sizeof((array)$kw)) )
     {
       $sql = "/* $debugMsg */ INSERT INTO {$this->tables['object_keywords']} " .
              " (fk_id,fk_table,keyword_id) VALUES ($id,'nodes_hierarchy',$kw_id)";
@@ -1122,7 +1122,7 @@ class testsuite extends tlObjectWithAttachments
   */
   function addKeywords($id,$kw_ids) {
     $status = 1;
-    $num_kws = sizeof($kw_ids);
+    $num_kws = sizeof((array)$kw_ids);
     for($idx = 0; $idx < $num_kws; $idx++) {
       $status = $status && $this->addKeyword($id,$kw_ids[$idx]);
     }
@@ -1185,7 +1185,7 @@ class testsuite extends tlObjectWithAttachments
         }
         if (isset($optExport['CFIELDS']) && $optExport['CFIELDS']) {
           $cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
-          if( count($cfMap) > 0 ) {
+          if( count((array)$cfMap) > 0 ) {
             $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
           } 
         }
@@ -1214,7 +1214,7 @@ class testsuite extends tlObjectWithAttachments
             }
           }
       
-          if( !is_null($attach) && count($attach) > 0 ) {
+          if( !is_null($attach) && count((array)$attach) > 0 ) {
             $attchRootElem = "<attachments>\n{{XMLCODE}}</attachments>\n";
             $attchElemTemplate = "\t<attachment>\n" .
                       "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
@@ -1255,7 +1255,7 @@ class testsuite extends tlObjectWithAttachments
     $tcase_mgr=null;
     $relXmlData = '';
     if( !is_null($childNodes) ) {
-      $loop_qty=sizeof($childNodes); 
+      $loop_qty=sizeof((array)$childNodes); 
       for($idx = 0;$idx < $loop_qty;$idx++) {
         $cNode = $childNodes[$idx];
         $nTable = $cNode['node_table'];
@@ -1351,7 +1351,7 @@ class testsuite extends tlObjectWithAttachments
     if (!$tproject_id)
     {
       $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-      $path_len=count($the_path);
+      $path_len=count((array)$the_path);
       $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
     }
   
@@ -1533,7 +1533,7 @@ class testsuite extends tlObjectWithAttachments
       $my['options'] = array_merge($my['options'], (array)$options);
       
       $subtree = $this->tree_manager->get_children($id, array('testcase' => 'exclude_me'));
-      if(!is_null($subtree) && count($subtree) > 0)
+      if(!is_null($subtree) && count((array)$subtree) > 0)
       {
       foreach( $subtree as $the_key => $elem)
       {
@@ -1720,7 +1720,7 @@ class testsuite extends tlObjectWithAttachments
         $xx = explode($beginTag,$rse[$item_key]);
 
         // How many requests to replace ?
-        $xx2do = count($xx);
+        $xx2do = count((array)$xx);
         $ghost = '';
         for($xdx=0; $xdx < $xx2do; $xdx++)
         {
@@ -1731,7 +1731,7 @@ class testsuite extends tlObjectWithAttachments
             // Theorically can be just ONE, but it depends
             // is user had not messed things.
             $yy = explode($endTag,$xx[$xdx]);
-            if( ($elc = count($yy)) > 0)
+            if( ($elc = count((array)$yy)) > 0)
             {
               $atx = $yy[0];
               try
@@ -1839,7 +1839,7 @@ class testsuite extends tlObjectWithAttachments
       foreach ($subtree as $the_key => $elem) {
         $testcases[] = $elem['id'];
       }
-      $doit = count($testcases) > 0;
+      $doit = count((array)$testcases) > 0;
     }
     
     if( $doit ) {
@@ -2023,7 +2023,7 @@ class testsuite extends tlObjectWithAttachments
       // the new ones.
       foreach($kwForTS as $tsk => $kwVenn) {
         $kw2add = array_diff($kwSet,$kwVenn);
-        if( count($kw2add) > 0 ) {
+        if( count((array)$kw2add) > 0 ) {
           foreach($kw2add as $kaboom) {
             $vv[] = "($tsk,'nodes_hierarchy',$kaboom)";
           }
@@ -2031,7 +2031,7 @@ class testsuite extends tlObjectWithAttachments
       }      
     }
 
-    if( count($vv) > 0 ) {
+    if( count((array)$vv) > 0 ) {
       $sql = "/* $debugMsg */
               INSERT INTO {$this->tables['object_keywords']} 
               (fk_id,fk_table,keyword_id) 
@@ -2082,7 +2082,7 @@ class testsuite extends tlObjectWithAttachments
              AND KW.keyword = {$safeKW}";
     $rs = (array)$this->db->get_recordset($sql);
 
-    return (count($rs) == 1);
+    return (count((array)$rs) == 1);
   } 
 
 

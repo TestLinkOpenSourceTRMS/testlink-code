@@ -342,7 +342,7 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,&$buildMgr,$templateCfg,$owe
         $guiObj->buildSet=$tplanMgr->get_builds($argsObj->tplan_id);
         $availableCF = (array)$buildMgr->get_linked_cfields_at_design($guiObj->build,$guiObj->tproject_id);
     
-        $hasCF = count($availableCF);
+        $hasCF = count((array)$availableCF);
         $guiObj->cfieldsColumns = null;
         $guiObj->cfieldsType = null;
 
@@ -728,7 +728,7 @@ function init_source_build_selector(&$testplan_mgr, &$argsObj)
   // get the number of existing execution assignments with each build
   if( !is_null($htmlMenu['items']) )
   {
-    $htmlMenu['build_count'] = count($htmlMenu['items']);
+    $htmlMenu['build_count'] = count((array)$htmlMenu['items']);
     foreach ($htmlMenu['items'] as $key => $name) 
     {
       $count = $testplan_mgr->assignment_mgr->get_count_of_assignments_for_build_id($key);

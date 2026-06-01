@@ -262,7 +262,7 @@ class tlRestApi
     if( !is_null($tproject) )
     {
       $items = $this->tprojectMgr->get_all_testplans($tproject[0]['id']);
-      $op['items'] = (!is_null($items) && count($items) > 0) ? $items : null;
+      $op['items'] = (!is_null($items) && count((array)$items) > 0) ? $items : null;
     }
     else 
     {
@@ -290,7 +290,7 @@ class tlRestApi
     {
       $tcaseIDSet = array();
       $this->tprojectMgr->get_all_testcases_id($tproject[0]['id'],$tcaseIDSet);
-      if( !is_null($tcaseIDSet) && count($tcaseIDSet) > 0 )
+      if( !is_null($tcaseIDSet) && count((array)$tcaseIDSet) > 0 )
       {
         $op['items'] = array();
         foreach( $tcaseIDSet as $key => $tcaseID )

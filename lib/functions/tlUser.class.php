@@ -336,7 +336,7 @@ class tlUser extends tlDBObject {
     }
     $allRoles = $db->fetchColumnsIntoMap($sql,'testproject_id','role_id');
     $this->tprojectRoles = null;
-    if (null != $allRoles && sizeof($allRoles)) {
+    if (null != $allRoles && sizeof((array)$allRoles)) {
       $roleCache = null;
       foreach($allRoles as $tprojectID => $roleID) {
         if (!isset($roleCache[$roleID])) {
@@ -373,7 +373,7 @@ class tlUser extends tlDBObject {
         
     $allRoles = $db->fetchColumnsIntoMap($sql,'testplan_id','role_id');
     $this->tplanRoles = null;
-    if (null != $allRoles  && sizeof($allRoles)) {
+    if (null != $allRoles  && sizeof((array)$allRoles)) {
       $roleCache = null;
       foreach($allRoles as $tplanID => $roleID) {
         if (!isset($roleCache[$roleID])) {
@@ -838,7 +838,7 @@ class tlUser extends tlDBObject {
 
       // Special situation => just one right
       $doMoreAnalysis = true;
-      if( count($userTestProjectRights) == 1) {
+      if( count((array)$userTestProjectRights) == 1) {
         $doMoreAnalysis = !is_null($userTestProjectRights[0]->dbID);
       }  
 
@@ -1037,7 +1037,7 @@ class tlUser extends tlDBObject {
     // Admin exception
     $doReindex = false;
     if( $this->globalRoleID != TL_ROLES_ADMIN && null != $testPlanSet 
-        && count($testPlanSet) > 0 ) {
+        && count((array)$testPlanSet) > 0 ) {
       foreach($testPlanSet as $idx => $item) {
         if( $item['is_public'] == 0 && $item['has_role'] == 0 ) {
           unset($testPlanSet[$idx]);
@@ -1136,7 +1136,7 @@ class tlUser extends tlDBObject {
       return null;
     }
 
-    for($idx = 0;$idx < sizeof($ids);$idx++) {
+    for($idx = 0;$idx < sizeof((array)$ids);$idx++) {
       $id = $ids[$idx];
       $user = tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
       if ($user) {  

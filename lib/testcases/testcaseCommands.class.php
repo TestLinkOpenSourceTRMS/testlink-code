@@ -924,7 +924,7 @@ class testcaseCommands {
     // Get all existent steps - info needed to do renumbering
     $stepNumberSet = array();
     $existentSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
-    $stepsQty = count($existentSteps);
+    $stepsQty = count((array)$existentSteps);
     for($idx=0; $idx < $stepsQty; $idx++)
     {
       $stepNumberSet[$idx] = $existentSteps[$idx]['step_number'];
@@ -956,7 +956,7 @@ class testcaseCommands {
         // if not nothing needs to be done
         // if yes need to loop
         $startFrom = $hitPos +1;
-        $endOn = count($stepNumberSet);
+        $endOn = count((array)$stepNumberSet);
         for($jdx = $startFrom; $jdx < $endOn; $jdx++)
         {
           if( $stepNumberSet[$jdx] == $just_renumbered['value'] )
@@ -1007,7 +1007,7 @@ class testcaseCommands {
       // Get all existent steps - info needed to do renumbering
       $stepNumberSet = array();
       $stepSet = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
-      $stepsQty = count($stepSet);
+      $stepsQty = count((array)$stepSet);
       for($idx=0; $idx < $stepsQty; $idx++) {
         $renumbered[$stepSet[$idx]['id']] = $idx+1; 
       }
@@ -1441,7 +1441,7 @@ class testcaseCommands {
     $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
 
     $tcExternalID = $guiObj->testcase['tc_external_id'];
-    if( null != $argsObj->free_keywords && count($argsObj->free_keywords) > 0) {
+    if( null != $argsObj->free_keywords && count((array)$argsObj->free_keywords) > 0) {
       $this->tcaseMgr->addKeywords($guiObj->tcase_id,
                                    $guiObj->tcversion_id,
                                    $argsObj->free_keywords);

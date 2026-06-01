@@ -152,7 +152,7 @@ abstract class reqMgrSystemInterface
     $this->lastproject = null;
     $this->lastbaseline = null;
     
-    if (count($this->projects) == 0)
+    if (count((array)$this->projects) == 0)
     {
       // No projects were found.
       return false;
@@ -168,7 +168,7 @@ abstract class reqMgrSystemInterface
       return false ;
     }
     
-    if (($project != $this->lastproject) || (count($this->baselines) == 0) || $refresh)
+    if (($project != $this->lastproject) || (count((array)$this->baselines) == 0) || $refresh)
     {
       // Retrieve baselines for the specified project.
       $this->lastproject = $project;

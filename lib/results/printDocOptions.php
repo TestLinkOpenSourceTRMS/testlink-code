@@ -210,7 +210,7 @@ function initializeGui(&$db,$args) {
 
   $gui->outputOptions = init_checkboxes($args);
   if($gui->showOptions == false) {
-    $loop2do = count($gui->outputOptions);
+    $loop2do = count((array)$gui->outputOptions);
     for($idx = 0; $idx < $loop2do; $idx++) {
       $gui->outputOptions[$idx]['checked'] = 'y';
     }  

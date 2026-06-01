@@ -79,7 +79,7 @@ if ($do_show_instructions) {
 
 // Testplan executions and result archiving. 
 // Checks whether execute cases button was clicked
-if($args->doExec == 1 && !is_null($args->tc_versions) && count($args->tc_versions)) {
+if($args->doExec == 1 && !is_null($args->tc_versions) && count((array)$args->tc_versions)) {
   $gui->remoteExecFeedback = launchRemoteExec($db,$args,$gui->tcasePrefix,$tplan_mgr,$tcase_mgr);
 }  
 
@@ -263,7 +263,7 @@ if(!is_null($linked_tcversions)) {
             $args->testcases_to_show = array_keys($xx);
           }
 
-          $chainLen = count($args->testcases_to_show);
+          $chainLen = count((array)$args->testcases_to_show);
           foreach($args->testcases_to_show as $ix => $val) {
             if( $val == $args->tc_id) {
               $nextInChain = $ix+1;
@@ -385,7 +385,7 @@ if(!is_null($linked_tcversions)) {
       }       
     }
 
-    if( count($stepSet) > 0 ) {
+    if( count((array)$stepSet) > 0 ) {
       // test case version under exec has steps
       $ctx = new stdClass();
       $ctx->testplan_id = $args->tplan_id;
@@ -465,7 +465,7 @@ if(!is_null($linked_tcversions)) {
         $gui->other_exec_cfields=$other_info['cfexec_values'];
          
         // this piece of code is useful to avoid error on smarty template due to undefined value   
-        if( is_array($tcversion_id) && (count($gui->other_execs) != count($gui->map_last_exec)) ) {
+        if( is_array($tcversion_id) && (count((array)$gui->other_execs) != count((array)$gui->map_last_exec)) ) {
           foreach($tcversion_id as $version_id) {
             if( !isset($gui->other_execs[$version_id]) ) {
               $gui->other_execs[$version_id]=null;  
@@ -673,7 +673,7 @@ function init_args(&$dbHandler,$cfgObj) {
     // Need to understand is still needed
     $tsuite_mgr = new testsuite($dbHandler);
     $xx = $tsuite_mgr->get_children($args->tsuite_id,array('details' => 'id'));
-    $ldx = count($xx);
+    $ldx = count((array)$xx);
     $xx[$ldx] = $args->tsuite_id;
     $args->tsuitesInBranch = $xx;
     unset($tsuite_mgr);
@@ -871,7 +871,7 @@ function get_ts_name_details(&$db,$tcase_id) {
                {$tables['nodes_hierarchy']} NHB
           WHERE TS.id=NHA.parent_id
           AND   NHB.id=NHA.parent_id ";
-  if( is_array($tcase_id) && count($tcase_id) > 0) {
+  if( is_array($tcase_id) && count((array)$tcase_id) > 0) {
     $in_list = implode(",",$tcase_id);
     $sql .= "AND NHA.id IN (" . $in_list . ")";
   } else if(!is_null($tcase_id)) {
@@ -966,7 +966,7 @@ function smarty_assign_tsuite_info(&$smarty,&$tree_mgr,$tcase_id,$tproject_id,$c
       $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
     }
 
-    if( count($a_tsval) > 0 ) {
+    if( count((array)$a_tsval) > 0 ) {
       $ckObj->value = $a_tsval[0];
       tlSetCookie($ckObj);
     }
@@ -1000,7 +1000,7 @@ function exec_additional_info(&$db, $fileRepo, &$tcase_mgr, $other_execs,
 
   
   foreach($other_execs as $tcversion_id => $execInfo) {
-    $num_elem = sizeof($execInfo);   
+    $num_elem = sizeof((array)$execInfo);   
     for($idx = 0;$idx < $num_elem;$idx++) {
       $exec_id = $execInfo[$idx]['execution_id'];
       $aInfo = getAttachmentInfos($fileRepo,$exec_id,'executions',true,1);
@@ -1010,7 +1010,7 @@ function exec_additional_info(&$db, $fileRepo, &$tcase_mgr, $other_execs,
       
       if($bugInterfaceOn) {
         $the_bugs = get_bugs_for_exec($db,$bugInterface,$exec_id);
-        if(count($the_bugs) > 0) {
+        if(count((array)$the_bugs) > 0) {
           $bugs[$exec_id] = $the_bugs;
         }  
       }
@@ -1293,7 +1293,7 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
 */
 function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg,$execCfg,$initValue=null) {
   
-    if(is_null($tcversions) || count($tcversions) == 0 ) {
+    if(is_null($tcversions) || count((array)$tcversions) == 0 ) {
       return null;  // nothing todo >>>------> bye!  
     }
      
@@ -1932,7 +1932,7 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$testSet,&$treeMgr,&$tc
   $tsuite_data = $tsuite_mgr->get_by_id($argsObj->id);
  
   // Get the path for every test case, grouping test cases that have same parent.
-  $testCaseQty = count($testSet->tcase_id);
+  $testCaseQty = count((array)$testSet->tcase_id);
   if( $testCaseQty > 0 )
   {
     $dummy = $tcaseMgr->cfield_mgr->getLocations();
@@ -2324,7 +2324,7 @@ function getSettingsAndFilters(&$argsObj) {
   if (isset($sf['filter_keywords'])) 
   {
     $argsObj->keyword_id = $sf['filter_keywords'];
-    if (is_array($argsObj->keyword_id) && count($argsObj->keyword_id) == 1) 
+    if (is_array($argsObj->keyword_id) && count((array)$argsObj->keyword_id) == 1) 
     {
       $argsObj->keyword_id = $argsObj->keyword_id[0];
     }

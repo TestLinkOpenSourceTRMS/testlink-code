@@ -31,7 +31,7 @@ $descr='Get all linked test case versions WITHOUT any kind of filter and/or opti
 $lt=$obj_mgr->get_linked_tcversions($tplan_id);
 echo '<hr>';
 echo $descr . '<br>';
-echo 'Qta records:' . count($lt)  . '<br>';
+echo 'Qta records:' . count((array)$lt)  . '<br>';
 new dBug($lt);
 */
 // ------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ if( !is_null($opt) )
 	echo 'Options:';
 	new dBug($opt);
 }
-echo 'Qta records:' . count($lt)  . '<br>';
+echo 'Qta records:' . count((array)$lt)  . '<br>';
 new dBug($lt);
 // ------------------------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ if( !is_null($opt) )
 	echo 'Options:';
 	new dBug($opt);
 }
-echo 'Qta records:' . count($lt)  . '<br>';
+echo 'Qta records:' . count((array)$lt)  . '<br>';
 new dBug($lt);
 // ------------------------------------------------------------------------------------
 
@@ -102,7 +102,7 @@ if( !is_null($opt) )
 	echo 'Options:';
 	new dBug($opt);
 }
-echo 'Qta records:' . count($lt)  . '<br>';
+echo 'Qta records:' . count((array)$lt)  . '<br>';
 new dBug($lt);
 // ------------------------------------------------------------------------------------
 
@@ -125,7 +125,7 @@ if( !is_null($opt) )
 	echo 'Options:';
 	new dBug($opt);
 }
-echo 'Qta records:' . count($lt)  . '<br>';
+echo 'Qta records:' . count((array)$lt)  . '<br>';
 new dBug($lt);
 // ------------------------------------------------------------------------------------
 
@@ -150,7 +150,7 @@ if( !is_null($opt) )
 	echo 'Options:';
 	new dBug($opt);
 }
-echo 'Qta records:' . count($lt)  . '<br>';
+echo 'Qta records:' . count((array)$lt)  . '<br>';
 new dBug($lt);
 // ------------------------------------------------------------------------------------
 

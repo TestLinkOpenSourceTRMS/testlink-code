@@ -169,7 +169,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
 
       // 
       $tcvRelations = (array)$tcaseMgr->getTCVRelationsRaw($tcversion_id);
-      if( count($tcvRelations) > 0 ) {
+      if( count((array)$tcvRelations) > 0 ) {
         $itemSet = array_keys($tcvRelations);
         $tcaseMgr->closeOpenTCVRelation($itemSet,LINK_TC_RELATION_CLOSED_BY_EXEC);
       }
@@ -263,7 +263,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
 
               // May be we have enabled MULTIPLE on file upload
               if( is_array($_FILES['uploadedFile']['name'][$step_id])) {
-                $curly = count($_FILES['uploadedFile']['name'][$step_id]); 
+                $curly = count((array)$_FILES['uploadedFile']['name'][$step_id]); 
                 for($moe=0; $moe < $curly; $moe++) {
                   $fSize = isset($_FILES['uploadedFile']['size'][$step_id][$moe]) ? 
                            $_FILES['uploadedFile']['size'][$step_id][$moe] : 0;
@@ -573,7 +573,7 @@ function delete_execution(&$db,$exec_id)
   $sql[] = "DELETE FROM {$tables['execution_tcsteps']} WHERE execution_id = {$sid}";
   
   // This delete HAS TO BE THE LATEST, because is the PARENT
-  $ldx = count($sql);
+  $ldx = count((array)$sql);
   $sql[$ldx] = "DELETE FROM {$tables['executions']} WHERE id = {$sid}";
 
   foreach ($sql as $the_stm)
@@ -853,7 +853,7 @@ function generateIssueText($dbHandler,$argsObj,$itsObj,$opt=null) {
                      'tc_name', 'tc_external_id');
 
     $lbl = array();
-    $l2d = count($lblKeys);
+    $l2d = count((array)$lblKeys);
     for($ldx=0; $ldx < $l2d; $ldx++) {
       $lbl[$lblKeys[$ldx]] = lang_get($lblKeys[$ldx]);
     }
@@ -1057,7 +1057,7 @@ function addAttachmentsToExec($execID,&$docRepo) {
     $honeyPot[$bee] = (array)$_FILES['uploadedFile'][$bee][0];
   }
 
-  $curly = count($honeyPot);
+  $curly = count((array)$honeyPot);
   $op = new stdClass();
   $op->msg = '';
 

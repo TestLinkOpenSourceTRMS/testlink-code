@@ -279,7 +279,7 @@ function edit(&$argsObj,&$cfieldMgr)
 		
 		$op->operation_descr = lang_get('title_cfield_edit') . TITLE_SEP_TYPE3 . $op->cf['name'];
 		$op->linked_tprojects = $cfieldMgr->get_linked_testprojects($argsObj->cfield_id); 
- 		$op->cf_is_linked = !is_null($op->linked_tprojects) && count($op->linked_tprojects) > 0;
+ 		$op->cf_is_linked = !is_null($op->linked_tprojects) && count((array)$op->linked_tprojects) > 0;
 	}
   return $op;
 }

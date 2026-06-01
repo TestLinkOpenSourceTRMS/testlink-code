@@ -252,10 +252,10 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
     {
       $tables = tlObjectWithDB::getDBTables(array('testplan_tcversions'));
       $platformSet = $tplanMgr->getPlatforms($contextObj->tplan_id,array('outputFormat' => 'mapAccessByName'));
-      $targetHasPlatforms = (count($platformSet) > 0);
+      $targetHasPlatforms = (count((array)$platformSet) > 0);
       
       $xmlLinks = $xml->executables->children();
-      $loops2do = count($xmlLinks);
+      $loops2do = count((array)$xmlLinks);
 
       // new dBug($platformSet);
       $tplanDesignCfg = config_get('tplanDesign');
@@ -341,7 +341,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
             $dummy = $tcaseMgr->get_basic_info($tcaseSet[$externalID],
                                                array('number' => $version));
 
-            if( count($dummy) > 0 )
+            if( count((array)$dummy) > 0 )
             {
               // Check :
               // for same test plan there is a different version already linked ?
@@ -474,7 +474,7 @@ function processPlatforms(&$platMgr,&$tplanMgr,$universe,$xmlSubset,$lbl,$tplanI
   $ret = array('status_ok' => true, 'msg' => null);
   $children = $xmlSubset->children();
   $msg_ok = array();
-  $loops2do = count($children);
+  $loops2do = count((array)$children);
   $status_ok = true;
   $idSet = null;
   for($idx = 0; $idx < $loops2do; $idx++)

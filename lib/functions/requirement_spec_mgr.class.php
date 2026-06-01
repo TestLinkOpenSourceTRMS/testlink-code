@@ -275,14 +275,14 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     $output['nottestable'] = $this->get_requirements($id,'all',null,$getOptions,$getFilters);   
 
     // get coverage
-    if (sizeof($validReq))
+    if (sizeof((array)$validReq))
     {
       foreach ($validReq as $req)
       {
         // collect TC for REQ
         $arrCoverage = $this->req_mgr->get_coverage($req['id']);
         
-        if (count($arrCoverage) > 0) 
+        if (count((array)$arrCoverage) > 0) 
         {
           // add information about coverage
           $req['coverage'] = $arrCoverage;
@@ -329,7 +329,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     $rs = $this->db->get_recordset($sql);
     if (!is_null($rs))
     {
-      $output['covered'] = count($rs);
+      $output['covered'] = count((array)$rs);
     }
     $output['uncovered'] = $output['expectedTotal'] - $output['total'];
     
@@ -402,7 +402,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
      
    	$path=$this->tree_mgr->get_path($item['id']); 
    	$tproject_id = $path[0]['parent_id'];
-   	$last_idx=count($path)-1;
+   	$last_idx=count((array)$path)-1;
    	$parent_id = $last_idx==0 ? null : $path[$last_idx]['parent_id'];
    	$chk=$this->check_main_data($title,$doc_id,$path[0]['parent_id'],$parent_id,$item['id']);
     
@@ -653,7 +653,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 		  break;
 		    
 		  case 'count':
-		   	return(!is_null($rs) ? count($rs) : 0);	   
+		   	return(!is_null($rs) ? count((array)$rs) : 0);	   
 		  break;
 		}
 	}
@@ -721,7 +721,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 				  break;
 					
 				  case 'count':
-					$rs = !is_null($rs) ? count($rs) : 0;	   
+					$rs = !is_null($rs) ? count((array)$rs) : 0;	   
 				  break;
 				}
 			}
@@ -1101,7 +1101,7 @@ function get_requirement_child_by_id_req($id){
 			}
 	  }
 	  
-		if( !is_null($attachments) && count($attachments) > 0 ) {
+		if( !is_null($attachments) && count((array)$attachments) > 0 ) {
 			$attchRootElem = 
         "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
 			$attchElemTemplate = "\t\t<attachment>\n" .
@@ -1124,7 +1124,7 @@ function get_requirement_child_by_id_req($id){
   	$req_spec = $this->getReqTree($id);
   	$childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
   	if( !is_null($childNodes) ) {
-      $loop_qty=sizeof($childNodes); 
+      $loop_qty=sizeof((array)$childNodes); 
       for($idx = 0;$idx < $loop_qty;$idx++) {
   	    $cNode = $childNodes[$idx];
   	    $nTable = $cNode['node_table'];
@@ -1136,7 +1136,7 @@ function get_requirement_child_by_id_req($id){
           $xmlData .= $this->req_mgr->exportReqToXML($cNode['id'],$tproject_id,$optForExport['ATTACHMENTS']);
 
           $relations = $this->req_mgr->get_relations($cNode['id']);
-          if( !is_null($relations['relations']) && count($relations['relations']) > 0 )
+          if( !is_null($relations['relations']) && count((array)$relations['relations']) > 0 )
           {
             foreach($relations['relations'] as $key => $rel) 
             {
@@ -1266,13 +1266,13 @@ function get_requirement_child_by_id_req($id){
       // Process children
       if( property_exists($xml_item,'requirement') )	              
       {
-          $loop2do=count($xml_item->requirement);
+          $loop2do=count((array)$xml_item->requirement);
           for($idx=0; $idx <= $loop2do; $idx++)
           {
               $xml_req=$this->req_mgr->xmlToMapRequirement($xml_item->requirement[$idx]);
               if(!is_null($xml_req))
               { 
-                  $fdx=count($mapped)-1;
+                  $fdx=count((array)$mapped)-1;
                   $mapped[$fdx]['requirements'][]=$xml_req;
               }    
           }    
@@ -1280,13 +1280,13 @@ function get_requirement_child_by_id_req($id){
 
       if( property_exists($xml_item,'relation') )               
       {
-          $loop3do=count($xml_item->relation);
+          $loop3do=count((array)$xml_item->relation);
           for($idx=0; $idx <= $loop3do; $idx++)
           {
               $rel=$this->req_mgr->convertRelationXmlToRelationMap($xml_item->relation[$idx]);
               if(!is_null($rel))
               { 
-                  $fdx=count($mapped)-1;
+                  $fdx=count((array)$mapped)-1;
                   $mapped[$fdx]['relations'][]=$rel;
               }    
           } 
@@ -1294,7 +1294,7 @@ function get_requirement_child_by_id_req($id){
 
       if( property_exists($xml_item,'req_spec') )	              
       {
-          $loop2do=count($xml_item->req_spec);
+          $loop2do=count((array)$xml_item->req_spec);
           for($idx=0; $idx <= $loop2do; $idx++)
           {
               $this->xmlToMapReqSpec($xml_item->req_spec[$idx],$depth);
@@ -1513,7 +1513,7 @@ function get_requirement_child_by_id_req($id){
 	
     $idCard = array('parent_id' => $id, 'item_id' => null, 'tproject_id' => $tproject_id); 
   	$cfMap = $this->get_linked_cfields($idCard);
-  	if( !is_null($cfMap) && count($cfMap) > 0 )
+  	if( !is_null($cfMap) && count((array)$cfMap) > 0 )
   	{
   		$xml = $this->cfield_mgr->exportValueAsXML($cfMap);
   	}
@@ -1576,7 +1576,7 @@ function get_requirement_child_by_id_req($id){
       }
     }
     
-    $loop2do = count($items);
+    $loop2do = count((array)$items);
     $container_id[0] = (is_null($parent_id) || $parent_id == 0) ? $tproject_id : $parent_id;
     
     // items is an array of req. specs
@@ -1687,7 +1687,7 @@ function get_requirement_child_by_id_req($id){
         $create_req = (!$has_filters || isset($copy_req[$idx])) && !is_null($reqSet);
         if($create_req)
         {
-          $items_qty = isset($copy_req[$idx]) ? count($copy_req[$idx]) : count($reqSet);
+          $items_qty = isset($copy_req[$idx]) ? count((array)$copy_req[$idx]) : count((array)$reqSet);
           $keys2insert = isset($copy_req[$idx]) ? $copy_req[$idx] : array_keys($reqSet);
           for($jdx = 0;$jdx < $items_qty; $jdx++)
           {
@@ -1700,7 +1700,7 @@ function get_requirement_child_by_id_req($id){
         if(isset($items[$idx]['relations']))
         {  
           $relationsMap = $items[$idx]['relations'];
-          $numberOfRelations = count($relationsMap);
+          $numberOfRelations = count((array)$relationsMap);
           for($jdx=0; $jdx < $numberOfRelations; $jdx++)
           {
             $rel = $relationsMap[$jdx];
@@ -1794,7 +1794,7 @@ function get_requirement_child_by_id_req($id){
         				$where . ' GROUP BY RSPEC_REV.parent_id ';
 
   	$maxi = (array)$this->db->fetchRowsIntoMap($sql_max,'rev_id');;
-  	if( count($maxi) > 0)
+  	if( count((array)$maxi) > 0)
   	{
       $sql =	" /* $debugMsg */ SELECT RSPEC.id,RSPEC.testproject_id,RSPEC.doc_id,NH_RSPEC.name AS title, " .
   				" RSPEC_REV.revision ";
@@ -1895,7 +1895,7 @@ function get_requirement_child_by_id_req($id){
   			// Few test indicates that it's true, but that using a counter
   			// is still better.
   			//
-			  $loop2do = count($subtree);
+			  $loop2do = count((array)$subtree);
   			for($sdx=0; $sdx <= $loop2do; $sdx++) {
 		  		$elem = &$subtree[$sdx];
 				  $the_parent_id = isset($parent_decode[$elem['parent_id']]) ? $parent_decode[$elem['parent_id']] : null;
@@ -2005,7 +2005,7 @@ function get_requirement_child_by_id_req($id){
 					" WHERE ATT.id='{$this->db->prepare_string($attachment[id])}' " .
 					" AND ATT.fk_id={$rs_id} ";
 				$rsx=$this->db->get_recordset($sql);
-				$addAttachment = ( is_null($rsx) || count($rsx) < 1 );
+				$addAttachment = ( is_null($rsx) || count((array)$rsx) < 1 );
 				if( $addAttachment === false ){ // inform user that the attachment has been skipped
 					$knownAttachments[] = $attachment['name'];
 				}

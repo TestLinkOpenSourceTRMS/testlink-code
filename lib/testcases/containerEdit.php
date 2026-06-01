@@ -174,7 +174,7 @@ if( $doIt ) {
       $gui->tproject_id = $args->tprojectID;
       $gui->containerType = $level;
       $gui->refreshTree = $args->refreshTree;
-      $gui->hasKeywords = (count($opt_cfg->from->map) > 0) || (count($opt_cfg->to->map) > 0);
+      $gui->hasKeywords = (count((array)$opt_cfg->from->map) > 0) || (count((array)$opt_cfg->to->map) > 0);
 
       $gui->cancelActionJS = 'location.href=fRoot+' . 
                              "'lib/testcases/archiveData.php?id=" . intval($args->containerID);
@@ -669,7 +669,7 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
     $map_msg['link_msg'] = null;
     $map_msg['delete_msg'] = null;
 
-    if(is_null($testcases) || count($testcases) == 0) {
+    if(is_null($testcases) || count((array)$testcases) == 0) {
       $can_delete = 1;
     }
     else {
@@ -799,7 +799,7 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
     $object_name = $object_info['name'];
 
 
-    if (!sizeof($children))
+    if (!sizeof((array)$children))
     {  
       $children = null;
     }
@@ -1008,7 +1008,7 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
 
   // check if operation can be done
   $user_feedback = $feedback;
-  if(!is_null($children) && (sizeof($children) > 0) && sizeof($testsuites)) {
+  if(!is_null($children) && (sizeof((array)$children) > 0) && sizeof((array)$testsuites)) {
     $op_ok = true;
   } else {
     $children = null;
@@ -1065,7 +1065,7 @@ returns: -
 function copyTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$tcaseMgr,$argsObj)
 {
   $op = array('refreshTree' => false, 'userfeedback' => '');
-  if( ($qty=sizeof($argsObj->tcaseSet)) > 0)
+  if( ($qty=sizeof((array)$argsObj->tcaseSet)) > 0)
   {
     $msg_id = $qty == 1 ? 'one_testcase_copied' : 'testcase_set_copied';
     $op['userfeedback'] = sprintf(lang_get($msg_id),$qty);
@@ -1105,7 +1105,7 @@ returns: -
 function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
 {
   $lbl = $argsObj->l10n; 
-  if (sizeof($argsObj->tcaseSet) > 0) {
+  if (sizeof((array)$argsObj->tcaseSet) > 0) {
     $status_ok = $treeMgr->change_parent($argsObj->tcaseSet,$argsObj->containerID);
     $user_feedback= $status_ok ? '' : lang_get('move_testcases_failed');
 
@@ -1201,7 +1201,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
     $tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID);
     $hasExecutedTC = false;
 
-    if( !is_null($guiObj->testCaseSet) && count($guiObj->testCaseSet) > 0)
+    if( !is_null($guiObj->testCaseSet) && count((array)$guiObj->testCaseSet) > 0)
     {
       foreach($guiObj->testCaseSet as &$child)
       {
@@ -1257,7 +1257,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
     }
     // check if operation can be done
     $guiObj->user_feedback = $feedback;
-    if(!is_null($guiObj->testCaseSet) && (sizeof($guiObj->testCaseSet) > 0) )
+    if(!is_null($guiObj->testCaseSet) && (sizeof((array)$guiObj->testCaseSet) > 0) )
     {
       $guiObj->op_ok = true;
       $guiObj->user_feedback = '';
@@ -1292,7 +1292,7 @@ returns: -
 */
 function doDeleteTestCases(&$dbHandler,$tcaseSet,&$tcaseMgr)
 {
-  if( count($tcaseSet) > 0 )
+  if( count((array)$tcaseSet) > 0 )
   {
     foreach($tcaseSet as $victim)
     {
@@ -1320,7 +1320,7 @@ function reorderTestCasesByCriteria($argsObj,&$tsuiteMgr,&$treeMgr) {
 function reorderTestCasesDictionary($argsObj,&$tsuiteMgr,&$treeMgr)
 {
   $tcaseSet = (array)$tsuiteMgr->get_children_testcases($argsObj->testsuiteID,'simple');
-  if( ($loop2do = count($tcaseSet)) > 0 )
+  if( ($loop2do = count((array)$tcaseSet)) > 0 )
   {
     for($idx=0; $idx < $loop2do; $idx++)
     {
@@ -1363,7 +1363,7 @@ function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
 {
   $exclude_node_types = array('testplan' => 1, 'requirement' => 1, 'testcase' => 1, 'requirement_spec' => 1);
   $itemSet = (array)$treeMgr->get_children($parent_id,$exclude_node_types);
-  if( ($loop2do = count($itemSet)) > 0 )
+  if( ($loop2do = count((array)$itemSet)) > 0 )
   {
     for($idx=0; $idx < $loop2do; $idx++)
     {
@@ -1414,7 +1414,7 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl=null) {
  */
 function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
 {
-  if( count($tcaseSet) > 0 )
+  if( count((array)$tcaseSet) > 0 )
   {
     $k2s = array('tc_status' => 'setStatus',
                  'importance' => 'setImportance',

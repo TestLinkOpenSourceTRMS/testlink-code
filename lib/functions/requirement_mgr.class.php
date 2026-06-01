@@ -169,7 +169,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     }
   }
 
-  if( count($dummy) > 1) {
+  if( count((array)$dummy) > 1) {
     $filter_clause = implode(" AND ",$dummy);
   }
 
@@ -1142,7 +1142,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
       // Useful for audit 
       $tcInfo = $this->tree_mgr->get_node_hierarchy_info($testcase_id);
 
-      $loop2do = count($reqLatestVersionIDSet);
+      $loop2do = count((array)$reqLatestVersionIDSet);
       for($idx=0; $idx < $loop2do; $idx++) {
         if( is_null($coverage) || 
             !isset($coverage[$reqLatestVersionIDSet[$idx]]) ) {
@@ -1347,7 +1347,7 @@ function exportReqToXML($id,$tproject_id=null, $inc_attachments=false)
 			}
 		}
 	  
-		if( !is_null($attachments) && count($attachments) > 0 )
+		if( !is_null($attachments) && count((array)$attachments) > 0 )
 		{
 			$attchRootElem = "<attachments>\n{{XMLCODE}}\t\t</attachments>\n";
 			$attchElemTemplate = "\t\t\t<attachment>\n" .
@@ -1751,7 +1751,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 					" WHERE ATT.id='{$this->db->prepare_string($attachment[id])}' " .
 					" AND ATT.fk_id={$srs_id} ";
 				$rsx=$this->db->get_recordset($sql);
-				$addAttachment = ( is_null($rsx) || count($rsx) < 1 );
+				$addAttachment = ( is_null($rsx) || count((array)$rsx) < 1 );
 				if( $addAttachment === false ){ // inform user that the attachment has been skipped
 					$knownAttachments[] = $attachment['name'];
 				}
@@ -1952,7 +1952,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
  {
     $xml = null;
     $cfMap=$this->get_linked_cfields($id,$version_id,$tproject_id);
-    if( !is_null($cfMap) && count($cfMap) > 0 ) {
+    if( !is_null($cfMap) && count((array)$cfMap) > 0 ) {
       $xml = $this->cfield_mgr->exportValueAsXML($cfMap);
     }
     return $xml;
@@ -2437,7 +2437,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $tproject_mgr = new testproject($this->db);
     $all_reqs = $tproject_mgr->get_all_requirement_ids($tproj_id);
     
-    if(count($all_reqs) > 0) 
+    if(count((array)$all_reqs) > 0) 
     {
       //only use maximum value of all reqs array
       $last_req = max($all_reqs);
@@ -2575,7 +2575,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
            " ORDER BY id ASC ";
    
     $relations['relations']= $this->db->get_recordset($sql);  
-    if( !is_null($relations['relations']) && count($relations['relations']) > 0 )
+    if( !is_null($relations['relations']) && count((array)$relations['relations']) > 0 )
     {
       $labels = $this->get_all_relation_labels();
       $label_keys = array_keys($labels);
@@ -2622,7 +2622,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
                  
         } // end foreach
         
-        $relations['num_relations'] = count($relations['relations']);
+        $relations['num_relations'] = count((array)$relations['relations']);
     }
     return $relations;
   }
@@ -3386,7 +3386,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   
     // we borrow logic (may be one day we can put it on a central place) from
     // testcase class create_tcase_only()
-    if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
+    if( !is_null($itemSet) && ($siblingQty=count((array)$itemSet)) > 0 )
     {
             $nameSet = array_flip(array_keys($itemSet));
       $target = $title2check . ($suffix = sprintf($mask,++$siblingQty));
@@ -3542,7 +3542,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       // FRL : interproject linking support
       $tproject_mgr = new testproject($this->db);
       $reqs = $this->get_by_id($relation['source_id'],requirement_mgr::LATEST_VERSION);
-      if ( ! is_null ( $reqs ) && count($reqs) > 0 )
+      if ( ! is_null ( $reqs ) && count((array)$reqs) > 0 )
       {
         $source_docid = $reqs[0]['req_doc_id'];
         if ($check_for_req_project)
@@ -3556,7 +3556,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       }
   
       $reqs = $this->get_by_id($relation['destination_id'],requirement_mgr::LATEST_VERSION);
-      if( !is_null($reqs) && count($reqs) > 0 )
+      if( !is_null($reqs) && count((array)$reqs) > 0 )
       {
         $destination_docid = $reqs[0]['req_doc_id'];
         if ($check_for_req_project)
@@ -4051,7 +4051,7 @@ function getCoverageCounter($id) {
         $xx = explode($beginTag,$rse[$item_key]);
 
         // How many requests to replace ?
-        $xx2do = count($xx);
+        $xx2do = count((array)$xx);
         $ghost = '';
         for($xdx=0; $xdx < $xx2do; $xdx++) {
           // Hope was not a false request.
@@ -4060,7 +4060,7 @@ function getCoverageCounter($id) {
             // Theorically can be just ONE, but it depends
             // is user had not messed things.
             $yy = explode($endTag,$xx[$xdx]);
-            if( ($elc = count($yy)) > 0) {
+            if( ($elc = count((array)$yy)) > 0) {
               $atx = $yy[0];
               try {
                 if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image']) {
@@ -4827,7 +4827,7 @@ function getCoverageCounter($id) {
         }                
       }
 
-      if( count($values) > 0 ) {
+      if( count((array)$values) > 0 ) {
         $sql .= " VALUES " . implode(',',$values);
         $this->db->exec_query($sql);
       }
@@ -4887,7 +4887,7 @@ function getCoverageCounter($id) {
                   WHERE id=$tprj";
         $dummy = $this->db->get_recordset($sqlP);
         
-        if( count($dummy) == 1 ) {
+        if( count((array)$dummy) == 1 ) {
           $prefix = $dummy[0]['prefix'];
         }          
         $glue = config_get('testcase_cfg');

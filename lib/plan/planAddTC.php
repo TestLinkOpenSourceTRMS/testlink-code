@@ -120,7 +120,7 @@ if($do_display) {
       $tproject_mgr->getKeywordsLatestTCV($args->tproject_id,
         $keywordsFilter->items,$keywordsFilter->type);
 
-    if (sizeof($keywordsTestCases)) {
+    if (sizeof((array)$keywordsTestCases)) {
       $testCaseSet = array_keys($keywordsTestCases);
     }
   }
@@ -129,7 +129,7 @@ if($do_display) {
   // exists on this test project.
   $cfields = (array)$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
   $opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
-  $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
+  $opt['add_custom_fields'] = count((array)$cfields) > 0 ? 1 : 0;
 
   // Add Test Cases to Test plan - Right pane does not honor custom field filter
   // filter by test case execution type
@@ -265,7 +265,7 @@ if($do_display) {
       $tproject_mgr->getKeywordsLatestTCV($args->tproject_id,
         $keywordsFilter->items,$keywordsFilter->type);
 
-		if (sizeof($keywordsTestCases)) {
+		if (sizeof((array)$keywordsTestCases)) {
 			$testCaseSet = array_keys($keywordsTestCases);
 		}
 	}
@@ -276,7 +276,7 @@ if($do_display) {
     (array)$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
 
 	$opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
-	$opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
+	$opt['add_custom_fields'] = count((array)$cfields) > 0 ? 1 : 0;
 
   // Add Test Cases to Test plan - Right pane does not honor custom field filter
   // filter by test case execution type
@@ -469,7 +469,7 @@ function init_args(&$tproject_mgr)
   // contains WHAT TO REMOVE
   $args->topLevelTestSuite = 0;
   if( $getFromSession && isset($pageCache['filter_toplevel_testsuite']) 
-                      && count($pageCache['filter_toplevel_testsuite']) > 0)
+                      && count((array)$pageCache['filter_toplevel_testsuite']) > 0)
   {
     // get all
     $first_level_suites = $tproject_mgr->get_first_level_test_suites($args->tproject_id,'simple',array('accessKey' => 'id'));
@@ -491,7 +491,7 @@ function init_args(&$tproject_mgr)
   $ak = 'filter_keywords';
   if (isset($pageCache[$ak])) {
     $args->keyword_id = $pageCache[$ak];
-    if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+    if (is_array($args->keyword_id) && count((array)$args->keyword_id) == 1) {
       $args->keyword_id = $args->keyword_id[0];
     }
   }
@@ -997,7 +997,7 @@ function init_build_selector(&$testplan_mgr, &$argsObj) {
     (array)$testplan_mgr->get_builds_for_html_options($argsObj->tplan_id,
                                                       testplan::GET_ACTIVE_BUILD,
                                                       testplan::GET_OPEN_BUILD);
-  $menu['count'] = count($menu['items']);
+  $menu['count'] = count((array)$menu['items']);
   
   // if no build has been chosen yet, select the newest build by default
   $build_id = $argsObj->build_id;

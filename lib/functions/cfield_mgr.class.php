@@ -20,7 +20,7 @@ require_once(dirname(__FILE__) . '/string_api.php');
 // Copied from mantis, allow load of user custom implementations
 // some sort of poor's man plugin
 $cf_files=glob( TL_ABS_PATH . "custom/cf_*.php");
-if( count($cf_files) > 0 )
+if( count((array)$cf_files) > 0 )
 {
   foreach($cf_files as $inc)
   {
@@ -537,7 +537,7 @@ class cfield_mgr extends tlObject
         $locFilter = (array)$filters[$filterKey];
         $additional_filter .= " AND CFTP.$filterKey IN(" . implode(",",$locFilter ) . ") ";
         
-        if ( $replaceLocation = (count($locFilter) > 1) ) {
+        if ( $replaceLocation = (count((array)$locFilter) > 1) ) {
           $locMap = $this->buildLocationMap('testcase');
           $targetLocationCode = " {$locMap['standard_location']['location']} AS location ";
         }
@@ -640,7 +640,7 @@ class cfield_mgr extends tlObject
   		case 'list':
   		case 'multiselection list':
    			$t_values = explode( '|', $p_field_def['possible_values']);
-   			$t_values_count = count($t_values);
+   			$t_values_count = count((array)$t_values);
         $window_size = intval($size);
         if($t_values_count < $window_size)
         {
@@ -1453,7 +1453,7 @@ class cfield_mgr extends tlObject
       $this->remove_all_scopes_values($id);
 		}
 		$linked_tprojects = $this->get_linked_testprojects($id);
-		if( !is_null($linked_tprojects) && count($linked_tprojects) > 0 )
+		if( !is_null($linked_tprojects) && count((array)$linked_tprojects) > 0 )
 		{
 		  $target=array_keys($linked_tprojects);
 		  foreach($target as $tproject_id)
@@ -1807,7 +1807,7 @@ function name_is_unique($id,$name)
         }
         $safe_value=$this->db->prepare_string($value);
 
-        $howMany = count($rs);
+        $howMany = count((array)$rs);
         if( $howMany > 0 && $value != "" ) {
           $sql = " UPDATE {$this->tables['cfield_execution_values']} " .
                  " SET value='{$safe_value}' " .   $where_clause;
@@ -1922,7 +1922,7 @@ function name_is_unique($id,$name)
           // date part indicator is Position 5, instead of 4
           //        	
           $dummy = explode('_',$key);
-          $last_idx = count($dummy)-1;
+          $last_idx = count((array)$dummy)-1;
 
           $the_value = null;  // without this #0008347 :(
           if( isset($this->html_date_input_suffix[$dummy[$last_idx]]) ) {
@@ -1946,7 +1946,7 @@ function name_is_unique($id,$name)
           case 'multiselection list':
           case 'checkbox':
             $valueIsArray = is_array($value);
-            if( $valueIsArray && count($value) > 1) {
+            if( $valueIsArray && count((array)$value) > 1) {
               $value=implode('|',$value);
             }
             else {
@@ -2483,7 +2483,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
   */
   function build_cfield_radio($custom_field_value) 
   {
-      if( count($custom_field_value) > 1)
+      if( count((array)$custom_field_value) > 1)
       {
         $value=implode('|',$custom_field_value);
       }
@@ -2624,7 +2624,7 @@ function buildLocationMap($nodeType)
   $dummy = $this->getLocations();
 	$verboseLocationCode = array_flip($dummy[$nodeType]);
 	if( !is_null($verboseLocationCode)
-      && count($verboseLocationCode) > 0 ) {
+      && count((array)$verboseLocationCode) > 0 ) {
 		foreach($verboseLocationCode as $key => $value) {
 			$locationMap[$key]['location']=$value;
 		}
@@ -3034,7 +3034,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
     $gogo->cf_types = $gogo->cfield_types = $this->get_available_types();
     
     // MAGIC 10
-    $gogo->drawControlsOnTop = (null != $gogo->cf_map && count($gogo->cf_map) > 10); 
+    $gogo->drawControlsOnTop = (null != $gogo->cf_map && count((array)$gogo->cf_map) > 10); 
 
     return $gogo;
   }

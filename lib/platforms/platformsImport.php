@@ -179,7 +179,7 @@ function doImport(&$dbHandler,$testproject_id)
 		$file_check = array('show_results' => 0, 'status_ok' => 0,'msg' => $msg);
 	}
   
-  if( count($import_msg['ko']) == 0 )
+  if( count((array)$import_msg['ko']) == 0 )
   {
     $import_msg['ko'] = null;
   }  

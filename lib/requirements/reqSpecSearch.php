@@ -113,7 +113,7 @@ if ($args->tprojectID)
 }
 
 $smarty = new TLSmarty();
-$gui->row_qty=count($itemSet);
+$gui->row_qty=count((array)$itemSet);
 if($gui->row_qty > 0)
 {
   $gui->resultSet = $itemSet;
@@ -164,7 +164,7 @@ function buildExtTable($gui, $charset)
   // }
   //
   //
-  if(count($gui->resultSet) > 0) 
+  if(count((array)$gui->resultSet) > 0) 
   {
     $matrixData = array();
     $columns = array();

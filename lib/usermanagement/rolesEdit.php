@@ -274,7 +274,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     $webEditorObj->Value = $roleObj->description;
 
     // build checked attribute for checkboxes
-    if(sizeof($roleObj->rights))
+    if(sizeof((array)$roleObj->rights))
     {
       foreach($roleObj->rights as $key => $right)
       {

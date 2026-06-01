@@ -190,7 +190,7 @@ if ($treeForPlatform) {
   foreach ($treeForPlatform as $platform_id => $tree2work) {
     $actionContext['platform_id'] = $platform_id;
 
-    if(isset($tree2work['childNodes']) && sizeof($tree2work['childNodes']) > 0) {
+    if(isset($tree2work['childNodes']) && sizeof((array)$tree2work['childNodes']) > 0) {
       $tree2work['name'] = $args->tproject_name;
       $tree2work['id'] = $args->tproject_id;
       $tree2work['node_type_id'] = $decode['node_descr_id']['testproject'];
@@ -513,7 +513,7 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$context,$decode) {
   $executed_qty = 0;
   $items2use = array();
   
-  if( !is_null($lastExecBy) && count($lastExecBy) > 0 ) {
+  if( !is_null($lastExecBy) && count((array)$lastExecBy) > 0 ) {
     // divide execution by Platform ID
     $p2loop = array_keys($lastExecBy);
     foreach($p2loop as $platfID) {                    

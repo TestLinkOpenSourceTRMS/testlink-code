@@ -135,12 +135,12 @@ function getIssues(&$dbHandler,&$execSet,$tprojectID)
   $tcv2loop = array_keys($execSet);
   foreach($tcv2loop as $tcvid)
   {
-    $execQty = count($execSet[$tcvid]);
+    $execQty = count((array)$execSet[$tcvid]);
     for($idx=0; $idx < $execQty; $idx++)
     {
       $exec_id = $execSet[$tcvid][$idx]['execution_id'];
       $dummy = get_bugs_for_exec($dbHandler,$its,$exec_id);
-      if(count($dummy) > 0)
+      if(count((array)$dummy) > 0)
       {
         $issues[$exec_id] = $dummy;
       } 
@@ -159,13 +159,13 @@ function getCustomFields(&$tcaseMgr,&$execSet)
   $tcv2loop = array_keys($execSet);
   foreach($tcv2loop as $tcvid)
   {
-    $execQty = count($execSet[$tcvid]);
+    $execQty = count((array)$execSet[$tcvid]);
     for($idx=0; $idx < $execQty; $idx++)
     {
       $exec_id = $execSet[$tcvid][$idx]['execution_id'];
       $tplan_id = $execSet[$tcvid][$idx]['testplan_id'];
       $dummy = (array)$tcaseMgr->html_table_of_custom_field_values($tcvid,'execution',null,$exec_id,$tplan_id);
-      $cf[$exec_id] = (count($dummy) > 0) ? $dummy : '';
+      $cf[$exec_id] = (count((array)$dummy) > 0) ? $dummy : '';
     } 
   }
   return $cf;
@@ -183,7 +183,7 @@ function getAttachments(&$dbHandler,&$execSet)
   $tcv2loop = array_keys($execSet);
   foreach($tcv2loop as $tcvid)
   {
-    $execQty = count($execSet[$tcvid]);
+    $execQty = count((array)$execSet[$tcvid]);
     for($idx=0; $idx < $execQty; $idx++)
     {
       $exec_id = $execSet[$tcvid][$idx]['execution_id'];

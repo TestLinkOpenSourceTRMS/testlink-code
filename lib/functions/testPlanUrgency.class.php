@@ -168,7 +168,7 @@ class testPlanUrgency extends testplan
     if( !is_null($my['filters']['testcases']) )
     {
       // sanitize
-      $loop2do = count($my['filters']['testcases']);
+      $loop2do = count((array)$my['filters']['testcases']);
       for($gdx=0; $gdx < $loop2do; $gdx++)
       {
         $my['filters']['testcases'][$gdx] = intval($my['filters']['testcases'][$gdx]);

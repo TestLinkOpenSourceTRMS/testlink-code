@@ -320,7 +320,7 @@ class mantisrestInterface extends issueTrackerInterface {
         throw new Exception("Error creating issue", 1);
       }
 
-      if (count($more['links']) > 0) {
+      if (count((array)$more['links']) > 0) {
         $this->APIClient->addExternalLinks($op->id,$more['links']);
       }
   

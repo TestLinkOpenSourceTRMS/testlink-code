@@ -241,7 +241,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
       (array)$req_mgr->getGoodForReqVersion($req['version_id'],
         array('verbose' => true, 'tproject_id' => $tprojectID));
 
-    if (count($req_coverage) > 0) {
+    if (count((array)$req_coverage) > 0) {
       $output .=  "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['related_tcs'] . 
                   "</span></td>" . "<td>";
       foreach ($req_coverage[$req['version_id']] as $tc) {
@@ -273,7 +273,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   // since 1.9.18 => we need to use req version
   $attachSet =  (array)$req_mgr->getAttachmentInfos($req['revision_id']);
 
-  if (count($attachSet)) {
+  if (count((array)$attachSet)) {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
                $labels['attached_files'] . "</span></td><td>";
     
@@ -485,7 +485,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
   }
   
   $attachSet =  (array)$req_spec_mgr->getAttachmentInfos($spec_id);
-  if (count($attachSet)) {
+  if (count((array)$attachSet)) {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
                $labels['attached_files'] . "</span></td><td><ul>";
 
@@ -564,7 +564,7 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,$tocPrefix, $rsCnt
     
     $childNodes = $node['childNodes'];
     $rsCnt = 0;
-         $children_qty = sizeof($childNodes);
+         $children_qty = sizeof((array)$childNodes);
     for($i = 0;$i < $children_qty ;$i++)
     {
       $current = $childNodes[$i];
@@ -833,7 +833,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocP
     // Need to be a LOCAL COUNTER for each PARENT
     $TOCCounter = 0;
     $childNodes = $node['childNodes'];
-    $children_qty = sizeof($childNodes);
+    $children_qty = sizeof((array)$childNodes);
     for($idx = 0;$idx < $children_qty ;$idx++)
     {
       $current = $childNodes[$idx];
@@ -1064,7 +1064,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                             'renderImageInline' => true));
 
 
-  if( null != $tcInfo && count($tcInfo) > 0) {
+  if( null != $tcInfo && count((array)$tcInfo) > 0) {
     $tcInfo = $tcInfo[0];
   } else {
     $msg = basename(__FILE__) . ' >' .
@@ -1231,7 +1231,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
           $code .= '</tr>';     
 
-          $loop2do = count($tcInfo[$key]);
+          $loop2do = count((array)$tcInfo[$key]);
           for($ydx=0 ; $ydx < $loop2do; $ydx++) {
             $code .= '<tr>' .
                      '<td width="5">' .  $tcInfo[$key][$ydx]['step_number'] . 
@@ -1434,7 +1434,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
              $labels['reqs'].'</span>'; 
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
 
-    if (sizeof($requirements)) {
+    if (sizeof((array)$requirements)) {
       foreach ($requirements as $req) {
         $code .=  htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) .
                   " " .
@@ -1457,7 +1457,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
 
     $kwSet = (array)$st->tc_mgr->getKeywords($id,$tcVersionID,null,array('fields' => 'keyword_id,KW.keyword'));
-    if (sizeof($kwSet)) {
+    if (sizeof((array)$kwSet)) {
       foreach ($kwSet as $kw) {
         $code .= htmlspecialchars($kw['keyword']) . "<br />";
       }
@@ -1475,7 +1475,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
 
     $itSet = (array)$st->tc_mgr->getPlatforms($id,$tcVersionID,null,array('fields' => 'platform_id,PL.name'));
-    if (sizeof($itSet)) {
+    if (sizeof((array)$itSet)) {
       foreach ($itSet as $it) {
         $code .= htmlspecialchars($it['name']) . "<br />";
       }
@@ -1489,7 +1489,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
   // Attachments
   $attachSet =  (array)$st->tc_mgr->getAttachmentInfos($tcVersionID);
-  if (count($attachSet) > 0) {
+  if (count((array)$attachSet) > 0) {
     $code .= '<tr><td> <span class="label">' . $labels['attached_files'] . '</span></td>';
     $code .= '<td colspan="' . ($cfg['tableColspan']-2) . '"><ul>';
 
@@ -1751,7 +1751,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
     $tInfo = null;
 
     $attachSet =  (array)$tsuite_mgr->getAttachmentInfos($node['id']);
-    if (count($attachSet) > 0) {
+    if (count((array)$attachSet) > 0) {
       $code .= '<table><caption style="text-align:left;">' . $l10n['attached_files'] . '</caption>';
       $code .= '<tr><td>&nbsp</td>';
       $code .= '<td><ul>';
@@ -1967,7 +1967,7 @@ function initRenderTestCaseCfg($options) {
                     'priority', 'high_priority','medium_priority','low_priority',
                     'attached_files','platforms');
                       
-  $labelsQty=count($labelsKeys);         
+  $labelsQty=count((array)$labelsKeys);         
   for($idx=0; $idx < $labelsQty; $idx++) {
     $labels[$labelsKeys[$idx]] = lang_get($labelsKeys[$idx]);
   }

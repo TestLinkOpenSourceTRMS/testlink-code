@@ -873,7 +873,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
       if(!$add_plan) 
       {
         $builds = $this->testplan_mgr->get_builds($plan['id'],testplan::GET_ACTIVE_BUILD,testplan::GET_OPEN_BUILD);
-        $add_plan =  (is_array($builds) && count($builds));
+        $add_plan =  (is_array($builds) && count((array)$builds));
       }
       
       if ($add_plan) 
@@ -1058,7 +1058,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     $type_selection = $this->args->{$type};
     
     // are there any keywords?
-    if (!is_null($keywords) && count($keywords)) 
+    if (!is_null($keywords) && count((array)$keywords)) 
     {
       $this->filters[$key] = array();
 
@@ -1076,7 +1076,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
       // data for the keywords themselves     
       $this->filters[$key]['items'] = $special['domain'] + $keywords;
       $this->filters[$key]['selected'] = $selection;
-      $this->filters[$key]['size'] = min(count($this->filters[$key]['items']),
+      $this->filters[$key]['size'] = min(count((array)$this->filters[$key]['items']),
                                          self::ADVANCED_FILTER_ITEM_QUANTITY);
 
       // additional data for the filter type (logical and/or)
@@ -1166,7 +1166,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
                                             MEDIUM => lang_get('medium_importance'), 
                                             LOW => lang_get('low_importance'));
     
-      $this->filters[$key]['size'] = sizeof($this->filters[$key]['items']);
+      $this->filters[$key]['size'] = sizeof((array)$this->filters[$key]['items']);
       $this->active_filters[$key] = $selection;
     }
   }
@@ -1484,7 +1484,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
       {
         $selection = null;
       }  
-      else if( count($cfx) > 0)
+      else if( count((array)$cfx) > 0)
       {
         $selection = $cfx;
         $this->do_filtering = true;
@@ -1506,7 +1506,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     $this->filters[$key]['items'] = array(0 => $this->option_strings['any']) +
                                           $this->tc_mgr->getWorkFlowStatusDomain();
 
-    $this->filters[$key]['size'] = min(count($this->filters[$key]['items']),
+    $this->filters[$key]['size'] = min(count((array)$this->filters[$key]['items']),
                                        self::ADVANCED_FILTER_ITEM_QUANTITY);
     
     $this->active_filters[$key] = $selection;

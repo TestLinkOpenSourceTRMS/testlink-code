@@ -60,7 +60,7 @@ foreach($phpSteps as $xx)
     }  
   }  
 }  
-$whatWillBeDone .= count($actions) ? implode('<br>',$actions) : 'Nothing!!';
+$whatWillBeDone .= count((array)$actions) ? implode('<br>',$actions) : 'Nothing!!';
 echo $whatWillBeDone . '<br>';
 
 foreach( $phpSteps as $m2i)

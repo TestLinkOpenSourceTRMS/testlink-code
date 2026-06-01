@@ -36,7 +36,7 @@ checkRights($db,$args->user,$ctx);
 $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 
 $smarty = new TLSmarty();
-if(count($gui->reqIDs) > 0)  {
+if(count((array)$gui->reqIDs) > 0)  {
   $chronoStart = microtime(true);
 
   $pathCache = null;
@@ -61,7 +61,7 @@ if(count($gui->reqIDs) > 0)  {
   $labels = init_labels($labels2get);
   
   $gui->cfields4req = (array)$cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement', null, 'name');
-  $gui->processCF = count($gui->cfields4req) > 0;
+  $gui->processCF = count((array)$gui->cfields4req) > 0;
 
 
   $coverageSet = null;
@@ -242,7 +242,7 @@ if(count($gui->reqIDs) > 0)  {
     
   // --------------------------------------------------------------------
   // Construction of EXT-JS table starts here    
-  if(($gui->row_qty = count($rows)) > 0 ) {
+  if(($gui->row_qty = count((array)$rows)) > 0 ) {
     $version_string = ($args->all_versions) ? $labels['number_of_versions'] : $labels['number_of_reqs'];
     $gui->pageTitle .= " - " . $version_string . ": " . $gui->row_qty;
        

@@ -485,7 +485,7 @@ class testcase extends tlObjectWithAttachments {
             // check if already exists a test case with this external id
             $info = $this->get_by_external($sf, $parent_id);
             if( !is_null($info)) {
-              if( count($info) > 1) {
+              if( count((array)$info) > 1) {
                 // abort
                 throw new Exception("More than one test case with same external ID");
               }
@@ -532,7 +532,7 @@ class testcase extends tlObjectWithAttachments {
     if ($my['options']['check_duplicate_name']) {
       $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);
 
-      if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 ) {
+      if( !is_null($itemSet) && ($siblingQty=count((array)$itemSet)) > 0 ) {
         $ret['has_duplicate'] = true;
 
         switch($my['options']['action_on_duplicate_name']) {
@@ -744,7 +744,7 @@ class testcase extends tlObjectWithAttachments {
     $ret['status_ok']=1;
 
     if ($result && ( !is_null($item->steps) && is_array($item->steps) ) ) {
-      $steps2create = count($item->steps);
+      $steps2create = count((array)$item->steps);
       $op['status_ok'] = 1;
 
       // need to this to manage call to this method for REST API.
@@ -816,7 +816,7 @@ class testcase extends tlObjectWithAttachments {
 
     $rs = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
 
-    if( is_null($rs) || count($rs) == 0 ) {
+    if( is_null($rs) || count((array)$rs) == 0 ) {
       $rs=null;
     }
     return $rs;
@@ -869,7 +869,7 @@ class testcase extends tlObjectWithAttachments {
               " AND NH_TCASE_PARENT.node_type_id = {$this->node_types_descr_id['testsuite']} ";
     }
     $recordset = $this->db->get_recordset($sql);
-    if(count($recordset) && $tproject_name != "")
+    if(count((array)$recordset) && $tproject_name != "")
     {
       list($tproject_info)=$this->tproject_mgr->get_by_name($tproject_name);
       foreach($recordset as $idx => $tcase_info)
@@ -966,7 +966,7 @@ class testcase extends tlObjectWithAttachments {
     
     $userIDSet = array();
 
-    if($status_ok && sizeof($idSet)) {
+    if($status_ok && sizeof((array)$idSet)) {
 
       $cfPlaces = $this->buildCFLocationMap();
       $gui->linked_versions = null;
@@ -1113,11 +1113,11 @@ class testcase extends tlObjectWithAttachments {
         }
 
         // Other versions (if exists)
-        if(count($tcvSet) > 1) {
+        if(count((array)$tcvSet) > 1) {
           $gui->testcase_other_versions[] = array_slice($tcvSet,1);
 
-          $target_idx = count($gui->testcase_other_versions) - 1;
-          $loop2do = count($gui->testcase_other_versions[$target_idx]);
+          $target_idx = count((array)$gui->testcase_other_versions) - 1;
+          $loop2do = count((array)$gui->testcase_other_versions[$target_idx]);
 
           $cfCtx = array('scope' => 'design','tproject_id' => $gui->tproject_id);
 
@@ -1218,7 +1218,7 @@ class testcase extends tlObjectWithAttachments {
 
 
     $gui->additionalMessages = [];
-    if ($gui->currentVersionKeywords != null && count($gui->currentVersionKeywords) > 0) {
+    if ($gui->currentVersionKeywords != null && count((array)$gui->currentVersionKeywords) > 0) {
       // look for annotations in notes
       foreach($gui->currentVersionKeywords as $kwEntity) {
         foreach($this->keywordAnnotations as $kwAnnot) {
@@ -1448,11 +1448,11 @@ class testcase extends tlObjectWithAttachments {
 
     $auditContext = array('on' => self::AUDIT_ON, 'version' => $version);
     
-    if(!is_null($items['todelete']) && count($items['todelete'])) {
+    if(!is_null($items['todelete']) && count((array)$items['todelete'])) {
       $this->deleteKeywords($id,$version_id,array_keys($items['todelete']),$auditContext);
     }
 
-    if(!is_null($items['new']) && count($items['new']))
+    if(!is_null($items['new']) && count((array)$items['new']))
     {
       $this->addKeywords($id,$version_id,array_keys($items['new']),$auditContext);
     }
@@ -1514,7 +1514,7 @@ class testcase extends tlObjectWithAttachments {
       $linked_not_exec = $this->get_linked_versions($id,array('exec_status' => 'NOT_EXECUTED'));
 
       $status='linked_and_executed';
-      if(count($linked_tcversions) == count($linked_not_exec))
+      if(count((array)$linked_tcversions) == count((array)$linked_not_exec))
       {
         $status = 'linked_but_not_executed';
       }
@@ -1764,7 +1764,7 @@ class testcase extends tlObjectWithAttachments {
         }
       }
 
-      if( count($children['step']) > 0) {
+      if( count((array)$children['step']) > 0) {
         $step_list=trim(implode(',',$children['step']));
         $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
                " WHERE id IN ({$step_list})";
@@ -1856,7 +1856,7 @@ class testcase extends tlObjectWithAttachments {
           }
         }
 
-        if( count($children['step']) > 0) {
+        if( count((array)$children['step']) > 0) {
           $step_list=trim(implode(',',$children['step']));
        }
     }
@@ -1994,7 +1994,7 @@ class testcase extends tlObjectWithAttachments {
                        AND tcversion_number <> {$myVersionNum}";
       $rs = (array)$this->db->get_recordset($sqlCheckExec);
 
-      if (count($rs) != 0) {
+      if (count((array)$rs) != 0) {
         // Get latest execution to get the version number and then tcversion_id 
         // to update the testplan_tcversions.
         // We need to get version number for EACH TEST PLAN!!
@@ -2363,7 +2363,7 @@ class testcase extends tlObjectWithAttachments {
     if( $this->cfg->testcase->relations->enable && 
         $freezeTCVRelationsOnNewTCVersion ) {
       $oldVerRel = $this->getTCVRelationsRaw($source['version_id']);
-      if( null != $oldVerRel && count($oldVerRel) > 0 ) {
+      if( null != $oldVerRel && count((array)$oldVerRel) > 0 ) {
         $i2c = array_keys($oldVerRel);
         $this->closeOpenTCVRelation($i2c,LINK_TC_RELATION_CLOSED_BY_NEW_TCVERSION);
       }
@@ -2503,7 +2503,7 @@ class testcase extends tlObjectWithAttachments {
     // Need to get all steps
     $gso = array('renderGhostSteps' => false, 'renderImageInline' => false);
     $stepsSet = $this->get_steps($from_tcversion_id,0,$gso);
-    if( !is_null($stepsSet) && count($stepsSet) > 0) {
+    if( !is_null($stepsSet) && count((array)$stepsSet) > 0) {
       foreach($stepsSet as $key => $step) {
         $op = $this->create_step($to_tcversion_id,$step['step_number'],
                                  $step['actions'],$step['expected_results'],
@@ -3111,7 +3111,7 @@ class testcase extends tlObjectWithAttachments {
     $link_info = null;
     $in_set = null;
 
-    if (sizeof($rs))
+    if (sizeof((array)$rs))
     {
       foreach($rs as $idx => $elem)
       {
@@ -3196,7 +3196,7 @@ class testcase extends tlObjectWithAttachments {
               $rs[]=$value;
 
               // Must Update list of not executed
-              $kix=count($rs);
+              $kix=count((array)$rs);
               $item_not_executed[]=$kix > 0 ? $kix-1 : $kix;
             }
 
@@ -3405,7 +3405,7 @@ class testcase extends tlObjectWithAttachments {
                               WHERE keyword_id = K.id
                               {$keyword_filter}
                               GROUP BY testcase_id ) AS MAFALDA " .
-                          " WHERE MAFALDA.HITS=" . count($keyword_id) . ")";
+                          " WHERE MAFALDA.HITS=" . count((array)$keyword_id) . ")";
 
               $keyword_filter ='';
           }
@@ -3557,7 +3557,7 @@ class testcase extends tlObjectWithAttachments {
     $adt = array('on' => self::AUDIT_ON, 'version' => null);
     $adt = array_merge($adt, (array)$audit);
 
-    if( count($kw_ids) == 0 ) {
+    if( count((array)$kw_ids) == 0 ) {
       return true;
     }
 
@@ -3588,7 +3588,7 @@ class testcase extends tlObjectWithAttachments {
       }
     }
 
-    if( count($dummy) <= 0 ) {
+    if( count((array)$dummy) <= 0 ) {
       return;
     }
 
@@ -3895,7 +3895,7 @@ class testcase extends tlObjectWithAttachments {
 
         if( is_array($my['options']['exec_to_exclude']))
         {
-            if(count($my['options']['exec_to_exclude']) > 0 )
+            if(count((array)$my['options']['exec_to_exclude']) > 0 )
             {
               $exec_id_list = implode(",",$my['options']['exec_to_exclude']);
                 $where_clause  .= " AND e.id NOT IN ({$exec_id_list}) ";
@@ -4076,10 +4076,10 @@ class testcase extends tlObjectWithAttachments {
 
     $recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
     $and_exec_id='';
-    if( !is_null($recordset) && count($recordset) > 0) {
+    if( !is_null($recordset) && count((array)$recordset) > 0) {
       $the_list = implode(",", array_keys($recordset));
       if($the_list != '') {
-        if( count($recordset) > 1 ) {
+        if( count((array)$recordset) > 1 ) {
           $and_exec_id = " AND e.id IN ($the_list) ";
         } else {
           $and_exec_id = " AND e.id = $the_list ";
@@ -4269,7 +4269,7 @@ class testcase extends tlObjectWithAttachments {
       // each UPPER CASE word in this map KEY, MUST HAVE AN OCCURENCE on $elemTpl
       // value is a key inside $tc_data[0]
       //
-      if( !is_null($cfMap) && count($cfMap) > 0 ) {
+      if( !is_null($cfMap) && count((array)$cfMap) > 0 ) {
         $tc_data[0]['xmlcustomfields'] = $cfieldMgr->exportValueAsXML($cfMap);
       }
     }
@@ -4291,7 +4291,7 @@ class testcase extends tlObjectWithAttachments {
       
       $req4version = $reqMgr->getGoodForTCVersion($testCaseVersionID);
 
-      if( !is_null($req4version) && count($req4version) > 0 ) {
+      if( !is_null($req4version) && count((array)$req4version) > 0 ) {
         $tc_data[0]['xmlrequirements'] = 
           exportDataToXML($req4version,$this->XMLCfg->req->root,
                           $this->XMLCfg->req->elemTPL,$this->XMLCfg->req->decode,true);
@@ -4322,7 +4322,7 @@ class testcase extends tlObjectWithAttachments {
   			}
   	  }
 	  
-		  if( !is_null($attachments) && count($attachments) > 0 ) {
+		  if( !is_null($attachments) && count((array)$attachments) > 0 ) {
         $tc_data[0]['xmlattachments'] = 
           exportDataToXML($attachments,$this->XMLCfg->att->root,
                           $this->XMLCfg->att->elemTPL,$this->XMLCfg->att->decode,true);
@@ -4794,7 +4794,7 @@ class testcase extends tlObjectWithAttachments {
 
     $itemSet=$req_mgr->get_all_for_tcase($from);
     if( !is_null($itemSet) ) {
-      $loop2do=count($itemSet);
+      $loop2do=count((array)$itemSet);
       for($idx=0; $idx < $loop2do; $idx++) {
         if( isset($mappings[$itemSet[$idx]['id']]) ) {
           $items[$idx]=$mappings[$itemSet[$idx]['id']];
@@ -4976,7 +4976,7 @@ class testcase extends tlObjectWithAttachments {
   function getTestProjectFromTestCase($id,$parent_id=null)
   {
     $the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
-    $path_len = count($the_path);
+    $path_len = count((array)$the_path);
     $tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
 
     return $tproject_id;
@@ -5536,14 +5536,14 @@ class testcase extends tlObjectWithAttachments {
 
         // First get root -> test project name and leaf => test case name
       $parts = explode($pathSeparator,$pathName);
-      $partsQty = count($parts);
+      $partsQty = count((array)$parts);
       $tprojectName = $parts[0];
       $tsuiteName = $parts[$partsQty-2];
       $tcaseName = end($parts);
 
       // get all testcases on test project with this name and parent test suite
         $recordset = $this->get_by_name($tcaseName, $tsuiteName ,$tprojectName);
-        if( !is_null($recordset) && count($recordset) > 0 )
+        if( !is_null($recordset) && count((array)$recordset) > 0 )
         {
           foreach($recordset as $value)
           {
@@ -5751,7 +5751,7 @@ class testcase extends tlObjectWithAttachments {
     if(!is_null($result) && $my['options']['renderImageInline']) {
       // for attachments we need the Test Case Version ID
       // (time ago we used the Test Case ID)
-      $k2l = count($result);
+      $k2l = count((array)$result);
       $gaga = array('actions','expected_results');
       for($idx=0; $idx < $k2l; $idx++) {
         $this->renderImageAttachments($tcversion_id,$result[$idx],$gaga);
@@ -6051,7 +6051,7 @@ class testcase extends tlObjectWithAttachments {
 
       if( !is_null($my['filters']['cfields']) ) {
         $cf_hash = &$my['filters']['cfields'];
-        $cfQty = count($cf_hash);
+        $cfQty = count((array)$cf_hash);
         $countmain = 1;
 
         // Build custom fields filter
@@ -6103,7 +6103,7 @@ class testcase extends tlObjectWithAttachments {
         $key2loop = array_keys($recordset);
         if($cfQty > 0) {
           foreach($key2loop as $key) {
-            if( count($recordset[$key]) < $cfQty) {
+            if( count((array)$recordset[$key]) < $cfQty) {
               unset($recordset[$key]);
             }
             else {
@@ -6119,7 +6119,7 @@ class testcase extends tlObjectWithAttachments {
           }
         }
 
-        if( count($recordset) <= 0 ) {
+        if( count((array)$recordset) <= 0 ) {
           $recordset = null;
         }
       }
@@ -6210,13 +6210,13 @@ class testcase extends tlObjectWithAttachments {
 
     $stepSet = (array)$this->get_steps($tcversion_id,0,
                                         array('fields2get' => 'id', 'accessKey' => 'id'));
-    if( count($stepSet) > 0 )
+    if( count((array)$stepSet) > 0 )
     {
       $this->delete_step_by_id(array_keys($stepSet));
     }
 
     // Now insert steps
-    $loop2do = count($steps);
+    $loop2do = count((array)$steps);
     for($idx=0; $idx < $loop2do; $idx++)
     {
       $this->create_step($tcversion_id,$steps[$idx]['step_number'],
@@ -6269,7 +6269,7 @@ class testcase extends tlObjectWithAttachments {
 
     $or_clause = '';
     $cf_query = '';
-    $cf_qty = count($cf_hash);
+    $cf_qty = count((array)$cf_hash);
 
     // do not worry!! it seems that filter criteria is OR, but really is an AND,
     // OR is needed to do a simple query.
@@ -6300,12 +6300,12 @@ class testcase extends tlObjectWithAttachments {
       $key2loop = array_keys($recordset);
       foreach($key2loop as $key)
       {
-        if( count($recordset[$key]) < $cf_qty)
+        if( count((array)$recordset[$key]) < $cf_qty)
         {
           unset($recordset[$key]);
         }
       }
-      if( count($recordset) <= 0 )
+      if( count((array)$recordset) <= 0 )
       {
         $recordset = null;
       }
@@ -6514,7 +6514,7 @@ class testcase extends tlObjectWithAttachments {
    */
   function renderGhostSteps(&$steps2render, $scan = null) {
     $warningRenderException = lang_get('unable_to_render_ghost');
-    $loop2do = count($steps2render);
+    $loop2do = count((array)$steps2render);
 
     $tlBeginMark = self::GHOSTBEGIN;
     $tlEndMark = self::GHOSTEND;
@@ -6542,7 +6542,7 @@ class testcase extends tlObjectWithAttachments {
 
         if($start !== FALSE) {
           $xx = explode($tlBeginMark,$rse[$gdx][$item_key]);
-          $xx2do = count($xx);
+          $xx2do = count((array)$xx);
           $ghost = '';
           $deghosted = false;
           for($xdx=0; $xdx < $xx2do; $xdx++) {
@@ -7243,7 +7243,7 @@ class testcase extends tlObjectWithAttachments {
     $goo->display_testcase_path = !is_null($goo->path_info);
     $goo->show_match_count = $viewer_defaults['show_match_count'];
     if($goo->show_match_count && $goo->display_testcase_path ) {
-      $goo->pageTitle .= '-' . lang_get('match_count') . ':' . ($goo->match_count = count($goo->path_info));
+      $goo->pageTitle .= '-' . lang_get('match_count') . ':' . ($goo->match_count = count((array)$goo->path_info));
     }
 
     $goo->refreshTree = isset($goo->refreshTree) ? $goo->refreshTree : $viewer_defaults['refreshTree'];
@@ -7296,13 +7296,13 @@ class testcase extends tlObjectWithAttachments {
     }
 
     if( $goo->display_parent_testsuite ) {
-      $parent = count($path2root)-2;
+      $parent = count((array)$path2root)-2;
       $goo->parentTestSuiteName = $path2root[$parent]['name'];
     }
 
 
     $testplans = $this->tproject_mgr->get_all_testplans($goo->tproject_id,array('plan_status' =>1) );
-    $goo->has_testplans = !is_null($testplans) && count($testplans) > 0 ? 1 : 0;
+    $goo->has_testplans = !is_null($testplans) && count((array)$testplans) > 0 ? 1 : 0;
 
 
     $platformMgr = new tlPlatform($this->db,$goo->tproject_id);
@@ -7405,7 +7405,7 @@ class testcase extends tlObjectWithAttachments {
         $xx = explode($tlBeginMark,$rse[$item_key]);
 
         // How many requests to replace ?
-        $xx2do = count($xx);
+        $xx2do = count((array)$xx);
         $ghost = '';
         for($xdx=0; $xdx < $xx2do; $xdx++) {
           $isTestCaseGhost = true;
@@ -7419,7 +7419,7 @@ class testcase extends tlObjectWithAttachments {
             // is user had not messed things.
             $yy = explode($tlEndMark,$xx[$xdx]);
 
-            if( ($elc = count($yy)) > 0)
+            if( ($elc = count((array)$yy)) > 0)
             {
               $dx = $yy[0];
 
@@ -7713,7 +7713,7 @@ class testcase extends tlObjectWithAttachments {
 
     $relSet['relations']= $this->db->get_recordset($sql);
 
-    if( !is_null($relSet['relations']) && count($relSet['relations']) > 0 ) {
+    if( !is_null($relSet['relations']) && count((array)$relSet['relations']) > 0 ) {
       $labels = $this->getRelationLabels();
       $label_keys = array_keys($labels);
       foreach($relSet['relations'] as $key => $rel)
@@ -7751,7 +7751,7 @@ class testcase extends tlObjectWithAttachments {
 
         } // end foreach
 
-        $relSet['num_relations'] = count($relSet['relations']);
+        $relSet['num_relations'] = count((array)$relSet['relations']);
     }
 
     return $relSet;
@@ -7794,7 +7794,7 @@ class testcase extends tlObjectWithAttachments {
 
     $relSet['relations']= $this->db->get_recordset($sql);
 
-    if( !is_null($relSet['relations']) && count($relSet['relations']) > 0 ) {
+    if( !is_null($relSet['relations']) && count((array)$relSet['relations']) > 0 ) {
       $labels = $this->getRelationLabels();
       $label_keys = array_keys($labels);
 
@@ -7836,7 +7836,7 @@ class testcase extends tlObjectWithAttachments {
 
         } // end foreach
 
-        $relSet['num_relations'] = count($relSet['relations']);
+        $relSet['num_relations'] = count((array)$relSet['relations']);
     }
 
     return $relSet;
@@ -8212,7 +8212,7 @@ class testcase extends tlObjectWithAttachments {
         $xx = explode($beginTag,$rse[$item_key]);
 
         // How many requests to replace ?
-        $xx2do = count($xx);
+        $xx2do = count((array)$xx);
         $ghost = '';
         for($xdx=0; $xdx < $xx2do; $xdx++) {
           // Hope was not a false request.
@@ -8221,7 +8221,7 @@ class testcase extends tlObjectWithAttachments {
             // Theorically can be just ONE, but it depends
             // is user had not messed things.
             $yy = explode($endTag,$xx[$xdx]);
-            if( ($elc = count($yy)) > 0) {
+            if( ($elc = count((array)$yy)) > 0) {
 
               $atx = $yy[0];
               if( intval($atx) == 0 ) {
@@ -8427,7 +8427,7 @@ class testcase extends tlObjectWithAttachments {
         $xx = explode($tlBeginTag,$play);
 
         // How many requests to replace ?
-        $xx2do = count($xx);
+        $xx2do = count((array)$xx);
         for($xdx=0; $xdx < $xx2do; $xdx++) {
 
           // Hope was not a false request.
@@ -8437,7 +8437,7 @@ class testcase extends tlObjectWithAttachments {
             // Theorically can be just ONE, but it depends
             // is user had not messed things.
             $yy = explode($tlEndTag,$xx[$xdx]);
-            if( ($elc = count($yy)) > 0) {
+            if( ($elc = count((array)$yy)) > 0) {
               $markAsIS = $tlBeginTag . $yy[0] . $tlEndTag;
               $variableName = trim($yy[0]);
 
@@ -8527,7 +8527,7 @@ class testcase extends tlObjectWithAttachments {
       }
     }
 
-    if(count($script_list) === 0)
+    if(count((array)$script_list) === 0)
     {
       $script_list = null;
     }
@@ -8599,7 +8599,7 @@ class testcase extends tlObjectWithAttachments {
       $name = $whoami['l'] . self::NAME_PHOPEN; 
 
       $juice = $this->orangeJuice($text2scan);
-      $name .=  ( count($dm) > 0 ) ? $dm[0] : $meat;
+      $name .=  ( count((array)$dm) > 0 ) ? $dm[0] : $meat;
       $name .= self::NAME_DIVIDE . $juice . self::NAME_PHCLOSE . $whoami['r']; 
     }
     return $name;
@@ -8643,7 +8643,7 @@ class testcase extends tlObjectWithAttachments {
       }    
       
       $dm = explode(self::NAME_DIVIDE, $needle);
-      $target = $side['l'] . ((count($dm) > 0) ? $dm[0] : $needle);
+      $target = $side['l'] . ((count((array)$dm) > 0) ? $dm[0] : $needle);
 
       $juice = $this->orangeJuice($scan4values);
       $target .= self::NAME_DIVIDE . $juice . $side['r']; 
@@ -8701,7 +8701,7 @@ class testcase extends tlObjectWithAttachments {
 
     $xx = $this->db->fetchRowsIntoMap( $sql, 'tcversion_id' );
 
-    if( null != $xx && count($xx) > 0 ) {
+    if( null != $xx && count((array)$xx) > 0 ) {
       return array_keys($xx);
     } 
 
@@ -8768,7 +8768,7 @@ class testcase extends tlObjectWithAttachments {
            " link_status,author_id) ";
 
     $values = array();
-    if( null != $relSource && count($relSource) > 0) {
+    if( null != $relSource && count((array)$relSource) > 0) {
       foreach ($relSource as $key => $elem) {
         $stm = "($dest_id,{$elem['destination_id']}," .
                "{$elem['relation_type']},{$elem['link_status']}," .
@@ -8777,7 +8777,7 @@ class testcase extends tlObjectWithAttachments {
       } 
     }
 
-    if( null != $relDest && count($relDest) > 0) {
+    if( null != $relDest && count((array)$relDest) > 0) {
       foreach ($relDest as $key => $elem) {
         $stm = "({$elem['source_id']},$dest_id," .
                "{$elem['relation_type']},{$elem['link_status']}," .
@@ -8786,7 +8786,7 @@ class testcase extends tlObjectWithAttachments {
       } 
     }
 
-    if( count($values) > 0 ) {
+    if( count((array)$values) > 0 ) {
       $sql = 'INSERT INTO ' . $this->tables['testcase_relations'] .
              $ins . ' VALUES ' . implode(',',$values);
 
@@ -8943,7 +8943,7 @@ class testcase extends tlObjectWithAttachments {
       $reqSet = null;
       $reqVerSet = null; 
 
-      $loop2do=count($itemSet);
+      $loop2do=count((array)$itemSet);
       for($idx=0; $idx < $loop2do; $idx++) {
 
         $reqID = $itemSet[$idx]['req_id'];
@@ -9067,7 +9067,7 @@ class testcase extends tlObjectWithAttachments {
         $xx = explode($tlBeginTag,$play);
 
         // How many requests to replace ?
-        $xx2do = count($xx);
+        $xx2do = count((array)$xx);
         $ghost = '';
         for($xdx=0; $xdx < $xx2do; $xdx++) {
 
@@ -9077,7 +9077,7 @@ class testcase extends tlObjectWithAttachments {
             // Theorically can be just ONE, but it depends
             // is user had not messed things.
             $yy = explode($tlEndTag,$xx[$xdx]);
-            if( ($elc = count($yy)) > 0) {
+            if( ($elc = count((array)$yy)) > 0) {
               $cfname = trim($yy[0]);
               try {
                 // look for the custom field
@@ -9341,7 +9341,7 @@ class testcase extends tlObjectWithAttachments {
 
     $tcvSet = $this->db->fetchRowsIntoMap($sqlA,'id');
 
-    if( count($linkSet) > 0 ) {
+    if( count((array)$linkSet) > 0 ) {
 
       $safeTP = intval($tplanID);
       $linkItems = array_keys($linkSet);
@@ -9466,7 +9466,7 @@ class testcase extends tlObjectWithAttachments {
   */
   public function saveStepsPartialExec($partialExec,$context) 
   {
-    if (!is_null($partialExec) && count($partialExec) > 0) {
+    if (!is_null($partialExec) && count((array)$partialExec) > 0) {
       $stepsIDSet = array_keys($partialExec['notes']);
       $this->deleteStepsPartialExec($stepsIDSet,$context);
         
@@ -9527,7 +9527,7 @@ class testcase extends tlObjectWithAttachments {
 
     $rs = (array)$this->db->get_recordset($sql);
 
-    return (count($rs) > 0);
+    return (count((array)$rs) > 0);
   }
 
 
@@ -9540,7 +9540,7 @@ class testcase extends tlObjectWithAttachments {
    */
   public function getStepsPartialExec($stepsIds,$context) {
     $rs = null;  
-    if (!is_null($stepsIds) && count($stepsIds) > 0) {
+    if (!is_null($stepsIds) && count((array)$stepsIds) > 0) {
 
       $fields2get = "tcstep_id,testplan_id,platform_id,build_id,
                      tester_id,notes,status,creation_ts";
@@ -9563,7 +9563,7 @@ class testcase extends tlObjectWithAttachments {
    * 
    */
   public function deleteStepsPartialExec($stepsIds,$context) {
-    if( count($stepsIds) > 0 ) {
+    if( count((array)$stepsIds) > 0 ) {
       // https://github.com/TestLinkOpenSourceTRMS/testlink-code/pull/327
       // Security
       $inClause = $this->db->prepare_string(implode(",",$stepsIds));
@@ -9817,7 +9817,7 @@ class testcase extends tlObjectWithAttachments {
     $adt = array('on' => self::AUDIT_ON, 'version' => null);
     $adt = array_merge($adt, (array)$audit);
 
-    if( count($idSet) == 0 ) {
+    if( count((array)$idSet) == 0 ) {
       return true;
     }
 
@@ -9849,7 +9849,7 @@ class testcase extends tlObjectWithAttachments {
       }
     }
 
-    if( count($dummy) <= 0 ) {
+    if( count((array)$dummy) <= 0 ) {
       return;
     }
 

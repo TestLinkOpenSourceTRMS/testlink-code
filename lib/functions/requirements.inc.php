@@ -123,7 +123,7 @@ function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID
   $unknown_code = lang_get('unknown_code');
   $reqMgr = new requirement_mgr($dbHandler);
   $arrImport = null;
-  if( ($loop2do=count($arrImportSource)) )
+  if( ($loop2do=count((array)$arrImportSource)) )
   {
     $getOptions = array('output' => 'minimun');
     $messages = array('ok' => '', 'import_req_conflicts_other_branch' => '','import_req_exists_here' => '');
@@ -193,7 +193,7 @@ function getReqDocIDs(&$db,$srs_id)
   $arrCurrentReq = $req_spec_mgr->get_requirements($srs_id);
 
   $result = null;
-  if (count($arrCurrentReq))
+  if (count((array)$arrCurrentReq))
   {
     // only if some reqs exist
     foreach ($arrCurrentReq as $data)
@@ -258,7 +258,7 @@ function importReqDataFromCSV($fileName)
   $fieldMappings = array("docid","title","description","type","status","expected_coverage","node_order");
     
 
-  $options = array('delimiter' => ',' , 'fieldQty' => count($fieldMappings));
+  $options = array('delimiter' => ',' , 'fieldQty' => count((array)$fieldMappings));
   $impData = importCSVData($fileName,$fieldMappings,$options);
   
   $reqData = &$impData['info'];
@@ -272,7 +272,7 @@ function importReqDataFromCSV($fileName)
     $fieldDefault = array("type" => array('check' => 'type_labels', 'value' => TL_REQ_TYPE_FEATURE), 
                           "status" => array('check' => 'status_labels' , 'value' => TL_REQ_STATUS_VALID));
   
-    $loop2do = count($reqData);
+    $loop2do = count((array)$reqData);
     for($ddx=0; $ddx < $loop2do; $ddx++)
     {
       foreach($reqData[$ddx] as $fieldKey => &$fieldValue)
@@ -310,7 +310,7 @@ function importReqDataFromCSVDoors($fileName)
   $fieldMappings = array("Object Identifier" => "title","Object Text" => "description",
                  "Created By","Created On","Last Modified By","Last Modified On");
   
-  $options = array('delimiter' => ',', 'fieldQty' => count($fieldMappings), 'processHeader' => true);
+  $options = array('delimiter' => ',', 'fieldQty' => count((array)$fieldMappings), 'processHeader' => true);
   $impData = importCSVData($fileName,$fieldMappings,$options);
 
   return $impData;
@@ -531,7 +531,7 @@ function doReqImport(&$dbHandler,$tprojectID,$userID,$reqSpecID,$fileName,$impor
   $arrImportSource = loadImportedReq($fileName, $importType);
   $arrImport = null;
 
-  if (count($arrImportSource))
+  if (count((array)$arrImportSource))
   {
     $map_cur_reqdoc_id = getReqDocIDs($dbHandler,$reqSpecID);
     if ($doImport)
@@ -585,13 +585,13 @@ function getReqCoverage(&$dbHandler,$reqs,&$execMap)
       $status_counters[$resultsCfg['status_code'][$status_code]]=0;
   }
   
-  $reqs_qty=count($reqs);
+  $reqs_qty=count((array)$reqs);
   if($reqs_qty > 0)
   {
     foreach($reqs as $requirement_id => $req_tcase_set)
     {
       $first_key=key($req_tcase_set);
-      $item_qty = count($req_tcase_set);
+      $item_qty = count((array)$req_tcase_set);
       $req = array("id" => $requirement_id, "title" => $req_tcase_set[$first_key]['req_title'],
                    "req_doc_id" => $req_tcase_set[$first_key]["req_doc_id"]);
       
@@ -720,7 +720,7 @@ function getReqCoverage(&$dbHandler,$reqs,&$execMap)
 function getLastExecutions(&$db,$tcaseSet,$tplanId)
 {
   $execMap = array();
-  if (sizeof($tcaseSet))
+  if (sizeof((array)$tcaseSet))
   {
     $tcase_mgr = new testcase($db);
       $items=array_keys($tcaseSet);
@@ -949,7 +949,7 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
       $sql = $sql2exec[$accessKey] . "'{$matches[$patternPositions['doc_id']][$key]}'";
       $rs = $dbHandler->get_recordset($sql);
       
-      if (count($rs) > 0) 
+      if (count((array)$rs) > 0) 
       {
   
         foreach($rs as $key => $value) 

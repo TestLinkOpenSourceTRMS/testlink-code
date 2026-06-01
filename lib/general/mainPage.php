@@ -37,7 +37,7 @@ $testplanID = intval($testplanID);
 
 $accessibleItems = $tproject_mgr->get_accessible_for_user($user->dbID,array('output' => 'map_name_with_inactive_mark'));
 $tprojectQty = $tproject_mgr->getItemCount();
-$userIsBlindFolded = (is_null($accessibleItems) || count($accessibleItems) == 0) && $tprojectQty > 0;
+$userIsBlindFolded = (is_null($accessibleItems) || count((array)$accessibleItems) == 0) && $tprojectQty > 0;
 
 if($userIsBlindFolded) {
   $testprojectID = $testplanID = 0;
@@ -88,7 +88,7 @@ if($testplanID > 0) {
 	//
 	$index=0;
 	$found=0;
-	$loop2do=count($arrPlans);
+	$loop2do=count((array)$arrPlans);
 	for($idx=0; $idx < $loop2do; $idx++) {
   	if( $arrPlans[$idx]['id'] == $testplanID ) {
      	$found = 1;
@@ -154,7 +154,7 @@ $gui->url = array('metrics_dashboard' => 'lib/results/metricsDashboard.php',
                   'testcase_assignments' => 'lib/testcases/tcAssignedToUser.php');
 $gui->launcher = 'lib/general/frmWorkArea.php';
 $gui->arrPlans = $arrPlans;                   
-$gui->countPlans = count($gui->arrPlans);
+$gui->countPlans = count((array)$gui->arrPlans);
 
 
 $gui->testprojectID = $testprojectID;

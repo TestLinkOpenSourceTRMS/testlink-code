@@ -39,7 +39,7 @@ switch ($args->doAction) {
     $gui->file_check = $dummy->file_check;
     $gui->userFeedback = (array)$dummy->userFeedback;
     $gui->importResult = lang_get('import_done');
-    if(array_key_exists("syntaxError", $gui->userFeedback) && count($gui->userFeedback['syntaxError']) > 0) {
+    if(array_key_exists("syntaxError", $gui->userFeedback) && count((array)$gui->userFeedback['syntaxError']) > 0) {
       $gui->importResult = lang_get('import_syntax_error');
     }
     $gui->refreshTree = $args->refreshTree && $gui->file_check['status_ok'];  
@@ -283,7 +283,7 @@ function doReqImportFromXML(&$reqSpecMgr,&$reqMgr,&$simpleXMLObj,$importContext,
       $items = array_merge($items,$dummy);
     }
   } else {
-    $loop2do = count($simpleXMLObj->requirement);
+    $loop2do = count((array)$simpleXMLObj->requirement);
     for($kdx=0; $kdx < $loop2do; $kdx++) {   
       $dummy = $reqMgr->createFromXML($simpleXMLObj->requirement[$kdx],$importContext->tproject_id,
           $importContext->req_spec_id,$importContext->user_id,null,$importOptions);
@@ -306,7 +306,7 @@ function doReqImportOther(&$reqMgr,$fileName,$importContext,$importOptions)
   if( !is_null($impSet) )
   { 
     $reqSet = $impSet['info'];
-    if( ($loop2do=count($reqSet)) )
+    if( ($loop2do=count((array)$reqSet)) )
     {
       for($kdx=0; $kdx < $loop2do; $kdx++)
       {   

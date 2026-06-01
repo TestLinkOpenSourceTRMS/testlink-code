@@ -912,7 +912,7 @@ class tlTestPlanMetrics extends testplan
     $totals = array();
     $priorityCfg = config_get('urgencyImportance');
     if( !is_null($rs) ) {
-      $loop2do = count($rs);
+      $loop2do = count((array)$rs);
       if( $my['opt']['groupByPlatform'] ) {
         // loop2do => platform Qty
         foreach( $rs as $platID => $elem ) {
@@ -1023,7 +1023,7 @@ class tlTestPlanMetrics extends testplan
     $safe_id = intval($id);  
     list($my,$builds,$sqlStm,$union,$platformSet) = $this->helperBuildSQLExecCounters($id, $filters, $opt);
 
-    if(is_null($builds) || count($builds) <= 0) {
+    if(is_null($builds) || count((array)$builds) <= 0) {
       return null;  // >>---> Bye!
     }  
 
@@ -1394,7 +1394,7 @@ class tlTestPlanMetrics extends testplan
         // only element contains Root node, is useless for this algorithm
         // 
         
-        if( count($staircase[$tsuite_id]) > 1) {
+        if( count((array)$staircase[$tsuite_id]) > 1) {
           // element at position 1 is a TOP LEVEL SUITE
           //$topSuiteID = &$staircase[$tsuite_id][1];
           $topSuiteID = $staircase[$tsuite_id][1];
@@ -1459,7 +1459,7 @@ class tlTestPlanMetrics extends testplan
         // only element contains Root node, is useless for this algorithm
         // 
         
-        if( count($staircase[$tsuite_id]) > 1) {
+        if( count((array)$staircase[$tsuite_id]) > 1) {
           // element at position 1 is a TOP LEVEL SUITE
           $topSuiteID = &$staircase[$tsuite_id][1];
           $initName = false;
@@ -1627,7 +1627,7 @@ class tlTestPlanMetrics extends testplan
   
     // Build item set
     $exec['tsuites_full'] = $this->get_testsuites($safe_id);
-    $loop2do = count($exec['tsuites_full']);
+    $loop2do = count((array)$exec['tsuites_full']);
     for($idx=0; $idx < $loop2do; $idx++) {
       $keySet[] = $exec['tsuites_full'][$idx]['id'];
 
@@ -2408,8 +2408,8 @@ class tlTestPlanMetrics extends testplan
 
         $dx = (array)$this->db->get_recordset($sql); 
 
-        $l2do = count($dx);
-        $loop2do = count($dummy);
+        $l2do = count((array)$dx);
+        $loop2do = count((array)$dummy);
         for($vdx=0; $vdx < $l2do; $vdx++)
         { 
           for($fdx=0; $fdx < $loop2do; $fdx++)
@@ -2789,7 +2789,7 @@ class tlTestPlanMetrics extends testplan
       $priorityCfg = config_get('urgencyImportance');
       $cache = array('tsuite' => null, 'tcase' => null);
 
-      $loop2do = count($rs);
+      $loop2do = count((array)$rs);
       $gnOpt = array('fields' => 'name');
 
       for($adx=0; $adx < $loop2do; $adx++)
@@ -3018,7 +3018,7 @@ class tlTestPlanMetrics extends testplan
     $buildSet = $this->get_builds($safeID,testplan::ACTIVE_BUILDS,
                                   testplan::OPEN_BUILDS);
 
-    $sql .= " HAVING COUNT(0) = " . count($buildSet);
+    $sql .= " HAVING COUNT(0) = " . count((array)$buildSet);
     $sql .= " ORDER BY platform_name,full_external_id ";
     
     return $this->db->get_recordset($sql);      
@@ -3156,7 +3156,7 @@ class tlTestPlanMetrics extends testplan
     $buildSet = $this->get_builds($safeID,testplan::ACTIVE_BUILDS,
                                   testplan::OPEN_BUILDS);
 
-    $sql .= " HAVING COUNT(0) = " . count($buildSet);
+    $sql .= " HAVING COUNT(0) = " . count((array)$buildSet);
     
     // echo $sql;
     return $this->db->get_recordset($sql);      
@@ -3232,7 +3232,7 @@ class tlTestPlanMetrics extends testplan
     $buildSet = $this->get_builds($safeID,testplan::ACTIVE_BUILDS,
                                   testplan::OPEN_BUILDS);
 
-    $sql .= " HAVING COUNT(0) = " . count($buildSet);
+    $sql .= " HAVING COUNT(0) = " . count((array)$buildSet);
     // $sql .= " ORDER BY platform_name,full_external_id ";
     
     // echo $sql;
@@ -3406,7 +3406,7 @@ class tlTestPlanMetrics extends testplan
            }
         */
 
-        $tsuiteDepth = count($staircase[$tsuite_id]);
+        $tsuiteDepth = count((array)$staircase[$tsuite_id]);
 
         $l2id = -1;
         if ($tsuiteDepth > 1) {
@@ -3636,7 +3636,7 @@ class tlTestPlanMetrics extends testplan
             WHERE testplan_id = $id 
             GROUP BY {$fieldList}";
    
-    $levels = count($context);
+    $levels = count((array)$context);
     switch ($levels) {
       case 1:
         $rs = $this->db->fetchRowsIntoMap($sql,'testplan_id');

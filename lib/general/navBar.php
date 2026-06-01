@@ -69,7 +69,7 @@ function init_args(&$dbH)
              ON TPRJ.id = NH.id ";
     $rs = (array)$dbH->get_recordset($sql);
 
-    if(count($rs) == 0) {
+    if(count((array)$rs) == 0) {
       $args->newInstallation = true;
     }  
   }  
@@ -93,7 +93,7 @@ function initializeGui(&$db,&$args) {
   $gui->TestProjects = 
     $tproject_mgr->get_accessible_for_user($args->user->dbID,$opx);
 
-  $gui->TestProjectCount = sizeof($gui->TestProjects);
+  $gui->TestProjectCount = sizeof((array)$gui->TestProjects);
   if($gui->TestProjectCount == 0) {
     $gui->TestProjects = null;
   } 
@@ -150,7 +150,7 @@ function initializeGui(&$db,&$args) {
   if($gui->tproject_id) {
     $testPlanSet = 
       (array)$args->user->getAccessibleTestPlans($db,$gui->tproject_id);
-    $gui->TestPlanCount = sizeof($testPlanSet);
+    $gui->TestPlanCount = sizeof((array)$testPlanSet);
 
     $tplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : null;
     if( !is_null($tplanID) ) {
@@ -163,7 +163,7 @@ function initializeGui(&$db,&$args) {
       //
       $index=0;
       $testPlanFound=0;
-      $loop2do=count($testPlanSet);
+      $loop2do=count((array)$testPlanSet);
       for($idx=0; $idx < $loop2do; $idx++) {
         if( $testPlanSet[$idx]['id'] == $tplanID ) {
           $testPlanFound = 1;
@@ -172,7 +172,7 @@ function initializeGui(&$db,&$args) {
         }
       }
 
-      if( $testPlanFound == 0 && is_array($testPlanSet) &&  count($testPlanSet) > 0) {
+      if( $testPlanFound == 0 && is_array($testPlanSet) &&  count((array)$testPlanSet) > 0) {
         $tplanID = $testPlanSet[0]['id'];
         setSessionTestPlan($testPlanSet[0]);      
       } 

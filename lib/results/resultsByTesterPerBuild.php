@@ -140,7 +140,7 @@ $smartTable->toolbarShowAllColumnsButton = true;
 $gui->tableSet = array($smartTable);
 
 // show warning message instead of table if table is empty
-$gui->warning_message = (count($rows) > 0) ? '' : lang_get('no_testers_per_build');
+$gui->warning_message = (count((array)$rows) > 0) ? '' : lang_get('no_testers_per_build');
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

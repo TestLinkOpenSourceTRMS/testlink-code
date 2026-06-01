@@ -102,7 +102,7 @@ function html_table_of_custom_field_inputs($htmlInputSize=0)
       // make it a parameter if someone really wants to keep it.
       $custom_field_types_id=array_flip($this->custom_field_types);
 
-      if( !is_null($cf) and count($cf) > 0 )
+      if( !is_null($cf) and count((array)$cf) > 0 )
       {
         foreach ($cf as $key => $value )
         {
@@ -127,7 +127,7 @@ function html_table_of_custom_field_inputs($htmlInputSize=0)
                 // unset($cf[$key]);
             //}
         }
-      } // if( !is_null($cf) and count($cf) > 0 )
+      } // if( !is_null($cf) and count((array)$cf) > 0 )
       return($cf);
     }
 

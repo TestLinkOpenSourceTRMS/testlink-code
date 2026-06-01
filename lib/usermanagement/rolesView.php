@@ -32,7 +32,7 @@ switch ($args->doAction)
     if ($role)
     {
       $gui->affectedUsers = $role->getAllUsersWithRole($db);
-      $doDelete = (sizeof($gui->affectedUsers) == 0);
+      $doDelete = (sizeof((array)$gui->affectedUsers) == 0);
     }
   break;
 

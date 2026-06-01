@@ -310,7 +310,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $guiObj->buildInfoSet = 
     $tplanMgr->get_builds($argsObj->tplan_id, testplan::ACTIVE_BUILDS,null,
                           array('orderBy' => $guiObj->matrixCfg->buildOrderByClause)); 
-  $guiObj->activeBuildsQty = count($guiObj->buildInfoSet);
+  $guiObj->activeBuildsQty = count((array)$guiObj->buildInfoSet);
 
 
   foreach($cfg['results']['code_status'] as $code => $verbose) {
@@ -371,7 +371,7 @@ function createSpreadsheet($gui,$args,$media) {
   $dataHeader[] = $lbl['latest_execution'];
   $dataHeader[] = $lbl['latest_exec_notes'];
 
-  $startingRow = count($lines2write) + 2; // MAGIC
+  $startingRow = count((array)$lines2write) + 2; // MAGIC
   $cellArea = "A{$startingRow}:";
   foreach ($dataHeader as $zdx => $field) {
     $cellID = $cellRange[$zdx] . $startingRow; 
@@ -383,7 +383,7 @@ function createSpreadsheet($gui,$args,$media) {
   $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($style['DataHeader']);	
 
   $startingRow++;
-  $qta_loops = count($gui->matrix);
+  $qta_loops = count((array)$gui->matrix);
   for($idx = 0; $idx < $qta_loops; $idx++) {
 		foreach($gui->matrix[$idx] as $ldx => $field) {
 			$cellID = $cellRange[$ldx] . $startingRow; 
@@ -618,7 +618,7 @@ function initStyleSpreadsheet() {
  */
 function setCellRangeSpreadsheet() {
   $cr = range('A','Z');
-  $crLen = count($cr);
+  $crLen = count((array)$cr);
   for($idx = 0; $idx < $crLen; $idx++) {
     for($jdx = 0; $jdx < $crLen; $jdx++) {
       $cr[] = $cr[$idx] . $cr[$jdx];

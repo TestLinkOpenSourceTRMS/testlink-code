@@ -226,7 +226,7 @@ class tlExtTable extends tlTable
     }
     
     $s = '[';
-    $n_columns = sizeof($this->columns);
+    $n_columns = sizeof((array)$this->columns);
     $options = array('width','hidden','groupable','hideable');
 
     for ($i=0; $i<$n_columns; $i++) 
@@ -339,7 +339,7 @@ class tlExtTable extends tlTable
   function buildFields()
   {
     $s = '[';
-    $n_columns = sizeof($this->columns);
+    $n_columns = sizeof((array)$this->columns);
     for ($i=0; $i < $n_columns; $i++) {
       $column = $this->columns[$i];
       $s .= "{name: '{$column['col_id']}'";

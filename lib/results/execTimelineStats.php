@@ -186,7 +186,7 @@ function createSpreadsheet($gui,$args,&$tplanMgr)
 
   $objPHPExcel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
   $lines2write = xlsStepOne($objPHPExcel,$style,$lbl,$gui);
-  $startingRow = count($lines2write); // MAGIC
+  $startingRow = count((array)$lines2write); // MAGIC
   $dataHeader = array();
   foreach( $dataHeaderMetrics as $val ) {
     $dataHeader[] = $val;
@@ -322,7 +322,7 @@ function initStyleSpreadsheet() {
  */
 function setCellRangeSpreadsheet() {
   $cr = range('A','Z');
-  $crLen = count($cr);
+  $crLen = count((array)$cr);
   for($idx = 0; $idx < $crLen; $idx++) {
     for($jdx = 0; $jdx < $crLen; $jdx++) {
       $cr[] = $cr[$idx] . $cr[$jdx];

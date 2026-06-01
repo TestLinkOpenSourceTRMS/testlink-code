@@ -408,7 +408,7 @@ class tree extends tlObject
   function get_path($node_id,$to_node_id = null,$format = 'full')  {
     $the_path = array();
     $this->_get_path($node_id,$the_path,$to_node_id,$format); 
-    if( !is_null($the_path) && count($the_path) > 0 ) {
+    if( !is_null($the_path) && count((array)$the_path) > 0 ) {
       $the_path = array_reverse($the_path);  
     }
     return $the_path;
@@ -423,7 +423,7 @@ class tree extends tlObject
     $matrioska = array();
     $this->_get_path($node_id,$the_path,$to_node_id,$format); 
     
-    if( !is_null($the_path) && ($loop2do=count($the_path)) > 0 ) {
+    if( !is_null($the_path) && ($loop2do=count((array)$the_path)) > 0 ) {
       $the_path=array_reverse($the_path);  
       $matrioska = $the_path[0];
       $matrioska['childNodes']=array();
@@ -730,7 +730,7 @@ class tree extends tlObject
     $sql .= " GROUP BY parent_id ";
     $rs = (array)$this->db->get_recordset($sql);
       
-    return (count($rs) > 0 ? $rs[0]['max_order']: 0);     
+    return (count((array)$rs) > 0 ? $rs[0]['max_order']: 0);     
   }
   
   
@@ -1218,7 +1218,7 @@ class tree extends tlObject
         $output_format = isset($options['output_format']) ? $options['output_format'] : $output_format;
       }
       
-      // according to count($items) we will try to optimize, sorry for magic number
+      // according to count((array)$items) we will try to optimize, sorry for magic number
       if( count((array)$items) > 200)
       {
         $xitems = array_flip((array)$items);
@@ -1252,7 +1252,7 @@ class tree extends tlObject
         }
       }
       
-      $status_ok = (!is_null($all_nodes) && count($all_nodes) > 0);
+      $status_ok = (!is_null($all_nodes) && count((array)$all_nodes) > 0);
       if( $status_ok )
       { 
         // get only different items, to get descriptions
@@ -1399,7 +1399,7 @@ class tree extends tlObject
    */
   function getTreeRoot($node_id) {
     $path = (array)$this->get_path($node_id);
-    $path_len = count($path);
+    $path_len = count((array)$path);
     $root_node_id = ($path_len > 0)? $path[0]['parent_id'] : $node_id;
     return $root_node_id;
   }
@@ -1477,7 +1477,7 @@ class tree extends tlObject
     if( !is_null($root_id) && ($node_id != $root_id) )
     {
       $children = (array)$this->db->get_recordset($sql);
-      if( count($children) == 0 )
+      if( count((array)$children) == 0 )
       {
         $sql2 = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
                 " WHERE NH.id = " . $this->db->prepare_int($node_id);
@@ -1625,7 +1625,7 @@ class tree extends tlObject
             $containerSet[] = $row['id'];
         }
       }
-      if (sizeof($containerSet))
+      if (sizeof((array)$containerSet))
       {
         $containerSet  = implode(",",$containerSet);
         $this->getAllItemsID($containerSet,$itemSet,$coupleTypes);

@@ -50,7 +50,7 @@ $buildSet = array('buildSet' => $args->builds->idSet);
 
 if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || 
     ($args->doAction == 'result' && 
-     count($args->builds->idSet) <= $gui->matrixCfg->buildQtyLimit) ) {
+     count((array)$args->builds->idSet) <= $gui->matrixCfg->buildQtyLimit) ) {
 
   $tpl = $templateCfg->default_template;
 
@@ -149,7 +149,7 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null) {
     ['title_key' => 'title_test_case_title', 'width' => 150]
   ];
   
-  if(!is_null($guiObj->platforms) && (count($guiObj->platforms) > 0)) {
+  if(!is_null($guiObj->platforms) && (count((array)$guiObj->platforms) > 0)) {
     $columns[] = [
       'title_key' => 'platform', 
       'width' => 60, 
@@ -288,7 +288,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $guiObj->matrix = [];
 
   $guiObj->platforms = (array)$tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
-  $guiObj->show_platforms = (count($guiObj->platforms) > 0);
+  $guiObj->show_platforms = (count((array)$guiObj->platforms) > 0);
 
   $guiObj->img = new stdClass();
   $guiObj->img->exec = $imgSet['exec_icon'];
@@ -325,7 +325,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $guiObj->matrixCfg  = config_get('resultMatrixReport');
   $guiObj->buildInfoSet = $tplanMgr->get_builds($argsObj->tplan_id, testplan::ACTIVE_BUILDS,null,
                                                 array('orderBy' => $guiObj->matrixCfg->buildOrderByClause)); 
-  $guiObj->activeBuildsQty = count($guiObj->buildInfoSet);
+  $guiObj->activeBuildsQty = count((array)$guiObj->buildInfoSet);
 
 
   // hmm need to understand if this can be removed
@@ -406,7 +406,7 @@ function createSpreadsheet($gui,$args,$media) {
     $lbl['title_test_case_title']
   ];
 
-  if( $showPlatforms = count($gui->platforms) > 0 )
+  if( $showPlatforms = count((array)$gui->platforms) > 0 )
   {
     $dataHeader[] = $lbl['platform'];
   }
@@ -449,7 +449,7 @@ function createSpreadsheet($gui,$args,$media) {
   $dataHeader[] = $lbl['last_execution'];
   $dataHeader[] = $lbl['latest_exec_notes'];
 
-  $startingRow = count($lines2write) + 2; // MAGIC
+  $startingRow = count((array)$lines2write) + 2; // MAGIC
   $cellArea = "A{$startingRow}:";
   foreach($dataHeader as $zdx => $field)
   {
@@ -462,7 +462,7 @@ function createSpreadsheet($gui,$args,$media) {
   $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($style['DataHeader']);	
 
   $startingRow++;
-  $qta_loops = count($gui->matrix);
+  $qta_loops = count((array)$gui->matrix);
   for($idx = 0; $idx < $qta_loops; $idx++)
   {
 		foreach($gui->matrix[$idx] as $ldx => $field)
@@ -781,7 +781,7 @@ function initStyleSpreadsheet() {
  */
 function setCellRangeSpreadsheet() {
   $cr = range('A','Z');
-  $crLen = count($cr);
+  $crLen = count((array)$cr);
   for($idx = 0; $idx < $crLen; $idx++) {
     for($jdx = 0; $jdx < $crLen; $jdx++) {
       $cr[] = $cr[$idx] . $cr[$jdx];

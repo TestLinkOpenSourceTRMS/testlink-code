@@ -556,7 +556,7 @@ function strings_stripSlashes($parameter,$bGPC = true)
   if (is_array($parameter))
   {
     $retParameter = null;
-    if (sizeof($parameter))
+    if (sizeof((array)$parameter))
     {
       foreach($parameter as $key=>$value)
       {
@@ -950,7 +950,7 @@ function split_localized_date($timestamp,$dateFormat)
   $format = preg_split('//', $strippedDateFormat, -1, PREG_SPLIT_NO_EMPTY);
   $pieces = explode($splitChar,$timestamp);
   $result = array();
-  if( count($pieces) == 3 )  // MAGIC ALLOWED 
+  if( count((array)$pieces) == 3 )  // MAGIC ALLOWED 
   {
     $k2t = array('Y' => 'year', 'm' => 'month', 'd' => 'day');
     foreach ($format as $idx => $access) 
@@ -1136,7 +1136,7 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
   doDBConnect($dbHandler);
 
   $user = tlUser::getByAPIKey($dbHandler,$apikey);
-  if( count($user) == 1 ) {
+  if( count((array)$user) == 1 ) {
     $_SESSION['lastActivity'] = time();
     $userObj = new tlUser(key($user));
     $userObj->readFromDB($dbHandler);
@@ -1571,7 +1571,7 @@ function initUserEnv(&$dbH, $context, $opt=null) {
   $args->zeroTestProjects = $gui->zeroTestProjects; 
 
   $args->userIsBlindFolded = 
-    (is_null($gui->prjSet) || count($gui->prjSet) == 0) 
+    (is_null($gui->prjSet) || count((array)$gui->prjSet) == 0) 
     && $gui->prjQtyWholeSystem > 0;
   if( $args->userIsBlindFolded ) {
     $args->current_tproject_id = 0;
@@ -1607,7 +1607,7 @@ function initUserEnv(&$dbH, $context, $opt=null) {
     // $gpOpt = array('output' => 'map');
     $gpOpt = null;
     $gui->tplanSet = (array)$args->user->getAccessibleTestPlans($dbH,$args->tproject_id,$gpOpt);
-    $gui->countPlans = count($gui->tplanSet);
+    $gui->countPlans = count((array)$gui->tplanSet);
   
     /* 20191212 - will remove because have created issues
        with IVU, and I not sure anymore of usefulness 
@@ -2052,7 +2052,7 @@ function getFirstLevelMenuStructure()
  *
  */
 function doTestPlanSetup(&$gui) {
-  $loop2do = count($gui->tplanSet);
+  $loop2do = count((array)$gui->tplanSet);
   if( $loop2do == 0 ) {
     return $gui->tplan_id;
   }

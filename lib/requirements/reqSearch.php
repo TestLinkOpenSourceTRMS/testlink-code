@@ -52,7 +52,7 @@ if ($args->tprojectID) {
   $map = (array)$db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
 
   // dont show requirements from different testprojects than the selected one
-  if (count($map)) {
+  if (count((array)$map)) {
     $reqIDSet = array_keys($map);
     foreach ($reqIDSet as $item)  {
       $pid = $tproject_mgr->tree_manager->getTreeRoot($item);
@@ -64,7 +64,7 @@ if ($args->tprojectID) {
 }
 
 $smarty = new TLSmarty();
-$gui->row_qty = count($map);
+$gui->row_qty = count((array)$map);
 if($gui->row_qty > 0) {
   $gui->resultSet = $map;
   if($gui->row_qty <= $req_cfg->search->max_qty_for_display) {
@@ -122,7 +122,7 @@ function buildExtTable($gui, $charset) {
   //
   //
 
-  if(count($gui->resultSet) > 0) {
+  if(count((array)$gui->resultSet) > 0) {
     $columns = array();
     
     $columns[] = array('title_key' => 'req_spec');

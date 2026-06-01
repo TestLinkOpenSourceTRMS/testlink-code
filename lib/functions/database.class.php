@@ -449,7 +449,7 @@ class database {
 
   /** @return integer count queries */
   function count_queries () {
-    return count( $this->queries_array );
+    return count((array)$this->queries_array);
     }
 
 
@@ -470,7 +470,7 @@ class database {
 
   /** get total time for queries */
   function time_queries () {
-    $t_count = count( $this->queries_array );
+    $t_count = count((array)$this->queries_array);
     $t_total = 0;
     for ( $i = 0; $i < $t_count; $i++ ) {
       $t_total += $this->queries_array[$i][1];

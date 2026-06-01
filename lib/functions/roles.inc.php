@@ -258,12 +258,12 @@ function checkForRights($rights,$roleQuestion,$bAND = 1) {
     $r = array_intersect($roleQuestion,$rights);
     if ($bAND) {
       //for AND all rights must be present
-      if (sizeof($r) == sizeof($roleQuestion)) {
+      if (sizeof((array)$r) == sizeof((array)$roleQuestion)) {
         $ret = 'yes';
       }  
     } else {
       //for OR one of all must be present
-      if (sizeof($r)) {
+      if (sizeof((array)$r)) {
         $ret = 'yes';
       }  
     }  

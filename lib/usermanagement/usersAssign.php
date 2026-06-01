@@ -115,7 +115,7 @@ $gui->grants = getGrantsForUserMgmt($db,$args->user,$target->testprojectID,-1);
 $gui->accessTypeImg = '';
 
 
-if(is_null($gui->features) || count($gui->features) == 0) {
+if(is_null($gui->features) || count((array)$gui->features) == 0) {
   $gui->features = null;
   if( $gui->user_feedback == '' ) {
 		$gui->user_feedback = $gui->not_for_you;
@@ -304,7 +304,7 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users) {
 	if (!$argsObj->featureID) {
 		if ($argsObj->testprojectID) {
 			$argsObj->featureID = $argsObj->testprojectID;
-		} else if (sizeof($features)) {
+		} else if (sizeof((array)$features)) {
 		  $xx = current($features);
 			$argsObj->featureID = $xx['id'];
 		}	
@@ -375,7 +375,7 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
     // if nothing special was selected, 
     // use the one in the session or the first
     if (!$argsObj->featureID) {
-      if (sizeof($features)) {
+      if (sizeof((array)$features)) {
         if ($argsObj->testplanID) {
           $key2loop = array_keys($features);
           foreach($key2loop as $idx) {
@@ -460,7 +460,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 		}
 		else
 		{
-		  //$loop2do = sizeof($activeTestplans);
+		  //$loop2do = sizeof((array)$activeTestplans);
 			//for($idx = 0; $idx < $loop2do; $idx++)
 			$features = array();
 		  $key2loop = array_keys($activeTestplans);
@@ -478,11 +478,11 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 		//if nothing special was selected, use the one in the session or the first
 		if (!$argsObj->featureID)
 		{
-			if (sizeof($features))
+			if (sizeof((array)$features))
 			{
 				if ($argsObj->testplanID)
 				{
-				  // $loop2do = sizeof($features);
+				  // $loop2do = sizeof((array)$features);
 					// for($idx = 0; $idx < $loop2do; $idx++)
 					$key2loop = array_keys($features);
 					foreach($key2loop as $idx)

@@ -31,7 +31,7 @@ list($gui->tplan_metrics,$gui->show_platforms, $platforms) = getMetrics($db,$_SE
 
 
 // new dBug($gui->tplan_metrics);
-if(count($gui->tplan_metrics) > 0) 
+if(count((array)$gui->tplan_metrics) > 0) 
 {
   $statusSetForDisplay = $result_cfg['status_label_for_exec_ui']; 
   $gui->warning_msg = '';

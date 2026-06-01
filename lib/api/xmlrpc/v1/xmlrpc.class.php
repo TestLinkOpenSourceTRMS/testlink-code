@@ -1977,7 +1977,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                         $sql = " SELECT id FROM {$this->tables['builds']} " . " WHERE id = " . $sourceBuild . " AND testplan_id = " . $testPlanID;
                         $rs = $this->dbObj->get_recordset( $sql );
 
-                        if(count( $rs ) == 1) {
+                        if(count((array)$rs) == 1) {
                             $taskMgr = new assignment_mgr( $this->dbObj );
                             $taskMgr->copy_assignments( $sourceBuild, $insertID, $this->userID );
                         }
@@ -2035,7 +2035,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         if($status_ok) {
             $testProjectID = $this->args[self::$testProjectIDParamName];
             $info = $this->tprojectMgr->get_all_testplans( $testProjectID );
-            if(! is_null( $info ) && count( $info ) > 0) {
+            if(! is_null( $info ) && count((array)$info) > 0) {
                 $info = array_values( $info );
             }
             return $info;
@@ -2385,7 +2385,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 $result = $testCaseMgr->get_by_name( $testCaseName, $optional[self::$testSuiteNameParamName], $optional[self::$testProjectNameParamName] );
             }
 
-            $match_count = count( $result );
+            $match_count = count((array)$result);
             switch($match_count) {
                 case 0 :
                     $status_ok = false;
@@ -2675,7 +2675,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             ) );
             $targetPlatform = null;
 
-            if(count($platformSet) > 0) {
+            if(count((array)$platformSet) > 0) {
                 $status_ok = $this->checkPlatformIdentity( $this->args[self::$testPlanIDParamName], $platformSet, $msg_prefix );
                 if($status_ok) {
                     $targetPlatform[$this->args[self::$platformIDParamName]] = $platformSet[$this->args[self::$platformIDParamName]];
@@ -3342,7 +3342,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $keywords = trim( $keywords );
         if($keywords != "") {
             $a_keywords = explode( ",", $keywords );
-            $items_qty = count( $a_keywords );
+            $items_qty = count((array)$a_keywords);
             for($idx = 0; $idx < $items_qty; $idx ++) {
                 $a_keywords[$idx] = trim( $a_keywords[$idx] );
             }
@@ -3490,7 +3490,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
             $rs = $this->dbObj->get_recordset( $sql );
 
-            if(count( $rs ) != 1) {
+            if(count((array)$rs) != 1) {
                 $status_ok = false;
                 $tproject_info = $this->tprojectMgr->get_by_id( $tproject_id );
                 $msg = sprintf( TPLAN_TPROJECT_KO_STR, $tplan_info['name'], $tplan_id, $tproject_info['name'], $tproject_id );
@@ -3515,7 +3515,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $sql = " SELECT TCV.version,TCV.id " . " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " . " WHERE NH.parent_id = {$tcase_id} " . " AND TCV.version = {$version_number} " . " AND TCV.id = NH.id ";
 
             $target_tcversion = $this->dbObj->fetchRowsIntoMap( $sql, 'version' );
-            if(is_null( $target_tcversion ) || count( $target_tcversion ) != 1) {
+            if(is_null( $target_tcversion ) || count((array)$target_tcversion) != 1) {
                 $status_ok = false;
                 $tcase_info = $this->tcaseMgr->get_by_id( $tcase_id );
                 $msg = sprintf( TCASE_VERSION_NUMBER_KO_STR, $version_number, $tcase_external_id, $tcase_info[0]['name'] );
@@ -3555,7 +3555,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                     'outputFormat' => 'mapAccessByID'
             );
             $platformSet = (arrya)$this->tplanMgr->getPlatforms( $tplan_id, $opt );
-            $hasPlatforms = (count( $platformSet ) > 0);
+            $hasPlatforms = (count((array)$platformSet) > 0);
             $hasPlatformIDArgs = $this->_isParamPresent( self::$platformIDParamName );
 
             if($hasPlatforms) {
@@ -4574,7 +4574,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
             $result = $testCaseMgr->get_by_id( $id, $version_id, $filters );
 
-            if(0 == sizeof( $result )) {
+            if(0 == sizeof((array)$result)) {
                 $status_ok = false;
                 $this->errors[] = new IXR_ERROR( NO_TESTCASE_FOUND, $msg_prefix . NO_TESTCASE_FOUND_STR );
                 return $this->errors;
@@ -4823,7 +4823,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $tplanID = $this->args[self::$testPlanIDParamName];
         $cfieldMgr = $this->tprojectMgr->cfield_mgr;
         $cfieldsMap = $cfieldMgr->get_linked_cfields_at_execution( $tprojectID, 1, 'testcase', null, null, null, 'name' );
-        $status_ok = !(is_null( $rs ) || is_null( $cfieldSet ) || count( $cfieldSet ) == 0);
+        $status_ok = !(is_null( $rs ) || is_null( $cfieldSet ) || count((array)$cfieldSet) == 0);
         $cfield4write = null;
         if($status_ok && ! is_null( $cfieldsMap )) {
             foreach( $cfieldSet as $name => $value ) {
@@ -5837,7 +5837,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         }
 
         if(! $status) {
-            $msg = $msg_prefix . sprintf( ATTACH_INVALID_ATTACHMENT_STR, $this->args[self::$fileNameParamName], sizeof( $this->args[self::$contentParamName] ) );
+            $msg = $msg_prefix . sprintf( ATTACH_INVALID_ATTACHMENT_STR, $this->args[self::$fileNameParamName], sizeof((array)$this->args[self::$contentParamName]) );
             $this->errors[] = new IXR_ERROR( ATTACH_INVALID_ATTACHMENT, $msg );
         }
 
@@ -5890,7 +5890,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $sql = " SELECT TCV.version,TCV.id " . " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " . " WHERE NH.parent_id = {$tcase_id} " . " AND TCV.version = {$version_number} " . " AND TCV.id = NH.id ";
 
         $target_tcversion = $this->dbObj->fetchRowsIntoMap( $sql, 'version' );
-        if(! is_null( $target_tcversion ) && count( $target_tcversion ) == 1) {
+        if(! is_null( $target_tcversion ) && count((array)$target_tcversion) == 1) {
             $dummy = current( $target_tcversion );
             $this->tcVersionID = $dummy['id'];
         } else {
@@ -7364,7 +7364,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             // access key => tcversion_id, tplan_id, platform_id
             $link = current( $info );
             $link = $link[$tplan_id]; // Inside test plan, is indexed by platform
-            $check_platform =(count( $link ) > 1) || ! isset( $link[0] );
+            $check_platform =(count((array)$link) > 1) || ! isset( $link[0] );
         }
 
         if($status_ok && $check_platform) {
@@ -7536,7 +7536,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 $targetIDs[] = $execContext['execution_id'];
             }
 
-            if ( count($targetIDs) > 0 ) {
+            if ( count((array)$targetIDs) > 0 ) {
                 $resultInfo[0]['bugs'] = array();
                 $sql = " SELECT DISTINCT bug_id FROM {$this->tables['execution_bugs']} " . " WHERE execution_id in(" . implode( ',', $targetIDs ) . ")";
                 $resultInfo[0]['bugs'] =( array ) $this->dbObj->get_recordset( $sql );
@@ -7631,7 +7631,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $link = current( $info );
             $link = $link[$tplan_id]; // Inside test plan, is indexed by platform
             $platform_id = 0;
-            $check_platform =(count( $link ) > 1) || ! isset( $link[0] );
+            $check_platform =(count((array)$link) > 1) || ! isset( $link[0] );
         }
 
         if($status_ok && $check_platform) {
@@ -8453,7 +8453,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $items = $tprojectMgr->get_subtree( $tproj['id'], $filters, $opt );
 
             $ni = array();
-            if(! is_null( $items ) &&($l2d = count( $items )) > 0) {
+            if(! is_null( $items ) &&($l2d = count((array)$items)) > 0) {
                 $tg = $this->args[self::$testSuiteNameParamName];
                 for($ydx = 0; $ydx <= $l2d; $ydx ++) {
                     if(strcmp( $items[$ydx]['name'], $tg ) == 0) {
@@ -8958,7 +8958,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             );
             $buildInfo = $bm->get_by_id( $buildID, $opx );
 
-            if($buildInfo == false || count( $buildInfo ) == 0) {
+            if($buildInfo == false || count((array)$buildInfo) == 0) {
                 $status_ok = false;
                 $msg = sprintf( INVALID_BUILDID_STR, $buildID );
                 $this->errors[] = new IXR_Error( INVALID_BUILDID, $msg );
@@ -9058,7 +9058,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                     $sql = "SELECT id FROM $target $where";
                     $rs = $this->dbObj->get_recordset( $sql );
 
-                    if(is_null( $rs ) or count( $rs ) != 1) {
+                    if(is_null( $rs ) or count((array)$rs) != 1) {
                         $sql = " INSERT INTO $target(";
 
                         $dbField[] = 'tcstep_id';

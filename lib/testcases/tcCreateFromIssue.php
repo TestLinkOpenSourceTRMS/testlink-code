@@ -148,7 +148,7 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
       if ($xmlKeywords)
       {
         $tproject = new testproject($db);
-        $loop2do = sizeof($xmlKeywords);
+        $loop2do = sizeof((array)$xmlKeywords);
         for($idx = 0; $idx < $loop2do ;$idx++)
         {
           $tproject->importKeywordsFromSimpleXML($tproject_id,$xmlKeywords[$idx]);
@@ -252,14 +252,14 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
 
     $reqSpecSet = $tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title','RSPEC.doc_id as rspec_doc_id', 'REQ.req_doc_id'),'req_doc_id');
-    $tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count($reqSpecSet) > 0);
+    $tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count((array)$reqSpecSet) > 0);
 
     $getVersionOpt = array('output' => 'minimun');
     $tcasePrefix = $tproject_mgr->getTestCasePrefix($tproject_id);
   }
   
   $resultMap = array();
-  $tc_qty = sizeof($tcData);
+  $tc_qty = sizeof((array)$tcData);
   $userIDCache = array();
   
   for($idx = 0; $idx <$tc_qty ; $idx++)
@@ -352,7 +352,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 
       if( !is_null($info) )
       {
-        $tcase_qty = count($info);
+        $tcase_qty = count((array)$info);
        switch($tcase_qty)
        {
            case 1:
@@ -392,7 +392,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
         { 
           // Get full path of existent Test Cases
           $stain = $tcase_mgr->tree_manager->get_path($item_id,null, 'name');
-          $n = count($stain);         
+          $n = count((array)$stain);         
           $stain[$n-1] = $tcasePrefix . config_get('testcase_cfg')->glue_character . $externalid . ':' . $stain[$n-1];
           $stain = implode('/',$stain);
           
@@ -478,7 +478,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 function buildKeywordList($kwMap,$keywords)
 {
   $items = array();
-  $loop2do = sizeof($keywords);
+  $loop2do = sizeof((array)$keywords);
   for($jdx = 0; $jdx <$loop2do ; $jdx++)
   {
     $items[] = $kwMap[trim($keywords[$jdx]['name'])]; 
@@ -657,7 +657,7 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
                      " AND REQ.srs_id={$req_spec_id} ";     
                    
               $rsx=$dbHandler->get_recordset($sql);
-              if( $useit=((!is_null($rsx) && count($rsx) > 0) ? true : false) )
+              if( $useit=((!is_null($rsx) && count((array)$rsx) > 0) ? true : false) )
               {
                 $cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']]=$rsx[0]['id'];
               }  
@@ -726,7 +726,7 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
   }
     
   $jdx = 0;
-  $loops2do=sizeof($xmlTCs);
+  $loops2do=sizeof((array)$xmlTCs);
   $tcaseSet = array();
   
   // $tcXML['elements'] = array('string' => array("summary","preconditions"),
@@ -796,7 +796,7 @@ function getStepsFromSimpleXMLObj($simpleXMLItems)
     // need to do this due to (maybe) a wrong name choice for XML element
   if( !is_null($items) )
   {
-    $loop2do = count($items);
+    $loop2do = count((array)$items);
     for($idx=0; $idx < $loop2do; $idx++)
     {
       $items[$idx]['expected_results'] = '';
@@ -924,7 +924,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
     }
 
     $childrenNodes = $xml->children();  
-    $loop2do = sizeof($childrenNodes);
+    $loop2do = sizeof((array)$childrenNodes);
     
     for($idx = 0; $idx < $loop2do; $idx++)
     {

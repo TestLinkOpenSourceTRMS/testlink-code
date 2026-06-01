@@ -192,7 +192,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options) {
   $resultMap = array();
   $tplan_mgr = null;
 
-  $tc_qty = sizeof($resultData);
+  $tc_qty = sizeof((array)$resultData);
   if($tc_qty) {
     $tplan_mgr=new testplan($db);
     $tproject_mgr=new testproject($db);
@@ -395,7 +395,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options) {
       			$stepSet = $tcase_mgr->getStepsSimple($tcversion_id,0,
       					  array('fields2get' => 'TCSTEPS.step_number,TCSTEPS.id',
       							'accessKey' => 'step_number'));
-      			$sc = count($tcase_exec['steps']);
+      			$sc = count((array)$tcase_exec['steps']);
 
       			for($sx=0; $sx < $sc; $sx++) {
       			  $snum = $tcase_exec['steps'][$sx]['step_number'];
@@ -496,7 +496,7 @@ function importExecutionsFromXML($xmlTCExecSet) {
   $execInfoSet=null;
   if($xmlTCExecSet) { 
     $jdx=0;
-    $exec_qty=sizeof($xmlTCExecSet);
+    $exec_qty=sizeof((array)$xmlTCExecSet);
     for($idx=0; $idx < $exec_qty ; $idx++) {
       $xmlTCExec=$xmlTCExecSet[$idx];
       $execInfo = importExecutionFromXML($xmlTCExec);
@@ -538,8 +538,8 @@ function importExecutionFromXML(&$xmlTCExec) {
   $execInfo['execution_type'] = intval((int) trim($xmlTCExec->execution_type));
   $execInfo['execution_duration'] = trim($xmlTCExec->execution_duration);
 
-  $bugQty = count($xmlTCExec->bug_id);
-  if( ($bugQty = count($xmlTCExec->bug_id)) > 0 ) {
+  $bugQty = count((array)$xmlTCExec->bug_id);
+  if( ($bugQty = count((array)$xmlTCExec->bug_id)) > 0 ) {
     foreach($xmlTCExec->bug_id as $bug) {
       $execInfo['bug_id'][] = (string) $bug;  
     }

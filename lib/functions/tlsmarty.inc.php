@@ -445,7 +445,7 @@ class TLSmarty extends Smarty {
                    'keyword_add' => $imgLoc . 'tag_blue_add.png');
 
     $imi = config_get('images');
-    if(count($imi) >0) {
+    if(count((array)$imi) >0) {
       foreach($imi as $key => $img) {
 
         // You need to configure in your custom config something like this

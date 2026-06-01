@@ -82,7 +82,7 @@ function init_args() {
   
   if (is_null($args->format)) {
     $reports_formats = config_get('reports_formats');
-    $args->format = sizeof($reports_formats) ? key($reports_formats) : null;
+    $args->format = sizeof((array)$reports_formats) ? key($reports_formats) : null;
   }
   
   if (is_null($args->tplan_id)) {

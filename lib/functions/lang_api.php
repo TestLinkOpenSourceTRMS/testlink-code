@@ -195,7 +195,7 @@ function lang_get_smarty($params, $smarty) {
   $myLocale=isset($params['locale']) ? $params['locale'] : null;
   if(  isset($params['var']) ) {
     $labels2translate=explode(',',$params['s']);
-    if( count($labels2translate) == 1) {
+    if( count((array)$labels2translate) == 1) {
       $myLabels=lang_get($params['s'], $myLocale);
     } else {
       $myLabels=array();

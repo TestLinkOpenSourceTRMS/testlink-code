@@ -190,7 +190,7 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
   $idx = 0;
   $a_tcid = array();
   $a_tsuite_idx = array();
-  if (count($test_spec)) {
+  if (count((array)$test_spec)) {
     $cfg = array('node_types' => $hash_id_descr, 
                  'write_status' => $write_status,
                  'is_uncovered_view_type' => $is_uncovered_view_type);
@@ -222,7 +222,7 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
   }
   
   // Collect information related to linked testcase versions
-  if(!is_null($out) && count($out) > 0 && !is_null($out[0]) && count($a_tcid))
+  if(!is_null($out) && count((array)$out) > 0 && !is_null($out[0]) && count((array)$a_tcid))
   {
     $optGBI = array('output' => 'full_without_users',
                     'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
@@ -234,14 +234,14 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
   // Try to prune empty test suites, to reduce memory usage and 
   // to remove elements
   // that do not need to be displayed on user interface.
-  if (count($result['spec_view']) > 0) {
+  if (count((array)$result['spec_view']) > 0) {
     removeEmptyTestSuites($result['spec_view'],$tcase_mgr->tree_manager,
                         ($my['options']['prune_unlinked_tcversions'] && $is_tplan_view_type),$hash_descr_id);
   }
   
   // Remove empty branches
   // Loop to compute test case qty ($tsuite_tcqty) on every level and prune test suite branchs that are empty
-  if (count($result['spec_view']) > 0) {
+  if (count((array)$result['spec_view']) > 0) {
     removeEmptyBranches($result['spec_view'],$tsuite_tcqty);
   }   
   
@@ -266,13 +266,13 @@ function gen_spec_view(&$db, $specViewType, $tobj_id, $id, $name, &$linked_items
   // {
   //  foreach($result['spec_view'] as $key => $value) 
   //     {
-  //        if(is_null($value) || !isset($value['testcases']) || !count($value['testcases']))
+  //        if(is_null($value) || !isset($value['testcases']) || !count((array)$value['testcases']))
   //          unset($result['spec_view'][$key]);
   //     }
   // }
   
   // #1650 We want to manage custom fields when user is doing test case execution assigment
-  if( count($result['spec_view']) > 0 && $my['options']['add_custom_fields'])
+  if( count((array)$result['spec_view']) > 0 && $my['options']['add_custom_fields'])
   {    
     addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
   }
@@ -341,7 +341,7 @@ $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 	$idx = 0;
 	$a_tcid = array();
 	$a_tsuite_idx = array();
-	if (count($test_spec)) {
+	if (count((array)$test_spec)) {
 		$cfg = array('node_types' => $hash_id_descr, 
                  'write_status' => $write_status,
 				         'is_uncovered_view_type' => $is_uncovered_view_type);
@@ -375,7 +375,7 @@ $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 	}
 
 	// Collect information related to linked testcase versions
-	if(!is_null($out) && count($out) > 0 && !is_null($out[0]) && count($a_tcid))
+	if(!is_null($out) && count((array)$out) > 0 && !is_null($out[0]) && count((array)$a_tcid))
 	{
 	$optGBI = array('output' => 'full_without_users',
 	'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
@@ -387,7 +387,7 @@ $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 
 	// Try to prune empty test suites, to reduce memory usage and to remove elements
 	// that do not need to be displayed on user interface.
-	if( count($result['spec_view']) > 0)
+	if( count((array)$result['spec_view']) > 0)
 	{
 		//removeEmptyTestSuites($result['spec_view'],$tcase_mgr->tree_manager,
 		//($my['options']['prune_unlinked_tcversions'] && $is_tplan_view_type),$hash_descr_id);
@@ -395,7 +395,7 @@ $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 
 	// Remove empty branches
   // Loop to compute test case qty ($tsuite_tcqty) on every level and prune test suite branchs that are empty
-	if( count($result['spec_view']) > 0)
+	if( count((array)$result['spec_view']) > 0)
 	{
 	//removeEmptyBranches($result['spec_view'],$tsuite_tcqty);
 }
@@ -423,13 +423,13 @@ $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 		// {
 	//  foreach($result['spec_view'] as $key => $value)
 	//     {
-	//        if(is_null($value) || !isset($value['testcases']) || !count($value['testcases']))
+	//        if(is_null($value) || !isset($value['testcases']) || !count((array)$value['testcases']))
 		//          unset($result['spec_view'][$key]);
 	//     }
 	// }
 
 	// #1650 We want to manage custom fields when user is doing test case execution assigment
-	if( count($result['spec_view']) > 0 && $my['options']['add_custom_fields'])
+	if( count((array)$result['spec_view']) > 0 && $my['options']['add_custom_fields'])
 	{
 	addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
 }
@@ -800,7 +800,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
       }
     }
 
-    if( count($itemSet) > 0 && 
+    if( count((array)$itemSet) > 0 && 
         ($useFilter['execution_type'] || $useFilter['importance'] || $useFilter['cfields'] || 
          $useFilter['status']) 
       ) {
@@ -876,7 +876,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
             // Potential Performance ISSUE
             $allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['execution_type'],$options);
 
-             $doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
+             $doFilter = (!is_null($allowedSet) &&  count((array)$allowedSet) > 0);
              $emptySet = !$doFilter;
           }
 
@@ -886,11 +886,11 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
             // because we have applied it before on:
             // $tcversionSet = $tcaseMgr->get_last_active_version()
             if( $useFilter['cfields'] ) {
-              $filteredSet = (!is_null($allowedSet) &&  count($allowedSet) > 0) ? array_keys($allowedSet) : $tcvidSet;
+              $filteredSet = (!is_null($allowedSet) &&  count((array)$allowedSet) > 0) ? array_keys($allowedSet) : $tcvidSet;
               $dummySet = $tcaseMgr->filter_tcversions_by_cfields($filteredSet,$filters['cfields'],$options);
 
               // transform to make compatible with filter_tcversions_by_exec_type() return type
-              if( !is_null($dummySet) &&  count($dummySet) > 0 ) {
+              if( !is_null($dummySet) &&  count((array)$dummySet) > 0 ) {
                 $allowedSet = null;
                 $work2do = array_keys($dummySet);
                 foreach($work2do as $wkey) {
@@ -899,11 +899,11 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
                 unset($dummySet);
               }
             }
-            $doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
+            $doFilter = (!is_null($allowedSet) &&  count((array)$allowedSet) > 0);
             $emptySet = !$doFilter;
           }
           
-          if( $doFilter && !is_null($allowedSet) &&  count($allowedSet) > 0 ) {
+          if( $doFilter && !is_null($allowedSet) &&  count((array)$allowedSet) > 0 ) {
             $useAllowed = true;
             foreach($allowedSet as $key => $value) {
               $tspecKey = $itemSet[$value['testcase_id']];  
@@ -917,7 +917,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
           }
 
           $setToRemove = array_diff_key($tcversionSet,$allowedSet);
-          if( !is_null($setToRemove) &&  count($setToRemove) > 0 ) {
+          if( !is_null($setToRemove) &&  count((array)$setToRemove) > 0 ) {
             foreach($setToRemove as $key => $value) {
               $tspecKey = $itemSet[$value['testcase_id']];  
               $test_spec[$tspecKey]=null; 
@@ -964,7 +964,7 @@ function removeEmptyTestSuites(&$testSuiteSet,&$treeMgr,$pruneUnlinkedTcversions
       {
         // Only if test suite has children test cases we need to understand
         // if they are linked or not
-        if( isset($value['testcases']) && count($value['testcases']) > 0 )
+        if( isset($value['testcases']) && count((array)$value['testcases']) > 0 )
         {
           foreach($value['testcases'] as $skey => $svalue)
           {
@@ -1052,7 +1052,7 @@ function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
   {
     if( !is_null($value) )
     {
-      if( isset($value['testcases']) && count($value['testcases']) > 0 )
+      if( isset($value['testcases']) && count((array)$value['testcases']) > 0 )
       {
         foreach($value['testcases'] as $skey => $svalue)
         {
@@ -1543,7 +1543,7 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name, &$linked_ite
   $idx = 0;
   $a_tcid = array();
   $a_tsuite_idx = array();
-  if(count($test_spec)) {
+  if(count((array)$test_spec)) {
     $cfg = array('node_types' => $hash_id_descr, 
                  'write_status' => $write_status,
                  'is_uncovered_view_type' => $is_uncovered_view_type);
@@ -1558,7 +1558,7 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name, &$linked_ite
   // Collect information related to linked testcase versions
   // DAMMED 0!!!!
   $firtsElemIDX = key($out);
-  if(!is_null($out) && count($out) > 0 && !is_null($out[$firtsElemIDX]) && count($a_tcid)) {
+  if(!is_null($out) && count((array)$out) > 0 && !is_null($out[$firtsElemIDX]) && count((array)$a_tcid)) {
     $optGBI = array('output' => 'full_without_users',
                     'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
     
@@ -1574,7 +1574,7 @@ function genSpecViewFlat(&$db, $specViewType, $tobj_id, $id, $name, &$linked_ite
     $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items,$options);
   }
 
-  if( count($result['spec_view']) > 0 && $my['options']['add_custom_fields']) {    
+  if( count((array)$result['spec_view']) > 0 && $my['options']['add_custom_fields']) {    
     addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
   }
 
@@ -1778,11 +1778,11 @@ function buildSkeletonFlat($branchRootID,$name,$config,&$test_spec,&$platforms)
   $tsuite_tcqty[$branchRootID] = $out[$hash_id_pos[$branchRootID]]['testcase_qty'];
 
   // Clean up
-  $loop2do = count($out);
+  $loop2do = count((array)$out);
   $toUnset = null;
   for($lzx=0; $lzx < $loop2do; $lzx++)
   {
-    if(count($out[$lzx]['testcases']) == 0)
+    if(count((array)$out[$lzx]['testcases']) == 0)
     {
       $toUnset[$lzx]=$lzx;
     }  

@@ -1487,7 +1487,7 @@ class testsuite extends tlObjectWithAttachments
     if( !is_null($sourceItems) )
     {
       // build item id list
-      $keySet = array_keys($sourceItems);
+      $keySet = array_keys((array)$sourceItems);
       foreach($keySet as $itemPos => $itemID)
       {
         if( isset($mappings[$itemID]) )

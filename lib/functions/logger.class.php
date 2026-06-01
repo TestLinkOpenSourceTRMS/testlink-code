@@ -93,7 +93,7 @@ class tlLogger extends tlObject
   {
     parent::__construct();
     
-    $this->loggerTypeDomain = array_flip(array_keys($this->loggerTypeClass));
+    $this->loggerTypeDomain = array_flip(array_keys((array)$this->loggerTypeClass));
     foreach($this->loggerTypeClass as $id => $className)
     {
       $class2call = $className;

@@ -2012,7 +2012,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     if(count((array)$cf) > 0)
     {
       $cfTypes = array_flip($this->cfield_mgr->get_available_types());
-      $key2loop = array_keys($cf);
+      $key2loop = array_keys((array)$cf);
       foreach($key2loop as $cfID)
       {
         // we will use these CF as filter => required property has to be

@@ -268,7 +268,7 @@ function getGrants($dbHandler,$user,$tproject_id,$forceToNo=false)
           'testproject_delete_executed_testcases' => 'testproject_delete_executed_testcases',
           'exec_ro_access' => 'exec_ro_access');
  if ($forceToNo) {
-    $grants = array_fill_keys(array_keys($right2check), 'no');
+    $grants = array_fill_keys(array_keys((array)$right2check), 'no');
     return $grants;      
  }  
   

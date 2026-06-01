@@ -255,7 +255,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 
   $rs = null;
   if(!is_null($recordset) && $my['options']['renderImageInline']) {
-    $k2l = array_keys($recordset);
+    $k2l = array_keys((array)$recordset);
     foreach($k2l as $akx) { 
       $this->renderImageAttachments($id,$recordset[$akx]);
     } 
@@ -267,9 +267,9 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     switch ($decodeUserMode) {
       case 'complex':
         // output[REQID][0] = array('id' =>, 'xx' => ...)
-        $flevel = array_keys($recordset);
+        $flevel = array_keys((array)$recordset);
         foreach($flevel as $flk) {
-          $key2loop = array_keys($recordset[$flk]);
+          $key2loop = array_keys((array)$recordset[$flk]);
           foreach( $key2loop as $key ) {
             foreach( $user_keys as $ukey => $userid_field) {
               $rs[$flk][$key][$ukey] = '';
@@ -290,7 +290,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
       
       case 'simple':
       default:
-        $key2loop = array_keys($recordset);
+        $key2loop = array_keys((array)$recordset);
         foreach( $key2loop as $key ) {
           foreach( $user_keys as $ukey => $userid_field) {
             $rs[$key][$ukey] = '';
@@ -616,7 +616,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       $sql .= " AND node_type_id=" . $this->node_types_descr_id['requirement_version'];
       
       $children_rs=$this->db->fetchRowsIntoMap($sql,'id');
-      $children = array_keys($children_rs); 
+      $children = array_keys((array)$children_rs); 
 
       // delete dependencies with test specification
       $sql = "DELETE FROM {$this->tables['req_coverage']} " . 
@@ -683,7 +683,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
              
       $revisionSet = $this->db->fetchRowsIntoMap($sql,'id');
       if( !is_null($revisionSet) ) {
-        $this->cfield_mgr->remove_all_design_values_from_node(array_keys($revisionSet));
+        $this->cfield_mgr->remove_all_design_values_from_node(array_keys((array)$revisionSet));
 
         $sql = "/* $debugMsg */ DELETE FROM {$this->tables['req_revisions']}
                                 WHERE parent_id IN ( {$implosion} ) ";
@@ -1025,7 +1025,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
 
     $nameSet = null;
     if( !is_null($itemSet) ){
-      $nameSet = array_flip(array_keys($itemSet));
+      $nameSet = array_flip(array_keys((array)$itemSet));
     }
     
     for ($idx = 0; $idx < $count; $idx++) {
@@ -2217,7 +2217,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       
       // req_doc_id has limited size then we need to be sure that generated id will
       // not exceed DB size
-          $nameSet = array_flip(array_keys($itemSet));
+          $nameSet = array_flip(array_keys((array)$itemSet));
         $prefix = trim_and_limit($item_info['req_doc_id'],
                      $this->fieldSize->req_docid-strlen($mask)-$safety_len);
                      
@@ -2578,7 +2578,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     if( !is_null($relations['relations']) && count((array)$relations['relations']) > 0 )
     {
       $labels = $this->get_all_relation_labels();
-      $label_keys = array_keys($labels);
+      $label_keys = array_keys((array)$labels);
       foreach($relations['relations'] as $key => $rel) 
       {
           
@@ -2802,7 +2802,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     else 
     {
       // "related to" is not configured, so take last element as selected one
-      $keys = array_keys($htmlSelect['items']);
+      $keys = array_keys((array)$htmlSelect['items']);
       $selected_key = end($keys);
     }
     $htmlSelect['selected'] = $selected_key;
@@ -3108,7 +3108,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       if( !is_null($rs) )
       {
         $lbl = init_labels(array('undefined' => 'undefined'));
-        $key2loop = array_keys($rs);
+        $key2loop = array_keys((array)$rs);
         foreach($key2loop as $ap)
         {
           $rs[$ap]['item_id'] = ($rs[$ap]['revision_id'] > 0) ? $rs[$ap]['revision_id'] : $rs[$ap]['version_id'];
@@ -3309,7 +3309,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $rs = $this->db->get_recordset($sql);
     
     if(!is_null($rs) && $my['opt']['renderImageInline']) {
-      $k2l = array_keys($rs);
+      $k2l = array_keys((array)$rs);
       foreach($k2l as $akx) { 
         $this->renderImageAttachments($rs[$akx]['req_id'],$rs[$akx]);
       } 
@@ -3327,7 +3327,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   function decode_users(&$rs)
   {
       $userCache = null;  // key: user id, value: display name
-      $key2loop = array_keys($rs);
+      $key2loop = array_keys((array)$rs);
       $labels['undefined'] = lang_get('undefined');
       $user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
       foreach( $key2loop as $key )
@@ -3388,7 +3388,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     // testcase class create_tcase_only()
     if( !is_null($itemSet) && ($siblingQty=count((array)$itemSet)) > 0 )
     {
-            $nameSet = array_flip(array_keys($itemSet));
+            $nameSet = array_flip(array_keys((array)$itemSet));
       $target = $title2check . ($suffix = sprintf($mask,++$siblingQty));
       $final_len = strlen($target);
       if( $final_len > $title_max_len)
@@ -3871,10 +3871,10 @@ function getByIDBulkLatestVersionRevision($id,$opt=null)
     if( is_int($x[0]) )
     {
       // output[REQID][0] = array('id' =>, 'xx' => ...)
-      $flevel = array_keys($recordset);
+      $flevel = array_keys((array)$recordset);
       foreach($flevel as $flk)
       {
-        $key2loop = array_keys($recordset[$flk]);
+        $key2loop = array_keys((array)$recordset[$flk]);
         foreach( $key2loop as $key )
         {
           foreach( $user_keys as $ukey => $userid_field)
@@ -3901,7 +3901,7 @@ function getByIDBulkLatestVersionRevision($id,$opt=null)
     else
     {
       // output[REQID] = array('id' =>, 'xx' => ...)
-      $key2loop = array_keys($recordset);
+      $key2loop = array_keys((array)$recordset);
       foreach( $key2loop as $key )
       {
         foreach( $user_keys as $ukey => $userid_field)
@@ -4131,7 +4131,7 @@ function getCoverageCounter($id) {
     $safe['user_id'] = intval($user_id);
     $safe['testproject_id'] = intval($tproject_id);
 
-    $fields = implode(',',array_keys($safe));
+    $fields = implode(',',array_keys((array)$safe));
 
     foreach($safe as $key => $val)
     {
@@ -4371,9 +4371,9 @@ function getCoverageCounter($id) {
                  "%logmsg%" => $log_msg,
                  "%version%" => $req['version'],
                  "%timestamp%" => date("D M j G:i:s T Y"));
-    $body['target'] = array_keys($trf);
+    $body['target'] = array_keys((array)$trf);
     $body['values'] = array_values($trf);
-    $subj['target'] = array_keys($trf);
+    $subj['target'] = array_keys((array)$trf);
     $subj['values'] = array_values($trf);
 
     foreach($iuSet as $ue)

@@ -54,7 +54,7 @@ if($qty_linked)
         $gui->show_details = 1;
     
         // get path
-        $tcaseSet=array_keys($gui->testcases);
+        $tcaseSet=array_keys((array)$gui->testcases);
         $path_info=$tree_mgr->get_full_path_verbose($tcaseSet);
         foreach($gui->testcases as $tcase_id => $value)
         {

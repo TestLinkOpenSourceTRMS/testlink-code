@@ -82,7 +82,7 @@ if( $args->doAction == 'result' &&
       $du = $tcase_mgr->getPathLayered(array($elem['tcase_id']));  
       $pathCache[$elem['tcase_id']] = $du[$elem['tsuite_id']]['value'];
       $levelCache[$elem['tcase_id']] = $du[$elem['tsuite_id']]['level'];
-      $ky = current(array_keys($du)); 
+      $ky = current(array_keys((array)$du)); 
       $topCache[$elem['tcase_id']] = $ky;
     }
    

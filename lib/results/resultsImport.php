@@ -177,7 +177,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options) {
   $columnDef = array();
   $adodbObj = $db->get_dbmgr_object();
   $columnDef['execution_bugs'] = $adodbObj->MetaColumns($tables['execution_bugs']);
-  $keySet = array_keys($columnDef['execution_bugs']);
+  $keySet = array_keys((array)$columnDef['execution_bugs']);
   foreach($keySet as $keyName) {
     if( ($keylow=strtolower($keyName)) != $keyName ) { 
       $columnDef['execution_bugs'][$keylow] = $columnDef['execution_bugs'][$keyName];

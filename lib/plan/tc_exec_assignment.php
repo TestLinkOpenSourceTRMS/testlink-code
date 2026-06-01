@@ -161,7 +161,7 @@ switch($args->level) {
   case 'testcase':
     // build the data need to call gen_spec_view
     $xx = $tcase_mgr->getPathLayered(array($args->id));
-    $yy = array_keys($xx);  // done to silence warning on end()
+    $yy = array_keys((array)$xx);  // done to silence warning on end()
     $tsuite_data['id'] = end($yy);
     $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
         
@@ -217,7 +217,7 @@ $gui->items = $out['spec_view'];
 // useful to avoid error messages on smarty template.
 $gui->items_qty = is_null($gui->items) ? 0 : count((array)$gui->items);
 $gui->has_tc = $out['num_tc'] > 0 ? 1:0;
-$gui->support_array = array_keys($gui->items);
+$gui->support_array = array_keys((array)$gui->items);
 
 if ($_SESSION['testprojectOptions']->testPriorityEnabled) 
 {
@@ -437,7 +437,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
 
 
   // Do we really have platforms?
-  $pset = array_flip(array_keys($features));
+  $pset = array_flip(array_keys((array)$features));
   if ($hasPlat = !isset($pset[0])) {
     $platMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     $platSet = $platMgr->getAllAsMap();
@@ -562,7 +562,7 @@ function doRemoveAll(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
   
   // Must be done before delete
   if($argsObj->send_mail) {
-    $fSet = array_keys($features2[$op]);
+    $fSet = array_keys((array)$features2[$op]);
     $items = $oMgr['tplan']->getFeatureByID($fSet);
     $testers = $oMgr['assign']->getUsersByFeatureBuild($fSet,$argsObj->build_id,$cfg['task_test_execution']);
 
@@ -570,7 +570,7 @@ function doRemoveAll(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
     foreach($items as $fid => $value)
     {
       $pid = $value['platform_id'];
-      $f4mail[$pid][$fid]['previous_user_id'] = array_keys($testers[$fid]); 
+      $f4mail[$pid][$fid]['previous_user_id'] = array_keys((array)$testers[$fid]); 
       $f4mail[$pid][$fid]['tcase_id'] = $items[$fid]['tcase_id'];
       $f4mail[$pid][$fid]['tcversion_id'] = $items[$fid]['tcversion_id'];
     } 
@@ -609,14 +609,14 @@ function doBulkUserRemove(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
 
     // Must be done before delete
     if($argsObj->send_mail) {
-      $fSet = array_keys($feat);
+      $fSet = array_keys((array)$feat);
       $items = $oMgr['tplan']->getFeatureByID($fSet);
       $testers = $oMgr['assign']->getUsersByFeatureBuild($fSet,$argsObj->build_id,$cfg['task_test_execution']);
 
       $f4mail = array();
       foreach($items as $fid => $value) {
         $pid = $value['platform_id'];
-        $f4mail[$pid][$fid]['previous_user_id'] = array_keys($testers[$fid]); 
+        $f4mail[$pid][$fid]['previous_user_id'] = array_keys((array)$testers[$fid]); 
         $f4mail[$pid][$fid]['tcase_id'] = $items[$fid]['tcase_id'];
         $f4mail[$pid][$fid]['tcversion_id'] = $items[$fid]['tcversion_id'];
       } 

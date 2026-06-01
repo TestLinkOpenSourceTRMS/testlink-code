@@ -501,7 +501,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat) {
               }
 
               if(!is_null($tcaseSet)){
-                $targetSet = array_keys($tcaseSet);
+                $targetSet = array_keys((array)$tcaseSet);
                 $features = $tplanMgr->getLinkedFeatures($argsObj->tplan_id,$glf['filters']);
                 $caOpt['feature_set'] = null;
                 foreach($targetSet as $tcase_id) {

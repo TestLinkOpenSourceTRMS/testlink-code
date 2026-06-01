@@ -850,7 +850,7 @@ class tlUser extends tlDBObject {
         }
 
         // subtract global rights    
-        $testProjectRights = array_diff($testProjectRights,array_keys($g_propRights_global));
+        $testProjectRights = array_diff($testProjectRights,array_keys((array)$g_propRights_global));
         propagateRights($globalRights,$g_propRights_global,$testProjectRights);
         $allRights = $testProjectRights;
       } else {
@@ -871,7 +871,7 @@ class tlUser extends tlDBObject {
         }
         
         //subtract test projects rights    
-        $testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
+        $testPlanRights = array_diff($testPlanRights,array_keys((array)$g_propRights_product));
         
         propagateRights($allRights,$g_propRights_product,$testPlanRights);
         $allRights = $testPlanRights;

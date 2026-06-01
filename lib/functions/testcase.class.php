@@ -572,7 +572,7 @@ class testcase extends tlObjectWithAttachments {
 
                 case 'counterSuffix':
                   $mask =  !is_null($algo_cfg->text) ? $algo_cfg->text : '#%s';
-                  $nameSet = array_flip(array_keys($itemSet));
+                  $nameSet = array_flip(array_keys((array)$itemSet));
 
                   // 20110109 - franciscom
                   // does not understand why I've choosen time ago
@@ -1210,7 +1210,7 @@ class testcase extends tlObjectWithAttachments {
 
     // Removing duplicate and NULL id's
     unset($userIDSet['']);
-    $gui->users = tlUser::getByIDs($this->db,array_keys($userIDSet));
+    $gui->users = tlUser::getByIDs($this->db,array_keys((array)$userIDSet));
     $gui->cf = null;
 
     $this->initShowGuiActions($gui);
@@ -1449,12 +1449,12 @@ class testcase extends tlObjectWithAttachments {
     $auditContext = array('on' => self::AUDIT_ON, 'version' => $version);
     
     if(!is_null($items['todelete']) && count((array)$items['todelete'])) {
-      $this->deleteKeywords($id,$version_id,array_keys($items['todelete']),$auditContext);
+      $this->deleteKeywords($id,$version_id,array_keys((array)$items['todelete']),$auditContext);
     }
 
     if(!is_null($items['new']) && count((array)$items['new']))
     {
-      $this->addKeywords($id,$version_id,array_keys($items['new']),$auditContext);
+      $this->addKeywords($id,$version_id,array_keys((array)$items['new']),$auditContext);
     }
   }
 
@@ -1698,13 +1698,13 @@ class testcase extends tlObjectWithAttachments {
 
     // Multiple Test Case Steps
     if( !is_null($recordset) && ($my['options']['output'] == 'full') ) {
-      $version2loop = array_keys($recordset);
+      $version2loop = array_keys((array)$recordset);
       foreach( $version2loop as $accessKey) {
         // no options => will renderd Ghost Steps
         $step_set = $this->get_steps($accessKey);
-        $tplan2loop = array_keys($recordset[$accessKey]);
+        $tplan2loop = array_keys((array)$recordset[$accessKey]);
         foreach( $tplan2loop as $tplanKey) {
-          $elem2loop = array_keys($recordset[$accessKey][$tplanKey]);
+          $elem2loop = array_keys((array)$recordset[$accessKey][$tplanKey]);
           foreach( $elem2loop as $elemKey) {
             $recordset[$accessKey][$tplanKey][$elemKey]['steps'] = $step_set;
           }
@@ -2364,7 +2364,7 @@ class testcase extends tlObjectWithAttachments {
         $freezeTCVRelationsOnNewTCVersion ) {
       $oldVerRel = $this->getTCVRelationsRaw($source['version_id']);
       if( null != $oldVerRel && count((array)$oldVerRel) > 0 ) {
-        $i2c = array_keys($oldVerRel);
+        $i2c = array_keys((array)$oldVerRel);
         $this->closeOpenTCVRelation($i2c,LINK_TC_RELATION_CLOSED_BY_NEW_TCVERSION);
       }
     }
@@ -2817,7 +2817,7 @@ class testcase extends tlObjectWithAttachments {
     $canProcess = !is_null($recordset);
 
     if( $canProcess && $render['variables'] ) {
-      $key2loop = array_keys($recordset);
+      $key2loop = array_keys((array)$recordset);
       foreach( $key2loop as $accessKey) {
         try {
           $this->renderVariables($recordset[$accessKey],$my['options']['tproject_id']);
@@ -2829,7 +2829,7 @@ class testcase extends tlObjectWithAttachments {
     }
 
     if( $canProcess && $render['specialKW'] ) {
-      $key2loop = array_keys($recordset);
+      $key2loop = array_keys((array)$recordset);
       foreach( $key2loop as $accessKey) {
         $this->renderSpecialTSuiteKeywords($recordset[$accessKey]);
       }
@@ -2839,7 +2839,7 @@ class testcase extends tlObjectWithAttachments {
 
     // ghost on preconditions and summary
     if( $canProcess && $my['options']['renderGhost'] ) {
-      $key2loop = array_keys($recordset);
+      $key2loop = array_keys((array)$recordset);
       foreach( $key2loop as $accessKey) {
         $this->renderGhost($recordset[$accessKey]);
       }
@@ -2847,7 +2847,7 @@ class testcase extends tlObjectWithAttachments {
     }
 
     if( $canProcess && $render['imageInline']) {
-      $key2loop = array_keys($recordset);
+      $key2loop = array_keys((array)$recordset);
       foreach( $key2loop as $accessKey) {
         $pVersion = $recordset[$accessKey]['id'];
         $this->renderImageAttachments($pVersion,$recordset[$accessKey]);
@@ -2860,7 +2860,7 @@ class testcase extends tlObjectWithAttachments {
     if( $canProcess && $my['options']['output'] == 'full') {
       $gsOpt['renderGhostSteps'] = $my['options']['renderGhost'];
 
-      $key2loop = array_keys($recordset);
+      $key2loop = array_keys((array)$recordset);
       foreach( $key2loop as $accessKey) {
         $step_set = $this->get_steps($recordset[$accessKey]['id'],0,$gsOpt);
         if($my['options']['withGhostString']) {
@@ -2882,7 +2882,7 @@ class testcase extends tlObjectWithAttachments {
     }
 
     if( $canProcess && $my['options']['getPrefix'] ) {
-      $key2loop = array_keys($recordset);
+      $key2loop = array_keys((array)$recordset);
       foreach( $key2loop as $accessKey) {
         $pfx = $this->getPrefix($recordset[$accessKey]['testcase_id']);
         $recordset[$accessKey]['fullExternalID'] =  $pfx[0] . $this->cfg->testcase->glue_character .
@@ -3217,7 +3217,7 @@ class testcase extends tlObjectWithAttachments {
       break;
 
       default:
-        $target = array_keys($rs);
+        $target = array_keys((array)$rs);
       break;
     }
 
@@ -3667,7 +3667,7 @@ class testcase extends tlObjectWithAttachments {
     if( !is_null($sourceKW) ) {
       
       // build item id list
-      $keySet = array_keys($sourceKW);
+      $keySet = array_keys((array)$sourceKW);
       if( null != $kwMappings ) {
         foreach($keySet as $itemPos => $itemID) {
           if( isset($mappings[$itemID]) ) {
@@ -4077,7 +4077,7 @@ class testcase extends tlObjectWithAttachments {
     $recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
     $and_exec_id='';
     if( !is_null($recordset) && count((array)$recordset) > 0) {
-      $the_list = implode(",", array_keys($recordset));
+      $the_list = implode(",", array_keys((array)$recordset));
       if($the_list != '') {
         if( count((array)$recordset) > 1 ) {
           $and_exec_id = " AND e.id IN ($the_list) ";
@@ -4156,12 +4156,12 @@ class testcase extends tlObjectWithAttachments {
         $xx = $this->getStepsExecInfo($tg['execution_id']);
       }
 
-      $itemSet = array_keys($recordset);
+      $itemSet = array_keys((array)$recordset);
       foreach( $itemSet as $sdx) {
         $step_set = $this->get_steps($recordset[$sdx]['id']);
         if($localOptions['getStepsExecInfo']) {
           if(!is_null($step_set)) {
-            $key_set = array_keys($step_set);
+            $key_set = array_keys((array)$step_set);
             foreach($key_set as $kyx) {
               $step_set[$kyx]['execution_notes'] = '';
               $step_set[$kyx]['execution_status'] = '';
@@ -4188,7 +4188,7 @@ class testcase extends tlObjectWithAttachments {
     // ghost Test Case processing in summary & preconditions
     if( !is_array($id) ) {
       if(!is_null($recordset)) {
-        $key2loop = array_keys($recordset);
+        $key2loop = array_keys((array)$recordset);
 
         // get test project from test plan
         $tplanInfo  = $this->tree_manager->get_node_hierarchy_info($tplan_id);
@@ -4656,11 +4656,11 @@ class testcase extends tlObjectWithAttachments {
             if($my['opt']['access_keys'] == 'testplan_testcase')
             {
               $tcaseSet=null;
-              $main_keys = array_keys($rs);
+              $main_keys = array_keys((array)$rs);
 
               foreach($main_keys as $maccess_key)
               {
-                $sec_keys = array_keys($rs[$maccess_key]);
+                $sec_keys = array_keys((array)$rs[$maccess_key]);
                 foreach($sec_keys as $saccess_key)
                 {
                   // is enough I process first element
@@ -4683,14 +4683,14 @@ class testcase extends tlObjectWithAttachments {
                 // to remove it from test suite name in "tc assigned to user" tables
                 $flat_path[$tcase_id]=implode('/',$pieces);
               }
-              $main_keys = array_keys($rs);
+              $main_keys = array_keys((array)$rs);
 
               foreach($main_keys as $idx)
               {
-                $sec_keys = array_keys($rs[$idx]);
+                $sec_keys = array_keys((array)$rs[$idx]);
                 foreach($sec_keys as $jdx)
                 {
-                  $third_keys = array_keys($rs[$idx][$jdx]);
+                  $third_keys = array_keys((array)$rs[$idx][$jdx]);
                   foreach($third_keys as $tdx)
                   {
                     $fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
@@ -5484,7 +5484,7 @@ class testcase extends tlObjectWithAttachments {
       }
 
       if( null != $xtree && $options['getTSuiteKeywords'] ) {
-        $tsSet = array_keys($xtree);
+        $tsSet = array_keys((array)$xtree);
         $opkw = array('output' => 'kwname');
         $fkw = array('keywordsLikeStart' => '@#');
         $iset = (array) $tsuiteMgr->getTSuitesFilteredByKWSet($tsSet,$opkw,$fkw);
@@ -6084,7 +6084,7 @@ class testcase extends tlObjectWithAttachments {
         $cfQuery = " AND ({$cfQuery}) ";
       }
 
-      $keySet = implode(',',array_keys($recordset));
+      $keySet = implode(',',array_keys((array)$recordset));
       $sql = "/* $debugMsg */ " .
              " {$selectClause}, NH_TCVERSION.parent_id AS testcase_id, " .
              " TCV.version,TCV.execution_type,TCV.importance,TCV.status {$cfSelect} " .
@@ -6100,7 +6100,7 @@ class testcase extends tlObjectWithAttachments {
       // (not doing this has produced in part TICKET 4704,4708)
       // entries whose count() < number of custom fields has to be removed
       if( !is_null($recordset) ) {
-        $key2loop = array_keys($recordset);
+        $key2loop = array_keys((array)$recordset);
         if($cfQty > 0) {
           foreach($key2loop as $key) {
             if( count((array)$recordset[$key]) < $cfQty) {
@@ -6212,7 +6212,7 @@ class testcase extends tlObjectWithAttachments {
                                         array('fields2get' => 'id', 'accessKey' => 'id'));
     if( count((array)$stepSet) > 0 )
     {
-      $this->delete_step_by_id(array_keys($stepSet));
+      $this->delete_step_by_id(array_keys((array)$stepSet));
     }
 
     // Now insert steps
@@ -6297,7 +6297,7 @@ class testcase extends tlObjectWithAttachments {
     // now loop over result, entries whose count() < number of custom fields has to be removed
     if( !is_null($recordset) )
     {
-      $key2loop = array_keys($recordset);
+      $key2loop = array_keys((array)$recordset);
       foreach($key2loop as $key)
       {
         if( count((array)$recordset[$key]) < $cf_qty)
@@ -6697,10 +6697,10 @@ class testcase extends tlObjectWithAttachments {
       (is_null($options->access_keys) || $options->access_keys='testplan_testcase') )
       {
         $tcaseSet=null;
-        $main_keys = array_keys($rs);
+        $main_keys = array_keys((array)$rs);
         foreach($main_keys as $maccess_key)
         {
-          $sec_keys = array_keys($rs[$maccess_key]);
+          $sec_keys = array_keys((array)$rs[$maccess_key]);
           foreach($sec_keys as $saccess_key)
           {
             // is enough I process first element
@@ -6721,14 +6721,14 @@ class testcase extends tlObjectWithAttachments {
           unset($pieces[0]);
           $flat_path[$tcase_id]=implode('/',$pieces);
         }
-        $main_keys = array_keys($rs);
+        $main_keys = array_keys((array)$rs);
 
         foreach($main_keys as $idx)
         {
-          $sec_keys = array_keys($rs[$idx]);
+          $sec_keys = array_keys((array)$rs[$idx]);
           foreach($sec_keys as $jdx)
           {
-            $third_keys = array_keys($rs[$idx][$jdx]);
+            $third_keys = array_keys((array)$rs[$idx][$jdx]);
             foreach($third_keys as $tdx)
             {
               $fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
@@ -7715,7 +7715,7 @@ class testcase extends tlObjectWithAttachments {
 
     if( !is_null($relSet['relations']) && count((array)$relSet['relations']) > 0 ) {
       $labels = $this->getRelationLabels();
-      $label_keys = array_keys($labels);
+      $label_keys = array_keys((array)$labels);
       foreach($relSet['relations'] as $key => $rel)
       {
         // is this relation type is configured?
@@ -7796,7 +7796,7 @@ class testcase extends tlObjectWithAttachments {
 
     if( !is_null($relSet['relations']) && count((array)$relSet['relations']) > 0 ) {
       $labels = $this->getRelationLabels();
-      $label_keys = array_keys($labels);
+      $label_keys = array_keys((array)$labels);
 
       foreach($relSet['relations'] as $key => $rel) {
         // is this relation type is configured?
@@ -8077,7 +8077,7 @@ class testcase extends tlObjectWithAttachments {
     else
     {
       // "related to" is not configured, so take last element as selected one
-      $keys = array_keys($htmlSelect['items']);
+      $keys = array_keys((array)$htmlSelect['items']);
       $selected_key = end($keys);
     }
     $htmlSelect['selected'] = $selected_key;
@@ -8702,7 +8702,7 @@ class testcase extends tlObjectWithAttachments {
     $xx = $this->db->fetchRowsIntoMap( $sql, 'tcversion_id' );
 
     if( null != $xx && count((array)$xx) > 0 ) {
-      return array_keys($xx);
+      return array_keys((array)$xx);
     } 
 
     return null;      
@@ -9344,7 +9344,7 @@ class testcase extends tlObjectWithAttachments {
     if( count((array)$linkSet) > 0 ) {
 
       $safeTP = intval($tplanID);
-      $linkItems = array_keys($linkSet);
+      $linkItems = array_keys((array)$linkSet);
       $inClause = implode(',',$linkItems);
 
        
@@ -9359,7 +9359,7 @@ class testcase extends tlObjectWithAttachments {
       $this->db->exec_query($sql);
 
       // Access by test case version id
-      $tcvItems = array_keys($tcvSet);
+      $tcvItems = array_keys((array)$tcvSet);
       $inClause = implode(',',$tcvItems);
 
       // Execution results
@@ -9467,7 +9467,7 @@ class testcase extends tlObjectWithAttachments {
   public function saveStepsPartialExec($partialExec,$context) 
   {
     if (!is_null($partialExec) && count((array)$partialExec) > 0) {
-      $stepsIDSet = array_keys($partialExec['notes']);
+      $stepsIDSet = array_keys((array)$partialExec['notes']);
       $this->deleteStepsPartialExec($stepsIDSet,$context);
         
       $prop = get_object_vars($context);
@@ -9973,7 +9973,7 @@ class testcase extends tlObjectWithAttachments {
     if( !is_null($sourceIT) ) {
       
       // build item id list
-      $itSet = array_keys($sourceIT);
+      $itSet = array_keys((array)$sourceIT);
       if( null != $platMap ) {
         foreach($itSet as $itemPos => $itemID) {
           if( isset($mappings[$itemID]) ) {

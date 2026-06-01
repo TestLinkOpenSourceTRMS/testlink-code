@@ -265,7 +265,7 @@ if($gui->row_qty > 0)
   if ($map)
   {
     $tcase_mgr = new testcase($db);   
-    $tcase_set = array_keys($map);
+    $tcase_set = array_keys((array)$map);
     $options = array('output_format' => 'path_as_string');
     $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
     $gui->resultSet = $map;

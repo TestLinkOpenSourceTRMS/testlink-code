@@ -363,7 +363,7 @@ function processTestPlan(&$dbHandler,&$argsObj,&$tplanMgr)
 		if( !is_null($set2update['items']) && count((array)$set2update['items']) > 0 )
 		{
 			$set2update['msg'] = '';
-			$itemSet=array_keys($set2update['items']);
+			$itemSet=array_keys((array)$set2update['items']);
 			$path_info=$tplanMgr->tree_manager->get_full_path_verbose($itemSet);
 			foreach($set2update['items'] as $tcase_id => $value)
 			{
@@ -387,7 +387,7 @@ function tideUpForGUI(&$output)
     	$itemSet = &$output['spec_view'][$idx]['testcases'];
     	if( count((array)$itemSet) > 0)
     	{
-    		$key2loop = array_keys($itemSet);
+    		$key2loop = array_keys((array)$itemSet);
     		foreach($key2loop as $tcaseID)
     		{
     			// want to understand

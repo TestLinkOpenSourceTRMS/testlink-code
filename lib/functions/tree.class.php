@@ -669,7 +669,7 @@ class tree extends tlObject
       $node_type_filter='';
       if( !is_null($exclude_node_types) )
       {
-         $types=implode("','",array_keys($exclude_node_types));  
+         $types=implode("','",array_keys((array)$exclude_node_types));  
          $node_type_filter=" AND NT.description NOT IN ('{$types}') ";
       }
       
@@ -1224,7 +1224,7 @@ class tree extends tlObject
         $xitems = array_flip((array)$items);
         $xsql = " SELECT parent_id,id " . 
                 " FROM {$this->tables['nodes_hierarchy']} " . 
-                " WHERE id IN (" . implode(',',array_keys($xitems)) . ")";
+                " WHERE id IN (" . implode(',',array_keys((array)$xitems)) . ")";
 
         $xmen = $this->db->fetchRowsIntoMap($xsql,'parent_id',database::CUMULATIVE);
         $all_nodes = array();      
@@ -1307,7 +1307,7 @@ class tree extends tlObject
             
             case 'simple':  
             default:
-            $keySet = array_keys($path_to);
+            $keySet = array_keys((array)$path_to);
             foreach($keySet as $key)
             {
               $path_to[$key] = $path_to[$key]['name'];

@@ -166,7 +166,7 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 
   // Get count of testcases linked to every testplan
   // Hmm Count active and inactive ?
-  $linkedItemsQty = $tplan_mgr->count_testcases(array_keys($test_plans),null,array('output' => 'groupByTestPlan'));
+  $linkedItemsQty = $tplan_mgr->count_testcases(array_keys((array)$test_plans),null,array('output' => 'groupByTestPlan'));
   
   
   $metricsMgr = new tlTestPlanMetrics($db);

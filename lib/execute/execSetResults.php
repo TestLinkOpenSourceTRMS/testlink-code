@@ -164,7 +164,7 @@ if(!is_null($linked_tcversions)) {
         $ctx->platform_id = $args->platform_id;
         $ctx->build_id = $args->build_id;
 
-        $tcase_mgr->deleteStepsPartialExec(array_keys($_REQUEST['step_notes']),$ctx);
+        $tcase_mgr->deleteStepsPartialExec(array_keys((array)$_REQUEST['step_notes']),$ctx);
       }
       
       list($execSet,$gui->addIssueOp,$gui->uploadOp) = 
@@ -260,7 +260,7 @@ if(!is_null($linked_tcversions)) {
 
             // key test case id
             // inside an idx array
-            $args->testcases_to_show = array_keys($xx);
+            $args->testcases_to_show = array_keys((array)$xx);
           }
 
           $chainLen = count((array)$args->testcases_to_show);
@@ -397,7 +397,7 @@ if(!is_null($linked_tcversions)) {
       
       if( null != $gui->stepsPartialExec ) {
         // will reload it!
-        $kij = current(array_keys($gui->map_last_exec));
+        $kij = current(array_keys((array)$gui->map_last_exec));
         $cucu = &$gui->map_last_exec[$kij];
         foreach($cucu['steps'] as $ccx => $se) {
           $stepID = $se['id'];
@@ -2219,7 +2219,7 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
 
         if(!is_null($argsObj->filter_cfields))
         {
-          $tk = array_keys($argsObj->filter_cfields);
+          $tk = array_keys((array)$argsObj->filter_cfields);
           $cf = null;  
           // foreach( array('design','testplan_design') as $l4)
           foreach( array('design') as $l4)

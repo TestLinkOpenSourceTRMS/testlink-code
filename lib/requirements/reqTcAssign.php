@@ -202,7 +202,7 @@ function doBulkAssignment(&$dbHandler,&$argsObj,$targetTestCaseSet = null)
 {
   $req_mgr = new requirement_mgr($dbHandler);
   $assignmentCounter = 0;
-  $requirements = array_keys($argsObj->reqIdSet);
+  $requirements = array_keys((array)$argsObj->reqIdSet);
   if(!is_null($requirements) && count((array)$requirements) > 0)
   {
     $tcase_set = $targetTestCaseSet;
@@ -233,11 +233,11 @@ function doSingleTestCaseOperation(&$dbHandler,&$argsObj,&$guiObj,$pfn) {
 
   switch($pfn) {
     case 'assign_to_tcase':
-      $items = array_keys($argsObj->reqIdSet);
+      $items = array_keys((array)$argsObj->reqIdSet);
     break;
 
     case 'delReqVersionTCVersionLinkByID':
-      $items = array_keys($argsObj->link_id);
+      $items = array_keys((array)$argsObj->link_id);
     break;
   }
 

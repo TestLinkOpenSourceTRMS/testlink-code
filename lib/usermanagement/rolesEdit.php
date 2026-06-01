@@ -99,7 +99,7 @@ function doOperation(&$dbHandler,$argsObj,$operation)
 
     case 'doCreate':
     case 'doUpdate':
-      $rights = implode("','",array_keys($argsObj->grant));
+      $rights = implode("','",array_keys((array)$argsObj->grant));
       $op->role->rights = tlRight::getAll($dbHandler,"WHERE description IN ('{$rights}')");
       $op->role->name = $argsObj->rolename;
       $op->role->description = $argsObj->notes;

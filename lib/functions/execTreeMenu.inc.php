@@ -194,7 +194,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
 
     if( $filters['keyword_filter_type'] == 'And' && !is_null($tplan_tcases)) {
       $kwc = count((array)$filters['keyword_id']);
-      $ak = array_keys($tplan_tcases);
+      $ak = array_keys((array)$tplan_tcases);
       $mx = null;
       foreach($ak as $tk) {
         if($tplan_tcases[$tk]['recordcount'] == $kwc) {
@@ -226,7 +226,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
       }
 
       if( null !== $tcc && count((array)$tcc) > 0 ) {
-        $tcIDSet = array_keys($tplan_tcases);
+        $tcIDSet = array_keys((array)$tplan_tcases);
         foreach($tcIDSet as $iID) {
           if( isset($tcc[$iID]) ) {
             $tplan_tcases[$iID]['exec_status'] = 
@@ -422,7 +422,7 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,
     $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
 
     $resultsCfg = config_get('results');
-    $status_descr_list = array_keys($resultsCfg['status_code']);
+    $status_descr_list = array_keys((array)$resultsCfg['status_code']);
     $status_descr_list[] = 'testcase_count';
 
     $my = array();
@@ -779,7 +779,7 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
         if($doPinBall && !is_null($tplan_tcases))
         {
           $kwc = count((array)$filters['keyword_id']);
-          $ak = array_keys($tplan_tcases);
+          $ak = array_keys((array)$tplan_tcases);
           $mx = null;
           foreach($ak as $tk)
           {
@@ -834,7 +834,7 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
       $test_spec[$key] = $testcase_counters[$key];
     }
   
-    $keys = array_keys($tplan_tcases);
+    $keys = array_keys((array)$tplan_tcases);
     $renderTreeNodeOpt['hideTestCases'] = $my['options']['hideTestCases'];
     $renderTreeNodeOpt['tc_action_enabled'] = isset($my['options']['tc_action_enabled']) ? 
                                               $my['options']['tc_action_enabled'] : 1;
@@ -880,7 +880,7 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 function helperInitCounters()
 {
   $resultsCfg = config_get('results');
-  $items = array_keys($resultsCfg['status_code']);
+  $items = array_keys((array)$resultsCfg['status_code']);
   $items[] = 'testcase_count';
   $cc = array_fill_keys($items, 0);
   return $cc;

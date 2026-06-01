@@ -631,14 +631,14 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 	$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
 
 	if( !is_null($itemSet) ) {
-		$reqSet = array_keys($itemSet);
+		$reqSet = array_keys((array)$itemSet);
 		$sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" . 
 		       " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
 		       " WHERE NH_REQV.parent_id IN (" . implode(",",$reqSet) . ") " .
 		       " GROUP BY NH_REQV.parent_id ";
 
 		$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
-	  $reqVersionSet = array_keys($latestVersionSet);
+	  $reqVersionSet = array_keys((array)$latestVersionSet);
 
     $getOptions['order_by'] = $my['options']['order_by'];
     $getOptions['outputLevel'] = $my['options']['outputLevel'];
@@ -695,14 +695,14 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
 			if( !is_null($itemSet) )
 			{
-				$reqSet = array_keys($itemSet);
+				$reqSet = array_keys((array)$itemSet);
 				$sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" . 
 					   " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
 					   " WHERE NH_REQV.parent_id IN (" . implode(",",$reqSet) . ") " .
 					   " GROUP BY NH_REQV.parent_id ";
 
 				$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
-				$reqVersionSet = array_keys($latestVersionSet);
+				$reqVersionSet = array_keys((array)$latestVersionSet);
 				
 				$getOptions['order_by'] = $my['options']['order_by'];
 				$getOptions['outputLevel'] = $my['options']['outputLevel'];
@@ -1571,7 +1571,7 @@ function get_requirement_child_by_id_req($id){
       {
         foreach($filters['requirements'] as $reqspec_pos => $requirements_pos)
         {
-            $copy_req[$reqspec_pos] = is_null($requirements_pos) ? null : array_keys($requirements_pos);
+            $copy_req[$reqspec_pos] = is_null($requirements_pos) ? null : array_keys((array)$requirements_pos);
         }
       }
     }
@@ -1688,7 +1688,7 @@ function get_requirement_child_by_id_req($id){
         if($create_req)
         {
           $items_qty = isset($copy_req[$idx]) ? count((array)$copy_req[$idx]) : count((array)$reqSet);
-          $keys2insert = isset($copy_req[$idx]) ? $copy_req[$idx] : array_keys($reqSet);
+          $keys2insert = isset($copy_req[$idx]) ? $copy_req[$idx] : array_keys((array)$reqSet);
           for($jdx = 0;$jdx < $items_qty; $jdx++)
           {
             $req = $reqSet[$keys2insert[$jdx]];
@@ -1817,7 +1817,7 @@ function get_requirement_child_by_id_req($id){
       				" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC " .
       				" ON NH_RSPEC.id = RSPEC.id ";
   				
-  		$sql .= $where . ' AND RSPEC_REV.id IN (' . implode(",",array_keys($maxi)) . ') '; 
+  		$sql .= $where . ' AND RSPEC_REV.id IN (' . implode(",",array_keys((array)$maxi)) . ') '; 
   		$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
     }
     	
@@ -2040,7 +2040,7 @@ function get_requirement_child_by_id_req($id){
 		{
 			// doc_id has limited size => we need to be sure that generated id 
       // will not exceed DB size
-      $nameSet = array_flip(array_keys($itemSet));
+      $nameSet = array_flip(array_keys((array)$itemSet));
 	    
       // 6 magic from " [xxx]"
 	    $prefix = trim_and_limit($item_info['doc_id'],$this->field_size->docid-6);
@@ -2262,7 +2262,7 @@ function get_requirement_child_by_id_req($id){
   		
   	if( !is_null($rs) )
   	{
-  		$key2loop = array_keys($rs);
+  		$key2loop = array_keys((array)$rs);
   		foreach($key2loop as $ap)
   		{
   			$rs[$ap]['item_id'] = $rs[$ap]['revision_id'];
@@ -2309,7 +2309,7 @@ function get_requirement_child_by_id_req($id){
 	function decode_users(&$rs)
 	{
   	$userCache = null;  // key: user id, value: display name
-  	$key2loop = array_keys($rs);
+  	$key2loop = array_keys((array)$rs);
   	$labels['undefined'] = lang_get('undefined');
   	$user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
   	foreach( $key2loop as $key )

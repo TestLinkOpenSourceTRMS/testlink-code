@@ -126,7 +126,7 @@ function initializeGui(&$db,&$args) {
     if( 0 == $gui->TestProjectCount ) {
       throw new Exception("Can't work without Test Project ID", 1);
     }
-    $theOne = current(array_keys($gui->TestProjects));
+    $theOne = current(array_keys((array)$gui->TestProjects));
     $gui->tproject_id = $gui->tprojectID = $theOne;
   }  
 

@@ -72,7 +72,7 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 	}
 	else
 	{
-		$filters['platforms'] = array_keys($gui->platformSet);
+		$filters['platforms'] = array_keys((array)$gui->platformSet);
 	}
    
 	// convert starttime to iso format for database usage

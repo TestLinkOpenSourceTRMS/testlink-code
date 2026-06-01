@@ -135,7 +135,7 @@ function buildUserMap($users,$add_options = false, $additional_options=null, $op
           $usersMap[$code] = $verbose_code;
       }
     }
-    $userSet = array_keys($users);
+    $userSet = array_keys((array)$users);
     $loops2do = count((array)$userSet);
     
     for( $idx=0; $idx < $loops2do ; $idx++)

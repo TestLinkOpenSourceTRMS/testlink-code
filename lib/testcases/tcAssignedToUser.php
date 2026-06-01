@@ -61,7 +61,7 @@ if( $doIt )
   $execCfg = config_get('exec_cfg');
 
   $tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
-  $tplanSet=array_keys($gui->resultSet);
+  $tplanSet=array_keys((array)$gui->resultSet);
   $sql="SELECT name,id FROM {$tables['nodes_hierarchy']} " .
        "WHERE id IN (" . implode(',',$tplanSet) . ")";
   $gui->tplanNames=$db->fetchRowsIntoMap($sql,'id');

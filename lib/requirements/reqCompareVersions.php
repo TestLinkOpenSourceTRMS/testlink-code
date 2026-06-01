@@ -179,7 +179,7 @@ function getCFDiff($cfields,&$reqMgr)
 
   if( !is_null($cfieldsLeft) )
   {
-    $key2loop = array_keys($cfieldsLeft);
+    $key2loop = array_keys((array)$cfieldsLeft);
     $cmp = array();
     $type_code = $reqMgr->cfield_mgr->get_available_types();
     $key2convert = array('lvalue','rvalue');

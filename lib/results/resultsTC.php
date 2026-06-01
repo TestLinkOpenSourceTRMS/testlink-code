@@ -517,7 +517,7 @@ function setUpBuilds(&$args,&$gui) {
     $gui->buildListForExcel = '';
     $gui->filterApplied = false;
     if( !is_null($gui->buildInfoSet) ) {
-      $args->builds->idSet = array_keys($gui->buildInfoSet);
+      $args->builds->idSet = array_keys((array)$gui->buildInfoSet);
     }
   } else {
     $args->builds->idSet = array_keys(array_flip($args->build_set));
@@ -554,21 +554,21 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
 
   $cols = $args->cols;
 
-  $tsuiteSet = array_keys($metrics);
+  $tsuiteSet = array_keys((array)$metrics);
   foreach($tsuiteSet as $tsuiteID) {
 
-    $tcaseSet = array_keys($metrics[$tsuiteID]);
+    $tcaseSet = array_keys((array)$metrics[$tsuiteID]);
     
     foreach($tcaseSet as $tcaseID) {
 
       // If there are NO PLATFORMS anyway we have the platformID=0!!!
-      $platformSet = array_keys($metrics[$tsuiteID][$tcaseID]);
+      $platformSet = array_keys((array)$metrics[$tsuiteID][$tcaseID]);
       foreach($platformSet as $platformID) {
         $rf = &$metrics[$tsuiteID][$tcaseID][$platformID];
         $rows = null;
 
         // some info does not change on different executions
-        $build2loop = array_keys($rf);
+        $build2loop = array_keys((array)$rf);
         $top = current($build2loop);
         $external_id = $args->tcPrefix . $rf[$top]['external_id'];
         $rows[$cols['tsuite']] = $rf[$top]['suiteName'];

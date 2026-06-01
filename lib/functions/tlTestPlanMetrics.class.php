@@ -65,7 +65,7 @@ class tlTestPlanMetrics extends testplan
     }
     // $this->notRunStatusCode = $this->tc_status_for_statistics['not_run'];
       
-    $this->statusCode = array_flip(array_keys($this->resultsCfg['status_label_for_exec_ui']));
+    $this->statusCode = array_flip(array_keys((array)$this->resultsCfg['status_label_for_exec_ui']));
     foreach($this->statusCode as $key => $dummy)
     {
       $this->statusCode[$key] = $this->resultsCfg['status_code'][$key];  
@@ -373,9 +373,9 @@ class tlTestPlanMetrics extends testplan
       //   Hmm, think about Need to check is this way is better that request DBMS to do it.
       // - Execution status that have not happened
       foreach($exec as $dum => &$elem) {                            
-        $platSet = array_keys($elem);
+        $platSet = array_keys((array)$elem);
         foreach($platSet as $platId ) {
-          $itemSet = array_keys($elem[$platId]);
+          $itemSet = array_keys((array)$elem[$platId]);
           foreach($itemSet as $itemID) {
             foreach($this->statusCode as $verbose => $code) {
               if(!isset($elem[$platId][$itemID][$code])) {
@@ -394,7 +394,7 @@ class tlTestPlanMetrics extends testplan
       //   Hmm, think about Need to check is this way is better that request DBMS to do it.
       // - Execution status that have not happened
       foreach($exec as &$elem) {                             
-        $itemSet = array_keys($elem);
+        $itemSet = array_keys((array)$elem);
         foreach($itemSet as $itemID) {
           foreach($this->statusCode as $verbose => $code) {
             if(!isset($elem[$itemID][$code])) {
@@ -468,11 +468,11 @@ class tlTestPlanMetrics extends testplan
 
       // Creating item list this way will generate a row also for
       // ACTIVE BUILDS were ALL TEST CASES HAVE NO TESTER ASSIGNMENT
-      // $buildList = array_keys($metrics['active_builds']);
+      // $buildList = array_keys((array)$metrics['active_builds']);
       
       // Creating item list this way will generate a row ONLY FOR
       // ACTIVE BUILDS were TEST CASES HAVE TESTER ASSIGNMENT
-      $buildList = array_keys($metrics['with_tester']);
+      $buildList = array_keys((array)$metrics['with_tester']);
       $renderObj->info = array();  
       foreach($buildList as $buildID)
       {
@@ -1122,10 +1122,10 @@ class tlTestPlanMetrics extends testplan
     $totals = array();
     foreach($exec as &$topLevelElem)
     {                             
-      $topLevelItemSet = array_keys($topLevelElem);
+      $topLevelItemSet = array_keys((array)$topLevelElem);
       foreach($topLevelItemSet as $topLevelItemID)
       {
-        $itemSet = array_keys($topLevelElem[$topLevelItemID]);
+        $itemSet = array_keys((array)$topLevelElem[$topLevelItemID]);
         foreach($itemSet as $itemID)
         {
           $elem = &$topLevelElem[$topLevelItemID];
@@ -1174,14 +1174,14 @@ class tlTestPlanMetrics extends testplan
     if( !is_null($metrics) )
     {
       $renderObj = new stdClass();
-      $topItemSet = array_keys($metrics['with_tester']);
+      $topItemSet = array_keys((array)$metrics['with_tester']);
       $renderObj->info = array();  
       $out = &$renderObj->info;
 
       $topElem = &$metrics['with_tester'];
       foreach($topItemSet as $topItemID)
       {
-        $itemSet = array_keys($topElem[$topItemID]);
+        $itemSet = array_keys((array)$topElem[$topItemID]);
         foreach($itemSet as $itemID)
         {
           $elem = &$topElem[$topItemID][$itemID];
@@ -1259,7 +1259,7 @@ class tlTestPlanMetrics extends testplan
       $renderObj->info = array(); 
 
       if( $byPlatform == false ) { 
-        $itemList = array_keys($metrics[$setKey]);      
+        $itemList = array_keys((array)$metrics[$setKey]);      
         foreach($itemList as $itemID) {
           if( isset($metrics['with_tester'][$itemID]) ) {
             $totalRun = 0;
@@ -1290,10 +1290,10 @@ class tlTestPlanMetrics extends testplan
         }
       } else {
         // mainKey is Platform ID
-        $platList = array_keys($metrics['with_tester']); 
+        $platList = array_keys((array)$metrics['with_tester']); 
         $mex = &$metrics['with_tester']; 
         foreach($platList as $platID) {
-          $itemList = array_keys($mex[$platID]);
+          $itemList = array_keys((array)$mex[$platID]);
           foreach($itemList as $itemID) {
             if( isset($mex[$platID]) ) {
               $totalRun = 0;
@@ -1369,7 +1369,7 @@ class tlTestPlanMetrics extends testplan
 
     list($rx,$staircase) = $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
 
-    // ??? $key2loop = array_keys($rx->info);
+    // ??? $key2loop = array_keys((array)$rx->info);
     $template = array('type' => 'tsuite', 'name' => '','total_tc' => 0,
               'percentage_completed' => 0, 'details' => array());  
 
@@ -1384,11 +1384,11 @@ class tlTestPlanMetrics extends testplan
     $topNameCache = null;
     $execQty = null;
 
-    $key2loop = array_keys($staircase);
+    $key2loop = array_keys((array)$staircase);
     $wp = isset($opt['groupByPlatform']) && $opt['groupByPlatform'];
 
     if( $wp ) {
-      $plat2loop = array_keys($rx->info);
+      $plat2loop = array_keys((array)$rx->info);
       foreach($key2loop as $tsuite_id) {
         // (count() == 1) => is a TOP LEVEL SUITE, 
         // only element contains Root node, is useless for this algorithm
@@ -1683,7 +1683,7 @@ class tlTestPlanMetrics extends testplan
     // now is time do some decoding
     // Key is a tuple (PARENT tsuite_id, test case id, platform id)
     //
-    $item2loop = array_keys($dummy);
+    $item2loop = array_keys((array)$dummy);
     $stairway2heaven = null;
     $pathway = null;
     $latestExec = null;
@@ -1695,9 +1695,9 @@ class tlTestPlanMetrics extends testplan
       unset($stairway2heaven);
 
       // go inside test case
-      $tcase2loop = array_keys($dummy[$item_id]);
+      $tcase2loop = array_keys((array)$dummy[$item_id]);
       foreach($tcase2loop as $tcase_id) {
-        $platform2loop = array_keys($dummy[$item_id][$tcase_id]);
+        $platform2loop = array_keys((array)$dummy[$item_id][$tcase_id]);
         foreach($platform2loop as $platform_id) {
           $latestExec[$platform_id][$tcase_id] = 
             array('id' => -1, 'status' => $this->notRunStatusCode);
@@ -1778,7 +1778,7 @@ class tlTestPlanMetrics extends testplan
       $bi->infoSet = $this->get_builds($id,testplan::ACTIVE_BUILDS,
                                        $openStatus);
       if (!is_null($bi->infoSet)) {
-       $bi->idSet = array_keys($bi->infoSet);
+       $bi->idSet = array_keys((array)$bi->infoSet);
       }
     }
     
@@ -1894,7 +1894,7 @@ class tlTestPlanMetrics extends testplan
     
     // refence is critic  
     foreach($out as &$elem) {                             
-      $itemSet = array_keys($elem);
+      $itemSet = array_keys((array)$elem);
       foreach($itemSet as $itemID) {             
         $totalByItemID[$itemID]['qty'] = 0;
         foreach($this->statusCode as $verbose => $code) {
@@ -2851,10 +2851,10 @@ class tlTestPlanMetrics extends testplan
 
     foreach($out as &$elem) {   
 
-      $rowSet = array_keys($elem);
+      $rowSet = array_keys((array)$elem);
       foreach($rowSet as $rowID) {
 
-        $colSet = array_keys($elem[$rowID]);
+        $colSet = array_keys((array)$elem[$rowID]);
         foreach($colSet as $colID) {             
           $totalByMatrix[$rowID][$colID]['qty'] = 0;
           foreach($this->statusCode as $verbose => $code) {
@@ -2887,7 +2887,7 @@ class tlTestPlanMetrics extends testplan
 
     // Creating item list this way will generate a row also for
     // ACTIVE BUILDS were ALL TEST CASES HAVE NO TESTER ASSIGNMENT
-    // $buildList = array_keys($metrics['active_builds']);
+    // $buildList = array_keys((array)$metrics['active_builds']);
     
     // Creating item list this way will generate a row ONLY FOR
     // ACTIVE BUILDS were TEST CASES HAVE TESTER ASSIGNMENT
@@ -2895,7 +2895,7 @@ class tlTestPlanMetrics extends testplan
       $renObj = new stdClass();
       $renObj->info = array();  
 
-      $platList = array_keys($metrics['with_tester']);
+      $platList = array_keys((array)$metrics['with_tester']);
       $mwt = &$metrics['with_tester'];
       foreach( $mwt as $platID => $buildMetrics ) {
         foreach($buildMetrics as $buildID => $met ) {
@@ -2929,10 +2929,10 @@ class tlTestPlanMetrics extends testplan
       }
   
       // Last step: get completness percentages
-      $platList = array_keys($renObj->info); 
+      $platList = array_keys((array)$renObj->info); 
       $tk = 'total_assigned';
       foreach($platList as $platID) {
-        $itemList = array_keys($renObj->info[$platID]);
+        $itemList = array_keys((array)$renObj->info[$platID]);
         foreach($itemList as $itemID) {
           if( isset($renObj->info[$platID]) ) {
             $totalRun = 0;
@@ -3061,7 +3061,7 @@ class tlTestPlanMetrics extends testplan
     // now is time do some decoding
     // Key is a tuple (PARENT tsuite_id, test case id, platform id)
     //
-    $item2loop = array_keys($dummy);
+    $item2loop = array_keys((array)$dummy);
     $stairway2heaven = null;
     $pathway = null;
     $latestExec = null;
@@ -3073,9 +3073,9 @@ class tlTestPlanMetrics extends testplan
       unset($stairway2heaven);
 
       // go inside test case
-      $tcase2loop = array_keys($dummy[$item_id]);
+      $tcase2loop = array_keys((array)$dummy[$item_id]);
       foreach($tcase2loop as $tcase_id) {
-        $platform2loop = array_keys($dummy[$item_id][$tcase_id]);
+        $platform2loop = array_keys((array)$dummy[$item_id][$tcase_id]);
         foreach($platform2loop as $platform_id) {
           $rf = &$dummy[$item_id][$tcase_id][$platform_id][0];
           $rf['suiteName'] = $pathway[$item_id];
@@ -3355,7 +3355,7 @@ class tlTestPlanMetrics extends testplan
     list($rx,$staircase) = 
       $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
 
-    // ??? $key2loop = array_keys($rx->info);
+    // ??? $key2loop = array_keys((array)$rx->info);
     $template = array('type' => 'tsuite', 
                       'name' => '',
                       'parent_id' => 0,
@@ -3377,12 +3377,12 @@ class tlTestPlanMetrics extends testplan
     $execQty = null;
     $execQtyL2 = null;
 
-    $key2loop = array_keys($staircase);
+    $key2loop = array_keys((array)$staircase);
     $wp = isset($opt['groupByPlatform']) && $opt['groupByPlatform'];
 
     if( $wp ) {
       $tsNameCache = array();
-      $plat2loop = array_keys($rx->info);
+      $plat2loop = array_keys((array)$rx->info);
 
       // In order to get SUM() for each Top (Level 1) Test Suite
       // using the specific test suite we get the Level 1

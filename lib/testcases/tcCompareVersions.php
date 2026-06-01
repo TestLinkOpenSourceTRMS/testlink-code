@@ -145,7 +145,7 @@ function buildDiff($items,$argsObj)
   $attrKeys = array();  
   $attrKeys['simple'] = array('summary','preconditions');
   $attrKeys['complex'] = array('steps' => 'actions', 'expected_results' => 'expected_results');
-  $dummy = array_merge($attrKeys['simple'],array_keys($attrKeys['complex'])); 
+  $dummy = array_merge($attrKeys['simple'],array_keys((array)$attrKeys['complex'])); 
   foreach($dummy as $gx)
   {
     foreach($panel as $side)

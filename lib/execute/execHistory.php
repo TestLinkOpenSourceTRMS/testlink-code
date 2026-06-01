@@ -132,7 +132,7 @@ function getIssues(&$dbHandler,&$execSet,$tprojectID)
   
   // we will see in future if we can use a better algorithm
   $issues = array();
-  $tcv2loop = array_keys($execSet);
+  $tcv2loop = array_keys((array)$execSet);
   foreach($tcv2loop as $tcvid)
   {
     $execQty = count((array)$execSet[$tcvid]);
@@ -156,7 +156,7 @@ function getIssues(&$dbHandler,&$execSet,$tprojectID)
 function getCustomFields(&$tcaseMgr,&$execSet)
 {
   $cf = array();
-  $tcv2loop = array_keys($execSet);
+  $tcv2loop = array_keys((array)$execSet);
   foreach($tcv2loop as $tcvid)
   {
     $execQty = count((array)$execSet[$tcvid]);
@@ -180,7 +180,7 @@ function getAttachments(&$dbHandler,&$execSet)
   $attachmentMgr = tlAttachmentRepository::create($dbHandler);
 
   $att = null;
-  $tcv2loop = array_keys($execSet);
+  $tcv2loop = array_keys((array)$execSet);
   foreach($tcv2loop as $tcvid)
   {
     $execQty = count((array)$execSet[$tcvid]);

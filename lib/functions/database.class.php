@@ -577,7 +577,7 @@ class database {
       $row = $this->fetchFirstRow($sql);
     if ($row)
       {
-      $fieldName = array_keys($row);   
+      $fieldName = array_keys((array)$row);   
       return $row[$fieldName[0]];
     }
     return null;

@@ -2992,12 +2992,12 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         // Do we need to get Test Case Steps?
         if(! is_null( $recordset ) && $opt[self::$getStepsInfoParamName]) {
-            $itemSet = array_keys( $recordset );
+            $itemSet = array_keys((array)$recordset);
             switch($options['output']) {
                 case 'mapOfArray' :
                 case 'mapOfMap' :
                     foreach( $itemSet as $itemKey ) {
-                        $keySet = array_keys( $recordset[$itemKey] );
+                        $keySet = array_keys((array)$recordset[$itemKey]);
                         $target = &$recordset[$itemKey];
                         foreach( $keySet as $accessKey ) {
                             $steps = $this->tcaseMgr->get_steps( $target[$accessKey]['tcversion_id'] );
@@ -3019,12 +3019,12 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         // Do we need the custom fields?
         if (! is_null( $recordset ) && ($opt[self::$customFieldsParamName] || is_array($opt[self::$customFieldsParamName]))) {
-            $itemSet = array_keys( $recordset );
+            $itemSet = array_keys((array)$recordset);
             switch($options['output']) {
                 case 'mapOfArray' :
                 case 'mapOfMap' :
                     foreach( $itemSet as $itemKey ) {
-                        $keySet = array_keys( $recordset[$itemKey] );
+                        $keySet = array_keys((array)$recordset[$itemKey]);
                         $target = &$recordset[$itemKey];
                         foreach( $keySet as $accessKey ) {
                             $target[$accessKey]['customfields'] = $this->_testcaseCustomFieldData(
@@ -3596,7 +3596,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $sql = " SELECT TCV.version,TCV.id " . " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " . " WHERE NH.parent_id = " . intval( $tcase_id ) . " AND TCV.id = NH.id ";
 
             $all_tcversions = $this->dbObj->fetchRowsIntoMap( $sql, 'id' );
-            $id_set = array_keys( $all_tcversions );
+            $id_set = array_keys((array)$all_tcversions);
 
             // get records regarding all test case versions linked to test plan
             $in_clause = implode( ",", $id_set );
@@ -6352,7 +6352,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                         'accessKey' => 'step_number'
                 );
                 $stepSet =( array ) $this->tcaseMgr->get_steps( $tcversion_id, 0, $opt );
-                $stepNumberIDSet = array_flip( array_keys( $stepSet ) );
+                $stepNumberIDSet = array_flip( array_keys((array)$stepSet) );
                 foreach( $stepNumberIDSet as $sn => $dummy ) {
                     $stepNumberIDSet[$sn] = $stepSet[$sn]['id'];
                 }
@@ -7967,7 +7967,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         // to same test project
         $status_ok = $this->_runChecks( $checkFunctions, $msg_prefix );
         if($status_ok) {
-            $items = array_keys( $this->args[self::$keywordNameParamName] );
+            $items = array_keys((array)$this->args[self::$keywordNameParamName]);
             $status_ok = $this->checkTestCaseSetIdentity( $msg_prefix, $items );
         }
 
@@ -8044,7 +8044,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 if(! isset( $cacheLTCV[$tcaseID] )) {
                     $cacheLTCV[$tcaseID] = $this->tcaseMgr->getLatestVersionID( $tcaseID );
                 }
-                $this->tcaseMgr->$method2call( $this->tcaseE2I[$ak], $cacheLTCV[$tcaseID], array_keys( $val ) );
+                $this->tcaseMgr->$method2call( $this->tcaseE2I[$ak], $cacheLTCV[$tcaseID], array_keys((array)$val) );
             }
         }
 

@@ -119,7 +119,7 @@ if( $hasTestCases ) {
 // Render Results
 if( !is_null($mapTC) ) {
   $tcase_mgr = new testcase($db);   
-  $tcase_set = array_keys($mapTC);
+  $tcase_set = array_keys((array)$mapTC);
   $options = array('output_format' => 'path_as_string');
   $gui->path_info = $treeMgr->get_full_path_verbose($tcase_set, $options);
   $gui->resultSet = $mapTC;
@@ -161,7 +161,7 @@ if(!is_null($table)) {
 $table = null;
 if( !is_null($mapRQ)) {
   $gui->resultReq = $mapRQ;
-  $req_set = array_keys($mapRQ);
+  $req_set = array_keys((array)$mapRQ);
   $options = array('output_format' => 'path_as_string');
   $gui->path_info = $treeMgr->get_full_path_verbose($req_set,$options);
 
@@ -373,7 +373,7 @@ function buildRQExtTable($gui, $charset)
     // Extract the relevant data and build a matrix
     $matrixData = array();
     
-    $key2loop = array_keys($gui->resultReq);
+    $key2loop = array_keys((array)$gui->resultReq);
     $img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
     $reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
     $reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">' . $labels['version_revision_tag'] . ' </a>'; 

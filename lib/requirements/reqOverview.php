@@ -81,7 +81,7 @@ if(count((array)$gui->reqIDs) > 0)  {
   //
   if ( $cfg->req->expected_coverage_management ||
        $gui->processCF )  {
-    $xSet = array_keys($reqSet);
+    $xSet = array_keys((array)$reqSet);
 
     foreach($xSet as $rqID) {
       $reqVersionSet[] = $reqSet[$rqID][0]['version_id'];

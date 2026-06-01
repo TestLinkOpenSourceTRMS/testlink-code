@@ -72,7 +72,7 @@ if (!is_null($metrics) and count((array)$metrics) > 0) {
   if( $args->type != $statusCode['not_run'] ) {
     // get Custom fields definition to understand columns to be added
     $cfSet = $tcase_mgr->cfield_mgr->get_linked_cfields_at_execution($args->tproject_id,true,'testcase');
-    $execSet = array_keys($metrics);
+    $execSet = array_keys((array)$metrics);
 
 
     // go for Custom fields values of all executions on ONE SHOT!
@@ -87,7 +87,7 @@ if (!is_null($metrics) and count((array)$metrics) > 0) {
       $dummy = $tcase_mgr->getPathLayered(array($exec['tcase_id']));  
       $pathCache[$exec['tcase_id']] = $dummy[$exec['tsuite_id']]['value'];
       $levelCache[$exec['tcase_id']] = $dummy[$exec['tsuite_id']]['level'];
-      $ky = current(array_keys($dummy)); 
+      $ky = current(array_keys((array)$dummy)); 
       $topCache[$exec['tcase_id']] = $ky;
     }
     

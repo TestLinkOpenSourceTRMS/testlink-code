@@ -121,7 +121,7 @@ if($do_display) {
         $keywordsFilter->items,$keywordsFilter->type);
 
     if (sizeof((array)$keywordsTestCases)) {
-      $testCaseSet = array_keys($keywordsTestCases);
+      $testCaseSet = array_keys((array)$keywordsTestCases);
     }
   }
   
@@ -266,7 +266,7 @@ if($do_display) {
         $keywordsFilter->items,$keywordsFilter->type);
 
 		if (sizeof((array)$keywordsTestCases)) {
-			$testCaseSet = array_keys($keywordsTestCases);
+			$testCaseSet = array_keys((array)$keywordsTestCases);
 		}
 	}
 
@@ -555,7 +555,7 @@ function doReorder(&$argsObj,&$tplanMgr)
     // Now add info for new liked test cases if any
     if(!is_null($argsObj->testcases2add))
     {
-        $tcaseSet = array_keys($argsObj->testcases2add);
+        $tcaseSet = array_keys((array)$argsObj->testcases2add);
         foreach($tcaseSet as $tcid)
         {
           // This check is needed because, after we have added test case
@@ -895,7 +895,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
  */
 function initDrawSaveButtons(&$guiObj)
 {
-  $keySet = array_keys($guiObj->items);
+  $keySet = array_keys((array)$guiObj->items);
 
   // 20100225 - eloff - BUGID 3205 - check only when platforms are active
   // Logic to initialize drawSavePlatformsButton.
@@ -908,7 +908,7 @@ function initDrawSaveButtons(&$guiObj)
       $testSuite = &$guiObj->items[$key];
       if($testSuite['linked_testcase_qty'] > 0)
       {
-        $tcaseSet = array_keys($testSuite['testcases']);
+        $tcaseSet = array_keys((array)$testSuite['testcases']);
         foreach($tcaseSet as $tcaseKey)
         {
           if( isset($testSuite['testcases'][$tcaseKey]['feature_id'][0]) )
@@ -934,7 +934,7 @@ function initDrawSaveButtons(&$guiObj)
     $tcaseSet = &$guiObj->items[$key]['testcases'];
     if( !is_null($tcaseSet) )
     {
-      $tcversionSet = array_keys($tcaseSet);
+      $tcversionSet = array_keys((array)$tcaseSet);
       foreach($tcversionSet as $tcversionID)
       {
         if( isset($tcaseSet[$tcversionID]['custom_fields']) && 
@@ -1002,7 +1002,7 @@ function init_build_selector(&$testplan_mgr, &$argsObj) {
   // if no build has been chosen yet, select the newest build by default
   $build_id = $argsObj->build_id;
   if (!$build_id && $menu['count']) {
-    $keys = array_keys($menu['items']);
+    $keys = array_keys((array)$menu['items']);
     $build_id = end($keys);
   }
   $menu['selected'] = $build_id;

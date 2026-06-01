@@ -78,7 +78,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
        // TODOD
        $tproject_mgr = new testproject($db);
        $usedKeywordsByKeyID = $tproject_mgr->getUsedKeywordsMap($tproject_id);
-       $filters['filter_keywords'] = array_keys($usedKeywordsByKeyID);
+       $filters['filter_keywords'] = array_keys((array)$usedKeywordsByKeyID);
     }
 
     $rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
@@ -351,7 +351,7 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
     $nodesCodeType = array_flip($nodesTypeCode);
 
     $resultsCfg = config_get('results');
-    $status_descr_list = array_keys($resultsCfg['status_code']);
+    $status_descr_list = array_keys((array)$resultsCfg['status_code']);
     $status_descr_list[] = 'testcase_count';
     
     $my = array();
@@ -2295,7 +2295,7 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
 {
   $tables = tlObject::getDBTables(array('executions','nodes_hierarchy'));
   $dummy = current($items);
-  $key2scan = array_keys($items);
+  $key2scan = array_keys((array)$items);
   $keySet = null;
   foreach($key2scan as $fx)
   {

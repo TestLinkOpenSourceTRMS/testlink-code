@@ -1259,7 +1259,7 @@ function setPublicStatus($id,$status)
     $result = tl::OK;
 
     $itemSet = (array)$this->getKeywordSet($tproject_id);
-    $kwIDs = array_keys($itemSet);
+    $kwIDs = array_keys((array)$itemSet);
 
     $opt = array('checkBeforeDelete' => false,
                  'context' => $tproject_name);
@@ -1991,7 +1991,7 @@ function setPublicStatus($id,$status)
     $tplanSet = $this->get_all_testplans($id);
     if( !is_null($tplanSet) && count((array)$tplanSet) > 0 ) {
       $tplan_mgr = new testplan($this->db);
-      $items=array_keys($tplanSet);     
+      $items=array_keys((array)$tplanSet);     
       foreach($items as $key) {
         $tplan_mgr->delete($key);
       }
@@ -2570,7 +2570,7 @@ function getFreeTestCases($id,$options=null)
     
     if( !is_null($free) && count((array)$free) > 0)
     {
-        $in_clause=implode(',',array_keys($free));
+        $in_clause=implode(',',array_keys((array)$free));
          $sql = " /* $debugMsg */ " .
               " SELECT MAX(TCV.version) AS version, TCV.tc_external_id, " .
                 " TCV.importance AS importance, NHTCV.parent_id AS id, NHTC.name " .
@@ -2933,7 +2933,7 @@ private function copy_cfields_assignments($source_id, $target_id)
     $row_set = $this->db->fetchRowsIntoMap($sql,'field_id');   
   if( !is_null($row_set) )
   {
-    $cfield_set = array_keys($row_set);
+    $cfield_set = array_keys((array)$row_set);
     $this->cfield_mgr->link_to_testproject($target_id,$cfield_set);
   }
 }
@@ -2950,7 +2950,7 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
   $tplanSet = $this->get_all_testplans($source_id);
   if( !is_null($tplanSet) )
   {
-    $keySet = array_keys($tplanSet);
+    $keySet = array_keys((array)$tplanSet);
     if( is_null($tplanMgr) )
     {
       $tplanMgr = new testplan($this->db);
@@ -3201,7 +3201,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
 
     // create list with test cases nodes
   $tclist = null;
-  $ks = array_keys($rs);
+  $ks = array_keys((array)$rs);
   foreach($ks as $ikey) {
     if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] ) {
       $tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
@@ -3657,11 +3657,11 @@ function getPublicAttr($id)
       $rs = $this->db->fetchRowsIntoMap($sql,'tcase_id',database::CUMULATIVE);
       if( !is_null($rs) )
       {
-        $k2g = array_keys($rs);
+        $k2g = array_keys((array)$rs);
         $path_info = $this->tree_manager->get_full_path_verbose($k2g,array('output_format' => 'path_as_string'));
         foreach($k2g as $tgx)
         {
-          $rx = array_keys($rs[$tgx]);
+          $rx = array_keys((array)$rs[$tgx]);
           foreach($rx as $ex)
           {
             $rs[$tgx][$ex]['path'] = $path_info[$tgx];

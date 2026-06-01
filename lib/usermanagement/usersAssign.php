@@ -278,7 +278,7 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users) {
   // has right enough to assign user role.
   //
   $features = array();
-  $idSet = $key2loop = array_keys($testprojects);
+  $idSet = $key2loop = array_keys((array)$testprojects);
   $rolesCache = null;
   foreach($idSet as $tk) {
     // $rolesCache[$testprojects[$tk]['effective_role']][] = $tk;  
@@ -312,7 +312,7 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users) {
 	
 	// get private/public status for feature2check
 	$featureIsPublic = 1;
-	$key2loop = array_keys($testprojects);
+	$key2loop = array_keys((array)$testprojects);
   foreach($key2loop as $ppx) {
 		if( $testprojects[$ppx]['id'] == $argsObj->featureID ) {
 			$featureIsPublic = $testprojects[$ppx]['is_public'];
@@ -349,7 +349,7 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
                                                               
     // we want to change map key, from testplan id to a sequential index
     // to maintain old logic
-    $activeKeys = array_keys($activeTestplans);
+    $activeKeys = array_keys((array)$activeTestplans);
     $myKeys = array_keys((array)$myAccessibleSet);
     $key2remove = $key2remove_diff = array_diff($activeKeys,$myKeys);
      if( !is_null($key2remove) ) {
@@ -364,7 +364,7 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
       $features = $activeTestplans;
     } else {
       $features = array();
-      $key2loop = array_keys($activeTestplans);
+      $key2loop = array_keys((array)$activeTestplans);
       foreach($key2loop as $idx) {
         if($argsObj->user->hasRight($dbHandler,"testplan_user_role_assignment",null,$activeTestplans[$idx]['id']) == "yes") {
           $features[$idx] = $activeTestplans[$idx];
@@ -377,7 +377,7 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
     if (!$argsObj->featureID) {
       if (sizeof((array)$features)) {
         if ($argsObj->testplanID) {
-          $key2loop = array_keys($features);
+          $key2loop = array_keys((array)$features);
           foreach($key2loop as $idx) {
             if ($argsObj->testplanID == $features[$idx]['id']) {
               $argsObj->featureID = $argsObj->testplanID;
@@ -428,7 +428,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
     //new dBug($myAccessibleSet);
    
     // we want to change map key, from testplan id to a sequential index to maintain old logic
-    $activeKeys = array_keys($activeTestplans);
+    $activeKeys = array_keys((array)$activeTestplans);
     $myKeys = array_keys((array)$myAccessibleSet);
 	  $key2remove = $key2remove_diff = array_diff($activeKeys,$myKeys);
     if( !is_null($key2remove) )
@@ -463,7 +463,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 		  //$loop2do = sizeof((array)$activeTestplans);
 			//for($idx = 0; $idx < $loop2do; $idx++)
 			$features = array();
-		  $key2loop = array_keys($activeTestplans);
+		  $key2loop = array_keys((array)$activeTestplans);
 			foreach($key2loop as $idx)
 			{
         // Humm!!, think we need to check testplan_user_role_assignment and not "testplan_planning"
@@ -484,7 +484,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 				{
 				  // $loop2do = sizeof((array)$features);
 					// for($idx = 0; $idx < $loop2do; $idx++)
-					$key2loop = array_keys($features);
+					$key2loop = array_keys((array)$features);
 					foreach($key2loop as $idx)
 					{
 						if ($argsObj->testplanID == $features[$idx]['id'])
@@ -515,7 +515,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
     // can manege roles on current selected test plan.
     // why I did not find this before ???
     $features = array();
-    $key2loop = array_keys($activeTestplans);
+    $key2loop = array_keys((array)$activeTestplans);
     foreach($key2loop as $idx)
     {
       $answer = $rolesCache[$testprojects[$idx]['effective_role']]->hasRight("user_role_assignment");
@@ -552,7 +552,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 function doUpdate(&$dbHandler,&$argsObj,&$featureMgr)
 {
 	$featureMgr->deleteUserRoles($argsObj->featureID,
-                               array_keys($argsObj->map_userid_roleid));
+                               array_keys((array)$argsObj->map_userid_roleid));
 	foreach($argsObj->map_userid_roleid as $user_id => $role_id)
 	{
 		if ($role_id)

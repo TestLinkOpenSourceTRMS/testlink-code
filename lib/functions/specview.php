@@ -530,10 +530,10 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr,
   
   if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
   {
-    $filteredSet = $tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
+    $filteredSet = $tcaseMgr->filterByKeyword(array_keys((array)$tplan_tcases),
                                               $argsObj->keyword_id,$argsObj->keywordsFilterType);
     
-    $filters = array('tcase_id' => array_keys($filteredSet));
+    $filters = array('tcase_id' => array_keys((array)$filteredSet));
 
     // HERE WE CAN HAVE AN ISSUE
     $tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
@@ -771,7 +771,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 
 
   if( $applyFilters ) {
-    $key2loop = array_keys($test_spec);
+    $key2loop = array_keys((array)$test_spec);
     
     // first step: generate list of TEST CASE NODES
     $itemSet = null ;
@@ -805,13 +805,13 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
          $useFilter['status']) 
       ) {
       // This logic can have some Potential Performance ISSUE - 20120619 - fman
-      $targetSet = array_keys($itemSet);
+      $targetSet = array_keys((array)$itemSet);
       $options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
 
       $getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
       $s2h = config_get('tplanDesign')->hideTestCaseWithStatusIn;
       if( !is_null($s2h) ) {
-        $getFilters['status'] = array('not_in' => array_keys($s2h));   
+        $getFilters['status'] = array('not_in' => array_keys((array)$s2h));   
       }
       
       $tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
@@ -853,7 +853,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
         break;
         
         default:
-          $tcvidSet = array_keys($tcversionSet);
+          $tcvidSet = array_keys((array)$tcversionSet);
           foreach($tcvidSet as $zx) {
             $tcidSet[$tcversionSet[$zx]['testcase_id']] = $zx;  
           }  
@@ -886,13 +886,13 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
             // because we have applied it before on:
             // $tcversionSet = $tcaseMgr->get_last_active_version()
             if( $useFilter['cfields'] ) {
-              $filteredSet = (!is_null($allowedSet) &&  count((array)$allowedSet) > 0) ? array_keys($allowedSet) : $tcvidSet;
+              $filteredSet = (!is_null($allowedSet) &&  count((array)$allowedSet) > 0) ? array_keys((array)$allowedSet) : $tcvidSet;
               $dummySet = $tcaseMgr->filter_tcversions_by_cfields($filteredSet,$filters['cfields'],$options);
 
               // transform to make compatible with filter_tcversions_by_exec_type() return type
               if( !is_null($dummySet) &&  count((array)$dummySet) > 0 ) {
                 $allowedSet = null;
-                $work2do = array_keys($dummySet);
+                $work2do = array_keys((array)$dummySet);
                 foreach($work2do as $wkey) {
                   $allowedSet[$wkey] = $dummySet[$wkey][0];
                 }
@@ -1058,7 +1058,7 @@ function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
         {
           if( ($linked_version_id=$svalue['linked_version_id']) > 0 )
           {
-            $platformSet = array_keys($svalue['feature_id']);
+            $platformSet = array_keys((array)$svalue['feature_id']);
             foreach($platformSet as $platform_id)
             {
               $testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id]='';

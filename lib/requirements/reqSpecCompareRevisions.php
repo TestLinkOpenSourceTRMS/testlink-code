@@ -165,7 +165,7 @@ function getCFDiff($cfields,&$itemMgr)
 	$cfieldsRight = $cfields['right_side']['value'];
 	if( !is_null($cfieldsLeft) )
 	{
-		$key2loop = array_keys($cfieldsLeft);
+		$key2loop = array_keys((array)$cfieldsLeft);
 		$cmp = array();
 		$type_code = $itemMgr->cfield_mgr->get_available_types();
 		$key2convert = array('lvalue','rvalue');

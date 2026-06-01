@@ -235,7 +235,7 @@ class testPlanUrgency extends testplan
     
     if( !is_null($rs) )
     {
-      $key2loop = array_keys($rs);
+      $key2loop = array_keys((array)$rs);
       switch($my['options']['details'])
       {
         case 'tcversion':
@@ -248,7 +248,7 @@ class testPlanUrgency extends testplan
         case 'platform':
           foreach($key2loop as  $key)
           {
-            $platformSet = array_keys($rs[$key]);
+            $platformSet = array_keys((array)$rs[$key]);
             foreach($platformSet as $platform_id) 
             {
               $rs[$key][$platform_id]['priority_level'] = priority_to_level($rs[$key][$platform_id]['priority']);

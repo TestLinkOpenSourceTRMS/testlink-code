@@ -835,7 +835,7 @@ class testplan extends tlObjectWithAttachments
     $items = $this->db->fetchRowsIntoMap($sql,'tsuite_id',database::CUMULATIVE);           
       $xsql = " SELECT COALESCE(parent_id,0) AS parent_id,id,name" . 
           " FROM {$this->tables['nodes_hierarchy']} " . 
-          " WHERE id IN (" . implode(',',array_keys($items)) . ") AND parent_id IS NOT NULL";
+          " WHERE id IN (" . implode(',',array_keys((array)$items)) . ") AND parent_id IS NOT NULL";
 
     unset($items);
     $xmen = $this->db->fetchMapRowsIntoMap($xsql,'parent_id','id');
@@ -864,7 +864,7 @@ class testplan extends tlObjectWithAttachments
     // Now with node list get order
       $xsql = " SELECT id,name,node_order " . 
           " FROM {$this->tables['nodes_hierarchy']} " . 
-          " WHERE id IN (" . implode(',',array_keys($tlnodes)) . ")" .
+          " WHERE id IN (" . implode(',',array_keys((array)$tlnodes)) . ")" .
           " ORDER BY node_order,name ";
     $xmen = $this->db->fetchRowsIntoMap($xsql,'id');
     switch($my['opt']['output'])
@@ -1197,7 +1197,7 @@ class testplan extends tlObjectWithAttachments
     
     if( !is_null($exec_ids) and count((array)$exec_ids) > 0 ) {
       // has executions
-      $exec_ids = array_keys($exec_ids);
+      $exec_ids = array_keys((array)$exec_ids);
       $exec_id_list = implode(",",$exec_ids);
       $exec_id_where= " WHERE execution_id IN ($exec_id_list)";
 
@@ -1259,7 +1259,7 @@ class testplan extends tlObjectWithAttachments
     $sql=" SELECT id AS link_id FROM {$this->tables['testplan_tcversions']} " .
        " WHERE testplan_id={$id} AND {$where_clause} ";
     $link_ids = $this->db->fetchRowsIntoMap($sql,'link_id');
-    $features = array_keys($link_ids);
+    $features = array_keys((array)$link_ids);
     if( count((array)$features) == 1) {
       $features=$features[0];
     }
@@ -1341,7 +1341,7 @@ class testplan extends tlObjectWithAttachments
       }
       
       
-      $tc_id_list = implode(",",array_keys($linked_items));
+      $tc_id_list = implode(",",array_keys((array)$linked_items));
       
       // 20081116 - franciscom -
       // Does DISTINCT is needed ? Humm now I think no.
@@ -2920,7 +2920,7 @@ class testplan extends tlObjectWithAttachments
             $linkedItems = $this->get_linked_tcvid($id,$platfID);  
             if( (!is_null($linkedItems)) )
             {
-              $tcVersionIDSet[$platfID]= array_keys($linkedItems);
+              $tcVersionIDSet[$platfID]= array_keys((array)$linkedItems);
             }
           }  
         }
@@ -3040,10 +3040,10 @@ class testplan extends tlObjectWithAttachments
 
       if( ($status_ok = !is_null($executed)) )
       {
-        $tc2loop = array_keys($executed);
+        $tc2loop = array_keys((array)$executed);
         foreach($tc2loop as $tcase_id)
         {
-          $p2loop = array_keys($executed[$tcase_id]);
+          $p2loop = array_keys((array)$executed[$tcase_id]);
           foreach($p2loop as $platf_id)
           {
             $targetSet[$platf_id][]=array('id' => $executed[$tcase_id][$platf_id]['exec_id'],
@@ -3140,10 +3140,10 @@ class testplan extends tlObjectWithAttachments
         $executed = $this->getLTCVNewGeneration($id,$filters,$options); 
         if( ($status_ok = !is_null($executed)) )
         {
-          $tc2loop = array_keys($executed);
+          $tc2loop = array_keys((array)$executed);
           foreach($tc2loop as $tcase_id)
           {
-            $p2loop = array_keys($executed[$tcase_id]);
+            $p2loop = array_keys((array)$executed[$tcase_id]);
             foreach($p2loop as $platf_id)
             {
               $targetSet[$platf_id][]=$executed[$tcase_id][$platf_id]['exec_id'];
@@ -3362,7 +3362,7 @@ class testplan extends tlObjectWithAttachments
       $sourceLinks = $this->platform_mgr->getLinkedToTestplanAsMap($source_id);
       if( !is_null($sourceLinks) )
       {
-        $sourceLinks = array_keys($sourceLinks);
+        $sourceLinks = array_keys((array)$sourceLinks);
         if( !is_null($mappings) )
         {
           foreach($sourceLinks as $key => $value)
@@ -3618,7 +3618,7 @@ class testplan extends tlObjectWithAttachments
         $sib = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id,$my['opt']);
       break;
     }
-    $tcversionSet = array_keys($sib);
+    $tcversionSet = array_keys((array)$sib);
     $elemQty = count((array)$tcversionSet);
     $dummy = array_flip($tcversionSet);
 
@@ -3723,7 +3723,7 @@ class testplan extends tlObjectWithAttachments
     $loop2do = count((array)$mm);
     if( $loop2do > 0 )
     { 
-      $items2loop = array_keys($mm);
+      $items2loop = array_keys((array)$mm);
       foreach($items2loop as $itemkey)
       {
         $mm[$itemkey] = array('platform_name' => $mm[$itemkey], 'id' => $itemkey);
@@ -5007,11 +5007,11 @@ class testplan extends tlObjectWithAttachments
     $hitsFoundOn['otherStatus'] = count((array)$hits['otherStatus']) > 0;
 
     if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus']) {
-      $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
+      $items = array_merge(array_keys((array)$hits['notRun']), array_keys((array)$hits['otherStatus']));
     } else if($hitsFoundOn['notRun']) {
-      $items = array_keys($hits['notRun']);
+      $items = array_keys((array)$hits['notRun']);
     } else if($hitsFoundOn['otherStatus']) {
-      $items = array_keys($hits['otherStatus']);
+      $items = array_keys((array)$hits['otherStatus']);
     }
 
         
@@ -5055,7 +5055,7 @@ class testplan extends tlObjectWithAttachments
         " AND E.status IS NULL ";
 
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    return is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
   }
 
 
@@ -5092,7 +5092,7 @@ class testplan extends tlObjectWithAttachments
         " AND E.status IS NULL ";
 
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    return is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
   }
 
 
@@ -5156,7 +5156,7 @@ class testplan extends tlObjectWithAttachments
         " AND E.status IN('{$statusInClause}')";
         
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    $hits = is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    $hits = is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
     
     $items = (array)$hits + (array)$notRunHits; 
     return count((array)$items) > 0 ? $items : null;
@@ -5221,7 +5221,7 @@ class testplan extends tlObjectWithAttachments
         " AND E.status IN('{$statusInClause}')";
     
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    $hits = is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    $hits = is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
     
     $items = (array)$hits + (array)$notRunHits; 
     return count((array)$items) > 0 ? $items : null;
@@ -5297,7 +5297,7 @@ class testplan extends tlObjectWithAttachments
 
     unset($safe_id,$buildsCfg,$sqlLEX);
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    return is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
   }
 
 
@@ -5375,7 +5375,7 @@ class testplan extends tlObjectWithAttachments
 
     unset($safe_id,$buildsCfg,$sqlLEBP);
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    return is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
   }
 
 
@@ -5453,16 +5453,16 @@ class testplan extends tlObjectWithAttachments
     {
       if( $hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'] )
       {
-        $items = array_keys($hits['notRun']) + array_keys($hits['otherStatus']);
+        $items = array_keys((array)$hits['notRun']) + array_keys((array)$hits['otherStatus']);
       }
     } 
     else if($get['notRun'] && $hitsFoundOn['notRun'])
     {
-      $items = array_keys($hits['notRun']);
+      $items = array_keys((array)$hits['notRun']);
     }
     else if($get['otherStatus'] && $hitsFoundOn['otherStatus'])
     {
-      $items = array_keys($hits['otherStatus']);
+      $items = array_keys((array)$hits['otherStatus']);
     }
     
     return is_null($items) ? $items : array_flip($items);
@@ -5671,8 +5671,8 @@ class testplan extends tlObjectWithAttachments
     if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'])
     {
             // THIS DOES NOT WORK with numeric keys  
-            // $items = array_merge(array_keys($hits['notRun']),array_keys($hits['otherStatus']));
-            //$items = array_keys($hits['notRun']) + array_keys($hits['otherStatus']);
+            // $items = array_merge(array_keys((array)$hits['notRun']),array_keys((array)$hits['otherStatus']));
+            //$items = array_keys((array)$hits['notRun']) + array_keys((array)$hits['otherStatus']);
 
             // 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
             // 
@@ -5692,15 +5692,15 @@ class testplan extends tlObjectWithAttachments
             // the first 5 testcases from $hits['otherStatus']) were not in the result set because of the + operator.
             // 
             // After using array_keys() we have numeric keys => we HAVE TO USE array_merge().
-            $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
+            $items = array_merge(array_keys((array)$hits['notRun']), array_keys((array)$hits['otherStatus']));
     } 
     else if($hitsFoundOn['notRun'])
     {
-      $items = array_keys($hits['notRun']);
+      $items = array_keys((array)$hits['notRun']);
     }
     else if($hitsFoundOn['otherStatus'])
     {
-      $items = array_keys($hits['otherStatus']);
+      $items = array_keys((array)$hits['otherStatus']);
     }
         
     return is_null($items) ? $items : array_flip($items);

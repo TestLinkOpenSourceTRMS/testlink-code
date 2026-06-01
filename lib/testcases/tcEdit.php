@@ -85,7 +85,7 @@ switch($args->doAction) {
   case "create":  
   case "edit":  
   case "doCreate":  
-    $op = $commandMgr->$pfn($args,$opt_cfg,array_keys($testCaseEditorKeys),$_REQUEST);
+    $op = $commandMgr->$pfn($args,$opt_cfg,array_keys((array)$testCaseEditorKeys),$_REQUEST);
     $doRender = true;
   break;
     

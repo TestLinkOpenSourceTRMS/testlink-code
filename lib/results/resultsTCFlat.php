@@ -446,7 +446,7 @@ function setUpBuilds(&$args,&$gui)
     $gui->filterApplied = false;
     if( !is_null($gui->buildInfoSet) )
     {
-      $args->builds->idSet = array_keys($gui->buildInfoSet);
+      $args->builds->idSet = array_keys((array)$gui->buildInfoSet);
     }
   }  
   else

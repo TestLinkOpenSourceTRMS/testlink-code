@@ -118,7 +118,7 @@ function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID
   $labels = array('type' => $reqCfg->type_labels, 'status' => $reqCfg->status_labels);
   $verbose = array('type' => null, 'status' => null);
   $cache = array('type' => null, 'status' => null);
-  $cacheKeys = array_keys($cache);
+  $cacheKeys = array_keys((array)$cache);
   
   $unknown_code = lang_get('unknown_code');
   $reqMgr = new requirement_mgr($dbHandler);
@@ -572,7 +572,7 @@ function getReqCoverage(&$dbHandler,$reqs,&$execMap)
   
   $coverageAlgorithm=config_get('req_cfg')->coverageStatusAlgorithm;
   $resultsCfg=config_get('results');
-  $status2check=array_keys($resultsCfg['status_label_for_exec_ui']);
+  $status2check=array_keys((array)$resultsCfg['status_label_for_exec_ui']);
   
   // $coverage['byStatus']=null;
   $coverage['withTestCase']=null;
@@ -723,7 +723,7 @@ function getLastExecutions(&$db,$tcaseSet,$tplanId)
   if (sizeof((array)$tcaseSet))
   {
     $tcase_mgr = new testcase($db);
-      $items=array_keys($tcaseSet);
+      $items=array_keys((array)$tcaseSet);
       $path_info=$tcase_mgr->tree_manager->get_full_path_verbose($items);
     $options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
     foreach($tcaseSet as $tcaseId => $tcInfo)

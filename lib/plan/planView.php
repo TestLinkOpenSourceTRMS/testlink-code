@@ -30,7 +30,7 @@ if ($args->tproject_id && checkRights($db,$args->user,$args->tproject_id)) {
     $dummy = $tplan_mgr->platform_mgr->testProjectCount();
     $gui->drawPlatformQtyColumn = $dummy[$args->tproject_id]['platform_qty'] > 0;
 
-    $tplanSet = array_keys($gui->tplans);
+    $tplanSet = array_keys((array)$gui->tplans);
     $dummy = $tplan_mgr->count_testcases($tplanSet,null,array('output' => 'groupByTestPlan'));
     $buildQty = $tplan_mgr->get_builds($tplanSet,null,null,array('getCount' => true));
     $rightSet = array('testplan_user_role_assignment');

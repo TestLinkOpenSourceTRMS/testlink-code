@@ -49,7 +49,7 @@ $reqContext = array('tproject_id' => $args->tproject_id, 'tplan_id' => $args->tp
                     'platform_id' => $args->platform);
 
 $reqSetX = (array)$req_mgr->getAllByContext($reqContext);
-$req_ids = array_keys($reqSetX);
+$req_ids = array_keys((array)$reqSetX);
 
 $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id) . (config_get('testcase_cfg')->glue_character);
 
@@ -93,7 +93,7 @@ if(count((array)$rspecSet))
       foreach ($req_info['linked_testcases'] as $key => $tc_info) 
       {
         $tc_id = $tc_info['id'];
-        $plat2loop = array_keys($testcases[$tc_id]);
+        $plat2loop = array_keys((array)$testcases[$tc_id]);
         $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']['total']++;
  
         foreach($plat2loop as $plat_id)

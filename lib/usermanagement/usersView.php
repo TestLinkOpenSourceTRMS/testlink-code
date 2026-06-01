@@ -276,7 +276,7 @@ function getAllUsersForGrid(&$dbHandler)
     foreach($users as $row)
     {
       $cr = array();
-      $elem = array_keys($row);
+      $elem = array_keys((array)$row);
       foreach($elem as $accessKey)
       {
         if(!is_numeric($accessKey))

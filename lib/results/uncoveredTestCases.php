@@ -72,7 +72,7 @@ if($gui->has_requirements)
 if($gui->has_tc = (!is_null($uncovered) && count((array)$uncovered) > 0) )
 {
     // Get external  ID
-    $testSet = array_keys($uncovered);
+    $testSet = array_keys((array)$uncovered);
     $inClause = implode(',',$testSet);
     $debugMsg = 'File: ' . basename(__FILE__) . ' - Line: ' . __LINE__ . ' - ';
     $sql = "/* $debugMsg */ " .

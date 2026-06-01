@@ -95,7 +95,7 @@ switch ($doc_info->type) {
     // Changed to get ALL platform attributes.
     $getOpt = array('outputFormat' => 'mapAccessByID', 'addIfNull' => true);
     $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
-    $platformIDSet = array_keys($platforms);
+    $platformIDSet = array_keys((array)$platforms);
 
     $printingOptions['priority'] = $doc_info->test_priority_enabled;
     $items2use = (object) array('estimatedExecTime' => null,'realExecTime' => null);
@@ -515,10 +515,10 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$context,$decode) {
   
   if( !is_null($lastExecBy) && count((array)$lastExecBy) > 0 ) {
     // divide execution by Platform ID
-    $p2loop = array_keys($lastExecBy);
+    $p2loop = array_keys((array)$lastExecBy);
     foreach($p2loop as $platfID) {                    
       if( !is_null($lastExecBy[$platfID]) ) {
-        $i2loop = array_keys($lastExecBy[$platfID]);  
+        $i2loop = array_keys((array)$lastExecBy[$platfID]);  
         $items2use[$platfID] = null;
         foreach($i2loop as $xdx) {
           $info = &$lastExecBy[$platfID][$xdx]; 
@@ -677,7 +677,7 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$ctx,&$docInfo,$de
     
     $avalon = $tplanMgr->getLTCVNewGeneration($tplanID, $filters, $getLTCVOpt); 
     if(!is_null($avalon)) {
-      $k2l = array_keys($avalon);
+      $k2l = array_keys((array)$avalon);
       foreach($k2l as $key) {
         $linkedBy[$platform_id][$key] = $avalon[$key][$platform_id];
       } 
@@ -688,7 +688,7 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$ctx,&$docInfo,$de
     // After architecture changes on how CF design values for Test Cases are
     // managed, we need the test case version ID and not test case ID
     // In addition if we loop over Platforms we need to save this set each time!!!
-    $items2loop = !is_null($linkedBy[$platform_id]) ? array_keys($linkedBy[$platform_id]) : null;
+    $items2loop = !is_null($linkedBy[$platform_id]) ? array_keys((array)$linkedBy[$platform_id]) : null;
     if( !is_null($items2loop) ) { 
       foreach($items2loop as $rdx) {  
         $metrics->estimatedExecTime[$platform_id][] = $linkedBy[$platform_id][$rdx]['tcversion_id'];

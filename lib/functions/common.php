@@ -1210,12 +1210,12 @@ function setUpEnvForRemoteAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=null
 
    $tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
    $i18nlabels = getLabels('workflowStatus','key');
-   array_keys($i18nlabels) will return array('draft','review');
+   array_keys((array)$i18nlabels) will return array('draft','review');
  
 
    $tlCfg->workflowStatus=array('draft' => 1, 'review' => 2);
    $i18nlabels = getLabels('workflowStatus','code');
-   array_keys($i18nlabels) will return array(1,2);
+   array_keys((array)$i18nlabels) will return array(1,2);
 
    @internal revisions
    @since 1.9.7
@@ -1885,7 +1885,7 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
 
   if( ($forceToNo = $argsObj->userIsBlindFolded) ) {
     $tr = array_merge($systemWideRights, $r2cTranslate);
-    $grants = array_fill_keys(array_keys($tr), 'no');
+    $grants = array_fill_keys(array_keys((array)$tr), 'no');
 
     foreach($r2cSame as $rr) {
       $grants[$rr] = 'no';

@@ -70,7 +70,7 @@ if(is_null($tsInf)) {
 
   // reorder data according test suite name
   natcasesort($tsInf->idNameMap);
-  $sortedKeys = array_keys($tsInf->idNameMap);
+  $sortedKeys = array_keys((array)$tsInf->idNameMap);
   $gui->dataByPlatform = new stdClass();
   $gui->dataByPlatform->testsuites = array();
   foreach ($gui->statistics->testsuites as $platId => $elem) {

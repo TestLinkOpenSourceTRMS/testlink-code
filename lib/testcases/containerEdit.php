@@ -1227,17 +1227,17 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
       // key level 2 : Test Plan  ID
       // key level 3 : Platform ID
 
-      $itemSet = array_keys($guiObj->exec_status_quo);
+      $itemSet = array_keys((array)$guiObj->exec_status_quo);
       foreach($itemSet as $mainKey)
       {
         $guiObj->display_platform[$mainKey] = false;
         if(!is_null($guiObj->exec_status_quo[$mainKey]) )
         {
-          $versionSet = array_keys($guiObj->exec_status_quo[$mainKey]);
+          $versionSet = array_keys((array)$guiObj->exec_status_quo[$mainKey]);
           $stop = false;
           foreach($versionSet as $version_id)
           {
-            $tplanSet = array_keys($guiObj->exec_status_quo[$mainKey][$version_id]);
+            $tplanSet = array_keys((array)$guiObj->exec_status_quo[$mainKey][$version_id]);
             foreach($tplanSet as $tplan_id)
             {
               if( ($guiObj->display_platform[$mainKey] = !isset($guiObj->exec_status_quo[$mainKey][$version_id][$tplan_id][0])) )
@@ -1327,7 +1327,7 @@ function reorderTestCasesDictionary($argsObj,&$tsuiteMgr,&$treeMgr)
       $a2sort[$tcaseSet[$idx]['id']] = strtolower($tcaseSet[$idx]['name']);
     }
     natsort($a2sort);
-    $a2sort = array_keys($a2sort);
+    $a2sort = array_keys((array)$a2sort);
     $treeMgr->change_order_bulk($a2sort);
   }
 }
@@ -1370,7 +1370,7 @@ function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
       $a2sort[$itemSet[$idx]['id']] = strtolower($itemSet[$idx]['name']);
     }
     natsort($a2sort);
-    $a2sort = array_keys($a2sort);
+    $a2sort = array_keys((array)$a2sort);
     $treeMgr->change_order_bulk($a2sort);
   }
 }
@@ -1453,7 +1453,7 @@ function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
     if( !is_null($cf_map) )
     {
       // get checkboxes from $_REQUEST
-      $k2i = array_keys($_REQUEST);
+      $k2i = array_keys((array)$_REQUEST);
       $cfval = null;
       foreach($k2i as $val)
       { 

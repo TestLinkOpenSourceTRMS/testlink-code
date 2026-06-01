@@ -491,7 +491,7 @@ class tlExtTable extends tlTable
     $resultsCfg = config_get('results');
     $jsCode = "status_code_order = new Array();\n";
         
-    $verboseStatusOrder=array_keys($resultsCfg["status_label_for_exec_ui"]);
+    $verboseStatusOrder=array_keys((array)$resultsCfg["status_label_for_exec_ui"]);
     foreach( $verboseStatusOrder as $order => $status )
     {
       $code = $resultsCfg['status_code'][$status];

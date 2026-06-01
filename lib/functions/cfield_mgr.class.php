@@ -970,7 +970,7 @@ class cfield_mgr extends tlObject
     $map = $this->db->fetchRowsIntoMap($sql,'id');
     if(!is_null($map) && !is_null($opt))
     {  
-      $k2l = array_keys($map);
+      $k2l = array_keys((array)$map);
       foreach($k2l as $key)
       {
         $map[$key]['enabled_on_context'] = '';
@@ -1455,7 +1455,7 @@ class cfield_mgr extends tlObject
 		$linked_tprojects = $this->get_linked_testprojects($id);
 		if( !is_null($linked_tprojects) && count((array)$linked_tprojects) > 0 )
 		{
-		  $target=array_keys($linked_tprojects);
+		  $target=array_keys((array)$linked_tprojects);
 		  foreach($target as $tproject_id)
 		  {
         $this->unlink_from_testproject($tproject_id,(array)$id);
@@ -2194,7 +2194,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 		}
 		else
 		{
-			$key2loop = array_keys($server_info);
+			$key2loop = array_keys((array)$server_info);
 			foreach($key2loop as $target)
 			{
 				$dummy = explode('_',$target);

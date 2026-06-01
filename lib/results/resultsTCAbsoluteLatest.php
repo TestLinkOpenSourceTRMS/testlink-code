@@ -434,7 +434,7 @@ function setUpBuilds(&$args,&$gui) {
     $gui->buildListForExcel = '';
     $gui->filterApplied = false;
     if( !is_null($gui->buildInfoSet) ) {
-      $args->builds->idSet = array_keys($gui->buildInfoSet);
+      $args->builds->idSet = array_keys((array)$gui->buildInfoSet);
     }
   } else {
     $args->builds->idSet = array_keys(array_flip($args->build_set));
@@ -477,14 +477,14 @@ function buildDataSet(&$db,&$args,&$gui,&$metrics,$labels,$forceFormat=null)
   $execVerboseCode = $execVerboseCode['status_code'];
   $execCodeVerbose = array_flip($execVerboseCode);
 
-  $itemSet = array_keys($metrics);
+  $itemSet = array_keys((array)$metrics);
   $tsuiteCache = array(); 
   $treeMgr = new tree($db);
 
   foreach($itemSet as $iidx) {
-    $tcaseSet = array_keys($metrics[$iidx]);
+    $tcaseSet = array_keys((array)$metrics[$iidx]);
     foreach($tcaseSet as $tcaseID) {
-      $platformSet = array_keys($metrics[$iidx][$tcaseID]);
+      $platformSet = array_keys((array)$metrics[$iidx][$tcaseID]);
       foreach($platformSet as $platformID) {
         $rf = &$metrics[$iidx][$tcaseID][$platformID][0];
 

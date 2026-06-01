@@ -1878,7 +1878,7 @@ class testplan extends tlObjectWithAttachments
     $status = tl::ERROR;
     $sql = " /* $debugMsg */ DELETE FROM {$this->tables['user_testplan_roles']} " .
            " WHERE testplan_id = " . intval($id);
-    if(!is_null($users))
+    if(!is_null($users) && !empty($users))
     {
       $sql .= " AND user_id IN(" . implode(',',$users) . ")";
     } 

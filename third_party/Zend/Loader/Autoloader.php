@@ -353,7 +353,7 @@ class Zend_Loader_Autoloader
 
         // Add non-namespaced autoloaders
         $autoloadersNonNamespace = $this->getNamespaceAutoloaders('');
-        if (count($autoloadersNonNamespace)) {
+        if (count((array)$autoloadersNonNamespace)) {
             foreach ($autoloadersNonNamespace as $ns) {
                 $autoloaders[] = $ns;
             }
@@ -536,7 +536,7 @@ class Zend_Loader_Autoloader
         }
 
         $parts = explode('.', $version);
-        $count = count($parts);
+        $count = count((array)$parts);
         if (1 == $count) {
             return 'major';
         }

@@ -41,10 +41,10 @@ $sql = " SELECT CFDV.*, NHITEM.node_type_id, NHVERSION.id AS version_node_id" .
 
 $workingSet = $db->get_recordset($sql);
 
-echo 'Records to process: '.count($workingSet).'<br>';
+echo 'Records to process: '.count((array)$workingSet).'<br>';
 if( !is_null($workingSet) )
 {
-	echo "Working - Custom Fields Migration - Records to process:" .  count($workingSet) . "<br>";
+	echo "Working - Custom Fields Migration - Records to process:" .  count((array)$workingSet) . "<br>";
 	foreach($workingSet as $target)
 	{
 		// $values[] = "( {$target['field_id']}, {$target['version_node_id']}, '{$target['value']}' )";

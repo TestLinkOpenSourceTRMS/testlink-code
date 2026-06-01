@@ -109,7 +109,7 @@ class DomTreeBuilder {
      */
     public function endDocument() {
         $this->endWord();
-        HTMLDiffer::diffDebug( count($this->textNodes) . " text nodes in document.\n" );
+        HTMLDiffer::diffDebug( count((array)$this->textNodes) . " text nodes in document.\n" );
     }
 
     public function startElement($parser, $name, /*array*/ $attributes) {
@@ -320,7 +320,7 @@ class TextNodeDiffer {
         $junk1 = $junk2 = null;
         $deletedNodes = $root->getMinimalDeletedSet($this->deletedID, $junk1, $junk2);
 
-        HTMLDiffer::diffDebug( "Minimal set of deleted nodes of size " . count($deletedNodes) . "\n" );
+        HTMLDiffer::diffDebug( "Minimal set of deleted nodes of size " . count((array)$deletedNodes) . "\n" );
 
         // Set prevLeaf to the leaf after which the old HTML needs to be
         // inserted
@@ -329,11 +329,11 @@ class TextNodeDiffer {
         }
         // Set nextLeaf to the leaf before which the old HTML needs to be
         // inserted
-        if ($before < count($this->textNodes)) {
+        if ($before < count((array)$this->textNodes)) {
             $nextLeaf = $this->textNodes[$before];
         }
 
-        while (count($deletedNodes) > 0) {
+        while (count((array)$deletedNodes) > 0) {
             if (isset($prevLeaf)) {
                 $prevResult = $prevLeaf->getLastCommonParent($deletedNodes[0]);
             } else {
@@ -342,7 +342,7 @@ class TextNodeDiffer {
                 $prevResult->indexInLastCommonParent = -1;
             }
             if (isset($nextLeaf)) {
-                $nextResult = $nextLeaf->getLastCommonParent($deletedNodes[count($deletedNodes) - 1]);
+                $nextResult = $nextLeaf->getLastCommonParent($deletedNodes[count((array)$deletedNodes) - 1]);
             } else {
                 $nextResult = new LastCommonParentResult();
                 $nextResult->parent = $this->bodyNode;
@@ -351,7 +351,7 @@ class TextNodeDiffer {
 
             if ($prevResult->lastCommonParentDepth == $nextResult->lastCommonParentDepth) {
                 // We need some metric to choose which way to add-...
-                if ($deletedNodes[0]->parent === $deletedNodes[count($deletedNodes) - 1]->parent
+                if ($deletedNodes[0]->parent === $deletedNodes[count((array)$deletedNodes) - 1]->parent
                         && $prevResult->parent === $nextResult->parent) {
                     // The difference is not in the parent
                     $prevResult->lastCommonParentDepth = $prevResult->lastCommonParentDepth + 1;
@@ -359,7 +359,7 @@ class TextNodeDiffer {
                     // The difference is in the parent, so compare them
                     // now THIS is tricky
                     $distancePrev = $deletedNodes[0]->parent->getMatchRatio($prevResult->parent);
-                    $distanceNext = $deletedNodes[count($deletedNodes) - 1]->parent->getMatchRatio($nextResult->parent);
+                    $distanceNext = $deletedNodes[count((array)$deletedNodes) - 1]->parent->getMatchRatio($nextResult->parent);
 
                     if ($distancePrev <= $distanceNext) {
                         $prevResult->lastCommonParentDepth = $prevResult->lastCommonParentDepth + 1;
@@ -390,8 +390,8 @@ class TextNodeDiffer {
                         $nextResult->indexInLastCommonParent = $nextResult->indexInLastCommonParent + 1;
                     }
                 }
-                $nextLeaf = $deletedNodes[count($deletedNodes) - 1]->copyTree();
-                unset($deletedNodes[count($deletedNodes) - 1]);
+                $nextLeaf = $deletedNodes[count((array)$deletedNodes) - 1]->copyTree();
+                unset($deletedNodes[count((array)$deletedNodes) - 1]);
                 $deletedNodes = array_values($deletedNodes);
                 $nextLeaf->setParent($nextResult->parent);
                 $nextResult->parent->addChildAbsolute($nextLeaf,$nextResult->indexInLastCommonParent);
@@ -405,11 +405,11 @@ class TextNodeDiffer {
     }
 
     public function lengthNew(){
-        return count($this->textNodes);
+        return count((array)$this->textNodes);
     }
 
     public function lengthOld(){
-        return count($this->oldTextNodes);
+        return count((array)$this->oldTextNodes);
     }
 }
 
@@ -496,13 +496,13 @@ class HTMLDiffer {
         $output = new HTMLOutput('htmldiff');
 
         //return $output->parse($textNodeDiffer->bodyNode);
-        return array($output->parse($textNodeDiffer->bodyNode), count($differences));
+        return array($output->parse($textNodeDiffer->bodyNode), count((array)$differences));
     }
 
     private function preProcess(/*array*/ $differences) {
         $newRanges = array();
 
-        $nbDifferences = count($differences);
+        $nbDifferences = count((array)$differences);
         for ($i = 0; $i < $nbDifferences; ++$i) {
             $leftStart = $differences[$i]->leftstart;
             $leftEnd = $differences[$i]->leftend;
@@ -547,7 +547,7 @@ class HTMLDiffer {
             $d += $number;
 
         }
-        return $d / (1.5 * count($numbers));
+        return $d / (1.5 * count((array)$numbers));
     }
 
     /**
@@ -588,8 +588,8 @@ class TextOnlyComparator {
     }
 
     public function getMatchRatio(TextOnlyComparator $other) {
-        $nbOthers = count($other->leafs);
-        $nbThis = count($this->leafs);
+        $nbOthers = count((array)$other->leafs);
+        $nbThis = count((array)$this->leafs);
         if($nbOthers == 0 || $nbThis == 0){
             return -log(0);
         }
@@ -625,7 +625,7 @@ class AncestorComparator {
         $diffengine = new WikiDiff3(10000, 1.35);
         $differences = $diffengine->diff_range($other->ancestorsText,$this->ancestorsText);
 
-        if (count($differences) == 0){
+        if (count((array)$differences) == 0){
             return null;
         }
         $changeTxt = new ChangeTextGenerator($this, $other);
@@ -650,11 +650,11 @@ class ChangeTextGenerator {
     public function getChanged(/*array*/ $differences) {
         $txt = new ChangeText;
         $rootlistopened = false;
-        if (count($differences) > 1) {
+        if (count((array)$differences) > 1) {
             $txt->addHtml('<ul class="changelist">');
             $rootlistopened = true;
         }
-        $nbDifferences = count($differences);
+        $nbDifferences = count((array)$differences);
         for ($j = 0; $j < $nbDifferences; ++$j) {
             $d = $differences[$j];
             $lvl1listopened = false;
@@ -799,14 +799,14 @@ class TagToString {
     }
 
     protected function addAttributes(ChangeText $txt, array $attributes) {
-        if (count($attributes) < 1) {
+        if (count((array)$attributes) < 1) {
             return;
         }
 
         $keys = array_keys($attributes);
         $txt->addHtml(Sanitizer::normalizeCharReferences( ' with "' . $keys[0] . '" attribute as "' . $attributes[$keys[0]] . '"'));
 
-        $nbAttributes_min_1 = count($attributes)-1;
+        $nbAttributes_min_1 = count((array)$attributes)-1;
         for ($i=1;$i<$nbAttributes_min_1;$i++) {
             $key = $keys[$i];
             $attr = $attributes[$key];

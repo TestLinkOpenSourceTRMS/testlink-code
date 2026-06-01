@@ -269,7 +269,7 @@ abstract class Zend_XmlRpc_Value
             }
             return self::getXmlRpcTypeByValue(get_object_vars($value));
         } elseif (is_array($value)) {
-            if (!empty($value) && is_array($value) && (array_keys($value) !== range(0, count($value) - 1))) {
+            if (!empty($value) && is_array($value) && (array_keys($value) !== range(0, count((array)$value) - 1))) {
                 return self::XMLRPC_TYPE_STRUCT;
             }
             return self::XMLRPC_TYPE_ARRAY;

@@ -421,7 +421,7 @@ class Zend_Http_Client_Adapter_Socket implements Zend_Http_Client_Adapter_Interf
             // If we got more than one Content-Length header (see ZF-9404) use
             // the last value sent
             if (is_array($headers['content-length'])) {
-                $contentLength = $headers['content-length'][count($headers['content-length']) - 1];
+                $contentLength = $headers['content-length'][count((array)$headers['content-length']) - 1];
             } else {
                 $contentLength = $headers['content-length'];
             }

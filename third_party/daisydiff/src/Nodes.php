@@ -60,8 +60,8 @@ class Node {
 
         $i = 1;
         $isSame = true;
-        $nbMyParents = count($myParents);
-        $nbOtherParents = count($otherParents);
+        $nbMyParents = count((array)$myParents);
+        $nbOtherParents = count((array)$otherParents);
         
         while ($isSame && $i < $nbMyParents && $i < $nbOtherParents) {
             if ($myParents[$i]->toDiffTag !== $otherParents[$i]->toDiffTag ||
@@ -150,7 +150,7 @@ class TagNode extends Node {
     }
 
     public function getNbChildren() {
-        return count($this->children);
+        return count((array)$this->children);
     }
 
     public function getMinimalDeletedSet($id, &$allDeleted, &$somethingDeleted) {

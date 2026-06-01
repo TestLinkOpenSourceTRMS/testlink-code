@@ -97,7 +97,7 @@ class dBug {
 		$arrInclude = array("include","include_once","require","require_once");
 		
 		//check for any included/required files. if found, get array of the last included file (they contain the right line numbers)
-		for($i=count($arrBacktrace)-1; $i>=0; $i--) {
+		for($i=count((array)$arrBacktrace)-1; $i>=0; $i--) {
 			$arrCurrent = $arrBacktrace[$i];
 			if(array_key_exists("function", $arrCurrent) && 
 				(in_array($arrCurrent["function"], $arrInclude) || (0 != strcasecmp($arrCurrent["function"], "dbug"))))
@@ -302,7 +302,7 @@ class dBug {
 		echo "<tr><td class=\"dBug_resourceKey\">&nbsp;</td>";
 		for($i=0;$i<$numfields;$i++) {
 			$field_header = "";
-			for($j=0; $j<count($arrFields); $j++) {
+			for($j=0; $j<count((array)$arrFields); $j++) {
 				$db_func = $db."_field_".$arrFields[$j];
 				if(function_exists($db_func)) {
 					$fheader = call_user_func($db_func, $var, $i). " ";
@@ -400,7 +400,7 @@ class dBug {
 		$this->xmlSData[$this->xmlCount].='$this->makeTDHeader("xml","xmlName");';
 		$this->xmlSData[$this->xmlCount].='echo "<strong>'.$this->xmlName[$this->xmlCount].'</strong>".$this->closeTDRow();';
 		$this->xmlSData[$this->xmlCount].='$this->makeTDHeader("xml","xmlAttributes");';
-		if(count($attribs)>0)
+		if(count((array)$attribs)>0)
 			$this->xmlSData[$this->xmlCount].='$this->varIsArray($this->xmlAttrib['.$this->xmlCount.']);';
 		else
 			$this->xmlSData[$this->xmlCount].='echo "&nbsp;";';

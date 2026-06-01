@@ -1284,7 +1284,7 @@ class Zend_Http_Client
         }
 
         // If we have POST parameters or files, encode and add them to the body
-        if (count($this->paramsPost) > 0 || count($this->files) > 0) {
+        if (count((array)$this->paramsPost) > 0 || count((array)$this->files) > 0) {
             switch($this->enctype) {
                 case self::ENC_FORMDATA:
                     // Encode body as multipart/form-data

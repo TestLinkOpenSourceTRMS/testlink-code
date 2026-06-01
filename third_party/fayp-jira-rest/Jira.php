@@ -467,7 +467,7 @@ class Jira
         $opt = 'expand=projects.issuetypes.fields';
         $items = $this->getCreateIssueMetadata($projectKeys,$opt);
         $ret = null;
-        if(!is_null($items) && count($items->projects) > 0)
+        if(!is_null($items) && count((array)$items->projects) > 0)
         {
             $ro = &$items->projects;
             foreach($ro as $ele)

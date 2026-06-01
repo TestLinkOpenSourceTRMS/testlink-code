@@ -62,7 +62,7 @@ class kintVariableData
 	 */
 	protected static function _isSequential( array $array )
 	{
-		return array_keys( $array ) === range( 0, count( $array ) - 1 );
+		return array_keys( $array ) === range( 0, count((array)$array) - 1 );
 	}
 
 	protected static function _strlen( $string, $encoding = null )

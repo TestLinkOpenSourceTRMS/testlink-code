@@ -19,10 +19,21 @@ export function PlansPage() {
   const [newBuild, setNewBuild] = useState('')
   const [newProjectName, setNewProjectName] = useState('')
   const [newProjectPrefix, setNewProjectPrefix] = useState('')
+  const [msName, setMsName] = useState('')
+  const [msDate, setMsDate] = useState('')
+  const [msA, setMsA] = useState('100')
+  const [msB, setMsB] = useState('100')
+  const [msC, setMsC] = useState('100')
 
   const builds = useQuery({
     queryKey: ['builds', plan?.id],
     queryFn: () => api.planBuilds(plan!.id),
+    enabled: plan != null,
+  })
+
+  const milestones = useQuery({
+    queryKey: ['milestones', plan?.id],
+    queryFn: () => api.planMilestones(plan!.id),
     enabled: plan != null,
   })
 
@@ -66,6 +77,31 @@ export function PlansPage() {
     mutationFn: (input: { id: string; is_open: number }) =>
       api.updateBuild(input.id, { is_open: input.is_open }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['builds'] }),
+  })
+
+  const createMilestone = useMutation({
+    mutationFn: () =>
+      api.createMilestone({
+        testplanID: Number(plan!.id),
+        name: msName,
+        target_date: msDate,
+        A: Number(msA),
+        B: Number(msB),
+        C: Number(msC),
+      }),
+    onSuccess: () => {
+      setMsName('')
+      setMsDate('')
+      setMsA('100')
+      setMsB('100')
+      setMsC('100')
+      qc.invalidateQueries({ queryKey: ['milestones'] })
+    },
+  })
+
+  const deleteMilestone = useMutation({
+    mutationFn: (id: number) => api.deleteMilestone(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['milestones'] }),
   })
 
   return (
@@ -164,6 +200,127 @@ export function PlansPage() {
             disabled={!newBuild.trim() || createBuild.isPending || !plan}
           >
             {t('createBuild')}
+          </Button>
+        </form>
+      </Panel>
+
+      <Panel title={`${t('milestones')} · ${plan?.name ?? ''}`}>
+        {milestones.isPending ? (
+          <Spinner />
+        ) : (milestones.data?.length ?? 0) === 0 ? (
+          <EmptyState>{t('noMilestones')}</EmptyState>
+        ) : (
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="text-mute border-line border-b text-left text-xs">
+                <th className="pb-2 font-medium">
+                  {t('milestoneNamePlaceholder')}
+                </th>
+                <th className="pb-2 font-medium">{t('milestoneTargetDate')}</th>
+                <th className="pb-2 text-center font-medium">
+                  {t('milestoneTargets')}
+                </th>
+                <th className="pb-2 font-medium">{t('milestoneProgress')}</th>
+                <th className="pb-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {milestones.data!.map((m) => (
+                <tr key={m.id} className="border-line border-b last:border-0">
+                  <td className="py-1.5 font-medium">{m.name}</td>
+                  <td className="text-mute py-1.5">{m.target_date}</td>
+                  <td className="py-1.5 text-center font-mono text-xs">
+                    {m.a}/{m.b}/{m.c}
+                  </td>
+                  <td className="py-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-paper border-line h-2 w-24 overflow-hidden rounded-full border">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${Math.min(100, m.executedPct)}%`,
+                            background: 'var(--color-accent)',
+                          }}
+                        />
+                      </div>
+                      <span className="text-mute font-mono text-xs whitespace-nowrap">
+                        {Math.round(m.executedPct)}% ·{' '}
+                        {t('milestonePassPct')(String(Math.round(m.passPct)))}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-1.5 text-right">
+                    <Button
+                      kind="ghost"
+                      disabled={deleteMilestone.isPending}
+                      onClick={() => {
+                        if (confirm(t('confirmDeleteMilestone')(m.name)))
+                          deleteMilestone.mutate(m.id)
+                      }}
+                    >
+                      {t('adminDelete')}
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <form
+          className="mt-3 flex flex-wrap items-center gap-2"
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (msName.trim() && msDate) createMilestone.mutate()
+          }}
+        >
+          <div className="min-w-[10rem] flex-1">
+            <TextInput
+              placeholder={t('milestoneNamePlaceholder')}
+              value={msName}
+              onChange={(e) => setMsName(e.target.value)}
+            />
+          </div>
+          <div className="w-40">
+            <TextInput
+              type="date"
+              value={msDate}
+              onChange={(e) => setMsDate(e.target.value)}
+            />
+          </div>
+          <div className="w-16">
+            <TextInput
+              type="number"
+              min={0}
+              max={100}
+              value={msA}
+              onChange={(e) => setMsA(e.target.value)}
+            />
+          </div>
+          <div className="w-16">
+            <TextInput
+              type="number"
+              min={0}
+              max={100}
+              value={msB}
+              onChange={(e) => setMsB(e.target.value)}
+            />
+          </div>
+          <div className="w-16">
+            <TextInput
+              type="number"
+              min={0}
+              max={100}
+              value={msC}
+              onChange={(e) => setMsC(e.target.value)}
+            />
+          </div>
+          <Button
+            type="submit"
+            disabled={
+              !msName.trim() || !msDate || createMilestone.isPending || !plan
+            }
+          >
+            {t('addMilestone')}
           </Button>
         </form>
       </Panel>

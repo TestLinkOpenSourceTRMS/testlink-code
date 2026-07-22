@@ -1,9 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
+import { Printer } from 'lucide-react'
 import { api } from '../lib/api'
 import { useT } from '../lib/i18n'
 import { useWorkspace } from '../lib/workspace'
-import { Button, Panel, Spinner } from '../components/ui'
+import {
+  Button,
+  Panel,
+  Spinner,
+  useVerdictLabels,
+  VERDICT_COLOR,
+} from '../components/ui'
 import { TrendChart } from '../components/TrendChart'
+
+const VERDICT_KEYS = ['p', 'f', 'b', 'n'] as const
 
 /** double-quote a CSV field when it contains a comma, quote, or newline */
 function csvEscape(v: string): string {
@@ -45,8 +54,20 @@ export function ReportsPage() {
     queryFn: () => api.planByTester(plan!.id),
     enabled: plan != null,
   })
+  const byKeyword = useQuery({
+    queryKey: ['byKeyword', plan?.id],
+    queryFn: () => api.planByKeyword(plan!.id),
+    enabled: plan != null,
+  })
+  const verdictLabels = useVerdictLabels()
 
   if (!plan) return <Spinner />
+
+  /** open the printable test report document (authenticated blob) */
+  const openReportDocument = async () => {
+    const url = await api.blobUrl(`/testplans/${plan.id}/document?type=report`)
+    window.open(url, '_blank')
+  }
 
   const exportTesterCsv = () => {
     if (!byTester.data) return
@@ -63,9 +84,16 @@ export function ReportsPage() {
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-4">
-      <h1 className="font-display text-xl font-bold tracking-tight">
-        {t('navReports')} · {plan.name}
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-xl font-bold tracking-tight">
+          {t('navReports')} · {plan.name}
+        </h1>
+        <Button kind="ghost" onClick={openReportDocument}>
+          <span className="inline-flex items-center gap-1.5">
+            <Printer className="size-3.5" /> {t('testReportDocument')}
+          </span>
+        </Button>
+      </div>
 
       <Panel title={t('executionTrend')}>
         {trend.isPending ? <Spinner /> : <TrendChart days={trend.data ?? []} />}
@@ -140,6 +168,54 @@ export function ReportsPage() {
                   <td className="py-1.5 text-right font-mono">
                     {(t.p + t.f + t.b + t.other).toLocaleString()}
                   </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Panel>
+
+      <Panel title={t('byKeyword')}>
+        {byKeyword.isPending ? (
+          <Spinner />
+        ) : (byKeyword.data?.length ?? 0) === 0 ? (
+          <div className="text-mute py-4 text-center text-sm">
+            {t('noKeywordData')}
+          </div>
+        ) : (
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="text-mute border-line border-b text-left text-xs">
+                <th className="pb-2 font-medium">{t('adminColKeyword')}</th>
+                <th className="pb-2 text-right font-medium">{t('cases')}</th>
+                {VERDICT_KEYS.map((v) => (
+                  <th key={v} className="pb-2 text-right font-medium">
+                    <span className="inline-flex items-center justify-end gap-1.5">
+                      <span
+                        className="size-2 rounded-full"
+                        style={{ background: VERDICT_COLOR[v] }}
+                      />
+                      {verdictLabels[v]}
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {byKeyword.data!.map((k) => (
+                <tr
+                  key={k.keyword_id}
+                  className="border-line border-b last:border-0"
+                >
+                  <td className="py-1.5 font-medium">{k.keyword}</td>
+                  <td className="py-1.5 text-right font-mono">
+                    {k.linked.toLocaleString()}
+                  </td>
+                  {VERDICT_KEYS.map((v) => (
+                    <td key={v} className="py-1.5 text-right font-mono">
+                      {k[v].toLocaleString()}
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>

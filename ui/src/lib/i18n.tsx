@@ -140,10 +140,23 @@ const en = {
   newBuildPlaceholder: 'New build name',
   createBuild: 'Create build',
 
+  // milestones
+  milestones: 'Milestones',
+  milestoneNamePlaceholder: 'Milestone name',
+  milestoneTargetDate: 'Target date',
+  milestoneTargets: 'A/B/C targets',
+  milestoneProgress: 'Progress',
+  addMilestone: 'Add milestone',
+  noMilestones: 'No milestones yet — add the first one below.',
+  confirmDeleteMilestone: (name: string) => `Delete milestone "${name}"?`,
+  milestonePassPct: (pct: string) => `${pct}% passed`,
+
   // reports
   executionTrend: 'Execution trend',
   buildComparison: 'Build comparison',
   byTester: 'By tester',
+  byKeyword: 'By keyword',
+  noKeywordData: 'No keyword data for this plan yet.',
   noExecutionsYet: 'No executions recorded yet.',
   flakyTestsAnalyzed: (n: string) => `Flaky tests · ${n} versions analyzed`,
   flips: 'Flips',
@@ -170,6 +183,16 @@ const en = {
 
   // export
   exportCsv: 'Export CSV',
+
+  // documents & TestLink-XML import/export
+  exportXml: 'Export XML',
+  specDocument: 'Spec document',
+  importXml: 'Import XML',
+  importedCases: (n: number) => `Imported ${n} test cases`,
+  importedCasesSkipped: (n: number, skipped: number) =>
+    `Imported ${n} test cases (${skipped} duplicates skipped)`,
+  importFailed: 'Import failed. Check the XML file.',
+  testReportDocument: 'Test report document',
 
   // requirements
   navRequirements: 'Requirements',
@@ -370,9 +393,21 @@ const ko: Messages = {
   newBuildPlaceholder: '새 빌드 이름',
   createBuild: '빌드 생성',
 
+  milestones: '마일스톤',
+  milestoneNamePlaceholder: '마일스톤 이름',
+  milestoneTargetDate: '목표일',
+  milestoneTargets: 'A/B/C 목표',
+  milestoneProgress: '진행률',
+  addMilestone: '마일스톤 추가',
+  noMilestones: '아직 마일스톤이 없습니다. 아래에서 첫 마일스톤을 추가하세요.',
+  confirmDeleteMilestone: (name) => `마일스톤 "${name}"을(를) 삭제할까요?`,
+  milestonePassPct: (pct) => `${pct}% 성공`,
+
   executionTrend: '실행 추이',
   buildComparison: '빌드 비교',
   byTester: '테스터별',
+  byKeyword: '키워드별',
+  noKeywordData: '이 플랜에 대한 키워드 데이터가 아직 없습니다.',
   noExecutionsYet: '아직 기록된 실행이 없습니다.',
   flakyTestsAnalyzed: (n) => `불안정 테스트 · ${n}개 버전 분석`,
   flips: '변동 횟수',
@@ -394,6 +429,15 @@ const ko: Messages = {
   buildReopen: '다시 열기',
 
   exportCsv: 'CSV 내보내기',
+
+  exportXml: 'XML 내보내기',
+  specDocument: '명세 문서',
+  importXml: 'XML 가져오기',
+  importedCases: (n) => `테스트 케이스 ${n}개를 가져왔습니다`,
+  importedCasesSkipped: (n, skipped) =>
+    `테스트 케이스 ${n}개를 가져왔습니다 (중복 ${skipped}개 건너뜀)`,
+  importFailed: '가져오기에 실패했습니다. XML 파일을 확인해 주세요.',
+  testReportDocument: '테스트 리포트 문서',
 
   navRequirements: '요구사항',
   reqSpecs: '요구사항 명세',
@@ -582,9 +626,21 @@ const vi: Messages = {
   newBuildPlaceholder: 'Tên bản dựng mới',
   createBuild: 'Tạo bản dựng',
 
+  milestones: 'Cột mốc',
+  milestoneNamePlaceholder: 'Tên cột mốc',
+  milestoneTargetDate: 'Ngày mục tiêu',
+  milestoneTargets: 'Mục tiêu A/B/C',
+  milestoneProgress: 'Tiến độ',
+  addMilestone: 'Thêm cột mốc',
+  noMilestones: 'Chưa có cột mốc — hãy thêm cái đầu tiên bên dưới.',
+  confirmDeleteMilestone: (name) => `Xóa cột mốc "${name}"?`,
+  milestonePassPct: (pct) => `${pct}% đạt`,
+
   executionTrend: 'Xu hướng thực thi',
   buildComparison: 'So sánh bản dựng',
   byTester: 'Theo người kiểm thử',
+  byKeyword: 'Theo từ khóa',
+  noKeywordData: 'Chưa có dữ liệu từ khóa cho kế hoạch này.',
   noExecutionsYet: 'Chưa có lần thực thi nào được ghi nhận.',
   flakyTestsAnalyzed: (n) => `Kiểm thử không ổn định · đã phân tích ${n} phiên bản`,
   flips: 'Lần đổi',
@@ -606,6 +662,15 @@ const vi: Messages = {
   buildReopen: 'Mở lại',
 
   exportCsv: 'Xuất CSV',
+
+  exportXml: 'Xuất XML',
+  specDocument: 'Tài liệu đặc tả',
+  importXml: 'Nhập XML',
+  importedCases: (n) => `Đã nhập ${n} trường hợp kiểm thử`,
+  importedCasesSkipped: (n, skipped) =>
+    `Đã nhập ${n} trường hợp kiểm thử (bỏ qua ${skipped} trùng lặp)`,
+  importFailed: 'Nhập thất bại. Hãy kiểm tra tệp XML.',
+  testReportDocument: 'Tài liệu báo cáo kiểm thử',
 
   navRequirements: 'Yêu cầu',
   reqSpecs: 'Đặc tả yêu cầu',

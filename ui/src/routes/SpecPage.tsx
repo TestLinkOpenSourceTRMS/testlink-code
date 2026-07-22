@@ -1,15 +1,18 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSearch } from '@tanstack/react-router'
 import {
   ChevronDown,
   ChevronRight,
+  FileDown,
   FileText,
+  FileUp,
   FolderPlus,
   Link2,
   Paperclip,
   Pencil,
   Plus,
+  Printer,
 } from 'lucide-react'
 import { api, type Suite } from '../lib/api'
 import { useT } from '../lib/i18n'
@@ -117,6 +120,8 @@ export function SpecPage() {
   const [creatingSuite, setCreatingSuite] = useState(false)
   const [newSuiteName, setNewSuiteName] = useState('')
   const [flash, setFlash] = useState('')
+  const [xmlFlash, setXmlFlash] = useState('')
+  const importInputRef = useRef<HTMLInputElement>(null)
 
   // deep links from Matrix/Run/Dashboard land here with ?caseId=
   useEffect(() => {
@@ -179,6 +184,43 @@ export function SpecPage() {
       setCreatingSuite(false)
       qc.invalidateQueries({ queryKey: ['suites'] })
     },
+  })
+
+  // --- document export & TestLink-XML import/export for the suite ---
+  const flashXml = (msg: string) => {
+    setXmlFlash(msg)
+    setTimeout(() => setXmlFlash(''), 3500)
+  }
+
+  const exportSuiteXml = async () => {
+    const url = await api.blobUrl(`/testsuites/${suiteId}/xml`)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `suite-${suiteId}.testsuite.xml`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const openSpecDocument = async () => {
+    const url = await api.blobUrl(
+      `/testprojects/${project!.id}/document?type=spec&suiteID=${suiteId}`,
+    )
+    window.open(url, '_blank')
+  }
+
+  const importXml = useMutation({
+    mutationFn: (file: File) =>
+      file.text().then((xml) => api.importSuiteXml(suiteId!, xml)),
+    onSuccess: (r) => {
+      flashXml(
+        r.skippedDuplicates > 0
+          ? t('importedCasesSkipped')(r.created, r.skippedDuplicates)
+          : t('importedCases')(r.created),
+      )
+      qc.invalidateQueries({ queryKey: ['suiteCases', suiteId] })
+      qc.invalidateQueries({ queryKey: ['suites'] })
+    },
+    onError: () => flashXml(t('importFailed')),
   })
 
   const linkCase = useMutation({
@@ -253,6 +295,43 @@ export function SpecPage() {
 
       {/* case list */}
       <div className="bg-panel border-line flex w-96 shrink-0 flex-col overflow-hidden rounded-lg border">
+        {suiteId != null && (
+          <div className="border-line flex flex-wrap items-center gap-1 border-b px-2 py-1.5">
+            <Button kind="ghost" onClick={exportSuiteXml}>
+              <span className="inline-flex items-center gap-1 text-xs">
+                <FileDown className="size-3.5" /> {t('exportXml')}
+              </span>
+            </Button>
+            <Button kind="ghost" onClick={openSpecDocument}>
+              <span className="inline-flex items-center gap-1 text-xs">
+                <Printer className="size-3.5" /> {t('specDocument')}
+              </span>
+            </Button>
+            <Button
+              kind="ghost"
+              onClick={() => importInputRef.current?.click()}
+              disabled={importXml.isPending}
+            >
+              <span className="inline-flex items-center gap-1 text-xs">
+                <FileUp className="size-3.5" /> {t('importXml')}
+              </span>
+            </Button>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".xml,text/xml,application/xml"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) importXml.mutate(file)
+                e.target.value = ''
+              }}
+            />
+            {xmlFlash && (
+              <span className="text-accent w-full text-xs">{xmlFlash}</span>
+            )}
+          </div>
+        )}
         {suiteId != null && (
           <form
             className="border-line flex gap-1 border-b p-2"

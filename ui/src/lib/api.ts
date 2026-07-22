@@ -213,6 +213,31 @@ export interface CustomField {
   enable_on_execution: number
 }
 
+export interface Milestone {
+  id: number
+  name: string
+  target_date: string
+  start_date: string | null
+  a: number
+  b: number
+  c: number
+  linked: number
+  executed: number
+  passed: number
+  executedPct: number
+  passPct: number
+}
+
+export interface KeywordReportRow {
+  keyword_id: number
+  keyword: string
+  linked: number
+  p: number
+  f: number
+  b: number
+  n: number
+}
+
 export function getSession() {
   const raw = localStorage.getItem('tl.session')
   return raw ? (JSON.parse(raw) as { apikey: string; user: User }) : null
@@ -332,6 +357,35 @@ export const api = {
       items: { login: string; p: number; f: number; b: number; other: number }[]
     }>(
       `/testplans/${planId}/byTester` + (buildId ? `?buildID=${buildId}` : ''),
+    ).then((r) => r.items),
+
+  planMilestones: (planId: string) =>
+    request<{ items: Milestone[] }>(
+      `/testplans/${planId}/milestones`,
+    ).then((r) => r.items),
+
+  createMilestone: (input: {
+    testplanID: number
+    name: string
+    target_date: string
+    start_date?: string
+    A?: number
+    B?: number
+    C?: number
+  }) =>
+    request<{ status: string; id: number }>('/milestones', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  deleteMilestone: (id: number) =>
+    request<{ status: string; id: number }>(`/milestones/${id}`, {
+      method: 'DELETE',
+    }),
+
+  planByKeyword: (planId: string) =>
+    request<{ items: KeywordReportRow[] }>(
+      `/testplans/${planId}/byKeyword`,
     ).then((r) => r.items),
 
   planByBuild: (planId: string) =>
@@ -462,6 +516,40 @@ export const api = {
     })
       .then((r) => r.blob())
       .then((b) => URL.createObjectURL(b)),
+
+  /**
+   * fetch any authenticated endpoint (HTML documents, XML export)
+   * as a blob and hand back an object URL — same pattern as
+   * attachmentUrl, for arbitrary paths
+   */
+  blobUrl: (path: string) =>
+    fetch(BASE + path, {
+      headers: { Apikey: getSession()?.apikey ?? '' },
+    }).then(async (r) => {
+      if (!r.ok) throw new Error(`API error ${r.status}`)
+      return URL.createObjectURL(await r.blob())
+    }),
+
+  /** POST raw TestLink-format XML into a suite; returns import counts */
+  importSuiteXml: (suiteId: number, xml: string) =>
+    fetch(`${BASE}/testsuites/${suiteId}/xml`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/xml',
+        Apikey: getSession()?.apikey ?? '',
+      },
+      body: xml,
+    }).then(async (r) => {
+      const body = (await r.json()) as {
+        status: string
+        created: number
+        skippedDuplicates: number
+        errors: string[]
+        message?: string
+      }
+      if (!r.ok) throw new Error(body.message ?? `API error ${r.status}`)
+      return body
+    }),
 
   createProject: (name: string, prefix: string) =>
     request<{ status: string; id: number }>('/testprojects', {

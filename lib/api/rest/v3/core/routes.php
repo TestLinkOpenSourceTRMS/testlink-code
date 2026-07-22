@@ -69,6 +69,14 @@ return function (App $app) {
             array($app->restApi,'getPlanByTester'));
   $app->get('/testplans/{id}/byBuild',
             array($app->restApi,'getPlanByBuild'));
+  $app->get('/testplans/{id}/byKeyword',
+            array($app->restApi,'getPlanByKeyword'));
+  $app->get('/testplans/{id}/milestones',
+            array($app->restApi,'getPlanMilestones'));
+  $app->post('/milestones',
+             array($app->restApi,'createMilestone'));
+  $app->delete('/milestones/{id}',
+               array($app->restApi,'deleteMilestone'));
   $app->get('/testprojects/{id}/reqspecs',
             array($app->restApi,'getProjectReqSpecs'));
   $app->post('/reqspecs',
@@ -85,6 +93,14 @@ return function (App $app) {
                array($app->restApi,'deleteRequirementCoverage'));
   $app->get('/testplans/{id}/reqCoverage',
             array($app->restApi,'getPlanReqCoverage'));
+  $app->get('/testprojects/{id}/document',
+            array($app->restApi,'getProjectDocument'));
+  $app->get('/testplans/{id}/document',
+            array($app->restApi,'getPlanDocument'));
+  $app->get('/testsuites/{id}/xml',
+            array($app->restApi,'exportSuiteXML'));
+  $app->post('/testsuites/{id}/xml',
+             array($app->restApi,'importSuiteXML'));
 
   $app->get('/testprojects',
             array($app->restApi,'testprojects'));

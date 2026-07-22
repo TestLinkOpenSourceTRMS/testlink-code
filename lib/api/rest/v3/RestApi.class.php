@@ -30,6 +30,9 @@
 
 require_once('../../../../config.inc.php');
 require_once('common.php');
+// exportDataToXML() lives here — needed by the legacy suite/case
+// XML exporters reused by the /testsuites/{id}/xml endpoint
+require_once('xml.inc.php');
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -2584,6 +2587,233 @@ class RestApi
   }
 
   /**
+   * true when $s is a valid calendar date in strict YYYY-MM-DD form.
+   */
+  private function isIsoDate($s)
+  {
+    if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', (string)$s, $m)) {
+      return false;
+    }
+    return checkdate(intval($m[2]), intval($m[3]), intval($m[1]));
+  }
+
+  /**
+   * GET /testplans/{id}/milestones
+   * Every milestone of the plan plus, on each one, the plan-wide
+   * progress as of now: how many linked cases have a latest result
+   * (executed %) and how many passed (pass %). Columns a/b/c are the
+   * per-priority (high/medium/low) % targets carried by the milestone.
+   * Progress is plan-wide (no per-priority breakdown) and reuses the
+   * same latest-per-version loose scan as getPlanSummary.
+   */
+  public function getPlanMilestones(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+
+    $sql = " SELECT COUNT(*) AS qty FROM {$this->tables['testplan_tcversions']} " .
+           " WHERE testplan_id = {$safeID} ";
+    $linked = intval($this->db->fetchFirstRowSingleColumn($sql, 'qty'));
+
+    // latest execution per test case version -> executed & passed totals
+    $sql = " SELECT E2.status, COUNT(*) AS qty FROM " .
+           " (SELECT MAX(id) AS mid FROM {$this->tables['executions']} " .
+           "   WHERE testplan_id = {$safeID} GROUP BY tcversion_id) M " .
+           " JOIN {$this->tables['executions']} E2 ON E2.id = M.mid " .
+           " GROUP BY E2.status ";
+    $executed = 0;
+    $passed = 0;
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $executed += intval($row['qty']);
+      if ($row['status'] == 'p') {
+        $passed += intval($row['qty']);
+      }
+    }
+    $executedPct = $linked > 0 ? round($executed * 100 / $linked, 1) : 0;
+    $passPct = $linked > 0 ? round($passed * 100 / $linked, 1) : 0;
+
+    $sql = " SELECT id, name, target_date, start_date, a, b, c " .
+           " FROM {$this->tables['milestones']} " .
+           " WHERE testplan_id = {$safeID} ORDER BY target_date, name ";
+    $items = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $items[] = array(
+        'id' => intval($row['id']),
+        'name' => $row['name'],
+        'target_date' => $row['target_date'],
+        'start_date' => $row['start_date'],
+        'a' => intval($row['a']),
+        'b' => intval($row['b']),
+        'c' => intval($row['c']),
+        'linked' => $linked,
+        'executed' => $executed,
+        'passed' => $passed,
+        'executedPct' => $executedPct,
+        'passPct' => $passPct);
+    }
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'planID' => $safeID,
+            'linked' => $linked, 'executed' => $executed, 'passed' => $passed,
+            'executedPct' => $executedPct, 'passPct' => $passPct,
+            'items' => $items)));
+    return $response;
+  }
+
+  /**
+   * POST /milestones
+   *   {testplanID, name, target_date (YYYY-MM-DD),
+   *    start_date?, A?, B?, C?}
+   * A/B/C are the high/medium/low priority % targets (default 100),
+   * stored in the a/b/c columns. Missing name or target_date -> 400;
+   * an unknown test plan -> 404.
+   */
+  public function createMilestone(Request $request, Response $response, $args)
+  {
+    $op = array('status' => 'ok', 'message' => 'ok');
+    $item = json_decode($request->getBody());
+
+    // required fields (400)
+    $name = ($item != null && isset($item->name)) ? trim((string)$item->name) : '';
+    $target = ($item != null && isset($item->target_date))
+              ? trim((string)$item->target_date) : '';
+    if ($name === '' || !$this->isIsoDate($target)) {
+      $op = array('status' => 'error',
+                  'message' => 'name and target_date (YYYY-MM-DD) are required');
+      $response->getBody()->write(json_encode($op));
+      return $response->withStatus(400);
+    }
+
+    // test plan must exist (404)
+    $tplanID = isset($item->testplanID) ? intval($item->testplanID) : 0;
+    $tplan = $tplanID > 0 ? $this->tplanMgr->get_by_id($tplanID) : null;
+    if (null == $tplan) {
+      $op = array('status' => 'error', 'message' => 'Test plan does not exist');
+      $response->getBody()->write(json_encode($op));
+      return $response->withStatus(404);
+    }
+
+    try {
+      $start = (isset($item->start_date) &&
+                $this->isIsoDate(trim((string)$item->start_date)))
+               ? trim((string)$item->start_date) : null;
+      // percentage targets, clamped to 0..100, default 100
+      $a = isset($item->A) ? max(0, min(100, intval($item->A))) : 100;
+      $b = isset($item->B) ? max(0, min(100, intval($item->B))) : 100;
+      $c = isset($item->C) ? max(0, min(100, intval($item->C))) : 100;
+
+      $cols = "testplan_id, name, target_date, a, b, c";
+      $vals = intval($tplanID) . "," .
+              " '" . $this->db->prepare_string($name) . "'," .
+              " '" . $this->db->prepare_string($target) . "'," .
+              " {$a}, {$b}, {$c}";
+      if ($start !== null) {
+        $cols .= ", start_date";
+        $vals .= ", '" . $this->db->prepare_string($start) . "'";
+      }
+      $sql = " INSERT INTO {$this->tables['milestones']} ({$cols}) " .
+             " VALUES ({$vals}) ";
+      $this->db->exec_query($sql);
+      $op['id'] = intval($this->db->insert_id($this->tables['milestones']));
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * DELETE /milestones/{id}
+   * Remove a milestone unconditionally.
+   */
+  public function deleteMilestone(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $op = array('status' => 'ok', 'message' => 'ok');
+    try {
+      $sql = " DELETE FROM {$this->tables['milestones']} WHERE id = {$safeID} ";
+      $this->db->exec_query($sql);
+      $op['id'] = $safeID;
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/byKeyword
+   * Per keyword (linked to any plan case through testcase_keywords):
+   * how many plan-linked cases carry it, and the latest-execution
+   * verdict counts p/f/b/n across those cases. n = linked cases with
+   * no latest result. The verdict side reuses the latest-per-version
+   * loose scan; keyword association is via the case node (parent of
+   * the version), so it holds regardless of which version the plan
+   * links. Keywords with no linked plan case are omitted.
+   */
+  public function getPlanByKeyword(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+
+    // linked plan cases carrying each keyword
+    $sql = " SELECT K.id AS keyword_id, K.keyword, " .
+           "        COUNT(DISTINCT T.tcversion_id) AS linked " .
+           " FROM {$this->tables['testplan_tcversions']} T " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = T.tcversion_id " .
+           " JOIN {$this->tables['testcase_keywords']} TK ON TK.testcase_id = NHTCV.parent_id " .
+           " JOIN {$this->tables['keywords']} K ON K.id = TK.keyword_id " .
+           " WHERE T.testplan_id = {$safeID} " .
+           " GROUP BY K.id, K.keyword ORDER BY K.keyword ";
+    $items = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $kid = intval($row['keyword_id']);
+      $items[$kid] = array('keyword_id' => $kid,
+                           'keyword' => $row['keyword'],
+                           'linked' => intval($row['linked']),
+                           'p' => 0, 'f' => 0, 'b' => 0, 'n' => 0,
+                           'executed' => 0);
+    }
+
+    // latest execution per version, rolled up to keyword verdict counts
+    $sql = " SELECT K.id AS keyword_id, E2.status, " .
+           "        COUNT(DISTINCT E2.tcversion_id) AS qty FROM " .
+           " (SELECT MAX(id) AS mid FROM {$this->tables['executions']} " .
+           "   WHERE testplan_id = {$safeID} GROUP BY tcversion_id) M " .
+           " JOIN {$this->tables['executions']} E2 ON E2.id = M.mid " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = E2.tcversion_id " .
+           " JOIN {$this->tables['testcase_keywords']} TK ON TK.testcase_id = NHTCV.parent_id " .
+           " JOIN {$this->tables['keywords']} K ON K.id = TK.keyword_id " .
+           " GROUP BY K.id, E2.status ";
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $kid = intval($row['keyword_id']);
+      if (!isset($items[$kid])) {
+        continue;
+      }
+      $qty = intval($row['qty']);
+      $items[$kid]['executed'] += $qty;
+      if (in_array($row['status'], array('p', 'f', 'b'))) {
+        $items[$kid][$row['status']] += $qty;
+      }
+    }
+
+    foreach ($items as &$kw) {
+      $kw['n'] = max(0, $kw['linked'] - $kw['executed']);
+      unset($kw['executed']);
+    }
+    unset($kw);
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'planID' => $safeID,
+            'items' => array_values($items))));
+    return $response;
+  }
+
+  /**
    * GET /testplans/{id}/matrixBySuite
    * Whole-plan overview on one screen: one row per test suite,
    * one column per build, cell = latest-status counts (p/f/b) plus
@@ -3294,6 +3524,587 @@ class RestApi
 
     $response->getBody()->write(json_encode(
       array('status' => 'ok', 'projectID' => $safeID, 'items' => $items)));
+    return $response;
+  }
+
+  // ==================================================================
+  // Documents & TestLink-XML import/export
+  // (SPA replacement for printDocument.php / tcExport.php / tcImport.php)
+  // ==================================================================
+
+  /** HTML-escape helper for the printable documents */
+  private static function docEsc($s)
+  {
+    return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+  }
+
+  /** execution status code -> human label for the printable report */
+  private static function docVerdictLabel($code)
+  {
+    switch ($code) {
+      case 'p': return 'Passed';
+      case 'f': return 'Failed';
+      case 'b': return 'Blocked';
+      case null:
+      case '':  return 'Not run';
+      default:  return (string)$code;
+    }
+  }
+
+  /**
+   * Shared shell of the printable documents: self-contained HTML,
+   * inline CSS only (no external assets), print-friendly.
+   */
+  private function docHtmlOpen($title, $subtitle)
+  {
+    $css =
+      'body{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;' .
+      'margin:32px auto;max-width:900px;padding:0 16px;color:#1a1a1a;line-height:1.45}' .
+      'h1{font-size:22px;margin:0 0 2px;border-bottom:2px solid #1a1a1a;padding-bottom:6px}' .
+      'h2{font-size:16px;margin:26px 0 6px;border-bottom:1px solid #999;padding-bottom:3px}' .
+      'h3{font-size:14px;margin:18px 0 4px}' .
+      '.sub{color:#555;font-size:12px;margin:0 0 18px}' .
+      '.meta{color:#555;font-size:12px;margin:2px 0}' .
+      '.block{margin:4px 0 10px}' .
+      '.blocklabel{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#777;margin:8px 0 2px}' .
+      'table{border-collapse:collapse;width:100%;margin:6px 0 14px;font-size:13px}' .
+      'th,td{border:1px solid #bbb;padding:4px 8px;text-align:left;vertical-align:top}' .
+      'th{background:#f0f0f0;font-size:12px}' .
+      'td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}' .
+      '.stepno{width:36px;text-align:right}' .
+      '.warn{background:#fff3cd;border:1px solid #d9c069;padding:8px 12px;margin:14px 0;font-size:13px}' .
+      '.v-p{color:#166534;font-weight:600}.v-f{color:#b91c1c;font-weight:600}' .
+      '.v-b{color:#92400e;font-weight:600}.v-n{color:#666}' .
+      '@media print{body{margin:0 auto}}';
+
+    return '<!DOCTYPE html><html><head><meta charset="utf-8">' .
+           '<title>' . self::docEsc($title) . '</title>' .
+           '<style>' . $css . '</style></head><body>' .
+           '<h1>' . self::docEsc($title) . '</h1>' .
+           '<p class="sub">' . self::docEsc($subtitle) . '</p>';
+  }
+
+  /**
+   * GET /testprojects/{id}/document?type=spec[&suiteID=]
+   * Self-contained printable HTML of the test specification:
+   * suite hierarchy with, per test case, external id, title, summary,
+   * preconditions and steps table. Optional suiteID narrows the scope
+   * to one suite subtree; the whole-project variant is capped at
+   * DOC_MAX_CASES cases with an explicit truncation note.
+   */
+  const DOC_MAX_CASES = 2000;
+
+  public function getProjectDocument(Request $request, Response $response, $args)
+  {
+    $projectID = intval($args['id']);
+    $qs = $request->getQueryParams();
+    $type = isset($qs['type']) ? trim($qs['type']) : 'spec';
+    $suiteID = isset($qs['suiteID']) ? intval($qs['suiteID']) : 0;
+
+    if ($type != 'spec') {
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => "Unsupported document type '{$type}'")));
+      return $response->withStatus(400);
+    }
+
+    $sql = " SELECT name FROM {$this->tables['nodes_hierarchy']} " .
+           " WHERE id = {$projectID} AND node_type_id = 1 ";
+    $projectName = $this->db->fetchFirstRowSingleColumn($sql, 'name');
+    if (is_null($projectName)) {
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => 'Test project does not exist')));
+      return $response->withStatus(404);
+    }
+
+    $scopeName = null;
+    if ($suiteID > 0) {
+      $sql = " SELECT name FROM {$this->tables['nodes_hierarchy']} " .
+             " WHERE id = {$suiteID} AND node_type_id = 2 ";
+      $scopeName = $this->db->fetchFirstRowSingleColumn($sql, 'name');
+      $rootOK = !is_null($scopeName) &&
+        intval($this->tsuiteMgr->tree_manager->getTreeRoot($suiteID)) == $projectID;
+      if (!$rootOK) {
+        $response->getBody()->write(json_encode(
+          array('status' => 'error',
+                'message' => 'Test suite does not exist in this project')));
+        return $response->withStatus(404);
+      }
+    }
+
+    // suite subtree in scope (same recursive shape as getProjectSuites)
+    $anchorID = $suiteID > 0 ? $suiteID : $projectID;
+    $sql = " WITH RECURSIVE st AS " .
+           " (SELECT id, parent_id, name, node_order " .
+           "    FROM {$this->tables['nodes_hierarchy']} " .
+           "   WHERE parent_id = {$anchorID} AND node_type_id = 2 " .
+           "  UNION ALL " .
+           "  SELECT nh.id, nh.parent_id, nh.name, nh.node_order " .
+           "    FROM {$this->tables['nodes_hierarchy']} nh " .
+           "    JOIN st ON nh.parent_id = st.id " .
+           "   WHERE nh.node_type_id = 2) " .
+           " SELECT * FROM st ";
+    $suiteRows = (array)$this->db->get_recordset($sql);
+    if ($suiteID > 0) {
+      $suiteRows[] = array('id' => $suiteID, 'parent_id' => $anchorID,
+                           'name' => $scopeName, 'node_order' => 0);
+    }
+
+    $childSuites = array();      // parent -> ordered child suites
+    $suiteIDSet = array($anchorID);
+    usort($suiteRows, function ($a, $b) {
+      return (intval($a['node_order']) <=> intval($b['node_order']))
+        ?: (intval($a['id']) <=> intval($b['id']));
+    });
+    foreach ($suiteRows as $row) {
+      $suiteIDSet[] = intval($row['id']);
+      if (intval($row['id']) != $suiteID) {
+        $childSuites[intval($row['parent_id'])][] = $row;
+      }
+    }
+
+    // latest-version data of every case in scope, bounded
+    $inList = implode(',', array_unique($suiteIDSet));
+    $cap = self::DOC_MAX_CASES;
+    $sql = " SELECT NHTC.id AS tcase_id, NHTC.parent_id AS suite_id, " .
+           "        NHTC.name, NHTC.node_order, " .
+           "        TCV.id AS tcversion_id, TCV.version, TCV.tc_external_id, " .
+           "        TCV.summary, TCV.preconditions, TCV.importance " .
+           " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+           " WHERE NHTC.parent_id IN ({$inList}) AND NHTC.node_type_id = 3 " .
+           "   AND TCV.version = (SELECT MAX(TCV2.version) " .
+           "         FROM {$this->tables['nodes_hierarchy']} NH2 " .
+           "         JOIN {$this->tables['tcversions']} TCV2 ON TCV2.id = NH2.id " .
+           "        WHERE NH2.parent_id = NHTC.id) " .
+           " ORDER BY NHTC.parent_id, NHTC.node_order, NHTC.id " .
+           " LIMIT " . ($cap + 1);
+    $caseRows = (array)$this->db->get_recordset($sql);
+    $truncated = count($caseRows) > $cap;
+    if ($truncated) {
+      array_pop($caseRows);
+    }
+
+    // steps of those versions, one query
+    $stepsByTCV = array();
+    if (count($caseRows) > 0) {
+      $tcvList = implode(',', array_map(function ($r) {
+        return intval($r['tcversion_id']);
+      }, $caseRows));
+      $sql = " SELECT NH.parent_id AS tcversion_id, TCS.step_number, " .
+             "        TCS.actions, TCS.expected_results " .
+             " FROM {$this->tables['tcsteps']} TCS " .
+             " JOIN {$this->tables['nodes_hierarchy']} NH ON NH.id = TCS.id " .
+             " WHERE NH.parent_id IN ({$tcvList}) " .
+             " ORDER BY NH.parent_id, TCS.step_number ";
+      foreach ((array)$this->db->get_recordset($sql) as $st) {
+        $stepsByTCV[$st['tcversion_id']][] = $st;
+      }
+    }
+
+    $casesBySuite = array();
+    foreach ($caseRows as $row) {
+      $casesBySuite[intval($row['suite_id'])][] = $row;
+    }
+
+    // project prefix for the external case ids
+    $sql = " SELECT prefix FROM {$this->tables['testprojects']} " .
+           " WHERE id = {$projectID} ";
+    $prefix = (string)$this->db->fetchFirstRowSingleColumn($sql, 'prefix');
+
+    $renderCase = function ($tc) use ($prefix, $stepsByTCV) {
+      $html = '<h3>' . self::docEsc($prefix . '-' . $tc['tc_external_id']) .
+              ' · ' . self::docEsc($tc['name']) .
+              ' <span class="meta">v' . intval($tc['version']) . '</span></h3>';
+      if (trim((string)$tc['summary']) != '') {
+        $html .= '<div class="blocklabel">Summary</div>' .
+                 '<div class="block">' . $tc['summary'] . '</div>';
+      }
+      if (trim((string)$tc['preconditions']) != '') {
+        $html .= '<div class="blocklabel">Preconditions</div>' .
+                 '<div class="block">' . $tc['preconditions'] . '</div>';
+      }
+      $steps = isset($stepsByTCV[$tc['tcversion_id']]) ?
+        $stepsByTCV[$tc['tcversion_id']] : array();
+      if (count($steps) > 0) {
+        $html .= '<table><tr><th class="stepno">#</th>' .
+                 '<th>Actions</th><th>Expected results</th></tr>';
+        foreach ($steps as $st) {
+          $html .= '<tr><td class="stepno">' . intval($st['step_number']) . '</td>' .
+                   '<td>' . $st['actions'] . '</td>' .
+                   '<td>' . $st['expected_results'] . '</td></tr>';
+        }
+        $html .= '</table>';
+      }
+      return $html;
+    };
+
+    // depth-first walk with hierarchical numbering (1, 1.1, ...)
+    $renderSuite = function ($sid, $number, $name) use (
+      &$renderSuite, &$childSuites, &$casesBySuite, $renderCase) {
+      $html = '';
+      if ($name !== null) {
+        $html .= '<h2>' . self::docEsc($number . ' ' . $name) . '</h2>';
+      }
+      foreach (isset($casesBySuite[$sid]) ? $casesBySuite[$sid] : array() as $tc) {
+        $html .= $renderCase($tc);
+      }
+      $childNo = 0;
+      foreach (isset($childSuites[$sid]) ? $childSuites[$sid] : array() as $child) {
+        $childNo++;
+        $childNumber = ($name === null ? '' : $number . '.') . $childNo;
+        $html .= $renderSuite(intval($child['id']), $childNumber, $child['name']);
+      }
+      return $html;
+    };
+
+    $title = 'Test specification · ' . $projectName .
+             ($scopeName !== null ? ' / ' . $scopeName : '');
+    $subtitle = 'Generated ' . date('Y-m-d H:i') . ' · ' .
+                count($caseRows) . ' test cases';
+    $html = $this->docHtmlOpen($title, $subtitle);
+    if ($truncated) {
+      $html .= '<div class="warn">Output truncated at ' . $cap .
+               ' test cases. Narrow the scope with a suite to get the full detail.</div>';
+    }
+    // the anchor level itself carries no heading (its name is in the
+    // title); child suites get hierarchical numbers 1, 1.1, ...
+    $html .= $renderSuite($anchorID, '', null);
+    $html .= '</body></html>';
+
+    $response->getBody()->write($html);
+    return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+  }
+
+  /**
+   * GET /testplans/{id}/document?type=report[&buildID=]
+   * Printable HTML test report: plan header, per-suite verdict summary
+   * (latest execution per case version — same shape as matrixBySuite),
+   * then the per-case latest verdict list with tester/date/notes.
+   */
+  public function getPlanDocument(Request $request, Response $response, $args)
+  {
+    $planID = intval($args['id']);
+    $qs = $request->getQueryParams();
+    $type = isset($qs['type']) ? trim($qs['type']) : 'report';
+    $buildID = isset($qs['buildID']) ? intval($qs['buildID']) : 0;
+
+    if ($type != 'report') {
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => "Unsupported document type '{$type}'")));
+      return $response->withStatus(400);
+    }
+
+    $plan = $this->tplanMgr->get_by_id($planID);
+    if (is_null($plan) || !isset($plan['name'])) {
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => 'Test plan does not exist')));
+      return $response->withStatus(404);
+    }
+
+    $sql = " SELECT name FROM {$this->tables['nodes_hierarchy']} " .
+           " WHERE id = " . intval($plan['testproject_id']);
+    $projectName = (string)$this->db->fetchFirstRowSingleColumn($sql, 'name');
+
+    $buildName = null;
+    if ($buildID > 0) {
+      $sql = " SELECT name FROM {$this->tables['builds']} " .
+             " WHERE id = {$buildID} AND testplan_id = {$planID} ";
+      $buildName = $this->db->fetchFirstRowSingleColumn($sql, 'name');
+      if (is_null($buildName)) {
+        $response->getBody()->write(json_encode(
+          array('status' => 'error', 'message' => 'Build does not belong to this plan')));
+        return $response->withStatus(404);
+      }
+    }
+    $buildFilter = $buildID > 0 ? " AND build_id = {$buildID} " : '';
+
+    // ---- per-suite verdict summary (matrixBySuite SQL shape) ----
+    $sql = " SELECT S.id AS suite_id, S.name AS suite_name, COUNT(*) AS linked " .
+           " FROM {$this->tables['testplan_tcversions']} T " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = T.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} S ON S.id = NHTC.parent_id " .
+           " WHERE T.testplan_id = {$planID} " .
+           " GROUP BY S.id, S.name ORDER BY S.name ";
+    $suites = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $suites[$row['suite_id']] = array(
+        'name' => $row['suite_name'],
+        'linked' => intval($row['linked']),
+        'p' => 0, 'f' => 0, 'b' => 0, 'other' => 0);
+    }
+
+    $sql = " SELECT S.id AS suite_id, E2.status, COUNT(*) AS qty " .
+           " FROM (SELECT MAX(id) AS mid FROM {$this->tables['executions']} " .
+           "        WHERE testplan_id = {$planID} {$buildFilter} " .
+           "        GROUP BY tcversion_id) M " .
+           " JOIN {$this->tables['executions']} E2 ON E2.id = M.mid " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = E2.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} S ON S.id = NHTC.parent_id " .
+           " GROUP BY S.id, E2.status ";
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $sid = $row['suite_id'];
+      if (!isset($suites[$sid])) {
+        continue;
+      }
+      $key = in_array($row['status'], array('p','f','b')) ? $row['status'] : 'other';
+      $suites[$sid][$key] += intval($row['qty']);
+    }
+
+    // ---- per-case latest verdict list, bounded like the spec doc ----
+    $cap = self::DOC_MAX_CASES;
+    $sql = " SELECT NHTC.name, TCV.tc_external_id, S.name AS suite_name, " .
+           "        E2.status, E2.execution_ts, E2.notes, " .
+           "        U.login AS tester, B.name AS build_name " .
+           " FROM {$this->tables['testplan_tcversions']} T " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = T.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} S ON S.id = NHTC.parent_id " .
+           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = T.tcversion_id " .
+           " LEFT JOIN (SELECT tcversion_id, MAX(id) AS mid " .
+           "              FROM {$this->tables['executions']} " .
+           "             WHERE testplan_id = {$planID} {$buildFilter} " .
+           "             GROUP BY tcversion_id) M ON M.tcversion_id = T.tcversion_id " .
+           " LEFT JOIN {$this->tables['executions']} E2 ON E2.id = M.mid " .
+           " LEFT JOIN {$this->tables['users']} U ON U.id = E2.tester_id " .
+           " LEFT JOIN {$this->tables['builds']} B ON B.id = E2.build_id " .
+           " WHERE T.testplan_id = {$planID} " .
+           " ORDER BY S.name, NHTC.name " .
+           " LIMIT " . ($cap + 1);
+    $caseRows = (array)$this->db->get_recordset($sql);
+    $truncated = count($caseRows) > $cap;
+    if ($truncated) {
+      array_pop($caseRows);
+    }
+
+    $title = 'Test report · ' . $plan['name'];
+    $subtitle = 'Project ' . $projectName .
+                ($buildName !== null ? ' · Build ' . $buildName : ' · all builds') .
+                ' · Generated ' . date('Y-m-d H:i');
+    $html = $this->docHtmlOpen($title, $subtitle);
+
+    $html .= '<h2>Verdict summary by suite</h2>';
+    if (count($suites) == 0) {
+      $html .= '<p class="meta">No test cases linked to this plan.</p>';
+    } else {
+      $tot = array('linked' => 0, 'p' => 0, 'f' => 0, 'b' => 0);
+      $html .= '<table><tr><th>Suite</th><th class="num">Cases</th>' .
+               '<th class="num">Passed</th><th class="num">Failed</th>' .
+               '<th class="num">Blocked</th><th class="num">Not run</th></tr>';
+      foreach ($suites as $s) {
+        $notRun = max(0, $s['linked'] - $s['p'] - $s['f'] - $s['b'] - $s['other']);
+        foreach (array('linked','p','f','b') as $k) {
+          $tot[$k] += $s[$k];
+        }
+        $html .= '<tr><td>' . self::docEsc($s['name']) . '</td>' .
+                 '<td class="num">' . $s['linked'] . '</td>' .
+                 '<td class="num v-p">' . $s['p'] . '</td>' .
+                 '<td class="num v-f">' . $s['f'] . '</td>' .
+                 '<td class="num v-b">' . $s['b'] . '</td>' .
+                 '<td class="num v-n">' . $notRun . '</td></tr>';
+      }
+      $html .= '<tr><th>Total</th><th class="num">' . $tot['linked'] . '</th>' .
+               '<th class="num v-p">' . $tot['p'] . '</th>' .
+               '<th class="num v-f">' . $tot['f'] . '</th>' .
+               '<th class="num v-b">' . $tot['b'] . '</th><th></th></tr></table>';
+    }
+
+    $html .= '<h2>Latest result per test case</h2>';
+    if ($truncated) {
+      $html .= '<div class="warn">List truncated at ' . $cap . ' test cases.</div>';
+    }
+    if (count($caseRows) == 0) {
+      $html .= '<p class="meta">No test cases linked to this plan.</p>';
+    } else {
+      $html .= '<table><tr><th>Test case</th><th>Suite</th><th>Verdict</th>' .
+               '<th>Tester</th><th>Date</th><th>Build</th><th>Notes</th></tr>';
+      foreach ($caseRows as $row) {
+        $code = isset($row['status']) ? $row['status'] : null;
+        $cls = in_array($code, array('p','f','b')) ? 'v-' . $code : 'v-n';
+        $html .= '<tr><td>' . self::docEsc($row['tc_external_id'] . ': ' . $row['name']) . '</td>' .
+                 '<td>' . self::docEsc($row['suite_name']) . '</td>' .
+                 '<td class="' . $cls . '">' . self::docEsc(self::docVerdictLabel($code)) . '</td>' .
+                 '<td>' . self::docEsc($row['tester'] ?? '') . '</td>' .
+                 '<td>' . self::docEsc($row['execution_ts'] ?? '') . '</td>' .
+                 '<td>' . self::docEsc($row['build_name'] ?? '') . '</td>' .
+                 '<td>' . self::docEsc($row['notes'] ?? '') . '</td></tr>';
+      }
+      $html .= '</table>';
+    }
+
+    $html .= '</body></html>';
+    $response->getBody()->write($html);
+    return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+  }
+
+  /**
+   * GET /testsuites/{id}/xml
+   * TestLink-format XML export of a suite subtree — same schema as the
+   * legacy tcExport.php page (it reuses the very same exporter:
+   * testsuite::exportTestSuiteDataToXML).
+   */
+  public function exportSuiteXML(Request $request, Response $response, $args)
+  {
+    $suiteID = intval($args['id']);
+
+    $sql = " SELECT name FROM {$this->tables['nodes_hierarchy']} " .
+           " WHERE id = {$suiteID} AND node_type_id = 2 ";
+    $suiteName = $this->db->fetchFirstRowSingleColumn($sql, 'name');
+    if (is_null($suiteName)) {
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => 'Test suite does not exist')));
+      return $response->withStatus(404);
+    }
+
+    $tprojectID = intval($this->tsuiteMgr->tree_manager->getTreeRoot($suiteID));
+
+    // same option set the legacy export page uses for a deep suite
+    // export without the optional extras (keywords/cfields/reqs/attachments)
+    $optExport = array('RECURSIVE' => 1, 'TCSTEPS' => 1,
+                       'EXTERNALID' => 1, 'ADDPREFIX' => 0,
+                       'TCSUMMARY' => 1, 'TCPRECONDITIONS' => 1,
+                       'KEYWORDS' => 0, 'CFIELDS' => 0,
+                       'REQS' => 0, 'ATTACHMENTS' => 0);
+
+    // the legacy exporter emits notices/warnings for unset optional
+    // sections and loads a helper via a cwd-relative require
+    // (../../third_party/...), so run it from lib/functions — the cwd
+    // the legacy pages give it — and silence the noise so the XML
+    // stream stays clean
+    $oldLevel = error_reporting(E_ERROR | E_PARSE);
+    $oldCwd = getcwd();
+    chdir(TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions');
+    ob_start();
+    $xml = TL_XMLEXPORT_HEADER .
+           $this->tsuiteMgr->exportTestSuiteDataToXML($suiteID, $tprojectID, $optExport);
+    ob_end_clean();
+    chdir($oldCwd);
+    error_reporting($oldLevel);
+
+    $fileName = preg_replace('/[^A-Za-z0-9._-]+/', '_', $suiteName) .
+                '.testsuite-deep.xml';
+    $response->getBody()->write($xml);
+    return $response
+      ->withHeader('Content-Type', 'application/xml; charset=utf-8')
+      ->withHeader('Content-Disposition',
+        'attachment; filename="' . addslashes($fileName) . '"');
+  }
+
+  /**
+   * POST /testsuites/{id}/xml
+   * Import test cases from TestLink-format XML (the schema the export
+   * above produces) into suite {id}. Body is the raw XML document.
+   * Cases whose name already exists in the target suite are skipped,
+   * so re-importing the same file is idempotent.
+   * Returns {created, skippedDuplicates, errors[]}.
+   */
+  public function importSuiteXML(Request $request, Response $response, $args)
+  {
+    $suiteID = intval($args['id']);
+
+    $sql = " SELECT name FROM {$this->tables['nodes_hierarchy']} " .
+           " WHERE id = {$suiteID} AND node_type_id = 2 ";
+    $suiteName = $this->db->fetchFirstRowSingleColumn($sql, 'name');
+    if (is_null($suiteName)) {
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => 'Test suite does not exist')));
+      return $response->withStatus(404);
+    }
+
+    $raw = trim((string)$request->getBody());
+    if ($raw == '') {
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => 'Empty request body — send the XML document')));
+      return $response->withStatus(400);
+    }
+
+    libxml_use_internal_errors(true);
+    $xml = simplexml_load_string($raw);
+    if ($xml === false) {
+      $detail = array_map(function ($e) {
+        return trim($e->message) . ' (line ' . $e->line . ')';
+      }, array_slice(libxml_get_errors(), 0, 3));
+      libxml_clear_errors();
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => 'Malformed XML',
+              'detail' => $detail)));
+      return $response->withStatus(400);
+    }
+
+    // accept <testcases>, <testsuite> (deep export) or a single <testcase>
+    $tcNodes = $xml->xpath('//testcase');
+    if ($xml->getName() == 'testcase') {
+      $tcNodes = array($xml);
+    }
+
+    $op = array('status' => 'ok', 'created' => 0,
+                'skippedDuplicates' => 0, 'errors' => array());
+
+    // names already present in the target suite -> duplicate skip
+    $sql = " SELECT name FROM {$this->tables['nodes_hierarchy']} " .
+           " WHERE parent_id = {$suiteID} AND node_type_id = 3 ";
+    $existing = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $existing[mb_strtolower(trim($row['name']))] = true;
+    }
+
+    foreach ($tcNodes as $tc) {
+      $name = trim((string)$tc['name']);
+      if ($name == '') {
+        $op['errors'][] = 'testcase without name attribute skipped';
+        continue;
+      }
+      if (isset($existing[mb_strtolower($name)])) {
+        $op['skippedDuplicates']++;
+        continue;
+      }
+
+      // steps use the legacy element names (expectedresults, ...)
+      $steps = array();
+      if (isset($tc->steps->step)) {
+        $n = 0;
+        foreach ($tc->steps->step as $step) {
+          $n++;
+          $stepNumber = intval((string)$step->step_number);
+          $steps[] = array(
+            'step_number' => $stepNumber > 0 ? $stepNumber : $n,
+            'actions' => (string)$step->actions,
+            'expected_results' => (string)$step->expectedresults,
+            'execution_type' => max(1, intval((string)$step->execution_type)));
+        }
+      }
+
+      $execType = intval((string)$tc->execution_type);
+      $importance = intval((string)$tc->importance);
+      $order = intval((string)$tc->node_order);
+
+      try {
+        $ret = $this->tcaseMgr->create(
+          $suiteID, $name,
+          (string)$tc->summary, (string)$tc->preconditions,
+          $steps, $this->userID, '', $order,
+          testcase::AUTOMATIC_ID,
+          $execType > 0 ? $execType : TESTCASE_EXECUTION_TYPE_MANUAL,
+          $importance > 0 ? $importance : 2);
+        if (isset($ret['status_ok']) && $ret['status_ok']) {
+          $op['created']++;
+          $existing[mb_strtolower($name)] = true;
+        } else {
+          $op['errors'][] = "'{$name}': " .
+            (isset($ret['msg']) ? $ret['msg'] : 'create failed');
+        }
+      } catch (Exception $e) {
+        $op['errors'][] = "'{$name}': " . $this->msgFromException($e);
+      }
+    }
+
+    if (count($tcNodes) == 0) {
+      $op['message'] = 'No <testcase> elements found in the document';
+    }
+
+    $response->getBody()->write(json_encode($op));
     return $response;
   }
 } // class end

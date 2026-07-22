@@ -32,6 +32,12 @@ export interface Step {
   execution_type: string
 }
 
+export interface AttachmentRow {
+  id: string
+  file_name: string
+  file_size: string
+}
+
 export interface Execution {
   id: string
   status: string
@@ -39,6 +45,14 @@ export interface Execution {
   build_name: string
   tester: string
   notes: string
+  attachments?: AttachmentRow[]
+}
+
+export interface SearchHit {
+  tcase_id: string
+  name: string
+  suite_name: string
+  tc_external_id: string
 }
 
 export interface CaseDetail {
@@ -335,6 +349,57 @@ export const api = {
       `/testplans/${planId}/link`,
       { method: 'POST', body: JSON.stringify({ tcaseIDs }) },
     ),
+
+  search: (projectId: string, q: string) =>
+    request<{ items: SearchHit[] }>(
+      `/testprojects/${projectId}/search?q=${encodeURIComponent(q)}`,
+    ).then((r) => r.items),
+
+  uploadAttachment: (executionId: number, file: File) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('title', file.name)
+    return fetch(`${BASE}/executions/${executionId}/attachments`, {
+      method: 'POST',
+      headers: { Apikey: getSession()?.apikey ?? '' },
+      body: fd,
+    }).then((r) => {
+      if (!r.ok) throw new Error('upload failed')
+      return r.json() as Promise<{ status: string }>
+    })
+  },
+
+  /** fetch with auth header, hand back an object URL for viewing */
+  attachmentUrl: (attachmentId: string) =>
+    fetch(`${BASE}/attachments/${attachmentId}`, {
+      headers: { Apikey: getSession()?.apikey ?? '' },
+    })
+      .then((r) => r.blob())
+      .then((b) => URL.createObjectURL(b)),
+
+  createProject: (name: string, prefix: string) =>
+    request<{ status: string; id: number }>('/testprojects', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        prefix,
+        notes: '',
+        active: 1,
+        is_public: 1,
+        options: {
+          requirementsEnabled: 0,
+          testPriorityEnabled: 1,
+          automationEnabled: 1,
+          inventoryEnabled: 0,
+        },
+      }),
+    }),
+
+  updateBuild: (buildId: string, patch: { is_open?: number; active?: number }) =>
+    request<{ status: string }>(`/builds/${buildId}`, {
+      method: 'PUT',
+      body: JSON.stringify(patch),
+    }),
 
   recordExecution: (input: {
     testPlanID: number

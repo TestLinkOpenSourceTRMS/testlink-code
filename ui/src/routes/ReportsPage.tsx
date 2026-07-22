@@ -2,8 +2,24 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useT } from '../lib/i18n'
 import { useWorkspace } from '../lib/workspace'
-import { Panel, Spinner } from '../components/ui'
+import { Button, Panel, Spinner } from '../components/ui'
 import { TrendChart } from '../components/TrendChart'
+
+/** double-quote a CSV field when it contains a comma, quote, or newline */
+function csvEscape(v: string): string {
+  return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
+}
+
+function downloadCsv(filename: string, rows: string[][]) {
+  const csv = rows.map((r) => r.map(csvEscape).join(',')).join('\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
 
 export function ReportsPage() {
   const { plan } = useWorkspace()
@@ -31,6 +47,19 @@ export function ReportsPage() {
   })
 
   if (!plan) return <Spinner />
+
+  const exportTesterCsv = () => {
+    if (!byTester.data) return
+    const header = ['login', 'p', 'f', 'b', 'total']
+    const rows = byTester.data.map((row) => [
+      row.login,
+      String(row.p),
+      String(row.f),
+      String(row.b),
+      String(row.p + row.f + row.b + row.other),
+    ])
+    downloadCsv('tester-report.csv', [header, ...rows])
+  }
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-4">
@@ -76,7 +105,14 @@ export function ReportsPage() {
         )}
       </Panel>
 
-      <Panel title={t('byTester')}>
+      <Panel
+        title={t('byTester')}
+        actions={
+          <Button kind="ghost" onClick={exportTesterCsv} disabled={!byTester.data}>
+            {t('exportCsv')}
+          </Button>
+        }
+      >
         {byTester.isPending ? (
           <Spinner />
         ) : (byTester.data?.length ?? 0) === 0 ? (

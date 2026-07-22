@@ -41,6 +41,14 @@ return function (App $app) {
              array($app->restApi,'linkPlanCases'));
   $app->get('/users',
             array($app->restApi,'getUsers'));
+  $app->get('/testprojects/{id}/search',
+            array($app->restApi,'searchTestCases'));
+  $app->post('/executions/{id}/attachments',
+             array($app->restApi,'uploadExecutionAttachment'));
+  $app->get('/executions/{id}/attachments',
+            array($app->restApi,'getExecutionAttachments'));
+  $app->get('/attachments/{id}',
+            array($app->restApi,'downloadAttachment'));
   $app->post('/testplans/{id}/assign',
              array($app->restApi,'assignPlanCases'));
   $app->get('/testplans/{id}/byTester',

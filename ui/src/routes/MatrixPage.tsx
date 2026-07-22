@@ -17,6 +17,22 @@ import {
 
 const PAGE_SIZE = 100
 
+/** double-quote a CSV field when it contains a comma, quote, or newline */
+function csvEscape(v: string): string {
+  return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
+}
+
+function downloadCsv(filename: string, rows: string[][]) {
+  const csv = rows.map((r) => r.map(csvEscape).join(',')).join('\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 /** stacked p/f/b/not-run ratio bar for one suite × build cell */
 function CellBar({
   cell,
@@ -85,6 +101,21 @@ export function MatrixPage() {
   const total = byCase.data?.total ?? 0
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
+  const exportCsv = () => {
+    if (!byCase.data) return
+    const builds = byCase.data.builds
+    const header = ['id', 'name', ...builds.map((b) => b.name)]
+    const rows = byCase.data.items.map((row) => {
+      const id = `${project?.prefix ?? ''}-${row.tc_external_id}`
+      const cells = builds.map((b) => {
+        const raw = row.results?.[b.id]
+        return raw === 'p' || raw === 'f' || raw === 'b' ? raw : ''
+      })
+      return [id, row.name, ...cells]
+    })
+    downloadCsv('matrix.csv', [header, ...rows])
+  }
+
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
       <div className="flex items-center gap-3">
@@ -131,6 +162,11 @@ export function MatrixPage() {
               ›
             </Button>
           </span>
+        )}
+        {mode === 'case' && (
+          <Button kind="ghost" onClick={exportCsv} disabled={!byCase.data}>
+            {t('exportCsv')}
+          </Button>
         )}
       </div>
 

@@ -7,6 +7,7 @@ import {
   FileText,
   FolderPlus,
   Link2,
+  Paperclip,
   Pencil,
   Plus,
 } from 'lucide-react'
@@ -403,6 +404,26 @@ export function SpecPage() {
                         </td>
                         <td className="py-1.5">{e.build_name}</td>
                         <td className="text-mute py-1.5">{e.tester}</td>
+                        <td className="py-1.5" title={t('attachmentsLabel')}>
+                          {e.attachments && e.attachments.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {e.attachments.map((att) => (
+                                <button
+                                  key={att.id}
+                                  className="text-accent inline-flex items-center gap-1 text-xs hover:underline"
+                                  onClick={() =>
+                                    api
+                                      .attachmentUrl(att.id)
+                                      .then((url) => window.open(url, '_blank'))
+                                  }
+                                >
+                                  <Paperclip className="size-3" />
+                                  {att.file_name}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

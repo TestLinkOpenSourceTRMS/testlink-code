@@ -150,6 +150,26 @@ const en = {
 
   // trend chart
   trendAriaLabel: 'Daily executions by verdict',
+
+  // search
+  searchPlaceholder: 'Search cases (name, ID, text)…',
+  searchNoResults: 'Nothing found.',
+
+  // attachments
+  attachEvidence: 'Attach evidence (optional)',
+  evidenceUploaded: 'Evidence uploaded',
+  attachmentsLabel: 'Attachments',
+
+  // projects & builds admin
+  newProjectTitle: 'New project',
+  projectNamePlaceholder: 'Project name',
+  projectPrefixPlaceholder: 'Prefix (e.g. ABC)',
+  createProject: 'Create project',
+  buildClose: 'Close',
+  buildReopen: 'Reopen',
+
+  // export
+  exportCsv: 'Export CSV',
 }
 
 export type Messages = typeof en
@@ -281,6 +301,22 @@ const ko: Messages = {
   flips: '변동 횟수',
 
   trendAriaLabel: '판정별 일별 실행 수',
+
+  searchPlaceholder: '케이스 검색 (이름, ID, 내용)…',
+  searchNoResults: '검색 결과가 없습니다.',
+
+  attachEvidence: '증적 첨부 (선택)',
+  evidenceUploaded: '증적이 업로드되었습니다',
+  attachmentsLabel: '첨부파일',
+
+  newProjectTitle: '새 프로젝트',
+  projectNamePlaceholder: '프로젝트 이름',
+  projectPrefixPlaceholder: '접두어 (예: ABC)',
+  createProject: '프로젝트 생성',
+  buildClose: '닫기',
+  buildReopen: '다시 열기',
+
+  exportCsv: 'CSV 내보내기',
 }
 
 const vi: Messages = {
@@ -405,6 +441,22 @@ const vi: Messages = {
   flips: 'Lần đổi',
 
   trendAriaLabel: 'Thực thi hằng ngày theo kết quả',
+
+  searchPlaceholder: 'Tìm ca kiểm thử (tên, ID, nội dung)…',
+  searchNoResults: 'Không tìm thấy kết quả.',
+
+  attachEvidence: 'Đính kèm bằng chứng (tùy chọn)',
+  evidenceUploaded: 'Đã tải lên bằng chứng',
+  attachmentsLabel: 'Tệp đính kèm',
+
+  newProjectTitle: 'Dự án mới',
+  projectNamePlaceholder: 'Tên dự án',
+  projectPrefixPlaceholder: 'Tiền tố (ví dụ: ABC)',
+  createProject: 'Tạo dự án',
+  buildClose: 'Đóng',
+  buildReopen: 'Mở lại',
+
+  exportCsv: 'Xuất CSV',
 }
 
 const dictionaries: Record<Locale, Messages> = { en, ko, vi }

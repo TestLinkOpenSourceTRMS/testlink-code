@@ -219,9 +219,13 @@ class RestApi
   /**
    *
    */
-  public function setContentTypeJSON(Request $request, RequestHandler $handler) 
+  public function setContentTypeJSON(Request $request, RequestHandler $handler)
   {
     $response = $handler->handle($request);
+    // binary endpoints (attachment download) set their own type
+    if ($response->getHeaderLine('Content-Type') != '') {
+      return $response;
+    }
     return $response
       ->withHeader('Content-Type', 'application/json');
   }
@@ -1877,6 +1881,24 @@ class RestApi
            " ORDER BY E.id DESC LIMIT 10 ";
     $item['executions'] = (array)$this->db->get_recordset($sql);
 
+    // evidence attached to those executions
+    if (count($item['executions']) > 0) {
+      $execIDSet = implode(',', array_map(function ($e) {
+        return intval($e['id']);
+      }, $item['executions']));
+      $sql = " SELECT id, fk_id, file_name, file_size FROM {$this->tables['attachments']} " .
+             " WHERE fk_table = 'executions' AND fk_id IN ({$execIDSet}) ";
+      $attachMap = array();
+      foreach ((array)$this->db->get_recordset($sql) as $att) {
+        $attachMap[$att['fk_id']][] = $att;
+      }
+      foreach ($item['executions'] as &$exec) {
+        $exec['attachments'] = isset($attachMap[$exec['id']]) ?
+          $attachMap[$exec['id']] : array();
+      }
+      unset($exec);
+    }
+
     $response->getBody()->write(json_encode(
       array('status' => 'ok', 'item' => $item)));
     return $response;
@@ -1958,7 +1980,9 @@ class RestApi
     $days = isset($qs['days']) ? max(1, min(365, intval($qs['days']))) : 30;
 
     // id is monotonically increasing, so ordering by (tcversion_id, id)
-    // follows idx_exec_tplan_tcv_id and preserves execution order
+    // follows idx_exec_tplan_tcv_id and preserves execution order.
+    // Rows are streamed one at a time — materializing the whole window
+    // as an array blew past memory_limit on large installations.
     $sql = " SELECT E.tcversion_id, E.status, NHTC.name, NHTC.id AS tcase_id " .
            " FROM {$this->tables['executions']} E " .
            " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = E.tcversion_id " .
@@ -1968,7 +1992,8 @@ class RestApi
            " ORDER BY E.tcversion_id, E.id ";
     $flips = array();
     $prev = array();
-    foreach ((array)$this->db->get_recordset($sql) as $row) {
+    $rs = $this->db->exec_query($sql);
+    while ($rs && ($row = $this->db->fetch_array($rs))) {
       $key = $row['tcversion_id'];
       if (!isset($flips[$key])) {
         $flips[$key] = array('tcversion_id' => intval($key),
@@ -2253,6 +2278,122 @@ class RestApi
 
     $response->getBody()->write(json_encode($op));
     return $response;
+  }
+
+  /**
+   * GET /testprojects/{id}/search?q=&limit=
+   * Find test cases by external id (PREFIX-123 or bare number),
+   * name, or summary text.
+   */
+  public function searchTestCases(Request $request, Response $response, $args)
+  {
+    $projectID = intval($args['id']);
+    $qs = $request->getQueryParams();
+    $q = isset($qs['q']) ? trim($qs['q']) : '';
+    $limit = isset($qs['limit']) ? max(1, min(200, intval($qs['limit']))) : 50;
+
+    $op = array('status' => 'ok', 'q' => $q, 'items' => array());
+    if (strlen($q) < 2) {
+      $op['message'] = 'query too short';
+      $response->getBody()->write(json_encode($op));
+      return $response;
+    }
+
+    $safeLike = $this->db->prepare_string($q);
+
+    // PREFIX-123 / 123 -> exact external id hit first
+    $extID = 0;
+    if (preg_match('/(\d+)$/', $q, $m)) {
+      $extID = intval($m[1]);
+    }
+    $extFilter = $extID > 0 ? " OR TCV.tc_external_id = {$extID} " : '';
+
+    // scope to the project's suite subtree (suites can nest)
+    $sql = " WITH RECURSIVE st AS " .
+           " (SELECT id FROM {$this->tables['nodes_hierarchy']} " .
+           "   WHERE parent_id = {$projectID} AND node_type_id = 2 " .
+           "  UNION ALL " .
+           "  SELECT nh.id FROM {$this->tables['nodes_hierarchy']} nh " .
+           "  JOIN st ON nh.parent_id = st.id WHERE nh.node_type_id = 2) " .
+           " SELECT DISTINCT NHTC.id AS tcase_id, NHTC.name, S.name AS suite_name, " .
+           "        MAX(TCV.tc_external_id) AS tc_external_id, " .
+           "        (MAX(TCV.tc_external_id) = " . ($extID > 0 ? $extID : -1) . ") AS exact_hit " .
+           " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+           " JOIN st ON NHTC.parent_id = st.id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+           " JOIN {$this->tables['nodes_hierarchy']} S ON S.id = NHTC.parent_id " .
+           " WHERE NHTC.node_type_id = 3 " .
+           " AND (NHTC.name LIKE '%{$safeLike}%' " .
+           "      OR TCV.summary LIKE '%{$safeLike}%' {$extFilter}) " .
+           " GROUP BY NHTC.id, NHTC.name, S.name " .
+           " ORDER BY exact_hit DESC, NHTC.name LIMIT {$limit} ";
+    $op['items'] = (array)$this->db->get_recordset($sql);
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * POST /executions/{id}/attachments  (multipart, field 'file')
+   * Attach evidence (screenshot, log, ...) to an execution.
+   */
+  public function uploadExecutionAttachment(Request $request, Response $response, $args)
+  {
+    $execID = intval($args['id']);
+    $op = array('status' => 'error', 'message' => 'no file received');
+
+    if ($execID > 0 && isset($_FILES['file'])) {
+      $repo = tlAttachmentRepository::create($this->db);
+      $title = isset($_POST['title']) ? $_POST['title'] : $_FILES['file']['name'];
+      $upOp = $repo->insertAttachment($execID, 'executions', $title, $_FILES['file']);
+      if ($upOp->statusOK) {
+        $op = array('status' => 'ok', 'message' => 'ok');
+      } else {
+        $op['message'] = 'upload rejected: ' . $upOp->statusCode;
+      }
+    }
+
+    if ($op['status'] != 'ok') {
+      $response = $response->withStatus(400);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /executions/{id}/attachments
+   */
+  public function getExecutionAttachments(Request $request, Response $response, $args)
+  {
+    $execID = intval($args['id']);
+    $repo = tlAttachmentRepository::create($this->db);
+    $items = (array)$repo->getAttachmentInfosFor($execID, 'executions');
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'items' => array_values($items))));
+    return $response;
+  }
+
+  /**
+   * GET /attachments/{id}
+   * Streams the attachment binary with its stored content type.
+   */
+  public function downloadAttachment(Request $request, Response $response, $args)
+  {
+    $attachID = intval($args['id']);
+    $repo = tlAttachmentRepository::create($this->db);
+    $info = $repo->getAttachmentInfo($attachID);
+    if (is_null($info)) {
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => 'attachment not found')));
+      return $response->withStatus(404);
+    }
+    $content = $repo->getAttachmentContent($attachID, $info);
+    $response->getBody()->write((string)$content);
+    return $response
+      ->withHeader('Content-Type', $info['file_type'])
+      ->withHeader('Content-Disposition',
+        'inline; filename="' . addslashes($info['file_name']) . '"');
   }
 
   /**

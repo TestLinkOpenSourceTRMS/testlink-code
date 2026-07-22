@@ -17,6 +17,8 @@ export function PlansPage() {
   const qc = useQueryClient()
   const [newPlan, setNewPlan] = useState('')
   const [newBuild, setNewBuild] = useState('')
+  const [newProjectName, setNewProjectName] = useState('')
+  const [newProjectPrefix, setNewProjectPrefix] = useState('')
 
   const builds = useQuery({
     queryKey: ['builds', plan?.id],
@@ -48,6 +50,22 @@ export function PlansPage() {
       setNewBuild('')
       qc.invalidateQueries({ queryKey: ['builds'] })
     },
+  })
+
+  const createProject = useMutation({
+    mutationFn: () =>
+      api.createProject(newProjectName, newProjectPrefix.toUpperCase()),
+    onSuccess: () => {
+      setNewProjectName('')
+      setNewProjectPrefix('')
+      qc.invalidateQueries({ queryKey: ['projects'] })
+    },
+  })
+
+  const toggleBuild = useMutation({
+    mutationFn: (input: { id: string; is_open: number }) =>
+      api.updateBuild(input.id, { is_open: input.is_open }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['builds'] }),
   })
 
   return (
@@ -110,6 +128,20 @@ export function PlansPage() {
                     {Number(b.active) ? t('activeLabel') : t('inactiveLabel')} ·{' '}
                     {Number(b.is_open) ? t('openLabel') : t('closedLabel')}
                   </td>
+                  <td className="py-1.5 pl-2 text-right">
+                    <Button
+                      kind="ghost"
+                      disabled={toggleBuild.isPending}
+                      onClick={() =>
+                        toggleBuild.mutate({
+                          id: b.id,
+                          is_open: Number(b.is_open) === 1 ? 0 : 1,
+                        })
+                      }
+                    >
+                      {Number(b.is_open) === 1 ? t('buildClose') : t('buildReopen')}
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -132,6 +164,38 @@ export function PlansPage() {
             disabled={!newBuild.trim() || createBuild.isPending || !plan}
           >
             {t('createBuild')}
+          </Button>
+        </form>
+      </Panel>
+
+      <Panel title={t('newProjectTitle')}>
+        <form
+          className="flex gap-2"
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (newProjectName.trim() && newProjectPrefix.trim())
+              createProject.mutate()
+          }}
+        >
+          <TextInput
+            placeholder={t('projectNamePlaceholder')}
+            value={newProjectName}
+            onChange={(e) => setNewProjectName(e.target.value)}
+          />
+          <TextInput
+            placeholder={t('projectPrefixPlaceholder')}
+            value={newProjectPrefix}
+            onChange={(e) => setNewProjectPrefix(e.target.value)}
+          />
+          <Button
+            type="submit"
+            disabled={
+              !newProjectName.trim() ||
+              !newProjectPrefix.trim() ||
+              createProject.isPending
+            }
+          >
+            {t('createProject')}
           </Button>
         </form>
       </Panel>

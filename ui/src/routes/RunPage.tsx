@@ -30,6 +30,8 @@ export function RunPage() {
   const [notes, setNotes] = useState('')
   const [savedFlash, setSavedFlash] = useState('')
   const [assignedTo, setAssignedTo] = useState('')
+  const [evidence, setEvidence] = useState<File | null>(null)
+  const [evidenceInputKey, setEvidenceInputKey] = useState(0)
 
   const builds = useQuery({
     queryKey: ['builds', plan?.id],
@@ -64,12 +66,20 @@ export function RunPage() {
         statusCode: verdict,
         notes,
       }),
-    onSuccess: (_r, verdict) => {
-      setSavedFlash(`${active!.name} → ${verdictLabels[verdict]}`)
+    onSuccess: (r, verdict) => {
+      const label = `${active!.name} → ${verdictLabels[verdict]}`
+      setSavedFlash(label)
       setNotes('')
       setActive(null)
       qc.invalidateQueries({ queryKey: ['queue'] })
       qc.invalidateQueries({ queryKey: ['summary'] })
+      if (evidence && r.id > 0) {
+        api.uploadAttachment(r.id, evidence).then(() => {
+          setSavedFlash(`${label} · ${t('evidenceUploaded')}`)
+        })
+      }
+      setEvidence(null)
+      setEvidenceInputKey((k) => k + 1)
       setTimeout(() => setSavedFlash(''), 2500)
     },
   })
@@ -212,6 +222,14 @@ export function RunPage() {
                 placeholder={t('notesPlaceholder')}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
+              />
+              <label className="text-mute text-xs">{t('attachEvidence')}</label>
+              <input
+                key={evidenceInputKey}
+                type="file"
+                accept=".png,.jpg,.gif,.doc,.xls,.xlsx,.csv"
+                onChange={(e) => setEvidence(e.target.files?.[0] ?? null)}
+                className="text-[13px]"
               />
               <div className="grid grid-cols-3 gap-2">
                 {(['p', 'f', 'b'] as Verdict[]).map((v) => (

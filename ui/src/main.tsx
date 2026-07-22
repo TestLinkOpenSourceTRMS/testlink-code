@@ -57,7 +57,11 @@ const specRoute = createRoute({
   path: '/spec',
   component: SpecPage,
   validateSearch: (search: Record<string, unknown>) => ({
-    caseId: typeof search.caseId === 'string' ? search.caseId : undefined,
+    // accept both "20117" (router-serialized) and bare 3 (hand-written)
+    caseId:
+      search.caseId != null && search.caseId !== ''
+        ? String(search.caseId)
+        : undefined,
   }),
 })
 

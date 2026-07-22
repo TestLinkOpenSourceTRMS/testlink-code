@@ -7226,6 +7226,16 @@ class testplan extends tlObjectWithAttachments
     $this->db->exec_query($sql);
     $execID = $this->db->insert_id($this->tables['executions']);
 
+    webhook_notify('execution.created',
+      array('executionID' => $execID,
+            'testPlanID' => $ex->testPlanID,
+            'buildID' => $ex->buildID,
+            'platformID' => $ex->platformID,
+            'testCaseVersionID' => $ex->testCaseVersionID,
+            'status' => $ex->statusCode,
+            'testerID' => $ex->testerID,
+            'source' => 'api'));
+
     // Do we have steps exec info?
     if (property_exists($ex,'steps')) {
        // steps [] of stepExec

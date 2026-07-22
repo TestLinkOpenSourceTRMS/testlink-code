@@ -58,14 +58,34 @@ if (!isset($_GET['code'])) {
       $urlOpt = [];
     break;
 
+    case 'oidc':
+      $clientType = 'testLink';
+      $_SESSION['oauth2state'] = $oauth2Name . '$$$' .
+                                 bin2hex(random_bytes(32));
+
+      // resolve endpoints from .well-known discovery when configured
+      require_once('oidc.php');
+      $cfg = oidc_resolve_endpoints($cfg);
+
+      $oap = [];
+      $oap['state'] = $_SESSION['oauth2state'];
+      $oap['redirect_uri'] = $cfg['redirect_uri'];
+      $oap['client_id'] = $cfg['oauth_client_id'];
+      $oap['scope'] = isset($cfg['oauth_scope']) ?
+                      $cfg['oauth_scope'] : 'openid profile email';
+      $oap['response_type'] = 'code';
+
+      $authUrl = $cfg['oauth_url'] . '?' . http_build_query($oap);
+    break;
+
     case 'microsoft':
     case 'azuread';
       $clientType = 'testLink';
-      $_SESSION['oauth2state'] = $oauth2Name . '$$$' . 
+      $_SESSION['oauth2state'] = $oauth2Name . '$$$' .
                                  bin2hex(random_bytes(32));
 
       // see https://docs.microsoft.com/en-us/azure/
-      //             active-directory/develop/v1-protocols-oauth-code 
+      //             active-directory/develop/v1-protocols-oauth-code
       // for details
       $oap = [];
       $oap['state'] = $_SESSION['oauth2state'];
@@ -76,11 +96,11 @@ if (!isset($_GET['code'])) {
       $oap['response_type'] = 'code';
 
       if ($oauth2Name == 'azuread') {
-        if (!is_null($oauthCfg['oauth_domain'])) {
-          $oap['domain_hint'] = $oauthCfg['oauth_domain'];
+        if (!is_null($cfg['oauth_domain'])) {
+          $oap['domain_hint'] = $cfg['oauth_domain'];
         }
       } else {
-        if ($oauthCfg['oauth_force_single']) {
+        if ($cfg['oauth_force_single']) {
           $oap['prompt'] = 'consent';
         }
       }

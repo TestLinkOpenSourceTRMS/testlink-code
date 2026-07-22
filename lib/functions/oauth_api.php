@@ -27,6 +27,7 @@ function oauth_link($oauthCfg)
     case 'github':
     case 'google':
     case 'microsoft':
+    case 'oidc':
       // @20200523 it seems that with relative can work 
       $url = 'lib/functions/oauth_providers/OAuth2Call.php?oauth2='
              . trim($oauthCfg['oauth_name']);

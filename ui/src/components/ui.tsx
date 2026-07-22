@@ -1,11 +1,16 @@
 import type { ReactNode } from 'react'
 import type { Verdict } from '../lib/api'
+import { useT } from '../lib/i18n'
 
-export const VERDICT_LABEL: Record<Verdict, string> = {
-  p: 'Passed',
-  f: 'Failed',
-  b: 'Blocked',
-  n: 'Not run',
+/** localized verdict labels — keys stay 'p' | 'f' | 'b' | 'n' */
+export function useVerdictLabels(): Record<Verdict, string> {
+  const { t } = useT()
+  return {
+    p: t('verdictPassed'),
+    f: t('verdictFailed'),
+    b: t('verdictBlocked'),
+    n: t('verdictNotRun'),
+  }
 }
 
 export const VERDICT_COLOR: Record<Verdict, string> = {
@@ -21,13 +26,14 @@ export function normVerdict(s: string | null | undefined): Verdict {
 
 /** small colored dot + label */
 export function VerdictBadge({ verdict }: { verdict: Verdict }) {
+  const labels = useVerdictLabels()
   return (
     <span className="inline-flex items-center gap-1.5 text-xs font-medium">
       <span
         className="size-2 rounded-full"
         style={{ background: VERDICT_COLOR[verdict] }}
       />
-      {VERDICT_LABEL[verdict]}
+      {labels[verdict]}
     </span>
   )
 }
@@ -107,10 +113,11 @@ export function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
 }
 
 export function Spinner() {
+  const { t } = useT()
   return (
     <div className="text-mute flex items-center gap-2 p-6 text-sm">
       <div className="border-line size-4 animate-spin rounded-full border-2 border-t-[var(--color-accent)]" />
-      Loading…
+      {t('loading')}
     </div>
   )
 }

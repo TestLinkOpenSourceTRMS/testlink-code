@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { api, type QueueItem, type Verdict } from '../lib/api'
+import { useT } from '../lib/i18n'
 import { useWorkspace } from '../lib/workspace'
 import {
   Button,
@@ -10,9 +11,9 @@ import {
   Panel,
   Spinner,
   VERDICT_COLOR,
-  VERDICT_LABEL,
   VerdictBadge,
   normVerdict,
+  useVerdictLabels,
 } from '../components/ui'
 
 const PAGE_SIZE = 100
@@ -20,12 +21,15 @@ const PAGE_SIZE = 100
 export function RunPage() {
   const { project, plan } = useWorkspace()
   const navigate = useNavigate()
+  const { t } = useT()
+  const verdictLabels = useVerdictLabels()
   const qc = useQueryClient()
   const [buildId, setBuildId] = useState('')
   const [page, setPage] = useState(1)
   const [active, setActive] = useState<QueueItem | null>(null)
   const [notes, setNotes] = useState('')
   const [savedFlash, setSavedFlash] = useState('')
+  const [assignedTo, setAssignedTo] = useState('')
 
   const builds = useQuery({
     queryKey: ['builds', plan?.id],
@@ -34,10 +38,21 @@ export function RunPage() {
   })
   const build = builds.data?.find((b) => b.id === buildId) ?? builds.data?.[0]
 
+  const users = useQuery({ queryKey: ['users'], queryFn: api.users })
+
   const queue = useQuery({
-    queryKey: ['queue', plan?.id, build?.id, page],
-    queryFn: () => api.planQueue(plan!.id, build!.id, page, PAGE_SIZE),
+    queryKey: ['queue', plan?.id, build?.id, page, assignedTo],
+    queryFn: () =>
+      api.planQueue(plan!.id, build!.id, page, PAGE_SIZE, assignedTo),
     enabled: plan != null && build != null,
+  })
+
+  const assign = useMutation({
+    mutationFn: (userID: number) =>
+      api.assignCases(plan!.id, Number(build!.id), [
+        { tcaseID: Number(active!.tcase_id), userID },
+      ]),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['queue'] }),
   })
 
   const record = useMutation({
@@ -50,7 +65,7 @@ export function RunPage() {
         notes,
       }),
     onSuccess: (_r, verdict) => {
-      setSavedFlash(`${active!.name} → ${VERDICT_LABEL[verdict]}`)
+      setSavedFlash(`${active!.name} → ${verdictLabels[verdict]}`)
       setNotes('')
       setActive(null)
       qc.invalidateQueries({ queryKey: ['queue'] })
@@ -69,8 +84,10 @@ export function RunPage() {
       {/* work queue */}
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="font-display text-lg font-bold tracking-tight">Run</h1>
-          <label className="text-mute ml-2 text-xs">Build</label>
+          <h1 className="font-display text-lg font-bold tracking-tight">
+            {t('navRun')}
+          </h1>
+          <label className="text-mute ml-2 text-xs">{t('build')}</label>
           <select
             className="border-line rounded-md border bg-transparent px-2 py-1.5 text-[13px]"
             value={build?.id ?? ''}
@@ -85,8 +102,25 @@ export function RunPage() {
               </option>
             ))}
           </select>
+          <label className="text-mute ml-2 text-xs">{t('assignedTo')}</label>
+          <select
+            className="border-line rounded-md border bg-transparent px-2 py-1.5 text-[13px]"
+            value={assignedTo}
+            onChange={(e) => {
+              setAssignedTo(e.target.value)
+              setPage(1)
+            }}
+          >
+            <option value="">{t('everyone')}</option>
+            <option value="none">{t('unassigned')}</option>
+            {users.data?.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.login}
+              </option>
+            ))}
+          </select>
           <span className="text-mute ml-auto font-mono text-xs">
-            {total.toLocaleString()} cases · page {page}/{pages}
+            {t('casesPageInfo')(total.toLocaleString(), page, pages)}
           </span>
           <Button kind="ghost" onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1}>
             ‹
@@ -98,7 +132,7 @@ export function RunPage() {
 
         {savedFlash && (
           <div className="bg-accent-soft text-accent rounded-md px-3 py-2 text-[13px]">
-            Saved: {savedFlash}
+            {t('saved')}: {savedFlash}
           </div>
         )}
 
@@ -106,7 +140,7 @@ export function RunPage() {
           {queue.isPending ? (
             <Spinner />
           ) : (queue.data?.items.length ?? 0) === 0 ? (
-            <EmptyState>No test cases linked to this plan.</EmptyState>
+            <EmptyState>{t('noLinkedCases')}</EmptyState>
           ) : (
             queue.data!.items.map((item) => {
               const v = normVerdict(item.exec_status)
@@ -122,6 +156,11 @@ export function RunPage() {
                 >
                   <CaseId prefix={project?.prefix ?? ''} ext={item.tc_external_id} />
                   <span className="truncate">{item.name}</span>
+                  {item.assigned_login && (
+                    <span className="bg-accent-soft text-accent ml-1 shrink-0 rounded-full px-2 py-0.5 text-[11px]">
+                      {item.assigned_login.split('@')[0]}
+                    </span>
+                  )}
                   <span className="ml-auto shrink-0">
                     <VerdictBadge verdict={v} />
                   </span>
@@ -134,11 +173,9 @@ export function RunPage() {
 
       {/* verdict recorder */}
       <div className="w-80 shrink-0">
-        <Panel title="Record result">
+        <Panel title={t('recordResult')}>
           {active == null ? (
-            <EmptyState>
-              Pick a case from the queue, decide, record.
-            </EmptyState>
+            <EmptyState>{t('pickFromQueue')}</EmptyState>
           ) : (
             <div className="flex flex-col gap-3">
               <div>
@@ -153,12 +190,26 @@ export function RunPage() {
                     })
                   }
                 >
-                  View steps & history →
+                  {t('viewStepsHistory')}
                 </button>
               </div>
+              <label className="text-mute text-xs">{t('assignTo')}</label>
+              <select
+                className="border-line rounded-md border bg-transparent px-2 py-1.5 text-[13px]"
+                value={active.assigned_to ?? ''}
+                onChange={(e) => assign.mutate(Number(e.target.value) || 0)}
+                disabled={assign.isPending}
+              >
+                <option value="">{t('unassigned')}</option>
+                {users.data?.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.login}
+                  </option>
+                ))}
+              </select>
               <textarea
                 className="border-line min-h-24 w-full rounded-md border p-2 text-[13px] focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]"
-                placeholder="Notes for this run (optional)"
+                placeholder={t('notesPlaceholder')}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
@@ -171,13 +222,13 @@ export function RunPage() {
                     className="rounded-md py-2 text-[13px] font-semibold text-white transition-[filter] hover:brightness-110 disabled:opacity-40"
                     style={{ background: VERDICT_COLOR[v] }}
                   >
-                    {VERDICT_LABEL[v]}
+                    {verdictLabels[v]}
                   </button>
                 ))}
               </div>
               {record.isError && (
                 <div className="text-[13px] text-[var(--color-fail)]">
-                  Could not save the result. Try again.
+                  {t('saveResultError')}
                 </div>
               )}
             </div>

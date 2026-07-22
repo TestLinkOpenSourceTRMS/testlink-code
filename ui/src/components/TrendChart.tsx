@@ -1,15 +1,18 @@
 import type { TrendDay } from '../lib/api'
-import { VERDICT_COLOR } from './ui'
+import { useT } from '../lib/i18n'
+import { VERDICT_COLOR, useVerdictLabels } from './ui'
 
 /**
  * Daily stacked verdict bars, inline SVG.
  * Height maps to executions; each bar splits pass/fail/blocked.
  */
 export function TrendChart({ days }: { days: TrendDay[] }) {
+  const { t } = useT()
+  const verdictLabels = useVerdictLabels()
   if (days.length === 0) {
     return (
       <div className="text-mute py-10 text-center text-sm">
-        No executions recorded yet.
+        {t('noExecutionsYet')}
       </div>
     )
   }
@@ -28,7 +31,7 @@ export function TrendChart({ days }: { days: TrendDay[] }) {
       viewBox={`0 0 ${W} ${H}`}
       className="w-full"
       role="img"
-      aria-label="Daily executions by verdict"
+      aria-label={t('trendAriaLabel')}
     >
       {[0, 0.5, 1].map((f) => {
         const y = 8 + plotH - plotH * f
@@ -75,7 +78,7 @@ export function TrendChart({ days }: { days: TrendDay[] }) {
                     rx={1.5}
                     fill={VERDICT_COLOR[s.k]}
                   >
-                    <title>{`${d.day} ${s.k}: ${d[s.k]}`}</title>
+                    <title>{`${d.day} ${verdictLabels[s.k]}: ${d[s.k]}`}</title>
                   </rect>
                 ),
             )}

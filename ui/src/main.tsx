@@ -12,6 +12,7 @@ import {
 } from '@tanstack/react-router'
 import './index.css'
 import { getSession } from './lib/api'
+import { I18nProvider } from './lib/i18n'
 import { WorkspaceProvider } from './lib/workspace'
 import { Shell } from './components/Shell'
 import { LoginPage } from './routes/LoginPage'
@@ -115,8 +116,10 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <I18nProvider>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </I18nProvider>
   </StrictMode>,
 )

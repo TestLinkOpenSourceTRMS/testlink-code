@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { api, setSession } from '../lib/api'
+import { useT } from '../lib/i18n'
 import { Button, TextInput } from '../components/ui'
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const { t } = useT()
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -19,7 +21,7 @@ export function LoginPage() {
       setSession({ apikey: r.apikey, user: r.user })
       navigate({ to: '/' })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sign-in failed')
+      setError(err instanceof Error ? err.message : t('signInFailed'))
     } finally {
       setBusy(false)
     }
@@ -33,19 +35,19 @@ export function LoginPage() {
             Test<span className="text-[var(--color-blocked)]">Link</span>
           </div>
           <p className="text-mute mt-1 text-sm">
-            Plan, run and read your testing.
+            {t('loginTagline')}
           </p>
         </div>
         <form onSubmit={submit} className="flex flex-col gap-3">
           <TextInput
-            placeholder="Login"
+            placeholder={t('loginPlaceholder')}
             value={login}
             onChange={(e) => setLogin(e.target.value)}
             autoFocus
             autoComplete="username"
           />
           <TextInput
-            placeholder="Password"
+            placeholder={t('passwordPlaceholder')}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -55,7 +57,7 @@ export function LoginPage() {
             <div className="text-[13px] text-[var(--color-fail)]">{error}</div>
           )}
           <Button type="submit" disabled={busy || !login || !password}>
-            {busy ? 'Signing in…' : 'Sign in'}
+            {busy ? t('signingIn') : t('signIn')}
           </Button>
         </form>
       </div>

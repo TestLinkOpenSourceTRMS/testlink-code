@@ -9,20 +9,27 @@ import {
   PlayCircle,
 } from 'lucide-react'
 import { getSession, setSession } from '../lib/api'
+import {
+  LOCALE_OPTIONS,
+  useT,
+  type Locale,
+  type StringMsgKey,
+} from '../lib/i18n'
 import { useWorkspace } from '../lib/workspace'
 
-const NAV = [
-  { to: '/', label: 'Dashboard', icon: Gauge },
-  { to: '/spec', label: 'Test cases', icon: FolderTree },
-  { to: '/run', label: 'Run', icon: PlayCircle },
-  { to: '/matrix', label: 'Matrix', icon: Grid3X3 },
-  { to: '/plans', label: 'Plans', icon: ClipboardList },
-  { to: '/reports', label: 'Reports', icon: LineChart },
+const NAV: { to: string; labelKey: StringMsgKey; icon: typeof Gauge }[] = [
+  { to: '/', labelKey: 'navDashboard', icon: Gauge },
+  { to: '/spec', labelKey: 'navTestCases', icon: FolderTree },
+  { to: '/run', labelKey: 'navRun', icon: PlayCircle },
+  { to: '/matrix', labelKey: 'navMatrix', icon: Grid3X3 },
+  { to: '/plans', labelKey: 'navPlans', icon: ClipboardList },
+  { to: '/reports', labelKey: 'navReports', icon: LineChart },
 ]
 
 export function Shell() {
   const navigate = useNavigate()
   const session = getSession()
+  const { t, locale, setLocale } = useT()
   const { projects, plans, project, plan, selectProject, selectPlan } =
     useWorkspace()
 
@@ -39,7 +46,7 @@ export function Shell() {
           </div>
         </div>
         <nav className="flex flex-col gap-0.5 px-2">
-          {NAV.map(({ to, label, icon: Icon }) => (
+          {NAV.map(({ to, labelKey, icon: Icon }) => (
             <Link
               key={to}
               to={to}
@@ -47,7 +54,7 @@ export function Shell() {
               activeOptions={{ exact: to === '/' }}
             >
               <Icon className="size-4" strokeWidth={1.8} />
-              {label}
+              {t(labelKey)}
             </Link>
           ))}
         </nav>
@@ -55,6 +62,18 @@ export function Shell() {
           <div className="mb-2 truncate">
             {session?.user.firstName} {session?.user.lastName}
           </div>
+          <select
+            aria-label={t('language')}
+            className="mb-3 w-full rounded-md border border-white/20 bg-transparent px-1.5 py-1 text-xs text-white/70 focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]"
+            value={locale}
+            onChange={(e) => setLocale(e.target.value as Locale)}
+          >
+            {LOCALE_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value} className="text-black">
+                {o.label}
+              </option>
+            ))}
+          </select>
           <button
             className="flex items-center gap-1.5 text-white/60 transition-colors hover:text-white"
             onClick={() => {
@@ -62,7 +81,7 @@ export function Shell() {
               navigate({ to: '/login' })
             }}
           >
-            <LogOut className="size-3.5" /> Sign out
+            <LogOut className="size-3.5" /> {t('signOut')}
           </button>
         </div>
       </aside>
@@ -70,7 +89,7 @@ export function Shell() {
       {/* content column */}
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="border-line bg-panel flex items-center gap-3 border-b px-5 py-2.5">
-          <label className="text-mute text-xs">Project</label>
+          <label className="text-mute text-xs">{t('project')}</label>
           <select
             className="border-line rounded-md border bg-transparent px-2 py-1.5 text-[13px] focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]"
             value={project?.id ?? ''}
@@ -82,7 +101,7 @@ export function Shell() {
               </option>
             ))}
           </select>
-          <label className="text-mute ml-2 text-xs">Test plan</label>
+          <label className="text-mute ml-2 text-xs">{t('testPlan')}</label>
           <select
             className="border-line rounded-md border bg-transparent px-2 py-1.5 text-[13px] focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]"
             value={plan?.id ?? ''}

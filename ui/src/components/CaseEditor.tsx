@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, Trash2 } from 'lucide-react'
 import { api, type CaseDetail } from '../lib/api'
+import { useT } from '../lib/i18n'
 import { Button, Panel, TextInput } from './ui'
 
 interface EditableStep {
@@ -19,6 +20,7 @@ export function CaseEditor({
   onDone: () => void
 }) {
   const qc = useQueryClient()
+  const { t } = useT()
   const [name, setName] = useState(detail.name)
   const [summary, setSummary] = useState(detail.summary)
   const [preconditions, setPreconditions] = useState(detail.preconditions)
@@ -58,38 +60,38 @@ export function CaseEditor({
           className="font-display text-lg font-bold"
         />
         <Button onClick={() => save.mutate()} disabled={save.isPending || !name.trim()}>
-          {save.isPending ? 'Saving…' : 'Save changes'}
+          {save.isPending ? t('saving') : t('saveChanges')}
         </Button>
         <Button kind="ghost" onClick={onDone}>
-          Cancel
+          {t('cancel')}
         </Button>
       </div>
       {save.isError && (
         <div className="text-[13px] text-[var(--color-fail)]">
-          Could not save. Try again.
+          {t('saveError')}
         </div>
       )}
 
-      <Panel title="Summary">
+      <Panel title={t('summary')}>
         <textarea
           className="border-line min-h-20 w-full rounded-md border p-2 text-[13px] focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]"
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
-          placeholder="What this case verifies"
+          placeholder={t('summaryPlaceholder')}
         />
       </Panel>
 
-      <Panel title="Preconditions">
+      <Panel title={t('preconditions')}>
         <textarea
           className="border-line min-h-16 w-full rounded-md border p-2 text-[13px] focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]"
           value={preconditions}
           onChange={(e) => setPreconditions(e.target.value)}
-          placeholder="State required before running"
+          placeholder={t('preconditionsPlaceholder')}
         />
       </Panel>
 
       <Panel
-        title={`Steps · ${steps.length}`}
+        title={t('stepsCount')(steps.length)}
         actions={
           <button
             className="text-accent inline-flex items-center gap-1 text-xs hover:underline"
@@ -97,13 +99,13 @@ export function CaseEditor({
               setSteps([...steps, { actions: '', expected_results: '' }])
             }
           >
-            <Plus className="size-3.5" /> Add step
+            <Plus className="size-3.5" /> {t('addStep')}
           </button>
         }
       >
         {steps.length === 0 ? (
           <div className="text-mute py-4 text-center text-sm">
-            No steps — add the first one.
+            {t('noStepsAddFirst')}
           </div>
         ) : (
           <ol className="flex flex-col gap-2">
@@ -117,13 +119,13 @@ export function CaseEditor({
                 </div>
                 <textarea
                   className="border-line min-h-16 rounded-md border p-2 text-[13px]"
-                  placeholder="Action"
+                  placeholder={t('actionPlaceholder')}
                   value={s.actions}
                   onChange={(e) => setStep(i, { actions: e.target.value })}
                 />
                 <textarea
                   className="border-line min-h-16 rounded-md border p-2 text-[13px]"
-                  placeholder="Expected result"
+                  placeholder={t('expectedResultPlaceholder')}
                   value={s.expected_results}
                   onChange={(e) =>
                     setStep(i, { expected_results: e.target.value })
@@ -131,7 +133,7 @@ export function CaseEditor({
                 />
                 <button
                   className="text-mute hover:text-[var(--color-fail)]"
-                  title="Remove step"
+                  title={t('removeStep')}
                   onClick={() => setSteps(steps.filter((_, idx) => idx !== i))}
                 >
                   <Trash2 className="size-4" />

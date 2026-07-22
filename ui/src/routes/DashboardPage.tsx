@@ -1,18 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { api, type Verdict } from '../lib/api'
+import { useT } from '../lib/i18n'
 import { useWorkspace } from '../lib/workspace'
 import {
   Panel,
   Spinner,
   VERDICT_COLOR,
-  VERDICT_LABEL,
+  useVerdictLabels,
 } from '../components/ui'
 import { TrendChart } from '../components/TrendChart'
 
 export function DashboardPage() {
   const { project, plan } = useWorkspace()
   const navigate = useNavigate()
+  const { t } = useT()
+  const verdictLabels = useVerdictLabels()
 
   const summary = useQuery({
     queryKey: ['summary', plan?.id],
@@ -44,8 +47,9 @@ export function DashboardPage() {
           {project?.name} · {plan.name}
         </h1>
         <p className="text-mute mt-0.5 text-sm">
-          {linked.toLocaleString()} linked test cases · pass rate{' '}
-          <span className="font-mono">{passRate}%</span> of latest runs
+          {t('linkedCasesCount')(linked.toLocaleString())} · {t('passRateLabel')}{' '}
+          <span className="font-mono">{passRate}%</span>
+          {t('passRateSuffix') && <> {t('passRateSuffix')}</>}
         </p>
       </div>
 
@@ -59,30 +63,30 @@ export function DashboardPage() {
             <div className="font-mono text-2xl font-medium">
               {(by[k] ?? 0).toLocaleString()}
             </div>
-            <div className="text-mute text-xs">{VERDICT_LABEL[k]}</div>
+            <div className="text-mute text-xs">{verdictLabels[k]}</div>
           </div>
         ))}
       </div>
 
-      <Panel title="Daily executions">
+      <Panel title={t('dailyExecutions')}>
         {trend.isPending ? <Spinner /> : <TrendChart days={trend.data ?? []} />}
       </Panel>
 
-      <Panel title="Flaky candidates">
+      <Panel title={t('flakyCandidates')}>
         {flaky.isPending ? (
           <Spinner />
         ) : (flaky.data?.items.length ?? 0) === 0 ? (
           <div className="text-mute py-6 text-center text-sm">
-            No pass/fail flapping detected. Steady suite.
+            {t('noFlaky')}
           </div>
         ) : (
           <table className="w-full text-[13px]">
             <thead>
               <tr className="text-mute border-line border-b text-left text-xs">
-                <th className="pb-2 font-medium">Test case</th>
-                <th className="pb-2 text-right font-medium">Status flips</th>
-                <th className="pb-2 text-right font-medium">Runs</th>
-                <th className="pb-2 pl-6 font-medium">Instability</th>
+                <th className="pb-2 font-medium">{t('testCase')}</th>
+                <th className="pb-2 text-right font-medium">{t('statusFlips')}</th>
+                <th className="pb-2 text-right font-medium">{t('runs')}</th>
+                <th className="pb-2 pl-6 font-medium">{t('instability')}</th>
               </tr>
             </thead>
             <tbody>

@@ -2011,12 +2011,30 @@ class RestApi
 
     $buildFilter = $buildID > 0 ? " AND E.build_id = {$buildID} " : '';
 
-    $sql = " SELECT COUNT(*) AS qty FROM {$this->tables['testplan_tcversions']} " .
-           " WHERE testplan_id = {$safeID} ";
+    // assignment join: execution assignments for this build
+    $uaJoin = " LEFT JOIN {$this->tables['user_assignments']} UA " .
+              "   ON UA.type = 1 AND UA.feature_id = T.id " .
+              "   AND UA.build_id = " . ($buildID > 0 ? $buildID : 0) .
+              " LEFT JOIN {$this->tables['users']} U ON U.id = UA.user_id ";
+
+    // optional filter: assignedTo=<userID> | 'none'
+    $assignFilter = '';
+    if (isset($qs['assignedTo']) && $qs['assignedTo'] !== '') {
+      if ($qs['assignedTo'] === 'none') {
+        $assignFilter = ' AND UA.id IS NULL ';
+      } else {
+        $assignFilter = ' AND UA.user_id = ' . intval($qs['assignedTo']);
+      }
+    }
+
+    $sql = " SELECT COUNT(*) AS qty " .
+           " FROM {$this->tables['testplan_tcversions']} T {$uaJoin} " .
+           " WHERE T.testplan_id = {$safeID} {$assignFilter} ";
     $total = intval($this->db->fetchFirstRowSingleColumn($sql, 'qty'));
 
     $sql = " SELECT T.tcversion_id, NHTCV.parent_id AS tcase_id, NHTC.name, " .
            "        TCV.tc_external_id, TCV.importance, " .
+           "        UA.user_id AS assigned_to, U.login AS assigned_login, " .
            "        (SELECT E.status FROM {$this->tables['executions']} E " .
            "          WHERE E.tcversion_id = T.tcversion_id " .
            "            AND E.testplan_id = T.testplan_id {$buildFilter} " .
@@ -2025,7 +2043,8 @@ class RestApi
            " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = T.tcversion_id " .
            " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
            " JOIN {$this->tables['tcversions']} TCV ON TCV.id = T.tcversion_id " .
-           " WHERE T.testplan_id = {$safeID} " .
+           $uaJoin .
+           " WHERE T.testplan_id = {$safeID} {$assignFilter} " .
            " ORDER BY NHTC.name LIMIT {$limit} OFFSET {$offset} ";
     $items = (array)$this->db->get_recordset($sql);
 
@@ -2233,6 +2252,154 @@ class RestApi
     }
 
     $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /users
+   * Active users, for assignment pickers.
+   */
+  public function getUsers(Request $request, Response $response, $args)
+  {
+    $sql = " SELECT id, login, first, last FROM {$this->tables['users']} " .
+           " WHERE active = 1 ORDER BY login ";
+    $items = (array)$this->db->get_recordset($sql);
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'items' => $items)));
+    return $response;
+  }
+
+  /**
+   * POST /testplans/{id}/assign  {buildID, items: [{tcaseID, userID}]}
+   * Assign execution of test cases (on one build) to users.
+   * userID 0 removes the assignment. Existing assignment for the
+   * same (case, build) is replaced.
+   */
+  public function assignPlanCases(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $op = array('status' => 'ok', 'message' => 'ok',
+                'assigned' => 0, 'removed' => 0, 'skipped' => 0);
+
+    try {
+      $item = json_decode($request->getBody());
+      if (null == $item || !isset($item->buildID) ||
+          !isset($item->items) || !is_array($item->items)) {
+        throw new Exception('Body must carry buildID and items array');
+      }
+      $buildID = intval($item->buildID);
+
+      foreach ($item->items as $one) {
+        $tcaseID = intval($one->tcaseID ?? 0);
+        $userID = intval($one->userID ?? 0);
+
+        // linked feature id = testplan_tcversions row of the case's
+        // latest linked version
+        $sql = " SELECT T.id FROM {$this->tables['testplan_tcversions']} T " .
+               " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = T.tcversion_id " .
+               " WHERE T.testplan_id = {$safeID} AND NHTCV.parent_id = {$tcaseID} " .
+               " ORDER BY T.tcversion_id DESC LIMIT 1 ";
+        $featureID = intval($this->db->fetchFirstRowSingleColumn($sql, 'id'));
+        if ($featureID <= 0) {
+          $op['skipped']++;
+          continue;
+        }
+
+        $sql = " DELETE FROM {$this->tables['user_assignments']} " .
+               " WHERE type = 1 AND feature_id = {$featureID} " .
+               " AND build_id = {$buildID} ";
+        $this->db->exec_query($sql);
+
+        if ($userID > 0) {
+          $sql = " INSERT INTO {$this->tables['user_assignments']} " .
+                 " (type, feature_id, user_id, build_id, assigner_id, creation_ts, status) " .
+                 " VALUES (1, {$featureID}, {$userID}, {$buildID}, " .
+                 intval($this->userID) . ", " . $this->db->db_now() . ", 1)";
+          $this->db->exec_query($sql);
+          $op['assigned']++;
+        } else {
+          $op['removed']++;
+        }
+      }
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/byTester
+   * Execution counts by tester (optionally ?buildID=), latest
+   * execution per (version, build) only — re-runs don't double count.
+   */
+  public function getPlanByTester(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $qs = $request->getQueryParams();
+    $buildID = isset($qs['buildID']) ? intval($qs['buildID']) : 0;
+    $buildFilter = $buildID > 0 ? " AND build_id = {$buildID} " : '';
+
+    $sql = " SELECT U.login, E2.status, COUNT(*) AS qty FROM " .
+           " (SELECT MAX(id) AS mid FROM {$this->tables['executions']} " .
+           "   WHERE testplan_id = {$safeID} {$buildFilter} " .
+           "   GROUP BY tcversion_id, build_id) M " .
+           " JOIN {$this->tables['executions']} E2 ON E2.id = M.mid " .
+           " JOIN {$this->tables['users']} U ON U.id = E2.tester_id " .
+           " GROUP BY U.login, E2.status ORDER BY U.login ";
+
+    $byTester = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $login = $row['login'];
+      if (!isset($byTester[$login])) {
+        $byTester[$login] = array('login' => $login,
+                                  'p' => 0, 'f' => 0, 'b' => 0, 'other' => 0);
+      }
+      $key = in_array($row['status'], array('p','f','b')) ? $row['status'] : 'other';
+      $byTester[$login][$key] += intval($row['qty']);
+    }
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'items' => array_values($byTester))));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/byBuild
+   * Latest-status totals per build — build quality comparison.
+   */
+  public function getPlanByBuild(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+
+    $sql = " SELECT COUNT(*) AS qty FROM {$this->tables['testplan_tcversions']} " .
+           " WHERE testplan_id = {$safeID} ";
+    $linked = intval($this->db->fetchFirstRowSingleColumn($sql, 'qty'));
+
+    $sql = " SELECT B.id AS build_id, B.name, E2.status, COUNT(*) AS qty FROM " .
+           " (SELECT MAX(id) AS mid FROM {$this->tables['executions']} " .
+           "   WHERE testplan_id = {$safeID} GROUP BY tcversion_id, build_id) M " .
+           " JOIN {$this->tables['executions']} E2 ON E2.id = M.mid " .
+           " JOIN {$this->tables['builds']} B ON B.id = E2.build_id " .
+           " GROUP BY B.id, B.name, E2.status ORDER BY B.id ";
+
+    $byBuild = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $bid = $row['build_id'];
+      if (!isset($byBuild[$bid])) {
+        $byBuild[$bid] = array('build_id' => intval($bid),
+                               'name' => $row['name'], 'linked' => $linked,
+                               'p' => 0, 'f' => 0, 'b' => 0, 'other' => 0);
+      }
+      $key = in_array($row['status'], array('p','f','b')) ? $row['status'] : 'other';
+      $byBuild[$bid][$key] += intval($row['qty']);
+    }
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'items' => array_values($byBuild))));
     return $response;
   }
 

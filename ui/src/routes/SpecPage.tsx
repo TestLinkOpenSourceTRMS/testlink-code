@@ -11,6 +11,7 @@ import {
   Plus,
 } from 'lucide-react'
 import { api, type Suite } from '../lib/api'
+import { useT } from '../lib/i18n'
 import { useWorkspace } from '../lib/workspace'
 import { CaseEditor } from '../components/CaseEditor'
 import {
@@ -54,6 +55,7 @@ function SuiteRow({
   selected: number | null
   onSelect: (id: number) => void
 }) {
+  const { t } = useT()
   const [open, setOpen] = useState(depth === 0)
   const isSelected = selected === node.id
   return (
@@ -72,7 +74,7 @@ function SuiteRow({
               setOpen(!open)
             }}
             className="text-mute p-0.5"
-            aria-label={open ? 'Collapse' : 'Expand'}
+            aria-label={open ? t('collapse') : t('expand')}
           >
             {open ? (
               <ChevronDown className="size-3.5" />
@@ -104,6 +106,7 @@ function SuiteRow({
 
 export function SpecPage() {
   const { project, plan } = useWorkspace()
+  const { t } = useT()
   const qc = useQueryClient()
   const search = useSearch({ strict: false }) as { caseId?: string }
   const [suiteId, setSuiteId] = useState<number | null>(null)
@@ -184,8 +187,8 @@ export function SpecPage() {
       qc.invalidateQueries({ queryKey: ['summary'] })
       setFlash(
         r.linked > 0
-          ? `Linked to ${plan!.name}`
-          : `Already in ${plan!.name}`,
+          ? t('linkedToPlan')(plan!.name)
+          : t('alreadyInPlan')(plan!.name),
       )
       setTimeout(() => setFlash(''), 2500)
     },
@@ -196,13 +199,15 @@ export function SpecPage() {
       {/* suite tree */}
       <div className="bg-panel border-line flex w-72 shrink-0 flex-col overflow-hidden rounded-lg border">
         <div className="border-line flex items-center justify-between border-b px-3 py-2">
-          <span className="text-mute text-xs font-medium uppercase">Suites</span>
+          <span className="text-mute text-xs font-medium uppercase">
+            {t('suites')}
+          </span>
           <button
             className="text-accent inline-flex items-center gap-1 text-xs hover:underline"
             onClick={() => setCreatingSuite(!creatingSuite)}
-            title="New suite (inside the selected suite, or at project root)"
+            title={t('newSuiteTitle')}
           >
-            <FolderPlus className="size-3.5" /> New suite
+            <FolderPlus className="size-3.5" /> {t('newSuite')}
           </button>
         </div>
         {creatingSuite && (
@@ -214,13 +219,13 @@ export function SpecPage() {
             }}
           >
             <TextInput
-              placeholder="Suite name"
+              placeholder={t('suiteNamePlaceholder')}
               value={newSuiteName}
               onChange={(e) => setNewSuiteName(e.target.value)}
               autoFocus
             />
             <Button type="submit" disabled={!newSuiteName.trim() || createSuite.isPending}>
-              Add
+              {t('add')}
             </Button>
           </form>
         )}
@@ -256,7 +261,7 @@ export function SpecPage() {
             }}
           >
             <TextInput
-              placeholder="New test case name"
+              placeholder={t('newCaseNamePlaceholder')}
               value={newCaseName}
               onChange={(e) => setNewCaseName(e.target.value)}
             />
@@ -270,13 +275,11 @@ export function SpecPage() {
         )}
         <div className="flex-1 overflow-auto">
           {suiteId == null ? (
-            <EmptyState>Pick a suite to see its test cases.</EmptyState>
+            <EmptyState>{t('pickSuite')}</EmptyState>
           ) : cases.isPending ? (
             <Spinner />
           ) : (cases.data?.length ?? 0) === 0 ? (
-            <EmptyState>
-              This suite has no test cases yet — write the first one above.
-            </EmptyState>
+            <EmptyState>{t('emptySuite')}</EmptyState>
           ) : (
             cases.data!.map((c) => (
               <button
@@ -303,7 +306,7 @@ export function SpecPage() {
       {/* case detail */}
       <div className="min-w-0 flex-1 overflow-auto">
         {caseId == null ? (
-          <EmptyState>Select a test case to read it.</EmptyState>
+          <EmptyState>{t('selectCase')}</EmptyState>
         ) : detail.isPending ? (
           <Spinner />
         ) : detail.data && editing ? (
@@ -332,7 +335,7 @@ export function SpecPage() {
                   )}
                   <Button kind="ghost" onClick={() => setEditing(true)}>
                     <span className="inline-flex items-center gap-1.5">
-                      <Pencil className="size-3.5" /> Edit
+                      <Pencil className="size-3.5" /> {t('edit')}
                     </span>
                   </Button>
                   <Button
@@ -341,7 +344,7 @@ export function SpecPage() {
                     disabled={!plan || linkCase.isPending}
                   >
                     <span className="inline-flex items-center gap-1.5">
-                      <Link2 className="size-3.5" /> Add to {plan?.name}
+                      <Link2 className="size-3.5" /> {t('addToPlan')(plan?.name ?? '')}
                     </span>
                   </Button>
                 </span>
@@ -354,9 +357,9 @@ export function SpecPage() {
               )}
             </div>
 
-            <Panel title={`Steps · ${detail.data.steps.length}`}>
+            <Panel title={t('stepsCount')(detail.data.steps.length)}>
               {detail.data.steps.length === 0 ? (
-                <EmptyState>No steps written for this case yet.</EmptyState>
+                <EmptyState>{t('noStepsWritten')}</EmptyState>
               ) : (
                 <ol className="flex flex-col gap-2">
                   {detail.data.steps.map((s) => (
@@ -381,9 +384,9 @@ export function SpecPage() {
               )}
             </Panel>
 
-            <Panel title="Recent runs">
+            <Panel title={t('recentRuns')}>
               {detail.data.executions.length === 0 ? (
-                <EmptyState>Never executed.</EmptyState>
+                <EmptyState>{t('neverExecuted')}</EmptyState>
               ) : (
                 <table className="w-full text-[13px]">
                   <tbody>

@@ -84,6 +84,15 @@ export interface QueueItem {
   tc_external_id: string
   importance: string
   exec_status: string | null
+  assigned_to: string | null
+  assigned_login: string | null
+}
+
+export interface UserRow {
+  id: string
+  login: string
+  first: string
+  last: string
 }
 
 export interface Project {
@@ -193,10 +202,49 @@ export const api = {
       (r) => r.items,
     ),
 
-  planQueue: (planId: string, buildId: string, page: number, limit = 100) =>
+  planQueue: (
+    planId: string,
+    buildId: string,
+    page: number,
+    limit = 100,
+    assignedTo = '',
+  ) =>
     request<{ items: QueueItem[]; total: number }>(
-      `/testplans/${planId}/queue?buildID=${buildId}&page=${page}&limit=${limit}`,
+      `/testplans/${planId}/queue?buildID=${buildId}&page=${page}&limit=${limit}` +
+        (assignedTo ? `&assignedTo=${assignedTo}` : ''),
     ),
+
+  users: () =>
+    request<{ items: UserRow[] }>('/users').then((r) => r.items),
+
+  assignCases: (
+    planId: string,
+    buildId: number,
+    items: { tcaseID: number; userID: number }[],
+  ) =>
+    request<{ status: string; assigned: number }>(
+      `/testplans/${planId}/assign`,
+      { method: 'POST', body: JSON.stringify({ buildID: buildId, items }) },
+    ),
+
+  planByTester: (planId: string, buildId = '') =>
+    request<{
+      items: { login: string; p: number; f: number; b: number; other: number }[]
+    }>(
+      `/testplans/${planId}/byTester` + (buildId ? `?buildID=${buildId}` : ''),
+    ).then((r) => r.items),
+
+  planByBuild: (planId: string) =>
+    request<{
+      items: {
+        build_id: number
+        name: string
+        linked: number
+        p: number
+        f: number
+        b: number
+      }[]
+    }>(`/testplans/${planId}/byBuild`).then((r) => r.items),
 
   planMatrix: (planId: string, page: number, limit = 100, suiteId?: number) =>
     request<{

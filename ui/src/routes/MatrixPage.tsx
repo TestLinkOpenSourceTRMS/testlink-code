@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { X } from 'lucide-react'
 import { api } from '../lib/api'
+import { useT } from '../lib/i18n'
 import { useWorkspace } from '../lib/workspace'
 import {
   Button,
@@ -10,8 +11,8 @@ import {
   EmptyState,
   Spinner,
   VERDICT_COLOR,
-  VERDICT_LABEL,
   normVerdict,
+  useVerdictLabels,
 } from '../components/ui'
 
 const PAGE_SIZE = 100
@@ -24,6 +25,7 @@ function CellBar({
   cell: { p: number; f: number; b: number } | undefined
   linked: number
 }) {
+  const labels = useVerdictLabels()
   const p = cell?.p ?? 0
   const f = cell?.f ?? 0
   const b = cell?.b ?? 0
@@ -43,7 +45,7 @@ function CellBar({
   return (
     <div
       className="flex h-3.5 w-full min-w-24 overflow-hidden rounded"
-      title={`Passed ${p} · Failed ${f} · Blocked ${b} · Not run ${n}`}
+      title={`${labels.p} ${p} · ${labels.f} ${f} · ${labels.b} ${b} · ${labels.n} ${n}`}
     >
       {seg(p, 'p')}
       {seg(f, 'f')}
@@ -56,6 +58,8 @@ function CellBar({
 export function MatrixPage() {
   const { project, plan } = useWorkspace()
   const navigate = useNavigate()
+  const { t } = useT()
+  const verdictLabels = useVerdictLabels()
   const [mode, setMode] = useState<'suite' | 'case'>('suite')
   const [page, setPage] = useState(1)
   const [suiteFilter, setSuiteFilter] = useState<{
@@ -85,7 +89,7 @@ export function MatrixPage() {
     <div className="flex h-full min-h-0 flex-col gap-3">
       <div className="flex items-center gap-3">
         <h1 className="font-display text-lg font-bold tracking-tight">
-          Result matrix
+          {t('resultMatrix')}
         </h1>
         <div className="border-line flex overflow-hidden rounded-md border text-[13px]">
           {(['suite', 'case'] as const).map((m) => (
@@ -98,7 +102,7 @@ export function MatrixPage() {
                   : 'bg-panel hover:bg-accent-soft'
               }`}
             >
-              {m === 'suite' ? 'By suite' : 'By case'}
+              {m === 'suite' ? t('bySuiteTab') : t('byCaseTab')}
             </button>
           ))}
         </div>
@@ -115,7 +119,7 @@ export function MatrixPage() {
         )}
         {mode === 'case' && (
           <span className="text-mute ml-auto flex items-center gap-2 font-mono text-xs">
-            {total.toLocaleString()} cases · page {page}/{pages}
+            {t('casesPageInfo')(total.toLocaleString(), page, pages)}
             <Button kind="ghost" onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1}>
               ‹
             </Button>
@@ -135,16 +139,16 @@ export function MatrixPage() {
           bySuite.isPending ? (
             <Spinner />
           ) : (bySuite.data?.items.length ?? 0) === 0 ? (
-            <EmptyState>No suites with linked test cases.</EmptyState>
+            <EmptyState>{t('noSuitesLinked')}</EmptyState>
           ) : (
             <table className="w-full text-[13px]">
               <thead className="bg-panel sticky top-0 shadow-[0_1px_0_var(--color-line)]">
                 <tr className="text-left">
                   <th className="text-mute px-3 py-2 text-xs font-medium">
-                    Test suite
+                    {t('testSuite')}
                   </th>
                   <th className="text-mute w-16 px-3 py-2 text-right text-xs font-medium">
-                    Cases
+                    {t('cases')}
                   </th>
                   {bySuite.data!.builds.map((b) => (
                     <th
@@ -166,7 +170,7 @@ export function MatrixPage() {
                       setMode('case')
                     }}
                     className="border-line hover:bg-paper cursor-pointer border-b last:border-0"
-                    title="Open case-level detail"
+                    title={t('openCaseDetail')}
                   >
                     <td className="px-3 py-1.5 font-medium">{s.name}</td>
                     <td className="text-mute px-3 py-1.5 text-right font-mono text-xs">
@@ -185,13 +189,13 @@ export function MatrixPage() {
         ) : byCase.isPending ? (
           <Spinner />
         ) : (byCase.data?.items.length ?? 0) === 0 ? (
-          <EmptyState>No test cases here.</EmptyState>
+          <EmptyState>{t('noCasesHere')}</EmptyState>
         ) : (
           <table className="w-full text-[13px]">
             <thead className="bg-panel sticky top-0 shadow-[0_1px_0_var(--color-line)]">
               <tr className="text-left">
                 <th className="text-mute px-3 py-2 text-xs font-medium">
-                  Test case
+                  {t('testCase')}
                 </th>
                 {byCase.data!.builds.map((b) => (
                   <th
@@ -212,7 +216,7 @@ export function MatrixPage() {
                   <td className="px-3 py-1.5">
                     <button
                       className="hover:text-accent inline-flex items-center gap-2 text-left"
-                      title="Open in Test cases"
+                      title={t('openInTestCases')}
                       onClick={() =>
                         navigate({
                           to: '/spec',
@@ -232,7 +236,7 @@ export function MatrixPage() {
                     return (
                       <td key={b.id} className="px-3 py-1.5 text-center">
                         <span
-                          title={VERDICT_LABEL[v]}
+                          title={verdictLabels[v]}
                           className="inline-block size-4 rounded"
                           style={{
                             background: VERDICT_COLOR[v],
@@ -259,13 +263,11 @@ export function MatrixPage() {
                 opacity: v === 'n' ? 0.25 : 1,
               }}
             />
-            {VERDICT_LABEL[v]}
+            {verdictLabels[v]}
           </span>
         ))}
         {mode === 'suite' && (
-          <span className="ml-auto">
-            Click a suite row to drill into its cases.
-          </span>
+          <span className="ml-auto">{t('clickSuiteHint')}</span>
         )}
       </div>
     </div>

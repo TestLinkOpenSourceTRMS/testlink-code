@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
+import { useT } from '../lib/i18n'
 import { useWorkspace } from '../lib/workspace'
 import {
   Button,
@@ -12,6 +13,7 @@ import {
 
 export function PlansPage() {
   const { project, plans, plan, selectPlan } = useWorkspace()
+  const { t } = useT()
   const qc = useQueryClient()
   const [newPlan, setNewPlan] = useState('')
   const [newBuild, setNewBuild] = useState('')
@@ -51,10 +53,10 @@ export function PlansPage() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4">
       <h1 className="font-display text-xl font-bold tracking-tight">
-        Test plans · {project?.name}
+        {t('testPlans')} · {project?.name}
       </h1>
 
-      <Panel title="Plans">
+      <Panel title={t('navPlans')}>
         <div className="flex flex-col gap-1">
           {plans.map((p) => (
             <button
@@ -68,7 +70,9 @@ export function PlansPage() {
             >
               {p.name}
               {plan?.id === p.id && (
-                <span className="text-mute ml-auto text-xs">selected</span>
+                <span className="text-mute ml-auto text-xs">
+                  {t('selectedTag')}
+                </span>
               )}
             </button>
           ))}
@@ -81,21 +85,21 @@ export function PlansPage() {
           }}
         >
           <TextInput
-            placeholder="New plan name"
+            placeholder={t('newPlanPlaceholder')}
             value={newPlan}
             onChange={(e) => setNewPlan(e.target.value)}
           />
           <Button type="submit" disabled={!newPlan.trim() || createPlan.isPending}>
-            Create plan
+            {t('createPlan')}
           </Button>
         </form>
       </Panel>
 
-      <Panel title={`Builds · ${plan?.name ?? ''}`}>
+      <Panel title={`${t('builds')} · ${plan?.name ?? ''}`}>
         {builds.isPending ? (
           <Spinner />
         ) : (builds.data?.length ?? 0) === 0 ? (
-          <EmptyState>No builds yet — create the first one below.</EmptyState>
+          <EmptyState>{t('noBuilds')}</EmptyState>
         ) : (
           <table className="w-full text-[13px]">
             <tbody>
@@ -103,8 +107,8 @@ export function PlansPage() {
                 <tr key={b.id} className="border-line border-b last:border-0">
                   <td className="py-1.5 font-medium">{b.name}</td>
                   <td className="text-mute py-1.5 text-right text-xs">
-                    {Number(b.active) ? 'active' : 'inactive'} ·{' '}
-                    {Number(b.is_open) ? 'open' : 'closed'}
+                    {Number(b.active) ? t('activeLabel') : t('inactiveLabel')} ·{' '}
+                    {Number(b.is_open) ? t('openLabel') : t('closedLabel')}
                   </td>
                 </tr>
               ))}
@@ -119,7 +123,7 @@ export function PlansPage() {
           }}
         >
           <TextInput
-            placeholder="New build name"
+            placeholder={t('newBuildPlaceholder')}
             value={newBuild}
             onChange={(e) => setNewBuild(e.target.value)}
           />
@@ -127,7 +131,7 @@ export function PlansPage() {
             type="submit"
             disabled={!newBuild.trim() || createBuild.isPending || !plan}
           >
-            Create build
+            {t('createBuild')}
           </Button>
         </form>
       </Panel>

@@ -39,6 +39,14 @@ return function (App $app) {
             array($app->restApi,'updateTestCase'));
   $app->post('/testplans/{id}/link',
              array($app->restApi,'linkPlanCases'));
+  $app->get('/users',
+            array($app->restApi,'getUsers'));
+  $app->post('/testplans/{id}/assign',
+             array($app->restApi,'assignPlanCases'));
+  $app->get('/testplans/{id}/byTester',
+            array($app->restApi,'getPlanByTester'));
+  $app->get('/testplans/{id}/byBuild',
+            array($app->restApi,'getPlanByBuild'));
 
   $app->get('/testprojects',
             array($app->restApi,'testprojects'));

@@ -161,30 +161,36 @@ class RestApi
   /**
    *
    */
-  public function authenticate(Request $request, RequestHandler $handler) 
+  public function authenticate(Request $request, RequestHandler $handler)
   {
-    $hh = $request->getHeaders();
-    
+    // the login endpoint is the one route that cannot require a key
+    $rp = $request->getUri()->getPath();
+    if (substr($rp, -11) == '/auth/login' &&
+        strtoupper($request->getMethod()) == 'POST') {
+      return $handler->handle($request);
+    }
+
     $apiKey = null;
 
-    // @20200317 - Not tested 
+    // @20200317 - Not tested
     // IMPORTANT NOTICE: 'PHP_AUTH_USER'
     // it seems this needs special configuration
     // with Apache when you use CGI Module
     // http://man.hubwiz.com/docset/PHP.docset/Contents/Resources/
     //        Documents/php.net/manual/en/features.http-auth.html
-    // 
+    //
+    // PSR-7 getHeaderLine() is case-insensitive, so this also matches
+    // proxies that normalize header names to lowercase.
     $apiKeySet = [
       'Apikey',
-      'ApiKey',
-      'APIKEY',
       'PHP_AUTH_USER'
     ];
     foreach( $apiKeySet as $accessKey ) {
-      if (isset($hh[$accessKey])) {
-        $apiKey = trim($hh[$accessKey][0]);
+      $hval = trim($request->getHeaderLine($accessKey));
+      if ($hval != '') {
+        $apiKey = $hval;
         break;
-      }  
+      }
     }
 
     if ($apiKey != null && $apiKey != '') {
@@ -207,8 +213,7 @@ class RestApi
     } 
     $response = new Response();
     $response->getBody()->write($msg);
-    $response->withStatus(401);
-    return $response;
+    return $response->withStatus(401);
   }
 
   /**
@@ -319,40 +324,59 @@ class RestApi
    * Will return LATEST VERSION of each test case.
    * Does return test step info ?
    *
+   * Supports optional pagination via query string:
+   *   ?page=<1-based page number>&limit=<items per page>
+   * When neither page nor limit is provided, ALL test cases are
+   * returned in a single response (backward compatible behavior).
+   * When paginated, the response carries page/limit/total so clients
+   * can iterate.
+   *
    * @param array idCard if provided identifies test project
    *                     'id' -> DBID
    *                     'name' ->
-   *                     'prefix' -> 
-   */ 
-  public function getProjectTestCases(Request $request, Response $response, $idCard) 
+   *                     'prefix' ->
+   */
+  public function getProjectTestCases(Request $request, Response $response, $idCard)
   {
 
-    $op  = array('status' => 'ok', 
-                 'message' => 'ok', 
+    $op  = array('status' => 'ok',
+                 'message' => 'ok',
                  'items' => null);
-    $tproject = $this->getProjects($idCard, 
+    $tproject = $this->getProjects($idCard,
                          array('output' => 'internal'));
 
     if( !is_null($tproject) ) {
       $tcaseIDSet = array();
       $this->tprojectMgr->get_all_testcases_id($tproject['id'],$tcaseIDSet);
 
+      $qs = $request->getQueryParams();
+      $paginated = isset($qs['page']) || isset($qs['limit']);
+      if( $paginated ) {
+        $limit = isset($qs['limit']) ? max(1,intval($qs['limit'])) : 100;
+        $page = isset($qs['page']) ? max(1,intval($qs['page'])) : 1;
+        $op['total'] = count($tcaseIDSet);
+        $op['page'] = $page;
+        $op['limit'] = $limit;
+        $tcaseIDSet = array_slice($tcaseIDSet,($page-1)*$limit,$limit);
+      }
+
       if( !is_null($tcaseIDSet) && count($tcaseIDSet) > 0 ) {
         $op['items'] = array();
         foreach( $tcaseIDSet as $key => $tcaseID ) {
           $item = $this->tcaseMgr->get_last_version_info($tcaseID);
-          $item['keywords'] = 
+          $item['keywords'] =
             $this->tcaseMgr->get_keywords_map($tcaseID,$item['tcversion_id']);
-          $item['customfields'] = 
+          $item['customfields'] =
             $this->tcaseMgr->get_linked_cfields_at_design($tcaseID,$item['tcversion_id'],null,null,$tproject['id']);
           $op['items'][] = $item;
         }
       }
     } else {
-      $op['message'] = "No Test Project identified by '" . $idCard . "'!";
+      $op['message'] = "No Test Project identified by '" .
+        (is_array($idCard) ? implode(',', $idCard) : $idCard) . "'!";
       $op['status']  = 'error';
     }
-    
+
     $payload = json_encode($op);
     $response->getBody()->write($payload);
     return $response;
@@ -1183,8 +1207,8 @@ class RestApi
       }
 
       // create obj with standard properties
-      $op['message'] = 'After buildTestCaseObj() >> ' .
       $tcase = $this->buildTestCaseObj($item);
+      $op['message'] = 'After buildTestCaseObj() >> ' . json_encode($tcase);
       $this->checkRelatives($tcase);
       
       $ou = $this->tcaseMgr->createFromObject($tcase);
@@ -1697,7 +1721,596 @@ class RestApi
    */
   function msgFromException($e)
   {
-    return $e->getMessage() . 
-           ' - offending line number: ' . $e->getLine();   
+    return $e->getMessage() .
+           ' - offending line number: ' . $e->getLine();
+  }
+
+  // ==================================================================
+  // Endpoints backing the SPA (ui/) — JSON in, JSON out.
+  // ==================================================================
+
+  /**
+   * POST /auth/login  {login, password}
+   * On success returns the user's API key (creating one when the
+   * user has none yet) so the SPA can use the standard Apikey header.
+   */
+  public function authLogin(Request $request, Response $response, $args)
+  {
+    $op = array('status' => 'error', 'message' => 'Invalid credentials');
+    $item = json_decode($request->getBody());
+
+    if (null != $item && isset($item->login) && isset($item->password)) {
+      $user = new tlUser();
+      $user->login = trim($item->login);
+      if ($user->readFromDB($this->db, tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK &&
+          $user->isActive &&
+          $user->comparePassword($this->db, $item->password) == tl::OK) {
+
+        if (strlen(trim((string)$user->userApiKey)) == 0) {
+          // no stored API key -> mint one (32 hex chars, column limit)
+          $user->userApiKey = bin2hex(random_bytes(16));
+          $sql = " UPDATE {$this->tables['users']} " .
+                 " SET script_key = '" .
+                 $this->db->prepare_string($user->userApiKey) . "'" .
+                 " WHERE id = " . intval($user->dbID);
+          $this->db->exec_query($sql);
+        }
+
+        $op = array('status' => 'ok',
+                    'apikey' => $user->userApiKey,
+                    'user' => array('id' => intval($user->dbID),
+                                    'login' => $user->login,
+                                    'firstName' => $user->firstName,
+                                    'lastName' => $user->lastName));
+      }
+    }
+
+    if ($op['status'] != 'ok') {
+      $response = $response->withStatus(401);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testprojects/{id}/suites
+   * Full test suite hierarchy of a project plus per-suite test case
+   * counts, so a client can render the tree without N requests.
+   */
+  public function getProjectSuites(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $sql = " WITH RECURSIVE st AS " .
+           " (SELECT id, parent_id, name, node_order " .
+           "    FROM {$this->tables['nodes_hierarchy']} " .
+           "   WHERE parent_id = {$safeID} AND node_type_id = 2 " .
+           "  UNION ALL " .
+           "  SELECT nh.id, nh.parent_id, nh.name, nh.node_order " .
+           "    FROM {$this->tables['nodes_hierarchy']} nh " .
+           "    JOIN st ON nh.parent_id = st.id " .
+           "   WHERE nh.node_type_id = 2) " .
+           " SELECT * FROM st ORDER BY parent_id, node_order, id ";
+    $suites = (array)$this->db->get_recordset($sql);
+
+    $sql = " SELECT parent_id, COUNT(*) AS qty " .
+           " FROM {$this->tables['nodes_hierarchy']} " .
+           " WHERE node_type_id = 3 GROUP BY parent_id ";
+    $counts = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $counts[$row['parent_id']] = intval($row['qty']);
+    }
+
+    foreach ($suites as &$suite) {
+      $suite['id'] = intval($suite['id']);
+      $suite['parent_id'] = intval($suite['parent_id']);
+      $suite['tcCount'] = isset($counts[$suite['id']]) ? $counts[$suite['id']] : 0;
+    }
+    unset($suite);
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'projectID' => $safeID, 'items' => $suites)));
+    return $response;
+  }
+
+  /**
+   * GET /testsuites/{id}/testcases
+   * Summary rows of the test cases directly inside a suite.
+   */
+  public function getSuiteTestCases(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $sql = " SELECT NHTC.id, NHTC.name, NHTC.node_order, " .
+           "        MAX(TCV.version) AS latest_version, " .
+           "        MAX(TCV.tc_external_id) AS tc_external_id, " .
+           "        MAX(TCV.importance) AS importance, " .
+           "        MAX(TCV.status) AS status " .
+           " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+           " WHERE NHTC.parent_id = {$safeID} AND NHTC.node_type_id = 3 " .
+           " GROUP BY NHTC.id, NHTC.name, NHTC.node_order " .
+           " ORDER BY NHTC.node_order, NHTC.id ";
+    $items = (array)$this->db->get_recordset($sql);
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'suiteID' => $safeID, 'items' => $items)));
+    return $response;
+  }
+
+  /**
+   * GET /testcases/{id}/detail
+   * Latest version of one test case: attributes, steps, recent runs.
+   */
+  public function getTestCaseDetail(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+
+    $sql = " SELECT NHTC.name, NHTC.parent_id AS suite_id, TCV.id AS tcversion_id, " .
+           "        TCV.version, TCV.tc_external_id, TCV.summary, TCV.preconditions, " .
+           "        TCV.importance, TCV.status, TCV.execution_type, TCV.active " .
+           " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+           " WHERE NHTC.id = {$safeID} " .
+           " ORDER BY TCV.version DESC LIMIT 1 ";
+    $item = $this->db->get_recordset($sql);
+    if (is_null($item)) {
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => 'Test case does not exist')));
+      return $response->withStatus(404);
+    }
+    $item = current($item);
+    $tcvID = intval($item['tcversion_id']);
+
+    $sql = " SELECT TCS.step_number, TCS.actions, TCS.expected_results, " .
+           "        TCS.execution_type " .
+           " FROM {$this->tables['tcsteps']} TCS " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH ON NH.id = TCS.id " .
+           " WHERE NH.parent_id = {$tcvID} ORDER BY TCS.step_number ";
+    $item['steps'] = (array)$this->db->get_recordset($sql);
+
+    $sql = " SELECT E.id, E.status, E.execution_ts, E.build_id, E.notes, " .
+           "        B.name AS build_name, U.login AS tester " .
+           " FROM {$this->tables['executions']} E " .
+           " LEFT JOIN {$this->tables['builds']} B ON B.id = E.build_id " .
+           " LEFT JOIN {$this->tables['users']} U ON U.id = E.tester_id " .
+           " WHERE E.tcversion_id = {$tcvID} " .
+           " ORDER BY E.id DESC LIMIT 10 ";
+    $item['executions'] = (array)$this->db->get_recordset($sql);
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'item' => $item)));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/summary
+   * Latest-execution status totals for a plan (dashboard numbers).
+   */
+  public function getPlanSummary(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+
+    $sql = " SELECT COUNT(*) AS qty FROM {$this->tables['testplan_tcversions']} " .
+           " WHERE testplan_id = {$safeID} ";
+    $linked = intval($this->db->fetchFirstRowSingleColumn($sql, 'qty'));
+
+    // latest-per-version via loose index scan on
+    // (testplan_id, tcversion_id, id) + PK join: cost follows the
+    // number of test case versions, not the number of executions.
+    $sql = " SELECT E2.status, COUNT(*) AS qty FROM " .
+           " (SELECT MAX(id) AS mid FROM {$this->tables['executions']} " .
+           "   WHERE testplan_id = {$safeID} GROUP BY tcversion_id) M " .
+           " JOIN {$this->tables['executions']} E2 ON E2.id = M.mid " .
+           " GROUP BY E2.status ";
+    $byStatus = array();
+    $executed = 0;
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $byStatus[$row['status']] = intval($row['qty']);
+      $executed += intval($row['qty']);
+    }
+    $byStatus['n'] = max(0, $linked - $executed);
+
+    $info = $this->tplanMgr->get_by_id($safeID);
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok',
+            'planID' => $safeID,
+            'name' => $info['name'] ?? '',
+            'linked' => $linked,
+            'byStatus' => $byStatus)));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/trend
+   * Daily execution counters by status.
+   */
+  public function getPlanTrend(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $sql = " SELECT DATE(execution_ts) AS execday, status, COUNT(*) AS qty " .
+           " FROM {$this->tables['executions']} " .
+           " WHERE testplan_id = {$safeID} " .
+           " GROUP BY execday, status ORDER BY execday ";
+    $days = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $day = $row['execday'];
+      if (!isset($days[$day])) {
+        $days[$day] = array('day' => $day, 'p' => 0, 'f' => 0, 'b' => 0, 'other' => 0);
+      }
+      $key = in_array($row['status'], array('p','f','b')) ? $row['status'] : 'other';
+      $days[$day][$key] += intval($row['qty']);
+    }
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'items' => array_values($days))));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/flaky
+   * Test case versions whose executions flip between pass and fail.
+   */
+  public function getPlanFlaky(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    // bounded window (default 30 days, ?days= to widen) keeps the
+    // scan proportional to recent activity instead of full history
+    $qs = $request->getQueryParams();
+    $days = isset($qs['days']) ? max(1, min(365, intval($qs['days']))) : 30;
+
+    // id is monotonically increasing, so ordering by (tcversion_id, id)
+    // follows idx_exec_tplan_tcv_id and preserves execution order
+    $sql = " SELECT E.tcversion_id, E.status, NHTC.name, NHTC.id AS tcase_id " .
+           " FROM {$this->tables['executions']} E " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = E.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+           " WHERE E.testplan_id = {$safeID} AND E.status IN ('p','f') " .
+           " AND E.execution_ts >= NOW() - INTERVAL {$days} DAY " .
+           " ORDER BY E.tcversion_id, E.id ";
+    $flips = array();
+    $prev = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $key = $row['tcversion_id'];
+      if (!isset($flips[$key])) {
+        $flips[$key] = array('tcversion_id' => intval($key),
+                             'tcase_id' => intval($row['tcase_id']),
+                             'name' => $row['name'],
+                             'flips' => 0, 'total' => 0);
+      }
+      $flips[$key]['total']++;
+      if (isset($prev[$key]) && $prev[$key] != $row['status']) {
+        $flips[$key]['flips']++;
+      }
+      $prev[$key] = $row['status'];
+    }
+    $flips = array_filter($flips, function ($item) {
+      return $item['flips'] > 0;
+    });
+    usort($flips, function ($a, $b) {
+      return $b['flips'] <=> $a['flips'];
+    });
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok',
+            'analyzed' => count($prev),
+            'items' => array_slice($flips, 0, 50))));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/queue?buildID=&page=&limit=
+   * Linked test cases with their latest result on a build —
+   * the execution work queue.
+   */
+  public function getPlanQueue(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $qs = $request->getQueryParams();
+    $buildID = isset($qs['buildID']) ? intval($qs['buildID']) : 0;
+    $limit = isset($qs['limit']) ? max(1, intval($qs['limit'])) : 200;
+    $page = isset($qs['page']) ? max(1, intval($qs['page'])) : 1;
+    $offset = ($page - 1) * $limit;
+
+    $buildFilter = $buildID > 0 ? " AND E.build_id = {$buildID} " : '';
+
+    $sql = " SELECT COUNT(*) AS qty FROM {$this->tables['testplan_tcversions']} " .
+           " WHERE testplan_id = {$safeID} ";
+    $total = intval($this->db->fetchFirstRowSingleColumn($sql, 'qty'));
+
+    $sql = " SELECT T.tcversion_id, NHTCV.parent_id AS tcase_id, NHTC.name, " .
+           "        TCV.tc_external_id, TCV.importance, " .
+           "        (SELECT E.status FROM {$this->tables['executions']} E " .
+           "          WHERE E.tcversion_id = T.tcversion_id " .
+           "            AND E.testplan_id = T.testplan_id {$buildFilter} " .
+           "          ORDER BY E.id DESC LIMIT 1) AS exec_status " .
+           " FROM {$this->tables['testplan_tcversions']} T " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = T.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = T.tcversion_id " .
+           " WHERE T.testplan_id = {$safeID} " .
+           " ORDER BY NHTC.name LIMIT {$limit} OFFSET {$offset} ";
+    $items = (array)$this->db->get_recordset($sql);
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'total' => $total,
+            'page' => $page, 'limit' => $limit, 'items' => $items)));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/matrix?page=&limit=
+   * Test result matrix — one row per linked test case, one column
+   * per build, cell = latest execution status on that build.
+   * Paginated by test case so the payload stays bounded no matter
+   * how large the plan is (the legacy page shipped 11MB at once).
+   */
+  public function getPlanMatrix(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $qs = $request->getQueryParams();
+    $limit = isset($qs['limit']) ? max(1, min(500, intval($qs['limit']))) : 100;
+    $page = isset($qs['page']) ? max(1, intval($qs['page'])) : 1;
+    $offset = ($page - 1) * $limit;
+
+    // optional drill-down: only cases directly inside one suite
+    $suiteID = isset($qs['suiteID']) ? intval($qs['suiteID']) : 0;
+    $suiteFilter = $suiteID > 0 ? " AND NHTC.parent_id = {$suiteID} " : '';
+
+    $sql = " SELECT COUNT(*) AS qty " .
+           " FROM {$this->tables['testplan_tcversions']} T " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = T.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+           " WHERE T.testplan_id = {$safeID} {$suiteFilter} ";
+    $total = intval($this->db->fetchFirstRowSingleColumn($sql, 'qty'));
+
+    $sql = " SELECT id, name FROM {$this->tables['builds']} " .
+           " WHERE testplan_id = {$safeID} ORDER BY id ";
+    $builds = (array)$this->db->get_recordset($sql);
+
+    // page of linked test cases
+    $sql = " SELECT T.tcversion_id, NHTCV.parent_id AS tcase_id, " .
+           "        NHTC.name, TCV.tc_external_id " .
+           " FROM {$this->tables['testplan_tcversions']} T " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = T.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = T.tcversion_id " .
+           " WHERE T.testplan_id = {$safeID} {$suiteFilter} " .
+           " ORDER BY NHTC.name LIMIT {$limit} OFFSET {$offset} ";
+    $rows = (array)$this->db->get_recordset($sql);
+
+    if (count($rows) > 0) {
+      // latest execution per (version, build) only for this page —
+      // IN-list + loose scan rides idx_exec_tplan_tcv_id
+      $idSet = implode(',', array_map(function ($r) {
+        return intval($r['tcversion_id']);
+      }, $rows));
+
+      $sql = " SELECT E2.tcversion_id, E2.build_id, E2.status FROM " .
+             " (SELECT MAX(id) AS mid FROM {$this->tables['executions']} " .
+             "   WHERE testplan_id = {$safeID} AND tcversion_id IN ({$idSet}) " .
+             "   GROUP BY tcversion_id, build_id) M " .
+             " JOIN {$this->tables['executions']} E2 ON E2.id = M.mid ";
+      $cells = array();
+      foreach ((array)$this->db->get_recordset($sql) as $cell) {
+        $cells[$cell['tcversion_id']][$cell['build_id']] = $cell['status'];
+      }
+      foreach ($rows as &$row) {
+        $row['results'] = isset($cells[$row['tcversion_id']]) ?
+          $cells[$row['tcversion_id']] : new stdClass();
+      }
+      unset($row);
+    }
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'total' => $total, 'page' => $page,
+            'limit' => $limit, 'builds' => $builds, 'items' => $rows)));
+    return $response;
+  }
+
+  /**
+   * PUT /testcases/{id}/update
+   * Update the latest version of a test case: name, summary,
+   * preconditions, importance, and (optionally) the full step list.
+   * When 'steps' is present it REPLACES the existing steps — the
+   * client always sends the complete list it wants to keep.
+   */
+  public function updateTestCase(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $op = array('status' => 'ok', 'message' => 'ok');
+
+    try {
+      $item = json_decode($request->getBody());
+      if (null == $item) {
+        throw new Exception('Malformed request body');
+      }
+
+      // latest version node of this test case
+      $sql = " SELECT TCV.id FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+             " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+             " WHERE NHTCV.parent_id = {$safeID} ORDER BY TCV.version DESC LIMIT 1 ";
+      $tcvID = intval($this->db->fetchFirstRowSingleColumn($sql, 'id'));
+      if ($tcvID <= 0) {
+        throw new Exception('Test case does not exist');
+      }
+
+      if (isset($item->name) && trim($item->name) != '') {
+        $sql = " UPDATE {$this->tables['nodes_hierarchy']} SET name = '" .
+               $this->db->prepare_string(trim($item->name)) . "'" .
+               " WHERE id = {$safeID} ";
+        $this->db->exec_query($sql);
+      }
+
+      $fields = array();
+      foreach (array('summary', 'preconditions') as $key) {
+        if (isset($item->$key)) {
+          $fields[] = " {$key} = '" .
+            $this->db->prepare_string($item->$key) . "'";
+        }
+      }
+      if (isset($item->importance)) {
+        $fields[] = ' importance = ' . intval($item->importance);
+      }
+      if (count($fields) > 0) {
+        $sql = " UPDATE {$this->tables['tcversions']} SET " .
+               implode(',', $fields) . " WHERE id = {$tcvID} ";
+        $this->db->exec_query($sql);
+      }
+
+      if (isset($item->steps) && is_array($item->steps)) {
+        // replace: drop existing step nodes, insert the new list
+        $sql = " SELECT id FROM {$this->tables['nodes_hierarchy']} " .
+               " WHERE parent_id = {$tcvID} AND node_type_id = 9 ";
+        foreach ((array)$this->db->get_recordset($sql) as $row) {
+          $this->tcaseMgr->delete_step_by_id(intval($row['id']));
+        }
+        $stepNum = 0;
+        foreach ($item->steps as $step) {
+          $stepNum++;
+          $this->tcaseMgr->create_step(
+            $tcvID, $stepNum,
+            isset($step->actions) ? $step->actions : '',
+            isset($step->expected_results) ? $step->expected_results : '',
+            isset($step->execution_type) ? intval($step->execution_type) : 1);
+        }
+        $op['steps'] = $stepNum;
+      }
+      $op['id'] = $safeID;
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * POST /testplans/{id}/link  {tcaseIDs: [...]}
+   * Link the LATEST version of each given test case to the plan.
+   * Already-linked cases are skipped, so the call is idempotent.
+   */
+  public function linkPlanCases(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $op = array('status' => 'ok', 'message' => 'ok', 'linked' => 0, 'skipped' => 0);
+
+    try {
+      $item = json_decode($request->getBody());
+      if (null == $item || !isset($item->tcaseIDs) || !is_array($item->tcaseIDs)) {
+        throw new Exception('Body must carry tcaseIDs array');
+      }
+
+      foreach ($item->tcaseIDs as $tcaseID) {
+        $tcaseID = intval($tcaseID);
+        $sql = " SELECT TCV.id FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+               " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+               " WHERE NHTCV.parent_id = {$tcaseID} " .
+               " ORDER BY TCV.version DESC LIMIT 1 ";
+        $tcvID = intval($this->db->fetchFirstRowSingleColumn($sql, 'id'));
+        if ($tcvID <= 0) {
+          $op['skipped']++;
+          continue;
+        }
+
+        $sql = " SELECT COUNT(*) AS qty FROM {$this->tables['testplan_tcversions']} " .
+               " WHERE testplan_id = {$safeID} AND tcversion_id = {$tcvID} ";
+        if (intval($this->db->fetchFirstRowSingleColumn($sql, 'qty')) > 0) {
+          $op['skipped']++;
+          continue;
+        }
+
+        $sql = " INSERT INTO {$this->tables['testplan_tcversions']} " .
+               " (testplan_id, tcversion_id, node_order, urgency, platform_id, author_id, creation_ts) " .
+               " VALUES ({$safeID}, {$tcvID}, 0, 2, 0, " .
+               intval($this->userID) . ", " . $this->db->db_now() . ")";
+        $this->db->exec_query($sql);
+        $op['linked']++;
+      }
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/matrixBySuite
+   * Whole-plan overview on one screen: one row per test suite,
+   * one column per build, cell = latest-status counts (p/f/b) plus
+   * not-run. This is the at-a-glance companion of the paginated
+   * case-level matrix.
+   */
+  public function getPlanMatrixBySuite(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+
+    $sql = " SELECT id, name FROM {$this->tables['builds']} " .
+           " WHERE testplan_id = {$safeID} ORDER BY id ";
+    $builds = (array)$this->db->get_recordset($sql);
+
+    // linked case count per direct parent suite
+    $sql = " SELECT S.id AS suite_id, S.name AS suite_name, COUNT(*) AS linked " .
+           " FROM {$this->tables['testplan_tcversions']} T " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = T.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} S ON S.id = NHTC.parent_id " .
+           " WHERE T.testplan_id = {$safeID} " .
+           " GROUP BY S.id, S.name ORDER BY S.name ";
+    $suites = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $suites[$row['suite_id']] =
+        array('suite_id' => intval($row['suite_id']),
+              'name' => $row['suite_name'],
+              'linked' => intval($row['linked']),
+              'cells' => array());
+    }
+
+    // latest status per (version, build) rolled up to suite counters
+    $sql = " SELECT S.id AS suite_id, E2.build_id, E2.status, COUNT(*) AS qty " .
+           " FROM (SELECT MAX(id) AS mid FROM {$this->tables['executions']} " .
+           "        WHERE testplan_id = {$safeID} " .
+           "        GROUP BY tcversion_id, build_id) M " .
+           " JOIN {$this->tables['executions']} E2 ON E2.id = M.mid " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = E2.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} S ON S.id = NHTC.parent_id " .
+           " GROUP BY S.id, E2.build_id, E2.status ";
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $sid = $row['suite_id'];
+      if (!isset($suites[$sid])) {
+        continue;
+      }
+      $bid = $row['build_id'];
+      if (!isset($suites[$sid]['cells'][$bid])) {
+        $suites[$sid]['cells'][$bid] = array('p' => 0, 'f' => 0, 'b' => 0);
+      }
+      $statusKey = in_array($row['status'], array('p','f','b')) ? $row['status'] : 'b';
+      $suites[$sid]['cells'][$bid][$statusKey] += intval($row['qty']);
+    }
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'builds' => $builds,
+            'items' => array_values($suites))));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/buildsById
+   * Builds of a plan, addressed by plan DBID (the legacy route wants
+   * the plan API key which the SPA does not have).
+   */
+  public function getPlanBuildsById(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $sql = " SELECT id, name, notes, active, is_open, creation_ts " .
+           " FROM {$this->tables['builds']} " .
+           " WHERE testplan_id = {$safeID} ORDER BY id DESC ";
+    $items = (array)$this->db->get_recordset($sql);
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'items' => $items)));
+    return $response;
   }
 } // class end

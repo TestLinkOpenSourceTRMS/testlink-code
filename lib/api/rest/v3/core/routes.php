@@ -13,12 +13,39 @@ return function (App $app) {
   // still seems valid
   $app->get('/whoAmI',array($app->restApi,'whoAmI'));
 
+  // SPA (ui/) endpoints
+  $app->post('/auth/login', array($app->restApi,'authLogin'));
+  $app->get('/testprojects/{id}/suites',
+            array($app->restApi,'getProjectSuites'));
+  $app->get('/testsuites/{id}/testcases',
+            array($app->restApi,'getSuiteTestCases'));
+  $app->get('/testcases/{id}/detail',
+            array($app->restApi,'getTestCaseDetail'));
+  $app->get('/testplans/{id}/summary',
+            array($app->restApi,'getPlanSummary'));
+  $app->get('/testplans/{id}/trend',
+            array($app->restApi,'getPlanTrend'));
+  $app->get('/testplans/{id}/flaky',
+            array($app->restApi,'getPlanFlaky'));
+  $app->get('/testplans/{id}/queue',
+            array($app->restApi,'getPlanQueue'));
+  $app->get('/testplans/{id}/buildsById',
+            array($app->restApi,'getPlanBuildsById'));
+  $app->get('/testplans/{id}/matrix',
+            array($app->restApi,'getPlanMatrix'));
+  $app->get('/testplans/{id}/matrixBySuite',
+            array($app->restApi,'getPlanMatrixBySuite'));
+  $app->put('/testcases/{id}/update',
+            array($app->restApi,'updateTestCase'));
+  $app->post('/testplans/{id}/link',
+             array($app->restApi,'linkPlanCases'));
+
   $app->get('/testprojects',
             array($app->restApi,'testprojects'));
   $app->get('/testprojects/{id}',
             array($app->restApi,'testprojects'));
   
-  $app->get('/testprojects/{id}/testcases',
+  $app->get('/testprojects/{mixedID}/testcases',
             array($app->restApi,'getProjectTestCases'));
   $app->get('/testprojects/{mixedID}/testplans', 
             array($app->restApi,'getProjectTestPlans'));

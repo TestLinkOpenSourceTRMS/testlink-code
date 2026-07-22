@@ -6,7 +6,7 @@
  */
 $bd = dirname(__FILE__);
 $ds = DIRECTORY_SEPARATOR;
-$dummy = explode($ds. lib . $ds, $bd);
+$dummy = explode($ds. 'lib' . $ds, $bd);
 require_once($dummy[0] . $ds . 'config.inc.php');
 require_once('common.php');
 

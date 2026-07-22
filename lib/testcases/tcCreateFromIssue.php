@@ -845,7 +845,7 @@ function getKeywordsFromSimpleXMLObj($simpleXMLItems)
   
 */
 function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
-                     $userID,$kwMap,$importIntoProject = 0,$duplicateLogic)
+                     $userID,$kwMap,$importIntoProject,$duplicateLogic)
 {
   static $tsuiteXML;
   static $tsuiteMgr;

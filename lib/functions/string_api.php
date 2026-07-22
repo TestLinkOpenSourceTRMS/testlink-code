@@ -12,6 +12,19 @@
  *     
  **/
 
+# Link-target constants used by string_insert_hrefs(), adapted from MantisBT
+# (constant_inc.php). They were referenced below but never defined in TestLink;
+# on PHP 8 referencing an undefined constant is a fatal error, so displaying
+# any value that contains a URL (e.g. a custom field rendered through
+# string_display_links()) crashed with:
+#   Error: Undefined constant "LINKS_NEW_WINDOW"
+if( !defined( 'LINKS_SAME_WINDOW' ) ) {
+	define( 'LINKS_SAME_WINDOW', 1 );
+}
+if( !defined( 'LINKS_NEW_WINDOW' ) ) {
+	define( 'LINKS_NEW_WINDOW', 2 );
+}
+
 
 /** 
  * Preserve spaces at beginning of lines. 
@@ -232,7 +245,7 @@ function string_sanitize_url( $p_url ) {
 	
 	// split and encode parameters
 	if ( strpos( $t_url, '?' ) !== FALSE ) {
-		list( $t_path, $t_param ) = split( '\?', $t_url, 2 );
+		list( $t_path, $t_param ) = explode( '?', $t_url, 2 );
 		if ( $t_param !== "" ) {
 			$t_vals = array();
 			parse_str( $t_param, $t_vals );
@@ -337,7 +350,7 @@ function string_insert_hrefs( $p_string ) {
 	# mailto: link, making sure that we skip processing of any existing anchor
 	# tags, to avoid parts of URLs such as https://user@example.com/ or
 	# http://user:password@example.com/ to be not treated as an email.
-	$t_pieces = preg_split( $s_anchor_regex, $p_string, null, PREG_SPLIT_DELIM_CAPTURE );
+	$t_pieces = preg_split( $s_anchor_regex, $p_string, -1, PREG_SPLIT_DELIM_CAPTURE );
 	$p_string = '';
 	foreach( $t_pieces as $piece ) {
 		if( preg_match( $s_anchor_regex, $piece ) ) {

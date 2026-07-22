@@ -12,28 +12,30 @@ import {
 import { TrendChart } from '../components/TrendChart'
 
 export function DashboardPage() {
-  const { project, plan } = useWorkspace()
+  const { project, plan, planId } = useWorkspace()
   const navigate = useNavigate()
   const { t } = useT()
   const verdictLabels = useVerdictLabels()
 
+  // fire on the remembered planId so these load in parallel with the
+  // projects/plans lookups on a revisit, not in a serial waterfall
   const summary = useQuery({
-    queryKey: ['summary', plan?.id],
-    queryFn: () => api.planSummary(plan!.id),
-    enabled: plan != null,
+    queryKey: ['summary', planId],
+    queryFn: () => api.planSummary(planId),
+    enabled: planId !== '',
   })
   const trend = useQuery({
-    queryKey: ['trend', plan?.id],
-    queryFn: () => api.planTrend(plan!.id),
-    enabled: plan != null,
+    queryKey: ['trend', planId],
+    queryFn: () => api.planTrend(planId),
+    enabled: planId !== '',
   })
   const flaky = useQuery({
-    queryKey: ['flaky', plan?.id],
-    queryFn: () => api.planFlaky(plan!.id),
-    enabled: plan != null,
+    queryKey: ['flaky', planId],
+    queryFn: () => api.planFlaky(planId),
+    enabled: planId !== '',
   })
 
-  if (!plan) return <Spinner />
+  if (planId === '' && !plan) return <Spinner />
 
   const by = summary.data?.byStatus ?? {}
   const linked = summary.data?.linked ?? 0
@@ -44,7 +46,7 @@ export function DashboardPage() {
     <div className="mx-auto flex max-w-5xl flex-col gap-4">
       <div>
         <h1 className="font-display text-xl font-bold tracking-tight">
-          {project?.name} · {plan.name}
+          {project?.name} · {plan?.name ?? summary.data?.name ?? ''}
         </h1>
         <p className="text-mute mt-0.5 text-sm">
           {t('linkedCasesCount')(linked.toLocaleString())} · {t('passRateLabel')}{' '}

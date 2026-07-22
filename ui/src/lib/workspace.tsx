@@ -14,6 +14,11 @@ interface Workspace {
   plans: Plan[]
   project: Project | null
   plan: Plan | null
+  /** last-known ids from localStorage — usable before the lists load,
+   *  so dependent queries can fire in parallel on a revisit instead of
+   *  waiting out a 3-hop request waterfall over a high-latency link. */
+  projectId: string
+  planId: string
   selectProject: (id: string) => void
   selectPlan: (id: string) => void
 }
@@ -38,13 +43,18 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const project =
     projects.find((p) => p.id === projectId) ?? projects[0] ?? null
 
+  // prefer the remembered id so plans can load without waiting for the
+  // projects response; fall back to the resolved project once it arrives
+  const effectiveProjectId = projectId || project?.id
+
   const { data: plans = [] } = useQuery({
-    queryKey: ['plans', project?.id],
-    queryFn: () => api.projectPlans(project!.id),
-    enabled: authed && project != null,
+    queryKey: ['plans', effectiveProjectId],
+    queryFn: () => api.projectPlans(effectiveProjectId!),
+    enabled: authed && effectiveProjectId != null,
   })
 
   const plan = plans.find((p) => p.id === planId) ?? plans[0] ?? null
+  const effectivePlanId = planId || plan?.id || ''
 
   useEffect(() => {
     if (project) localStorage.setItem('tl.project', project.id)
@@ -61,7 +71,16 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider
-      value={{ projects, plans, project, plan, selectProject, selectPlan }}
+      value={{
+        projects,
+        plans,
+        project,
+        plan,
+        projectId: effectiveProjectId ?? '',
+        planId: effectivePlanId,
+        selectProject,
+        selectPlan,
+      }}
     >
       {children}
     </Ctx.Provider>

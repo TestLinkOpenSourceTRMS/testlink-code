@@ -22,6 +22,8 @@ import { RunPage } from './routes/RunPage'
 import { MatrixPage } from './routes/MatrixPage'
 import { PlansPage } from './routes/PlansPage'
 import { ReportsPage } from './routes/ReportsPage'
+import { RequirementsPage } from './routes/RequirementsPage'
+import { AdminPage } from './routes/AdminPage'
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -89,15 +91,29 @@ const reportsRoute = createRoute({
   component: ReportsPage,
 })
 
+const requirementsRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: '/requirements',
+  component: RequirementsPage,
+})
+
+const adminRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: '/admin',
+  component: AdminPage,
+})
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   shellRoute.addChildren([
     dashboardRoute,
     specRoute,
+    requirementsRoute,
     runRoute,
     matrixRoute,
     plansRoute,
     reportsRoute,
+    adminRoute,
   ]),
 ])
 

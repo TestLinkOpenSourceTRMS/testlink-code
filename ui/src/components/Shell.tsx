@@ -1,12 +1,14 @@
 import { Link, Outlet, useNavigate } from '@tanstack/react-router'
 import {
   ClipboardList,
+  FileCheck2,
   FolderTree,
   Gauge,
   Grid3X3,
   LineChart,
   LogOut,
   PlayCircle,
+  Settings,
 } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -86,10 +88,12 @@ function SearchBox({ projectId }: { projectId: string | undefined }) {
 const NAV: { to: string; labelKey: StringMsgKey; icon: typeof Gauge }[] = [
   { to: '/', labelKey: 'navDashboard', icon: Gauge },
   { to: '/spec', labelKey: 'navTestCases', icon: FolderTree },
+  { to: '/requirements', labelKey: 'navRequirements', icon: FileCheck2 },
   { to: '/run', labelKey: 'navRun', icon: PlayCircle },
   { to: '/matrix', labelKey: 'navMatrix', icon: Grid3X3 },
   { to: '/plans', labelKey: 'navPlans', icon: ClipboardList },
   { to: '/reports', labelKey: 'navReports', icon: LineChart },
+  { to: '/admin', labelKey: 'navAdmin', icon: Settings },
 ]
 
 export function Shell() {

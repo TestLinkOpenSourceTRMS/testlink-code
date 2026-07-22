@@ -1243,10 +1243,37 @@ class RestApi
    * "notes"
    * "testProject": {"prefix":"APR"}
    */
-  public function createKeyword(Request $request, 
-                                Response $response, 
-                                $args) 
+  public function createKeyword(Request $request,
+                                Response $response,
+                                $args)
   {
+    // New SPA/admin path: body carries testProjectID directly.
+    // {testProjectID, keyword, notes?}  ->  addKeyword by project id.
+    // The legacy prefix path (below) is preserved untouched for
+    // existing callers that send testProject.prefix.
+    $probe = json_decode((string)$request->getBody());
+    if (null != $probe && isset($probe->testProjectID)) {
+      $op = array('status' => 'ok', 'message' => 'ok');
+      try {
+        if (!isset($probe->keyword) || trim((string)$probe->keyword) === '') {
+          throw new Exception('Body must carry testProjectID and a non-empty keyword');
+        }
+        $pid = intval($probe->testProjectID);
+        $notes = isset($probe->notes) ? strval($probe->notes) : '';
+        $ou = $this->tprojectMgr->addKeyword($pid, trim((string)$probe->keyword), $notes);
+        if ($ou['status'] < tl::OK) {
+          throw new Exception($ou['msg']);
+        }
+        $op['id'] = intval($ou['id']);
+      } catch (Exception $e) {
+        $op = array('status' => 'error',
+                    'message' => $this->msgFromException($e));
+        $response = $response->withStatus(400);
+      }
+      $response->getBody()->write(json_encode($op));
+      return $response;
+    }
+
     $op = $this->getStdIDKO();
 
     try {
@@ -2402,9 +2429,21 @@ class RestApi
    */
   public function getUsers(Request $request, Response $response, $args)
   {
-    $sql = " SELECT id, login, first, last FROM {$this->tables['users']} " .
-           " WHERE active = 1 ORDER BY login ";
+    // role name comes from the roles table (users.role_id -> roles.id);
+    // active flag is included so the admin UI can list and toggle
+    // deactivated users. Legacy fields (id, login, first, last) are
+    // kept verbatim — only new fields are added.
+    $sql = " SELECT U.id, U.login, U.first, U.last, U.email, " .
+           "        U.role_id, U.active, R.description AS role " .
+           " FROM {$this->tables['users']} U " .
+           " LEFT JOIN {$this->tables['roles']} R ON R.id = U.role_id " .
+           " ORDER BY U.login ";
     $items = (array)$this->db->get_recordset($sql);
+    foreach ($items as &$u) {
+      $u['role_id'] = intval($u['role_id']);
+      $u['active'] = intval($u['active']);
+    }
+    unset($u);
     $response->getBody()->write(json_encode(
       array('status' => 'ok', 'items' => $items)));
     return $response;
@@ -2619,6 +2658,642 @@ class RestApi
     $items = (array)$this->db->get_recordset($sql);
     $response->getBody()->write(json_encode(
       array('status' => 'ok', 'items' => $items)));
+    return $response;
+  }
+
+  /**
+   * GET /testprojects/{id}/reqspecs
+   * Requirement specification tree of a project (specs can nest),
+   * with the number of requirements directly inside each spec.
+   */
+  public function getProjectReqSpecs(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $sql = " WITH RECURSIVE rst AS " .
+           " (SELECT id, parent_id, name, node_order " .
+           "    FROM {$this->tables['nodes_hierarchy']} " .
+           "   WHERE parent_id = {$safeID} AND node_type_id = 6 " .
+           "  UNION ALL " .
+           "  SELECT nh.id, nh.parent_id, nh.name, nh.node_order " .
+           "    FROM {$this->tables['nodes_hierarchy']} nh " .
+           "    JOIN rst ON nh.parent_id = rst.id " .
+           "   WHERE nh.node_type_id = 6) " .
+           " SELECT rst.id, rst.parent_id, rst.name, rst.node_order, RS.doc_id " .
+           " FROM rst JOIN {$this->tables['req_specs']} RS ON RS.id = rst.id " .
+           " ORDER BY rst.parent_id, rst.node_order, rst.id ";
+    $specs = (array)$this->db->get_recordset($sql);
+
+    $sql = " SELECT NHR.parent_id, COUNT(*) AS qty " .
+           " FROM {$this->tables['nodes_hierarchy']} NHR " .
+           " WHERE NHR.node_type_id = 7 GROUP BY NHR.parent_id ";
+    $counts = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $counts[$row['parent_id']] = intval($row['qty']);
+    }
+
+    foreach ($specs as &$spec) {
+      $spec['id'] = intval($spec['id']);
+      $spec['parent_id'] = intval($spec['parent_id']);
+      $spec['reqCount'] = isset($counts[$spec['id']]) ? $counts[$spec['id']] : 0;
+    }
+    unset($spec);
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'projectID' => $safeID, 'items' => $specs)));
+    return $response;
+  }
+
+  /**
+   * POST /reqspecs  {testProjectID, parentID?, docID, title, scope?}
+   * Create a requirement specification (type 6 node + req_specs row
+   * + first req_specs_revisions row, all via requirement_spec_mgr).
+   * Without parentID the spec lands at project root.
+   */
+  public function createReqSpec(Request $request, Response $response, $args)
+  {
+    $op = array('status' => 'ok', 'message' => 'ok');
+    try {
+      $item = json_decode($request->getBody());
+      if (null == $item || !isset($item->testProjectID) ||
+          !isset($item->docID) || !isset($item->title)) {
+        throw new Exception('Body must carry testProjectID, docID, title');
+      }
+      $tprojectID = intval($item->testProjectID);
+      $parentID = isset($item->parentID) && intval($item->parentID) > 0 ?
+                  intval($item->parentID) : $tprojectID;
+      $scope = isset($item->scope) ? strval($item->scope) : '';
+
+      // type is passed explicitly: the signature default
+      // (TL_REQ_SPEC_TYPE_FEATURE) is an undefined constant — every
+      // legacy caller sends the form value. '2' = feature.
+      $ret = $this->reqSpecMgr->create(
+        $tprojectID, $parentID, trim($item->docID), trim($item->title),
+        $scope, 0, $this->userID, '2');
+      if (intval($ret['status_ok']) == 0) {
+        throw new Exception($ret['msg']);
+      }
+      $op['id'] = intval($ret['id']);
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /reqspecs/{id}/requirements
+   * Requirements directly inside a spec: doc id, title, the status
+   * of the LATEST version, and how many test cases cover each one.
+   */
+  public function getReqSpecRequirements(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $sql = " SELECT NHR.id, NHR.name, NHR.node_order, R.req_doc_id, " .
+           "        RV.version, RV.status, RV.type, RV.expected_coverage " .
+           " FROM {$this->tables['nodes_hierarchy']} NHR " .
+           " JOIN {$this->tables['requirements']} R ON R.id = NHR.id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHRV ON NHRV.parent_id = NHR.id " .
+           " JOIN {$this->tables['req_versions']} RV ON RV.id = NHRV.id " .
+           " WHERE NHR.parent_id = {$safeID} AND NHR.node_type_id = 7 " .
+           " AND RV.version = " .
+           "     (SELECT MAX(RV2.version) FROM {$this->tables['nodes_hierarchy']} NHRV2 " .
+           "       JOIN {$this->tables['req_versions']} RV2 ON RV2.id = NHRV2.id " .
+           "      WHERE NHRV2.parent_id = NHR.id) " .
+           " ORDER BY NHR.node_order, NHR.id ";
+    $items = (array)$this->db->get_recordset($sql);
+
+    $sql = " SELECT RC.req_id, COUNT(DISTINCT RC.testcase_id) AS qty " .
+           " FROM {$this->tables['req_coverage']} RC " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHR ON NHR.id = RC.req_id " .
+           " WHERE NHR.parent_id = {$safeID} GROUP BY RC.req_id ";
+    $counts = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $counts[$row['req_id']] = intval($row['qty']);
+    }
+
+    foreach ($items as &$req) {
+      $req['id'] = intval($req['id']);
+      $req['coverageCount'] = isset($counts[$req['id']]) ? $counts[$req['id']] : 0;
+    }
+    unset($req);
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'reqSpecID' => $safeID, 'items' => $items)));
+    return $response;
+  }
+
+  /**
+   * POST /requirements  {reqSpecID, docID, title, scope?}
+   * Create a requirement and its first version (type 7 node +
+   * requirements row + type 8 version node + req_versions row,
+   * all via requirement_mgr).
+   */
+  public function createRequirement(Request $request, Response $response, $args)
+  {
+    $op = array('status' => 'ok', 'message' => 'ok');
+    try {
+      $item = json_decode($request->getBody());
+      if (null == $item || !isset($item->reqSpecID) ||
+          !isset($item->docID) || !isset($item->title)) {
+        throw new Exception('Body must carry reqSpecID, docID, title');
+      }
+      $srsID = intval($item->reqSpecID);
+      $scope = isset($item->scope) ? strval($item->scope) : '';
+
+      $ret = $this->reqMgr->create(
+        $srsID, trim($item->docID), trim($item->title), $scope, $this->userID);
+      if (intval($ret['status_ok']) == 0) {
+        throw new Exception($ret['msg']);
+      }
+      $op['id'] = intval($ret['id']);
+      $op['versionID'] = intval($ret['version_id']);
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /requirements/{id}/detail
+   * Latest version of one requirement plus the test cases that
+   * cover it (req_coverage).
+   */
+  public function getRequirementDetail(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+
+    $sql = " SELECT NHR.name, NHR.parent_id AS srs_id, R.req_doc_id, " .
+           "        RV.id AS req_version_id, RV.version, RV.scope, RV.status, " .
+           "        RV.type, RV.expected_coverage, RV.creation_ts, RV.modification_ts " .
+           " FROM {$this->tables['nodes_hierarchy']} NHR " .
+           " JOIN {$this->tables['requirements']} R ON R.id = NHR.id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHRV ON NHRV.parent_id = NHR.id " .
+           " JOIN {$this->tables['req_versions']} RV ON RV.id = NHRV.id " .
+           " WHERE NHR.id = {$safeID} " .
+           " ORDER BY RV.version DESC LIMIT 1 ";
+    $item = $this->db->get_recordset($sql);
+    if (is_null($item)) {
+      $response->getBody()->write(json_encode(
+        array('status' => 'error', 'message' => 'Requirement does not exist')));
+      return $response->withStatus(404);
+    }
+    $item = current($item);
+    $item['id'] = $safeID;
+
+    $sql = " SELECT DISTINCT RC.testcase_id AS tcase_id, NHTC.name, " .
+           "        (SELECT MAX(TCV.tc_external_id) " .
+           "           FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+           "           JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+           "          WHERE NHTCV.parent_id = RC.testcase_id) AS tc_external_id " .
+           " FROM {$this->tables['req_coverage']} RC " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = RC.testcase_id " .
+           " WHERE RC.req_id = {$safeID} " .
+           " ORDER BY NHTC.name ";
+    $item['coverage'] = (array)$this->db->get_recordset($sql);
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'item' => $item)));
+    return $response;
+  }
+
+  /**
+   * POST /requirements/{id}/coverage  {tcaseIDs: [...]}
+   * Cover the requirement with test cases: link its LATEST version
+   * to the LATEST version of each given case. Already-covered cases
+   * are skipped, so the call is idempotent.
+   */
+  public function addRequirementCoverage(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $op = array('status' => 'ok', 'message' => 'ok', 'linked' => 0, 'skipped' => 0);
+
+    try {
+      $item = json_decode($request->getBody());
+      if (null == $item || !isset($item->tcaseIDs) || !is_array($item->tcaseIDs)) {
+        throw new Exception('Body must carry tcaseIDs array');
+      }
+
+      // latest version node of this requirement
+      $sql = " SELECT RV.id FROM {$this->tables['nodes_hierarchy']} NHRV " .
+             " JOIN {$this->tables['req_versions']} RV ON RV.id = NHRV.id " .
+             " WHERE NHRV.parent_id = {$safeID} ORDER BY RV.version DESC LIMIT 1 ";
+      $reqVersionID = intval($this->db->fetchFirstRowSingleColumn($sql, 'id'));
+      if ($reqVersionID <= 0) {
+        throw new Exception('Requirement does not exist');
+      }
+
+      foreach ($item->tcaseIDs as $tcaseID) {
+        $tcaseID = intval($tcaseID);
+        $sql = " SELECT TCV.id FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+               " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+               " WHERE NHTCV.parent_id = {$tcaseID} " .
+               " ORDER BY TCV.version DESC LIMIT 1 ";
+        $tcvID = intval($this->db->fetchFirstRowSingleColumn($sql, 'id'));
+        if ($tcvID <= 0) {
+          $op['skipped']++;
+          continue;
+        }
+
+        $sql = " SELECT COUNT(*) AS qty FROM {$this->tables['req_coverage']} " .
+               " WHERE req_id = {$safeID} AND testcase_id = {$tcaseID} ";
+        if (intval($this->db->fetchFirstRowSingleColumn($sql, 'qty')) > 0) {
+          $op['skipped']++;
+          continue;
+        }
+
+        $sql = " INSERT INTO {$this->tables['req_coverage']} " .
+               " (req_id, testcase_id, req_version_id, tcversion_id, author_id, creation_ts) " .
+               " VALUES ({$safeID}, {$tcaseID}, {$reqVersionID}, {$tcvID}, " .
+               intval($this->userID) . ", " . $this->db->db_now() . ")";
+        $this->db->exec_query($sql);
+        $op['linked']++;
+      }
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * DELETE /requirements/{id}/coverage/{tcaseID}
+   * Unlink a test case from a requirement — every coverage row of
+   * the pair goes away, whatever req/tc version it pointed at.
+   */
+  public function deleteRequirementCoverage(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $tcaseID = intval($args['tcaseID']);
+
+    $sql = " DELETE FROM {$this->tables['req_coverage']} " .
+           " WHERE req_id = {$safeID} AND testcase_id = {$tcaseID} ";
+    $this->db->exec_query($sql);
+    $removed = intval($this->db->affected_rows());
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'removed' => $removed)));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/reqCoverage
+   * Requirements coverage report for a plan: for each requirement
+   * covering cases linked to the plan, the latest-execution verdict
+   * counts (p/f/b/n) of those cases. Latest execution per version
+   * uses the same MAX(id) loose-scan pattern as getPlanSummary, so
+   * cost stays plan-scoped.
+   */
+  public function getPlanReqCoverage(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+
+    $sql = " SELECT RC.req_id, R.req_doc_id, NHR.name, " .
+           "        PL.tcase_id, LE.status " .
+           " FROM (SELECT T.tcversion_id, NHTCV.parent_id AS tcase_id " .
+           "         FROM {$this->tables['testplan_tcversions']} T " .
+           "         JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+           "           ON NHTCV.id = T.tcversion_id " .
+           "        WHERE T.testplan_id = {$safeID}) PL " .
+           " JOIN (SELECT DISTINCT req_id, testcase_id " .
+           "         FROM {$this->tables['req_coverage']}) RC " .
+           "   ON RC.testcase_id = PL.tcase_id " .
+           " JOIN {$this->tables['requirements']} R ON R.id = RC.req_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHR ON NHR.id = RC.req_id " .
+           " LEFT JOIN (SELECT E2.tcversion_id, E2.status FROM " .
+           "             (SELECT MAX(id) AS mid FROM {$this->tables['executions']} " .
+           "               WHERE testplan_id = {$safeID} GROUP BY tcversion_id) M " .
+           "             JOIN {$this->tables['executions']} E2 ON E2.id = M.mid) LE " .
+           "   ON LE.tcversion_id = PL.tcversion_id " .
+           " ORDER BY R.req_doc_id, RC.req_id ";
+
+    $reqs = array();
+    $rs = $this->db->exec_query($sql);
+    while ($rs && ($row = $this->db->fetch_array($rs))) {
+      $rid = $row['req_id'];
+      if (!isset($reqs[$rid])) {
+        $reqs[$rid] = array('req_id' => intval($rid),
+                            'req_doc_id' => $row['req_doc_id'],
+                            'name' => $row['name'],
+                            'inPlan' => 0, 'covered' => 0,
+                            'p' => 0, 'f' => 0, 'b' => 0, 'n' => 0);
+      }
+      $reqs[$rid]['inPlan']++;
+      $key = in_array($row['status'], array('p','f','b')) ? $row['status'] : 'n';
+      $reqs[$rid][$key]++;
+    }
+
+    if (count($reqs) > 0) {
+      // total covered cases per requirement (plan-linked or not)
+      $idSet = implode(',', array_map('intval', array_keys($reqs)));
+      $sql = " SELECT req_id, COUNT(DISTINCT testcase_id) AS qty " .
+             " FROM {$this->tables['req_coverage']} " .
+             " WHERE req_id IN ({$idSet}) GROUP BY req_id ";
+      foreach ((array)$this->db->get_recordset($sql) as $row) {
+        $reqs[$row['req_id']]['covered'] = intval($row['qty']);
+      }
+    }
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'planID' => $safeID,
+            'items' => array_values($reqs))));
+    return $response;
+  }
+
+  // ==================================================================
+  // Admin module — users, keywords, platforms, custom fields.
+  // Replaces the common operations of the legacy usermanagement /
+  // keywords / platforms / cfields frame pages.
+  // ==================================================================
+
+  /** map a tlUser error code to a human message for the API client */
+  private function userErrorMsg($code)
+  {
+    switch (intval($code)) {
+      case tlUser::E_LOGINLENGTH:       return 'Login is empty or too long';
+      case tlUser::E_EMAILLENGTH:       return 'Email is too long';
+      case tlUser::E_NOTALLOWED:        return 'Login contains characters that are not allowed';
+      case tlUser::E_FIRSTNAMELENGTH:   return 'First name is empty or too long';
+      case tlUser::E_LASTNAMELENGTH:    return 'Last name is empty or too long';
+      case tlUser::E_PWDEMPTY:          return 'Password must not be empty';
+      case tlUser::E_LOGINALREADYEXISTS:return 'A user with this login already exists';
+      case tlUser::E_EMAILFORMAT:       return 'Email address is not valid';
+      case tlUser::E_DBERROR:           return 'Database error while saving the user';
+      default:                          return 'Could not create user (code ' . intval($code) . ')';
+    }
+  }
+
+  /**
+   * POST /users  {login, password, firstName, lastName, email, roleID?}
+   * Create a user through the tlUser class (same writeToDB +
+   * setPassword pattern the legacy usermanagement uses). When roleID
+   * is omitted the configured default global role is used. The new
+   * user is active and uses internal (DB) password management, so it
+   * can immediately authenticate through POST /auth/login.
+   */
+  public function createUser(Request $request, Response $response, $args)
+  {
+    $op = array('status' => 'ok', 'message' => 'ok');
+    try {
+      $item = json_decode($request->getBody());
+      if (null == $item || !isset($item->login) || !isset($item->password) ||
+          !isset($item->firstName) || !isset($item->lastName) ||
+          !isset($item->email)) {
+        throw new Exception('Body must carry login, password, firstName, lastName, email');
+      }
+
+      $user = new tlUser();
+      $user->login = trim($item->login);
+      $user->firstName = trim($item->firstName);
+      $user->lastName = trim($item->lastName);
+      $user->emailAddress = trim($item->email);
+      $user->locale = 'en_GB';
+      $user->isActive = 1;
+      $user->authentication = '';   // '' => configured default method (DB)
+      $user->globalRoleID = isset($item->roleID) && intval($item->roleID) > 0 ?
+                            intval($item->roleID) : config_get('default_roleid');
+
+      $rc = $user->setPassword((string)$item->password);
+      if ($rc < tl::OK) {
+        throw new Exception($this->userErrorMsg($rc));
+      }
+
+      $rc = $user->writeToDB($this->db);
+      if ($rc < tl::OK) {
+        throw new Exception($this->userErrorMsg($rc));
+      }
+      $op['id'] = intval($user->dbID);
+      $op['login'] = $user->login;
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * PUT /users/{id}  {active}
+   * Activate / deactivate a user. Deactivated users can no longer
+   * authenticate (POST /auth/login checks isActive).
+   */
+  public function updateUser(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $op = array('status' => 'ok', 'message' => 'ok');
+    try {
+      $item = json_decode($request->getBody());
+      if (null == $item || !isset($item->active)) {
+        throw new Exception('Body must carry active');
+      }
+      $active = intval($item->active) ? 1 : 0;
+      $sql = " UPDATE {$this->tables['users']} SET active = {$active} " .
+             " WHERE id = {$safeID} ";
+      $this->db->exec_query($sql);
+      $op['id'] = $safeID;
+      $op['active'] = $active;
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testprojects/{id}/keywords
+   * Keywords defined in a project plus how many test cases use each.
+   */
+  public function getProjectKeywords(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $sql = " SELECT id, keyword, notes FROM {$this->tables['keywords']} " .
+           " WHERE testproject_id = {$safeID} ORDER BY keyword ";
+    $items = (array)$this->db->get_recordset($sql);
+
+    $sql = " SELECT keyword_id, COUNT(*) AS qty " .
+           " FROM {$this->tables['testcase_keywords']} GROUP BY keyword_id ";
+    $counts = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $counts[$row['keyword_id']] = intval($row['qty']);
+    }
+
+    foreach ($items as &$kw) {
+      $kw['id'] = intval($kw['id']);
+      $kw['linkedCount'] = isset($counts[$kw['id']]) ? $counts[$kw['id']] : 0;
+    }
+    unset($kw);
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'projectID' => $safeID, 'items' => $items)));
+    return $response;
+  }
+
+  /**
+   * DELETE /keywords/{id}
+   * Remove a keyword. Mirrors the keyword-manager behaviour: the
+   * tlKeyword deleteFromDB (invoked via deleteKeyword) also removes
+   * the testcase_keywords and object_keywords link rows. Deletion is
+   * unconditional here (checkBeforeDelete disabled), matching an
+   * admin "delete keyword" action.
+   */
+  public function deleteKeyword(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $op = array('status' => 'ok', 'message' => 'ok');
+    try {
+      $rc = $this->tprojectMgr->deleteKeyword($safeID,
+              array('checkBeforeDelete' => false));
+      if ($rc < tl::OK) {
+        throw new Exception('Could not delete keyword');
+      }
+      $op['id'] = $safeID;
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testprojects/{id}/platforms
+   * Every platform of the project (regardless of enable flags) with
+   * its design/execution/open flags and how many plans link it.
+   */
+  public function getProjectPlatforms(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+    $platMgr = new tlPlatform($this->db, $safeID);
+    // null on the enable filters => do not filter, return them all
+    $rs = $platMgr->getAll(array('include_linked_count' => true,
+                                 'enable_on_design' => null,
+                                 'enable_on_execution' => null,
+                                 'is_open' => null));
+    $items = array();
+    foreach ((array)$rs as $row) {
+      $items[] = array(
+        'id' => intval($row['id']),
+        'name' => $row['name'],
+        'notes' => $row['notes'],
+        'enable_on_design' => intval($row['enable_on_design']),
+        'enable_on_execution' => intval($row['enable_on_execution']),
+        'is_open' => intval($row['is_open']),
+        'linked_count' => isset($row['linked_count']) ? intval($row['linked_count']) : 0);
+    }
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'projectID' => $safeID, 'items' => $items)));
+    return $response;
+  }
+
+  /**
+   * POST /platforms  {testProjectID, name, notes?}
+   * Create a platform in a project (enabled on design and execution).
+   * A duplicate name in the same project is rejected with 400.
+   */
+  public function createPlatform(Request $request, Response $response, $args)
+  {
+    $op = array('status' => 'ok', 'message' => 'ok');
+    try {
+      $item = json_decode($request->getBody());
+      if (null == $item || !isset($item->testProjectID) ||
+          !isset($item->name) || trim((string)$item->name) === '') {
+        throw new Exception('Body must carry testProjectID and a non-empty name');
+      }
+      $platMgr = new tlPlatform($this->db, intval($item->testProjectID));
+
+      $plat = new stdClass();
+      $plat->name = trim((string)$item->name);
+      $plat->notes = isset($item->notes) ? strval($item->notes) : '';
+      $plat->enable_on_design = 1;
+      $plat->enable_on_execution = 1;
+
+      $ret = $platMgr->create($plat);
+      if ($ret['status'] == tlPlatform::E_NAMEALREADYEXISTS) {
+        throw new Exception('A platform with this name already exists in the project');
+      }
+      if ($ret['status'] != tl::OK) {
+        throw new Exception('Could not create platform');
+      }
+      $op['id'] = intval($ret['id']);
+    } catch (Exception $e) {
+      $op = array('status' => 'error',
+                  'message' => $this->msgFromException($e));
+      $response = $response->withStatus(400);
+    }
+
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testprojects/{id}/customfields
+   * Custom fields linked to a project (custom_fields JOIN
+   * cfield_testprojects). Type ints are mapped to their verbose name
+   * via cfield_mgr::$custom_field_types, and the node types the field
+   * applies to (cfield_node_types) are resolved to their descriptions.
+   * Read-only — custom field creation stays in the legacy UI.
+   */
+  public function getProjectCustomFields(Request $request, Response $response, $args)
+  {
+    $safeID = intval($args['id']);
+
+    $sql = " SELECT CF.id, CF.name, CF.label, CF.type, " .
+           "        CF.enable_on_design, CF.enable_on_execution, " .
+           "        CF.enable_on_testplan_design, " .
+           "        CFTP.active, CFTP.display_order " .
+           " FROM {$this->tables['custom_fields']} CF " .
+           " JOIN {$this->tables['cfield_testprojects']} CFTP " .
+           "   ON CFTP.field_id = CF.id " .
+           " WHERE CFTP.testproject_id = {$safeID} " .
+           " ORDER BY CFTP.display_order, CF.name ";
+    $rows = (array)$this->db->get_recordset($sql);
+
+    // node types each field applies to
+    $sql = " SELECT CNT.field_id, NT.description " .
+           " FROM {$this->tables['cfield_node_types']} CNT " .
+           " JOIN {$this->tables['node_types']} NT ON NT.id = CNT.node_type_id " .
+           " ORDER BY CNT.field_id, NT.id ";
+    $appliesTo = array();
+    foreach ((array)$this->db->get_recordset($sql) as $row) {
+      $appliesTo[$row['field_id']][] = $row['description'];
+    }
+
+    $cfTypes = $this->cfieldMgr->custom_field_types;
+
+    $items = array();
+    foreach ($rows as $row) {
+      $fid = intval($row['id']);
+      $typeInt = intval($row['type']);
+      $items[] = array(
+        'id' => $fid,
+        'name' => $row['name'],
+        'label' => $row['label'],
+        'type' => isset($cfTypes[$typeInt]) ? $cfTypes[$typeInt] : ('type ' . $typeInt),
+        'appliesTo' => isset($appliesTo[$fid]) ? implode(', ', $appliesTo[$fid]) : '',
+        'active' => intval($row['active']),
+        'enable_on_design' => intval($row['enable_on_design']),
+        'enable_on_execution' => intval($row['enable_on_execution']));
+    }
+
+    $response->getBody()->write(json_encode(
+      array('status' => 'ok', 'projectID' => $safeID, 'items' => $items)));
     return $response;
   }
 } // class end

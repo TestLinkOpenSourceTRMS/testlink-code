@@ -170,6 +170,83 @@ const en = {
 
   // export
   exportCsv: 'Export CSV',
+
+  // requirements
+  navRequirements: 'Requirements',
+  reqSpecs: 'Specifications',
+  newReqSpec: 'New spec',
+  newReqSpecTitle:
+    'New requirement spec (inside the selected spec, or at project root)',
+  reqSpecDocIdPlaceholder: 'Doc ID (e.g. RS-1)',
+  reqSpecTitlePlaceholder: 'Spec title',
+  pickReqSpec: 'Pick a specification to see its requirements.',
+  emptyReqSpec: 'No requirements in this spec yet — add the first one above.',
+  selectRequirement: 'Select a requirement to read it.',
+  newReqDocIdPlaceholder: 'Doc ID (e.g. REQ-1)',
+  newReqTitlePlaceholder: 'New requirement title',
+  scopeLabel: 'Scope',
+  coveredCases: 'Covered test cases',
+  noCoveredCases: 'No test cases cover this requirement yet.',
+  coverageSearchPlaceholder: 'Search cases to cover…',
+  unlink: 'Unlink',
+  reqPlanCoverage: (plan: string) => `Coverage in ${plan}`,
+  noReqCoverageInPlan:
+    'No covered test cases are linked to this plan yet.',
+  inPlanOfCovered: (inPlan: number, covered: number) =>
+    `${inPlan}/${covered} in plan`,
+
+  // admin
+  navAdmin: 'Admin',
+  adminNeedProject:
+    'Select a project to manage its keywords, platforms and custom fields.',
+  adminSaveError: 'Could not save. Check the fields and try again.',
+  adminTabUsers: 'Users',
+  adminTabKeywords: 'Keywords',
+  adminTabPlatforms: 'Platforms',
+  adminTabCustomFields: 'Custom fields',
+  // users tab
+  adminColLogin: 'Login',
+  adminColName: 'Name',
+  adminColEmail: 'Email',
+  adminColRole: 'Role',
+  adminColStatus: 'Status',
+  adminActivate: 'Activate',
+  adminDeactivate: 'Deactivate',
+  newUserTitle: 'New user',
+  userLoginPlaceholder: 'Login',
+  userPasswordPlaceholder: 'Password',
+  userFirstPlaceholder: 'First name',
+  userLastPlaceholder: 'Last name',
+  userEmailPlaceholder: 'Email',
+  createUser: 'Create user',
+  noUsers: 'No users.',
+  // keywords tab
+  keywordPlaceholder: 'Keyword',
+  keywordNotesPlaceholder: 'Notes (optional)',
+  addKeyword: 'Add keyword',
+  noKeywords: 'No keywords in this project yet.',
+  adminColKeyword: 'Keyword',
+  adminColNotes: 'Notes',
+  adminColUsage: 'Used by',
+  adminDelete: 'Delete',
+  confirmDeleteKeyword: (kw: string) =>
+    `Delete keyword "${kw}"? Its links to test cases will be removed too.`,
+  // platforms tab
+  platformNamePlaceholder: 'Platform name',
+  platformNotesPlaceholder: 'Notes (optional)',
+  addPlatform: 'Add platform',
+  noPlatforms: 'No platforms in this project yet.',
+  adminColPlatform: 'Platform',
+  adminColEnabled: 'Enabled on',
+  enabledDesign: 'Design',
+  enabledExecution: 'Execution',
+  // custom fields tab
+  adminColLabel: 'Label',
+  adminColType: 'Type',
+  adminColAppliesTo: 'Applies to',
+  noCustomFields: 'No custom fields linked to this project.',
+  cfLegacyHint:
+    'Custom field creation is done in the legacy UI for now — this list is read-only.',
 }
 
 export type Messages = typeof en
@@ -317,6 +394,78 @@ const ko: Messages = {
   buildReopen: '다시 열기',
 
   exportCsv: 'CSV 내보내기',
+
+  navRequirements: '요구사항',
+  reqSpecs: '요구사항 명세',
+  newReqSpec: '새 명세',
+  newReqSpecTitle: '새 요구사항 명세 (선택한 명세 안 또는 프로젝트 루트에 생성)',
+  reqSpecDocIdPlaceholder: '문서 ID (예: RS-1)',
+  reqSpecTitlePlaceholder: '명세 제목',
+  pickReqSpec: '명세를 선택하면 요구사항이 표시됩니다.',
+  emptyReqSpec:
+    '이 명세에는 아직 요구사항이 없습니다. 위에서 첫 요구사항을 추가해 보세요.',
+  selectRequirement: '요구사항을 선택해 내용을 확인하세요.',
+  newReqDocIdPlaceholder: '문서 ID (예: REQ-1)',
+  newReqTitlePlaceholder: '새 요구사항 제목',
+  scopeLabel: '범위',
+  coveredCases: '연결된 케이스',
+  noCoveredCases: '아직 이 요구사항을 커버하는 테스트 케이스가 없습니다.',
+  coverageSearchPlaceholder: '커버할 케이스 검색…',
+  unlink: '연결 해제',
+  reqPlanCoverage: (plan) => `${plan} 커버리지`,
+  noReqCoverageInPlan: '이 플랜에 연결된 커버 케이스가 아직 없습니다.',
+  inPlanOfCovered: (inPlan, covered) => `${covered}개 중 ${inPlan}개 플랜에 포함`,
+
+  navAdmin: '관리',
+  adminNeedProject: '프로젝트를 선택하면 키워드, 플랫폼, 커스텀 필드를 관리할 수 있습니다.',
+  adminSaveError: '저장하지 못했습니다. 입력값을 확인하고 다시 시도해 주세요.',
+  adminTabUsers: '사용자',
+  adminTabKeywords: '키워드',
+  adminTabPlatforms: '플랫폼',
+  adminTabCustomFields: '커스텀 필드',
+
+  adminColLogin: '아이디',
+  adminColName: '이름',
+  adminColEmail: '이메일',
+  adminColRole: '역할',
+  adminColStatus: '상태',
+  adminActivate: '활성화',
+  adminDeactivate: '비활성화',
+  newUserTitle: '새 사용자',
+  userLoginPlaceholder: '아이디',
+  userPasswordPlaceholder: '비밀번호',
+  userFirstPlaceholder: '이름',
+  userLastPlaceholder: '성',
+  userEmailPlaceholder: '이메일',
+  createUser: '사용자 생성',
+  noUsers: '사용자가 없습니다.',
+
+  keywordPlaceholder: '키워드',
+  keywordNotesPlaceholder: '설명 (선택)',
+  addKeyword: '키워드 추가',
+  noKeywords: '이 프로젝트에는 아직 키워드가 없습니다.',
+  adminColKeyword: '키워드',
+  adminColNotes: '설명',
+  adminColUsage: '사용 케이스',
+  adminDelete: '삭제',
+  confirmDeleteKeyword: (kw) =>
+    `키워드 "${kw}"를 삭제할까요? 테스트 케이스와의 연결도 함께 삭제됩니다.`,
+
+  platformNamePlaceholder: '플랫폼 이름',
+  platformNotesPlaceholder: '설명 (선택)',
+  addPlatform: '플랫폼 추가',
+  noPlatforms: '이 프로젝트에는 아직 플랫폼이 없습니다.',
+  adminColPlatform: '플랫폼',
+  adminColEnabled: '활성 범위',
+  enabledDesign: '설계',
+  enabledExecution: '실행',
+
+  adminColLabel: '레이블',
+  adminColType: '유형',
+  adminColAppliesTo: '적용 대상',
+  noCustomFields: '이 프로젝트에 연결된 커스텀 필드가 없습니다.',
+  cfLegacyHint:
+    '커스텀 필드 생성은 현재 레거시 UI에서 진행합니다. 이 목록은 읽기 전용입니다.',
 }
 
 const vi: Messages = {
@@ -457,6 +606,82 @@ const vi: Messages = {
   buildReopen: 'Mở lại',
 
   exportCsv: 'Xuất CSV',
+
+  navRequirements: 'Yêu cầu',
+  reqSpecs: 'Đặc tả yêu cầu',
+  newReqSpec: 'Đặc tả mới',
+  newReqSpecTitle:
+    'Đặc tả yêu cầu mới (trong đặc tả đang chọn, hoặc ở gốc dự án)',
+  reqSpecDocIdPlaceholder: 'Mã tài liệu (vd: RS-1)',
+  reqSpecTitlePlaceholder: 'Tiêu đề đặc tả',
+  pickReqSpec: 'Chọn một đặc tả để xem các yêu cầu.',
+  emptyReqSpec:
+    'Đặc tả này chưa có yêu cầu nào — hãy thêm cái đầu tiên ở trên.',
+  selectRequirement: 'Chọn một yêu cầu để xem nội dung.',
+  newReqDocIdPlaceholder: 'Mã tài liệu (vd: REQ-1)',
+  newReqTitlePlaceholder: 'Tiêu đề yêu cầu mới',
+  scopeLabel: 'Phạm vi',
+  coveredCases: 'Các ca kiểm thử bao phủ',
+  noCoveredCases: 'Chưa có ca kiểm thử nào bao phủ yêu cầu này.',
+  coverageSearchPlaceholder: 'Tìm ca kiểm thử để bao phủ…',
+  unlink: 'Hủy liên kết',
+  reqPlanCoverage: (plan) => `Độ bao phủ trong ${plan}`,
+  noReqCoverageInPlan:
+    'Chưa có ca được bao phủ nào liên kết với kế hoạch này.',
+  inPlanOfCovered: (inPlan, covered) =>
+    `${inPlan}/${covered} trong kế hoạch`,
+
+  navAdmin: 'Quản trị',
+  adminNeedProject:
+    'Chọn một dự án để quản lý từ khóa, nền tảng và trường tùy chỉnh của nó.',
+  adminSaveError: 'Không thể lưu. Hãy kiểm tra các trường và thử lại.',
+  adminTabUsers: 'Người dùng',
+  adminTabKeywords: 'Từ khóa',
+  adminTabPlatforms: 'Nền tảng',
+  adminTabCustomFields: 'Trường tùy chỉnh',
+
+  adminColLogin: 'Tên đăng nhập',
+  adminColName: 'Họ tên',
+  adminColEmail: 'Email',
+  adminColRole: 'Vai trò',
+  adminColStatus: 'Trạng thái',
+  adminActivate: 'Kích hoạt',
+  adminDeactivate: 'Vô hiệu hóa',
+  newUserTitle: 'Người dùng mới',
+  userLoginPlaceholder: 'Tên đăng nhập',
+  userPasswordPlaceholder: 'Mật khẩu',
+  userFirstPlaceholder: 'Tên',
+  userLastPlaceholder: 'Họ',
+  userEmailPlaceholder: 'Email',
+  createUser: 'Tạo người dùng',
+  noUsers: 'Không có người dùng nào.',
+
+  keywordPlaceholder: 'Từ khóa',
+  keywordNotesPlaceholder: 'Ghi chú (tùy chọn)',
+  addKeyword: 'Thêm từ khóa',
+  noKeywords: 'Dự án này chưa có từ khóa nào.',
+  adminColKeyword: 'Từ khóa',
+  adminColNotes: 'Ghi chú',
+  adminColUsage: 'Được dùng bởi',
+  adminDelete: 'Xóa',
+  confirmDeleteKeyword: (kw) =>
+    `Xóa từ khóa "${kw}"? Các liên kết với trường hợp kiểm thử cũng sẽ bị xóa.`,
+
+  platformNamePlaceholder: 'Tên nền tảng',
+  platformNotesPlaceholder: 'Ghi chú (tùy chọn)',
+  addPlatform: 'Thêm nền tảng',
+  noPlatforms: 'Dự án này chưa có nền tảng nào.',
+  adminColPlatform: 'Nền tảng',
+  adminColEnabled: 'Bật cho',
+  enabledDesign: 'Thiết kế',
+  enabledExecution: 'Thực thi',
+
+  adminColLabel: 'Nhãn',
+  adminColType: 'Loại',
+  adminColAppliesTo: 'Áp dụng cho',
+  noCustomFields: 'Không có trường tùy chỉnh nào liên kết với dự án này.',
+  cfLegacyHint:
+    'Việc tạo trường tùy chỉnh hiện được thực hiện trong giao diện cũ — danh sách này chỉ để xem.',
 }
 
 const dictionaries: Record<Locale, Messages> = { en, ko, vi }

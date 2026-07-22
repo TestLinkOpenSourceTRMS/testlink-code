@@ -127,6 +127,92 @@ export interface Build {
   is_open: string
 }
 
+export interface ReqSpec {
+  id: number
+  parent_id: number
+  name: string
+  doc_id: string
+  reqCount: number
+}
+
+export interface ReqRow {
+  id: number
+  name: string
+  req_doc_id: string
+  version: string
+  status: string
+  coverageCount: number
+}
+
+export interface ReqCoverageCase {
+  tcase_id: string
+  name: string
+  tc_external_id: string
+}
+
+export interface ReqDetail {
+  id: number
+  name: string
+  srs_id: string
+  req_doc_id: string
+  version: string
+  scope: string
+  status: string
+  expected_coverage: string
+  coverage: ReqCoverageCase[]
+}
+
+export interface ReqPlanCoverage {
+  req_id: number
+  req_doc_id: string
+  name: string
+  inPlan: number
+  covered: number
+  p: number
+  f: number
+  b: number
+  n: number
+}
+
+export interface AdminUser {
+  id: string
+  login: string
+  first: string
+  last: string
+  email: string
+  role_id: number
+  role: string | null
+  active: number
+}
+
+export interface Keyword {
+  id: number
+  keyword: string
+  notes: string
+  linkedCount: number
+}
+
+export interface Platform {
+  id: number
+  name: string
+  notes: string
+  enable_on_design: number
+  enable_on_execution: number
+  is_open: number
+  linked_count: number
+}
+
+export interface CustomField {
+  id: number
+  name: string
+  label: string
+  type: string
+  appliesTo: string
+  active: number
+  enable_on_design: number
+  enable_on_execution: number
+}
+
 export function getSession() {
   const raw = localStorage.getItem('tl.session')
   return raw ? (JSON.parse(raw) as { apikey: string; user: User }) : null
@@ -400,6 +486,122 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(patch),
     }),
+
+  reqSpecs: (projectId: string) =>
+    request<{ items: ReqSpec[] }>(`/testprojects/${projectId}/reqspecs`).then(
+      (r) => r.items,
+    ),
+
+  createReqSpec: (input: {
+    testProjectID: number
+    parentID?: number
+    docID: string
+    title: string
+  }) =>
+    request<{ status: string; id: number }>('/reqspecs', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  specRequirements: (specId: number) =>
+    request<{ items: ReqRow[] }>(`/reqspecs/${specId}/requirements`).then(
+      (r) => r.items,
+    ),
+
+  createRequirement: (input: {
+    reqSpecID: number
+    docID: string
+    title: string
+  }) =>
+    request<{ status: string; id: number; versionID: number }>(
+      '/requirements',
+      { method: 'POST', body: JSON.stringify(input) },
+    ),
+
+  requirementDetail: (reqId: number) =>
+    request<{ item: ReqDetail }>(`/requirements/${reqId}/detail`).then(
+      (r) => r.item,
+    ),
+
+  addReqCoverage: (reqId: number, tcaseIDs: number[]) =>
+    request<{ status: string; linked: number; skipped: number }>(
+      `/requirements/${reqId}/coverage`,
+      { method: 'POST', body: JSON.stringify({ tcaseIDs }) },
+    ),
+
+  removeReqCoverage: (reqId: number, tcaseId: number) =>
+    request<{ status: string; removed: number }>(
+      `/requirements/${reqId}/coverage/${tcaseId}`,
+      { method: 'DELETE' },
+    ),
+
+  planReqCoverage: (planId: string) =>
+    request<{ items: ReqPlanCoverage[] }>(
+      `/testplans/${planId}/reqCoverage`,
+    ).then((r) => r.items),
+
+  // ---- admin module ----
+  adminUsers: () =>
+    request<{ items: AdminUser[] }>('/users').then((r) => r.items),
+
+  createUser: (input: {
+    login: string
+    password: string
+    firstName: string
+    lastName: string
+    email: string
+    roleID?: number
+  }) =>
+    request<{ status: string; id: number; login: string }>('/users', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  setUserActive: (id: string, active: number) =>
+    request<{ status: string; id: number; active: number }>(`/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ active }),
+    }),
+
+  keywords: (projectId: string) =>
+    request<{ items: Keyword[] }>(
+      `/testprojects/${projectId}/keywords`,
+    ).then((r) => r.items),
+
+  createKeyword: (input: {
+    testProjectID: number
+    keyword: string
+    notes: string
+  }) =>
+    request<{ status: string; id: number }>('/keywords', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  deleteKeyword: (id: number) =>
+    request<{ status: string; id: number }>(`/keywords/${id}`, {
+      method: 'DELETE',
+    }),
+
+  platforms: (projectId: string) =>
+    request<{ items: Platform[] }>(
+      `/testprojects/${projectId}/platforms`,
+    ).then((r) => r.items),
+
+  createPlatform: (input: {
+    testProjectID: number
+    name: string
+    notes: string
+  }) =>
+    request<{ status: string; id: number }>('/platforms', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  customFields: (projectId: string) =>
+    request<{ items: CustomField[] }>(
+      `/testprojects/${projectId}/customfields`,
+    ).then((r) => r.items),
 
   recordExecution: (input: {
     testPlanID: number

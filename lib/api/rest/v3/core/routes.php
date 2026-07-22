@@ -41,6 +41,20 @@ return function (App $app) {
              array($app->restApi,'linkPlanCases'));
   $app->get('/users',
             array($app->restApi,'getUsers'));
+  $app->post('/users',
+             array($app->restApi,'createUser'));
+  $app->put('/users/{id}',
+            array($app->restApi,'updateUser'));
+  $app->get('/testprojects/{id}/keywords',
+            array($app->restApi,'getProjectKeywords'));
+  $app->delete('/keywords/{id}',
+               array($app->restApi,'deleteKeyword'));
+  $app->get('/testprojects/{id}/platforms',
+            array($app->restApi,'getProjectPlatforms'));
+  $app->post('/platforms',
+             array($app->restApi,'createPlatform'));
+  $app->get('/testprojects/{id}/customfields',
+            array($app->restApi,'getProjectCustomFields'));
   $app->get('/testprojects/{id}/search',
             array($app->restApi,'searchTestCases'));
   $app->post('/executions/{id}/attachments',
@@ -55,6 +69,22 @@ return function (App $app) {
             array($app->restApi,'getPlanByTester'));
   $app->get('/testplans/{id}/byBuild',
             array($app->restApi,'getPlanByBuild'));
+  $app->get('/testprojects/{id}/reqspecs',
+            array($app->restApi,'getProjectReqSpecs'));
+  $app->post('/reqspecs',
+             array($app->restApi,'createReqSpec'));
+  $app->get('/reqspecs/{id}/requirements',
+            array($app->restApi,'getReqSpecRequirements'));
+  $app->post('/requirements',
+             array($app->restApi,'createRequirement'));
+  $app->get('/requirements/{id}/detail',
+            array($app->restApi,'getRequirementDetail'));
+  $app->post('/requirements/{id}/coverage',
+             array($app->restApi,'addRequirementCoverage'));
+  $app->delete('/requirements/{id}/coverage/{tcaseID}',
+               array($app->restApi,'deleteRequirementCoverage'));
+  $app->get('/testplans/{id}/reqCoverage',
+            array($app->restApi,'getPlanReqCoverage'));
 
   $app->get('/testprojects',
             array($app->restApi,'testprojects'));

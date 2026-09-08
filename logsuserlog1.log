@@ -1,0 +1,414 @@
+	[26/Sep/8 09:57:58][AUDIT][ud1kd5r1nlba8cba2re588ejls][GUI]
+		Login for 'admin' from '::1' succeeded
+[<<][6a9fdc268d6c4792166630][DEFAULT][/testlink/login.php][26/Sep/8 09:57:58][26/Sep/8 09:57:58][took 0.071076 secs]
+[<<][6a9fdc26c1095454444918][DEFAULT][/testlink/index.php][26/Sep/8 09:57:58][26/Sep/8 09:57:58][took 0.084057 secs]
+[>>][6a9fdc26d62f8040233358][DEFAULT][/testlink/index.php][26/Sep/8 09:57:58]
+[<<][6a9fdc26d62f8040233358][DEFAULT][/testlink/index.php][26/Sep/8 09:57:58][26/Sep/8 09:57:59][took 0.135511 secs]
+[<<][6a9fdc2722056408981737][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 09:57:59][26/Sep/8 09:57:59][took 0.079255 secs]
+[>>][6a9fdc273624f987056164][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 09:57:59]
+[<<][6a9fdc273624f987056164][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 09:57:59][26/Sep/8 09:57:59][took 0.028211 secs]
+[>>][6a9fdc273dac8218354759][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 09:57:59]
+[<<][6a9fdc273dac8218354759][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 09:57:59][26/Sep/8 09:57:59][took 0.563732 secs]
+[<<][6a9fdc2726175073740806][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 09:57:59][26/Sep/8 09:57:59][took 0.698788 secs]
+[>>][6a9fdc27d167c783992905][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 09:57:59]
+[<<][6a9fdc27d167c783992905][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 09:57:59][26/Sep/8 09:57:59][took 0.006324 secs]
+[>>][6a9fdc27d3574747198829][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 09:57:59]
+[<<][6a9fdc27d3574747198829][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 09:57:59][26/Sep/8 09:57:59][took 0.032958 secs]
+[<<][6a9fdc27ebcbb182586115][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 09:57:59][26/Sep/8 09:58:00][took 0.079768 secs]
+[>>][6a9fdc280bfa4382175394][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 09:58:00]
+[<<][6a9fdc280bfa4382175394][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 09:58:00][26/Sep/8 09:58:00][took 0.011895 secs]
+[>>][6a9fdc280fc3b455160820][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 09:58:00]
+[<<][6a9fdc280fc3b455160820][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 09:58:00][26/Sep/8 09:58:02][took 2.027758 secs]
+[<<][6a9fdc743817c955149206][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 09:59:16][26/Sep/8 09:59:16][took 0.052654 secs]
+[>>][6a9fdc74457db701600532][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 09:59:16]
+[<<][6a9fdc74457db701600532][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 09:59:16][26/Sep/8 09:59:16][took 0.008242 secs]
+[>>][6a9fdc7447d0b472138865][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 09:59:16]
+[<<][6a9fdc7447d0b472138865][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 09:59:16][26/Sep/8 09:59:16][took 0.019128 secs]
+[<<][6a9fdd1bb3976693467772][DEFAULT][/testlink/index.php][26/Sep/8 10:02:03][26/Sep/8 10:02:03][took 0.071229 secs]
+[>>][6a9fdd1bc5b2e498010534][DEFAULT][/testlink/index.php][26/Sep/8 10:02:03]
+[<<][6a9fdd1bc5b2e498010534][DEFAULT][/testlink/index.php][26/Sep/8 10:02:03][26/Sep/8 10:02:03][took 0.014058 secs]
+[<<][6a9fdd1bdf3a1040622418][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:02:03][26/Sep/8 10:02:03][took 0.050495 secs]
+[>>][6a9fdd1bec146172233675][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:02:03]
+[<<][6a9fdd1bec146172233675][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:02:03][26/Sep/8 10:02:03][took 0.007111 secs]
+[>>][6a9fdd1bee397538762486][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:02:03]
+[<<][6a9fdd1bee397538762486][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:02:03][26/Sep/8 10:02:04][took 0.060269 secs]
+[<<][6a9fdd1be1f1c117374950][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:02:03][26/Sep/8 10:02:04][took 0.154636 secs]
+[>>][6a9fdd1c13feb704855518][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:02:04]
+[<<][6a9fdd1c13feb704855518][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:02:04][26/Sep/8 10:02:04][took 0.022751 secs]
+[>>][6a9fdd1c1a481946147632][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:02:04]
+[<<][6a9fdd1c1a481946147632][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:02:04][26/Sep/8 10:02:04][took 0.052178 secs]
+[<<][6a9fdd1c3a8a8745566361][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:02:04][26/Sep/8 10:02:04][took 0.068582 secs]
+[>>][6a9fdd1c4bdde749648340][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:02:04]
+[<<][6a9fdd1c4bdde749648340][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:02:04][26/Sep/8 10:02:04][took 0.007904 secs]
+[>>][6a9fdd1c4e623112601667][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:02:04]
+[<<][6a9fdd1c4e623112601667][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:02:04][26/Sep/8 10:02:04][took 0.053265 secs]
+[<<][6a9fdd1ea0760771951768][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:02:06][26/Sep/8 10:02:06][took 0.051416 secs]
+[>>][6a9fdd1ead941574351009][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:02:06]
+[<<][6a9fdd1ead941574351009][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:02:06][26/Sep/8 10:02:06][took 0.00436 secs]
+[>>][6a9fdd1eaf037622086047][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:02:06]
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "gui_cfg" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "testproject_coloring" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "main_descr" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 120
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 120
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "caption" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 123
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 123
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "mgt_view_events" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 125
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 125
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined property: stdClass::$found - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 141
+	[26/Sep/8 10:02:06][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined property: stdClass::$tprojectName - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 409
+[<<][6a9fdd1eaf037622086047][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:02:06][26/Sep/8 10:02:06][took 0.140996 secs]
+[<<][6a9fdd20e43c5944340458][DEFAULT][/testlink/index.php][26/Sep/8 10:02:08][26/Sep/8 10:02:09][took 0.083657 secs]
+[>>][6a9fdd21053b6213099716][DEFAULT][/testlink/index.php][26/Sep/8 10:02:09]
+[<<][6a9fdd21053b6213099716][DEFAULT][/testlink/index.php][26/Sep/8 10:02:09][26/Sep/8 10:02:09][took 0.015111 secs]
+[<<][6a9fdd212c223910600398][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:02:09][26/Sep/8 10:02:09][took 0.053568 secs]
+[>>][6a9fdd2139917143041983][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:02:09]
+[<<][6a9fdd2139917143041983][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:02:09][26/Sep/8 10:02:09][took 0.007679 secs]
+[>>][6a9fdd213c078065237340][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:02:09]
+[<<][6a9fdd213c078065237340][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:02:09][26/Sep/8 10:02:09][took 0.048116 secs]
+[<<][6a9fdd212c223312157154][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:02:09][26/Sep/8 10:02:09][took 0.176976 secs]
+[>>][6a9fdd2158154196202593][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:02:09]
+[<<][6a9fdd2158154196202593][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:02:09][26/Sep/8 10:02:09][took 0.026968 secs]
+[>>][6a9fdd215f74e287549382][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:02:09]
+[<<][6a9fdd215f74e287549382][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:02:09][26/Sep/8 10:02:09][took 0.035777 secs]
+[<<][6a9fdd2177268096350800][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:02:09][26/Sep/8 10:02:09][took 0.061185 secs]
+[>>][6a9fdd2186ad0660249392][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:02:09]
+[<<][6a9fdd2186ad0660249392][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:02:09][26/Sep/8 10:02:09][took 0.0076090000000001 secs]
+[>>][6a9fdd21890e0437144494][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:02:09]
+[<<][6a9fdd21890e0437144494][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:02:09][26/Sep/8 10:02:09][took 0.05982 secs]
+[<<][6a9fdd2caa6bf003501206][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:02:20][26/Sep/8 10:02:20][took 0.055158 secs]
+[>>][6a9fdd2cb86ce976903154][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:02:20]
+[<<][6a9fdd2cb86ce976903154][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:02:20][26/Sep/8 10:02:20][took 0.00634 secs]
+[>>][6a9fdd2cba799449589656][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:02:20]
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "gui_cfg" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "testproject_coloring" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "main_descr" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 120
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 120
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "caption" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 123
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 123
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "mgt_view_events" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 125
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 125
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined property: stdClass::$found - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 141
+	[26/Sep/8 10:02:20][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined property: stdClass::$tprojectName - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 409
+[<<][6a9fdd2cba799449589656][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:02:20][26/Sep/8 10:02:20][took 0.060348 secs]
+[<<][6a9fde1a8f820127023157][DEFAULT][/testlink/index.php][26/Sep/8 10:06:18][26/Sep/8 10:06:18][took 0.079437 secs]
+[>>][6a9fde1aa39e0127013201][DEFAULT][/testlink/index.php][26/Sep/8 10:06:18]
+[<<][6a9fde1aa39e0127013201][DEFAULT][/testlink/index.php][26/Sep/8 10:06:18][26/Sep/8 10:06:18][took 0.015366 secs]
+[<<][6a9fde1ac36b7230142093][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:06:18][26/Sep/8 10:06:18][took 0.06355 secs]
+[>>][6a9fde1ad3677727893475][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:06:18]
+[<<][6a9fde1ad3677727893475][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:06:18][26/Sep/8 10:06:18][took 0.007286 secs]
+[>>][6a9fde1ad5a36923262786][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:06:18]
+[<<][6a9fde1ad5a36923262786][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:06:18][26/Sep/8 10:06:19][took 0.134486 secs]
+[<<][6a9fde1ac46ab172157785][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:06:18][26/Sep/8 10:06:19][took 0.240866 secs]
+[>>][6a9fde1b0ba53475333487][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:06:19]
+[<<][6a9fde1b0ba53475333487][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:06:19][26/Sep/8 10:06:19][took 0.008475 secs]
+[>>][6a9fde1b0e371887740952][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:06:19]
+[<<][6a9fde1b0e371887740952][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:06:19][26/Sep/8 10:06:19][took 0.043839 secs]
+[<<][6a9fde1b2d66d550604143][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:06:19][26/Sep/8 10:06:19][took 0.064067 secs]
+[>>][6a9fde1b3d958224413100][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:06:19]
+[<<][6a9fde1b3d958224413100][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:06:19][26/Sep/8 10:06:19][took 0.006044 secs]
+[>>][6a9fde1b3f808070550990][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:06:19]
+[<<][6a9fde1b3f808070550990][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:06:19][26/Sep/8 10:06:19][took 0.058234 secs]
+[<<][6a9fde1da416c644314010][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:06:21][26/Sep/8 10:06:21][took 0.06195 secs]
+[>>][6a9fde1db3bda353304693][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:06:21]
+[<<][6a9fde1db3bda353304693][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:06:21][26/Sep/8 10:06:21][took 0.0048010000000001 secs]
+[>>][6a9fde1db535a526137480][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:06:21]
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "gui_cfg" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "testproject_coloring" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "main_descr" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 120
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 120
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "caption" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 123
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 123
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "mgt_view_events" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 125
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 125
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined property: stdClass::$found - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 141
+	[26/Sep/8 10:06:21][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined property: stdClass::$tprojectName - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 409
+[<<][6a9fde1db535a526137480][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:06:21][26/Sep/8 10:06:21][took 0.056156 secs]
+[<<][6a9fde9a65ea2096493441][DEFAULT][/testlink/index.php][26/Sep/8 10:08:26][26/Sep/8 10:08:26][took 0.066492 secs]
+[>>][6a9fde9a76da4311237565][DEFAULT][/testlink/index.php][26/Sep/8 10:08:26]
+[<<][6a9fde9a76da4311237565][DEFAULT][/testlink/index.php][26/Sep/8 10:08:26][26/Sep/8 10:08:26][took 0.012287 secs]
+[<<][6a9fde9ab5c02164896695][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:08:26][26/Sep/8 10:08:26][took 0.152674 secs]
+[>>][6a9fde9add371925630239][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:08:26]
+[<<][6a9fde9add371925630239][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:08:26][26/Sep/8 10:08:26][took 0.0057429999999999 secs]
+[>>][6a9fde9adf0d0871246266][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:08:26]
+[<<][6a9fde9adf0d0871246266][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:08:26][26/Sep/8 10:08:26][took 0.046973 secs]
+[<<][6a9fde9acf476847684769][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:08:26][26/Sep/8 10:08:27][took 0.17736 secs]
+[>>][6a9fde9b0802e166391576][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:08:27]
+[<<][6a9fde9b0802e166391576][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:08:27][26/Sep/8 10:08:27][took 0.008465 secs]
+[>>][6a9fde9b0a805914376019][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:08:27]
+[<<][6a9fde9b0a805914376019][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:08:27][26/Sep/8 10:08:27][took 0.049537 secs]
+[<<][6a9fde9b29f24922091243][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:08:27][26/Sep/8 10:08:27][took 0.06153 secs]
+[>>][6a9fde9b399a9703879380][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:08:27]
+[<<][6a9fde9b399a9703879380][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:08:27][26/Sep/8 10:08:27][took 0.005812 secs]
+[>>][6a9fde9b3b6ec477432901][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:08:27]
+[<<][6a9fde9b3b6ec477432901][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:08:27][26/Sep/8 10:08:27][took 0.063277 secs]
+[<<][6a9fde9d3b66b166499414][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:08:29][26/Sep/8 10:08:29][took 0.076936 secs]
+[>>][6a9fde9d4f05d804104915][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:08:29]
+[<<][6a9fde9d4f05d804104915][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:08:29][26/Sep/8 10:08:29][took 0.009622 secs]
+[>>][6a9fde9d5239f195224475][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:08:29]
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "gui_cfg" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "testproject_coloring" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "main_descr" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 120
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 120
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "caption" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 123
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 123
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "mgt_view_events" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 125
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 125
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined property: stdClass::$found - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 141
+	[26/Sep/8 10:08:29][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined property: stdClass::$tprojectName - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 409
+[<<][6a9fde9d5239f195224475][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:08:29][26/Sep/8 10:08:29][took 0.062228 secs]
+[<<][6a9fdf3c50e5e638002039][DEFAULT][/testlink/index.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.025681 secs]
+[>>][6a9fdf3c5770d540621857][DEFAULT][/testlink/index.php][26/Sep/8 10:11:08]
+[<<][6a9fdf3c5770d540621857][DEFAULT][/testlink/index.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.006496 secs]
+[<<][6a9fdf3c6ce78091118686][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.027442 secs]
+[>>][6a9fdf3c73f61506679271][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:11:08]
+[<<][6a9fdf3c73f61506679271][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.003477 secs]
+[>>][6a9fdf3c75092466898166][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:11:08]
+[<<][6a9fdf3c75092466898166][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.039331 secs]
+[<<][6a9fdf3c6e585135983926][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.107334 secs]
+[>>][6a9fdf3c88e61226423902][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:11:08]
+[<<][6a9fdf3c88e61226423902][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.006183 secs]
+[>>][6a9fdf3c8aacf666228146][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:11:08]
+[<<][6a9fdf3c8aacf666228146][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.015892 secs]
+[<<][6a9fdf3c9649c393222854][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.021608 secs]
+[>>][6a9fdf3c9bd59445974751][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:11:08]
+[<<][6a9fdf3c9bd59445974751][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.0072840000000001 secs]
+[>>][6a9fdf3c9de3e063970771][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:11:08]
+[<<][6a9fdf3c9de3e063970771][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:11:08][26/Sep/8 10:11:08][took 0.050012 secs]
+[<<][6a9fdf3e79e61439679832][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:11:10][26/Sep/8 10:11:10][took 0.056034 secs]
+[>>][6a9fdf3e88137250354355][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:11:10]
+[<<][6a9fdf3e88137250354355][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:11:10][26/Sep/8 10:11:10][took 0.004593 secs]
+[>>][6a9fdf3e899ef524816255][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:11:10]
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "gui_cfg" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "testproject_coloring" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 53
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "main_descr" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 120
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 120
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "caption" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 123
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 123
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined array key "mgt_view_events" - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 125
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 125
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined property: stdClass::$found - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 141
+	[26/Sep/8 10:11:10][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI]
+		E_WARNING
+Undefined property: stdClass::$tprojectName - in C:\xampp\htdocs\testlink\gui\templates_c\fab3dea92506ed8c9f7911be76167cb16a20085d_0.file.projectEdit.tpl.php - Line 409
+[<<][6a9fdf3e899ef524816255][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:11:10][26/Sep/8 10:11:10][took 0.151257 secs]
+[<<][6a9fdf8fa6150838227012][DEFAULT][/testlink/logout.php][26/Sep/8 10:12:31][26/Sep/8 10:12:31][took 0.065279 secs]
+[>>][6a9fdf8fb6a00313182271][DEFAULT][/testlink/logout.php][26/Sep/8 10:12:31]
+[<<][6a9fdf8fb6a00313182271][DEFAULT][/testlink/logout.php][26/Sep/8 10:12:31][26/Sep/8 10:12:31][took 0.01015 secs]
+[>>][6a9fdf8fb9a4e825840769][DEFAULT][/testlink/logout.php][26/Sep/8 10:12:31]
+	[26/Sep/8 10:12:31][AUDIT][ud1kd5r1nlba8cba2re588ejls][GUI]
+		Logout of 'admin'
+	[26/Sep/8 10:12:34][AUDIT][ud1kd5r1nlba8cba2re588ejls][GUI]
+		Login for 'admin' from '::1' succeeded
+[<<][6a9fdf9214a7f603167624][DEFAULT][/testlink/login.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.064721 secs]
+[<<][6a9fdf92367d1706931952][DEFAULT][/testlink/index.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.057682 secs]
+[>>][6a9fdf924516c323185193][DEFAULT][/testlink/index.php][26/Sep/8 10:12:34]
+[<<][6a9fdf924516c323185193][DEFAULT][/testlink/index.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.009845 secs]
+[<<][6a9fdf9260056053353640][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.057566 secs]
+[>>][6a9fdf926e9cf841555519][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:12:34]
+[<<][6a9fdf926e9cf841555519][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.006779 secs]
+[>>][6a9fdf9270acb560675545][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:12:34]
+[<<][6a9fdf9270acb560675545][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.059544 secs]
+[<<][6a9fdf926009b111446863][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.173995 secs]
+[>>][6a9fdf928b0df487142150][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:12:34]
+[<<][6a9fdf928b0df487142150][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.0070330000000001 secs]
+[>>][6a9fdf928d30b976045994][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:12:34]
+[<<][6a9fdf928d30b976045994][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.029753 secs]
+[<<][6a9fdf92a16f6980055663][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.061876 secs]
+[>>][6a9fdf92b1135559785984][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:12:34]
+[<<][6a9fdf92b1135559785984][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.0094339999999999 secs]
+[>>][6a9fdf92b3d25077357474][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:12:34]
+[<<][6a9fdf92b3d25077357474][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:12:34][26/Sep/8 10:12:34][took 0.057279 secs]
+[<<][6a9fdfa568f88445243544][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:12:53][26/Sep/8 10:12:53][took 0.054653 secs]
+[>>][6a9fdfa576d81439026906][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:12:53]
+[<<][6a9fdfa576d81439026906][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:12:53][26/Sep/8 10:12:53][took 0.004549 secs]
+[>>][6a9fdfa57853f151540074][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:12:53]
+	[26/Sep/8 10:12:53][AUDIT][ud1kd5r1nlba8cba2re588ejls][GUI - Test Project ID : 1]
+		Test Project 'Tayo' was created
+	[26/Sep/8 10:12:54][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI - Test Project ID : 1]
+		E_WARNING
+Undefined array key "DataTablesSelector" - in C:\xampp\htdocs\testlink\gui\templates_c\0e0946dd7a5d2f4e922349992e3e4b1125256677_0.file.DataTables.inc.tpl.php - Line 35
+	[26/Sep/8 10:12:54][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI - Test Project ID : 1]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\0e0946dd7a5d2f4e922349992e3e4b1125256677_0.file.DataTables.inc.tpl.php - Line 35
+[<<][6a9fdfa57853f151540074][DEFAULT][/testlink/lib/project/projectEdit.php][26/Sep/8 10:12:53][26/Sep/8 10:12:54][took 1.479322 secs]
+[<<][6a9fdfa72e590040894807][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:12:55][26/Sep/8 10:12:55][took 0.073586 secs]
+[>>][6a9fdfa740e52056584805][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:12:55]
+[<<][6a9fdfa740e52056584805][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:12:55][26/Sep/8 10:12:55][took 0.005718 secs]
+[>>][6a9fdfa742aba299211759][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:12:55]
+[<<][6a9fdfa742aba299211759][DEFAULT][/testlink/lib/general/navBar.php][26/Sep/8 10:12:55][26/Sep/8 10:12:55][took 0.032659 secs]
+[<<][6a9fdfa7677ba632821311][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:12:55][26/Sep/8 10:12:55][took 0.057111 secs]
+[>>][6a9fdfa7760a8117416064][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:12:55]
+[<<][6a9fdfa7760a8117416064][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:12:55][26/Sep/8 10:12:55][took 0.007169 secs]
+[>>][6a9fdfa77840b831365883][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:12:55]
+[<<][6a9fdfa77840b831365883][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:12:55][26/Sep/8 10:12:58][took 2.746606 secs]
+[<<][6a9fdffb62de2515444927][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:19][26/Sep/8 10:14:19][took 0.088956 secs]
+[>>][6a9fdffb79654470068402][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:19]
+[<<][6a9fdffb79654470068402][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:19][26/Sep/8 10:14:19][took 0.010011 secs]
+[>>][6a9fdffb7c71e133576121][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:19]
+[<<][6a9fdffb7c71e133576121][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:19][26/Sep/8 10:14:22][took 3.36324 secs]
+[<<][6a9fdffdbed51444560437][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:21][26/Sep/8 10:14:22][took 1.133321 secs]
+[>>][6a9fdffee0035384466824][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:22]
+[<<][6a9fdffee0035384466824][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:22][26/Sep/8 10:14:22][took 0.007566 secs]
+[>>][6a9fdffee249c117655738][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:22]
+[<<][6a9fdffee249c117655738][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:22][26/Sep/8 10:14:23][took 0.202922 secs]
+[<<][6a9fe0147e7dc518310221][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:44][26/Sep/8 10:14:44][took 0.071241 secs]
+[>>][6a9fe0149075f144917916][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:44]
+[<<][6a9fe0149075f144917916][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:44][26/Sep/8 10:14:44][took 0.005814 secs]
+[>>][6a9fe014927ae831945024][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:44]
+	[26/Sep/8 10:14:44][AUDIT][ud1kd5r1nlba8cba2re588ejls][GUI - Test Project ID : 1]
+		Password of user 'admin' was saved
+[<<][6a9fe014927ae831945024][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:14:44][26/Sep/8 10:14:45][took 0.459825 secs]
+[<<][6a9fe046188a6486185299][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:15:34][26/Sep/8 10:15:34][took 0.058435 secs]
+[>>][6a9fe046276d9100972195][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:15:34]
+[<<][6a9fe046276d9100972195][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:15:34][26/Sep/8 10:15:34][took 0.00856 secs]
+[>>][6a9fe0462a346928498116][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:15:34]
+[<<][6a9fe0462a346928498116][DEFAULT][/testlink/lib/usermanagement/userInfo.php][26/Sep/8 10:15:34][26/Sep/8 10:15:34][took 0.256551 secs]
+[<<][6a9fe0482c79c662703451][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:36][26/Sep/8 10:15:36][took 0.062428 secs]
+[>>][6a9fe0483c494772476492][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:36]
+[<<][6a9fe0483c494772476492][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:36][26/Sep/8 10:15:36][took 0.008968 secs]
+[>>][6a9fe0483ee01111827976][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:36]
+[<<][6a9fe0483ee01111827976][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:36][26/Sep/8 10:15:36][took 0.038302 secs]
+[<<][6a9fe04cb5c24949540715][DEFAULT][/testlink/lib/plan/planView.php][26/Sep/8 10:15:40][26/Sep/8 10:15:40][took 0.053447 secs]
+[>>][6a9fe04cc35d4663857801][DEFAULT][/testlink/lib/plan/planView.php][26/Sep/8 10:15:40]
+[<<][6a9fe04cc35d4663857801][DEFAULT][/testlink/lib/plan/planView.php][26/Sep/8 10:15:40][26/Sep/8 10:15:40][took 0.0049709999999999 secs]
+[>>][6a9fe04cc4feb217306552][DEFAULT][/testlink/lib/plan/planView.php][26/Sep/8 10:15:40]
+[<<][6a9fe04cc4feb217306552][DEFAULT][/testlink/lib/plan/planView.php][26/Sep/8 10:15:40][26/Sep/8 10:15:42][took 1.239434 secs]
+[<<][6a9fe0506427e914104728][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:44][26/Sep/8 10:15:44][took 0.096749 secs]
+[>>][6a9fe0507caab026676297][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:44]
+[<<][6a9fe0507caab026676297][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:44][26/Sep/8 10:15:44][took 0.027373 secs]
+[>>][6a9fe050844a0213301553][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:44]
+[<<][6a9fe050844a0213301553][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:44][26/Sep/8 10:15:44][took 0.044221 secs]
+[<<][6a9fe05212e81723784551][DEFAULT][/lib/issuetrackers/issueTrackerView.php][26/Sep/8 10:15:46][26/Sep/8 10:15:46][took 0.052416 secs]
+[>>][6a9fe0522031c179570673][DEFAULT][/lib/issuetrackers/issueTrackerView.php][26/Sep/8 10:15:46]
+[<<][6a9fe0522031c179570673][DEFAULT][/lib/issuetrackers/issueTrackerView.php][26/Sep/8 10:15:46][26/Sep/8 10:15:46][took 0.022197 secs]
+[>>][6a9fe05226423548048990][DEFAULT][/lib/issuetrackers/issueTrackerView.php][26/Sep/8 10:15:46]
+[<<][6a9fe05226423548048990][DEFAULT][/lib/issuetrackers/issueTrackerView.php][26/Sep/8 10:15:46][26/Sep/8 10:15:46][took 0.676301 secs]
+[<<][6a9fe054aad21633628941][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:48][26/Sep/8 10:15:48][took 0.098082 secs]
+[>>][6a9fe054c376d070045837][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:48]
+[<<][6a9fe054c376d070045837][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:48][26/Sep/8 10:15:48][took 0.009598 secs]
+[>>][6a9fe054c656c533061226][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:48]
+[<<][6a9fe054c656c533061226][DEFAULT][/testlink/lib/general/mainPage.php][26/Sep/8 10:15:48][26/Sep/8 10:15:48][took 0.038906 secs]
+[<<][6a9fe057e050e821236955][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:15:51][26/Sep/8 10:15:52][took 0.126361 secs]
+[>>][6a9fe0580b7f7204550478][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:15:52]
+[<<][6a9fe0580b7f7204550478][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:15:52][26/Sep/8 10:15:52][took 0.019 secs]
+[>>][6a9fe058109f0899529447][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:15:52]
+	[26/Sep/8 10:15:52][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI - Test Project ID : 1]
+		E_WARNING
+Undefined array key "DataTablesSelector" - in C:\xampp\htdocs\testlink\gui\templates_c\0e0946dd7a5d2f4e922349992e3e4b1125256677_0.file.DataTables.inc.tpl.php - Line 35
+	[26/Sep/8 10:15:52][WARNING][ud1kd5r1nlba8cba2re588ejls][GUI - Test Project ID : 1]
+		E_WARNING
+Attempt to read property "value" on null - in C:\xampp\htdocs\testlink\gui\templates_c\0e0946dd7a5d2f4e922349992e3e4b1125256677_0.file.DataTables.inc.tpl.php - Line 35
+[<<][6a9fe058109f0899529447][DEFAULT][/testlink/lib/project/projectView.php][26/Sep/8 10:15:52][26/Sep/8 10:15:52][took 0.083886 secs]

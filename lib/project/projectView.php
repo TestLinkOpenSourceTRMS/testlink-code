@@ -101,12 +101,15 @@ function initializeGui(&$dbHandler,&$argsObj) {
   $cfg = getWebEditorCfg('testproject');
   $guiObj->editorType = $cfg['type'];
 
-  $guiObj->itemQty = count($guiObj->tprojects);
+  $guiObj->itemQty = is_array($guiObj->tprojects) ? count($guiObj->tprojects) : 0;
 
   if($guiObj->itemQty > 0) {
     $guiObj->pageTitle .= ' ' . sprintf(lang_get('available_test_projects'),$guiObj->itemQty);
  
-    initIntegrations($guiObj->tprojects,$guiObj->itemQty,$tplEngine);
+    if ($guiObj->itemQty > 0 && is_array($guiObj->tprojects)) {
+    $guiObj->pageTitle .= ' ' . sprintf(lang_get('available_test_projects'), $guiObj->itemQty);
+    initIntegrations($guiObj->tprojects, $guiObj->itemQty, $tplEngine);
+    }
   }  
 
   return array($guiObj,$tplEngine);

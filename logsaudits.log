@@ -1,0 +1,10 @@
+	[26/Sep/8 09:57:58][AUDIT][ud1kd5r1nlba8cba2re588ejls][GUI]
+		Login for 'admin' from '::1' succeeded
+	[26/Sep/8 10:12:31][AUDIT][ud1kd5r1nlba8cba2re588ejls][GUI]
+		Logout of 'admin'
+	[26/Sep/8 10:12:34][AUDIT][ud1kd5r1nlba8cba2re588ejls][GUI]
+		Login for 'admin' from '::1' succeeded
+	[26/Sep/8 10:12:53][AUDIT][ud1kd5r1nlba8cba2re588ejls][GUI - Test Project ID : 1]
+		Test Project 'Tayo' was created
+	[26/Sep/8 10:14:44][AUDIT][ud1kd5r1nlba8cba2re588ejls][GUI - Test Project ID : 1]
+		Password of user 'admin' was saved

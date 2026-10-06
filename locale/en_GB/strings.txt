@@ -4180,4 +4180,14 @@ $TLS_exec_stats_on_testproject = 'Execution Activity for Test project';
 $TLS_link_report_exec_stats_on_testproject = 'Execution Activity';
 $TLS_exec_qty = "Numer of Executions";
 
+$TLS_title_results_trend = "Execution Trend & Flaky Tests";
+$TLS_link_report_results_trend = "Execution Trend & Flaky Tests";
+$TLS_trend_daily_executions = "Daily executions by status";
+$TLS_trend_flaky_title = "Flaky test candidates";
+$TLS_trend_flaky_help = "Test case versions whose executions flip between pass and fail. Frequent flips usually mean an unstable test or an unstable feature.";
+$TLS_trend_flaky_flips = "Status flips";
+$TLS_trend_flaky_execs = "Executions analyzed";
+$TLS_trend_analyzed_hint = "Test case versions analyzed";
+$TLS_trend_no_data = "No execution data available for this test plan.";
+
 // ----- END -----------------------------------------------------

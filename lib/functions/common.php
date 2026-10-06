@@ -44,6 +44,7 @@ require_once('tlsmarty.inc.php');
 
 /** Initialize the Event System */
 require_once('event_api.php' );
+require_once('webhook_api.php');
 
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');

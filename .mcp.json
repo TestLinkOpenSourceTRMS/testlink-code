@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "testlink": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["mcp/dist/index.js"],
+      "env": {
+        "TESTLINK_URL": "${TESTLINK_URL:-http://localhost:8090}",
+        "TESTLINK_APIKEY": "${TESTLINK_APIKEY}"
+      }
+    }
+  }
+}

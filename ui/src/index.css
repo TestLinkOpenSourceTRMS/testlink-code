@@ -1,0 +1,61 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/space-grotesk';
+@import '@fontsource-variable/inter';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
+@theme {
+  /* paper & ink — quiet neutral base, all chroma reserved for verdicts */
+  --color-paper: #fafaf8;
+  --color-panel: #ffffff;
+  --color-ink: #1a1d21;
+  --color-rail: #22262b;
+  --color-rail-hover: #2e333a;
+  --color-line: #e4e4de;
+  --color-mute: #6b7280;
+
+  /* the four verdicts — the only saturated colors in the app */
+  --color-pass: #2f9e63;
+  --color-fail: #d64545;
+  --color-blocked: #e8a13c;
+  --color-notrun: #8b93a1;
+
+  /* interactive accent — restrained teal, never used for status */
+  --color-accent: #0e7c86;
+  --color-accent-soft: #e3f1f2;
+
+  --font-display: 'Space Grotesk Variable', sans-serif;
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-paper text-ink font-sans text-[13.5px] antialiased;
+}
+
+/* verdict spine — the colored left rail that encodes status everywhere */
+.spine {
+  @apply relative pl-3;
+}
+.spine::before {
+  content: '';
+  @apply absolute top-1 bottom-1 left-0 w-[3px] rounded-full;
+  background: var(--spine-color, var(--color-notrun));
+}
+.spine-p { --spine-color: var(--color-pass); }
+.spine-f { --spine-color: var(--color-fail); }
+.spine-b { --spine-color: var(--color-blocked); }
+.spine-n { --spine-color: var(--color-notrun); }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

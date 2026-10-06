@@ -160,12 +160,22 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
 
       $sql .= ',' . $dura . ")";
 
-      $db->exec_query($sql);    
-      
-      // at least for Postgres DBMS table name is needed. 
+      $db->exec_query($sql);
+
+      // at least for Postgres DBMS table name is needed.
       $execution_id = $db->insert_id($executions_table);
-      
+
       $execSet[$tcversion_id] = $execution_id;
+
+      webhook_notify('execution.created',
+        array('executionID' => $execution_id,
+              'testPlanID' => $execSign->tplan_id,
+              'buildID' => $execSign->build_id,
+              'platformID' => $executedInPlatform,
+              'testCaseVersionID' => $tcversion_id,
+              'status' => $current_status,
+              'testerID' => $execSign->user_id,
+              'source' => 'ui'));
 
       // 
       $tcvRelations = (array)$tcaseMgr->getTCVRelationsRaw($tcversion_id);

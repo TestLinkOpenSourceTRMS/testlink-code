@@ -116,18 +116,28 @@ TreePanelState.prototype.onCollapse = function (node) {
 /*
  * Restore the saved expansion state.
  * defaultPath: key of the node to expand when no state is available.
+ *
+ * Parity with the old ExtJS restoreState (expandPath per saved entry):
+ * - the saved state is NEVER rewritten (except the first-run empty case,
+ *   where [defaultPath] is persisted, as the old code did). In lazy trees
+ *   the saved keys may point at nodes that are not loaded yet; rewriting
+ *   would permanently drop them.
+ * - expanding a key loads unloaded lazy children first, because
+ *   setExpanded(true) triggers the lazy load before applying the flag
+ *   (hasChildren() is `undefined`, not `false`, for such nodes).
  */
 TreePanelState.prototype.restoreState = function (defaultPath) {
   var self = this;
   var mytree = this.mytree;
   this._read();
 
-  var loadedKeys = [];
-  mytree.visitRows(function (n) { loadedKeys.push(n.key); return true; });
+  var toExpand = this.state.slice();
 
-  var toExpand = this.state.filter(function (k) {
-    return loadedKeys.indexOf(k) !== -1;
-  });
+  if (!toExpand.length) {
+    // first run: remember the root as the expanded state
+    toExpand = [defaultPath];
+    this.saveState(toExpand);
+  }
 
   // expand deepest first: parent expansions make deeper nodes visible
   toExpand.sort(function (a, b) {
@@ -136,19 +146,17 @@ TreePanelState.prototype.restoreState = function (defaultPath) {
     return lb - la;
   });
 
-  if (!toExpand.length) {
-    toExpand = [defaultPath];
-  }
-
   var done = 0;
   function next() {
     if (done >= toExpand.length) {
-      self.saveState(toExpand); // persist normalized state
-      return;
+      return; // keep the saved state untouched (stale keys are harmless)
     }
     var key = toExpand[done++];
     var node = wbFindNodeByKey(mytree, key);
-    if (node && node.hasChildren() && !node.isExpanded()) {
+    // `!== false` on purpose: a lazy node whose children are not loaded yet
+    // reports `undefined` and must still be expanded - setExpanded() loads
+    // the children first (same as the old expandPath did).
+    if (node && node.hasChildren() !== false && !node.isExpanded()) {
       node.setExpanded(true, { noEvents: true }).then(next, next);
     } else {
       next();
@@ -372,14 +380,52 @@ function wlTreeInit() {
         return ['over', 'before', 'after'];
       },
       drop: function (e) {
-        var effParent = (e.suggestedDropMode === 'appendChild') ? e.node : e.node.parent;
-        if (!effParent || String(effParent.key) === rootKey) {
-          return; // drop on top-level / root: ignore
+        var srcNode = e.sourceNode;
+        if (!srcNode || !srcNode.data || srcNode.data.draggable === false || !e.node) {
+          return; // not draggable (root has draggable:false; guarded in dragStart too)
         }
-        var siblingKey = (e.suggestedDropMode === 'before') ? e.node.key : null;
-        writeNodePositionToDB(effParent, e.sourceNode.key,
-                              e.sourceNode.parent ? e.sourceNode.parent.key : rootKey,
-                              effParent.key, siblingKey);
+        // capture the old parent BEFORE the move mutates it
+        var oldParent = srcNode.parent;
+        var oldParentId = oldParent ? String(oldParent.key) : rootKey;
+        // effective parent + moveTo target by drop region (0.15
+        // suggestedDropMode: 'appendChild' | 'before' | 'after')
+        var newParent, target, mode;
+        if (e.suggestedDropMode === 'appendChild') {
+          newParent = e.node; target = e.node; mode = 'appendChild';
+        } else {
+          newParent = e.node.parent; target = e.node;
+          mode = (e.suggestedDropMode === 'after') ? 'after' : 'before';
+        }
+        // No reordering the project itself: it is TestLink's root and not
+        // draggable (dragStart returns false for it). The only meaningless drop
+        // is one at the invisible Wunderbaum system-root level (dropping
+        // before/after the project row, where e.node.parent is that system root).
+        // Reordering the project's own children (the top-level suites) IS allowed:
+        // newParent is then the project node, not the system root - matching the
+        // old ExtJS `movenode` handler, which fired for those moves.
+        if (!newParent || newParent.isRootNode()) {
+          return; // drop at the system-root level: ignore
+        }
+        // Wunderbaum 0.15 does NOT move the node itself: the `drop` event is
+        // the terminal step (returns void, nothing re-parents afterwards).
+        // Perform the move first so the UI updates AND the persisted nodelist
+        // below reflects the NEW sibling order - same as the old ExtJS
+        // `movenode` handler, which fired after the UI move and read
+        // newparent.childNodes in the new order.
+        var sameParent = oldParent && oldParent === newParent;
+        if (!sameParent || mode !== 'appendChild') {
+          srcNode.moveTo(target, mode);
+        }
+        // nodeorder: 0-based position of the moved node among its NEW siblings
+        // (the old code passed an ExtJS index; the back-end reads it as an int).
+        var nodeorder = 0;
+        if (newParent.children) {
+          for (var i = 0; i < newParent.children.length; i++) {
+            if (newParent.children[i] === srcNode) { nodeorder = i; break; }
+          }
+        }
+        writeNodePositionToDB(newParent, srcNode.key,
+                              oldParentId, newParent.key, nodeorder);
       }
     } : { enabled: false },
     lazyLoad: function (e) {
@@ -403,15 +449,21 @@ function wlTreeInit() {
         return;
       }
       // a data-level `expanded: true` alone does not fetch a lazy node's
-      // children; trigger the first load explicitly
+      // children; trigger the first load explicitly and wait for it, so that
+      // restoreState() can find the first-level children (the old ExtJS code
+      // called restoreState right after render and expandPath() then loaded
+      // the missing lazy levels on the way down)
+      var p = Promise.resolve();
       if (isLazy) {
         var rootNode = wbFindNodeByKey(treeState.mytree, rootKey);
         if (rootNode && rootNode.lazy && rootNode.isUnloaded()) {
-          rootNode.setExpanded(true, { noEvents: true });
+          p = rootNode.setExpanded(true, { noEvents: true }).catch(function (err) {
+            if (window.console) { window.console.error('wbTree: initial lazy load failed', err); }
+          });
         }
       }
       // restore last state (or expand root by default)
-      treeState.restoreState(rootKey);
+      p.then(function () { treeState.restoreState(rootKey); });
     },
     activate: function (e) {
       var href = e.node.data && e.node.data.href;

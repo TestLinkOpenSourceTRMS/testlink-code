@@ -59,8 +59,7 @@ Ext.state.Manager.setProvider(new Ext.ux.LocalStorageProvider());
       treeCfg.cookiePrefix = "{$gui->ajaxTree->cookiePrefix}";
     </script>
     
-    <script type="text/javascript" src='gui/javascript/execTree.js'>
-    </script>
+    {include file="inc_wunderbaum.tpl"}
 
 <script type="text/javascript">
 function pre_submit()

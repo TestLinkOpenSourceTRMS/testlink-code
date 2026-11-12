@@ -22,7 +22,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   treeCfg.children = {$gui->ajaxTree->children}
   treeCfg.cookiePrefix = '{$gui->ajaxTree->cookiePrefix}';
   </script>
-  <script type="text/javascript" src='gui/javascript/execTree.js'></script>
+  {include file="inc_wunderbaum.tpl"}
 
 {else}
   <script type="text/javascript">
@@ -38,7 +38,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   treeCfg.dragDropBackEndUrl = '{$gui->ajaxTree->dragDrop->BackEndUrl}';
   treeCfg.cookiePrefix = '{$gui->ajaxTree->cookiePrefix}';
   </script>
-  <script type="text/javascript" src='gui/javascript/treebyloader.js'></script>
+  {include file="inc_wunderbaum.tpl"}
 {/if} 
 
 {if $gui->buildInfoSet != ''}

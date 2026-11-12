@@ -41,7 +41,7 @@ Ext.state.Manager.setProvider(new Ext.ux.LocalStorageProvider());
   treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
   treeCfg.children={$gui->ajaxTree->children};
   </script>
-  <script type="text/javascript" src='gui/javascript/execTree.js'></script>
+  {include file="inc_wunderbaum.tpl"}
 
 {else}
   <script type="text/javascript">
@@ -59,8 +59,7 @@ Ext.state.Manager.setProvider(new Ext.ux.LocalStorageProvider());
   treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
   treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
   </script>
-  <script type="text/javascript" src='gui/javascript/treebyloader.js'>
-  </script>
+  {include file="inc_wunderbaum.tpl"}
 {/if}
 
 <script type="text/javascript" language="javascript">

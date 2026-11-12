@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "tablednd": "^1.0.3"
+    "tablednd": "^1.0.3",
+    "wunderbaum": "^0.15.0"
   }
 }

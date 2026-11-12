@@ -62,7 +62,7 @@ Ext.state.Manager.setProvider(new Ext.ux.LocalStorageProvider());
   treeCfg.children={$gui->ajaxTree->children};
   treeCfg.cookiePrefix = "{$gui->ajaxTree->cookiePrefix}";
   </script>
-  <script type="text/javascript" src='gui/javascript/execTree.js'></script>
+  {include file="inc_wunderbaum.tpl"}
 {else}
   <script type="text/javascript">
   treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
@@ -78,8 +78,7 @@ Ext.state.Manager.setProvider(new Ext.ux.LocalStorageProvider());
   treeCfg.root_href = "{$gui->ajaxTree->root_node->href}";
   treeCfg.cookiePrefix = "{$gui->ajaxTree->cookiePrefix}";
   </script>
-        
- <script type="text/javascript" src="gui/javascript/treebyloader.js"></script>
+  {include file="inc_wunderbaum.tpl"}
 {/if}
 
 <script type="text/javascript">

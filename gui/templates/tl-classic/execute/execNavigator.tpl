@@ -112,7 +112,7 @@ treeCfg.children={$gui->ajaxTree->children};
 treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
 </script>
 
-<script type="text/javascript" src='gui/javascript/execTreeWithMenu.js'></script>
+{include file="inc_wunderbaum.tpl"}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 {include file='inc_filter_panel_js.tpl'}
 

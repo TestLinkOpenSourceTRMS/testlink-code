@@ -163,11 +163,13 @@ TreePanelState.prototype.restoreState = function (defaultPath) {
 
 /*
  * tree.getNodeByKey() was removed in 0.15: find the first node with the
- * given key by visiting the rows.
+ * given key by visiting all nodes. `tree.visit()` covers hidden nodes too,
+ * unlike `visitRows()` (visible rows only), so keys behind a collapsed
+ * ancestor are found as well.
  */
 function wbFindNodeByKey(mytree, key) {
   var found = null;
-  mytree.visitRows(function (n) {
+  mytree.visit(function (n) {
     if (n.key === key) {
       found = n;
       return false;
@@ -178,19 +180,17 @@ function wbFindNodeByKey(mytree, key) {
 }
 
 /*
- * tree.collapseAll() was removed in 0.15: the template buttons call it,
- * so provide the old behavior (collapse every expanded node).
+ * tree.collapseAll() was removed in 0.15: the template buttons call it, so
+ * provide the old behavior (collapse every expanded node, recursively).
+ * Delegate to the built-in tree.expandAll(false, {deep:true}): collapsing
+ * while iterating the visible rows would skip the children of a parent that
+ * was collapsed before the iterator reached them, leaving stale expand
+ * events (and stale localStorage state) behind. The built-in recurses into
+ * already-collapsed nodes and fires the `expand` (e.flag=false) event for
+ * every collapsed node. `deep` is a documented ExpandAllOptions member.
  */
 function wbCollapseAll() {
-  var mytree = this;
-  var promises = [];
-  mytree.visitRows(function (n) {
-    if (n.isExpanded()) {
-      promises.push(n.setExpanded(false));
-    }
-    return true;
-  });
-  return Promise.all(promises);
+  return this.expandAll(false, { deep: true });
 }
 
 /* =====================================================================

@@ -362,9 +362,21 @@ function wlTreeInit() {
         if (!e.sourceNode || !e.sourceNode.data) {
           return false;
         }
-        // root can not be a drop target
+        // The project row (rootKey) can only be a drop target for appendChild
+        // (drop OVER it -> becomes a top-level child of the project). The old
+        // ExtJS tree offered append-only on its root; before/after the project
+        // row is a system-root-level move that has no back-end meaning, so the
+        // drop handler below no-ops it. checkMovement still validates the
+        // node type against the project (the effective new parent).
         if (String(e.node.key) === rootKey) {
-          return false;
+          if (e.suggestedDropMode !== 'appendChild') {
+            return false; // before/after the project row: ignore
+          }
+          if (treeCfg.useBeforeMoveNode &&
+              !checkMovement(e.node, e.sourceNode, e.sourceNode.key, e.node.key, 0)) {
+            return false;
+          }
+          return ['over'];
         }
         // lazy parents without loaded children must be expanded first
         if (e.node.lazy && !e.node.isLoaded() && !e.node.isExpanded()) {

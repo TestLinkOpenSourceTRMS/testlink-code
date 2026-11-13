@@ -16,6 +16,8 @@ Behavior preserved:
 - lazy loading of child nodes via AJAX (treeCfg.loader + &node=<id>)
 - drag & drop reordering with beforemovenode-style validation and
   changeParent/doReorder back-end calls (treeCfg.enableDD)
+- right-click context menu (node name + API ID) on test suite / test case
+  nodes of the lazy navigators (treebyloader.js behavior)
 
 Requires (in this order):
 1. ExtJS / Ext.ux.LocalStorageProvider - loaded by the page (templates keep
@@ -66,7 +68,23 @@ function TreePanelState(mytree, cookiePrefix) {
   this.mytree = mytree;
   this.cookiePrefix = cookiePrefix;
   this.storageKey = cookiePrefix + 'tree_div';
-  this.state = []; // list of expanded node keys
+  this.state = []; // list of ExtJS-style path strings, e.g. ["/1/42"]
+}
+
+/*
+ * ExtJS-style path string for a node: '/' + keys from the (project) root
+ * down to the node, e.g. root -> '/1', child -> '/1/42'. Identical to the
+ * old ExtJS `node.getPath()` (pathSeparator + b.join(pathSeparator)); it
+ * differs from Wunderbaum's own `node.getPath()` (no leading separator).
+ */
+function wbExtPath(node) {
+  var keys = [];
+  var n = node;
+  while (n && !n.isRootNode()) {
+    keys.unshift(n.key);
+    n = n.parent;
+  }
+  return '/' + keys.join('/');
 }
 
 TreePanelState.prototype._read = function () {
@@ -95,43 +113,59 @@ TreePanelState.prototype.saveState = function (newState) {
 };
 
 TreePanelState.prototype.onExpand = function (node) {
-  var key = node.key;
+  // old ExtJS onExpand: keep stored paths that are not (sub)paths of the
+  // expanded node, then append the expanded path
+  var currentPath = wbExtPath(node);
   var newState = this.state.slice();
-  if (newState.indexOf(key) === -1) {
-    newState.push(key);
-    this.saveState(newState);
+  var out = [];
+  for (var i = 0; i < newState.length; i++) {
+    if (currentPath.indexOf(newState[i]) === -1) {
+      out.push(newState[i]);
+    }
   }
+  out.push(currentPath);
+  this.saveState(out);
 };
 
 TreePanelState.prototype.onCollapse = function (node) {
-  var key = node.key;
+  // old ExtJS onCollapse: keep stored paths that are NOT subpaths of the
+  // collapsed node; if that empties the state, remember the parent path
+  // (or the bare separator when collapsing the project root itself)
+  var closedPath = wbExtPath(node);
   var newState = this.state.slice();
-  var idx = newState.indexOf(key);
-  if (idx !== -1) {
-    newState.splice(idx, 1);
-    this.saveState(newState);
+  var out = [];
+  for (var i = 0; i < newState.length; i++) {
+    if (newState[i].indexOf(closedPath) === -1) {
+      out.push(newState[i]);
+    }
   }
+  if (out.length === 0) {
+    out.push(node.parent ? wbExtPath(node.parent) : '/');
+  }
+  this.saveState(out);
 };
 
 /*
  * Restore the saved expansion state.
- * defaultPath: key of the node to expand when no state is available.
+ * defaultPath: ExtJS path string of the node to expand when no state is
+ * available (the project root's path, e.g. '/1').
  *
  * Parity with the old ExtJS restoreState (expandPath per saved entry):
  * - the saved state is NEVER rewritten (except the first-run empty case,
- *   where [defaultPath] is persisted, as the old code did). In lazy trees
- *   the saved keys may point at nodes that are not loaded yet; rewriting
- *   would permanently drop them.
- * - expanding a key loads unloaded lazy children first, because
- *   setExpanded(true) triggers the lazy load before applying the flag
- *   (hasChildren() is `undefined`, not `false`, for such nodes).
+ *   where [defaultPath] is persisted, as the old code did).
+ * - a saved entry is an expansion frontier: expandPath() each one, i.e.
+ *   load + expand every node of the path shallowest-first, INCLUDING the
+ *   target (a saved node was expanded, so it comes back expanded - exactly
+ *   what the old ExtJS expandPath() did; a lazy target's children load on
+ *   the way down, as before).
+ * - events are suppressed while restoring; the initial root expansion is
+ *   the one that seeds the state on the first run.
  */
 TreePanelState.prototype.restoreState = function (defaultPath) {
-  var self = this;
   var mytree = this.mytree;
   this._read();
 
-  var toExpand = this.state.slice();
+  var toExpand = this.state.slice().filter(Boolean);
 
   if (!toExpand.length) {
     // first run: remember the root as the expanded state
@@ -139,30 +173,39 @@ TreePanelState.prototype.restoreState = function (defaultPath) {
     this.saveState(toExpand);
   }
 
-  // expand deepest first: parent expansions make deeper nodes visible
-  toExpand.sort(function (a, b) {
-    var na = wbFindNodeByKey(mytree, a), nb = wbFindNodeByKey(mytree, b);
-    var la = na ? na.getLevel() : 0, lb = nb ? nb.getLevel() : 0;
-    return lb - la;
-  });
-
-  var done = 0;
-  function next() {
-    if (done >= toExpand.length) {
-      return; // keep the saved state untouched (stale keys are harmless)
+  // expand one frontier entry: every key of the path, shallowest-first,
+  // load + expand with no events (the old tree.expandPath() semantics)
+  function expandPath(path) {
+    var keys = String(path).split('/');
+    var p = Promise.resolve();
+    for (var i = 1; i < keys.length; i++) {
+      (function (i) {
+        p = p.then(function () {
+          var node = wbFindNodeByKey(mytree, keys[i]);
+          if (!node) {
+            return; // stale entry (node removed server-side): ignore, as before
+          }
+          // `hasChildren() !== false` on purpose: a lazy node whose
+          // children are not loaded yet reports `undefined` and must still
+          // be expanded - setExpanded() loads the children first (same as
+          // the old expandPath did); a loaded empty node reports `false`
+          // and is skipped.
+          if (node.hasChildren() !== false && !node.isExpanded()) {
+            return node.setExpanded(true, { noEvents: true });
+          }
+        });
+      })(i);
     }
-    var key = toExpand[done++];
-    var node = wbFindNodeByKey(mytree, key);
-    // `!== false` on purpose: a lazy node whose children are not loaded yet
-    // reports `undefined` and must still be expanded - setExpanded() loads
-    // the children first (same as the old expandPath did).
-    if (node && node.hasChildren() !== false && !node.isExpanded()) {
-      node.setExpanded(true, { noEvents: true }).then(next, next);
-    } else {
-      next();
-    }
+    return p.catch(function (err) {
+      if (window.console) { window.console.error('wbTree: restoreState failed', path, err); }
+    });
   }
-  next();
+
+  var p = Promise.resolve();
+  toExpand.forEach(function (path) {
+    p = p.then(function () { return expandPath(path); });
+  });
+  return p;
 };
 
 /* =====================================================================
@@ -199,6 +242,86 @@ function wbFindNodeByKey(mytree, key) {
  */
 function wbCollapseAll() {
   return this.expandAll(false, { deep: true });
+}
+
+/* =====================================================================
+ *  Context menu (treebyloader.js behavior, lazy navigators only)
+ * ===================================================================== */
+
+/*
+ * The old ExtJS tree showed a right-click menu on test suite / test case
+ * rows: the node name (without the trailing ' (id)') and its API id.
+ * Wunderbaum has no built-in context menu, so provide an equivalent
+ * floating menu: resolve the row node via Wunderbaum.getNode() (the row
+ * element carries the node on `_wb_node`), then show two text items at
+ * the cursor position. Closes on any click, scroll, or Escape.
+ */
+var wbContextMenu = null;
+
+function wbContextMenuClose() {
+  if (wbContextMenu && wbContextMenu.parentNode) {
+    wbContextMenu.parentNode.removeChild(wbContextMenu);
+  }
+  wbContextMenu = null;
+}
+
+function wbShowTreeContextMenu(node, x, y) {
+  var type = (node.data && node.data.testlink_node_type) || '';
+  if (type !== 'testsuite' && type !== 'testcase') {
+    return; // old menuShow switched on these two types only
+  }
+  wbContextMenuClose();
+  var el = document.createElement('div');
+  el.className = 'wb-context-menu';
+  el.style.cssText = 'position:absolute;z-index:10000;min-width:120px;padding:2px 0;' +
+    'background:#fff;border:1px solid #9db8d2;' +
+    'box-shadow:2px 2px 5px rgba(0,0,0,.35);font:11px Verdana,Geneva,sans-serif;';
+  var head = document.createElement('div');
+  // old code: node.text with the trailing ' (id)' stripped
+  head.textContent = node.title.replace(/\s*\([^)]*\)$/, '');
+  head.style.cssText = 'font-weight:bold;margin:0px 4px 0px 27px;line-height:18px;';
+  var api = document.createElement('div');
+  api.textContent = 'API ID:' + node.key;
+  api.style.cssText = 'margin:0px 4px 0px 27px;line-height:18px;';
+  el.appendChild(head);
+  el.appendChild(api);
+  document.body.appendChild(el);
+  wbContextMenu = el;
+  // keep the menu on screen
+  var maxLeft = (document.documentElement.clientWidth || 1024) - el.offsetWidth - 4;
+  var maxTop = (document.documentElement.clientHeight || 768) - el.offsetHeight - 4;
+  if (x > maxLeft) { x = Math.max(0, maxLeft); }
+  if (y > maxTop) { y = Math.max(0, maxTop); }
+  el.style.left = (x + document.documentElement.scrollLeft) + 'px';
+  el.style.top = (y + document.documentElement.scrollTop) + 'px';
+  window.setTimeout(function () {
+    document.addEventListener('click', wbContextMenuClose);
+    document.addEventListener('contextmenu', wbContextMenuClose);
+    document.addEventListener('scroll', wbContextMenuClose, true);
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' || ev.keyCode === 27) { wbContextMenuClose(); }
+    });
+  }, 0);
+}
+
+/*
+ * Attach the right-click menu to a lazy tree (only the lazy navigators,
+ * treebyloader.js, had the context menu).
+ */
+function wbAttachTreeContextMenu(tree) {
+  var el = tree.element || (tree.elementDom && tree.elementDom.node);
+  if (!el || el._wbTreeContextMenu) {
+    return;
+  }
+  el._wbTreeContextMenu = true;
+  el.addEventListener('contextmenu', function (event) {
+    var node = mar10.Wunderbaum.getNode(event);
+    if (!node || node.isRootNode() || node.isStatusNode()) {
+      return; // no menu on the project row or system status rows
+    }
+    event.preventDefault();
+    wbShowTreeContextMenu(node, event.clientX, event.clientY);
+  });
 }
 
 /* =====================================================================
@@ -335,15 +458,14 @@ function wlTreeInit() {
     root.children = wbMapChildren(treeCfg.children, {});
   }
 
-  // created before the constructor: expand events may fire during the
-  // initial load (root is expanded by default)
+  // created before the constructor: the lazy initial load fires the
+  // `init` event, which must be able to reach treeState.restoreState()
   var treeState = new TreePanelState(undefined, treeCfg.cookiePrefix);
 
   var wbOptions = {
     id: 'tree',
     element: '#' + treeCfg.tree_div_id,
     source: [root],
-    expanded: true,
     checkbox: false,
     dnd: enableDD ? {
       effectAllowed: 'move',
@@ -425,7 +547,15 @@ function wlTreeInit() {
         // `movenode` handler, which fired after the UI move and read
         // newparent.childNodes in the new order.
         var sameParent = oldParent && oldParent === newParent;
-        if (!sameParent || mode !== 'appendChild') {
+        // The only true no-op is appending a node that is already the LAST
+        // child of the parent it is dropped on (dropping a top-level suite on
+        // the project row, or a TC on its own suite, when it is already
+        // last). Old ExtJS still fired `movenode` for the UI move in the other
+        // same-parent cases, so perform the move to match it.
+        var isNoOp = sameParent && mode === 'appendChild' &&
+                     newParent.children && newParent.children.length &&
+                     newParent.children[newParent.children.length - 1] === srcNode;
+        if (!isNoOp) {
           srcNode.moveTo(target, mode);
         }
         // nodeorder: 0-based position of the moved node among its NEW siblings
@@ -462,20 +592,30 @@ function wlTreeInit() {
       }
       // a data-level `expanded: true` alone does not fetch a lazy node's
       // children; trigger the first load explicitly and wait for it, so that
-      // restoreState() can find the first-level children (the old ExtJS code
-      // called restoreState right after render and expandPath() then loaded
-      // the missing lazy levels on the way down)
+      // restoreState() can find the first-level children (as the old ExtJS
+      // expandPath() did, loading the missing lazy levels on the way down).
+      // Skip it when the saved state is ['/'] (project row collapsed and
+      // saved by onCollapse): the old expandPath('/') was a no-op, so the
+      // tree must come back collapsed.
       var p = Promise.resolve();
       if (isLazy) {
-        var rootNode = wbFindNodeByKey(treeState.mytree, rootKey);
-        if (rootNode && rootNode.lazy && rootNode.isUnloaded()) {
-          p = rootNode.setExpanded(true, { noEvents: true }).catch(function (err) {
-            if (window.console) { window.console.error('wbTree: initial lazy load failed', err); }
-          });
+        var rawState = [];
+        try {
+          rawState = JSON.parse(window.localStorage.getItem(
+            treeCfg.cookiePrefix + 'tree_div')) || [];
+        } catch (err) { rawState = []; }
+        if (rawState.indexOf('/') === -1) {
+          var rootNode = wbFindNodeByKey(treeState.mytree, rootKey);
+          if (rootNode && rootNode.lazy && rootNode.isUnloaded()) {
+            p = rootNode.setExpanded(true, { noEvents: true }).catch(function (err) {
+              if (window.console) { window.console.error('wbTree: initial lazy load failed', err); }
+            });
+          }
         }
       }
-      // restore last state (or expand root by default)
-      p.then(function () { treeState.restoreState(rootKey); });
+      // restore last state (or expand the root by default); the old code
+      // passed `tree.root.getPath()` - the ExtJS path string of the root
+      p.then(function () { treeState.restoreState('/' + rootKey); });
     },
     activate: function (e) {
       var href = e.node.data && e.node.data.href;
@@ -512,6 +652,11 @@ function wlTreeInit() {
   // keep the ExtJS-era global name: inc_tree_control.tpl uses
   // tree.expandAll() and tree.collapseAll()
   myTree.collapseAll = wbCollapseAll;
+
+  // the old treebyloader.js (lazy navigators) had the right-click context menu
+  if (isLazy) {
+    wbAttachTreeContextMenu(myTree);
+  }
   window.tree = myTree;
 }
 

@@ -527,7 +527,11 @@ function wlTreeInit() {
       preventSameParent: false,
       preventVoidMoves: false,
       dragStart: function (e) {
-        if (!e.sourceNode.data || e.sourceNode.data.draggable === false) {
+        // 0.15 fires `dnd.dragStart` via srcNode._callEvent({event}) -> the
+        // source node is e.node (node:this is spread into the event). There is
+        // NO e.sourceNode here (that field only exists on dragEnter/drop), so
+        // reading e.sourceNode would throw and kill every drag.
+        if (!e.node || !e.node.data || e.node.data.draggable === false) {
           return false;
         }
         return true;

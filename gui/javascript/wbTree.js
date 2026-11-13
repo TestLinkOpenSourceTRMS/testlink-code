@@ -263,6 +263,18 @@ function wbContextMenuClose() {
     wbContextMenu.parentNode.removeChild(wbContextMenu);
   }
   wbContextMenu = null;
+  // Remove the close listeners. They were registered synchronously on the
+  // previous open; leaving them on document made every later right-click
+  // close the just-opened menu (a stale `contextmenu` listener fired while
+  // the new one was still opening) and they accumulated on every open. The
+  // close handlers are named functions (never nulled) so removeEventListener
+  // always matches what was added.
+  if (typeof document !== 'undefined') {
+    document.removeEventListener('click', wbContextMenuClose);
+    document.removeEventListener('contextmenu', wbCmContextHandler);
+    document.removeEventListener('scroll', wbContextMenuClose, true);
+    document.removeEventListener('keydown', wbCmKeydownHandler);
+  }
 }
 
 function wbShowTreeContextMenu(node, x, y) {
@@ -294,14 +306,30 @@ function wbShowTreeContextMenu(node, x, y) {
   if (y > maxTop) { y = Math.max(0, maxTop); }
   el.style.left = (x + document.documentElement.scrollLeft) + 'px';
   el.style.top = (y + document.documentElement.scrollTop) + 'px';
-  window.setTimeout(function () {
+  // Register the close listeners SYNCHRONOUSLY: the opening `contextmenu`
+  // event is stopped from reaching document (see wbAttachTreeContextMenu),
+  // so they cannot close the menu while it is being opened. Removed again in
+  // wbContextMenuClose(). (Previously they were added in a setTimeout(0)
+  // and never removed, so a stale `contextmenu` listener closed the next
+  // just-opened menu and they accumulated on every open.)
+  if (typeof document !== 'undefined') {
     document.addEventListener('click', wbContextMenuClose);
-    document.addEventListener('contextmenu', wbContextMenuClose);
+    document.addEventListener('contextmenu', wbCmContextHandler);
     document.addEventListener('scroll', wbContextMenuClose, true);
-    document.addEventListener('keydown', function (ev) {
-      if (ev.key === 'Escape' || ev.keyCode === 27) { wbContextMenuClose(); }
-    });
-  }, 0);
+    document.addEventListener('keydown', wbCmKeydownHandler);
+  }
+}
+
+/* Closes the menu on any second right-click (the opening one never reaches
+   document because the attach handler stops its propagation). */
+function wbCmContextHandler() {
+  wbContextMenuClose();
+}
+
+function wbCmKeydownHandler(ev) {
+  if (ev && (ev.key === 'Escape' || ev.keyCode === 27)) {
+    wbContextMenuClose();
+  }
 }
 
 /*
@@ -315,11 +343,20 @@ function wbAttachTreeContextMenu(tree) {
   }
   el._wbTreeContextMenu = true;
   el.addEventListener('contextmenu', function (event) {
+    // old ExtJS tree.on({contextmenu:{...stopEvent:true}}): the browser's
+    // default context menu is suppressed for the whole tree, not only for
+    // the rows that show the custom menu.
+    event.preventDefault();
     var node = mar10.Wunderbaum.getNode(event);
     if (!node || node.isRootNode() || node.isStatusNode()) {
-      return; // no menu on the project row or system status rows
+      return; // no custom menu on the project row or system status rows
     }
-    event.preventDefault();
+    // Keep the opening `contextmenu` from bubbling to document: the document
+    // `contextmenu` close handler is registered (synchronously, on the
+    // previous open), and letting it see THIS event would close the menu we
+    // are about to create. A second right-click (different event) still
+    // reaches document and closes the open menu.
+    event.stopImmediatePropagation();
     wbShowTreeContextMenu(node, event.clientX, event.clientY);
   });
 }
@@ -413,6 +450,12 @@ function wbMapChildren(children, seenKeys, lazyMode) {
       testlink_node_name: raw.testlink_node_name || '',
       testlink_node_type: raw.testlink_node_type || '',
       forbidden_parent: raw.forbidden_parent || '',
+      // the PHP builders set leaf=true only for test cases and leaf=false for
+      // every suite/project ("used on custom code on drag and drop"). `leaf`
+      // is NOT a built-in Wunderbaum node-data property in 0.15 (leaf-ness is
+      // derived from `children`), so carry the flag for the DnD dragEnter gate,
+      // which mirrors the old ExtJS getDropPoint() `tn.isLeaf()` check.
+      leaf: raw.leaf === true,
       position: raw.position != null ? raw.position : 0,
       cls: raw.cls || ''
     };
@@ -439,7 +482,12 @@ function wlTreeInit() {
   }
 
   var rootKey = String(treeCfg.root_id);
-  var enableDD = (treeCfg.enableDD === true || treeCfg.enableDD === 'true');
+  // The templates render PHP booleans into quoted strings: enabled=true
+  // becomes the string '1', enabled=false becomes '' (Smarty). The old
+  // ExtJS code passed treeCfg.enableDD straight to TreePanel (raw truthy),
+  // so keep raw-truthy semantics here instead of a strict 'true' compare,
+  // which would have disabled DnD on every real page.
+  var enableDD = !!treeCfg.enableDD;
   var isLazy = !!treeCfg.loader;
 
   var root = {
@@ -470,7 +518,11 @@ function wlTreeInit() {
     dnd: enableDD ? {
       effectAllowed: 'move',
       dropEffectDefault: 'move',
-      preventLazyParents: true,
+      // The old ExtJS tree let you drop a TC onto a collapsed lazy suite:
+      // processDrop() expanded the target (triggering the lazy load) and then
+      // completed the move. Keep that - the `drop` handler below loads an
+      // unloaded lazy target before moving into it.
+      preventLazyParents: false,
       preventRecursion: true,
       preventSameParent: false,
       preventVoidMoves: false,
@@ -480,38 +532,53 @@ function wlTreeInit() {
         }
         return true;
       },
+      // 0.15 fires dragEnter when the pointer ENTERS a node, with
+      // {event, sourceNode, node} and NO drop region yet (the region is
+      // only known in dragover/drop). It must return the SET of allowed
+      // regions, so every candidate region is validated here against the
+      // effective new parent - the port of the old beforemovenode gate.
       dragEnter: function (e) {
-        if (!e.sourceNode || !e.sourceNode.data) {
+        if (!e.sourceNode || !e.sourceNode.data || !e.node) {
           return false;
         }
-        // The project row (rootKey) can only be a drop target for appendChild
-        // (drop OVER it -> becomes a top-level child of the project). The old
-        // ExtJS tree offered append-only on its root; before/after the project
-        // row is a system-root-level move that has no back-end meaning, so the
-        // drop handler below no-ops it. checkMovement still validates the
-        // node type against the project (the effective new parent).
-        if (String(e.node.key) === rootKey) {
-          if (e.suggestedDropMode !== 'appendChild') {
-            return false; // before/after the project row: ignore
-          }
+        var src = e.sourceNode, tgt = e.node;
+        // dropping a node on itself is meaningless; the old ExtJS code only
+        // emitted a movenode with nodeorder -1 (garbage), so gate it here.
+        if (tgt === src) {
+          return false;
+        }
+        // The project row is append-only, exactly like the old ExtJS
+        // getDropPoint() root case (before/after the project row is a
+        // system-root-level move with no back-end meaning; the drop
+        // handler below no-ops it anyway).
+        if (String(tgt.key) === rootKey) {
           if (treeCfg.useBeforeMoveNode &&
-              !checkMovement(e.node, e.sourceNode, e.sourceNode.key, e.node.key, 0)) {
+              !checkMovement(tgt, src, src.key, tgt.key, 0)) {
             return false;
           }
           return ['over'];
         }
-        // lazy parents without loaded children must be expanded first
-        if (e.node.lazy && !e.node.isLoaded() && !e.node.isExpanded()) {
-          return false;
+        // before/after: the effective new parent is the target's parent
+        var allowBeforeAfter = !treeCfg.useBeforeMoveNode ||
+          !tgt.parent ||
+          checkMovement(tgt.parent, src, src.key, tgt.parent.key, 0);
+        // over (append into the target): leaf rows never accept children.
+        // The old ExtJS getDropPoint() computed `noAppend = ... || tn.isLeaf()`,
+        // and TreeNode.isLeaf() is just the node's `leaf` flag - it does NOT
+        // consult hasChildren(). The PHP builders set leaf=false for every
+        // suite/project and leaf=true only for test cases, so an EMPTY suite
+        // (loaded, hasChildren()===false) must still accept an append; keying
+        // leaf-ness off hasChildren() wrongly blocked drops into empty suites.
+        var tgtIsLeaf = !!tgt.data.leaf;
+        var allowOver = !tgtIsLeaf &&
+          (!treeCfg.useBeforeMoveNode ||
+           checkMovement(tgt, src, src.key, tgt.key, 0));
+        if (allowOver && allowBeforeAfter) {
+          return ['over', 'before', 'after'];
         }
-        if (treeCfg.useBeforeMoveNode) {
-          var effParent = (e.suggestedDropMode === 'appendChild') ? e.node : e.node.parent;
-          if (effParent && !checkMovement(effParent, e.sourceNode,
-                                          e.sourceNode.key, effParent.key, 0)) {
-            return false;
-          }
-        }
-        return ['over', 'before', 'after'];
+        if (allowOver) { return ['over']; }
+        if (allowBeforeAfter) { return ['before', 'after']; }
+        return false;
       },
       drop: function (e) {
         var srcNode = e.sourceNode;
@@ -530,44 +597,64 @@ function wlTreeInit() {
           newParent = e.node.parent; target = e.node;
           mode = (e.suggestedDropMode === 'after') ? 'after' : 'before';
         }
-        // No reordering the project itself: it is TestLink's root and not
-        // draggable (dragStart returns false for it). The only meaningless drop
-        // is one at the invisible Wunderbaum system-root level (dropping
-        // before/after the project row, where e.node.parent is that system root).
-        // Reordering the project's own children (the top-level suites) IS allowed:
-        // newParent is then the project node, not the system root - matching the
-        // old ExtJS `movenode` handler, which fired for those moves.
+        // The only meaningless drop is one at the invisible Wunderbaum
+        // system-root level (before/after the project row, where
+        // e.node.parent is that system root). Reordering the project's
+        // own children (the top-level suites) IS allowed: newParent is
+        // then the project node - matching the old ExtJS `movenode`
+        // handler, which fired for those moves.
         if (!newParent || newParent.isRootNode()) {
           return; // drop at the system-root level: ignore
         }
-        // Wunderbaum 0.15 does NOT move the node itself: the `drop` event is
-        // the terminal step (returns void, nothing re-parents afterwards).
-        // Perform the move first so the UI updates AND the persisted nodelist
-        // below reflects the NEW sibling order - same as the old ExtJS
-        // `movenode` handler, which fired after the UI move and read
-        // newparent.childNodes in the new order.
-        var sameParent = oldParent && oldParent === newParent;
-        // The only true no-op is appending a node that is already the LAST
-        // child of the parent it is dropped on (dropping a top-level suite on
-        // the project row, or a TC on its own suite, when it is already
-        // last). Old ExtJS still fired `movenode` for the UI move in the other
-        // same-parent cases, so perform the move to match it.
-        var isNoOp = sameParent && mode === 'appendChild' &&
-                     newParent.children && newParent.children.length &&
-                     newParent.children[newParent.children.length - 1] === srcNode;
-        if (!isNoOp) {
-          srcNode.moveTo(target, mode);
+        // self-drop: the dragEnter gate normally prevents this, but guard
+        // anyway so no garbage doReorder is ever persisted.
+        if (target === srcNode) {
+          return;
         }
-        // nodeorder: 0-based position of the moved node among its NEW siblings
-        // (the old code passed an ExtJS index; the back-end reads it as an int).
-        var nodeorder = 0;
-        if (newParent.children) {
-          for (var i = 0; i < newParent.children.length; i++) {
-            if (newParent.children[i] === srcNode) { nodeorder = i; break; }
+        // the dragEnter gate normally prevents this, but guard anyway:
+        // never move a node into its own subtree
+        if (srcNode.isAncestorOf && srcNode.isAncestorOf(target)) {
+          return;
+        }
+        // Wunderbaum 0.15 does NOT move the node itself: the `drop` event
+        // is the terminal step (returns void, nothing re-parents
+        // afterwards). Perform the move first so the UI updates AND the
+        // persisted nodelist below reflects the NEW sibling order. This
+        // matches the old ExtJS `movenode` handler: TreeNode.appendChild /
+        // insertBefore fire the node `move` event whenever oldParent is set,
+        // which includes same-parent moves, so the old code persisted those
+        // too (no isNoOp skip - a faithful mirror).
+        function persist() {
+          // nodeorder: 0-based position of the moved node among its NEW
+          // siblings (the old code passed an ExtJS index; the back-end
+          // reads it as an int).
+          var nodeorder = 0;
+          if (newParent.children) {
+            for (var i = 0; i < newParent.children.length; i++) {
+              if (newParent.children[i] === srcNode) { nodeorder = i; break; }
+            }
           }
+          writeNodePositionToDB(newParent, srcNode.key,
+                                oldParentId, newParent.key, nodeorder);
         }
-        writeNodePositionToDB(newParent, srcNode.key,
-                              oldParentId, newParent.key, nodeorder);
+        if (mode === 'appendChild' &&
+            newParent.lazy && newParent.hasChildren() === undefined) {
+          // Target is an unloaded lazy parent. The old ExtJS processDrop()
+          // expanded the target (triggering its lazy load) and then did the
+          // move - replicate that. A direct moveTo() here would corrupt the
+          // target (0.15 would set its children to just the moved node and
+          // mark it loaded, clobbering the real children).
+          newParent.setExpanded(true, { noEvents: false }).then(function () {
+            srcNode.moveTo(target, 'appendChild');
+            persist();
+          }).catch(function (err) {
+            if (window.console) { window.console.error('wbTree: lazy drop load failed', err); }
+            newParent.setExpanded(true, { noEvents: true });
+          });
+          return;
+        }
+        srcNode.moveTo(target, mode);
+        persist();
       }
     } : { enabled: false },
     lazyLoad: function (e) {

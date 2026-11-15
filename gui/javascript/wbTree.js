@@ -459,12 +459,45 @@ function wbMapChildren(children, seenKeys, lazyMode) {
       position: raw.position != null ? raw.position : 0,
       cls: raw.cls || ''
     };
+
+    // Icon + expand-chevron model:
+    //  - testcase             -> page icon (fa fa-file-o), never a chevron (leaf)
+    //  - testproject/testsuite-> folder icon, and a chevron ONLY when the node
+    //                             actually has children. An empty suite gets a
+    //                             closed folder and NO chevron (previously an
+    //                             unloaded lazy suite showed a chevron too).
+    //
+    // `has_children` comes from gettprojectnodes.php (direct displayable-child
+    // count). Eager builders don't send it, so fall back to the nested
+    // `children` / `leaf` flag. `filled` = definitely has children.
+    var isTc = (raw.testlink_node_type === 'testcase');
+    var filled;
+    if (raw.has_children !== undefined) {
+      filled = !!raw.has_children;
+    } else if (raw.children && raw.children.length) {
+      filled = true;
+    } else {
+      filled = (raw.leaf === true) ? false : null; // unknown (eager, no flag)
+    }
+    // A filled suite/project leaves `icon` unset so Wunderbaum auto-picks the
+    // icon and the folder toggles folder <-> folder-open on expand (as the old
+    // ExtJS folders did). Everything else gets an explicit icon so it never
+    // falls through to the library's 'doc' (page) default: testcase -> page,
+    // empty suite -> folder.
+    if (isTc) {
+      node.icon = 'fa fa-file-o';
+    } else if (filled !== true) {
+      node.icon = 'fa fa-folder';
+    }
+
     if (raw.children && raw.children.length) {
       // fully nested (eager tree): map the whole subtree
       node.children = wbMapChildren(raw.children, seenKeys, lazyMode);
-    } else if (lazyMode && raw.leaf !== true) {
+    } else if (lazyMode && raw.leaf !== true && filled !== false) {
       // lazy tree: expandable node whose children are fetched on demand.
       // Without `lazy: true` Wunderbaum would not render an expander.
+      // `filled === false` (server: no direct children) -> NOT lazy, so no
+      // chevron and no fetch; an empty suite stays a plain folder row.
       node.lazy = true;
     }
     out.push(node);
@@ -514,6 +547,38 @@ function wlTreeInit() {
     id: 'tree',
     element: '#' + treeCfg.tree_div_id,
     source: [root],
+    // Wunderbaum 0.15's default iconMap uses Bootstrap Icons (`bi ...`), but
+    // this app ships Font Awesome 4.5 (gui/icons/font-awesome-4.5.0, linked by
+    // inc_wunderbaum.tpl) and NOT Bootstrap Icons - with the default map every
+    // expander/icon would render as an empty slot (the font is never loaded).
+    // Point the map at FA classes so the expand chevrons, loading spinner and
+    // the auto folder/doc fallbacks are all visible. Node icons themselves are
+    // set per-node in wbMapChildren; filled suites + the project root leave
+    // `icon` unset on purpose so the auto fallback below toggles
+    // folder <-> folder-open as they expand (like the old ExtJS folders).
+    iconMap: mar10.Wunderbaum.iconMaps.bootstrap ?
+      Object.assign({}, mar10.Wunderbaum.iconMaps.bootstrap, {
+        expanderCollapsed: 'fa fa-caret-right',
+        expanderExpanded: 'fa fa-caret-down',
+        expanderLazy: 'fa fa-caret-right',
+        loading: 'fa fa-spinner fa-spin',
+        folder: 'fa fa-folder',
+        folderOpen: 'fa fa-folder-open',
+        // an unloaded lazy suite is not yet expanded: show a closed folder
+        folderLazy: 'fa fa-folder',
+        // anything that has no icon and no children (defensive; our leaf
+        // testcases set their own) -> a page
+        doc: 'fa fa-file-o'
+      }) : {
+        expanderCollapsed: 'fa fa-caret-right',
+        expanderExpanded: 'fa fa-caret-down',
+        expanderLazy: 'fa fa-caret-right',
+        loading: 'fa fa-spinner fa-spin',
+        folder: 'fa fa-folder',
+        folderOpen: 'fa fa-folder-open',
+        folderLazy: 'fa fa-folder',
+        doc: 'fa fa-file-o'
+      },
     checkbox: false,
     dnd: enableDD ? {
       effectAllowed: 'move',

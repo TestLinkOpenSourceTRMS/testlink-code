@@ -100,6 +100,34 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     $external = $dbHandler->fetchRowsIntoMap($sql,'parent_id');
   }
     
+  // has_children per returned node: does it have any DIRECT child of a
+  // displayable type (same exclusions as the main query)? Drives the expand
+  // chevron: an empty suite/project must not show one, and a lazy node whose
+  // children are not loaded yet would otherwise report children==null (expandable).
+  $hasChildrenMap = array();
+  if(!is_null($nodeSet)) {
+    $childIds = array();
+    foreach($nodeSet as $cidRow) {
+      $childIds[] = intval($cidRow['id']);
+    }
+    if($childIds) {
+      $inList = implode(',', $childIds);
+      $hsql = " SELECT N2.parent_id, COUNT(*) AS child_cnt " .
+              " FROM {$tables['nodes_hierarchy']} N2, {$tables['node_types']} NT2 " .
+              " WHERE N2.node_type_id = NT2.id " .
+              " AND N2.parent_id IN (" . $inList . ") " .
+              " AND NT2.description NOT IN " .
+              " ('testcase_version','testplan','requirement_spec','requirement'{$filter_node_type}) " .
+              " GROUP BY N2.parent_id ";
+      $hasSet = $dbHandler->get_recordset($hsql);
+      if(!is_null($hasSet)) {
+        foreach($hasSet as $hrow) {
+          $hasChildrenMap[intval($hrow['parent_id'])] = (intval($hrow['child_cnt']) > 0);
+        }
+      }
+    }
+  }
+
   if(!is_null($nodeSet)) {
     foreach($nodeSet as $key => $row) {
       $path['text'] = htmlspecialchars($row['name']);
@@ -114,6 +142,10 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
       $path['testlink_node_type'] = $row['node_type'];
       $path['testlink_node_name'] = $path['text']; // already htmlspecialchars() done
       $path['forbidden_parent'] = 'none';
+
+      // direct-child presence, drives the expand chevron (false for testcases)
+      $path['has_children'] = isset($hasChildrenMap[intval($row['id'])])
+                              ? (bool)$hasChildrenMap[intval($row['id'])] : false;
 
       $tcase_qty = null;
       switch($row['node_type'])

@@ -230,27 +230,111 @@ of the guard is "at most once per page, per template"):
 
 No `wbTree.js` or library changes were needed — the JS was correct all along.
 
+### Proof 1: the compiled template is ground truth
+
+`_harness/compile_proof.php` compiles the pre-fix and post-fix guard forms with
+the app's exact Smarty (3.1.48, `vendor/smarty/smarty`) and reads back the
+**compiled `.php` file** — the literal PHP that runs inside the Apache request.
+Reading each variant's own compiled file:
+
+| source (`.tpl`) | compiled (`.php`) line |
+|---|---|
+| `{if guard_header_smarty(__FILE__)}`        | `if (guard_header_smarty('__FILE__')) {?>` |
+| `{if guard_header_smarty('inc_wunderbaum.tpl')}` | `if (guard_header_smarty('inc_wunderbaum.tpl')) {?>` |
+| `{if guard_header_smarty('inc_ext_js.tpl')}`   | `if (guard_header_smarty('inc_ext_js.tpl')) {?>` |
+
+So the bare `__FILE__` in a plugin argument compiles to the **shared literal
+string `'__FILE__'`** (not the compiled-file path, not the bare constant). Both
+pre-fix templates therefore guarded on the **same key**, which is exactly the
+collision. The post-fix form gives each template a **distinct key**.
+
+### Proof 2: behavioral collision on the real templates
+
+`_harness/collision_proof.php` renders the **real** `inc_ext_js.tpl` +
+`inc_wunderbaum.tpl` (pre-fix from migration commit `8fc308296`, post-fix from
+the working tree) in the app's include order, one scenario per isolated
+process (one process == one request == one page):
+
+| scenario | ext-all.js | wunderbaum.umd.js | wbTree.js |
+|---|---|---|---|
+| pre-fix (both `__FILE__`)         | 1 | **0** | **0** |
+| post-fix (unique keys)            | 1 | 1 | 1 |
+| post-fix, wunderbaum included 2×  | — | 1 | 1 |
+
+- Pre-fix: the Ext-JS tags render but **wunderbaum tags are absent** (the
+  colliding key was consumed by `inc_ext_js.tpl` first) — the reported symptom.
+- Post-fix: both render.
+- Post-fix double-include: emitted **exactly once** (idempotent, as intended).
+
+### Repo-wide scan
+
+Only two templates call `guard_header_smarty()`: `inc_ext_js.tpl` and
+`inc_wunderbaum.tpl`. No other bare-constant plugin argument exists, and no
+other pair shares a key. The six navigator templates that include
+`inc_wunderbaum.tpl` (tcTree, planTCNavigator, planAddTCNavigator,
+execNavigator, reqSpecListTree, printDocOptions) all also include
+`inc_ext_js.tpl` first, so they were all affected and are all covered by the
+same fix.
+
 ### Re-validation (live pages, logged-in browser, project "GAGA" / suite "TS100")
 
-`_harness/live_tree_check.js` injected into the main world of the real
-`listTestCases.php` page — 19/19 green:
+Two **distinct real pages** fetched over HTTP with a logged-in session were
+checked for the three guard-emitted tags (wunderbaum.css / wunderbaum.umd.js /
+wbTree.js) plus the Ext-JS tags — each present **exactly once**:
 
-| Check | Result |
-|---|---|
-| `mar10` / `WunderbaumClass` / `wbTreeLoaded` (wrapper fns) | ok |
-| `wonderCss` / `umdScript` / `wbTreeScript` tags present in head | ok |
-| `treeGlobal` = real Wunderbaum instance | ok |
-| `rootRow` "GAGA (0)" rendered | ok |
-| `lazySuiteRow` "TS100 (0)" **lazy-loaded via gettprojectnodes.php** | ok |
-| `rootHref` `javascript:EP(1)` / `suiteHref` `javascript:ETS(2)` | ok |
-| `rootExpandedInitially` / `rootLoaded` (restoreState + initial lazy load) | ok |
-| `expandAllBtn` (Expand tree button -> `tree.expandAll()`) | ok |
-| `collapseAllFn` / `collapseAllWorked` (`tree.collapseAll()` polyfill) | ok |
-| `stateSaved` / `stateFormat` (ExtJS path-string localStorage state) | ok |
+| Page | Template | branch | result |
+|---|---|---|---|
+| `lib/testcases/listTestCases.php?feature=edit_tc&testproject=1` | `tcTree.tpl` | lazy (`treeCfg.loader`) | all tags ×1 |
+| `lib/results/printDocOptions.php?type=testspec&testproject=1`   | `printDocOptions.tpl` | lazy (`treeCfg.loader`) | all tags ×1 |
 
-The eager branch (planTCNavigator / execNavigator / reqSpecListTree /
-printDocOptions) shares the same `inc_wunderbaum.tpl` include, so the same fix
-covers it; the lazy branch above is the one with the strictest load path.
+`_harness/checktree.php` reports **11/13** on the first page (the two "misses"
+were the checker looking for the eager `treeCfg.children=[...]` markers; this
+environment's spec tree uses the lazy loader, confirmed by `treeCfg.loader=
+...gettprojectnodes.php`). `_harness/tree2.html` and
+`_harness/printspectree.html` hold the raw pages.
+
+The eager/lazy difference is only which `treeCfg` values are assigned
+(children JSON vs loader URL); the `inc_wunderbaum.tpl` include — the guarded
+part — is byte-identical, so the guard behaves the same on both branches.
+
+#### Eager branch (plan/exec navigators): real-template render proof
+
+The eager navigators — `planTCNavigator.tpl` (eager-only), `execNavigator.tpl`,
+and the `children` arms of `planAddTCNavigator.tpl` / `reqSpecListTree.tpl` /
+`printDocOptions.tpl` — take the branch where `$gui->ajaxTree->loader` is empty
+and `treeCfg.children = <JSON>` is set instead. They cannot be exercised **live**
+in this environment: the `testplans` and `builds` tables are **empty**, so
+`plan_mode` / `execution_mode` has no valid `testplan_id` and the PHP dies in
+`tlTestCaseFilterControl::init_setting_build()` →
+`testplan::get_builds_for_html_options(null)` (SQL `WHERE testplan_id = `) **before
+any template renders**. That 500 is a data precondition, independent of the
+guard fix (which only touches head emission). To cover the eager branch without
+mutating environment data, `_harness/eager_proof.php` renders the **real**
+`inc_ext_js.tpl` + `inc_wunderbaum.tpl` (post-fix from the working tree, pre-fix
+from `8fc308296`) through the app's real Smarty in the exact eager include order
+(`inc_ext_js` → eager `treeCfg.children=[…]` → `inc_wunderbaum`), one scenario
+per isolated process (one process == one page, so the per-process static guard
+map starts empty):
+
+| scenario | ext-all.js | reset-min.css | wunderbaum.css | wunderbaum.umd.js | wbTree.js | eager children | lazy loader URL |
+|---|---|---|---|---|---|---|---|
+| pre-fix (both `__FILE__`) | 1 | 1 | **0** | **0** | **0** | present | — |
+| post-fix (unique keys) | 1 | 1 | 1 | 1 | 1 | present | absent |
+
+Pre-fix the eager branch reproduces the symptom (Ext-JS tags present, wunderbaum
+tags swallowed); post-fix all tags emit exactly once with the eager children
+JSON and no lazy loader URL. 9/9 checks pass; this is the same `planTCNavigator`/
+`execNavigator` structure the live lazy pages couldn't reach here.
+
+#### In-browser render + expand/collapse (lazy branch)
+
+Driven the live page in a real browser (project TK;GAGA): the root node
+`GAGA (0)` renders as a live Wunderbaum node (`div.wb-list-container`,
+`i.wb-expander` classes). Clicking its expander fired the lazy load
+(`wb-busy` → `gettprojectnodes.php`) and the child suite **`TS100 (0)`**
+appeared; the "Collapse tree" button (`tree.collapseAll()` polyfill) hid it
+again. The `ext-all.js` Ext.ux.CollapsiblePanel filters UI was present and
+intact, confirming `inc_ext_js` still fires first and is unaffected.
 
 ### Lesson
 

@@ -59,11 +59,17 @@ function translate_tc_status_smarty($params, $smarty) {
  *
  * Usage (in template):
  * <code>
- * {if guard_header_smarty(__FILE__)}
+ * {if guard_header_smarty('inc_my_js.tpl')}
  *     template code
  *     <script src="big-library.js type="text/javascript"></script>
  * {/if}
  * </code>
+ *
+ * The key MUST be a unique, quoted string per template file. Do NOT pass the
+ * bare PHP constant __FILE__: Smarty compiles it to the literal string
+ * '__FILE__' inside template function arguments, so EVERY template would
+ * guard on the same key and the first guarded include on the page would
+ * swallow the flag for all the others (they would render nothing).
  */
 function guard_header_smarty($file) {
 	static $guarded = array();

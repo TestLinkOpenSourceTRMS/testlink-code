@@ -4,6 +4,12 @@ Branch: `testlink-2026-Wunderbaum-tree`
 Date: 2026-11-13
 Status: all four validation areas green; production fix committed.
 
+> **2026-11-15 addendum — the tree did NOT render on the real pages.**
+> The callback/harness validation above was green, but the actual navigator
+> pages showed an empty `#tree_div`. Root cause was in the **template wiring**,
+> which none of the harnesses exercised (they load the JS via plain
+> `<script src>` and bypass Smarty). See §8 for the full write-up and fix.
+
 ## 1. Scope
 
 Replacement of the four ExtJS tree scripts with a single Wunderbaum 0.15-based
@@ -173,3 +179,81 @@ faithful 0.15 event objects.
 2. `_harness/lazy_state_smoke.js` exists but was never run (redundant with
    the already-green `lazy.html` state validation). Delete or run later.
 3. `_harness/` scaffolding intentionally stays uncommitted.
+
+## 8. 2026-11-15: "no tree displayed" on the real pages — root cause and fix
+
+### Symptom
+
+After the migration, every navigator page (e.g. `lib/testcases/listTestCases.php?
+tproject_id=1&feature=edit_tc`) rendered an empty `#tree_div`. No console
+errors, no `mar10` global, no `window.tree`. The `treeCfg` inline script
+rendered fine; the three tags that `{include file="inc_wunderbaum.tpl"}` should
+have emitted (wunderbaum.css, wunderbaum.umd.js, wbTree.js) were **absent from
+the raw HTML** — the include rendered nothing.
+
+### Root cause: `guard_header_smarty(__FILE__)` key collision
+
+`inc_wunderbaum.tpl` guarded its output with
+`{if guard_header_smarty(__FILE__)}`, copying the pattern from
+`inc_ext_js.tpl`. But Smarty 3.1 (3.1.48 here) compiles a bare `__FILE__`
+inside a template **function argument** to the *literal string* `'__FILE__'`
+(it only resolves the constant for unquoted `{$...}`-style usage, not for
+registered-plugin arguments). Both templates therefore guarded on the **same
+static key**, and `guard_header_smarty()` keeps a `static $guarded` map per
+request:
+
+```
+sequence in the rendered head:
+  1. {include file="inc_ext_js.tpl"}   -> guard_header_smarty("__FILE__") -> true  (consumes the key)
+  2. {include file="inc_wunderbaum.tpl"} -> guard_header_smarty("__FILE__") -> false -> renders NOTHING
+```
+
+Every navigator template includes `inc_ext_js.tpl` first (for the
+CollapsiblePanel filters UI), so `inc_wunderbaum.tpl` was **always** the losing
+side. The collision is deterministic, page-independent, and invisible in the
+JS harnesses: those pages load the library with plain `<script src>` tags and
+never run the Smarty template, so the guard was never on the test path.
+
+Proof: `_harness/guard_proof.php` reproduces the static-key behavior
+(first call true, second call false for the same key).
+
+### Fix
+
+Guard on a **unique, quoted string per template file** (the documented intent
+of the guard is "at most once per page, per template"):
+
+- `gui/templates/tl-classic/inc_wunderbaum.tpl`: `guard_header_smarty('inc_wunderbaum.tpl')`
+- `gui/templates/tl-classic/inc_ext_js.tpl`: `guard_header_smarty('inc_ext_js.tpl')`
+  (updated for consistency; the two keys can no longer collide)
+- `lib/functions/tlsmarty.inc.php`: `guard_header_smarty()` docblock now warns
+  against the bare `__FILE__` form and documents the unique-key requirement.
+
+No `wbTree.js` or library changes were needed — the JS was correct all along.
+
+### Re-validation (live pages, logged-in browser, project "GAGA" / suite "TS100")
+
+`_harness/live_tree_check.js` injected into the main world of the real
+`listTestCases.php` page — 19/19 green:
+
+| Check | Result |
+|---|---|
+| `mar10` / `WunderbaumClass` / `wbTreeLoaded` (wrapper fns) | ok |
+| `wonderCss` / `umdScript` / `wbTreeScript` tags present in head | ok |
+| `treeGlobal` = real Wunderbaum instance | ok |
+| `rootRow` "GAGA (0)" rendered | ok |
+| `lazySuiteRow` "TS100 (0)" **lazy-loaded via gettprojectnodes.php** | ok |
+| `rootHref` `javascript:EP(1)` / `suiteHref` `javascript:ETS(2)` | ok |
+| `rootExpandedInitially` / `rootLoaded` (restoreState + initial lazy load) | ok |
+| `expandAllBtn` (Expand tree button -> `tree.expandAll()`) | ok |
+| `collapseAllFn` / `collapseAllWorked` (`tree.collapseAll()` polyfill) | ok |
+| `stateSaved` / `stateFormat` (ExtJS path-string localStorage state) | ok |
+
+The eager branch (planTCNavigator / execNavigator / reqSpecListTree /
+printDocOptions) shares the same `inc_wunderbaum.tpl` include, so the same fix
+covers it; the lazy branch above is the one with the strictest load path.
+
+### Lesson
+
+Callback-level harness validation does not cover **template wiring**.
+When a change touches `*.tpl` include structure, re-verify on a real
+logged-in page (raw HTML + DOM + console), not only in the static harness.

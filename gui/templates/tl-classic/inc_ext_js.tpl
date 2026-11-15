@@ -44,7 +44,10 @@ Purpose: include files for:
 {/if}
 
 
-{if guard_header_smarty(__FILE__)}
+{* guard key must be unique per template file: a bare __FILE__ here compiles to the
+   same literal string in every template, so guarded includes would swallow each
+   other (the second one on the page would render nothing). *}
+{if guard_header_smarty('inc_ext_js.tpl')}
 
   {assign var="$css_only" value="$css_only|default:0"}
   {$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}

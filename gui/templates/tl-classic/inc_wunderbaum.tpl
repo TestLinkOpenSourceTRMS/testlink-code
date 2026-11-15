@@ -8,7 +8,10 @@ Purpose: load the Wunderbaum tree library and the TestLink wrapper
          The page MUST define the global `treeCfg` object before including
          this file; wbTree.js reads it and initializes on DOM ready.
 *}
-{if guard_header_smarty(__FILE__)}
+{* guard key must be unique per template file: a bare __FILE__ here compiles to the
+   same literal string in every template, so the first guarded include on the page
+   (inc_ext_js.tpl) would swallow the flag and this template would render nothing. *}
+{if guard_header_smarty('inc_wunderbaum.tpl')}
   <link rel="stylesheet" type="text/css" href="{$basehref}node_modules/wunderbaum/dist/wunderbaum.css" />
   <script type="text/javascript" src="{$basehref}node_modules/wunderbaum/dist/wunderbaum.umd.js"></script>
   <script type="text/javascript" src="{$basehref}gui/javascript/wbTree.js"></script>

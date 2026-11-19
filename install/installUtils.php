@@ -403,10 +403,10 @@ function check_pear_modules()
 function check_db_loaded_extension($db_type) {
   $dbType2PhpExtension = array('postgres' => 'pgsql');
 
-  $isPHPGTE7 = version_compare(phpversion(), "7.0.0", ">=");
+  $isPHPGTE7 = version_compare(phpversion(), "8.3.0", ">=");
 
   $ext2search = $db_type;  
-  if( $ext2search == 'mysql' &&  $isPHPGTE7) {
+  if( $ext2search == 'mysql' ) {
     $ext2search = 'mysqli';
   }
 

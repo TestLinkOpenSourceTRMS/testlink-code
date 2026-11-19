@@ -97,6 +97,7 @@ function getUserList(&$db,$db_type)
    switch($db_type)
    {
       case 'mysql':
+      case 'mysqli':
       $result = $db->exec_query('SELECT DISTINCT user AS user FROM user');
       break;
       
@@ -402,10 +403,10 @@ function check_pear_modules()
 function check_db_loaded_extension($db_type) {
   $dbType2PhpExtension = array('postgres' => 'pgsql');
 
-  $isPHPGTE7 = version_compare(phpversion(), "7.0.0", ">=");
+  $isPHPGTE7 = version_compare(phpversion(), "8.3.0", ">=");
 
   $ext2search = $db_type;  
-  if( $ext2search == 'mysql' &&  $isPHPGTE7) {
+  if( $ext2search == 'mysql' ) {
     $ext2search = 'mysqli';
   }
 
@@ -526,11 +527,9 @@ function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd) {
     }    
   } 
 
-  // To have compatibility with MySQL 5.x
-  // IDENTIFIED WITH mysql_native_password
   if ($isMySQL) {
     $stmt .= 
-      " IDENTIFIED WITH mysql_native_password BY '$passwd' ";    
+      " IDENTIFIED WITH caching_sha2_password BY '$passwd' ";    
   }
 
   if ($isMariaDB) {

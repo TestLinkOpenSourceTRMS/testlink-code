@@ -9,10 +9,10 @@
  * @filesource  installDbInput.php
  * @package   TestLink
  * @author    Martin Havlat
- * @copyright   2009,2016 TestLink community 
+ * @copyright   2009,2026 TestLink community 
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.20
  **/
 
 require_once("installUtils.php");
@@ -119,8 +119,10 @@ include 'installHead.inc';
     <div class="labelHolder">
       <label for="databasetype">Database Type</label>
     </div>
+
+    <!-- 2026-11-19 mysql it's ok will be transformed later in mysqli -->
     <select id="databasetype" name="databasetype">
-      <option value="mysql" selected>MySQL/MariaDB (5.6+ / 10.+)</option>
+      <option value="mysql" selected>MySQL(8.4+) / MariaDB (10.11 LTS/ 11.4 LTS / 11.8 LTS / 12.3 LTS)</option>
       <option value="postgres" >Postgres (9.1 and later)</option>
       <option value="mssql" >Microsoft SQL Server 2008 and later (Experimental)</option>
     </select> 

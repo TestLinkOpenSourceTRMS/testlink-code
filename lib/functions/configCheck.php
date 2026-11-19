@@ -9,7 +9,7 @@
  * @filesource  configCheck.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2022, TestLink community 
+ * @copyright   2007-2026, TestLink community 
  * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
@@ -563,7 +563,7 @@ function checkPhpExtensions(&$errCounter) {
                   'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
 
   $mysqlExt = 'mysql';
-  if( version_compare(phpversion(), "7.4.2", ">=") ) {
+  if( version_compare(phpversion(), "8.3", ">=") ) {
     $mysqlExt = 'mysqli';
   } 
   $checks[]=array('extension' => $mysqlExt,
@@ -622,6 +622,11 @@ function checkPhpExtensions(&$errCounter) {
   $checks[]=array('extension' => 'curl',
                   'msg' => array('feedback' => 'cURL library', 'ok' => $td_ok, 
                                  'ko' => " not enabled. You MUST install it to use REST Integration with issue trackers. "));
+
+$checks[]=array('extension' => 'openssl',
+                  'msg' => array('feedback' => 'OpenSSL', 'ok' => $td_ok, 
+                                 'ko' => " not enabled. You MUST install it for MySQL. "));
+
 
   $out='';
   foreach($checks as $test)
@@ -760,7 +765,7 @@ function checkServerOs()
  */
 function checkPhpVersion(&$errCounter)
 {
-  $min_version = '7.4.2'; 
+  $min_version = '8.3'; 
   $my_version = phpversion();
 
   // version_compare:

@@ -87,7 +87,7 @@ class database {
     $fetch_mode = ADODB_FETCH_ASSOC;
 
     $this->dbType = $db_type;
-    if( $this->dbType == 'mysql' && version_compare(phpversion(), "5.5.0", ">=") )
+    if( $this->dbType == 'mysql' || $this->dbType == 'mysqli' )
     {
       $this->dbType = 'mysqli';
     }

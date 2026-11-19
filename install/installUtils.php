@@ -97,6 +97,7 @@ function getUserList(&$db,$db_type)
    switch($db_type)
    {
       case 'mysql':
+      case 'mysqli':
       $result = $db->exec_query('SELECT DISTINCT user AS user FROM user');
       break;
       
@@ -526,11 +527,9 @@ function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd) {
     }    
   } 
 
-  // To have compatibility with MySQL 5.x
-  // IDENTIFIED WITH mysql_native_password
   if ($isMySQL) {
     $stmt .= 
-      " IDENTIFIED WITH mysql_native_password BY '$passwd' ";    
+      " IDENTIFIED WITH caching_sha2_password BY '$passwd' ";    
   }
 
   if ($isMariaDB) {

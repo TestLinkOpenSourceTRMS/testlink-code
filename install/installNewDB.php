@@ -446,6 +446,7 @@ switch($db_type) {
     break;
 
     case 'mysql':
+    case 'mysqli':  
     @$conn_result = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, $db_name); 
     break;
         

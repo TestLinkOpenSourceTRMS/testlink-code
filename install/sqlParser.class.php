@@ -49,6 +49,7 @@ class SqlParser {
     switch($this->db_type)
     {
       case 'mysql':
+      case 'mysqli':  
         $cfil = array_filter($contents,array($this,"only_good_mysql"));
       break;
           
@@ -63,7 +64,7 @@ class SqlParser {
       break;
     }
 
-    $r2d2 = implode("", $cfil);
+    $r2d2 = implode("", (array)$cfil);
     // echo "<pre>debug 20090715 - \ - " . __FUNCTION__ . " --- "; print_r($r2d2); echo "</pre>";
 
     if( $do_replace)

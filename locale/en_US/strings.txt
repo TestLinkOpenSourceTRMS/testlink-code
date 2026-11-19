@@ -1196,6 +1196,13 @@ $TLS_warning_modify_role = "Really modify the role?";
 $TLS_th_reqmgrsystem_rights = 'Req. Management System';
 $TLS_assign_tproject_roles = "Role Management - Assign Test Project roles";
 $TLS_assign_tplan_roles = "Role Management - Assign Test Plan roles";
+$TLS_filter_all = "All";
+$TLS_search_user_hint = "user name (login)";
+$TLS_btn_filter = "Filter";
+$TLS_prev_page = "Previous";
+$TLS_next_page = "Next";
+$TLS_users_shown_of = "shown";
+
 
 
 

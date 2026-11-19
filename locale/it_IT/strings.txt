@@ -2352,5 +2352,12 @@ $TLS_confirm_install_text = "undefined";
 $TLS_confirm_uninstall_header = "undefined";
 $TLS_confirm_uninstall_text = "undefined";
 $TLS_desc_mgt_plugins = "undefined";
+
+$TLS_filter_all = "Tutti";
+$TLS_search_user_hint = "nome utente (login)";
+$TLS_btn_filter = "Filtra";
+$TLS_prev_page = "Precedente";
+$TLS_next_page = "Successiva";
+$TLS_users_shown_of = "visualizzati";
 // ----- END ------------------------------------------------------------------
 ?>

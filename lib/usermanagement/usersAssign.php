@@ -87,8 +87,12 @@ if ($args->featureID && $args->doUpdate && $featureMgr) {
 }
 // ------------------------------------------------------------------
 // Important: 
-// Must be done here after having done update, to get current information
-$gui->users = tlUser::getAll($db,"WHERE active=1",null,null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+// Must be done here after having done update, to get current information.
+// MantisBT-style UX: only the filtered/paged subset of users is loaded
+// and rendered (see getFilteredUsersPage()).
+$usersPage = getFilteredUsersPage($db,$args);
+$gui->users = $usersPage['users'];
+$gui->pager = $usersPage['pager'];
 checkSessionValid($db);
 $args->user = $_SESSION['currentUser'];
 // ------------------------------------------------------------------
@@ -137,6 +141,130 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /**
+ * getFilteredUsersPage
+ *
+ * MantisBT-style (manage_user_page.php) server-side user listing:
+ * limited number of records per page + filter by initial letter
+ * and/or user name (login LIKE search).
+ *
+ * @param object &$db adodb handler
+ * @param object $args args object (page_number, filter, search, per_page)
+ * @return array with keys:
+ *   - users: array of tlUser objects (page subset)
+ *   - pager: stdClass model for the template
+ */
+function getFilteredUsersPage(&$db,$args) {
+  $tables = tlObject::getDBTables('users');
+  $where = ' WHERE active = 1 ';
+
+  // initial-letter filter: login starts with <letter>
+  if ($args->filter != 'ALL') {
+    $where .= " AND login LIKE '" . $db->prepare_string($args->filter) . "%' ";
+  }
+
+  // username search: login contains <term>
+  // (% and _ in user input are escaped so they act as literals)
+  $searchTerm = $args->search;
+  if ($searchTerm != '') {
+    $searchTerm = str_replace(array('!','%','_'),
+                              array('!!','!%','!_'),
+                              $db->prepare_string($searchTerm));
+    $where .= " AND login LIKE '%" . $searchTerm . "%' ESCAPE '!' ";
+  }
+
+  $countSql = " SELECT COUNT(id) AS total FROM {$tables['users']} " . $where;
+  $rs = $db->get_recordset($countSql);
+  $total = (is_array($rs) && isset($rs[0])) ? intval($rs[0]['total']) : 0;
+
+  $perPage = intval($args->per_page);
+  $pageNumber = intval($args->page_number);
+  $pageCount = 1;
+  $offset = 0;
+
+  if ($perPage > 0) {
+    $pageCount = intval(ceil($total / $perPage));
+    if ($pageCount < 1) {
+      $pageCount = 1;
+    }
+    // keep page number inside [1..page_count], as in MantisBT
+    if ($pageNumber > $pageCount) {
+      $pageNumber = $pageCount;
+    }
+    if ($pageNumber < 1) {
+      $pageNumber = 1;
+    }
+    $offset = ($pageNumber - 1) * $perPage;
+  }
+
+  $sql = " SELECT id FROM {$tables['users']} " . $where . " ORDER BY login ";
+  if ($perPage > 0) {
+    $sql .= " LIMIT " . $perPage . " OFFSET " . $offset . " ";
+  }
+
+  $users = tlDBObject::createObjectsFromDBbySQL($db,$sql,'id','tlUser',true,
+                                                tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+  $users = is_null($users) ? array() : $users;
+
+  $pager = new stdClass();
+  $pager->enabled = ($perPage > 0);
+  $pager->per_page = $perPage;
+  $pager->page_number = $pager->enabled ? $pageNumber : 1;
+  $pager->page_count = $pager->enabled ? $pageCount : 1;
+  $pager->total_users = $total;
+  $pager->filter = $args->filter;
+  $pager->search = $args->search;
+  $pager->first_row = $total > 0 ? ($offset + 1) : 0;
+  $pager->last_row = min($total, $offset + count($users));
+
+  // per-initial-letter counts for the MantisBT-style filter chips
+  // (letter counts respect the active search term, as in the main listing)
+  $letterCounts = array();
+  if ($perPage > 0) {
+    $chipsSql = " SELECT LEFT(login,1) AS ch, COUNT(id) AS n FROM {$tables['users']} " . $where .
+                  " GROUP BY LEFT(login,1) ";
+    $rs = $db->get_recordset($chipsSql);
+    if (is_array($rs)) {
+      foreach ($rs as $row) {
+        $letterCounts[strtoupper($row['ch'])] = intval($row['n']);
+      }
+    }
+  }
+  $pager->letter_counts = $letterCounts;
+  $pager->all_count = $total;
+
+  // windowed page links: 1 ... n-2 n-1 n n+1 n+2 ... last
+  $pageLinks = array();
+  if ($pager->enabled && $pageCount > 1) {
+    $start = max(1, $pageNumber - 2);
+    $end = min($pageCount, $pageNumber + 2);
+    if ($start > 1) {
+      $pageLinks[] = array('page' => 1, 'label' => '1', 'active' => ($pageNumber == 1));
+      if ($start > 2) {
+        $pageLinks[] = array('page' => null, 'label' => '&hellip;', 'active' => false, 'ellipsis' => true);
+      }
+    }
+    for ($pn = $start; $pn <= $end; $pn++) {
+      if ($pn == 1 && $start > 1) {
+        continue; // page 1 already added above
+      }
+      $pageLinks[] = array('page' => $pn, 'label' => (string)$pn, 'active' => ($pn == $pageNumber));
+    }
+    if ($end < $pageCount) {
+      if ($end < $pageCount - 1) {
+        $pageLinks[] = array('page' => null, 'label' => '&hellip;', 'active' => false, 'ellipsis' => true);
+      }
+      $pageLinks[] = array('page' => $pageCount, 'label' => (string)$pageCount, 'active' => ($pageNumber == $pageCount));
+    }
+  }
+  $pager->page_links = $pageLinks;
+  $pager->has_prev = $pager->enabled && $pageNumber > 1;
+  $pager->has_next = $pager->enabled && $pageNumber < $pageCount;
+
+  return array('users' => $users, 'pager' => $pager);
+}
+
+
+/**
  * 
  *
  */
@@ -145,7 +273,11 @@ function init_args(&$tprojMgr) {
 			"featureType" => array(tlInputParameter::STRING_N,0,100),
 			"featureID" => array(tlInputParameter::INT_N),
 			"userRole" => array(tlInputParameter::ARRAY_INT),
-			"do_update" => array(tlInputParameter::STRING_N,0,100)
+			"do_update" => array(tlInputParameter::STRING_N,0,100),
+			"page_number" => array(tlInputParameter::INT_N),
+			"filter" => array(tlInputParameter::STRING_N,0,100),
+			"search" => array(tlInputParameter::STRING_N,0,100),
+			"per_page" => array(tlInputParameter::INT_N)
 	);
 
 	$pParams = R_PARAMS($iParams);
@@ -155,6 +287,35 @@ function init_args(&$tprojMgr) {
   $args->featureID = $pParams["featureID"];
   $args->map_userid_roleid = $pParams["userRole"];
   $args->doUpdate = ($pParams["do_update"] != "") ? 1 : 0;
+
+  // MantisBT-style paging/filtering parameters.
+  // per_page = 0 means "no limit" (legacy behaviour, all active users).
+  $args->page_number = $pParams["page_number"] > 0 ? $pParams["page_number"] : 1;
+  $args->per_page = $pParams["per_page"] > 0 ? min($pParams["per_page"], 1000) : 0;
+  $filterUpper = strtoupper(trim($pParams["filter"]));
+  $validFilters = array_merge(array('ALL'),
+                  array_map('strtoupper', array_merge(range('A','Z'), range('0','9'))));
+  $args->filter = in_array($filterUpper, $validFilters) ? $filterUpper : 'ALL';
+  $args->search = trim($pParams["search"]);
+
+  // Default per-page, reusing the existing usersAssign pagination config block
+  $guiCfg = config_get('gui');
+  $defaultPerPage = 20;
+  $paginationEnabled = true;
+  if (isset($guiCfg->usersAssign->pagination->enabled)) {
+    $paginationEnabled = (bool)$guiCfg->usersAssign->pagination->enabled;
+  }
+  if (isset($guiCfg->usersAssign->pagination->length)) {
+    if (preg_match('/\[\s*(\d+)/', $guiCfg->usersAssign->pagination->length, $m)) {
+      $defaultPerPage = $m[1] + 0;
+    }
+  }
+  if (!$paginationEnabled) {
+    $defaultPerPage = 0;
+  }
+  if ($args->per_page == 0) {
+    $args->per_page = $defaultPerPage;
+  }
 
   $args->testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
@@ -583,6 +744,7 @@ function initializeGui(&$dbHandler,$argsObj)
   {
   	$gui->role_colour = tlRole::getRoleColourCfg($dbHandler);
   }
+  $gui->pager = null;
   return $gui;
 }
 

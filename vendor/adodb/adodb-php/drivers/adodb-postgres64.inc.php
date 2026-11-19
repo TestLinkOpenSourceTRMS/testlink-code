@@ -831,7 +831,7 @@ class ADODB_postgres64 extends ADOConnection{
 					if ($params) $params .= ',';
 					if (is_string($v)) {
 						$params .= 'VARCHAR';
-					} else if (is_integer($v)) {
+					} else if (is_int($v)) {
 						$params .= 'INTEGER';
 					} else {
 						$params .= "REAL";

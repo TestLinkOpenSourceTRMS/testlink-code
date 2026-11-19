@@ -768,7 +768,7 @@ order by constraint_name, referenced_table_name, keyno";
 
 					$params .= "@P$i=N" . $inputVar;
 
-				} else if (is_integer($v)) {
+				} else if (is_int($v)) {
 					$decl .= "@P$i INT";
 					$params .= "@P$i=".$v;
 				} else if (is_float($v)) {
@@ -1004,7 +1004,7 @@ class ADORecordset_mssql extends ADORecordSet {
 					if (@is_array($this->fields)) {
 						$fassoc = array();
 						foreach($this->fields as $k => $v) {
-							if (is_integer($k)) continue;
+							if (is_int($k)) continue;
 							$fassoc[$k] = $v;
 						}
 						$this->fields = $fassoc;

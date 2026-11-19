@@ -925,7 +925,7 @@ static $cacheCols;
 			$cacheCols = $columns;
 		}
 	} else if (is_subclass_of($rs, 'adorecordset')) {
-		if (isset($rs->insertSig) && is_integer($cacheRS) && $cacheRS == $rs->insertSig) {
+		if (isset($rs->insertSig) && is_int($cacheRS) && $cacheRS == $rs->insertSig) {
 			$columns = $cacheCols;
 		} else {
 			$columns = [];

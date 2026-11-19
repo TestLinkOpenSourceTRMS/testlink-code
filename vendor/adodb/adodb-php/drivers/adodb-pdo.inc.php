@@ -680,7 +680,6 @@ class ADODB_pdo_base extends ADODB_pdo {
 	function _init($parentDriver)
 	{
 		$parentDriver->_bindInputArray = true;
-		#$parentDriver->_connectionID->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY,true);
 	}
 
 	function ServerInfo()

@@ -198,7 +198,7 @@ if (!defined('_ADODB_LAYER')) {
 		/**
 		 * ADODB version as a string.
 		 */
-		$ADODB_vers = 'v5.22.11  2025-11-22';
+		$ADODB_vers = 'v5.22.12  2026-08-19';
 
 		/**
 		 * Determines whether recordset->RecordCount() is used.
@@ -695,6 +695,15 @@ if (!defined('_ADODB_LAYER')) {
 
 	/** @var string a specified locale. */
 	var $locale;
+
+	/**
+	 * Setting true forces metacolumns to be read the db for
+	 * each access of a table instead of using cached version.
+	 * Currently only works on mssqlnative
+	 *
+	 * @var bool
+	 */
+	public bool $cachedSchemaFlush = false;
 
 
 	/**
@@ -3826,6 +3835,13 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		var $fields = false;
 		var $connection = false;
 
+		/**
+		 * The timestamp that the recordset was created
+		 *
+		 * @var integer
+		 */
+		public int $timeCreated = 0;
+
 		function RowCount() {
 			return 0;
 		}
@@ -5173,7 +5189,7 @@ class ADORecordSet implements IteratorAggregate {
 
 		// Change the case
 		foreach($this->fields as $k => $v) {
-			if (!is_integer($k)) {
+			if (!is_int($k)) {
 				$k = $fn_change_case($k);
 			}
 			$arr[$k] = $v;

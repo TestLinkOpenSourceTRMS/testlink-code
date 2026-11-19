@@ -611,7 +611,7 @@ class ADODB_sqlite3 extends ADOConnection {
 		// Build as many keys as available
 		$bindIndex = 2;
 		foreach ($params as $bindValue) {
-			if (is_integer($bindValue) || is_bool($bindValue) || is_float($bindValue)) {
+			if (is_int($bindValue) || is_bool($bindValue) || is_float($bindValue)) {
 				$type = SQLITE3_NUM;
 			} elseif (is_object($bindValue)) {
 				// Assume a blob, this should never appear in

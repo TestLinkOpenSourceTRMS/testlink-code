@@ -14,6 +14,30 @@ Older changelogs:
 
 --------------------------------------------------------------------------------
 
+## [5.22.12] - 2026-08-19
+
+### Fixed
+
+- core: deprecation warnings in csv2rs() with PHP 8.4
+  [#1152](https://github.com/ADOdb/ADOdb/issues/1152)
+- core: Undefined class property in ADOrecordset_empty (PHP 8.2)
+  [#1154](https://github.com/ADOdb/ADOdb/issues/1154)
+- core: Move the cachedSchemaFlush property from mssqlnative
+  [#1176](https://github.com/ADOdb/ADOdb/issues/1176)
+- PHP 8.5 compatibility
+  [#1150](https://github.com/ADOdb/ADOdb/issues/1150)
+  [#1171](https://github.com/ADOdb/ADOdb/issues/1171)
+  [#1172](https://github.com/ADOdb/ADOdb/issues/1172)
+- PHP 8.6 compatibility
+  [#1250](https://github.com/ADOdb/ADOdb/issues/1250)
+- mysqli: metaDatabases() returns empty result set if fetch mode is ADODB_FETCH_NUM
+  [#1162](https://github.com/ADOdb/ADOdb/issues/1162)
+- mysqli: calling metaColumns() on non-existing table throws error
+  [#1212](https://github.com/ADOdb/ADOdb/issues/1212)
+- pgsql: undefined variable and array key warnings in alterColumnSQL()
+  [#1169](https://github.com/ADOdb/ADOdb/issues/1169)
+
+
 ## [5.22.11] - 2025-11-22
 
 ### Fixed
@@ -83,7 +107,7 @@ Older changelogs:
 
 - Backtrace output is not channeled through ADODB_OUTP
   [#1018](https://github.com/ADOdb/ADOdb/issues/1018)
-- changeColumnSQL not handling new vs changed columns correctly #1010
+- changeColumnSQL not handling new vs changed columns correctly
   [#1010](https://github.com/ADOdb/ADOdb/issues/1010)
 - PHP 8 compatibility
   [#1009](https://github.com/ADOdb/ADOdb/issues/1009)
@@ -1524,6 +1548,7 @@ Released together with [v4.95](changelog_v4.x.md#495---17-may-2007)
 - Adodb5 version,more error checking code now will use exceptions if available.
 
 
+[5.22.12]: https://github.com/adodb/adodb/compare/v5.22.11...v5.22.12
 [5.22.11]: https://github.com/adodb/adodb/compare/v5.22.10...v5.22.11
 [5.22.10]: https://github.com/adodb/adodb/compare/v5.22.9...v5.22.10
 [5.22.9]: https://github.com/adodb/adodb/compare/v5.22.8...v5.22.9

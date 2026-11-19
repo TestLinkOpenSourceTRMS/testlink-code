@@ -231,14 +231,15 @@ class ADODB2_postgres extends ADODB_DataDict
 					$existing = $this->metaColumns($tabname);
 					list(,$colname,$default) = $matches;
 					$alter .= $colname;
-					if ($this->connection) {
+
+					$v = preg_replace('/^' . preg_quote($colname) . '\s/', '', $v);
+					$t = trim(str_replace('DEFAULT ' . $default,'',$v));
+
+					if ($this->connection && array_key_exists(strtoupper($colname), $existing)) {
 						$old_coltype = $this->connection->metaType($existing[strtoupper($colname)]);
 					} else {
 						$old_coltype = $t;
 					}
-					$v = preg_replace('/^' . preg_quote($colname) . '\s/', '', $v);
-					$t = trim(str_replace('DEFAULT '.$default,'',$v));
-
 					// Type change from bool to int
 					if ( $old_coltype == 'L' && $t == 'INTEGER' ) {
 						$sql[] = $alter . ' DROP DEFAULT';

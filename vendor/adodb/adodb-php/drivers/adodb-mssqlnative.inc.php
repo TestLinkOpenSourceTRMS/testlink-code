@@ -98,7 +98,6 @@ class ADODB_mssqlnative extends ADOConnection {
 	var $_dropSeqSQL = "drop table %s";
 
 	var $connectionInfo    = array('ReturnDatesAsStrings'=>true);
-	var $cachedSchemaFlush = false;
 
 	var $sequences = false;
 	var $mssql_version = '';

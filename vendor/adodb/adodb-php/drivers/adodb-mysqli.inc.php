@@ -44,7 +44,10 @@ class ADODB_mysqli extends ADOConnection {
 	var $dataProvider = 'mysql';
 	var $hasInsertID = true;
 	var $hasAffectedRows = true;
-	var $metaTablesSQL = "SELECT
+	var $metaDatabasesSQL = "SHOW DATABASES
+		WHERE `database` NOT IN ('mysql', 'information_schema', 'performance_schema')";
+	var $metaTablesSQL = /** @lang text */
+		"SELECT
 			TABLE_NAME,
 			CASE WHEN TABLE_TYPE = 'VIEW' THEN 'V' ELSE 'T' END
 		FROM INFORMATION_SCHEMA.TABLES
@@ -631,27 +634,6 @@ class ADODB_mysqli extends ADOConnection {
 	}
 
 	/**
-	 * Return a list of all visible databases except the 'mysql' database.
-	 *
-	 * @return array|false An array of database names, or false if the query failed.
-	 */
-	function MetaDatabases()
-	{
-		$query = "SHOW DATABASES";
-		$ret = $this->execute($query);
-		if ($ret && is_object($ret)){
-			$arr = array();
-			while (!$ret->EOF){
-				$db = $ret->fields('Database');
-				if ($db != 'mysql') $arr[] = $db;
-				$ret->moveNext();
-			}
-			return $arr;
-		}
-		return $ret;
-	}
-
-	/**
 	 * Get a list of indexes on the specified table.
 	 *
 	 * @param string $table The name of the table to get indexes for.
@@ -953,7 +935,19 @@ class ADODB_mysqli extends ADOConnection {
 			$table = "$owner.$table";
 		}
 
-		$a_create_table = $this->getRow(sprintf('SHOW CREATE TABLE `%s`', $table));
+		$showCreate = $this->getRow(
+				sprintf('SHOW CREATE TABLE `%s`', $table)
+		);
+
+		if ( !$showCreate || !is_array($showCreate) ) {
+			/*
+			* Invalid table or owner provided
+			*/
+			$this->setFetchMode($savem);
+			return false;
+		}
+
+		$a_create_table = array_change_key_case($showCreate, CASE_UPPER);
 
 		$this->setFetchMode($savem);
 
@@ -1020,9 +1014,11 @@ class ADODB_mysqli extends ADOConnection {
 				   AND table_name='$table'";
 
 		$schemaArray = $this->getAssoc($SQL);
-		if (is_array($schemaArray)) {
+		if ($schemaArray) {
 			$schemaArray = array_change_key_case($schemaArray,CASE_LOWER);
 			$rs = $this->Execute(sprintf($this->metaColumnsSQL,$table));
+		} else {
+			$rs = false;
 		}
 
 		if (isset($savem)) $this->SetFetchMode($savem);
@@ -1252,7 +1248,7 @@ class ADODB_mysqli extends ADOConnection {
 	{
 		$typeString = '';
 		foreach ($inputArr as $v) {
-			if (is_integer($v) || is_bool($v)) {
+			if (is_int($v) || is_bool($v)) {
 				$typeString .= 'i';
 			} elseif (is_float($v)) {
 				$typeString .= 'd';
@@ -1305,7 +1301,7 @@ class ADODB_mysqli extends ADOConnection {
 			$a = '';
 			foreach($inputarr as $v) {
 				if (is_string($v)) $a .= 's';
-				else if (is_integer($v)) $a .= 'i';
+				else if (is_int($v)) $a .= 'i';
 				else $a .= 'd';
 			}
 

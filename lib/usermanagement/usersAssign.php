@@ -298,14 +298,25 @@ function init_args(&$tprojMgr) {
   $args->filter = in_array($filterUpper, $validFilters) ? $filterUpper : 'ALL';
   $args->search = trim($pParams["search"]);
 
-  // Default per-page, reusing the existing usersAssign pagination config block
+  // Default per-page: prefer the explicit config option
+  // $tlCfg->gui->usersAssign->pagination->page_length, then fall back to
+  // the first number of the legacy DataTables 'length' string, then 20.
   $guiCfg = config_get('gui');
   $defaultPerPage = 20;
   $paginationEnabled = true;
   if (isset($guiCfg->usersAssign->pagination->enabled)) {
     $paginationEnabled = (bool)$guiCfg->usersAssign->pagination->enabled;
   }
-  if (isset($guiCfg->usersAssign->pagination->length)) {
+  $pageLengthSet = false;
+  if (isset($guiCfg->usersAssign->pagination->page_length)) {
+    $cfgPageLength = intval($guiCfg->usersAssign->pagination->page_length);
+    if ($cfgPageLength > 0) {
+      $defaultPerPage = min($cfgPageLength, 1000);
+      $pageLengthSet = true;
+    }
+  }
+  if (!$pageLengthSet && isset($guiCfg->usersAssign->pagination->length)) {
+    // legacy fallback: first number of the DataTables 'length' string
     if (preg_match('/\[\s*(\d+)/', $guiCfg->usersAssign->pagination->length, $m)) {
       $defaultPerPage = $m[1] + 0;
     }

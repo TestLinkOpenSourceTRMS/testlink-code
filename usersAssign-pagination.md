@@ -77,15 +77,22 @@ validation:
   `A–Z`/`0–9`, otherwise it is treated as `ALL`.
 - `search` → trimmed; may be empty.
 
-The **default per-page** comes from the existing config block
+The **default per-page** comes from the usersAssign pagination config block:
 
 ```php
-$tlCfg->gui->usersAssign->pagination->enabled   // default true
-$tlCfg->gui->usersAssign->pagination->length    // '[20, 40, 60, -1], ...'
+$tlCfg->gui->usersAssign->pagination->enabled      // default true
+$tlCfg->gui->usersAssign->pagination->page_length  // default 20 (1..1000)
+$tlCfg->gui->usersAssign->pagination->length       // '[20, 40, 60, -1], ...' (legacy)
 ```
 
-The first number in `length` is used as the default page size (20). If
-`pagination->enabled` is `false`, paging is disabled entirely (`per_page = 0`),
+`page_length` is the explicit page-length option. Resolution order:
+
+1. `page_length` when set and `> 0` (capped at `1000`).
+2. Otherwise the first number of the legacy DataTables-style `length` string
+   (kept for backward compatibility with existing configurations).
+3. Otherwise the built-in default `20`.
+
+If `pagination->enabled` is `false`, paging is disabled entirely (`per_page = 0`),
 which reproduces the old "show all active users" behaviour.
 
 ### `getFilteredUsersPage($db, $args)`
@@ -173,7 +180,8 @@ Six new UI strings were added to **en_US**, **en_GB** and **it_IT**:
 | Setting                                                        | Default |
 |----------------------------------------------------------------|---------|
 | `$tlCfg->gui->usersAssign->pagination->enabled`                | `true`  |
-| page size (first number of `pagination->length`)               | `20`    |
+| `$tlCfg->gui->usersAssign->pagination->page_length`            | `20`    |
+| legacy `length` first number (fallback when `page_length` unset)| `20`    |
 | `per_page` override cap                                         | `1000`  |
 | `filter` fallback when invalid                                  | `ALL`   |
 

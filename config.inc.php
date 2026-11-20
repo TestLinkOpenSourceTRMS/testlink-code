@@ -646,6 +646,10 @@ $tlCfg->gui->usersAssign = new stdClass();
 $tlCfg->gui->usersAssign->pagination = new stdClass();
 $tlCfg->gui->usersAssign->pagination->enabled = true;
 $tlCfg->gui->usersAssign->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
+/** Default number of users shown per page (server-side pagination).
+ *  Valid range 1..1000; 0 or unset falls back to the first number of
+ *  'length' above (legacy DataTables format). */
+$tlCfg->gui->usersAssign->pagination->page_length = 20;
 
 $tlCfg->gui->planView = new stdClass();
 $tlCfg->gui->planView->pagination = new stdClass();

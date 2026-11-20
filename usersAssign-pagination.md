@@ -81,7 +81,7 @@ The **default per-page** comes from the usersAssign pagination config block:
 
 ```php
 $tlCfg->gui->usersAssign->pagination->enabled      // default true
-$tlCfg->gui->usersAssign->pagination->page_length  // default 20 (1..1000)
+$tlCfg->gui->usersAssign->pagination->page_length  // default 50 (1..1000)
 $tlCfg->gui->usersAssign->pagination->length       // '[20, 40, 60, -1], ...' (legacy)
 ```
 
@@ -180,7 +180,7 @@ Six new UI strings were added to **en_US**, **en_GB** and **it_IT**:
 | Setting                                                        | Default |
 |----------------------------------------------------------------|---------|
 | `$tlCfg->gui->usersAssign->pagination->enabled`                | `true`  |
-| `$tlCfg->gui->usersAssign->pagination->page_length`            | `20`    |
+| `$tlCfg->gui->usersAssign->pagination->page_length`            | `50`    |
 | legacy `length` first number (fallback when `page_length` unset)| `20`    |
 | `per_page` override cap                                         | `1000`  |
 | `filter` fallback when invalid                                  | `ALL`   |

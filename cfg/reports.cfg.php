@@ -84,12 +84,21 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 	'format' => 'format_html,format_pseudo_ods'
 );
 
-$tlCfg->reports_list['report_by_tsuite'] = 
+$tlCfg->reports_list['report_by_tsuite'] =
   array('title' => 'link_report_by_tsuite',
         'url' => 'lib/results/resultsByTSuite.php',
         'enabled' => 'all',
-        'directLink' => 
+        'directLink' =>
           '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=report_by_tsuite',
+        'format' => 'format_html'
+);
+
+$tlCfg->reports_list['results_trend'] =
+  array('title' => 'link_report_results_trend',
+        'url' => 'lib/results/resultsTrend.php',
+        'enabled' => 'all',
+        'directLink' =>
+          '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=results_trend',
         'format' => 'format_html'
 );
 

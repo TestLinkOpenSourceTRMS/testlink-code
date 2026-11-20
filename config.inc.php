@@ -313,6 +313,20 @@ $tlCfg->notifications->userSignUp->to = new stdClass();
 $tlCfg->notifications->userSignUp->to->roles = array(TL_ROLES_ADMIN);
 $tlCfg->notifications->userSignUp->to->users = null; // i.e. array('login01','login02');
 
+/**
+ * Outgoing webhooks - notify external systems (Slack/Teams bridges, CI, etc.)
+ * when events happen inside TestLink. Disabled when empty.
+ * @see lib/functions/webhook_api.php for payload format and signature.
+ *
+ * Example (put in custom_config.inc.php):
+ * $tlCfg->webhooks = array(
+ *   array('url' => 'https://hooks.example.com/testlink',
+ *         'events' => array('execution.created'),  // or array('*')
+ *         'secret' => 'shared-secret'),
+ * );
+ */
+$tlCfg->webhooks = array();
+
 // ----------------------------------------------------------------------------
 /* [LOGGING] */
 

@@ -323,7 +323,7 @@ function buildMailCfg(&$guiObj) {
  * return tlExtTable
  *
  */
-function buildMatrix($dataSet, &$args, $options = array(), $platforms,$customFieldColumns=null) {
+function buildMatrix($dataSet, &$args, $options, $platforms,$customFieldColumns=null) {
   $default_options = 
     array('show_platforms' => false,'format' => FORMAT_HTML);
   $options = array_merge($default_options, $options);

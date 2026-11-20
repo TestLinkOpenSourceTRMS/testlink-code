@@ -3554,7 +3554,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $opt = array(
                     'outputFormat' => 'mapAccessByID'
             );
-            $platformSet = (arrya)$this->tplanMgr->getPlatforms( $tplan_id, $opt );
+            $platformSet = (array)$this->tplanMgr->getPlatforms( $tplan_id, $opt );
             $hasPlatforms = (count( $platformSet ) > 0);
             $hasPlatformIDArgs = $this->_isParamPresent( self::$platformIDParamName );
 

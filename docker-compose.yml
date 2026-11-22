@@ -15,6 +15,12 @@ services:
     - MYSQL_DATABASE=testlink
     volumes:
     - mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pteste"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   maildev:
     image: maildev/maildev:latest
@@ -32,7 +38,7 @@ services:
     restart: unless-stopped
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
       maildev:
         condition: service_started
     networks:

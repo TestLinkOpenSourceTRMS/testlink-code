@@ -6,3 +6,4 @@ config_db.inc.php
 **/._*
 upload_area/**
 .env
+.worktrees/

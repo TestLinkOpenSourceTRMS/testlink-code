@@ -161,8 +161,13 @@ class RestApi
   /**
    *
    */
-  public function authenticate(Request $request, RequestHandler $handler) 
+  public function authenticate(Request $request, RequestHandler $handler)
   {
+    // Allow OPTIONS preflight requests through without authentication
+    if ($request->getMethod() === 'OPTIONS') {
+      return $handler->handle($request);
+    }
+
     $hh = $request->getHeaders();
     
     $apiKey = null;
@@ -1697,7 +1702,330 @@ class RestApi
    */
   function msgFromException($e)
   {
-    return $e->getMessage() . 
-           ' - offending line number: ' . $e->getLine();   
+    return $e->getMessage() .
+           ' - offending line number: ' . $e->getLine();
   }
+
+  /**
+   * GET /testprojects/{id}/testsuites
+   * Returns the test suite tree for a project
+   */
+  public function getProjectTestSuites(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok', 'items' => null);
+    try {
+      $tproject_id = intval($args['id']);
+      $suites = $this->tsuiteMgr->get_all_by_tproject_id($tproject_id);
+      $op['items'] = $suites ? array_values($suites) : [];
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testsuites/{id}/testcases
+   * Returns test cases in a test suite
+   */
+  public function getSuiteTestCases(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok', 'items' => null);
+    try {
+      $tsuite_id = intval($args['id']);
+      $items = $this->tcaseMgr->get_all_in_suite($tsuite_id,
+                   array('output' => 'array_of_map', 'details' => 'simple'));
+      $op['items'] = $items ? array_values($items) : [];
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testcases/{id}
+   * Returns a single test case with steps
+   */
+  public function getTestCaseDetail(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
+    try {
+      $tc_id = intval($args['id']);
+      $item = $this->tcaseMgr->get_last_version_info($tc_id);
+      if ($item) {
+        $item['steps'] = $this->tcaseMgr->get_steps($tc_id, $item['tcversion_id']);
+        $item['keywords'] = $this->tcaseMgr->get_keywords_map($tc_id, $item['tcversion_id']);
+        $op['item'] = $item;
+      } else {
+        $op['status'] = 'error';
+        $op['message'] = "Test case $tc_id not found";
+      }
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/executions
+   * Returns execution results for a test plan
+   */
+  public function getPlanExecutions(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok', 'items' => null);
+    try {
+      $tplan_id = intval($args['id']);
+      $filters = array();
+      $options = array('output' => 'array_of_map');
+
+      $items = $this->tplanMgr->get_linked_tcversions($tplan_id, $filters, $options);
+      $op['items'] = $items ? array_values($items) : [];
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testplans/{id}/progress
+   * Returns progress statistics for dashboard charts
+   * Returns: passed, failed, blocked, not_run counts and percentages
+   */
+  public function getPlanProgress(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
+    try {
+      $tplan_id = intval($args['id']);
+
+      $sql = "SELECT e.status, COUNT(*) as cnt
+              FROM {$this->tables['executions']} e
+              JOIN {$this->tables['testplan_tcversions']} tptcv
+                ON tptcv.tcversion_id = e.tcversion_id
+                AND tptcv.testplan_id = e.testplan_id
+              WHERE e.testplan_id = {$tplan_id}
+              AND e.id IN (
+                SELECT MAX(id) FROM {$this->tables['executions']}
+                WHERE testplan_id = {$tplan_id}
+                GROUP BY tcversion_id, testplan_id, platform_id
+              )
+              GROUP BY e.status";
+
+      $rows = $this->db->fetchRowsIntoMap($sql, 'status');
+
+      $stats = array('p' => 0, 'f' => 0, 'b' => 0, 'n' => 0);
+      if ($rows) {
+        foreach ($rows as $status => $row) {
+          if (isset($stats[$status])) {
+            $stats[$status] = intval($row['cnt']);
+          }
+        }
+      }
+
+      // Count total linked TCs
+      $totalSql = "SELECT COUNT(*) as cnt FROM {$this->tables['testplan_tcversions']} WHERE testplan_id = {$tplan_id}";
+      $totalRow = $this->db->fetchFirstRow($totalSql);
+      $total = $totalRow ? intval($totalRow['cnt']) : 0;
+
+      $executed = $stats['p'] + $stats['f'] + $stats['b'];
+      $stats['n'] = max(0, $total - $executed);
+      $stats['total'] = $total;
+      $stats['passed'] = $stats['p'];
+      $stats['failed'] = $stats['f'];
+      $stats['blocked'] = $stats['b'];
+      $stats['not_run'] = $stats['n'];
+      $stats['pass_rate'] = $total > 0 ? round(($stats['p'] / $total) * 100, 1) : 0;
+
+      // Daily execution trend (last 30 days)
+      $trendSql = "SELECT DATE(execution_ts) as exec_date, status, COUNT(*) as cnt
+                   FROM {$this->tables['executions']}
+                   WHERE testplan_id = {$tplan_id}
+                   AND execution_ts >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+                   GROUP BY DATE(execution_ts), status
+                   ORDER BY exec_date";
+      $trendRows = $this->db->get_recordset($trendSql);
+      $stats['trend'] = $trendRows ? $trendRows : [];
+
+      $op['item'] = $stats;
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testprojects/{id}/dashboard
+   * Returns project-level dashboard statistics
+   */
+  public function getProjectDashboard(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
+    try {
+      $tproject_id = intval($args['id']);
+
+      // Test plans count
+      $plansSql = "SELECT COUNT(*) as cnt FROM {$this->tables['testplans']} WHERE testproject_id = {$tproject_id} AND active = 1";
+      $plansRow = $this->db->fetchFirstRow($plansSql);
+      $plansCount = $plansRow ? intval($plansRow['cnt']) : 0;
+
+      // Test suites count
+      $suitesSql = "SELECT COUNT(*) as cnt FROM {$this->tables['testsuites']} WHERE testproject_id = {$tproject_id}";
+      $suitesRow = $this->db->fetchFirstRow($suitesSql);
+      $suitesCount = $suitesRow ? intval($suitesRow['cnt']) : 0;
+
+      // Test cases count
+      $tcSql = "SELECT COUNT(DISTINCT n.id) as cnt
+                FROM {$this->tables['nodes_hierarchy']} n
+                JOIN {$this->tables['node_types']} nt ON n.node_type_id = nt.id
+                WHERE nt.description = 'testcase'
+                AND n.parent_id IN (
+                  SELECT id FROM {$this->tables['nodes_hierarchy']} n2
+                  WHERE n2.id = {$tproject_id} OR n2.parent_id = {$tproject_id}
+                )";
+      $tcRow = $this->db->fetchFirstRow($tcSql);
+      $tcCount = $tcRow ? intval($tcRow['cnt']) : 0;
+
+      // Milestones count
+      $milestonesCount = 0;
+      try {
+        $milestonesSql = "SELECT COUNT(*) as cnt FROM milestones WHERE testproject_id = {$tproject_id}";
+        $milestonesRow = $this->db->fetchFirstRow($milestonesSql);
+        $milestonesCount = $milestonesRow ? intval($milestonesRow['cnt']) : 0;
+      } catch (Exception $e) { /* table might not exist yet */ }
+
+      $op['item'] = array(
+        'plans_count'      => $plansCount,
+        'suites_count'     => $suitesCount,
+        'testcases_count'  => $tcCount,
+        'milestones_count' => $milestonesCount,
+      );
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /milestones/{id}
+   */
+  public function getMilestone(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
+    try {
+      $id = intval($args['id']);
+      $sql = "SELECT * FROM milestones WHERE id = {$id}";
+      $row = $this->db->fetchFirstRow($sql);
+      if ($row) {
+        $op['item'] = $row;
+      } else {
+        $op['status'] = 'error';
+        $op['message'] = "Milestone $id not found";
+      }
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * GET /testprojects/{id}/milestones
+   * Returns milestones for a project
+   */
+  public function getProjectMilestones(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok', 'items' => null);
+    try {
+      $tproject_id = intval($args['id']);
+      $sql = "SELECT * FROM milestones WHERE testproject_id = {$tproject_id} ORDER BY due_date";
+      $rows = $this->db->get_recordset($sql);
+      $op['items'] = $rows ? $rows : [];
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * POST /testprojects/{id}/milestones
+   */
+  public function createMilestone(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok', 'id' => -1);
+    try {
+      $tproject_id = intval($args['id']);
+      $body = json_decode($request->getBody(), true);
+
+      $name        = $this->db->prepare_string($body['name'] ?? '');
+      $description = $this->db->prepare_string($body['description'] ?? '');
+      $due_date    = isset($body['due_date']) ? "'" . $this->db->prepare_string($body['due_date']) . "'" : 'NULL';
+
+      $sql = "INSERT INTO milestones (testproject_id, name, description, due_date)
+              VALUES ({$tproject_id}, '{$name}', '{$description}', {$due_date})";
+      $this->db->exec_query($sql);
+      $op['id'] = $this->db->insert_id();
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * PUT /milestones/{id}
+   */
+  public function updateMilestone(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok');
+    try {
+      $id   = intval($args['id']);
+      $body = json_decode($request->getBody(), true);
+
+      $sets = [];
+      if (isset($body['name'])) {
+        $sets[] = "name = '" . $this->db->prepare_string($body['name']) . "'";
+      }
+      if (isset($body['description'])) {
+        $sets[] = "description = '" . $this->db->prepare_string($body['description']) . "'";
+      }
+      if (isset($body['due_date'])) {
+        $sets[] = "due_date = '" . $this->db->prepare_string($body['due_date']) . "'";
+      }
+      if (isset($body['is_completed'])) {
+        $sets[] = "is_completed = " . intval($body['is_completed']);
+      }
+
+      if (!empty($sets)) {
+        $sql = "UPDATE milestones SET " . implode(', ', $sets) . " WHERE id = {$id}";
+        $this->db->exec_query($sql);
+      }
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
+  /**
+   * DELETE /milestones/{id}
+   */
+  public function deleteMilestone(Request $request, Response $response, $args) {
+    $op = array('status' => 'ok', 'message' => 'ok');
+    try {
+      $id  = intval($args['id']);
+      $sql = "DELETE FROM milestones WHERE id = {$id}";
+      $this->db->exec_query($sql);
+    } catch (Exception $e) {
+      $op['status'] = 'error';
+      $op['message'] = __METHOD__ . ' >> ' . $this->msgFromException($e);
+    }
+    $response->getBody()->write(json_encode($op));
+    return $response;
+  }
+
 } // class end

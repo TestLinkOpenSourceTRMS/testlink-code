@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<body>
+<p>A(z) '[%docid%]:%title%' követelményből %user% egy új verziót hozott létre. 
+<br>
+</p>
+<p>Naplóüzenet:<br/>%logmsg%</p>
+<p></p>
+<p><b>Követelmény hatóköre (Scope)</b> </p>
+%scope%<p></p>
+<p>Ezt az e-mailt a rendszer automatikusan generálta. (%timestamp%) </p>
+</body>
+</html>

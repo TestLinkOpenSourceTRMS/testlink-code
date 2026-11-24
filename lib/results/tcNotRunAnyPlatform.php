@@ -51,7 +51,7 @@ $platforms_active = !is_null($gui->platforms);
 $gui->buildInfoSet = $tplan_mgr->get_builds($args->tplan_id, 1); // only active builds
 if ($gui->buildInfoSet)
 {
-	$buildIDSet = array_keys($gui->buildInfoSet);
+	$buildIDSet = array_keys((array)$gui->buildInfoSet);
 	$buildQty = sizeOf($buildIDSet);
 }
 

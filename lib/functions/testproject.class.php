@@ -299,7 +299,7 @@ public function setSessionProject($projectId)
  * @param array $recorset produced by getTestProject() 
  */
 protected function parseTestProjectRecordset(&$recordset) {
-  if (null != $recordset && count($recordset) > 0) {
+  if (null != $recordset && count((array)$recordset) > 0) {
     foreach ($recordset as $number => $row) {
       $recordset[$number]['opt'] = unserialize($row['options']);
     }
@@ -488,7 +488,7 @@ function get_all($filters=null,$options=null)
     $this->parseTestProjectRecordset($recordset);
   } else {
     $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
-    if (null != $recordset && count($recordset) > 0) {
+    if (null != $recordset && count((array)$recordset) > 0) {
       foreach ($recordset as $number => $row) {
         $recordset[$number]['opt'] = unserialize($row['options']);
       }
@@ -684,7 +684,7 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null) {
     case 'map_with_inactive_mark':
     default:
       $arrTemp = (array)$this->db->fetchRowsIntoMap($sql,'id');
-      $do_post_process = (count($arrTemp) > 0);
+      $do_post_process = (count((array)$arrTemp) > 0);
     break;
   }
     
@@ -834,7 +834,7 @@ function count_testcases($id)
 {
   $tcIDs = array();
   $this->get_all_testcases_id($id,$tcIDs);
-  $qty = sizeof($tcIDs);
+  $qty = sizeof((array)$tcIDs);
   return $qty;
 }
 
@@ -899,7 +899,7 @@ function count_testcases($id)
                     array('recursive' => !self::RECURSIVE_MODE,
                           'exclude_testcases' => self::EXCLUDE_TESTCASES));
 
-    if(count($test_spec))
+    if(count((array)$test_spec))
     {
       $ret = $this->_createHierarchyMap($test_spec,$mode);
     }
@@ -1259,12 +1259,12 @@ function setPublicStatus($id,$status)
     $result = tl::OK;
 
     $itemSet = (array)$this->getKeywordSet($tproject_id);
-    $kwIDs = array_keys($itemSet);
+    $kwIDs = array_keys((array)$itemSet);
 
     $opt = array('checkBeforeDelete' => false,
                  'context' => $tproject_name);
 
-    $loop2do = sizeof($kwIDs);
+    $loop2do = sizeof((array)$kwIDs);
     for($idx = 0;$idx < $loop2do; $idx++) {
       $opt['nameForAudit'] = $itemSet[$kwIDs[$idx]]['keyword'];
 
@@ -1332,7 +1332,7 @@ function setPublicStatus($id,$status)
       $xmlCode .= TL_XMLEXPORT_HEADER."\n";
     }
     $xmlCode .= "<keywords>";
-    for($idx = 0;$idx < sizeof($kwIDs);$idx++)
+    for($idx = 0;$idx < sizeof((array)$kwIDs);$idx++)
     {
       $keyword = new tlKeyword($kwIDs[$idx]);
       $keyword->readFromDb($this->db);
@@ -1351,7 +1351,7 @@ function setPublicStatus($id,$status)
   function exportKeywordsToCSV($testproject_id,$delim = ';') {
     $kwIDs = $this->getKeywordIDsFor($testproject_id);
     $csv = null;
-    for($idx = 0;$idx < sizeof($kwIDs);$idx++) {
+    for($idx = 0;$idx < sizeof((array)$kwIDs);$idx++) {
       $keyword = new tlKeyword($kwIDs[$idx]);
       $keyword->readFromDb($this->db);
       $keyword->writeToCSV($csv,$delim);
@@ -1540,7 +1540,7 @@ function setPublicStatus($id,$status)
     
     $my['options'] = array('order_cfg' => array('type' => 'rspec'), 'output' => 'rspec');
       $subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
-      if(count($subtree))
+      if(count((array)$subtree))
     {
       $ret = $this->_createHierarchyMap($subtree,$mode,$dot,'doc_id');
         }
@@ -1982,16 +1982,16 @@ function setPublicStatus($id,$status)
     $this->deleteAttachments($id);
     
     $reqSpecSet=$reqspec_mgr->get_all_id_in_testproject($id);
-    if( !is_null($reqSpecSet) && count($reqSpecSet) > 0 ) {
+    if( !is_null($reqSpecSet) && count((array)$reqSpecSet) > 0 ) {
       foreach($reqSpecSet as $reqSpec) {
         $reqspec_mgr->delete_deep($reqSpec['id']);
       }      
     }
     
     $tplanSet = $this->get_all_testplans($id);
-    if( !is_null($tplanSet) && count($tplanSet) > 0 ) {
+    if( !is_null($tplanSet) && count((array)$tplanSet) > 0 ) {
       $tplan_mgr = new testplan($this->db);
-      $items=array_keys($tplanSet);     
+      $items=array_keys((array)$tplanSet);     
       foreach($items as $key) {
         $tplan_mgr->delete($key);
       }
@@ -2168,7 +2168,7 @@ function setPublicStatus($id,$status)
           $suiteIDs[] = $row['id'];
         }
       }
-      if (sizeof($suiteIDs))
+      if (sizeof((array)$suiteIDs))
       {
         $suiteIDs  = implode(",",$suiteIDs);
         $this->get_all_testcases_id($suiteIDs,$tcIDs,$options);
@@ -2223,7 +2223,7 @@ function DEPRECATED_get_keywords_tcases($testproject_id, $keyword_id=0, $keyword
                             AND testproject_id = {$testproject_id}
                             {$keyword_filter}
                             GROUP BY testcase_id ) AS FOXDOG " .
-                        " WHERE FOXDOG.HITS=" . count($keyword_id) . ")";
+                        " WHERE FOXDOG.HITS=" . count((array)$keyword_id) . ")";
                      
             $keyword_filter ='';
         }    
@@ -2277,7 +2277,7 @@ function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
         $subquery = " AND tcversion_id IN (" .
                     " SELECT FOXDOG.tcversion_id FROM
                           ( $sqlCount ) AS FOXDOG " .
-                        " WHERE FOXDOG.HITS=" . count($keyword_id) . ")";
+                        " WHERE FOXDOG.HITS=" . count((array)$keyword_id) . ")";
         $kwFilter ='';
       }    
     }
@@ -2334,7 +2334,7 @@ function XXXgetPlatformsLatestTCV($tproject_id, $platform_id=0, $filterType='Or'
         $subquery = " AND tcversion_id IN (" .
                     " SELECT FOXDOG.tcversion_id FROM
                           ( $sqlCount ) AS FOXDOG " .
-                        " WHERE FOXDOG.HITS=" . count($platform_id) . ")";
+                        " WHERE FOXDOG.HITS=" . count((array)$platform_id) . ")";
         $platFilter ='';
       }    
     }
@@ -2497,7 +2497,7 @@ function get_first_level_test_suites($tproject_id,$mode='simple',$opt=null)
     break;
 
     case 'smarty_html_options':
-    if( !is_null($fl) && count($fl) > 0)
+    if( !is_null($fl) && count((array)$fl) > 0)
     {
       foreach($fl as $idx => $map)
       {
@@ -2568,9 +2568,9 @@ function getFreeTestCases($id,$options=null)
         $free=$retval['allfree'] ? $all : array_diff_key($all,$linked);
     }
     
-    if( !is_null($free) && count($free) > 0)
+    if( !is_null($free) && count((array)$free) > 0)
     {
-        $in_clause=implode(',',array_keys($free));
+        $in_clause=implode(',',array_keys((array)$free));
          $sql = " /* $debugMsg */ " .
               " SELECT MAX(TCV.version) AS version, TCV.tc_external_id, " .
                 " TCV.importance AS importance, NHTCV.parent_id AS id, NHTC.name " .
@@ -2933,7 +2933,7 @@ private function copy_cfields_assignments($source_id, $target_id)
     $row_set = $this->db->fetchRowsIntoMap($sql,'field_id');   
   if( !is_null($row_set) )
   {
-    $cfield_set = array_keys($row_set);
+    $cfield_set = array_keys((array)$row_set);
     $this->cfield_mgr->link_to_testproject($target_id,$cfield_set);
   }
 }
@@ -2950,7 +2950,7 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
   $tplanSet = $this->get_all_testplans($source_id);
   if( !is_null($tplanSet) )
   {
-    $keySet = array_keys($tplanSet);
+    $keySet = array_keys((array)$tplanSet);
     if( is_null($tplanMgr) )
     {
       $tplanMgr = new testplan($this->db);
@@ -3195,13 +3195,13 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
   
   // Approach Change - get all 
   $rs = (array)$this->db->fetchRowsIntoMap($sql,'id');
-  if( count($rs) == 0 ) {
+  if( count((array)$rs) == 0 ) {
     return $qnum;
   }
 
     // create list with test cases nodes
   $tclist = null;
-  $ks = array_keys($rs);
+  $ks = array_keys((array)$rs);
   foreach($ks as $ikey) {
     if( $rs[$ikey]['node_type_id'] == $this->tree_manager->node_descr_id['testcase'] ) {
       $tclist[$rs[$ikey]['id']] = $rs[$ikey]['id'];
@@ -3284,7 +3284,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
     if( $filterOnTC ) {
       $ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
-      if( count($ky) > 0 ) {
+      if( count((array)$ky) > 0 ) {
         foreach($ky as $tcase) {
           unset($rs[$tcase]);            
         }
@@ -3350,7 +3350,7 @@ function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyw
   if( $getWithOutKeywords || $keyword_filter_type == 'NotLinked') {  
 
     $this->get_all_testcases_id($tproject_id,$tcaseSet);
-    if( ($hasTCases = count($tcaseSet) > 0) ) {
+    if( ($hasTCases = count((array)$tcaseSet) > 0) ) {
       $delTT = true;
       $tt = 'temp_tcset_' . $tproject_id . md5(microtime());
       $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS 
@@ -3411,7 +3411,7 @@ function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyw
         $sql = "/* Filter Type = AND */
                 SELECT FOXDOG.testcase_id 
                 FROM ( $sqlCount ) AS FOXDOG 
-                WHERE FOXDOG.HITS=" . count($keyword_id);
+                WHERE FOXDOG.HITS=" . count((array)$keyword_id);
       break;
 
 
@@ -3624,7 +3624,7 @@ function getPublicAttr($id)
     // 
     $target = array();
     $this->get_all_testcases_id($id,$target);
-    $itemQty = count($target);
+    $itemQty = count((array)$target);
    
     $rs = null;
     if($itemQty > 0)
@@ -3657,11 +3657,11 @@ function getPublicAttr($id)
       $rs = $this->db->fetchRowsIntoMap($sql,'tcase_id',database::CUMULATIVE);
       if( !is_null($rs) )
       {
-        $k2g = array_keys($rs);
+        $k2g = array_keys((array)$rs);
         $path_info = $this->tree_manager->get_full_path_verbose($k2g,array('output_format' => 'path_as_string'));
         foreach($k2g as $tgx)
         {
-          $rx = array_keys($rs[$tgx]);
+          $rx = array_keys((array)$rs[$tgx]);
           foreach($rx as $ex)
           {
             $rs[$tgx][$ex]['path'] = $path_info[$tgx];
@@ -4130,7 +4130,7 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
   $getWithOutPlatforms = in_array(-1,$platSet); 
   if( $getWithOutPlatforms ) {  
     $this->get_all_testcases_id($tproject_id,$tcaseSet);
-    if( ($hasTCases = count($tcaseSet) > 0) ) {
+    if( ($hasTCases = count((array)$tcaseSet) > 0) ) {
       $delTT = true;
       $tt = 'temp_tcset_' . $tproject_id . md5(microtime());
       $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS 
@@ -4192,7 +4192,7 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
         $sql = "/* Filter Type = AND */
                 SELECT PLTFOXDOG.testcase_id 
                 FROM ( $sqlCount ) AS PLTFOXDOG 
-                WHERE PLTFOXDOG.HITS=" . count($platform_id);
+                WHERE PLTFOXDOG.HITS=" . count((array)$platform_id);
       break;
 
 

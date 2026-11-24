@@ -173,11 +173,11 @@ class testplan extends tlObjectWithAttachments
         $pinfo = $this->tproject_mgr->get_by_id(intval($item->testProjectID));
       }
       
-      if( null == $pinfo || count($pinfo) == 0 ) {
+      if( null == $pinfo || count((array)$pinfo) == 0 ) {
         $pinfo = $this->tproject_mgr->get_by_prefix($item->testProjectID);            
       }
       
-      if( is_null($pinfo) || count($pinfo) == 0 ) {
+      if( is_null($pinfo) || count((array)$pinfo) == 0 ) {
         throw new Exception('Test project ID does not exist');      
       }  
 
@@ -529,7 +529,7 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     // protect yourself :) - 20140607
-    if( is_null($id) || (is_int($id) && intval($id) <= 0 ) || (is_array($id) && count($id) == 0) )
+    if( is_null($id) || (is_int($id) && intval($id) <= 0 ) || (is_array($id) && count((array)$id) == 0) )
     {
       return 0;  // >>>----> Bye
     } 
@@ -835,7 +835,7 @@ class testplan extends tlObjectWithAttachments
     $items = $this->db->fetchRowsIntoMap($sql,'tsuite_id',database::CUMULATIVE);           
       $xsql = " SELECT COALESCE(parent_id,0) AS parent_id,id,name" . 
           " FROM {$this->tables['nodes_hierarchy']} " . 
-          " WHERE id IN (" . implode(',',array_keys($items)) . ") AND parent_id IS NOT NULL";
+          " WHERE id IN (" . implode(',',array_keys((array)$items)) . ") AND parent_id IS NOT NULL";
 
     unset($items);
     $xmen = $this->db->fetchMapRowsIntoMap($xsql,'parent_id','id');
@@ -864,7 +864,7 @@ class testplan extends tlObjectWithAttachments
     // Now with node list get order
       $xsql = " SELECT id,name,node_order " . 
           " FROM {$this->tables['nodes_hierarchy']} " . 
-          " WHERE id IN (" . implode(',',array_keys($tlnodes)) . ")" .
+          " WHERE id IN (" . implode(',',array_keys((array)$tlnodes)) . ")" .
           " ORDER BY node_order,name ";
     $xmen = $this->db->fetchRowsIntoMap($xsql,'id');
     switch($my['opt']['output'])
@@ -900,7 +900,7 @@ class testplan extends tlObjectWithAttachments
         array_shift($filter);
       }
       
-      if(count($filter)) {
+      if(count((array)$filter)) {
         $sql['filter'] = " AND TK.keyword_id IN (" . implode(',',$filter) . ")"; 
       }  
     }
@@ -1008,7 +1008,7 @@ class testplan extends tlObjectWithAttachments
       unset($filter[$this->notRunStatusCode]);  
     }
     
-    if(count($filter) > 0)
+    if(count((array)$filter) > 0)
     {
       $dummy = " E.status IN ('" . implode("','",$filter) . "') ";
       $execFilter = " ( {$dummy} {$lastExecSql} ) ";  
@@ -1195,9 +1195,9 @@ class testplan extends tlObjectWithAttachments
 
     $exec_ids = $this->db->fetchRowsIntoMap($sql,'execution_id');
     
-    if( !is_null($exec_ids) and count($exec_ids) > 0 ) {
+    if( !is_null($exec_ids) and count((array)$exec_ids) > 0 ) {
       // has executions
-      $exec_ids = array_keys($exec_ids);
+      $exec_ids = array_keys((array)$exec_ids);
       $exec_id_list = implode(",",$exec_ids);
       $exec_id_where= " WHERE execution_id IN ($exec_id_list)";
 
@@ -1259,8 +1259,8 @@ class testplan extends tlObjectWithAttachments
     $sql=" SELECT id AS link_id FROM {$this->tables['testplan_tcversions']} " .
        " WHERE testplan_id={$id} AND {$where_clause} ";
     $link_ids = $this->db->fetchRowsIntoMap($sql,'link_id');
-    $features = array_keys($link_ids);
-    if( count($features) == 1) {
+    $features = array_keys((array)$link_ids);
+    if( count((array)$features) == 1) {
       $features=$features[0];
     }
     $this->assignment_mgr->delete_by_feature_id($features);
@@ -1341,7 +1341,7 @@ class testplan extends tlObjectWithAttachments
       }
       
       
-      $tc_id_list = implode(",",array_keys($linked_items));
+      $tc_id_list = implode(",",array_keys((array)$linked_items));
       
       // 20081116 - franciscom -
       // Does DISTINCT is needed ? Humm now I think no.
@@ -1878,7 +1878,7 @@ class testplan extends tlObjectWithAttachments
     $status = tl::ERROR;
     $sql = " /* $debugMsg */ DELETE FROM {$this->tables['user_testplan_roles']} " .
            " WHERE testplan_id = " . intval($id);
-    if(!is_null($users))
+    if(!is_null($users) && !empty($users))
     {
       $sql .= " AND user_id IN(" . implode(',',$users) . ")";
     } 
@@ -2179,7 +2179,7 @@ class testplan extends tlObjectWithAttachments
         
       $recordset = (array)$this->db->get_recordset($sql);
       $myarray = array();
-      if (count($recordset) > 0) {        
+      if (count((array)$recordset) > 0) {        
         $myarray = array($recordset[0]);
         $myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
       }
@@ -2476,7 +2476,7 @@ class testplan extends tlObjectWithAttachments
       // Need to get testplan parent (testproject id) in order to get custom fields
       // 20081122 - franciscom - need to check when we can call this with ID=NULL
       $the_path = $this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-      $path_len = count($the_path);
+      $path_len = count((array)$the_path);
     }
     $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id; 
     
@@ -2508,7 +2508,7 @@ class testplan extends tlObjectWithAttachments
       // Need to get testplan parent (testproject id) in order to get custom fields
       // 20081122 - franciscom - need to check when we can call this with ID=NULL
       $the_path = $this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-      $path_len = count($the_path);
+      $path_len = count((array)$the_path);
     }
     $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id; 
     
@@ -2731,7 +2731,7 @@ class testplan extends tlObjectWithAttachments
         $doFilter = true;
       }  
     }
-    $cf_qty = count($cf_hash) - $ignored;                                      
+    $cf_qty = count((array)$cf_hash) - $ignored;                                      
     $doIt = !$doFilter;
     foreach ($tp_tcs as $tc_id => $tc_value)
     {
@@ -2749,7 +2749,7 @@ class testplan extends tlObjectWithAttachments
         // TO CHECK - 20140126 - Give a look to treeMenu.inc.php - filter_by_cf_values()  
         // to understand if both logics are coerent.
         //
-        $doIt = (count($rows) == $cf_qty);
+        $doIt = (count((array)$rows) == $cf_qty);
       }  
       if( $doIt ) 
       {
@@ -2814,7 +2814,7 @@ class testplan extends tlObjectWithAttachments
 
     $tcVersionIDSet = array();
     $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
-    $platformSet = array_keys($this->getPlatforms($id,$getOpt));
+    $platformSet = array_keys((array)$this->getPlatforms($id,$getOpt));
 
     if( is_null($itemSet) )
     {
@@ -2858,7 +2858,7 @@ class testplan extends tlObjectWithAttachments
     foreach($tcVersionIDSet as $platfID => $items)
     {  
       $estimated['platform'][$platfID]['minutes'] = 0;
-      $estimated['platform'][$platfID]['tcase_qty'] = count($items);
+      $estimated['platform'][$platfID]['tcase_qty'] = count((array)$items);
       foreach($items as $dx)
       {
         if(!is_null($dx['estimated_exec_duration']))
@@ -2893,7 +2893,7 @@ class testplan extends tlObjectWithAttachments
     {
       $tcVersionIDSet = array();
       $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
-      $platformSet = array_keys($this->getPlatforms($id,$getOpt));
+      $platformSet = array_keys((array)$this->getPlatforms($id,$getOpt));
       
       $sql = " /* $debugMsg */ ";
       if( DB_TYPE == 'mysql')
@@ -2920,7 +2920,7 @@ class testplan extends tlObjectWithAttachments
             $linkedItems = $this->get_linked_tcvid($id,$platfID);  
             if( (!is_null($linkedItems)) )
             {
-              $tcVersionIDSet[$platfID]= array_keys($linkedItems);
+              $tcVersionIDSet[$platfID]= array_keys((array)$linkedItems);
             }
           }  
         }
@@ -2961,7 +2961,7 @@ class testplan extends tlObjectWithAttachments
         $sql2exec = $sql . " AND node_id IN (" . implode(',',$items) . ")";
         $dummy = $this->db->fetchOneValue($sql2exec);
         $estimated['platform'][$platfID]['minutes'] = is_null($dummy) ? 0 : $dummy;
-        $estimated['platform'][$platfID]['tcase_qty'] = count($items);
+        $estimated['platform'][$platfID]['tcase_qty'] = count((array)$items);
         
         $estimated['totalMinutes'] += $estimated['platform'][$platfID]['minutes'];
         $estimated['totalTestCases'] += $estimated['platform'][$platfID]['tcase_qty'];
@@ -3017,7 +3017,7 @@ class testplan extends tlObjectWithAttachments
     $targetSet = array();
 
     $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
-    $platformSet = array_keys($this->getPlatforms($context->tplan_id,$getOpt));
+    $platformSet = array_keys((array)$this->getPlatforms($context->tplan_id,$getOpt));
 
     if( is_null($execIDSet) )
     {
@@ -3040,10 +3040,10 @@ class testplan extends tlObjectWithAttachments
 
       if( ($status_ok = !is_null($executed)) )
       {
-        $tc2loop = array_keys($executed);
+        $tc2loop = array_keys((array)$executed);
         foreach($tc2loop as $tcase_id)
         {
-          $p2loop = array_keys($executed[$tcase_id]);
+          $p2loop = array_keys((array)$executed[$tcase_id]);
           foreach($p2loop as $platf_id)
           {
             $targetSet[$platf_id][]=array('id' => $executed[$tcase_id][$platf_id]['exec_id'],
@@ -3071,7 +3071,7 @@ class testplan extends tlObjectWithAttachments
     foreach($targetSet as $platfID => $itemSet)
     {  
       $total_time['platform'][$platfID]['minutes'] = 0;
-      $total_time['platform'][$platfID]['tcase_qty'] = count($itemSet);
+      $total_time['platform'][$platfID]['tcase_qty'] = count((array)$itemSet);
       foreach($itemSet as $dx)
       {
         if(!is_null($dx['duration']))
@@ -3107,7 +3107,7 @@ class testplan extends tlObjectWithAttachments
     if( $status_ok)
     {
       $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
-      $platformSet = array_keys($this->getPlatforms($id,$getOpt));
+      $platformSet = array_keys((array)$this->getPlatforms($id,$getOpt));
 
       // ----------------------------------------------------------------------------
       $sql="SELECT SUM(CAST(value AS NUMERIC)) ";
@@ -3140,10 +3140,10 @@ class testplan extends tlObjectWithAttachments
         $executed = $this->getLTCVNewGeneration($id,$filters,$options); 
         if( ($status_ok = !is_null($executed)) )
         {
-          $tc2loop = array_keys($executed);
+          $tc2loop = array_keys((array)$executed);
           foreach($tc2loop as $tcase_id)
           {
-            $p2loop = array_keys($executed[$tcase_id]);
+            $p2loop = array_keys((array)$executed[$tcase_id]);
             foreach($p2loop as $platf_id)
             {
               $targetSet[$platf_id][]=$executed[$tcase_id][$platf_id]['exec_id'];
@@ -3181,7 +3181,7 @@ class testplan extends tlObjectWithAttachments
 
         $dummy = $this->db->fetchOneValue($sql2exec);
         $total_time['platform'][$platfID]['minutes'] = is_null($dummy) ? 0 : $dummy;
-        $total_time['platform'][$platfID]['tcase_qty'] = count($items);
+        $total_time['platform'][$platfID]['tcase_qty'] = count((array)$items);
 
         $total_time['totalMinutes'] += $total_time['platform'][$platfID]['minutes'];
         $total_time['totalTestCases'] += $total_time['platform'][$platfID]['tcase_qty'];
@@ -3245,7 +3245,7 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $node_types = $this->tree_manager->get_available_node_types();
-    $num_exec = count($buildSet);
+    $num_exec = count((array)$buildSet);
     $build_in = implode(",", $buildSet);
     $status_in = implode("',", (array)$status);
     
@@ -3285,7 +3285,7 @@ class testplan extends tlObjectWithAttachments
     
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     
-    if (count($first_results)) {
+    if (count((array)$first_results)) {
       foreach ($first_results as $key => $value) {
         $recordset[$key] = $value;
       }
@@ -3362,7 +3362,7 @@ class testplan extends tlObjectWithAttachments
       $sourceLinks = $this->platform_mgr->getLinkedToTestplanAsMap($source_id);
       if( !is_null($sourceLinks) )
       {
-        $sourceLinks = array_keys($sourceLinks);
+        $sourceLinks = array_keys((array)$sourceLinks);
         if( !is_null($mappings) )
         {
           foreach($sourceLinks as $key => $value)
@@ -3618,8 +3618,8 @@ class testplan extends tlObjectWithAttachments
         $sib = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id,$my['opt']);
       break;
     }
-    $tcversionSet = array_keys($sib);
-    $elemQty = count($tcversionSet);
+    $tcversionSet = array_keys((array)$sib);
+    $elemQty = count((array)$tcversionSet);
     $dummy = array_flip($tcversionSet);
 
     $pos = $dummy[$tcversion_id];  
@@ -3720,10 +3720,10 @@ class testplan extends tlObjectWithAttachments
     $xml_mapping = array("||PLATFORMNAME||" => "platform_name", "||PLATFORMID||" => 'id');
 
     $mm = (array)$this->platform_mgr->getLinkedToTestplanAsMap($id);
-    $loop2do = count($mm);
+    $loop2do = count((array)$mm);
     if( $loop2do > 0 )
     { 
-      $items2loop = array_keys($mm);
+      $items2loop = array_keys((array)$mm);
       foreach($items2loop as $itemkey)
       {
         $mm[$itemkey] = array('platform_name' => $mm[$itemkey], 'id' => $itemkey);
@@ -3913,7 +3913,7 @@ class testplan extends tlObjectWithAttachments
     // -----------------------------------------------------------------------------------------------------
     // get test plan contents (test suites and test cases)
     $item_info['testsuites'] = null;
-    if( !is_null($tplan_spec) && isset($tplan_spec['childNodes']) && ($loop2do = count($tplan_spec['childNodes'])) > 0)
+    if( !is_null($tplan_spec) && isset($tplan_spec['childNodes']) && ($loop2do = count((array)$tplan_spec['childNodes'])) > 0)
     {
       $item_info['testsuites'] = '<testsuites>' . 
                                  $this->exportTestSuiteDataToXML($tplan_spec,$context['tproject_id'],$id,
@@ -3970,7 +3970,7 @@ class testplan extends tlObjectWithAttachments
       }  
 
       $cfMap = (array)$tsuiteMgr->get_linked_cfields_at_design($container['id'],null,null,$tproject_id);
-      if( count($cfMap) > 0 )
+      if( count((array)$cfMap) > 0 )
       {
         $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
       } 
@@ -3984,7 +3984,7 @@ class testplan extends tlObjectWithAttachments
     $childNodes = isset($container['childNodes']) ? $container['childNodes'] : null ;
     if( !is_null($childNodes) )
     {
-      $loop_qty=sizeof($childNodes); 
+      $loop_qty=sizeof((array)$childNodes); 
       for($idx = 0;$idx < $loop_qty;$idx++)
       {
         $cNode = $childNodes[$idx];
@@ -4030,7 +4030,7 @@ class testplan extends tlObjectWithAttachments
           }
         }
       }
-      (count($userList) > 0) ? $tcaseExportOptions['ASSIGNED_USER'] = $userList : $tcaseExportOptions['ASSIGNED_USER'] = null;
+      (count((array)$userList) > 0) ? $tcaseExportOptions['ASSIGNED_USER'] = $userList : $tcaseExportOptions['ASSIGNED_USER'] = null;
       
       $xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
                                                          $tproject_id,testcase::NOXMLHEADER,
@@ -4275,7 +4275,7 @@ class testplan extends tlObjectWithAttachments
     $sql .= " ORDER BY node_order,id";
     
     $rs = $this->db->fetchRowsIntoMap($sql,'id');
-    if( null == $rs || count($rs) == 0 ) {
+    if( null == $rs || count((array)$rs) == 0 ) {
       return $qnum;
     }
   
@@ -4643,7 +4643,7 @@ class testplan extends tlObjectWithAttachments
     // Maybe copy/paste-error on refactoring? 
     // Example: With 3 builds and filtering for FAILED or BLOCKED on ALL builds
     // we have to get 3 hits for each test case to be shown, not six hits.
-    // $countTarget = intval($buildsCfg['count']) * count($dummy);
+    // $countTarget = intval($buildsCfg['count']) * count((array)$dummy);
     $countTarget = intval($buildsCfg['count']);
 
     $groupBy = ' GROUP BY ' . ((DB_TYPE == 'mssql') ? 'parent_id ':'tcase_id');
@@ -4947,7 +4947,7 @@ class testplan extends tlObjectWithAttachments
       unset($statusSet[$flippedStatusSet[$this->notRunStatusCode]]);
     }
         
-    $get['otherStatus'] = count($statusSet) > 0;
+    $get['otherStatus'] = count((array)$statusSet) > 0;
     if($get['otherStatus']) {
       $statusSet = $this->sanitizeExecStatus($statusSet);
       $statusInClause = implode("','",$statusSet);
@@ -4960,7 +4960,7 @@ class testplan extends tlObjectWithAttachments
       // Maybe copy/paste-error on refactoring? 
       // Example: With 3 builds and filtering for FAILED or BLOCKED on ALL builds
       // we have to get 3 hits for each test case to be shown, not six hits.
-      // $countTarget = intval($buildsCfg['count']) * count($statusSet);
+      // $countTarget = intval($buildsCfg['count']) * count((array)$statusSet);
       $countTarget = intval($buildsCfg['count']);
             
       $otherStatusSQL = " /* $debugMsg */ " .
@@ -5003,15 +5003,15 @@ class testplan extends tlObjectWithAttachments
         
     // build results record set
     $hitsFoundOn = array();
-    $hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
-    $hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
+    $hitsFoundOn['notRun'] = count((array)$hits['notRun']) > 0;
+    $hitsFoundOn['otherStatus'] = count((array)$hits['otherStatus']) > 0;
 
     if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus']) {
-      $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
+      $items = array_merge(array_keys((array)$hits['notRun']), array_keys((array)$hits['otherStatus']));
     } else if($hitsFoundOn['notRun']) {
-      $items = array_keys($hits['notRun']);
+      $items = array_keys((array)$hits['notRun']);
     } else if($hitsFoundOn['otherStatus']) {
-      $items = array_keys($hits['otherStatus']);
+      $items = array_keys((array)$hits['otherStatus']);
     }
 
         
@@ -5055,7 +5055,7 @@ class testplan extends tlObjectWithAttachments
         " AND E.status IS NULL ";
 
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    return is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
   }
 
 
@@ -5092,7 +5092,7 @@ class testplan extends tlObjectWithAttachments
         " AND E.status IS NULL ";
 
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    return is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
   }
 
 
@@ -5156,10 +5156,10 @@ class testplan extends tlObjectWithAttachments
         " AND E.status IN('{$statusInClause}')";
         
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    $hits = is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    $hits = is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
     
     $items = (array)$hits + (array)$notRunHits; 
-    return count($items) > 0 ? $items : null;
+    return count((array)$items) > 0 ? $items : null;
   }
 
 
@@ -5221,10 +5221,10 @@ class testplan extends tlObjectWithAttachments
         " AND E.status IN('{$statusInClause}')";
     
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    $hits = is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    $hits = is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
     
     $items = (array)$hits + (array)$notRunHits; 
-    return count($items) > 0 ? $items : null;
+    return count((array)$items) > 0 ? $items : null;
   }
 
 
@@ -5297,7 +5297,7 @@ class testplan extends tlObjectWithAttachments
 
     unset($safe_id,$buildsCfg,$sqlLEX);
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    return is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
   }
 
 
@@ -5375,7 +5375,7 @@ class testplan extends tlObjectWithAttachments
 
     unset($safe_id,$buildsCfg,$sqlLEBP);
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-    return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
+    return is_null($recordset) ? $recordset : array_flip(array_keys((array)$recordset));
   }
 
 
@@ -5437,7 +5437,7 @@ class testplan extends tlObjectWithAttachments
       unset($statusSetLocal[$dummy[$this->notRunStatusCode]]);
     }
     
-    if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
+    if( ($get['otherStatus']=(count((array)$statusSetLocal) > 0)) )
     {
       tLog(__METHOD__ . ":: \$tplan_mgr->$getHitsStatusSetMethod", 'DEBUG');
       $hits['otherStatus'] = (array)$this->$getHitsStatusSetMethod($id,$statusSetLocal,$buildSet);  
@@ -5445,24 +5445,24 @@ class testplan extends tlObjectWithAttachments
 
     // build results recordset
     $hitsFoundOn = array();
-    $hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
-    $hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
+    $hitsFoundOn['notRun'] = count((array)$hits['notRun']) > 0;
+    $hitsFoundOn['otherStatus'] = count((array)$hits['otherStatus']) > 0;
     
     
     if($get['notRun'] && $get['otherStatus'])
     {
       if( $hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'] )
       {
-        $items = array_keys($hits['notRun']) + array_keys($hits['otherStatus']);
+        $items = array_keys((array)$hits['notRun']) + array_keys((array)$hits['otherStatus']);
       }
     } 
     else if($get['notRun'] && $hitsFoundOn['notRun'])
     {
-      $items = array_keys($hits['notRun']);
+      $items = array_keys((array)$hits['notRun']);
     }
     else if($get['otherStatus'] && $hitsFoundOn['otherStatus'])
     {
-      $items = array_keys($hits['otherStatus']);
+      $items = array_keys((array)$hits['otherStatus']);
     }
     
     return is_null($items) ? $items : array_flip($items);
@@ -5650,15 +5650,15 @@ class testplan extends tlObjectWithAttachments
       $hits['notRun'] = (array)$this->$getHitsNotRunMethod($id,$platformID,$buildSet);  
       unset($statusSetLocal[$dummy[$this->notRunStatusCode]]);
     }
-    if( ($get['otherStatus']=(count($statusSetLocal) > 0)) )
+    if( ($get['otherStatus']=(count((array)$statusSetLocal) > 0)) )
     {
       $hits['otherStatus'] = (array)$this->$getHitsStatusSetMethod($id,$platformID,$statusSetLocal,$buildSet);  
     }
 
     // build results recordset
     $hitsFoundOn = array();
-    $hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
-    $hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
+    $hitsFoundOn['notRun'] = count((array)$hits['notRun']) > 0;
+    $hitsFoundOn['otherStatus'] = count((array)$hits['otherStatus']) > 0;
 
         //20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
         //if($get['notRun'] && $get['otherStatus'])
@@ -5671,8 +5671,8 @@ class testplan extends tlObjectWithAttachments
     if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'])
     {
             // THIS DOES NOT WORK with numeric keys  
-            // $items = array_merge(array_keys($hits['notRun']),array_keys($hits['otherStatus']));
-            //$items = array_keys($hits['notRun']) + array_keys($hits['otherStatus']);
+            // $items = array_merge(array_keys((array)$hits['notRun']),array_keys((array)$hits['otherStatus']));
+            //$items = array_keys((array)$hits['notRun']) + array_keys((array)$hits['otherStatus']);
 
             // 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
             // 
@@ -5692,15 +5692,15 @@ class testplan extends tlObjectWithAttachments
             // the first 5 testcases from $hits['otherStatus']) were not in the result set because of the + operator.
             // 
             // After using array_keys() we have numeric keys => we HAVE TO USE array_merge().
-            $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
+            $items = array_merge(array_keys((array)$hits['notRun']), array_keys((array)$hits['otherStatus']));
     } 
     else if($hitsFoundOn['notRun'])
     {
-      $items = array_keys($hits['notRun']);
+      $items = array_keys((array)$hits['notRun']);
     }
     else if($hitsFoundOn['otherStatus'])
     {
-      $items = array_keys($hits['otherStatus']);
+      $items = array_keys((array)$hits['otherStatus']);
     }
         
     return is_null($items) ? $items : array_flip($items);
@@ -5727,10 +5727,10 @@ class testplan extends tlObjectWithAttachments
 
     if($my['options']['buildID'] <= 0) {
       if( is_null($buildSet) ) {
-        $buildSet = array_keys($this->get_builds($id, self::ACTIVE_BUILDS));
+        $buildSet = array_keys((array)$this->get_builds($id, self::ACTIVE_BUILDS));
         $buildsCfg['statusClause'] = " AND B.active = 1 ";
       }
-      $buildsCfg['count'] = count($buildSet);
+      $buildsCfg['count'] = count((array)$buildSet);
       $buildsCfg['inClause'] = implode(",",$buildSet);
     } else {
       $buildsCfg['inClause'] = intval($my['options']['buildID']);
@@ -5991,7 +5991,7 @@ class testplan extends tlObjectWithAttachments
       {
         $activeStatus = intval($domain[$options['build_active_status']]);
       }
-      $dummy = array_keys($this->get_builds($safe_id,$activeStatus));
+      $dummy = array_keys((array)$this->get_builds($safe_id,$activeStatus));
     }
     
     return implode(",",$dummy);
@@ -6428,7 +6428,7 @@ class testplan extends tlObjectWithAttachments
           {
             case 'multiselection list':
               // 
-              if( count($cf_value) > 1)
+              if( count((array)$cf_value) > 1)
               {
                 $combo = implode('|',$cf_value);
                 $cf_sql .= "( CFTPD.value = '{$combo}' AND CFTPD.field_id = {$cf_id} )";
@@ -7327,12 +7327,12 @@ class testplan extends tlObjectWithAttachments
     $mm = $this->getLinkedStaticView($id,$my['filters'],array('output' => 'array','detail' => '4results'));
     
 
-    if(!is_null($mm) && ($tcaseQty=count($mm)) > 0)
+    if(!is_null($mm) && ($tcaseQty=count((array)$mm)) > 0)
     {
 
       // Custom fields processing
       $xcf = $this->cfield_mgr->get_linked_cfields_at_execution($item['tproject_id'],1,'testcase');
-      if(!is_null($xcf) && ($cfQty=count($xcf)) > 0)
+      if(!is_null($xcf) && ($cfQty=count((array)$xcf)) > 0)
       {
         for($gdx=0; $gdx < $tcaseQty; $gdx++)
         {
@@ -7355,7 +7355,7 @@ class testplan extends tlObjectWithAttachments
         $mm[$gdx]['steps'] = $this->tcase_mgr->getStepsSimple($mm[$gdx]['tcversion_id'],0,$gso);
         if(!is_null($mm[$gdx]['steps']))
         {
-          $qs = count($mm[$gdx]['steps']);
+          $qs = count((array)$mm[$gdx]['steps']);
           for($scx=0; $scx < $qs; $scx++)
           {
             $mm[$gdx]['steps'][$scx]['notes'] = 'your step exec notes';

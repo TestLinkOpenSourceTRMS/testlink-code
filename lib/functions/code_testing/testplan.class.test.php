@@ -216,7 +216,7 @@ new dBug($build_mgr);
 
 
 $all_builds=$tplan_mgr->get_builds($tplan_id);
-$dummy=array_keys($all_builds);
+$dummy=array_keys((array)$all_builds);
 $build_id=$dummy[0];
 
 echo "<pre> build manager - get_by_id(\$id)";echo "</pre>";

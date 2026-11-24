@@ -59,7 +59,7 @@ class WikiDiff3 {
     public function diff(/*array*/ $from, /*array*/ $to){
         //remember initial lengths
         $m = sizeof($from);
-        $n = count($to);
+        $n = count((array)$to);
 
         $this->heuristicUsed = false;
 
@@ -110,8 +110,8 @@ class WikiDiff3 {
 
         unset($shared, $from, $to);
 
-        $this->m = count($this->from);
-        $this->n = count($this->to);
+        $this->m = count((array)$this->from);
+        $this->n = count((array)$this->to);
 
         $this->removed = $this->m > 0 ? array_fill(0, $this->m, true) : array();
         $this->added = $this->n > 0 ? array_fill(0, $this->n, true) : array();

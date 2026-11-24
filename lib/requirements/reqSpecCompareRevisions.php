@@ -69,7 +69,7 @@ if ($args->doCompare)
 		
 			$gui->diff[$key]["diff"] = $differ->inline($gui->diff[$key]["left"], $gui->leftID, 
 			                                            $gui->diff[$key]["right"], $gui->rightID,$args->context);
-			$gui->diff[$key]["count"] = count($differ->changes);
+			$gui->diff[$key]["count"] = count((array)$differ->changes);
 		}
 		
 		$gui->diff[$key]["heading"] = lang_get($key);
@@ -114,7 +114,7 @@ function getItemsToCompare($leftSideID,$rightSideID,&$itemSet)
 			$ret['right_item'] = $item;
 		}
 		
-		if( count($ret) == 2 )
+		if( count((array)$ret) == 2 )
 		{
 			break;
 		}
@@ -165,7 +165,7 @@ function getCFDiff($cfields,&$itemMgr)
 	$cfieldsRight = $cfields['right_side']['value'];
 	if( !is_null($cfieldsLeft) )
 	{
-		$key2loop = array_keys($cfieldsLeft);
+		$key2loop = array_keys((array)$cfieldsLeft);
 		$cmp = array();
 		$type_code = $itemMgr->cfield_mgr->get_available_types();
 		$key2convert = array('lvalue','rvalue');
@@ -214,7 +214,7 @@ function getCFDiff($cfields,&$itemMgr)
 			} // mega if
 		}  // foraeach		
 	}
-	return count($cmp) > 0 ? $cmp : null;	
+	return count((array)$cmp) > 0 ? $cmp : null;	
 }
 
 
@@ -261,7 +261,7 @@ function initializeGui(&$dbHandler,&$argsObj,$lbl,&$itemMgr)
 	// Truncate log message
 	if( $reqSpecCfg->log_message_len > 0 )
 	{	
-		$loop2do = count($guiObj->items);
+		$loop2do = count((array)$guiObj->items);
 		for($idx=0; $idx < $loop2do; $idx++)
 		{
 			if( strlen($guiObj->items[$idx]['log_message']) > $reqSpecCfg->log_message_len )

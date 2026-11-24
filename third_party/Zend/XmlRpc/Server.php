@@ -566,7 +566,7 @@ class Zend_XmlRpc_Server extends Zend_Server_Abstract
         $info     = $this->_table->getMethod($method);
         $params   = $request->getParams();
         $argv     = $info->getInvokeArguments();
-        if (0 < count($argv) and $this->sendArgumentsToAllMethods()) {
+        if (0 < count((array)$argv) and $this->sendArgumentsToAllMethods()) {
             $params = array_merge($params, $argv);
         }
 
@@ -574,8 +574,8 @@ class Zend_XmlRpc_Server extends Zend_Server_Abstract
         $matched    = false;
         $sigCalled  = $request->getTypes();
 
-        $sigLength  = count($sigCalled);
-        $paramsLen  = count($params);
+        $sigLength  = count((array)$sigCalled);
+        $paramsLen  = count((array)$params);
         if ($sigLength < $paramsLen) {
             for ($i = $sigLength; $i < $paramsLen; ++$i) {
                 $xmlRpcValue = Zend_XmlRpc_Value::getXmlRpcValue($params[$i]);

@@ -1217,7 +1217,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                         $this->args->$key : $newest_build_id;
 
     // still no build selected? take first one from selection.
-    if (!$this->settings[$key]['selected'] && sizeof($this->settings[$key]['items'])) 
+    if (!$this->settings[$key]['selected'] && sizeof((array)$this->settings[$key]['items'])) 
     {
       $this->settings[$key]['selected'] = end($tplan_builds);
     }
@@ -1274,7 +1274,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       if(!$add_plan) 
       {
         $builds = $this->testplan_mgr->get_builds($plan['id'],testplan::GET_ACTIVE_BUILD,testplan::GET_OPEN_BUILD);
-        $add_plan =  (is_array($builds) && count($builds));
+        $add_plan =  (is_array($builds) && count((array)$builds));
       }
       
       if ($add_plan) 
@@ -1309,7 +1309,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
     
     $platformSet = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
-    if( is_null($platformSet) || count($platformSet) == 0) {
+    if( is_null($platformSet) || count((array)$platformSet) == 0) {
       // Brute force bye, bye !! >>--->
       $this->settings[$key] = [
         'items' => null, 
@@ -1515,7 +1515,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $type_selection = $this->args->{$type};
     
     // are there any keywords?
-    $atLeastOneKW = !is_null($keywords) && count($keywords);
+    $atLeastOneKW = !is_null($keywords) && count((array)$keywords);
     if ($atLeastOneKW) {
       $this->filters[$key] = array();
 
@@ -1530,7 +1530,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       // data for the keywords themselves     
       $this->filters[$key]['items'] = $special['domain'] + $keywords;
       $this->filters[$key]['selected'] = $selection;
-      $this->filters[$key]['size'] = min(count($this->filters[$key]['items']),
+      $this->filters[$key]['size'] = min(count((array)$this->filters[$key]['items']),
                                          self::ADVANCED_FILTER_ITEM_QUANTITY);
 
       // additional data for the filter type (logical and/or)
@@ -1549,7 +1549,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       // !!Regardless of filter mode!!
       //
       if (is_array($this->filters[$key]['selected']) && 
-          count($this->filters[$key]['selected']) > 1 &&  
+          count((array)$this->filters[$key]['selected']) > 1 &&  
           in_array(0, $this->filters[$key]['selected'])) {
         $this->active_filters[$key] = null;
       } else {
@@ -1626,7 +1626,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                             MEDIUM => lang_get('medium_importance'), 
                                             LOW => lang_get('low_importance'));
     
-      $this->filters[$key]['size'] = sizeof($this->filters[$key]['items']);
+      $this->filters[$key]['size'] = sizeof((array)$this->filters[$key]['items']);
       $this->active_filters[$key] = $selection;
     }
   }
@@ -1942,7 +1942,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     if (!$selection || $this->args->reset_filters)  {
       if( !is_null($this->args->caller) && !$selection) {
         $selection = null;
-      } else if( count($cfx) > 0) {
+      } else if( count((array)$cfx) > 0) {
         $selection = $cfx;
         $this->do_filtering = true;
       } else {
@@ -1959,7 +1959,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $this->filters[$key]['items'] = array(0 => $this->option_strings['any']) +
                                           $this->tc_mgr->getWorkFlowStatusDomain();
 
-    $this->filters[$key]['size'] = min(count($this->filters[$key]['items']),
+    $this->filters[$key]['size'] = min(count((array)$this->filters[$key]['items']),
                                        self::ADVANCED_FILTER_ITEM_QUANTITY);
     
     $this->active_filters[$key] = $selection;
@@ -2009,10 +2009,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // for CF types that present a domain like LIST, then if the blank option is
     // not present will be added as FIRST OPTION
 
-    if(count($cf) > 0)
+    if(count((array)$cf) > 0)
     {
       $cfTypes = array_flip($this->cfield_mgr->get_available_types());
-      $key2loop = array_keys($cf);
+      $key2loop = array_keys((array)$cf);
       foreach($key2loop as $cfID)
       {
         // we will use these CF as filter => required property has to be
@@ -2184,7 +2184,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $platformSet = (array)$this->platform_mgr->getAllAsMap($opxy);
     $this->filters[$key] = array('items' => $platformSet,
                                  'selected' => $selection);
-    $this->filters[$key]['size'] = min(count($this->filters[$key]['items']),
+    $this->filters[$key]['size'] = min(count((array)$this->filters[$key]['items']),
                                        self::ADVANCED_FILTER_ITEM_QUANTITY);
                              
     // set the active value to filter

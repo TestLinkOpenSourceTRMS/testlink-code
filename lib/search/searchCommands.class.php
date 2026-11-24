@@ -481,7 +481,7 @@ class searchCommands
       }  
     }
 
-    $this->gui->filter_by['custom_fields'] = !is_null($this->gui->cf) && count($this->gui->cf) > 0;
+    $this->gui->filter_by['custom_fields'] = !is_null($this->gui->cf) && count((array)$this->gui->cf) > 0;
 
     $this->gui->keywords = $this->tprojectMgr->getKeywordSet($this->args->tproject_id);
     $this->gui->filter_by['keyword'] = !is_null($this->gui->keywords);
@@ -567,7 +567,7 @@ class searchCommands
 
     $reqSet = $this->getReqIDSet($args->tproject_id);
 
-    $noItems = is_null($reqSet) || count($reqSet) == 0;
+    $noItems = is_null($reqSet) || count((array)$reqSet) == 0;
     $bye = $noItems || (!$canUseTarget && $req_cf_id <= 0); 
     if( $bye )
     {  
@@ -726,7 +726,7 @@ class searchCommands
 
     $mapTS = null;
     $tsuiteSet = $this->getTestSuiteIDSet($args->tproject_id);
-    if(is_null($tsuiteSet) || count($tsuiteSet) == 0)
+    if(is_null($tsuiteSet) || count((array)$tsuiteSet) == 0)
     {
       return null;
     }  
@@ -810,7 +810,7 @@ class searchCommands
     $filterSpecial = null;
 
 
-    if( is_null($tcaseSet) || count($tcaseSet) == 0)
+    if( is_null($tcaseSet) || count((array)$tcaseSet) == 0)
     {
       return null;
     }  
@@ -928,7 +928,7 @@ class searchCommands
 
 
     $otherFilters = '';  
-    if(!is_null($filterSpecial) && count($filterSpecial) > 1)
+    if(!is_null($filterSpecial) && count((array)$filterSpecial) > 1)
     {
       $otherFilters = " AND (/* filterSpecial */ " . 
                       implode("",$filterSpecial) . ")";

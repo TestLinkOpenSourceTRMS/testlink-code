@@ -153,7 +153,7 @@ class githubrestInterface extends issueTrackerInterface
       try
       {
         $items = $this->APIClient->getRepo();
-        $this->connected = count($items) > 0 ? true : false;
+        $this->connected = count((array)$items) > 0 ? true : false;
         unset($items);
       }
       catch(Exception $e)
@@ -227,7 +227,7 @@ class githubrestInterface extends issueTrackerInterface
         $issue->summaryHTMLString = (string)$jsonObj->title.":</br>".(string)$jsonObj->body; 
         $issue->summary =  (string)$jsonObj->title.":\n".(string)$jsonObj->body;
         $Notes = $this->APIClient->getNotes((int)$issueID);
-        if(is_array($Notes) && count($Notes)>0){
+        if(is_array($Notes) && count((array)$Notes)>0){
           foreach($Notes as $key => $note){
             $issue->summaryHTMLString .= "</br>[Note $key]:$note->body";
             $issue->summary .= "\n[Note $key]: $note->body";

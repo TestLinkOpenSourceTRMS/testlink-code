@@ -213,7 +213,7 @@ class bareBonesRestAPI {
     curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
     curl_setopt($this->curl, CURLOPT_HEADER, 0); 
 
-    if (count($this->curlHeader) >0) {
+    if (count((array)$this->curlHeader) >0) {
       curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->curlHeader); 
     }
 

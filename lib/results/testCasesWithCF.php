@@ -105,7 +105,7 @@ if( $args->doIt )
 		}
 	}
 
-	if (count($matrixData) > 0) 
+	if (count((array)$matrixData) > 0) 
 	{
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
@@ -218,7 +218,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
     
     // this way on caller can be used on array operations, without warnings
     $guiObj->cfields = (array)$guiObj->cfields;  
-    if( count($guiObj->cfields) > 0 )
+    if( count((array)$guiObj->cfields) > 0 )
     {
     	foreach($guiObj->cfields as $key => $values)
     	{
@@ -255,7 +255,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
         }
     }
 
-    if(($guiObj->row_qty=count($cf_map)) == 0 )
+    if(($guiObj->row_qty=count((array)$cf_map)) == 0 )
     {
         $guiObj->warning_msg = lang_get('no_linked_tc_cf');
     }

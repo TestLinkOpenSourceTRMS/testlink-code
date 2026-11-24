@@ -441,7 +441,7 @@ function initializeGui(&$dbHandler,&$argsObj)
   $guiObj->auth_method_opt = array(lang_get('default_auth_method') . 
                              "(" . $guiObj->authCfg['domain'][$guiObj->authCfg['method']]['description'] . ")" => '');
 
-  $dummy = array_keys($guiObj->authCfg['domain']);
+  $dummy = array_keys((array)$guiObj->authCfg['domain']);
   foreach($dummy as $xc)
   {
     // description => html option value

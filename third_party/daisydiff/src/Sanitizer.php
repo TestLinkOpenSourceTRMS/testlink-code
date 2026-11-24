@@ -709,7 +709,7 @@ class Sanitizer {
 
             $attribs[] = "$encAttribute=\"$encValue\"";
         }
-        return count( $attribs ) ? ' ' . implode( ' ', $attribs ) : '';
+        return count((array)$attribs) ? ' ' . implode( ' ', $attribs ) : '';
     }
 
     /**

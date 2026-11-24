@@ -157,7 +157,7 @@ class Zend_Loader_Autoloader_Resource implements Zend_Loader_Autoloader_Interfac
             }
         }
 
-        if (count($segments) < 2) {
+        if (count((array)$segments) < 2) {
             // assumes all resources have a component and class name, minimum
             return false;
         }
@@ -171,7 +171,7 @@ class Zend_Loader_Autoloader_Resource implements Zend_Loader_Autoloader_Interfac
             if (isset($this->_components[$component])) {
                 $lastMatch = $component;
             }
-        } while (count($segments));
+        } while (count((array)$segments));
 
         if (!$lastMatch) {
             return false;

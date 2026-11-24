@@ -322,7 +322,7 @@ class Zend_Http_Cookie
             }
 
             $keyValue = explode('=', $part, 2);
-            if (count($keyValue) == 2) {
+            if (count((array)$keyValue) == 2) {
                 list($k, $v) = $keyValue;
                 switch (strtolower($k))    {
                     case 'expires':

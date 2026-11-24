@@ -33,7 +33,7 @@ $client->debug=$debug;
 $answer = runTest($client,$method,$args);
 new dBug($answer);
 
-$items_qty = count($answer);
+$items_qty = count((array)$answer);
 foreach($answer as $item)
 {
 	if( isset($item['name']) )

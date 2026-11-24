@@ -367,7 +367,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		$response = $this->client->getResponse();
 		var_dump($response);
 		// Just check the size is good since we don't know the insert id
-		$this->assertEquals(3, sizeof($response[0]));
+		$this->assertEquals(3, sizeof((array)$response[0]));
 	}
 	
 	function testReportTCResultRequestWithPassedStatus()
@@ -387,7 +387,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		
 		$response = $this->client->getResponse();
 		// Just check the size is good since we don't know the insert id
-		$this->assertEquals(3, sizeof($response[0]));
+		$this->assertEquals(3, sizeof((array)$response[0]));
 	}			
 	
 	function testReportTCResultRequestWithFailedStatus()
@@ -407,7 +407,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		
 		$response = $this->client->getResponse();
 		// Just check the size is good since we don't know the insert id
-		$this->assertEquals(3, sizeof($response[0]));
+		$this->assertEquals(3, sizeof((array)$response[0]));
 	}
 		
 	function testReportTCResultWithNoParams()
@@ -448,7 +448,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		
 		$response = $this->client->getResponse();
 		// Just check the size is good since we don't know the insert id
-		$this->assertEquals(3, sizeof($response[0]));
+		$this->assertEquals(3, sizeof((array)$response[0]));
 	}
 
     function testGetLastTestResult()
@@ -480,7 +480,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
         $response = $this->client->getResponse();
         // Just check the size is good since we don't know the insert id
         print_r($response);
-        $this->assertEquals(9, sizeof($response[0]));
+        $this->assertEquals(9, sizeof((array)$response[0]));
         $this->assertEquals('b', $response[0]['status']);
 		
 	}
@@ -505,7 +505,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		
 		$response = $this->client->getResponse();
 		// Just check the size is good since we don't know the insert id
-		$this->assertEquals(3, sizeof($response[0]));
+		$this->assertEquals(3, sizeof((array)$response[0]));
 	}		
 	
 	function testReportTCResultNotGuessingBuildID()
@@ -558,7 +558,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		// Just check the size is good since we don't know the insert id
 		var_dump($response);
 		
-		$this->assertEquals(3, sizeof($response[0]));				
+		$this->assertEquals(3, sizeof((array)$response[0]));				
 	}
 	
 	function testCreateBuildWithInsufficientRights()
@@ -593,7 +593,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		}		
 		$response = $this->client->getResponse();
 		var_dump($response);
-		$this->assertEquals(3, sizeof($response[0]));
+		$this->assertEquals(3, sizeof((array)$response[0]));
 	}
 	
 	function testCreateBuildWithNotes()
@@ -609,7 +609,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 					$this->client->getErrorMessage();
 		}		
 		$response = $this->client->getResponse();
-		$this->assertEquals(3, sizeof($response[0]));
+		$this->assertEquals(3, sizeof((array)$response[0]));
 	}
 	
 	function testCreateBuildWithInvalidTPID()

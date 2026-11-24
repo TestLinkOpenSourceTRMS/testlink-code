@@ -195,7 +195,7 @@ function lang_get_smarty($params, $smarty) {
   $myLocale=isset($params['locale']) ? $params['locale'] : null;
   if(  isset($params['var']) ) {
     $labels2translate=explode(',',$params['s']);
-    if( count($labels2translate) == 1) {
+    if( count((array)$labels2translate) == 1) {
       $myLabels=lang_get($params['s'], $myLocale);
     } else {
       $myLabels=array();
@@ -262,7 +262,7 @@ function lang_load( $p_lang, $p_dir = null ) {
   }
 
   $t_vars = get_defined_vars();
-  foreach( array_keys($t_vars) as $t_var ) 
+  foreach( array_keys((array)$t_vars) as $t_var ) 
   {
     $t_lang_var = preg_replace( '/^TLS_/', '', $t_var );
     if ( $t_lang_var != $t_var) 

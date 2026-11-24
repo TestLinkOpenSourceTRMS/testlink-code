@@ -29,7 +29,7 @@ function exportDataToCSV($data,$sourceKeys,$destKeys,$bWithHeader = 0,$delimiter
 		$csvContent .= $header . $newLine;
 	}
 
-	$len = count($sourceKeys);
+	$len = count((array)$sourceKeys);
   foreach($data as $values) { 
 		$line = '';
 		for($k = 0;$k < $len;$k++) {
@@ -131,7 +131,7 @@ function importCSVData($fileName,$fieldMappings, $options = null) {
 	        	{
 					if( $check_syntax)
 					{
-						$fieldsQty = count($data);
+						$fieldsQty = count((array)$data);
 						if( !($do_import = ($fieldsQty == $my['options']['fieldQty'])))
 						{
 							$msg = 'Field count:' . $fieldsQty . ' Required Field count: ' . 

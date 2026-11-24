@@ -58,7 +58,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
   }
   if (!$_SESSION['testprojectID']) {
       $tpID = null;
-      if (sizeof($arrProducts))
+      if (sizeof((array)$arrProducts))
       {
         $tpID = key($arrProducts);
       } 
@@ -135,8 +135,8 @@ function buildUserMap($users,$add_options = false, $additional_options=null, $op
           $usersMap[$code] = $verbose_code;
       }
     }
-    $userSet = array_keys($users);
-    $loops2do = count($userSet);
+    $userSet = array_keys((array)$users);
+    $loops2do = count((array)$userSet);
     
     for( $idx=0; $idx < $loops2do ; $idx++)
     {
@@ -309,7 +309,7 @@ function getAllUsersRoles(&$db,$order_by = null)
 
   $users = tlDBObject::createObjectsFromDBbySQL($db,$sql,"id","tlUser",false,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
   
-  $loop2do = count($users);
+  $loop2do = count((array)$users);
   $specialK = array_flip((array)config_get('demoSpecialUsers'));
   $demoModeEnabled = config_get('demoMode');
   for($idx=0; $idx < $loop2do; $idx++)

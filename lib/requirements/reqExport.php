@@ -152,7 +152,7 @@ function doExport(&$argsObj,&$req_spec_mgr)
       switch($argsObj->scope) {
         case 'tree':
           $reqSpecSet = $req_spec_mgr->getFirstLevelInTestProject($argsObj->tproject_id);
-          $reqSpecSet = array_keys($reqSpecSet);
+          $reqSpecSet = array_keys((array)$reqSpecSet);
         break;
           
         case 'branch':

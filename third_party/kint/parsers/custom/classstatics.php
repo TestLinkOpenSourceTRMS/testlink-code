@@ -44,6 +44,6 @@ class Kint_Parsers_ClassStatics extends kintParser
 
 		$this->value = $extendedValue;
 		$this->type  = 'Static class properties';
-		$this->size  = count( $extendedValue );
+		$this->size  = count((array)$extendedValue);
 	}
 }

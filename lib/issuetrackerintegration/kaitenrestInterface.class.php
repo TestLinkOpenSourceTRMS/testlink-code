@@ -114,7 +114,7 @@ class kaitenrestInterface extends issueTrackerInterface {
       // to undestand if connection is OK, I will ask for users.
       try {
         $items = $this->APIClient->getUsers();
-        $this->connected = count($items) > 0 ? true : false;
+        $this->connected = count((array)$items) > 0 ? true : false;
         unset($items);
       }
       catch(Exception $e) {
@@ -251,7 +251,7 @@ class kaitenrestInterface extends issueTrackerInterface {
 
     foreach($pik as $ky => $vy ) {
       preg_match('/^' . $vy . '(.+)$/imu', $info, $matches[$ky]);    
-      if( count($matches[$ky]) > 1 ) {
+      if( count((array)$matches[$ky]) > 1 ) {
         $result['links'][] = [
           'descr' => $vy,
           'url' => $matches[$ky][1]
@@ -276,7 +276,7 @@ class kaitenrestInterface extends issueTrackerInterface {
         throw new Exception("Error creating issue", 1);
       }
 
-      if (count($more['links']) > 0) {
+      if (count((array)$more['links']) > 0) {
         $this->APIClient->addExternalLinks($op->id,$more['links']);
       }
   

@@ -545,7 +545,7 @@ class reqCommands {
     $my['filters'] = array('exclude_node_types' => $exclude_node_types);
     $my['options']['order_cfg']['type'] = $my['options']['output'] = 'rspec';
     $subtree = $this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters'],$my['options']);
-    if(count($subtree))
+    if(count((array)$subtree))
     {
       $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree,'dotted',array('field' => 'doc_id','format' => '%s:'));
     }
@@ -671,7 +671,7 @@ class reqCommands {
     }
     
     $other_req = $this->reqMgr->getByDocID($argsObj->relation_destination_req_doc_id, $tproject_id);
-    if (count($other_req) < 1) {
+    if (count((array)$other_req) < 1) {
       // req doc ID was not ok
       $op['ok'] = false;
       $op['msg'] = lang_get('rel_add_error_dest_id');

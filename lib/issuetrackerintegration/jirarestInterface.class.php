@@ -408,7 +408,7 @@ class jirarestInterface extends issueTrackerInterface
         /*
         $matches = preg_grep("/(?:\/.*\/{1,})(.*) - Execution/", 
                              (array)$summary);
-        if (count($matches) > 0 && isset($matches[1])) {
+        if (count((array)$matches) > 0 && isset($matches[1])) {
           $issue['fields']['customfield_10311'] = $matches[1];
         }
         */
@@ -618,7 +618,7 @@ class jirarestInterface extends issueTrackerInterface
     $ret = null;
     if(!is_null($attrSet))
     {
-      $ic = count($attrSet);
+      $ic = count((array)$attrSet);
       for($idx=0; $idx < $ic; $idx++)
       {
         $ret[$attrSet[$idx]->id] = $attrSet[$idx]->name; 
@@ -789,7 +789,7 @@ class jirarestInterface extends issueTrackerInterface
       $cf = (array)$cf;    
       $cfJIRAID = $cf['customfieldId']; 
       $valueSet = (array)$cf['values'];        
-      $loop2do = count($valueSet);
+      $loop2do = count((array)$valueSet);
 
       $dummy = null;
       $cfType = strtolower((string)$cf['type']);

@@ -52,8 +52,8 @@ if ($args->tprojectID) {
   $map = (array)$db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
 
   // dont show requirements from different testprojects than the selected one
-  if (count($map)) {
-    $reqIDSet = array_keys($map);
+  if (count((array)$map)) {
+    $reqIDSet = array_keys((array)$map);
     foreach ($reqIDSet as $item)  {
       $pid = $tproject_mgr->tree_manager->getTreeRoot($item);
       if ($pid != $args->tprojectID) {
@@ -64,11 +64,11 @@ if ($args->tprojectID) {
 }
 
 $smarty = new TLSmarty();
-$gui->row_qty = count($map);
+$gui->row_qty = count((array)$map);
 if($gui->row_qty > 0) {
   $gui->resultSet = $map;
   if($gui->row_qty <= $req_cfg->search->max_qty_for_display) {
-    $req_set = array_keys($map);
+    $req_set = array_keys((array)$map);
     $options = array('output_format' => 'path_as_string');
     $gui->path_info = 
       $tproject_mgr->tree_manager->get_full_path_verbose($req_set,$options);
@@ -122,7 +122,7 @@ function buildExtTable($gui, $charset) {
   //
   //
 
-  if(count($gui->resultSet) > 0) {
+  if(count((array)$gui->resultSet) > 0) {
     $columns = array();
     
     $columns[] = array('title_key' => 'req_spec');
@@ -131,7 +131,7 @@ function buildExtTable($gui, $charset) {
     // Extract the relevant data and build a matrix
     $matrixData = array();
     
-    $key2loop = array_keys($gui->resultSet);
+    $key2loop = array_keys((array)$gui->resultSet);
     $img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
     // req_id, req_version_id
     $reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 

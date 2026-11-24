@@ -326,7 +326,7 @@ class tlRestApi
  
     if( !is_null($tproject) ) {
       $items = $this->tprojectMgr->get_all_testplans($tproject['id']);
-      $op['items'] = (!is_null($items) && count($items) > 0) ? $items : null;
+      $op['items'] = (!is_null($items) && count((array)$items) > 0) ? $items : null;
     } else {
       $op['message'] = "No Test Project identified by '" . $idCard . "'!";
       $op['status']  = 'error';
@@ -352,7 +352,7 @@ class tlRestApi
       $tcaseIDSet = array();
       $this->tprojectMgr->get_all_testcases_id($tproject['id'],$tcaseIDSet);
 
-      if( !is_null($tcaseIDSet) && count($tcaseIDSet) > 0 ) {
+      if( !is_null($tcaseIDSet) && count((array)$tcaseIDSet) > 0 ) {
         $op['items'] = array();
         foreach( $tcaseIDSet as $key => $tcaseID ) {
           $item = $this->tcaseMgr->get_last_version_info($tcaseID);
@@ -1010,7 +1010,7 @@ class tlRestApi
 
         if(!$attrOK) {
           $msg = "Attribute: {$key} mandatory key (";
-          if(count($attr) > 1) {
+          if(count((array)$attr) > 1) {
             $msg .= "one of set: ";
           }  
           $msg .= implode('/',$attr) . ") is missing";
@@ -1236,7 +1236,7 @@ class tlRestApi
  
     if( !is_null($tplan) ) {
       $items = $this->tplanMgr->get_builds($tplan['id']);
-      $op['items'] = (!is_null($items) && count($items) > 0) ? $items : null;
+      $op['items'] = (!is_null($items) && count((array)$items) > 0) ? $items : null;
     } else {
       $op['message'] = "No Test Plan identified by '" . $idCard . "'!";
       $op['status']  = 'error';
@@ -1531,7 +1531,7 @@ class tlRestApi
             $p2link[$plat_id]=$plat_id;
           }
         }
-        if (count($p2link) >0){
+        if (count((array)$p2link) >0){
           $platMgr->linkToTestplan($p2link,$tplan_id);
         }
       }  

@@ -385,7 +385,7 @@ function doSSOWebServerVar(&$dbHandler,$authCfg=null)
 
     $rs = $dbHandler->get_recordset($sql);
     
-    $login_exists = !is_null($rs) && ($accountQty =count($rs)) == 1;
+    $login_exists = !is_null($rs) && ($accountQty =count((array)$rs)) == 1;
     $loginKO = true;
 
     if( $login_exists  ) {

@@ -163,7 +163,7 @@ function init_args(&$tplanMgr)
 	if (isset($session_data[$fk])) 
 	{
 		$args->keyword_id = $session_data[$fk];
-		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) 
+		if (is_array($args->keyword_id) && count((array)$args->keyword_id) == 1) 
 		{
 			$args->keyword_id = $args->keyword_id[0];
 		}
@@ -331,7 +331,7 @@ function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tree
 	$linked_items[$xx['tc_id']][0] = $xx; // adapt data structure to gen_spec_view() desires
 	
 	$my_path = $treeMgr->get_path($argsObj->id);
-	$idx_ts = count($my_path)-1;
+	$idx_ts = count((array)$my_path)-1;
 	$tsuite_data = $my_path[$idx_ts-1];
 
 	// Again here need to understand why we seems to consider ONLY keywords filter.
@@ -358,12 +358,12 @@ function processTestPlan(&$dbHandler,&$argsObj,&$tplanMgr)
 									   lang_get('no_newest_version_of_linked_tcversions');
 	
     $set2update['items'] = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
-    if( count($set2update['items']) > 0 )
+    if( count((array)$set2update['items']) > 0 )
     {
-		if( !is_null($set2update['items']) && count($set2update['items']) > 0 )
+		if( !is_null($set2update['items']) && count((array)$set2update['items']) > 0 )
 		{
 			$set2update['msg'] = '';
-			$itemSet=array_keys($set2update['items']);
+			$itemSet=array_keys((array)$set2update['items']);
 			$path_info=$tplanMgr->tree_manager->get_full_path_verbose($itemSet);
 			foreach($set2update['items'] as $tcase_id => $value)
 			{
@@ -381,13 +381,13 @@ function processTestPlan(&$dbHandler,&$argsObj,&$tplanMgr)
 function tideUpForGUI(&$output)
 {
     // We are going to loop over test suites
-    $loop2do = count($output['spec_view']);
+    $loop2do = count((array)$output['spec_view']);
     for($idx=0; $idx < $loop2do; $idx++)
     {
     	$itemSet = &$output['spec_view'][$idx]['testcases'];
-    	if( count($itemSet) > 0)
+    	if( count((array)$itemSet) > 0)
     	{
-    		$key2loop = array_keys($itemSet);
+    		$key2loop = array_keys((array)$itemSet);
     		foreach($key2loop as $tcaseID)
     		{
     			// want to understand
@@ -397,7 +397,7 @@ function tideUpForGUI(&$output)
     			// if we have ZERO ACTIVE VERSIONS
     			//
     			$active = 0;
-    			$total = count($itemSet[$tcaseID]['tcversions_active_status']);
+    			$total = count((array)$itemSet[$tcaseID]['tcversions_active_status']);
     			foreach($itemSet[$tcaseID]['tcversions_active_status'] as $status)
     			{
     				if($status)
@@ -420,7 +420,7 @@ function tideUpForGUI(&$output)
 				if( !is_null($lnItem) && isset($itemSet[$tcaseID]['tcversions'][$lnItem]) )
 				{
 					unset($itemSet[$tcaseID]['updateTarget'][$lnItem]);
-					if(count($itemSet[$tcaseID]['updateTarget']) == 0)
+					if(count((array)$itemSet[$tcaseID]['updateTarget']) == 0)
 					{
 						$itemSet[$tcaseID]['updateTarget'] = null;
 					}

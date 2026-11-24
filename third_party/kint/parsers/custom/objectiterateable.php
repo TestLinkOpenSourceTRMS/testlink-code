@@ -17,6 +17,6 @@ class Kint_Parsers_objectIterateable extends kintParser
 
 		$this->value = kintParser::factory( $arrayCopy )->extendedValue;
 		$this->type  = 'Iterator contents';
-		$this->size  = count( $arrayCopy );
+		$this->size  = count((array)$arrayCopy);
 	}
 }

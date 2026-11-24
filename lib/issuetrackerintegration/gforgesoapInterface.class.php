@@ -135,7 +135,7 @@ class gforgesoapInterface extends issueTrackerInterface
             $issue = $this->APIClient->getTrackerItemFull($this->authToken, $issueID);
             new dBug($issue);
             
-            echo 'QTY extra_field_data:' . count($issue->extra_field_data) . '<br>';
+            echo 'QTY extra_field_data:' . count((array)$issue->extra_field_data) . '<br>';
             $target = array();
             $dataID = array();
             foreach($issue->extra_field_data as $efd)

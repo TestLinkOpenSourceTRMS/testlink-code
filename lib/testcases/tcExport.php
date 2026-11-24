@@ -74,7 +74,7 @@ if( $check_children ) {
                                           "requirement" => "exclude_me"));
 
   $gui->nothing_todo_msg='';
-  if(count($children)==0) {
+  if(count((array)$children)==0) {
     $gui->do_it = 0 ;
   }
 }

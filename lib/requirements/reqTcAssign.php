@@ -39,7 +39,7 @@ switch($args->doAction) {
       $bulkCounter = 0;
       $bulkDone = true;
       $args->edit = 'testsuite';
-      if( !is_null($tcase_set) && count($tcase_set) > 0 ) {
+      if( !is_null($tcase_set) && count((array)$tcase_set) > 0 ) {
         $bulkCounter = doBulkAssignment($db,$args,$tcase_set);
       }
     break;  
@@ -159,7 +159,7 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj) {
   $guiObj->tcase_number = 0;
   $guiObj->has_req_spec = false;
 
-  if(!is_null($guiObj->req_specs) && count($guiObj->req_specs)) {  
+  if(!is_null($guiObj->req_specs) && count((array)$guiObj->req_specs)) {  
     $guiObj->has_req_spec = true;
        
     if(is_null($argsObj->idReqSpec)) {
@@ -182,7 +182,7 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj) {
 
 
     $tcase_set = getTargetTestCases($dbHandler,$argsObj);
-    $guiObj->tcase_number = count($tcase_set);            
+    $guiObj->tcase_number = count((array)$tcase_set);            
     if( $guiObj->tcase_number > 0 ) {
       $guiObj->bulkassign_warning_msg = 
         sprintf(lang_get('bulk_req_assign_msg'),$guiObj->tcase_number,$tsuite_info['name']);
@@ -202,8 +202,8 @@ function doBulkAssignment(&$dbHandler,&$argsObj,$targetTestCaseSet = null)
 {
   $req_mgr = new requirement_mgr($dbHandler);
   $assignmentCounter = 0;
-  $requirements = array_keys($argsObj->reqIdSet);
-  if(!is_null($requirements) && count($requirements) > 0)
+  $requirements = array_keys((array)$argsObj->reqIdSet);
+  if(!is_null($requirements) && count((array)$requirements) > 0)
   {
     $tcase_set = $targetTestCaseSet;
     if( is_null($tcase_set) )
@@ -212,7 +212,7 @@ function doBulkAssignment(&$dbHandler,&$argsObj,$targetTestCaseSet = null)
       $tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
     }
 
-    if( !is_null($tcase_set) && count($tcase_set) )
+    if( !is_null($tcase_set) && count((array)$tcase_set) )
     {
       // $assignmentCounter = $req_mgr->bulk_assignment($requirements,$tcase_set,$argsObj->user->dbID);
 
@@ -233,15 +233,15 @@ function doSingleTestCaseOperation(&$dbHandler,&$argsObj,&$guiObj,$pfn) {
 
   switch($pfn) {
     case 'assign_to_tcase':
-      $items = array_keys($argsObj->reqIdSet);
+      $items = array_keys((array)$argsObj->reqIdSet);
     break;
 
     case 'delReqVersionTCVersionLinkByID':
-      $items = array_keys($argsObj->link_id);
+      $items = array_keys((array)$argsObj->link_id);
     break;
   }
 
-  if( count($items) == 0 ) {
+  if( count((array)$items) == 0 ) {
     $guiObj->user_feedback = lang_get('req_msg_noselect');
     return $guiObj;
   }
@@ -285,11 +285,11 @@ function doSingleTestCaseOperation(&$dbHandler,&$argsObj,&$guiObj,$pfn) {
  */
 function array_diff_byId($arrAll, $arrPart) {
 
-  if (is_null($arrAll) || !count($arrAll)) {
+  if (is_null($arrAll) || !count((array)$arrAll)) {
     return null;
   }
 
-  if (is_null($arrPart) || !count($arrPart)) {
+  if (is_null($arrPart) || !count((array)$arrPart)) {
     return $arrAll;
   }
 
@@ -315,7 +315,7 @@ function array_diff_byId($arrAll, $arrPart) {
 function processTestCase(&$dbHandler,&$argsObj,&$guiObj) {
   $tproject_mgr = new testproject($dbHandler);
   $guiObj->arrReqSpec = $tproject_mgr->genComboReqSpec($argsObj->tproject_id,'dotted',"&nbsp;");
-  $SRS_qty = count($guiObj->arrReqSpec);
+  $SRS_qty = count((array)$guiObj->arrReqSpec);
   
   if($SRS_qty > 0) {
     $tc_mgr = new testcase($dbHandler);

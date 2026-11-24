@@ -38,7 +38,7 @@ $cfieldMgr = new cfield_mgr($db);
 
 
 $targetSet = cleanUpTarget($db,$args->target);
-$canUseTarget = (count($targetSet) > 0);
+$canUseTarget = (count((array)$targetSet) > 0);
 
 if($args->oneCheck == false) {
   $gui->caller = 'search';
@@ -110,7 +110,7 @@ if( $args->rq_scope || $args->rq_title || $args->rq_doc_id || ($req_cf_id > 0) )
 } 
 
   
-$hasTestCases = (!is_null($tcaseSet) && count($tcaseSet) > 0);
+$hasTestCases = (!is_null($tcaseSet) && count((array)$tcaseSet) > 0);
 if( $hasTestCases ) {
   $emptyTestProject = false;
   $mapTC = $cmdMgr->searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id);
@@ -119,7 +119,7 @@ if( $hasTestCases ) {
 // Render Results
 if( !is_null($mapTC) ) {
   $tcase_mgr = new testcase($db);   
-  $tcase_set = array_keys($mapTC);
+  $tcase_set = array_keys((array)$mapTC);
   $options = array('output_format' => 'path_as_string');
   $gui->path_info = $treeMgr->get_full_path_verbose($tcase_set, $options);
   $gui->resultSet = $mapTC;
@@ -161,7 +161,7 @@ if(!is_null($table)) {
 $table = null;
 if( !is_null($mapRQ)) {
   $gui->resultReq = $mapRQ;
-  $req_set = array_keys($mapRQ);
+  $req_set = array_keys((array)$mapRQ);
   $options = array('output_format' => 'path_as_string');
   $gui->path_info = $treeMgr->get_full_path_verbose($req_set,$options);
 
@@ -247,7 +247,7 @@ function buildTSExtTable($gui, $charset, $edit_icon, $history_icon)
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
   
-  if(count($gui->resultTestSuite) > 0) 
+  if(count((array)$gui->resultTestSuite) > 0) 
   {
     $labels = array('test_suite' => lang_get('test_suite'), 
                     'details' => lang_get('details'));
@@ -299,7 +299,7 @@ function buildRSExtTable($gui, $charset, $edit_icon, $history_icon)
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
   
-  if(count($gui->resultReqSpec) > 0) 
+  if(count((array)$gui->resultReqSpec) > 0) 
   {
     $labels = array('req_spec' => lang_get('req_spec'), 
                     'scope' => lang_get('scope'));
@@ -361,7 +361,7 @@ function buildRQExtTable($gui, $charset)
   $labels = init_labels($lbl);
   $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
   
-  if(count($gui->resultReq) > 0) 
+  if(count((array)$gui->resultReq) > 0) 
   {
     $columns = array();
     
@@ -373,7 +373,7 @@ function buildRQExtTable($gui, $charset)
     // Extract the relevant data and build a matrix
     $matrixData = array();
     
-    $key2loop = array_keys($gui->resultReq);
+    $key2loop = array_keys((array)$gui->resultReq);
     $img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
     $reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
     $reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">' . $labels['version_revision_tag'] . ' </a>'; 

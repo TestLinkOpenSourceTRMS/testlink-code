@@ -90,7 +90,7 @@ $tplEngine->display($tplCfg->template_dir . $tpl);
 function initEnv(&$dbHandler) {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
-  $source = sizeof($_POST) ? "POST" : "GET";
+  $source = sizeof((array)$_POST) ? "POST" : "GET";
   
   $ipcfg = 
     array( "doAction" => array($source,tlInputParameter::STRING_N,0,50),

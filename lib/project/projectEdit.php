@@ -129,7 +129,7 @@ switch($args->doAction) {
     $gui->tprojects = (array)$tproject_mgr->get_accessible_for_user($args->userID,$opt);
       
     $gui->pageTitle = lang_get('title_testproject_management');
-    $gui->itemQty = $tprojQty = count($gui->tprojects);
+    $gui->itemQty = $tprojQty = count((array)$gui->tprojects);
 
     if($gui->itemQty > 0) {
       $gui->pageTitle .= ' ' . sprintf(lang_get('available_test_projects'),$gui->itemQty);

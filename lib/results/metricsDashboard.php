@@ -31,7 +31,7 @@ list($gui->tplan_metrics,$gui->show_platforms, $platforms) = getMetrics($db,$_SE
 
 
 // new dBug($gui->tplan_metrics);
-if(count($gui->tplan_metrics) > 0) 
+if(count((array)$gui->tplan_metrics) > 0) 
 {
   $statusSetForDisplay = $result_cfg['status_label_for_exec_ui']; 
   $gui->warning_msg = '';
@@ -166,7 +166,7 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 
   // Get count of testcases linked to every testplan
   // Hmm Count active and inactive ?
-  $linkedItemsQty = $tplan_mgr->count_testcases(array_keys($test_plans),null,array('output' => 'groupByTestPlan'));
+  $linkedItemsQty = $tplan_mgr->count_testcases(array_keys((array)$test_plans),null,array('output' => 'groupByTestPlan'));
   
   
   $metricsMgr = new tlTestPlanMetrics($db);

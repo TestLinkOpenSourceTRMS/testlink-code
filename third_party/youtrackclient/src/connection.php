@@ -247,7 +247,7 @@ class Connection {
   }
 
   public function import_users($users) {
-    if (count($users) <= 0) {
+    if (count((array)$users) <= 0) {
       return;
     }
     $xml = "<list>\n";

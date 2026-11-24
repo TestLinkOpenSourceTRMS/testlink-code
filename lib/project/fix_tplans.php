@@ -37,7 +37,7 @@ if ($can_manage_tprojects)
 	}	
 	
 	$testPlans = getTestPlansWithoutProject($db);
-	$testPlansCount = count($testPlans);
+	$testPlansCount = count((array)$testPlans);
 	
 	$tpObj = new testproject($db);
 	$testProjects = $tpObj->get_all();

@@ -66,7 +66,7 @@ if(!is_null($gui->freeTestCases['items']))
   	{
         $msg_key = '';    
         $tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id) . $tcase_cfg->glue_character;
-        $tcaseSet = array_keys($gui->freeTestCases['items']);
+        $tcaseSet = array_keys((array)$gui->freeTestCases['items']);
         $tsuites = $tproject_mgr->tree_manager->get_full_path_verbose($tcaseSet,
         															  array('output_format' => 'path_as_string'));
   	    unset($tcaseSet);

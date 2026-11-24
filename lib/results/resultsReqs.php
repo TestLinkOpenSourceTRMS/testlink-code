@@ -49,7 +49,7 @@ $reqContext = array('tproject_id' => $args->tproject_id, 'tplan_id' => $args->tp
                     'platform_id' => $args->platform);
 
 $reqSetX = (array)$req_mgr->getAllByContext($reqContext);
-$req_ids = array_keys($reqSetX);
+$req_ids = array_keys((array)$reqSetX);
 
 $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id) . (config_get('testcase_cfg')->glue_character);
 
@@ -59,11 +59,11 @@ $testcases = array();
 // first step: get the requirements and linked testcases with which we have to work,
 // order them into $rspecSet by spec
 $gui->total_reqs = 0;
-if (count($req_ids)) 
+if (count((array)$req_ids)) 
 {   
   list($gui->total_reqs,$rspecSet,$testcases) = buildReqSpecMap($req_ids,$req_mgr,$req_spec_mgr,$tplan_mgr,
                                                                     $args->states_to_show->selected,$args);
-  if (!count($rspecSet)) 
+  if (!count((array)$rspecSet)) 
   {
     $gui->warning_msg = $labels['no_matching_reqs'];
   }
@@ -75,7 +75,7 @@ else
 
 
 // second step: walk through req spec map, count/calculate, store results
-if(count($rspecSet)) 
+if(count((array)$rspecSet)) 
 {
 
   foreach ($rspecSet as $rspec_id => $req_spec_info) 
@@ -93,7 +93,7 @@ if(count($rspecSet))
       foreach ($req_info['linked_testcases'] as $key => $tc_info) 
       {
         $tc_id = $tc_info['id'];
-        $plat2loop = array_keys($testcases[$tc_id]);
+        $plat2loop = array_keys((array)$testcases[$tc_id]);
         $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']['total']++;
  
         foreach($plat2loop as $plat_id)
@@ -132,7 +132,7 @@ if(count($rspecSet))
 }
 
 // last step: build the table
-if (count($rspecSet)) 
+if (count((array)$rspecSet)) 
 {
   $allStatusCode = config_get('results');
 
@@ -209,7 +209,7 @@ if (count($rspecSet))
       if ($req_cfg->expected_coverage_management) 
       {
         $expected_coverage = $req_info['expected_coverage'];
-        $current = count($req_info['linked_testcases']);
+        $current = count((array)$req_info['linked_testcases']);
         if ($expected_coverage) 
         {
           $coverage_string = "<!-- -1 -->" . $labels['na'] . " ($current/0)";
@@ -278,7 +278,7 @@ if (count($rspecSet))
 
       // show all linked tcversions incl exec result
       $linked_tcs_with_status = '';
-      if (count($req_info['linked_testcases']) > 0 ) 
+      if (count((array)$req_info['linked_testcases']) > 0 ) 
       {
         // ATTENTION HERE IS WHERE PLATFORMS AFFECTS
         foreach($req_info['linked_testcases'] as $ltcase) 
@@ -772,7 +772,7 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
       }  
 
       // if there is linked (active) test case
-      if (count($req['linked_testcases']) > 0) {
+      if (count((array)$req['linked_testcases']) > 0) {
         $total++;
         $rspec[$req['srs_id']]['requirements'][$id] = $req;
 
@@ -798,7 +798,7 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
   // TC3 is NOT PART OF TEST PLAN under analisys
   //
   $tcaseSet = array();
-  if (count($tc_ids)) 
+  if (count((array)$tc_ids)) 
   {
     $filters = array('tcase_id' => $tc_ids);
     $f2a = array('platform','build');

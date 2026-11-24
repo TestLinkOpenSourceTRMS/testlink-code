@@ -70,7 +70,7 @@ if(is_null($tsInf)) {
 
   // reorder data according test suite name
   natcasesort($tsInf->idNameMap);
-  $sortedKeys = array_keys($tsInf->idNameMap);
+  $sortedKeys = array_keys((array)$tsInf->idNameMap);
   $gui->dataByPlatform = new stdClass();
   $gui->dataByPlatform->testsuites = array();
   foreach ($gui->statistics->testsuites as $platId => $elem) {
@@ -194,7 +194,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) {
   $gui->mailFeedBack = new stdClass();
   $gui->mailFeedBack->msg = '';
 
-  $gui->hasPlatforms = count($gui->platformSet) >= 1 && 
+  $gui->hasPlatforms = count((array)$gui->platformSet) >= 1 && 
                        !isset($gui->platformSet[0]);
 
   return $gui;
@@ -257,7 +257,7 @@ function createSpreadsheet($gui,$args,&$tplanMgr) {
                       'tcQtyKey' => 'total_assigned',
                       'source' => &$gui->statistics->overallBuildStatus);
 
-  $startingRow = count($lines2write); // MAGIC
+  $startingRow = count((array)$lines2write); // MAGIC
   foreach( $oneLevel as $target ) {
     $entity = $target['entity'];
     $dimension = $target['dimension'];
@@ -356,7 +356,7 @@ function createSpreadsheet($gui,$args,&$tplanMgr) {
     $nameKey = $target['nameKey'];
     $tcQtyKey = $target['tcQtyKey'];
 
-    if( count($target['source']) == 0 ) {
+    if( count((array)$target['source']) == 0 ) {
       continue;
     }
 
@@ -548,7 +548,7 @@ function initStyleSpreadsheet() {
  */
 function setCellRangeSpreadsheet() {
   $cr = range('A','Z');
-  $crLen = count($cr);
+  $crLen = count((array)$cr);
   for($idx = 0; $idx < $crLen; $idx++) {
     for($jdx = 0; $jdx < $crLen; $jdx++) {
       $cr[] = $cr[$idx] . $cr[$jdx];

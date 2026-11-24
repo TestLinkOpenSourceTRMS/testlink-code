@@ -59,7 +59,7 @@ if( $args->doAction == 'result' ) {
 }
 
 if( $args->doAction == 'result' && 
-  !is_null($metrics) and count($metrics) > 0 ) {              
+  !is_null($metrics) and count((array)$metrics) > 0 ) {              
 
   $doIt = true;
   $doChoice = false;
@@ -82,7 +82,7 @@ if( $args->doAction == 'result' &&
       $du = $tcase_mgr->getPathLayered(array($elem['tcase_id']));  
       $pathCache[$elem['tcase_id']] = $du[$elem['tsuite_id']]['value'];
       $levelCache[$elem['tcase_id']] = $du[$elem['tsuite_id']]['level'];
-      $ky = current(array_keys($du)); 
+      $ky = current(array_keys((array)$du)); 
       $topCache[$elem['tcase_id']] = $ky;
     }
    
@@ -264,7 +264,7 @@ function initializeGui(&$dbh,&$argsObj,&$tplanMgr) {
   $guiObj->platformSet = $tplanMgr->getPlatforms($argsObj->tplan_id,$getOpt);
   
   $guiObj->show_platforms = true;
-  $pqy = count($guiObj->platformSet);
+  $pqy = count((array)$guiObj->platformSet);
   if( $pqy == 0 || ($pqy == 1) && isset($guiObj->platformSet[0])){
     $guiObj->show_platforms = false;
   }
@@ -406,7 +406,7 @@ function createSpreadsheet($gui,$args,$media) {
     $dataHeader[] = $lbl['platform'];
   }
 
-  $startingRow = count($lines2write) + 2; // MAGIC
+  $startingRow = count((array)$lines2write) + 2; // MAGIC
   $cellArea = "A{$startingRow}:";
   foreach($dataHeader as $zdx => $field) {
     $cellID = $cellRange[$zdx] . $startingRow; 
@@ -420,7 +420,7 @@ function createSpreadsheet($gui,$args,$media) {
   // Now process data  
   $colorChangeCol = 1;
   $startingRow++;
-  $qta_loops = count($gui->dataSet);
+  $qta_loops = count((array)$gui->dataSet);
   $val4color = $gui->dataSet[0][$colorChangeCol];
   for($idx = 0; $idx < $qta_loops; $idx++) {
     $line2write = $gui->dataSet[$idx];

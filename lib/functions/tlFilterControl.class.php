@@ -446,7 +446,7 @@ abstract class tlFilterControl extends tlObjectWithDB
 
       // show/hide CF
       $this->filters[$key] = array('items' => $cf_html_code,'btn_label' => $btn_label,'collapsed' => $collapsed);
-      $this->active_filters[$key] = count($selection) ? $selection : null;
+      $this->active_filters[$key] = count((array)$selection) ? $selection : null;
     }
   } // end of method
 

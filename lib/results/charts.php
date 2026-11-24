@@ -44,7 +44,7 @@ if($gui->can_use_charts == 'OK')
     									                   "&tproject_id=$args->tproject_id";
     
     $platformSet = $tplan_mgr->getPlatforms($gui->tplan_id,array('outputFormat' => 'map'));
-    $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
+    $platformIDSet = is_null($platformSet) ? array(0) : array_keys((array)$platformSet);
 
     $gui->charts = array($l18n['overall_metrics'] => $chartsUrl->overallPieChart);
     if(!is_null($platformSet))

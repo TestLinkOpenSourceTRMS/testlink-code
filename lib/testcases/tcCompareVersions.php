@@ -64,7 +64,7 @@ if ($args->compare_selected_versions)
 		
 		  $gui->diff[$key]['diff'] = $diffEngine->inline($gui->diff[$key]['left'], $gui->leftID, 
 			                                               $gui->diff[$key]['right'], $gui->rightID,$args->context);
-			$gui->diff[$key]['count'] = count($diffEngine->changes);
+			$gui->diff[$key]['count'] = count((array)$diffEngine->changes);
 		}
 		
 		// are there any changes? then display! if not, nothing to show here
@@ -145,7 +145,7 @@ function buildDiff($items,$argsObj)
   $attrKeys = array();  
   $attrKeys['simple'] = array('summary','preconditions');
   $attrKeys['complex'] = array('steps' => 'actions', 'expected_results' => 'expected_results');
-  $dummy = array_merge($attrKeys['simple'],array_keys($attrKeys['complex'])); 
+  $dummy = array_merge($attrKeys['simple'],array_keys((array)$attrKeys['complex'])); 
   foreach($dummy as $gx)
   {
     foreach($panel as $side)

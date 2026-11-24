@@ -328,7 +328,7 @@ class stashrestInterface extends codeTrackerInterface
     $ret = null;
     if(!is_null($attrSet))
     {
-      $ic = count($attrSet);
+      $ic = count((array)$attrSet);
       for($idx=0; $idx < $ic; $idx++)
       {
         $ret[$attrSet[$idx]->key] = $attrSet[$idx]->name . " (" . $attrSet[$idx]->key . ")"; 
@@ -346,7 +346,7 @@ class stashrestInterface extends codeTrackerInterface
     $ret = null;
     if(!is_null($attrSet))
     {
-      $ic = count($attrSet);
+      $ic = count((array)$attrSet);
       for($idx=0; $idx < $ic; $idx++)
       {
         $ret[$attrSet[$idx]->$id] = $attrSet[$idx]->$name;
@@ -364,7 +364,7 @@ class stashrestInterface extends codeTrackerInterface
     $ret = null;
     if(!is_null($attrSet))
     {
-      $ic = count($attrSet);
+      $ic = count((array)$attrSet);
       for($idx=0; $idx < $ic; $idx++)
       {
         $ret[$attrSet[$idx]->id] = $attrSet[$idx]->name . " (" . $attrSet[$idx]->key . ")";

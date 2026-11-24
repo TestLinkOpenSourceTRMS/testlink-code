@@ -265,7 +265,7 @@ if($gui->row_qty > 0)
   if ($map)
   {
     $tcase_mgr = new testcase($db);   
-    $tcase_set = array_keys($map);
+    $tcase_set = array_keys((array)$map);
     $options = array('output_format' => 'path_as_string');
     $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
     $gui->resultSet = $map;
@@ -300,7 +300,7 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)  {
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
   
-  if(null != $gui->resultSet && count($gui->resultSet) > 0)  {
+  if(null != $gui->resultSet && count((array)$gui->resultSet) > 0)  {
     $labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
     $columns = array();
     

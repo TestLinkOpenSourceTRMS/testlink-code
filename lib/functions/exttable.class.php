@@ -226,7 +226,7 @@ class tlExtTable extends tlTable
     }
     
     $s = '[';
-    $n_columns = sizeof($this->columns);
+    $n_columns = sizeof((array)$this->columns);
     $options = array('width','hidden','groupable','hideable');
 
     for ($i=0; $i<$n_columns; $i++) 
@@ -339,7 +339,7 @@ class tlExtTable extends tlTable
   function buildFields()
   {
     $s = '[';
-    $n_columns = sizeof($this->columns);
+    $n_columns = sizeof((array)$this->columns);
     for ($i=0; $i < $n_columns; $i++) {
       $column = $this->columns[$i];
       $s .= "{name: '{$column['col_id']}'";
@@ -491,7 +491,7 @@ class tlExtTable extends tlTable
     $resultsCfg = config_get('results');
     $jsCode = "status_code_order = new Array();\n";
         
-    $verboseStatusOrder=array_keys($resultsCfg["status_label_for_exec_ui"]);
+    $verboseStatusOrder=array_keys((array)$resultsCfg["status_label_for_exec_ui"]);
     foreach( $verboseStatusOrder as $order => $status )
     {
       $code = $resultsCfg['status_code'][$status];

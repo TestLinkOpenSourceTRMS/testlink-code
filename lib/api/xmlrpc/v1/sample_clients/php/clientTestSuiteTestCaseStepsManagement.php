@@ -65,7 +65,7 @@ if( !is_null($ret) && isset($ret['steps']) && !is_null($ret['steps']) && $ret['s
 	$originalSteps = (array)$ret['steps'];
 }
 
-if( ($loop2do = count($originalSteps)) > 0 )
+if( ($loop2do = count((array)$originalSteps)) > 0 )
 {
 	$runDelete = true;
 	$allSteps = null;

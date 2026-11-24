@@ -155,7 +155,7 @@ class gitlabrestInterface extends issueTrackerInterface
       try
       {
         $items = $this->APIClient->getProjects();
-        $this->connected = count($items) > 0 ? true : false;
+        $this->connected = count((array)$items) > 0 ? true : false;
         unset($items);
       }
       catch(Exception $e)

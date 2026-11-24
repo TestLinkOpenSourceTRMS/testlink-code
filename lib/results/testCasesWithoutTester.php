@@ -35,7 +35,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
   $metrics = $metricsMgr->getNotRunWoTesterAssigned($args->tplan_id,null,null,
                                                     array('output' => 'array', 'ignoreBuild' => true));
 
-  if(($gui->row_qty = count($metrics)) > 0)
+  if(($gui->row_qty = count((array)$metrics)) > 0)
   {
     $msg_key = '';
     $links = featureLinks($gui->labels,$smarty->getImages());

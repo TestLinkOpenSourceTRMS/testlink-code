@@ -22,7 +22,7 @@ class Kint_Parsers_Microtime extends kintParser
 		$this->value = @date( 'Y-m-d H:i:s', $sec ) . '.' . substr( $usec, 2, 4 );
 
 		$numberOfCalls = count( self::$_times );
-		if ( $numberOfCalls > 0 ) { # meh, faster than count($times) > 1
+		if ( $numberOfCalls > 0 ) { # meh, faster than count((array)$times) > 1
 			$lap           = $time - end( self::$_times );
 			self::$_laps[] = $lap;
 

@@ -516,11 +516,11 @@ class testcaseCommands {
       // key level 2 : Test Plan  ID
       // key level 3 : Platform ID
       
-      $versionSet = array_keys($guiObj->exec_status_quo);
+      $versionSet = array_keys((array)$guiObj->exec_status_quo);
       $stop = false;
       foreach($versionSet as $version_id)
       {
-        $tplanSet = array_keys($guiObj->exec_status_quo[$version_id]);
+        $tplanSet = array_keys((array)$guiObj->exec_status_quo[$version_id]);
         foreach($tplanSet as $tplan_id)
         {
           if( ($guiObj->display_platform = !isset($guiObj->exec_status_quo[$version_id][$tplan_id][0])) )
@@ -627,7 +627,7 @@ class testcaseCommands {
     $guiObj->tcversion_id = $argsObj->tcversion_id;
 
     $guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
-    $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
+    $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys((array)$guiObj->step_set));
     $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
         
     // Get all existent steps
@@ -682,7 +682,7 @@ class testcaseCommands {
       $guiObj->step_number = $max_step;
 
       $guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
-      $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
+      $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys((array)$guiObj->step_set));
       $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
 
       $templateCfg = templateConfiguration('tcStepEdit');
@@ -745,7 +745,7 @@ class testcaseCommands {
     $guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
 
     $guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
-    $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
+    $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys((array)$guiObj->step_set));
 
     $templateCfg = templateConfiguration('tcStepEdit');
     $guiObj->template=$templateCfg->default_template;
@@ -899,7 +899,7 @@ class testcaseCommands {
     $guiObj->step_id = $argsObj->step_id;
 
     $guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
-    $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
+    $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys((array)$guiObj->step_set));
     $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
 
     $templateCfg = templateConfiguration('tcStepEdit');
@@ -924,7 +924,7 @@ class testcaseCommands {
     // Get all existent steps - info needed to do renumbering
     $stepNumberSet = array();
     $existentSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
-    $stepsQty = count($existentSteps);
+    $stepsQty = count((array)$existentSteps);
     for($idx=0; $idx < $stepsQty; $idx++)
     {
       $stepNumberSet[$idx] = $existentSteps[$idx]['step_number'];
@@ -956,7 +956,7 @@ class testcaseCommands {
         // if not nothing needs to be done
         // if yes need to loop
         $startFrom = $hitPos +1;
-        $endOn = count($stepNumberSet);
+        $endOn = count((array)$stepNumberSet);
         for($jdx = $startFrom; $jdx < $endOn; $jdx++)
         {
           if( $stepNumberSet[$jdx] == $just_renumbered['value'] )
@@ -978,7 +978,7 @@ class testcaseCommands {
     $guiObj->step_id = $op['id'];
 
     $guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
-    $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
+    $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys((array)$guiObj->step_set));
     $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
     $templateCfg = templateConfiguration('tcStepEdit');
     $guiObj->template=$templateCfg->default_template;
@@ -1007,7 +1007,7 @@ class testcaseCommands {
       // Get all existent steps - info needed to do renumbering
       $stepNumberSet = array();
       $stepSet = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
-      $stepsQty = count($stepSet);
+      $stepsQty = count((array)$stepSet);
       for($idx=0; $idx < $stepsQty; $idx++) {
         $renumbered[$stepSet[$idx]['id']] = $idx+1; 
       }
@@ -1441,7 +1441,7 @@ class testcaseCommands {
     $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
 
     $tcExternalID = $guiObj->testcase['tc_external_id'];
-    if( null != $argsObj->free_keywords && count($argsObj->free_keywords) > 0) {
+    if( null != $argsObj->free_keywords && count((array)$argsObj->free_keywords) > 0) {
       $this->tcaseMgr->addKeywords($guiObj->tcase_id,
                                    $guiObj->tcversion_id,
                                    $argsObj->free_keywords);

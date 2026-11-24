@@ -102,7 +102,7 @@ class assignment_mgr extends tlObjectWithDB
   // delete assignments by feature id and build_id
   function delete_by_feature_id_and_build_id($feature_map) 
   {
-    $feature_id_list = implode(",",array_keys($feature_map));
+    $feature_id_list = implode(",",array_keys((array)$feature_map));
     $where_clause = " WHERE feature_id IN ($feature_id_list) ";
       
     $sql = " DELETE FROM {$this->tables['user_assignments']}  {$where_clause} ";
@@ -184,7 +184,7 @@ class assignment_mgr extends tlObjectWithDB
                   " AND user_id = " . $safe['user_id'];
 
         $rs = $this->db->get_recordset($check);
-        if( is_null($rs) || count($rs) == 0 )
+        if( is_null($rs) || count((array)$rs) == 0 )
         {
           if($safe['user_id'] > 0)
           {
@@ -526,7 +526,7 @@ class assignment_mgr extends tlObjectWithDB
 
     
     $bye = true;
-    if( !is_null($rs) && count($rs) > 0)
+    if( !is_null($rs) && count((array)$rs) > 0)
     {
       $bye = false;
       $sql = " SELECT NHTPRJ.name AS tproject, " .

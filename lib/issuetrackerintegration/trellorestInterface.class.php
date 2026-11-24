@@ -101,7 +101,7 @@ class trellorestInterface extends issueTrackerInterface {
   {
     $norm = $issueID;
     $pieces = explode('/',$issueID);
-    $piecesQty = count($pieces); 
+    $piecesQty = count((array)$pieces); 
     if ( $piecesQty > 1) {
       // MAGIC
       // 0 -> https:

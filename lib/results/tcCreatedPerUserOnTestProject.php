@@ -257,7 +257,7 @@ function initGuiForCSVDownload(&$dbHandler,$argsObj,&$guiObj) {
       }
     }
 
-    if( count($rows) == 0 ) {
+    if( count((array)$rows) == 0 ) {
       return;
     }
 

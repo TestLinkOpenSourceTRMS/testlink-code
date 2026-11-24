@@ -513,7 +513,7 @@ function plugin_init_installed()
 
   plugin_register_installed();
 
-  $t_plugins = array_keys($g_plugin_cache);
+  $t_plugins = array_keys((array)$g_plugin_cache);
 
   foreach ($t_plugins as $t_basename) 
   {

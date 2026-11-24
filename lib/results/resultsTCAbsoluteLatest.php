@@ -310,7 +310,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $guiObj->buildInfoSet = 
     $tplanMgr->get_builds($argsObj->tplan_id, testplan::ACTIVE_BUILDS,null,
                           array('orderBy' => $guiObj->matrixCfg->buildOrderByClause)); 
-  $guiObj->activeBuildsQty = count($guiObj->buildInfoSet);
+  $guiObj->activeBuildsQty = count((array)$guiObj->buildInfoSet);
 
 
   foreach($cfg['results']['code_status'] as $code => $verbose) {
@@ -371,7 +371,7 @@ function createSpreadsheet($gui,$args,$media) {
   $dataHeader[] = $lbl['latest_execution'];
   $dataHeader[] = $lbl['latest_exec_notes'];
 
-  $startingRow = count($lines2write) + 2; // MAGIC
+  $startingRow = count((array)$lines2write) + 2; // MAGIC
   $cellArea = "A{$startingRow}:";
   foreach ($dataHeader as $zdx => $field) {
     $cellID = $cellRange[$zdx] . $startingRow; 
@@ -383,7 +383,7 @@ function createSpreadsheet($gui,$args,$media) {
   $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($style['DataHeader']);	
 
   $startingRow++;
-  $qta_loops = count($gui->matrix);
+  $qta_loops = count((array)$gui->matrix);
   for($idx = 0; $idx < $qta_loops; $idx++) {
 		foreach($gui->matrix[$idx] as $ldx => $field) {
 			$cellID = $cellRange[$ldx] . $startingRow; 
@@ -434,7 +434,7 @@ function setUpBuilds(&$args,&$gui) {
     $gui->buildListForExcel = '';
     $gui->filterApplied = false;
     if( !is_null($gui->buildInfoSet) ) {
-      $args->builds->idSet = array_keys($gui->buildInfoSet);
+      $args->builds->idSet = array_keys((array)$gui->buildInfoSet);
     }
   } else {
     $args->builds->idSet = array_keys(array_flip($args->build_set));
@@ -477,14 +477,14 @@ function buildDataSet(&$db,&$args,&$gui,&$metrics,$labels,$forceFormat=null)
   $execVerboseCode = $execVerboseCode['status_code'];
   $execCodeVerbose = array_flip($execVerboseCode);
 
-  $itemSet = array_keys($metrics);
+  $itemSet = array_keys((array)$metrics);
   $tsuiteCache = array(); 
   $treeMgr = new tree($db);
 
   foreach($itemSet as $iidx) {
-    $tcaseSet = array_keys($metrics[$iidx]);
+    $tcaseSet = array_keys((array)$metrics[$iidx]);
     foreach($tcaseSet as $tcaseID) {
-      $platformSet = array_keys($metrics[$iidx][$tcaseID]);
+      $platformSet = array_keys((array)$metrics[$iidx][$tcaseID]);
       foreach($platformSet as $platformID) {
         $rf = &$metrics[$iidx][$tcaseID][$platformID][0];
 
@@ -618,7 +618,7 @@ function initStyleSpreadsheet() {
  */
 function setCellRangeSpreadsheet() {
   $cr = range('A','Z');
-  $crLen = count($cr);
+  $crLen = count((array)$cr);
   for($idx = 0; $idx < $crLen; $idx++) {
     for($jdx = 0; $jdx < $crLen; $jdx++) {
       $cr[] = $cr[$idx] . $cr[$jdx];

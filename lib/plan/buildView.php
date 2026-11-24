@@ -58,7 +58,7 @@ function initEnv(&$dbHandler)
   if (!is_null($gui->buildSet)) {
     $availableCF = (array)$build_mgr->get_linked_cfields_at_design(current($gui->buildSet),$gui->tproject_id);
   }
-  $hasCF = count($availableCF);
+  $hasCF = count((array)$availableCF);
   $gui->cfieldsColumns = null; 
   $gui->cfieldsType = null;
   $initCFCol = true;

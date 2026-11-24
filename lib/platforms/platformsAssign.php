@@ -72,7 +72,7 @@ if (isset($args->tplan_id)) {
   if ($args->doAction == 'doAssignPlatforms') {
     $platform_mgr->linkToTestplan($args->platformsToAdd,$args->tplan_id);
     $platform_mgr->unlinkFromTestplan($args->platformsToRemove,$args->tplan_id);
-    if( $fix_needed && count($args->platformsToAdd) == 1)
+    if( $fix_needed && count((array)$args->platformsToAdd) == 1)
     {
       reset($args->platformsToAdd);
       $tplan_mgr->changeLinkedTCVersionsPlatform($args->tplan_id,0,current($args->platformsToAdd));

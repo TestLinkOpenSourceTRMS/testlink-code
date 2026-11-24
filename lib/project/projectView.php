@@ -101,7 +101,7 @@ function initializeGui(&$dbHandler,&$argsObj) {
   $cfg = getWebEditorCfg('testproject');
   $guiObj->editorType = $cfg['type'];
 
-  $guiObj->itemQty = count($guiObj->tprojects);
+  $guiObj->itemQty = count((array)$guiObj->tprojects);
 
   if($guiObj->itemQty > 0) {
     $guiObj->pageTitle .= ' ' . sprintf(lang_get('available_test_projects'),$guiObj->itemQty);

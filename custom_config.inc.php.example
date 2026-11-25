@@ -292,6 +292,11 @@
 // and enable it below:
 //
 // $tlCfg->tree_css = 'tl_wunderbaum.css';
+//
+// To recreate the look of the OLD ExtJS 3.4.0 TreePanel (original folder/
+// leaf/arrow sprites, 11px arial, 18px rows) instead:
+//
+// $tlCfg->tree_css = 'tl_wunderbaum_extjs.css';
 // ---------------------------------------------------------------------------
 
 

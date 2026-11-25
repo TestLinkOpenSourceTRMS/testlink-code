@@ -1,0 +1,149 @@
+/*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+@filesource tl_wunderbaum_extjs.css
+
+----------------------------------------------------------------------------
+Wunderbaum tree theme: "classic ExtJS" (original TestLink tree icons)
+----------------------------------------------------------------------------
+Recreates the look of the OLD ExtJS 3.4.0 TreePanel (tcTree.js) on the new
+Wunderbaum 0.15 navigator. It does nothing until you point $tlCfg->tree_css
+at it (see custom_config.inc.php):
+
+    $tlCfg->tree_css = 'tl_wunderbaum_extjs.css';
+
+What it restores from the old tree (third_party/ext-js/images/default/tree/):
+
+  * node icons:  folder.gif        (closed suite / project)
+                 folder-open.gif   (expanded suite / project)
+                 leaf.gif          (test case rows)
+                 loading.gif       (lazy load, instead of the FA spinner)
+  * expanders:   arrows.gif        (the solid +/- triangle arrows, with the
+                 original hover variants - the old tree used useArrows:true)
+  * geometry:    11px arial, 18px rows, 16px icon slots + 16px indent steps
+                 (the old .x-tree-node / .x-tree-node-el values)
+  * colors:      black text on white, the classic #c3daf9 selection bar with
+                 a #3399bb focus/border (the old .x-view-selector palette)
+
+How it works
+------------
+* @imported by inc_wunderbaum.tpl AFTER the library css, so these rules win.
+* Scoped to #tree_div, so only the trees are affected, never the rest of the
+  UI. The sprite url() paths are relative to THIS file's folder.
+* The Wunderbaum nodes carry the Font Awesome 4.5 classes (fa fa-folder,
+  fa fa-folder-open, fa fa-file-o, fa fa-caret-*) chosen by wbTree.js; the
+  glyph itself is hidden (color: transparent) and the original gif is painted
+  as the slot's background. No JS change is needed.
+
+Known limitation
+----------------
+The old tree's elbow connector lines (lines:true) have no pure-CSS
+equivalent: Wunderbaum rows are absolutely positioned with no per-node DOM
+hook for guide lines. Everything else - icons, arrows, hover, selection,
+row size, indent - matches the original.
+----------------------------------------------------------------------------
+*/
+
+/* ===== base look: geometry + colors of the old ExtJS tree ================ */
+#tree_div {
+  /* old .x-tree-node:  font: normal 11px arial, tahoma, helvetica, sans-serif; */
+  --wb-font-stack: arial, tahoma, helvetica, sans-serif;
+  font-size: 11px;
+
+  /* old rows: 18px tall (line-height:18px), 16px icons, 16px indent steps */
+  --wb-row-outer-height: 18px;
+  --wb-row-inner-height: 18px;
+  --wb-row-padding-y: 0;
+  --wb-col-padding-x: 2px;
+  --wb-icon-outer-width: 16px;   /* also the per-level indent width */
+  --wb-icon-outer-height: 18px;
+  --wb-icon-width: 16px;
+  --wb-icon-height: 16px;
+  --wb-icon-padding-x: 0;
+  --wb-icon-padding-y: 1px;
+
+  /* old palette: black text, #c3daf9 selection, #3399bb focus/border
+     (from .x-tree-node / .x-view-selector in ext-all.css) */
+  --wb-node-text-color: #000000;
+  --wb-background-color: #ffffff;
+  --wb-border-color: #3399bb;
+  --wb-active-color: #c3daf9;          /* selected row bar */
+  --wb-active-hover-color: #c3daf9;
+  --wb-active-border-color: #3399bb;
+  --wb-active-hover-border-color: #3399bb;
+  --wb-bg-highlight-color: #3399bb;
+  --wb-hover-color: #e8f2fc;           /* old .x-tree-node-over pale blue */
+  --wb-focus-border-color: #3399bb;
+}
+
+/* the old tree frame was a 1px #c3daf9 line (tree_div style in the tpls) */
+#tree_div {
+  border-width: 1px;
+  border-radius: 0;
+}
+
+/* ===== node icons: swap the FA glyphs for the original ExtJS gifs ========= */
+#tree_div .wunderbaum span.wb-node i.wb-icon {
+  color: transparent;                 /* hide the FA font glyph */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: auto;
+}
+
+/* test case row -> leaf.gif (old .x-tree-node-leaf .x-tree-node-icon) */
+#tree_div .wunderbaum span.wb-node i.wb-icon.fa-file-o {
+  background-image: url('../../../../third_party/ext-js/images/default/tree/leaf.gif');
+}
+
+/* closed suite/project -> folder.gif
+   (old .x-tree-node-collapsed .x-tree-node-icon) */
+#tree_div .wunderbaum span.wb-node i.wb-icon.fa-folder {
+  background-image: url('../../../../third_party/ext-js/images/default/tree/folder.gif');
+}
+
+/* expanded suite/project -> folder-open.gif
+   (old .x-tree-node-expanded .x-tree-node-icon) */
+#tree_div .wunderbaum span.wb-node i.wb-icon.fa-folder-open {
+  background-image: url('../../../../third_party/ext-js/images/default/tree/folder-open.gif');
+}
+
+/* defensive: an expanded row whose icon class still reads "closed" */
+#tree_div .wunderbaum div.wb-row.wb-expanded span.wb-node i.wb-icon.fa-folder {
+  background-image: url('../../../../third_party/ext-js/images/default/tree/folder-open.gif');
+}
+
+/* lazy-load indicator -> loading.gif (old .x-tree-node-loading) */
+#tree_div .wunderbaum span.wb-node i.wb-icon.fa-spinner,
+#tree_div .wunderbaum span.wb-node i.wb-expander.fa-spinner {
+  color: transparent;
+  animation: none;
+  background-image: url('../../../../third_party/ext-js/images/default/tree/loading.gif');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+
+/* ===== expanders: the old solid +/- triangle arrows (arrows.gif) =========== */
+/* sprite cells, 16x18, from ext-all.css .x-tree-arrows rules:
+     plus   0 0      minus -16px 0      plus-over -32px 0      minus-over -48px 0 */
+#tree_div .wunderbaum span.wb-node i.wb-expander {
+  color: transparent;                 /* hide the fa-caret-* glyph */
+  cursor: pointer;
+  background-image: url('../../../../third_party/ext-js/images/default/tree/arrows.gif');
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+
+#tree_div .wunderbaum span.wb-node i.wb-expander.fa-caret-down {
+  background-position: -16px 0;
+}
+
+#tree_div .wunderbaum:hover span.wb-node i.wb-expander.fa-caret-right {
+  background-position: -32px 0;
+}
+
+#tree_div .wunderbaum:hover span.wb-node i.wb-expander.fa-caret-down {
+  background-position: -48px 0;
+}
+
+/* ===== END ================================================================== */

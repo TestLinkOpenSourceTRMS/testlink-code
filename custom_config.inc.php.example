@@ -277,6 +277,22 @@
 // $tlCfg->req_spec_template->scope->value = 'what a req_spec';
 // $tlCfg->req_spec_template->scope->type = 'file';
 // $tlCfg->req_spec_template->scope->value = 'c:\usr\local\xampp-1.7.2\xampp\htdocs\head-20090909\item_templates\req_spec.txt';
+//
+// ---------------------------------------------------------------------------
+// Wunderbaum tree theme
+//
+// Restyle the left-hand tree navigators (font, row height, colors, ...).
+// Point $tlCfg->tree_css at a CSS file in the same folder as the standard
+// TL css (gui/themes/default/css/). The file is @imported by every page
+// that shows a tree, AFTER the library css, scoped to #tree_div, so it
+// only affects the trees and never the rest of the UI.
+//
+// A ready-made, fully-commented starting point is shipped at
+// gui/themes/default/css/tl_wunderbaum.css - copy it, tweak the values,
+// and enable it below:
+//
+// $tlCfg->tree_css = 'tl_wunderbaum.css';
+// ---------------------------------------------------------------------------
 
 
 ?>

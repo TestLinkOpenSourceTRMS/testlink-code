@@ -341,3 +341,63 @@ intact, confirming `inc_ext_js` still fires first and is unaffected.
 Callback-level harness validation does not cover **template wiring**.
 When a change touches `*.tpl` include structure, re-verify on a real
 logged-in page (raw HTML + DOM + console), not only in the static harness.
+
+## 9. 2026-11-25: optional tree theme (`$tlCfg->tree_css`)
+
+Feature: a CSS config option to restyle the Wunderbaum tree navigators
+(font, row size, spacing, colors), mirroring the existing `$tlCfg->custom_css`
+convention.
+
+### How it works
+
+- `config.inc.php`: `$tlCfg->tree_css = null;` (null/'' = disabled), right
+  below `$tlCfg->custom_css`.
+- `lib/functions/tlsmarty.inc.php`: assigns `use_tree_css` / `tree_css`
+  (absolute `basehref . TL_THEME_CSS_DIR . $tlCfg->tree_css`), the same way
+  `use_custom_css` / `custom_css` are assigned.
+- `gui/templates/tl-classic/inc_wunderbaum.tpl`: when `use_tree_css` is set,
+  emits `<style>@import "{$tree_css}";</style>` **after** the
+  `wunderbaum.css` link, inside the existing `guard_header_smarty('inc_wunderbaum.tpl')`
+  block. Later-in-head wins over the library's `:root` defaults, so the theme
+  overrides apply.
+- `gui/themes/default/css/tl_wunderbaum.css`: ready-to-use sample theme,
+  fully commented, scoped to `#tree_div` (the element `wbTree.js` initializes
+  the tree on) so it can only restyle the trees.
+- `custom_config.inc.php.example`: documented example
+  (`$tlCfg->tree_css = 'tl_wunderbaum.css';`).
+
+### Why `#tree_div`, and why it is safe
+
+Wunderbaum 0.15 exposes every color/size as a CSS custom property (`--wb-*`)
+on the tree **container** element (the `<div>` passed as `element:`), not on
+`:root`. All navigator templates create the tree in `#tree_div`, so scoping
+the theme to `#tree_div` restyles exactly the trees and nothing else, and
+multiple trees per page each pick up the same variables (they all share
+`#tree_div` as their id in their own panel). Hover/active/dimmed/grayscale
+variants are derived by the browser from the base colors via `color-mix()`,
+so a theme only needs to set the base variables. `font-size` is the one
+literal (14px) the library puts on the container; the sample overrides it.
+
+### Validation (live browser harness, php -S 127.0.0.1:8740)
+
+`_harness/harness_tree_theme.php` renders the **real** `inc_wunderbaum.tpl`
+through the app's Smarty (the guarded include, exactly as production pages
+do) and boots the real `wunderbaum.umd.js` + `wbTree.js` on an eager tree.
+`?theme=1` simulates `$tlCfg->tree_css` set, `?theme=0` the default (null).
+Computed styles read from the page main world on `#tree_div`:
+
+| property (computed) | default (`?theme=0`) | themed (`?theme=1`) |
+|---|---|---|
+| `--wb-font-stack` | `Helvetica, sans-serif` | `'Trebuchet MS', Arial, Verdana, sans-serif` |
+| `font-size`       | `14px` | `13px` |
+| `--wb-row-outer-height` | `22px` (rows 22px) | `20px` (rows 20px) |
+| `--wb-node-text-color` | `#56534c` | `#111111` |
+| `--wb-border-color` | `#56534c` | `#99bbe8` |
+| `--wb-bg-highlight-color` | `#26a0da` | `#15428b` |
+| `--wb-focus-border-color` | `#275dc5` | `#15428b` |
+
+Both modes: `treeInitialized=true`, 4 rows, no JS errors. The rendered head
+checks confirm the `@import` is present **only** in themed mode and, in that
+mode, appears **after** the `wunderbaum.css` link; in default mode it is
+absent. Default mode is byte-for-byte the library defaults — enabling the
+theme changes nothing about tree behavior, only appearance.

@@ -170,6 +170,17 @@ class TLSmarty extends Smarty {
         $basehref . TL_THEME_CSS_DIR . $tlCfg->custom_css);
     }
     
+    // same convention as use_custom_css, but scoped to the Wunderbaum tree
+    // navigators: inc_wunderbaum.tpl @imports this file AFTER the library css,
+    // so its --wb-* custom-property overrides on #tree_div win over defaults
+    // (see gui/themes/default/css/tl_wunderbaum.css for the documented vars)
+    $this->assign('use_tree_css', 0);
+    if(!is_null($tlCfg->tree_css) && $tlCfg->tree_css != '') {
+      $this->assign('use_tree_css', 1);
+      $this->assign('tree_css',
+        $basehref . TL_THEME_CSS_DIR . $tlCfg->tree_css);
+    }
+
     $this->assign('locale', $my_locale);
      
     //

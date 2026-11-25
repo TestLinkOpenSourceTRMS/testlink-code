@@ -1,0 +1,95 @@
+/*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+@filesource tl_wunderbaum.css
+
+----------------------------------------------------------------------------
+Wunderbaum tree theme for TestLink
+----------------------------------------------------------------------------
+This is an OPTIONAL theme for the left-hand tree navigators. It does nothing
+until you point $tlCfg->tree_css at it (see custom_config.inc.php):
+
+    $tlCfg->tree_css = 'tl_wunderbaum.css';
+
+How it works
+------------
+* It is @imported by inc_wunderbaum.tpl, AFTER the library stylesheet, so
+  these overrides win over the library defaults on the SAME page.
+* It is scoped to #tree_div (the element the tree initializes on), so it can
+  only restyle the trees and never the rest of the TestLink UI.
+* In Wunderbaum 0.15 every color/size that matters is a CSS custom property
+  (--wb-*) set on the tree container. Setting a base color here is enough:
+  the hover/active/dimmed/grayscale variants are derived in the browser with
+  color-mix() from the base. Only override a derived variable if you want to
+  force it.
+
+The default (unthemed) tree is already readable. The values below make it
+match TestLink's classic look (Trebuchet MS, 13px rows, blue header accents).
+Tweak anything you like - nothing breaks if a variable is misspelled, it just
+falls back to the library default.
+----------------------------------------------------------------------------
+*/
+
+#tree_div {
+  /* ----- Typography ---------------------------------------------------- */
+  /* font family + weight. The library sets its own font-size (14px) on the
+     container; override it here to change the base text size. */
+  --wb-font-stack: 'Trebuchet MS', Arial, Verdana, sans-serif;
+  font-size: 13px;
+
+  /* ----- Row / cell geometry ------------------------------------------ */
+  /* row-outer-height: total height of a row (text + padding)
+     row-inner-height: the clickable inner strip
+     row-padding-y: vertical padding inside the row
+     col-padding-x: horizontal padding of the first (title) cell
+     icon-*: the square slot that holds the expander chevron / node icon   */
+  --wb-row-outer-height: 20px;
+  --wb-row-inner-height: 18px;
+  --wb-row-padding-y: 1px;
+  --wb-col-padding-x: 4px;
+  --wb-icon-outer-height: 18px;
+  --wb-icon-outer-width: 18px;
+  --wb-icon-height: 14px;
+  --wb-icon-width: 14px;
+  --wb-icon-padding-y: 2px;
+  --wb-icon-padding-x: 2px;
+
+  /* ----- Base colors (derived colors follow these automatically) ------ */
+  --wb-node-text-color:  #111111;   /* row text                     */
+  --wb-background-color: #ffffff;   /* tree background              */
+  --wb-border-color:     #99bbe8;   /* outer frame + grid lines     */
+  --wb-grid-color:       #cdd8e6;   /* subtle vertical grid lines   */
+  --wb-header-color:     #cddef3;   /* (grid) header background     */
+  --wb-alternate-row-color: #f4f8fd; /* zebra striping, wb-alternate */
+  --wb-bg-highlight-color: #15428b;  /* selection / badge accent     */
+  --wb-focus-border-color: #15428b;  /* keyboard focus ring          */
+  --wb-error-color:      #b5373b;   /* invalid / error text         */
+}
+
+/*
+ * Optional: alternate (zebra) row shading.
+ * The library only renders even/odd rows in two shades when the tree element
+ * carries the feature class `wb-alternate`. Enable it with one line:
+ */
+/* #tree_div { background: #ffffff; }
+   .wunderbaum.wb-alternate div.wb-row:nth-child(even) {
+     background-color: #f4f8fd;
+   } */
+
+/*
+ * Optional: soften the outer frame so the tree blends into the panel.
+ * The library draws a 2px border around the container; TestLink's panels are
+ * already framed, so a 1px line looks tidier.
+ */
+#tree_div {
+  border-width: 1px;
+  border-radius: 0;
+}
+
+/*
+ * Optional: dim the indent lines and node glyphs a touch. The `--wb-dim-color`
+ * is derived from the base text color, so this is only needed if the default
+ * guide lines look too heavy for your palette.
+ */
+/* #tree_div { --wb-dim-color: #b8c4d4; } */
+
+/* ----- END ------------------------------------------------------------- */

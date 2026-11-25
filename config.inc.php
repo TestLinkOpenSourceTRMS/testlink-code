@@ -136,6 +136,13 @@ define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
 // null or '' => do not use
 $tlCfg->custom_css = null;
 
+// name of your tree css file, place it in the same folder as the standard TL css.
+// Restyles ONLY the Wunderbaum tree navigators (the left-hand tree panels),
+// by overriding the library's --wb-* CSS custom properties on #tree_div.
+// See gui/themes/default/css/tl_wunderbaum.css for the documented variables.
+// null or '' => do not use
+$tlCfg->tree_css = null;
+
 
 /** Include constants and magic numbers (users should not change it)*/
 require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');

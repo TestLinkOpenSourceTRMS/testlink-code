@@ -142,6 +142,29 @@ a theme only needs to set the base variables.
 4. Preview via the harness (`?theme=2` is the pattern — or just load your file
    from the same server and inspect `#tree_div` computed styles).
 
+### Gotcha: how to target node icons / expanders
+
+Wunderbaum is initialized **on** `#tree_div`, so `#tree_div` **is** the
+`.wunderbaum` element — there is no `.wunderbaum` descendant inside it. Icon
+and expander rules must therefore be anchored on `#tree_div .wb-node ...` (or
+`#tree_div div.wb-row ...`), **not** on `#tree_div .wunderbaum .wb-node ...`:
+
+```css
+/*  CORRECT  — matches the node: */
+#tree_div .wb-node i.wb-icon.fa-folder   { color: #f7c64b; }
+#tree_div .wb-node i.wb-expander.fa-caret-down { color: #8a8a8a; }
+
+/*  WRONG  — matches nothing, the rule is silently dropped: */
+#tree_div .wunderbaum .wb-node i.wb-icon.fa-folder { color: #f7c64b; }
+```
+
+The `#tree_div { --wb-*: ... }` custom-property block is unaffected (it targets
+`#tree_div` directly), which is why a theme can change the frame/row colors
+correctly while its icon-color rules do nothing if they carry the extra
+`.wunderbaum` descendant. The shipped `tl_wunderbaum.css` sample only sets
+custom properties, so it never hit this. `tl_wunderbaum_windows.css` shows the
+correct icon-targeting form.
+
 ## Troubleshooting
 
 | Symptom | Cause / fix |

@@ -22,8 +22,11 @@ Purpose: load the Wunderbaum tree library and the TestLink wrapper
   {* Optional tree theme ($tlCfg->tree_css): @import AFTER the library css so
      the theme's --wb-* overrides on #tree_div win over the defaults. The
      $use_tree_css flag is set by tlsmarty.inc.php (same convention as
-     $use_custom_css in inc_head.tpl). *} {if $use_tree_css}
-  <style media="all" type="text/css">@import "{$tree_css}";</style>
+     $use_custom_css in inc_head.tpl). The trailing ?v= cache-busts the theme
+     file inside @import so a browser that already cached an older tree_css
+     value (or a different theme) re-fetches it: bump the stamp whenever you
+     change $tlCfg->tree_css in custom_config.inc.php. *} {if $use_tree_css}
+  <style media="all" type="text/css">@import "{$tree_css}?v={$tree_css_v|default:1}";</style>
   {/if}
   {* Center the FA glyphs inside the fixed-width wb-icon/wb-expander slots
      (the font renders at line-height 1, which would top-align the glyph). *}

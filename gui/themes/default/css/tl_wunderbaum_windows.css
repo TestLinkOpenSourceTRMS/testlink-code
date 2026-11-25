@@ -1,0 +1,125 @@
+/*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+@filesource tl_wunderbaum_windows.css
+
+----------------------------------------------------------------------------
+Wunderbaum tree theme: "Windows / Explorer"
+----------------------------------------------------------------------------
+Gives the left-hand tree navigators (test project, test plan, build,
+requirement spec trees) the classic Windows/Outlook Explorer look -
+yellow folders, gray ">" / "v" chevrons and a light-blue selection bar.
+No sprite images are needed: it re-styles the Font Awesome 4.5 glyphs that
+wbTree.js already puts on every node, so it is fully self-contained and
+portable.
+
+It does nothing until you point $tlCfg->tree_css at it
+(see custom_config.inc.php):
+
+    $tlCfg->tree_css = 'tl_wunderbaum_windows.css';
+
+How it works
+------------
+* @imported by inc_wunderbaum.tpl AFTER the library css, so these rules win.
+* Scoped to #tree_div, so only the trees are affected, never the rest of the
+  UI.
+* The Wunderbaum nodes carry the Font Awesome 4.5 classes chosen by wbTree.js:
+  fa-folder / fa-folder-open (suites & projects), fa-file-o (test cases) and
+  fa-caret-right / fa-caret-down (expanders). This theme only recolours and
+  nudges those glyphs.
+* IMPORTANT - selector form: #tree_div IS the .wunderbaum element itself
+  (Wunderbaum is initialized ON #tree_div), so there is NO .wunderbaum
+  descendant inside it. Anchor icon rules on `#tree_div .wb-node ...`, not
+  `#tree_div .wunderbaum .wb-node ...` - the latter matches nothing and every
+  rule silently does nothing (the icons stay the default text color).
+
+Node-type reference (wbTree.js iconMap)
+---------------------------------------
+  * suite / project, closed   -> fa fa-folder        (fa-folder-o for leaf)
+  * suite / project, expanded -> fa fa-folder-open
+  * test case / leaf          -> fa fa-file-o
+  * expander, collapsed       -> fa fa-caret-right
+  * expander, expanded        -> fa fa-caret-down
+----------------------------------------------------------------------------
+*/
+
+#tree_div {
+  /* ----- Typography ---------------------------------------------------- */
+  /* Windows shell trees use Tahoma / Segoe UI. */
+  --wb-font-stack: 'Segoe UI', Tahoma, Verdana, sans-serif;
+  font-size: 12px;
+
+  /* ----- Row / cell geometry ------------------------------------------ */
+  /* Compact, tight rows like the Windows explorer tree. */
+  --wb-row-outer-height: 20px;
+  --wb-row-inner-height: 18px;
+  --wb-row-padding-y: 1px;
+  --wb-col-padding-x: 3px;
+  --wb-icon-outer-height: 18px;
+  --wb-icon-outer-width: 18px;
+  --wb-icon-height: 14px;
+  --wb-icon-width: 14px;
+  --wb-icon-padding-y: 2px;
+  --wb-icon-padding-x: 2px;
+
+  /* ----- Base colors (Windows palette) ------------------------------- */
+  --wb-node-text-color:  #000000;   /* black row text          */
+  --wb-background-color: #ffffff;   /* white tree background   */
+  --wb-border-color:     #d9d9d9;   /* light-gray outer frame  */
+  --wb-grid-color:       #e6e6e6;   /* subtle grid lines       */
+  --wb-alternate-row-color: #f4f8fd;
+  --wb-hover-color:      #e8f0fe;   /* pale-blue hover (classic) */
+  --wb-focus-border-color: #3399bb; /* keyboard focus ring      */
+  --wb-bg-highlight-color: #3399bb; /* badge / accent           */
+  --wb-error-color:      #b5373b;
+
+  /* ----- Windows selection bar ---------------------------------------- */
+  /* The selected row is a light-blue bar with a blue focus border. */
+  --wb-active-color:              #cce8ff;
+  --wb-active-hover-color:        #b3d9ff;
+  --wb-active-border-color:       #99d1ff;
+  --wb-active-hover-border-color: #3399bb;
+}
+
+/* Windows trees sit in a 1px gray frame, not the library's 2px blue. */
+#tree_div {
+  border-width: 1px;
+  border-radius: 0;
+}
+
+/* ===== Node icons ====================================================== */
+/* Folders: yellow when closed, slightly brighter when open (Windows look).
+   wbTree.js assigns fa-folder (closed), fa-folder-open (expanded) and
+   fa-folder-o (a folder with no children) - colour all three. */
+#tree_div .wb-node i.wb-icon.fa-folder,
+#tree_div .wb-node i.wb-icon.fa-folder-o {
+  color: #f7c64b;                      /* closed folder yellow */
+}
+#tree_div .wb-node i.wb-icon.fa-folder-open {
+  color: #ffd966;                      /* open folder, brighter */
+}
+
+/* Test cases / leaves: a neutral gray document icon. */
+#tree_div .wb-node i.wb-icon.fa-file-o {
+  color: #8a8a8a;
+}
+
+/* ===== Expanders: gray ">" / "v" chevrons (like the Windows tree) ===== */
+/* The library renders these as small filled carets; give them a soft gray. */
+#tree_div .wb-node i.wb-expander.fa-caret-right,
+#tree_div .wb-node i.wb-expander.fa-caret-down {
+  color: #8a8a8a;
+  font-size: 13px;                     /* a touch smaller than the icon */
+}
+
+/* Slightly darker chevron on hover, so the expander reads as interactive. */
+#tree_div div.wb-row.wb-selected i.wb-expander,
+#tree_div:hover div.wb-row i.wb-expander {
+  color: #4d4d4d;
+}
+
+/* Selected row text stays crisp black (matches the Windows selection bar). */
+#tree_div div.wb-row.wb-selected .wb-text {
+  color: #000000;
+}
+
+/* ----- END ------------------------------------------------------------- */

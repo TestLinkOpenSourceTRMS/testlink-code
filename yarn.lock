@@ -7,6 +7,11 @@ tablednd@^1.0.3:
   resolved "https://registry.npmjs.org/tablednd/-/tablednd-1.0.3.tgz"
   integrity sha1-DGmSvH/j7F6IA0RoRHnJ35DARCs=
 
+ws@*:
+  version "8.23.0"
+  resolved "https://registry.npmjs.org/ws/-/ws-8.23.0.tgz"
+  integrity sha512-wCkmX8QMOrKjgO8HW2WyDbTSGeqkocxgDzS9iR79rEAexty6/2qzilx3Ag8Tqf9ykop3irLKle0MtVn5qjVnoQ==
+
 wunderbaum@^0.15.0:
   version "0.15.0"
   resolved "https://registry.npmjs.org/wunderbaum/-/wunderbaum-0.15.0.tgz"

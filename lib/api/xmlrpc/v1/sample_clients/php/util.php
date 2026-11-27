@@ -24,7 +24,7 @@ function show_api_db_sample_msg()
 function runTest(&$client,$method,$args,$feedback_id=1)
 {
   
-  echo __FUNCTION__ . '<br>';
+  echo __FUNCTION__ . ' -> ' . $method . '<br>';
   new dBug($args);
   $html_id="result_{$feedback_id}";
     

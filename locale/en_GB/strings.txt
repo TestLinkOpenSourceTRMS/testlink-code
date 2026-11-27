@@ -3175,6 +3175,7 @@ $TLS_API_NO_TESTSUITEID = "No testsuiteid provided.";
 $TLS_API_NO_TPID = "No testplan ID (testplanid) provided.";
 $TLS_API_NO_TCID = "No testcase ID (testcaseid) provided.";
 $TLS_API_NO_PLATFORMID = "No Platform ID (platformid) provided.";
+$TLS_API_NO_ITSID = "No Issue Tracker System ID (itsid) provided.";
 $TLS_API_NO_USERID = "No user ID (userid) provided.";
 $TLS_API_NO_ROLEID = "No role ID (roleid) provided.";
 

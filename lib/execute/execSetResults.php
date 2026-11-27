@@ -353,7 +353,7 @@ if(!is_null($linked_tcversions)) {
   
   if(!$args->reload_caller) {  
     if ($args->doDelete) {
-      $dummy = delete_execution($db,$args->exec_to_delete);
+      $dummy = $tcase_mgr->deleteExecution($args->exec_to_delete);
   	  if ($dummy){
   	    $tc_info = $tcase_mgr->getExternalID($tcase_id);
   	    $tp_info = $tplan_mgr->get_by_id($args->tplan_id);

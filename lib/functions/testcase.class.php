@@ -4845,26 +4845,75 @@ class testcase extends tlObjectWithAttachments {
   }
 
   /**
-     * given an executio id delete execution and related data.
-     *
-     */
-    function deleteExecution($executionID)
-    {
-        $whereClause = " WHERE execution_id = {$executionID} ";
-    $sql = array("DELETE FROM {$this->tables['execution_bugs']} {$whereClause} ",
-                 "DELETE FROM {$this->tables['cfield_execution_values']} {$whereClause} ",
-                 "DELETE FROM {$this->tables['executions']} WHERE id = {$executionID}" );
+   * given an execution id delete execution and related data.
+   *
+   */
+  function deleteExecution($executionID) {
+    $execID = intval($executionID);
 
-    foreach ($sql as $the_stm)
-    {
+    // Delete attachements
+    //   of steps
+    $sql = "SELECT id FROM {$this->tables['execution_tcsteps']} " .
+           "WHERE execution_id = {$execID}";
+
+    $rs = $this->db->fetchRowsIntoMap($sql, 'id');
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db, $fik, false);
+      }
+    }
+    //   of the execution
+    $sql = "SELECT id FROM {$this->tables['attachments']} " .
+           "WHERE fk_table = 'executions' AND fk_id = {$execID}";
+
+    $rs = $this->db->fetchRowsIntoMap($sql, 'id');
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db, $fik, false);
+      }
+    }
+
+    // Retrieve TC version ID
+    $sql = "SELECT tcversion_id from {$this->tables['executions']} WHERE id={$execID}";
+    $tcversion_id = $this->db->fetchOneValue($sql);
+
+    // Delete the execution and linked data
+    $whereClause = "WHERE execution_id = {$execID}";
+    $sql = array("DELETE FROM {$this->tables['execution_bugs']} {$whereClause}",
+                 "DELETE FROM {$this->tables['cfield_execution_values']} {$whereClause}",
+                 "DELETE FROM {$this->tables['execution_tcsteps']} {$whereClause}",
+                 "DELETE FROM {$this->tables['executions']} WHERE id = {$execID}");
+
+    foreach ($sql as $the_stm) {
       $result = $this->db->exec_query($the_stm);
-      if (!$result)
-      {
+      if (!$result) {
         break;
       }
     }
+
+    // Reopen closed relations by exec
+    $tcvRelations = (array) $this->getTCVRelationsRaw($tcversion_id);
+    if( count($tcvRelations) > 0 ) {
+      $itemSet = array_keys($tcvRelations);
+      $this->openClosedTCVRelation($itemSet, LINK_TC_RELATION_CLOSED_BY_EXEC);
     }
 
+    // Reopen closed requirements by exec
+    // Check if Test Project has the requirement management feature enabled
+    $tproject_id = $this->tproject_id;
+    if (!$tproject_id) {
+      // retrieve TC ID
+      $tcase_id = $this->tree_manager->get_node_hierarchy_info($tcversion_id)['parent_id'];
+
+      $tproject_id = $this->getTestProjectFromTestCase($tcase_id);
+    }
+    $topt = $this->tproject_mgr->getOptions($tproject_id);
+    if( $topt->requirementsEnabled ) {
+        $this->openClosedReqLinks($tcversion_id,
+                                  LINK_TC_REQ_CLOSED_BY_EXEC);
+    }
+
+  }
 
 
 
@@ -8756,6 +8805,22 @@ class testcase extends tlObjectWithAttachments {
 
 
   /**
+   * Reopen closed TCV relation after execution deletion
+   */
+  function openClosedTCVRelation($relationID, $reason) {
+
+    $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */ ';
+    $sql = " $debugMsg UPDATE {$this->tables['testcase_relations']} " .
+           " SET link_status = " . LINK_TC_RELATION_OPEN .
+           " WHERE id IN(" . implode(',', $relationID) . ")" .
+           " AND link_status = " . intval($reason);
+
+    $this->db->exec_query($sql);
+
+  }
+
+
+  /**
    *
    **/
   function copyTCVRelations($source_id,$dest_id) {
@@ -8898,6 +8963,26 @@ class testcase extends tlObjectWithAttachments {
     $this->db->exec_query($sql);
 
     // No audit yet
+  }
+
+  /**
+   * Reopen closed requirement links after execution deletion
+   */
+  function openClosedReqLinks($tcversion_id, $reason) {
+
+    $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */ ';
+
+    $commonWhere = " WHERE tcversion_id = " . intval($tcversion_id) .
+                   " AND link_status = " . intval($reason);
+
+    /* Note: We can unfreeze requirements only if there is no others
+       executed TC linked to them */
+
+    // Work on Coverage
+    $sql = "$debugMsg UPDATE {$this->tables['req_coverage']} " .
+           " SET link_status = " . LINK_TC_REQ_OPEN .
+           $commonWhere;
+    $this->db->exec_query($sql);
   }
 
   /**
